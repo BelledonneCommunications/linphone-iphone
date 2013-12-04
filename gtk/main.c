@@ -69,7 +69,7 @@ void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpoi
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
-
+void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data);
 
 #ifndef HAVE_GTK_OSX
 static gint main_window_x=0;
@@ -642,6 +642,10 @@ static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, cons
 			ret=TRUE;
 		g_free(tmp);
 	}
+
+	if( address)
+		g_free(address);
+
 	return ret;
 }
 
@@ -665,8 +669,11 @@ static void load_uri_history(){
 	}
 	gtk_entry_completion_set_model(gep,GTK_TREE_MODEL(model));
 	gtk_entry_completion_set_text_column(gep,0);
+	gtk_entry_completion_set_popup_completion(gep, TRUE);
 	gtk_entry_completion_set_match_func(gep,uribar_completion_matchfunc, NULL, NULL);
+	gtk_entry_completion_set_minimum_key_length(gep,3);
 	gtk_entry_set_completion(uribar,gep);
+	g_signal_connect (G_OBJECT (uribar), "changed", G_CALLBACK(linphone_gtk_on_uribar_changed), NULL);
 }
 
 static void save_uri_history(){
@@ -716,6 +723,94 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	gtk_list_store_prepend(GTK_LIST_STORE(model),&iter);
 	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,text,1,COMPLETION_HISTORY,-1);
 	save_uri_history();
+}
+
+void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* friends, void* data )
+{
+	GtkTreeIter    iter;
+	GtkEntry*    uribar = GTK_ENTRY(data);
+	GtkEntryCompletion* compl = gtk_entry_get_completion(uribar);
+	GtkTreeModel* model = gtk_entry_completion_get_model(compl);
+	GtkListStore*  list = GTK_LIST_STORE(model);
+	gboolean valid;
+
+	// clear completion list from previous non-history completion suggestions
+	valid = gtk_tree_model_get_iter_first(model,&iter);
+	while(valid)
+	{
+		char* url;
+		int type;
+		gtk_tree_model_get(model,&iter, 0,&url, 1,&type, -1);
+
+		if (type != COMPLETION_HISTORY) {
+			valid = gtk_list_store_remove(list, &iter);
+		} else {
+			valid = gtk_tree_model_iter_next(model,&iter);
+		}
+
+		if( url ) g_free(url);
+		if( !valid ) break;
+	}
+
+	// add new non-history related matches
+	while( friends ){
+		LinphoneFriend* lf = friends->data;
+		if( lf ) {
+			const LinphoneAddress* la = linphone_friend_get_address(lf);
+			if( la ){
+				char *addr = linphone_address_as_string(la);
+
+				if( addr ){
+					ms_message("[LDAP]Insert match: %s",  addr);
+					gtk_list_store_insert_with_values(list, &iter, -1,
+													  0, addr,
+													  1, COMPLETION_LDAP, -1);
+					ms_free(addr);
+				}
+			}
+		}
+		friends = friends->next;
+	}
+	gtk_entry_completion_complete(compl);
+
+	// Gtk bug? we need to emit a "changed" signal so that the completion appears if
+	// the list of results was previously empty
+	g_signal_handlers_block_by_func(uribar, linphone_gtk_on_uribar_changed, NULL);
+	g_signal_emit_by_name(uribar, "changed");
+	g_signal_handlers_unblock_by_func(uribar, linphone_gtk_on_uribar_changed, NULL);
+}
+
+struct CompletionTimeout {
+	guint timeout_id;
+};
+
+static gboolean launch_contact_provider_search(void *userdata)
+{
+	LinphoneCore*     core = linphone_gtk_get_core();
+	GtkWidget*      uribar = GTK_WIDGET(userdata);
+	const gchar* predicate = gtk_entry_get_text((GtkEntry*)uribar);
+
+	if( strlen(predicate) >= 3 ){ // don't search too small predicates
+		ms_message("launch_contact_provider_search");
+		linphone_core_ldap_launch_search(core, predicate, on_contact_provider_search_results, uribar);
+	}
+	return FALSE;
+}
+
+void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
+{
+	gchar* text = gtk_editable_get_chars(uribar, 0,-1);
+	gint timeout = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "complete_timeout"));
+	ms_message("URIBAR changed, new text: %s, userdata %p uribar @%p", text, user_data, uribar);
+	if( text ) g_free(text);
+
+
+	if( timeout != 0 ) {
+		g_source_remove(timeout);
+	}
+	timeout = g_timeout_add_seconds(1,(GSourceFunc)launch_contact_provider_search, uribar);
+
+	gtk_object_set_data(GTK_OBJECT(uribar),"complete_timeout", GINT_TO_POINTER(timeout) );
 }
 
 bool_t linphone_gtk_video_enabled(void){

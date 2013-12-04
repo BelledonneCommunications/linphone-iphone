@@ -73,6 +73,7 @@ struct _LinphoneLDAPContactSearch
 	char*   filter;
 	bool_t  complete;
 	MSList* found_entries;
+	int     found_count;
 };
 
 
@@ -80,7 +81,7 @@ struct _LinphoneLDAPContactSearch
  * LinphoneLDAPContactSearch
  * *************************/
 
-LinphoneLDAPContactSearch*linphone_ldap_contact_search_create(LinphoneLDAPContactProvider* cp, const char* predicate, ContactSearchCallback cb, void* cb_data)
+LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPContactProvider* cp, const char* predicate, ContactSearchCallback cb, void* cb_data)
 
 {
 	LinphoneLDAPContactSearch* search = belle_sip_object_new(LinphoneLDAPContactSearch);
@@ -118,9 +119,16 @@ LinphoneLDAPContactSearch*linphone_ldap_contact_search_create(LinphoneLDAPContac
 	return search;
 }
 
+void linphone_ldap_contact_search_destroy_friend( void* entry )
+{
+	linphone_friend_destroy((LinphoneFriend*)entry);
+}
+
 static void linphone_ldap_contact_search_destroy( LinphoneLDAPContactSearch* obj )
 {
 	ms_message("~LinphoneLDAPContactSearch(%p)", obj);
+	ms_list_for_each(obj->found_entries, linphone_ldap_contact_search_destroy_friend);
+	obj->found_entries = ms_list_free(obj->found_entries);
 	if( obj->filter ) ms_free(obj->filter);
 }
 
@@ -136,6 +144,11 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneLDAPContactSearch,LinphoneContactSearch,
 /* ***************************
  * LinphoneLDAPContactProvider
  * ***************************/
+static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid );
+static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContactProvider* obj, LinphoneContactSearch *req);
+static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvider* obj );
+
+/* Authentication methods */
 struct AuthMethodDescription{
 	LDAPAuthMethod method;
 	const char* description;
@@ -147,10 +160,6 @@ static struct AuthMethodDescription ldap_auth_method_description[] = {
 	{SASL,      "sasl"},
 	{0,         NULL}
 };
-static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid );
-static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContactProvider* obj, LinphoneContactSearch *req);
-static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvider* obj );
-
 
 static LDAPAuthMethod linphone_ldap_contact_provider_auth_method( const char* description )
 {
@@ -163,7 +172,7 @@ static LDAPAuthMethod linphone_ldap_contact_provider_auth_method( const char* de
 	return ANONYMOUS;
 }
 
-static void linphone_ldap_contact_provider_destroy_request(void *req, void *dummy)
+static void linphone_ldap_contact_provider_destroy_request(void *req)
 {
 	belle_sip_object_unref(req);
 }
@@ -171,7 +180,7 @@ static void linphone_ldap_contact_provider_destroy_request(void *req, void *dumm
 static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider* obj )
 {
 	// clean pending requests
-	ms_list_for_each2(obj->requests, linphone_ldap_contact_provider_destroy_request, 0);
+	ms_list_for_each(obj->requests, linphone_ldap_contact_provider_destroy_request);
 
 	if (obj->ld) ldap_unbind_ext(obj->ld, NULL, NULL);
 	obj->ld = NULL;
@@ -179,8 +188,7 @@ static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider*
 	linphone_ldap_contact_provider_conf_destroy(obj);
 }
 
-
-static int linphone_ldap_parse_bind_results( LinphoneLDAPContactProvider* obj, LDAPMessage* results )
+static int linphone_ldap_contact_provider_parse_bind_results( LinphoneLDAPContactProvider* obj, LDAPMessage* results )
 {
 	int ret = ldap_parse_sasl_bind_result(obj->ld, results, NULL, 0);
 	if( ret != LDAP_SUCCESS ){
@@ -191,23 +199,23 @@ static int linphone_ldap_parse_bind_results( LinphoneLDAPContactProvider* obj, L
 	return ret;
 }
 
-static int linphone_ldap_complete_contact( LinphoneLDAPContactProvider* obj, struct LDAPFriendData* lf, const char* attr_name, const char* attr_value)
+static int linphone_ldap_contact_provider_complete_contact( LinphoneLDAPContactProvider* obj, struct LDAPFriendData* lf, const char* attr_name, const char* attr_value)
 {
 	if( strcmp(attr_name, obj->name_attr ) == 0 ){
-		ms_message("Got name attr: %s", attr_value);
 		lf->name = ms_strdup(attr_value);
 	} else if( strcmp(attr_name, obj->sip_attr) == 0 ) {
-		ms_message("Got sip attr: %s", attr_value);
 		lf->sip = ms_strdup(attr_value);
 	}
 
 	// return 1 if the structure has enough data to create a linphone friend
-	if( lf->name && lf->sip ) return 1;
-	else return 0;
+	if( lf->name && lf->sip )
+		return 1;
+	else
+		return 0;
 
 }
 
-static void linphone_ldap_handle_search_result( LinphoneLDAPContactProvider* obj, LinphoneLDAPContactSearch* req, LDAPMessage* message )
+static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPContactProvider* obj, LinphoneLDAPContactSearch* req, LDAPMessage* message )
 {
 	int msgtype = ldap_msgtype(message);
 
@@ -222,7 +230,7 @@ static void linphone_ldap_handle_search_result( LinphoneLDAPContactProvider* obj
 		while( entry != NULL ){
 
 			struct LDAPFriendData ldap_data = {0};
-			bool_t all_found = FALSE;
+			bool_t contact_complete = FALSE;
 			BerElement*  ber = NULL;
 			char*       attr = ldap_first_attribute(obj->ld, entry, &ber);
 			char*         dn = ldap_get_dn(obj->ld, entry);
@@ -241,8 +249,8 @@ static void linphone_ldap_handle_search_result( LinphoneLDAPContactProvider* obj
 				{
 					ms_message("%s -> %s", attr, (*it)->bv_val);
 
-					all_found = linphone_ldap_complete_contact(obj, &ldap_data, attr, (*it)->bv_val);
-					if( all_found ) break;
+					contact_complete = linphone_ldap_contact_provider_complete_contact(obj, &ldap_data, attr, (*it)->bv_val);
+					if( contact_complete ) break;
 
 					it++;
 				}
@@ -250,18 +258,19 @@ static void linphone_ldap_handle_search_result( LinphoneLDAPContactProvider* obj
 				if( values ) ldap_value_free_len(values);
 				ldap_memfree(attr);
 
-				if( all_found ) break;
+				if( contact_complete ) break;
 
 				attr = ldap_next_attribute(obj->ld, entry, ber);
 			}
 
-			if( all_found ) {
+			if( contact_complete ) {
 				LinphoneAddress* la = linphone_core_interpret_url(lc, ldap_data.sip);
 				if( la ){
 					LinphoneFriend* lf = linphone_core_create_friend(lc);
 					linphone_friend_set_address(lf, la);
 					linphone_friend_set_name(lf, ldap_data.name);
 					req->found_entries = ms_list_append(req->found_entries, lf);
+					req->found_count++;
 					ms_message("Added friend %s / %s", ldap_data.name, ldap_data.sip);
 					ms_free(ldap_data.sip);
 					ms_free(ldap_data.name);
@@ -284,7 +293,6 @@ static void linphone_ldap_handle_search_result( LinphoneLDAPContactProvider* obj
 	break;
 
 
-
 	default: ms_message("Unhandled message type %x", msgtype); break;
 	}
 }
@@ -298,7 +306,7 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		struct timeval timeout = {0,0};
 		LDAPMessage* results = NULL;
 
-		int ret = ldap_result(obj->ld, LDAP_RES_ANY, LDAP_MSG_ALL, &timeout, &results);
+		int ret = ldap_result(obj->ld, LDAP_RES_ANY, LDAP_MSG_ONE, &timeout, &results);
 
 		if( ret != 0 && ret != -1) ms_message("ldap_result %x", ret);
 
@@ -316,25 +324,25 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 			if( ldap_msgid( results ) != obj->bind_msgid ) {
 				ms_error("Bad msgid");
 			} else {
-				linphone_ldap_parse_bind_results( obj, results );
+				linphone_ldap_contact_provider_parse_bind_results( obj, results );
 				obj->bind_msgid = 0; // we're bound now, don't bother checking again
 			}
 			break;
 		}
-		case LDAP_RES_SEARCH_RESULT:
 		case LDAP_RES_EXTENDED:
 		case LDAP_RES_SEARCH_ENTRY:
 		case LDAP_RES_SEARCH_REFERENCE:
 		case LDAP_RES_INTERMEDIATE:
+		case LDAP_RES_SEARCH_RESULT:
 		{
 			LDAPMessage* message = ldap_first_message(obj->ld, results);
 			LinphoneLDAPContactSearch* req = linphone_ldap_request_entry_search(obj, ldap_msgid(message));
 			while( message != NULL ){
 				ms_message("Message @%p:id %d / type %x / associated request: %p", message, ldap_msgid(message), ldap_msgtype(message), req);
-				linphone_ldap_handle_search_result(obj, req, message );
+				linphone_ldap_contact_provider_handle_search_result(obj, req, message );
 				message = ldap_next_message(obj->ld, message);
 			}
-			if( req ) linphone_ldap_contact_provider_cancel_search(LINPHONE_CONTACT_PROVIDER(obj), LINPHONE_CONTACT_SEARCH(req));
+			if( req && ret == LDAP_RES_SEARCH_RESULT) linphone_ldap_contact_provider_cancel_search(LINPHONE_CONTACT_PROVIDER(obj), LINPHONE_CONTACT_SEARCH(req));
 			break;
 		}
 		case LDAP_RES_MODIFY:
@@ -501,9 +509,8 @@ static int linphone_ldap_request_entry_compare_strong(const void*a, const void* 
 
 static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid )
 {
-	LinphoneLDAPContactSearch dummy = {
-		.msgid = msgid
-	};
+	LinphoneLDAPContactSearch dummy = {};
+	dummy.msgid = msgid;
 
 	MSList* list_entry = ms_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
 	if( list_entry ) return list_entry->data;
@@ -557,7 +564,6 @@ static int linphone_ldap_marshal(LinphoneLDAPContactProvider* obj, char* buff, s
 
 	error = belle_sip_snprintf(buff, buff_size, offset, "bind_msgid:%d,\n", obj->bind_msgid);
 	if(error!= BELLE_SIP_OK) return error;
-
 
 	error = belle_sip_snprintf(buff, buff_size, offset,
 							   "CONFIG:\n"
