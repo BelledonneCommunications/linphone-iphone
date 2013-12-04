@@ -213,50 +213,8 @@ static void simple_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-	LinphoneCore* lc_marie=marie->lc;
-	LinphoneCore* lc_pauline=pauline->lc;
-	stats* stat_marie=&marie->stat;
-	stats* stat_pauline=&pauline->stat;
-	LinphoneProxyConfig* proxy;
-	LinphoneAddress* identity;
-
-
-	linphone_core_invite(lc_marie,"pauline");
-
-	CU_ASSERT_TRUE (wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
-	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
-
-	linphone_core_get_default_proxy(lc_marie,&proxy);
-	CU_ASSERT_PTR_NOT_NULL (proxy);
-	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(lc_pauline));
-	if (linphone_core_get_current_call_remote_address(lc_pauline)) {
-		CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
-		linphone_address_destroy(identity);
-
-		linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
-
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,1));
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
-		/*just to sleep*/
-		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
-
-		check_rtcp(marie,pauline);
-
-		linphone_core_terminate_all_calls(lc_pauline);
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
-		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
-	}
-	linphone_core_destroy(marie->lc);
-	marie->lc=NULL;
-	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallReleased,1);
-	linphone_core_destroy(pauline->lc);
-	pauline->lc=NULL;
-	CU_ASSERT_EQUAL(stat_pauline->number_of_LinphoneCallReleased,1);
+	CU_ASSERT_TRUE(call(pauline,marie));
+	check_rtcp(marie,pauline);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1076,6 +1034,7 @@ static void early_media_call_forking(void) {
 	LinphoneCall *marie2_call;
 	LinphoneCall *pauline_call;
 	int dummy=0;
+	char hellopath[256];
 	
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
@@ -1088,6 +1047,12 @@ static void early_media_call_forking(void) {
 	
 	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
+
+	/*use playfile for marie1 to avoid locking on capture card*/
+	linphone_core_use_files (marie1->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(marie1->lc,hellopath);
+
 	
 	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
