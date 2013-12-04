@@ -1035,8 +1035,7 @@ static void early_media_call_forking(void) {
 	LinphoneCall *marie2_call;
 	LinphoneCall *pauline_call;
 	int dummy=0;
-	char ringbackpath[256];
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
+	char hellopath[256];
 	
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
@@ -1049,10 +1048,11 @@ static void early_media_call_forking(void) {
 	
 	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
+
 	/*use playfile for marie1 to avoid locking on capture card*/
 	linphone_core_use_files (marie1->lc,TRUE);
-	linphone_core_set_play_file(marie1->lc,ringbackpath);
-
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(marie1->lc,hellopath);
 	
 	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
