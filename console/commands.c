@@ -2109,7 +2109,13 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	memset(voice,0,sizeof(voice));
 	sscanf(args,"%63s",voice);
 	sentence=args+strlen(voice);
+
+#ifdef __APPLE__
+	wavfile=mktemp("/tmp/linphonec-espeak-XXXXXX");
+#else
 	wavfile=tempnam("/tmp/","linphonec-espeak-");
+#endif
+
 	snprintf(cl,sizeof(cl),"espeak -v %s -s 100 -w %s --stdin",voice,wavfile);
 	file=popen(cl,"w");
 	if (file==NULL){
