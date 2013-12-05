@@ -18,6 +18,7 @@
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
+#include <belle-sip/dict.h>
 
 #include <ldap.h>
 
@@ -39,6 +40,8 @@ struct LDAPFriendData {
 struct _LinphoneLDAPContactProvider
 {
 	LinphoneContactProvider base;
+	LinphoneDictionary* config;
+
 	LDAP*   ld;
 	MSList* requests;
 	uint    req_count;
@@ -184,6 +187,8 @@ static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider*
 
 	if (obj->ld) ldap_unbind_ext(obj->ld, NULL, NULL);
 	obj->ld = NULL;
+
+	if( obj->config ) linphone_dictionary_unref(obj->config);
 
 	linphone_ldap_contact_provider_conf_destroy(obj);
 }
@@ -379,6 +384,24 @@ static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvi
 	}
 }
 
+static bool_t linphone_ldap_contact_provider_valid_config(LinphoneLDAPContactProvider* obj)
+{
+	bool_t valid = linphone_dictionary_haskey(obj->config, "use_tls") &&
+			linphone_dictionary_haskey(obj->config, "timeout") &&
+			linphone_dictionary_haskey(obj->config, "deref_aliases") &&
+			linphone_dictionary_haskey(obj->config, "max_results") &&
+			linphone_dictionary_haskey(obj->config, "auth_method") &&
+			linphone_dictionary_haskey(obj->config, "username") &&
+			linphone_dictionary_haskey(obj->config, "password") &&
+			linphone_dictionary_haskey(obj->config, "base_object") &&
+			linphone_dictionary_haskey(obj->config, "server") &&
+			linphone_dictionary_haskey(obj->config, "filter") &&
+			linphone_dictionary_haskey(obj->config, "name_attribute") &&
+			linphone_dictionary_haskey(obj->config, "sip_attribute") &&
+			linphone_dictionary_haskey(obj->config, "attributes");
+	return valid;
+}
+
 static void linphone_ldap_contact_provider_loadconfig(LinphoneLDAPContactProvider* obj, LpConfig* config)
 {
 	const char* section="ldap";
@@ -397,7 +420,7 @@ static void linphone_ldap_contact_provider_loadconfig(LinphoneLDAPContactProvide
 	obj->username    = ms_strdup(lp_config_get_string(config, section, "username",       ""));
 	obj->password    = ms_strdup(lp_config_get_string(config, section, "password",       ""));
 	obj->base_object = ms_strdup(lp_config_get_string(config, section, "base_object",    "dc=example,dc=com"));
-	obj->server      = ms_strdup(lp_config_get_string(config, section, "server",         "ldap://localhost:10389"));
+	obj->server      = ms_strdup(lp_config_get_string(config, section, "server",         "ldap://192.168.0.230:10389"));
 	obj->filter      = ms_strdup(lp_config_get_string(config, section, "filter",         "uid=*%s*"));
 	obj->name_attr   = ms_strdup(lp_config_get_string(config, section, "name_attribute", "givenName"));
 	obj->sip_attr    = ms_strdup(lp_config_get_string(config, section, "sip_attribute",  "mobile"));
@@ -463,6 +486,8 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 	int proto_version = LDAP_VERSION3;
 
 	linphone_contact_provider_init((LinphoneContactProvider*)obj, lc);
+
+	obj->config = linphone_dictionary_ref(linphone_dictionary_new());
 	ms_message( "Constructed Contact provider '%s'", BELLE_SIP_OBJECT_VPTR(obj,LinphoneContactProvider)->name);
 
 	linphone_ldap_contact_provider_loadconfig(obj, linphone_core_get_config(lc));
