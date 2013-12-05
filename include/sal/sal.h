@@ -685,6 +685,8 @@ bool_t sal_nat_helper_enabled(Sal *sal);
 
 LINPHONE_PUBLIC	void sal_set_dns_timeout(Sal* sal,int timeout);
 LINPHONE_PUBLIC int sal_get_dns_timeout(const Sal* sal);
+LINPHONE_PUBLIC void sal_enable_dns_srv(Sal *sal, bool_t enable);
+LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);

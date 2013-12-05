@@ -499,6 +499,8 @@ static void net_config_read (LinphoneCore *lc)
 		/*legacy parameter*/
 		linphone_core_set_download_ptime(lc,tmp);
 	}
+	tmp = lp_config_get_int(lc->config, "net", "dns_srv_enabled", 1);
+	linphone_core_enable_dns_srv(lc, tmp);
 
 	/* This is to filter out unsupported firewall policies */
 	linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
@@ -1067,6 +1069,16 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
 	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","upload_bw",bw);
+}
+
+void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
+	sal_enable_dns_srv(lc->sal, enable);
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config, "net", "dns_srv_enabled", enable ? 1 : 0);
+}
+
+bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc) {
+	return sal_dns_srv_enabled(lc->sal);
 }
 
 /**

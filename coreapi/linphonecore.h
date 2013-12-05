@@ -1400,6 +1400,22 @@ LINPHONE_PUBLIC	void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime)
 
 LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
+/**
+ * Enable or disable DNS SRV resolution.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] enable TRUE to enable DNS SRV resolution, FALSE to disable it.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether DNS SRV resolution is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @returns TRUE if DNS SRV resolution is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
+
 /* returns a MSList of PayloadType */
 LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
