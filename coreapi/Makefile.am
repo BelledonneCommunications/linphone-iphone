@@ -49,6 +49,7 @@ liblinphone_la_SOURCES=\
 	info.c \
 	event.c event.h \
 	contactprovider.c contactprovider.h \
+	dict.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

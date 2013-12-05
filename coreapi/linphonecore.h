@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 
 #include <belle-sip/object.h>
+#include <belle-sip/dict.h>
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
@@ -120,6 +121,8 @@ typedef enum _LinphoneTransportType LinphoneTransportType;
  */
 typedef struct SalAddress LinphoneAddress;
 
+typedef struct belle_sip_dict LinphoneDictionary;
+
 /**
  * The LinphoneContent struct holds data that can be embedded in a signaling message.
  * @ingroup misc
@@ -182,6 +185,37 @@ typedef enum _LinphoneReason LinphoneReason;
  * @ingroup misc
 **/
 const char *linphone_reason_to_string(LinphoneReason err);
+
+
+/* linphone dictionary */
+LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new();
+LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
+LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
+void linphone_dictionary_unref(LinphoneDictionary* obj);
+LINPHONE_PUBLIC void linphone_dictionary_set_int(LinphoneDictionary* obj, const char* key, int value);
+LINPHONE_PUBLIC int linphone_dictionary_get_int(LinphoneDictionary* obj, const char* key, int default_value);
+LINPHONE_PUBLIC void linphone_dictionary_set_string(LinphoneDictionary* obj, const char* key, const char*value);
+LINPHONE_PUBLIC const char* linphone_dictionary_get_string(LinphoneDictionary* obj, const char* key, const char* default_value);
+LINPHONE_PUBLIC void linphone_dictionary_set_int64(LinphoneDictionary* obj, const char* key, int64_t value);
+LINPHONE_PUBLIC int64_t linphone_dictionary_get_int64(LinphoneDictionary* obj, const char* key, int64_t default_value);
+LINPHONE_PUBLIC int linphone_dictionary_remove(LinphoneDictionary* obj, const char* key);
+LINPHONE_PUBLIC void linphone_dictionary_clear(LinphoneDictionary* obj);
+LINPHONE_PUBLIC int linphone_dictionary_haskey(LinphoneDictionary* obj, const char* key);
+LINPHONE_PUBLIC void linphone_dictionary_foreach( const LinphoneDictionary* obj, void (*apply_func)(const char*key, void* value, void* userdata), void* userdata);
+/**
+ * Converts a config section into a dictionary.
+ * @return a #LinphoneDictionary with all the keys from a section, or NULL if the section doesn't exist
+ * @ingroup misc
+ */
+LinphoneDictionary* lp_config_section_to_dict( const LpConfig* lpconfig, const char* section );
+
+/**
+ * Loads a dictionary into a section of the lpconfig. If the section doesn't exist it is created.
+ * Overwrites existing keys, creates non-existing keys.
+ * @ingroup misc
+ */
+void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, const LinphoneDictionary* dict);
+
 
 #ifdef IN_LINPHONE
 #include "linphonefriend.h"
