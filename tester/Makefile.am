@@ -1,10 +1,10 @@
-EXTRA_DIST=pauline_rc laure_rc marie_rc marie_no_sdp_rc
+EXTRA_DIST=	empty_rc laure_rc marie_early_rc marie_no_sdp_rc marie_rc multi_account_lrc pauline_alt_rc \
+		pauline_rc pauline_wild_rc tester_hosts sounds images certificates
 
 
 if BUILD_CUNIT_TESTS
 
 noinst_PROGRAMS=liblinphone_tester  
-TESTS=$(noinst_PROGRAMS)
 
 liblinphone_tester_SOURCES=	liblinphone_tester.c liblinphone_tester.h\
 				setup_tester.c \
@@ -28,5 +28,13 @@ LDADD=$(top_builddir)/coreapi/liblinphone.la
 AM_LDFLAGS=$(CUNIT_LIBS)
 
 AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS)  
+
+test: liblinphone_tester
+	./liblinphone_tester  --config $(abs_srcdir) 
+
+else
+
+test:
+	@echo "CUnit must be installed to be able to run the tests!"
 
 endif
