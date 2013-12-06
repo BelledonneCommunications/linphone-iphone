@@ -922,9 +922,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 			
 		}
 
-    NSUInteger cpucount = [[NSProcessInfo processInfo] processorCount];
-	ms_set_cpu_count(cpucount);
-
 	if (![LinphoneManager isNotIphone3G]){
 		PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"SILK",24000,-1);
 		if (pt) {
