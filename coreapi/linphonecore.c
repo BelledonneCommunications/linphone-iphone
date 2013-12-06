@@ -1351,11 +1351,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
 
-#ifdef BUILD_LDAP
-	lc->ldap =linphone_ldap_contact_provider_create(lc);
-	belle_sip_object_ref( lc->ldap );
-#endif
-
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;

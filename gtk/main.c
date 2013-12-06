@@ -848,6 +848,7 @@ void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
 	timeout = g_timeout_add_seconds(1,(GSourceFunc)launch_contact_provider_search, uribar);
 
 	gtk_object_set_data(GTK_OBJECT(uribar),"complete_timeout", GINT_TO_POINTER(timeout) );
+#endif
 }
 
 bool_t linphone_gtk_video_enabled(void){
