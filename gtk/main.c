@@ -50,6 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
 static LinphoneCore *the_core=NULL;
+static LinphoneLDAPContactProvider* ldap_provider = NULL;
 static GtkWidget *the_ui=NULL;
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
@@ -256,7 +257,17 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
-	
+
+
+#ifdef BUILD_LDAP
+	if( lp_config_has_section(linphone_core_get_config(the_core),"ldap") ){
+		LpConfig* cfg = linphone_core_get_config(the_core);
+		LinphoneDictionary* ldap_cfg = lp_config_section_to_dict(cfg, "ldap");
+		ldap_provider = linphone_ldap_contact_provider_create(the_core, ldap_cfg);
+		belle_sip_object_ref( ldap_provider );
+	}
+#endif
+
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
@@ -274,12 +285,20 @@ LinphoneCore *linphone_gtk_get_core(void){
 	return the_core;
 }
 
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
+#ifdef BUILD_LDAP
+	return ldap_provider;
+#else
+	return NULL;
+#endif
+}
+
 GtkWidget *linphone_gtk_get_main_window(){
 	return the_ui;
 }
 
 void linphone_gtk_destroy_main_window() {
-	linphone_gtk_destroy_window(the_ui);	
+	linphone_gtk_destroy_window(the_ui);
 	the_ui = NULL;
 }
 
@@ -786,19 +805,37 @@ struct CompletionTimeout {
 
 static gboolean launch_contact_provider_search(void *userdata)
 {
-	LinphoneCore*     core = linphone_gtk_get_core();
+	LinphoneLDAPContactProvider* ldap = linphone_gtk_get_ldap();
 	GtkWidget*      uribar = GTK_WIDGET(userdata);
 	const gchar* predicate = gtk_entry_get_text((GtkEntry*)uribar);
 
-	if( strlen(predicate) >= 3 ){ // don't search too small predicates
+	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
+
 		ms_message("launch_contact_provider_search");
-		linphone_core_ldap_launch_search(core, predicate, on_contact_provider_search_results, uribar);
+
+		LinphoneContactSearch* search =
+				BELLE_SIP_OBJECT_VPTR(ldap,LinphoneContactProvider)->begin_search(
+					LINPHONE_CONTACT_PROVIDER(ldap),
+					predicate,
+					on_contact_provider_search_results,
+					uribar);
+
+		char *desc = belle_sip_object_to_string(ldap);
+
+		if( desc) {
+			ms_message("ldap: %s", desc);
+			ms_free(desc);
+		}
+
+		if(search)
+			belle_sip_object_ref(search);
 	}
 	return FALSE;
 }
 
 void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
 {
+#ifdef BUILD_LDAP
 	gchar* text = gtk_editable_get_chars(uribar, 0,-1);
 	gint timeout = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "complete_timeout"));
 	ms_message("URIBAR changed, new text: %s, userdata %p uribar @%p", text, user_data, uribar);

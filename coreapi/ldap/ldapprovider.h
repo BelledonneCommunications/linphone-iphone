@@ -39,4 +39,4 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneLDAPContactProvider,LinphoneContactProvider)
 BELLE_SIP_DECLARE_CUSTOM_VPTR_END
 
-LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc);
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config);

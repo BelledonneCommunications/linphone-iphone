@@ -6270,24 +6270,3 @@ void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path){
 		linphone_core_message_storage_init(lc);
 	}
 }
-
-
-LinphoneContactSearch* linphone_core_ldap_launch_search(LinphoneCore* lc, const char* predicate, ContactSearchCallback cb, void* userdata)
-{
-	if( lc->ldap ){
-		LinphoneContactProvider* cp = LINPHONE_CONTACT_PROVIDER(lc->ldap);
-		LinphoneContactSearch* search = BELLE_SIP_OBJECT_VPTR(cp,LinphoneContactProvider)->begin_search(cp, predicate, cb, userdata);
-		char *desc = belle_sip_object_to_string(cp);
-
-		if( desc) {
-			ms_message("ldap: %s", desc);
-			ms_free(desc);
-		}
-
-		if(search){
-			belle_sip_object_ref(search);
-			return search;
-		}
-	}
-	return NULL;
-}

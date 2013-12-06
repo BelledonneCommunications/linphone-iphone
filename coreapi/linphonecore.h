@@ -2216,8 +2216,6 @@ typedef struct _LinphoneContactSearch LinphoneContactSearch;
 typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
 
 
-LINPHONE_PUBLIC LinphoneContactSearch* linphone_core_ldap_launch_search(LinphoneCore* lc, const char* predicate, ContactSearchCallback cb, void* userdata);
-
 #ifdef __cplusplus
 }
 #endif
