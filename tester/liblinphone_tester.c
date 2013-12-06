@@ -205,7 +205,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	else
 		proxy_count=0;
 
-	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <(20+ (proxy_count>2?(proxy_count-2)*10:0))) {
+	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <(30+ (proxy_count>2?(proxy_count-2)*10:0))) {
 		linphone_core_iterate(mgr->lc);
 		ms_usleep(100000);
 	}
