@@ -357,7 +357,7 @@ void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
 
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
-	GtkWidget *main_window=linphone_gtk_get_main_window ();
+	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *text=linphone_gtk_get_widget(chat_view,"textview");
 	GdkColor color;
@@ -375,7 +375,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	colorb.red = 56832;
   	colorb.green = 60928;
   	colorb.blue = 61952;
-	
+
 	with_str=linphone_address_as_string_uri_only(with);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_WORD_CHAR);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
@@ -468,9 +468,10 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 	gboolean send=TRUE;
 	/*GtkNotebook *notebook= ( GtkNotebook * ) linphone_gtk_get_widget ( main_window,"viewswitch" );*/
 	const LinphoneAddress *from= linphone_chat_message_get_from ( msg );
-
+	
 	w= ( GtkWidget* ) g_object_get_data ( G_OBJECT ( friendlist ),"chatview" );
 	if ( w!=NULL ) {
+	/* Chat window opened */
 		const LinphoneAddress *from_chatview=linphone_gtk_friend_list_get_active_address();
 		if (linphone_address_weak_equal(from,from_chatview)) {
 			send=TRUE;
@@ -480,8 +481,13 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 			}
 			send=FALSE;
 		}
-	} else {
+	} else {	
+	/* Chat window closed */
+#ifdef MSG_STORAGE_ENABLED
 		send=FALSE;
+#else
+		send=TRUE;
+#endif
 		if ( !linphone_gtk_friend_list_is_contact ( linphone_chat_message_get_from ( msg ) ) ) {
 			linphone_gtk_chat_add_contact ( linphone_chat_message_get_from ( msg ) );
 		}
