@@ -647,7 +647,7 @@ int sal_call_accept(SalOp*h){
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow()));
 	if (h->base.root->session_expires!=0){
 		if (h->supports_session_timers) {
-			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create( "Supported", "timer"));
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create("Supported", "timer"));
 		}
 	}
 
