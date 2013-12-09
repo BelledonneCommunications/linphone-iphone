@@ -26,7 +26,7 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+2 win32 bundle from http://www.gtk.org 
+Download lastest gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org 
 
 Install all these three package in /:
 
@@ -70,14 +70,14 @@ Kill it. Don't know what it is, but once killed, windows runs normally.
 
 ./autogen.sh
 
-./configure --prefix=/opt/linphone --enable-shared --disable-static
+./configure --prefix=/usr --enable-shared --disable-static
 #note: in order to use the tunnel, append --enable-tunnel to the configure line above.
 
 #compile:
 
 make
 
-#now install to /opt/linphone, required for compilation of plugins.
+#now install to /usr, required for compilation of plugins.
 
 make install
 
@@ -96,7 +96,7 @@ make setup.exe
 #build plugins
 cd mediastreamer2/plugins/msx264
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static
+PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
 #make a binary zip of this plugin
 make zip
 #or make an installer
@@ -105,7 +105,7 @@ make setup.exe
 #the buddylookup plugin enables lookup of buddies in a remote database using xml-rpc over http/https.
 cd coreapi/plugins/buddylookup
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
+PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static 
 make
 #make a binary zip of this plugin
 make zip
@@ -129,7 +129,7 @@ libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all these
 libtheora (from the web)
 libx264 (compiled from the version distributed from linphone's web site)
 libogg (from the web)
-libspeex, libspeexdsp (compiled, statically to workaround a dll-related crash)
+libspeex, libspeexdsp (compiled)
 libgnutls (from the web)
 libgsm (from the web)
 libxml2 (compiled)

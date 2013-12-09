@@ -113,7 +113,7 @@ other-cherrypick:
 			/mingw/bin/libintl-8.dll \
 			/mingw/bin/libiconv-2.dll \
 			/mingw/bin/pthreadGC2.dll \
-			$(INSTALLDIR_WITH_PREFIX)/bin/. \
+			$(INSTALLDIR_WITH_PREFIX)/bin/. ;\
 	fi
 
 

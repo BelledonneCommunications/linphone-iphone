@@ -16,7 +16,6 @@ find share/locale/hu
 find share/locale/it
 find share/locale/ja
 find share/locale/nb
-find share/locale/nb_NO
 find share/locale/nl
 find share/locale/pl
 find share/locale/pt
@@ -24,7 +23,6 @@ find share/locale/pt_BR
 find share/locale/ru
 find share/locale/sr
 find share/locale/sv
-find share/locale/zh
 find share/locale/zh_CN
 find share/locale/zh_TW
 find share/themes
