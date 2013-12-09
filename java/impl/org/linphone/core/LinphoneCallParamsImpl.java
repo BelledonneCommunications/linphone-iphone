@@ -106,5 +106,17 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public String getCustomHeader(String name) {
 		return getCustomHeader(nativePtr,name);
 	}
+
+	private native void setPrivacy(long nativePtr, int mask);
+	@Override
+	public void setPrivacy(int privacy_mask) {
+		setPrivacy(nativePtr,privacy_mask);
+	}
+
+	private native int getPrivacy(long nativePtr);
+	@Override
+	public int getPrivacy() {
+		return getPrivacy(nativePtr);
+	}
 	
 }

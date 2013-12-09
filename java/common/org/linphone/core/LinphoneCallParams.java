@@ -93,4 +93,16 @@ public interface LinphoneCallParams {
 	 * @return value for the header, or null if it doesn't exist.
 	 */
 	String getCustomHeader(String name);
+	
+	/**
+	 * Set the privacy for the call.
+	 * @param privacy_mask a or'd int of values defined in interface {@link org.linphone.core.Privacy}
+	 */
+	void setPrivacy(int privacy_mask);
+	
+	/**
+	 * Get the privacy mask requested for this call.
+	 * @return the privacy mask as defined in interface {@link org.linphone.core.Privacy}
+	 */
+	int getPrivacy();
 }
