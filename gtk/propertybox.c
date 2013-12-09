@@ -1132,15 +1132,17 @@ static void port_config_free(PortConfigCtx *ctx){
 	g_free(ctx);
 }
 
-static void apply_transports(PortConfigCtx *ctx){
+static gboolean apply_transports(PortConfigCtx *ctx){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	LCSipTransports tp;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	linphone_core_get_sip_transports(lc,&tp);
 	tp.udp_port=ctx->tp.udp_port;
 	tp.tcp_port=ctx->tp.tcp_port;
+	g_message("new transports: %i, %i, %i",(int)tp.udp_port,(int)tp.tcp_port,(int)tp.tls_port);
 	linphone_core_set_sip_transports(lc,&tp);
 	g_object_set_data(G_OBJECT(mw),"port_config",NULL);
+	return FALSE;
 }
 
 static void transport_changed(GtkWidget *parameters){

@@ -3088,8 +3088,10 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
-	if (md && !sal_media_description_empty(md))
+	if (md && !sal_media_description_empty(md)){
 		linphone_core_update_streams (lc,call,md);
+		linphone_call_fix_call_parameters(call);
+	}
 	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	return 0;
 }

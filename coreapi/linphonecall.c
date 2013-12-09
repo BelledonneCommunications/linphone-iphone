@@ -1909,9 +1909,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
 
-	/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
-	 * further in the call, for example during pause,resume, conferencing reINVITEs*/
-	linphone_call_fix_call_parameters(call);
 	if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed)) {
 		ice_session_start_connectivity_checks(call->ice_session);
 	}
