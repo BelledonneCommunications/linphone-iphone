@@ -148,7 +148,8 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneLDAPContactSearch,LinphoneContactSearch,
 /* ***************************
  * LinphoneLDAPContactProvider
  * ***************************/
-static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid );
+
+static inline LinphoneLDAPContactSearch* linphone_ldap_contact_provider_request_search( LinphoneLDAPContactProvider* obj, int msgid );
 static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContactProvider* obj, LinphoneContactSearch *req);
 static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvider* obj );
 static bool_t linphone_ldap_contact_provider_iterate(void *data);
@@ -247,7 +248,7 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 
 
 			if( dn ){
-				ms_message("search result: dn: %s", dn);
+				//ms_message("search result: dn: %s", dn);
 				ldap_memfree(dn);
 			}
 
@@ -346,9 +347,9 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		case LDAP_RES_SEARCH_RESULT:
 		{
 			LDAPMessage* message = ldap_first_message(obj->ld, results);
-			LinphoneLDAPContactSearch* req = linphone_ldap_request_entry_search(obj, ldap_msgid(message));
+			LinphoneLDAPContactSearch* req = linphone_ldap_contact_provider_request_search(obj, ldap_msgid(message));
 			while( message != NULL ){
-				ms_message("Message @%p:id %d / type %x / associated request: %p", message, ldap_msgid(message), ldap_msgtype(message), req);
+				//ms_message("Message @%p:id %d / type %x / associated request: %p", message, ldap_msgid(message), ldap_msgtype(message), req);
 				linphone_ldap_contact_provider_handle_search_result(obj, req, message );
 				message = ldap_next_message(obj->ld, message);
 			}
@@ -541,7 +542,7 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 			obj = NULL;
 		} else {
 			// register our hook into iterate so that LDAP can do its magic asynchronously.
-			linphone_ldap_contact_provider_bind(obj);
+			//linphone_ldap_contact_provider_bind(obj);
 			linphone_core_add_iterate_hook(lc, linphone_ldap_contact_provider_iterate, obj);
 		}
 	}
@@ -570,7 +571,7 @@ static int linphone_ldap_request_entry_compare_strong(const void*a, const void* 
 	return !(ra->msgid == rb->msgid) && !(ra == rb);
 }
 
-static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid )
+static inline LinphoneLDAPContactSearch* linphone_ldap_contact_provider_request_search( LinphoneLDAPContactProvider* obj, int msgid )
 {
 	LinphoneLDAPContactSearch dummy = {};
 	dummy.msgid = msgid;
@@ -598,11 +599,15 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 	return ret;
 }
 
-static LinphoneLDAPContactSearch* linphone_ldap_begin_search ( LinphoneLDAPContactProvider* obj,
+static LinphoneLDAPContactSearch* linphone_ldap_contact_provider_begin_search ( LinphoneLDAPContactProvider* obj,
 		const char* predicate,
 		ContactSearchCallback cb,
 		void* cb_data )
 {
+	// if we're not yet connected, bind
+	if( !obj->connected ) linphone_ldap_contact_provider_bind(obj);
+
+
 	LinphoneLDAPContactSearch* request = linphone_ldap_contact_search_create ( obj, predicate, cb, cb_data );
 
 	if ( request != NULL ) {
@@ -615,7 +620,7 @@ static LinphoneLDAPContactSearch* linphone_ldap_begin_search ( LinphoneLDAPConta
 }
 
 
-static int linphone_ldap_marshal(LinphoneLDAPContactProvider* obj, char* buff, size_t buff_size, size_t *offset)
+static int linphone_ldap_contact_provider_marshal(LinphoneLDAPContactProvider* obj, char* buff, size_t buff_size, size_t *offset)
 {
 	belle_sip_error_code error = BELLE_SIP_OK;
 
@@ -672,10 +677,10 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneLDAPContactProvider)=
 			BELLE_SIP_VPTR_INIT(LinphoneLDAPContactProvider,LinphoneContactProvider,TRUE),
 			(belle_sip_object_destroy_t)linphone_ldap_contact_provider_destroy,
 			NULL,
-			(belle_sip_object_marshal_t)linphone_ldap_marshal
+			(belle_sip_object_marshal_t)linphone_ldap_contact_provider_marshal
 		},
 		"LDAP",
-		(LinphoneContactProviderStartSearchMethod)linphone_ldap_begin_search,
+		(LinphoneContactProviderStartSearchMethod)linphone_ldap_contact_provider_begin_search,
 		(LinphoneContactProviderCancelSearchMethod)linphone_ldap_contact_provider_cancel_search
 	}
 };
