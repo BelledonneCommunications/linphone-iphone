@@ -1139,7 +1139,6 @@ static gboolean apply_transports(PortConfigCtx *ctx){
 	linphone_core_get_sip_transports(lc,&tp);
 	tp.udp_port=ctx->tp.udp_port;
 	tp.tcp_port=ctx->tp.tcp_port;
-	g_message("new transports: %i, %i, %i",(int)tp.udp_port,(int)tp.tcp_port,(int)tp.tls_port);
 	linphone_core_set_sip_transports(lc,&tp);
 	g_object_set_data(G_OBJECT(mw),"port_config",NULL);
 	return FALSE;

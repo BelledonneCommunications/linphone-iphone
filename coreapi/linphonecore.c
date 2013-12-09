@@ -2417,18 +2417,12 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 		ret=ms_list_append(ret,sal_address_clone((SalAddress*)srv_route));
 	}
 	if (ret==NULL){
-		/*still no route, so try to build a route from proxy transport + identity host, 
-		 *in order to force using the transport required for this proxy, if any.*/
+		/*if the proxy address matches the domain part of the destination, then use the same transport
+		 * as the one used for registration. This is done by forcing a route to this proxy.*/
 		SalAddress *proxy_addr=sal_address_new(linphone_proxy_config_get_addr(proxy));
-		const char *transport=sal_address_get_transport_name(proxy_addr);
-		if (transport){
-			SalAddress *route=sal_address_new(NULL);
-			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)dest));
-			sal_address_set_port(route,sal_address_get_port((SalAddress*)dest));
-			sal_address_set_transport_name(route,transport);
-			ret=ms_list_append(ret,route);
-		}
-		sal_address_destroy(proxy_addr);
+		if (strcmp(sal_address_get_domain(proxy_addr),linphone_address_get_domain(dest))==0){
+			ret=ms_list_append(ret,proxy_addr);
+		}else sal_address_destroy(proxy_addr);
 	}
 	return ret;
 }
