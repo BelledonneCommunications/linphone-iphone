@@ -291,6 +291,7 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 					ms_message("Added friend %s / %s", ldap_data.name, ldap_data.sip);
 					ms_free(ldap_data.sip);
 					ms_free(ldap_data.name);
+					linphone_address_destroy(la);
 				}
 			}
 
