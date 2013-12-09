@@ -885,6 +885,7 @@ static void simple_conference(void) {
 
 	marie_call_laure=linphone_core_get_current_call(marie->lc);
 
+	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_call_laure);
 	linphone_core_add_to_conference(marie->lc,marie_call_laure);
 	CU_ASSERT_TRUE(wait_for(marie->lc,laure->lc,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1));
 

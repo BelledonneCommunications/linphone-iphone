@@ -341,7 +341,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 void linphone_core_play_tone(LinphoneCore *lc);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
-
+void linphone_call_fix_call_parameters(LinphoneCall *call);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);

@@ -391,7 +391,10 @@ static void call_accepted(SalOp *op){
 					}
 				}
 			}
-			linphone_core_update_streams (lc,call,md);
+			linphone_core_update_streams(lc,call,md);
+			/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
+			* further in the call, for example during pause,resume, conferencing reINVITEs*/
+			linphone_call_fix_call_parameters(call);
 			if (!call->current_params.in_conference)
 				lc->current_call=call;
 			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
@@ -440,8 +443,9 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
-	if (md && !sal_media_description_empty(md))
+	if (md && !sal_media_description_empty(md)){
 		linphone_core_update_streams(lc,call,md);
+	}
 }
 
 static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
