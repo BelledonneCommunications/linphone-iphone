@@ -153,6 +153,19 @@ public interface LinphoneProxyConfig {
 	int getExpires();
 	
 	/**
+	 * Set the privacy for all calls or chat sessions using the identity exposed by this LinphoneProxyConfig
+	 * @param privacy_mask a or'd int of values defined in interface {@link org.linphone.core.Privacy}
+	 */
+	void setPrivacy(int privacy_mask);
+	
+	/**
+	 * Get the privacy mask requested for this proxy config.
+	 * @return the privacy mask as defined in interface {@link org.linphone.core.Privacy}
+	 */
+	int getPrivacy();
+	
+	
+	/**
 	 * Sets parameters for the contact
 	 * @param parameters to add
 	 */

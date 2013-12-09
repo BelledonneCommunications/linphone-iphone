@@ -2568,6 +2568,20 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setMediaEncryption
 	linphone_call_params_set_media_encryption((LinphoneCallParams*)cp,(LinphoneMediaEncryption)jmenc);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCallParamsImpl_getPrivacy(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong cp
+																			) {
+	return (jint)linphone_call_params_get_privacy((LinphoneCallParams*)cp);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setPrivacy(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong cp
+																			,jint privacy) {
+	linphone_call_params_set_privacy((LinphoneCallParams*)cp,privacy);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_audioBandwidth(JNIEnv *env, jobject thiz, jlong lcp, jint bw){
 	linphone_call_params_set_audio_bandwidth_limit((LinphoneCallParams*)lcp, bw);
 }
@@ -2717,6 +2731,14 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv
 
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getExpires(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return linphone_proxy_config_get_expires((LinphoneProxyConfig *) ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setPrivacy(JNIEnv*  env,jobject thiz,jlong ptr,jint privacy) {
+	linphone_proxy_config_set_privacy((LinphoneProxyConfig *) ptr, (int) privacy);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getPrivacy(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return linphone_proxy_config_get_privacy((LinphoneProxyConfig *) ptr);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
