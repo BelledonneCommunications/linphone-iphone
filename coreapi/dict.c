@@ -96,7 +96,7 @@ void linphone_dictionary_clear(LinphoneDictionary* obj)
 	belle_sip_dict_clear(obj);
 }
 
-int linphone_dictionary_haskey(LinphoneDictionary* obj, const char* key)
+int linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key)
 {
 	return belle_sip_dict_haskey(obj, key);
 }

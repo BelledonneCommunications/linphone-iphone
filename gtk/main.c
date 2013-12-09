@@ -232,6 +232,22 @@ static const char *linphone_gtk_get_factory_config_file(){
 	return _factory_config_file;
 }
 
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
+#ifdef BUILD_LDAP
+	return ldap_provider;
+#else
+	return NULL;
+#endif
+}
+
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
+{
+	if( ldap_provider )
+		belle_sip_object_unref(ldap_provider);
+
+	ldap_provider = LINPHONE_LDAP_CONTACT_PROVIDER(belle_sip_object_ref( ldap ));
+}
+
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
@@ -263,8 +279,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	if( lp_config_has_section(linphone_core_get_config(the_core),"ldap") ){
 		LpConfig* cfg = linphone_core_get_config(the_core);
 		LinphoneDictionary* ldap_cfg = lp_config_section_to_dict(cfg, "ldap");
-		ldap_provider = linphone_ldap_contact_provider_create(the_core, ldap_cfg);
-		belle_sip_object_ref( ldap_provider );
+		linphone_gtk_set_ldap( linphone_ldap_contact_provider_create(the_core, ldap_cfg) );
 	}
 #endif
 
@@ -283,14 +298,6 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 LinphoneCore *linphone_gtk_get_core(void){
 	return the_core;
-}
-
-LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
-#ifdef BUILD_LDAP
-	return ldap_provider;
-#else
-	return NULL;
-#endif
 }
 
 GtkWidget *linphone_gtk_get_main_window(){

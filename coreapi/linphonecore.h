@@ -200,7 +200,7 @@ LINPHONE_PUBLIC void linphone_dictionary_set_int64(LinphoneDictionary* obj, cons
 LINPHONE_PUBLIC int64_t linphone_dictionary_get_int64(LinphoneDictionary* obj, const char* key, int64_t default_value);
 LINPHONE_PUBLIC int linphone_dictionary_remove(LinphoneDictionary* obj, const char* key);
 LINPHONE_PUBLIC void linphone_dictionary_clear(LinphoneDictionary* obj);
-LINPHONE_PUBLIC int linphone_dictionary_haskey(LinphoneDictionary* obj, const char* key);
+LINPHONE_PUBLIC int linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key);
 LINPHONE_PUBLIC void linphone_dictionary_foreach( const LinphoneDictionary* obj, void (*apply_func)(const char*key, void* value, void* userdata), void* userdata);
 /**
  * Converts a config section into a dictionary.

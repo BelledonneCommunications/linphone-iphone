@@ -74,6 +74,7 @@ void linphone_gtk_close_assistant(void);
 
 LinphoneCore *linphone_gtk_get_core(void);
 LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
 GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);

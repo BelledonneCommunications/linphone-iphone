@@ -53,16 +53,17 @@ struct _LinphoneLDAPContactProvider
 	// config
 	int use_tls;
 	LDAPAuthMethod auth_method;
-	char*  username;
-	char*  password;
-	char*  server;
+	const char*  username;
+	const char*  password;
+	const char*  server;
 
-	char*  base_object;
-	char** attributes;
-	char*  sip_attr;
-	char*  name_attr;
+	const char*  base_object;
+	const char*  sip_attr;
+	const char*  name_attr;
+	const char*  filter;
 
-	char*  filter;
+	char**       attributes;
+
 	int    timeout;
 	int    deref_aliases;
 	int    max_results;
@@ -150,6 +151,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneLDAPContactSearch,LinphoneContactSearch,
 static inline LinphoneLDAPContactSearch* linphone_ldap_request_entry_search( LinphoneLDAPContactProvider* obj, int msgid );
 static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContactProvider* obj, LinphoneContactSearch *req);
 static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvider* obj );
+static bool_t linphone_ldap_contact_provider_iterate(void *data);
 
 /* Authentication methods */
 struct AuthMethodDescription{
@@ -182,6 +184,9 @@ static void linphone_ldap_contact_provider_destroy_request_cb(void *req)
 
 static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider* obj )
 {
+	ms_message("linphone_ldap_contact_provider_destroy");
+	linphone_core_remove_iterate_hook(LINPHONE_CONTACT_PROVIDER(obj)->lc, linphone_ldap_contact_provider_iterate,obj);
+
 	// clean pending requests
 	ms_list_for_each(obj->requests, linphone_ldap_contact_provider_destroy_request_cb);
 
@@ -399,7 +404,7 @@ static char* required_config_keys[] = {
 	NULL
 };
 
-static bool_t linphone_ldap_contact_provider_valid_config(LinphoneDictionary* dict)
+static bool_t linphone_ldap_contact_provider_valid_config(const LinphoneDictionary* dict)
 {
 	char** config_name = required_config_keys;
 
@@ -410,6 +415,7 @@ static bool_t linphone_ldap_contact_provider_valid_config(LinphoneDictionary* di
 		has_key = linphone_dictionary_haskey(dict, *config_name);
 		if( !has_key ) ms_error("Missing LDAP config value for '%s'", *config_name);
 		valid &= has_key;
+		config_name++;
 	}
 	return valid;
 }
@@ -426,9 +432,7 @@ static void linphone_ldap_contact_provider_loadconfig(LinphoneLDAPContactProvide
 	if( obj->config ) linphone_dictionary_unref(obj->config);
 
 	// clone new config into the dictionary
-	obj->config = linphone_dictionary_clone(dict);
-	linphone_dictionary_ref(obj->config);
-
+	obj->config = linphone_dictionary_ref(linphone_dictionary_clone(dict));
 
 	obj->use_tls       = linphone_dictionary_get_int(obj->config, "use_tls",       0);
 	obj->timeout       = linphone_dictionary_get_int(obj->config, "timeout",       10);
@@ -480,8 +484,7 @@ static void linphone_ldap_contact_provider_loadconfig(LinphoneLDAPContactProvide
 
 static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj )
 {
-	const char* password_str = linphone_dictionary_get_string(obj, "password", "");
-	struct berval password = { strlen( password_str ), password_str };
+	struct berval password = { strlen( obj->password ), ms_strdup(obj->password) };
 	int ret;
 	int bind_msgid = 0;
 
@@ -505,6 +508,8 @@ static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj
 		break;
 	}
 	}
+	if(password.bv_val) ms_free(password.bv_val);
+
 	return 0;
 }
 
