@@ -814,25 +814,28 @@ static gboolean launch_contact_provider_search(void *userdata)
 {
 	LinphoneLDAPContactProvider* ldap = linphone_gtk_get_ldap();
 	GtkWidget*      uribar = GTK_WIDGET(userdata);
-	const gchar* predicate = gtk_entry_get_text((GtkEntry*)uribar);
+	const gchar* predicate = gtk_entry_get_text(GTK_ENTRY(uribar));
+	gchar* previous_search = gtk_object_get_data(GTK_OBJECT(uribar), "previous_search");
 
 	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
 
-		ms_message("launch_contact_provider_search");
+		if( previous_search  && (strstr(predicate, previous_search) == predicate) ){
+			ms_message("Don't launch search on already searched data (current: %s, old search: %s)",
+					   predicate, previous_search);
+			return FALSE;
+		}
 
+		// save current search
+		if( previous_search ) ms_free(previous_search);
+		gtk_object_set_data(GTK_OBJECT(uribar), "previous_search", ms_strdup(predicate));
+
+		ms_message("launch_contact_provider_search");
 		LinphoneContactSearch* search =
 				BELLE_SIP_OBJECT_VPTR(ldap,LinphoneContactProvider)->begin_search(
 					LINPHONE_CONTACT_PROVIDER(ldap),
 					predicate,
 					on_contact_provider_search_results,
 					uribar);
-
-		char *desc = belle_sip_object_to_string(ldap);
-
-		if( desc) {
-			ms_message("ldap: %s", desc);
-			ms_free(desc);
-		}
 
 		if(search)
 			belle_sip_object_ref(search);
@@ -845,13 +848,12 @@ void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
 #ifdef BUILD_LDAP
 	gchar* text = gtk_editable_get_chars(uribar, 0,-1);
 	gint timeout = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "complete_timeout"));
-	ms_message("URIBAR changed, new text: %s, userdata %p uribar @%p", text, user_data, uribar);
 	if( text ) g_free(text);
-
 
 	if( timeout != 0 ) {
 		g_source_remove(timeout);
 	}
+
 	timeout = g_timeout_add_seconds(1,(GSourceFunc)launch_contact_provider_search, uribar);
 
 	gtk_object_set_data(GTK_OBJECT(uribar),"complete_timeout", GINT_TO_POINTER(timeout) );
