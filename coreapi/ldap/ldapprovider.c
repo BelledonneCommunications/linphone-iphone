@@ -77,7 +77,7 @@ struct _LinphoneLDAPContactSearch
 	char*   filter;
 	bool_t  complete;
 	MSList* found_entries;
-	int     found_count;
+	unsigned int found_count;
 };
 
 
@@ -127,6 +127,12 @@ void linphone_ldap_contact_search_destroy_friend( void* entry )
 {
 	linphone_friend_destroy((LinphoneFriend*)entry);
 }
+
+unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj)
+{
+	return obj->found_count;
+}
+
 
 static void linphone_ldap_contact_search_destroy( LinphoneLDAPContactSearch* obj )
 {
@@ -512,6 +518,11 @@ static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj
 	if(password.bv_val) ms_free(password.bv_val);
 
 	return 0;
+}
+
+unsigned int linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj)
+{
+	return obj->max_results;
 }
 
 LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config)

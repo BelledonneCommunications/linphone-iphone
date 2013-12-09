@@ -31,6 +31,8 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 															   ContactSearchCallback cb,
 															   void* cb_data);
 
+unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj);
+
 
 /* LinphoneLDAPContactProvider */
 
@@ -40,3 +42,4 @@ BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneLDAPContactProvider,LinphoneContactP
 BELLE_SIP_DECLARE_CUSTOM_VPTR_END
 
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config);
+unsigned int linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);

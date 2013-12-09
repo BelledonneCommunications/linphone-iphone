@@ -245,7 +245,8 @@ void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
 	if( ldap_provider )
 		belle_sip_object_unref(ldap_provider);
 
-	ldap_provider = LINPHONE_LDAP_CONTACT_PROVIDER(belle_sip_object_ref( ldap ));
+	ldap_provider = ldap ? LINPHONE_LDAP_CONTACT_PROVIDER(belle_sip_object_ref( ldap ))
+						 : NULL;
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
@@ -798,6 +799,12 @@ void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* fri
 		friends = friends->next;
 	}
 	gtk_entry_completion_complete(compl);
+	// save the number of LDAP results to better decide if new results should be fetched when search predicate gets bigger
+	gtk_object_set_data(GTK_OBJECT(uribar), "ldap_res_cout",
+						GINT_TO_POINTER(
+							linphone_ldap_contact_search_result_count(LINPHONE_LDAP_CONTACT_SEARCH(req))
+							)
+						);
 
 	// Gtk bug? we need to emit a "changed" signal so that the completion appears if
 	// the list of results was previously empty
@@ -816,12 +823,17 @@ static gboolean launch_contact_provider_search(void *userdata)
 	GtkWidget*      uribar = GTK_WIDGET(userdata);
 	const gchar* predicate = gtk_entry_get_text(GTK_ENTRY(uribar));
 	gchar* previous_search = gtk_object_get_data(GTK_OBJECT(uribar), "previous_search");
+	unsigned int prev_res_count = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "ldap_res_cout"));
 
 	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
+		unsigned int max_res_count = linphone_ldap_contact_provider_get_max_result(ldap);
 
-		if( previous_search  && (strstr(predicate, previous_search) == predicate) ){
-			ms_message("Don't launch search on already searched data (current: %s, old search: %s)",
-					   predicate, previous_search);
+		if( previous_search  &&
+			(strstr(predicate, previous_search) == predicate) && // last search contained results from this one
+			(prev_res_count != max_res_count) ){ // and we didn't reach the max result limit
+
+			ms_message("Don't launch search on already searched data (current: %s, old search: %s), (%d/%d results)",
+					   predicate, previous_search, prev_res_count, max_res_count);
 			return FALSE;
 		}
 
@@ -2032,6 +2044,9 @@ static void linphone_gtk_quit(void){
 		g_source_remove_by_user_data(linphone_gtk_get_core());
 #ifdef BUILD_WIZARD
 		linphone_gtk_close_assistant();
+#endif
+#ifdef BUILD_LDAP
+		linphone_gtk_set_ldap(NULL);
 #endif
 		linphone_gtk_uninit_instance();
 		linphone_gtk_destroy_log_window();
