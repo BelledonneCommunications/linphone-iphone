@@ -157,4 +157,6 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
 
 SalReason sal_reason_to_sip_code(SalReason r);
 
+belle_sip_header_t * sal_make_supported_header(Sal *sal);
+
 #endif /* SAL_IMPL_H_ */

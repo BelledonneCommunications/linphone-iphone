@@ -857,6 +857,7 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_request_t* req, int code ) {
 	belle_sip_response_t *resp=belle_sip_response_create_from_request(req,code);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),sal_make_supported_header(sal));
 	return resp;
 }
 

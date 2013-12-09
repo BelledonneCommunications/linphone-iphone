@@ -111,6 +111,10 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	return contact_header;
 }
 
+belle_sip_header_t * sal_make_supported_header(Sal *sal){
+	return belle_sip_header_create("Supported","replaces, outbound");
+}
+
 belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to_header;
@@ -133,16 +137,16 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
 
 	req=belle_sip_request_create(
-							req_uri,
-							method,
-		                    belle_sip_provider_create_call_id(prov),
-		                    belle_sip_header_cseq_create(20,method),
-		                    from_header,
-		                    to_header,
-		                    belle_sip_header_via_new(),
-		                    70);
+					req_uri,
+					method,
+					belle_sip_provider_create_call_id(prov),
+					belle_sip_header_cseq_create(20,method),
+					from_header,
+					to_header,
+					belle_sip_header_via_new(),
+					70);
 
-	if (op->privacy&SalPrivacyId) {
+	if (op->privacy & SalPrivacyId) {
 		belle_sip_header_p_preferred_identity_t* p_preferred_identity=belle_sip_header_p_preferred_identity_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op)));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(p_preferred_identity));
 	}
@@ -162,6 +166,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyUser));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(privacy_header));
 	}
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),sal_make_supported_header(op->base.root));
 	return req;
 }
 
