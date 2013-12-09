@@ -24,11 +24,12 @@ bin_PROGRAMS+=linphoned
 endif
 
 linphonec_SOURCES=linphonec.c linphonec.h commands.c
-linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS)
+linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS) $(BELLESIP_CFLAGS)
 linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 		$(READLINE_LIBS)  \
 		$(SQLITE3_LIBS) \
-		$(X11_LIBS)
+		$(X11_LIBS) \
+		$(BELLESIP_LIBS)
 
 if BUILD_WIN32
 #special build of linphonec to detach from the windows console
