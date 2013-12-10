@@ -810,11 +810,11 @@ const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op){
 
 void sal_set_uuid(Sal *sal, const char *uuid){
 	if (sal->uuid){
-		belle_sip_free(sal->uuid);
+		ms_free(sal->uuid);
 		sal->uuid=NULL;
 	}
 	if (uuid)
-		sal->uuid=belle_sip_strdup(uuid);
+		sal->uuid=ms_strdup(uuid);
 }
 
 typedef struct {

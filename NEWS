@@ -1,6 +1,15 @@
 linphone-3.7...??
-	Liblinphone level improvements thanks to belle-sip new SIP stack:
-	* multiple SIP transports simualtaneously now allowed
+	Application level improvements:
+	* It is now possible to configure multiple proxy accounts with different transports (UDP, TCP, TLS)
+	* can work with IPv6 and IPv4 simultaneously
+	* User can choose video rendering method on Linux
+	* Video HD formats support added, leveraging on multiple cores for encoding if available
+	* Keyboard can be used for DTMF input
+	* Faster and higly responsive UI thanks to fully asynchronous operation of the liblinphone.
+	* Addon of opus codec
+
+	Liblinphone level improvements thanks to new "belle-sip" SIP stack:
+	* multiple SIP transports simultaneously now allowed
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
 	* fully asynchronous behavior: no more lengthly DNS or connections 
 	* +sip.instance parameter (RFC5626)
@@ -10,6 +19,7 @@ linphone-3.7...??
 	* SIP transaction state machines improved (RFC6026)
 	* Privacy API (RFC3323, RFC3325)
 	* Full support of rich presence in (RFC4480)
+	* Better handling of sips scheme in URIs.
 
 
 linphone-3.6.1 -- June 17, 2013
