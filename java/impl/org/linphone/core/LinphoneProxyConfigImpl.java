@@ -30,12 +30,14 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
+	private native int getExpires(long nativePtr);
 
 	boolean ownPtr = false;
 	protected LinphoneProxyConfigImpl(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
 		nativePtr = newLinphoneProxyConfig();
 		setIdentity(identity);
 		setProxy(proxy);
+		setRoute(route);
 		enableRegister(enableRegister);
 		ownPtr=true;
 	}
@@ -64,12 +66,14 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	
 	private native boolean isRegistered(long ptr);
 	private native void setDialPrefix(long ptr, String prefix);
+	private native String getDialPrefix(long ptr);
 	
 	private native String normalizePhoneNumber(long ptr,String number);
 	
 	private native String getDomain(long ptr);
 	
 	private native void setDialEscapePlus(long ptr, boolean value);
+	private native boolean getDialEscapePlus(long ptr);
 	
 	private native String getRoute(long ptr);
 	private native int setRoute(long ptr,String uri);
@@ -107,11 +111,17 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public void setDialPrefix(String prefix) {
 		setDialPrefix(nativePtr, prefix);
 	}
+	public String getDialPrefix() {
+		return getDialPrefix(nativePtr);
+	}
 	public String getDomain() {
 		return getDomain(nativePtr);
 	}
 	public void setDialEscapePlus(boolean value) {
 		 setDialEscapePlus(nativePtr,value);
+	}
+	public boolean getDialEscapePlus() {
+		return getDialEscapePlus(nativePtr);
 	}
 	public String getIdentity() {
 		return getIdentity(nativePtr);
@@ -143,6 +153,9 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public void setExpires(int delay) {
 		setExpires(nativePtr, delay);
 	}
+	public int getExpires() {
+		return getExpires(nativePtr);
+	}
 	public boolean publishEnabled() {
 		return publishEnabled(nativePtr); 
 	}
@@ -157,5 +170,21 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	@Override
 	public int lookupCCCFromE164(String e164) {
 		return lookupCCCFromE164(nativePtr, e164);
+	}
+	private native int getReason(long nativeptr);
+	@Override
+	public Reason getError() {
+		return Reason.fromInt(getReason(nativePtr));
+	}
+	private native void setPrivacy(long nativePtr, int mask);
+	@Override
+	public void setPrivacy(int privacy_mask) {
+		setPrivacy(nativePtr,privacy_mask);
+	}
+
+	private native int getPrivacy(long nativePtr);
+	@Override
+	public int getPrivacy() {
+		return getPrivacy(nativePtr);
 	}
 }

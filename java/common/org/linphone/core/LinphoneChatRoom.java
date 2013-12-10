@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
+
+import org.linphone.core.LinphoneChatMessage.State;
+
 /**
  * 
  * A chat room is the place where text messages are exchanged. 
@@ -48,4 +51,56 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message);
+	
+	/**
+	 * Returns the chat history associated with the peer address associated with this chat room
+	 * @return an array of LinphoneChatMessage
+	 */
+	LinphoneChatMessage[] getHistory();
+	
+	/**
+	 * Returns the chat history associated with the peer address associated with this chat room
+	 * @param limit the maximum number of messages to fetch
+	 * @return an array of LinphoneChatMessage
+	 */
+	LinphoneChatMessage[] getHistory(int limit);
+	
+	/**
+	 * Destroys a LinphoneChatRoom.
+	 */
+	void destroy();
+	
+	/**
+	 * Returns the amount of unread messages associated with the peer of this chatRoom.
+	 * @return the amount of unread messages
+	 */
+	int getUnreadMessagesCount();
+	
+	/**
+	 * Deletes all the messages associated with the peer of this chat room
+	 */
+	void deleteHistory();
+	
+	/**
+	 * Marks all the messages in this conversation as read
+	 */
+	void markAsRead();
+	
+	/**
+	 * Deletes a message
+	 * @param message the message to delete
+	 */
+	void deleteMessage(LinphoneChatMessage message);
+	
+	/**
+	 * Update the value stored in the database for the external_body_url field
+	 * @param message to update
+	 */
+	void updateUrl(LinphoneChatMessage message);
+	
+	/**
+	 * Create a LinphoneChatMessage
+	 * @return LinphoneChatMessage object
+	 */
+	LinphoneChatMessage createLinphoneChatMessage(String message, String url, State state, long timestamp, boolean isRead, boolean isIncoming);
 }

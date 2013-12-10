@@ -117,6 +117,44 @@ public interface LinphoneCoreListener {
 	 */
 	void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event);
 
+	/** 
+	 * Notifies progress of a call transfer. 
+	 * @param lc the LinphoneCore
+	 * @param call the call through which the transfer was sent.
+	 * @param new_call_state the state of the call resulting of the transfer, at the other party. 
+	 **/
+	void transferState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State new_call_state);
+	
+	/**
+	 * Notifies an incoming INFO message.
+	 * @param lc the LinphoneCore.
+	 * @param info the info message
+	 */
+	void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info);
+	
+	/**
+	 * Notifies of subscription requests state changes, including new incoming subscriptions.
+	 * @param lc the LinphoneCore
+	 * @param ev LinphoneEvent object representing the subscription context.
+	 * @param state actual state of the subscription.
+	 */
+	void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev, SubscriptionState state);
+	
+	/**
+	 * Notifies of an incoming NOTIFY received.
+	 * @param lc the linphoneCore
+	 * @param ev a LinphoneEvent representing the subscription context for which this notify belongs, or null if it is a NOTIFY out of of any subscription. 
+	 * @param eventName the event name
+	 * @param content content of the NOTIFY request.
+	 */
+	void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content);
+	/**
+	 * Notifies about outgoing generic publish states.
+	 * @param lc the LinphoneCore
+	 * @param ev a LinphoneEvent representing the publish, typically created by {@link LinphoneCore#publish}
+	 * @param state the publish state
+	 */
+	void publishStateChanged(LinphoneCore lc, LinphoneEvent ev, PublishState state);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */

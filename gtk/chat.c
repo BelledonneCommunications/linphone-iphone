@@ -76,7 +76,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	}
 	g_hash_table_destroy(table);
 	g_object_set_data(G_OBJECT(w),"cr",NULL);
-	g_object_set_data(G_OBJECT(friendlist),"from",NULL);
+	linphone_gtk_friend_list_set_active_address(NULL);
 	gtk_widget_destroy(w);
 }
 
@@ -178,7 +178,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		case LinphoneChatMessageStateInProgress:
 		{
 			g_hash_table_insert(table,(gpointer)msg,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
-			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending .. ",-1,									
+			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,									
 		                                "right","small","italic","font_grey","bg",NULL);
 			g_object_set_data(G_OBJECT(w),"table",table);
 			break;
@@ -249,7 +249,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 
 		switch (state) {
 			case LinphoneChatMessageStateInProgress:
-				result="Sending ";
+				result="Sending ..";
 				break;
 			case LinphoneChatMessageStateDelivered:
 			{
@@ -258,16 +258,19 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 				char buf[80];
 				strftime(buf,80,"%H:%M",tm);
 				result=buf;
+				g_hash_table_remove(table,msg);
 				break;
 			}
 			case  LinphoneChatMessageStateNotDelivered:
+			{
 				result="Message not sent";
+				g_hash_table_remove(table,msg);
 				break;
+			}
 			default : result="Sending ..";
 		}
 		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result,-1,
 												"right","small","italic","font_grey","bg",NULL);
-		g_hash_table_remove(table,msg);
 		g_object_set_data(G_OBJECT(page),"table",table);
 	} 
 }
@@ -331,23 +334,24 @@ void display_history_message(GtkWidget *chat_view,MSList *messages,const Linphon
 
 void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
 	LinphoneFriend *lf=NULL;
-	char *uri=linphone_address_as_string(addr);
-	lf=linphone_friend_new_with_addr(uri);
-	ms_free(uri);
-	char *fixed_uri=NULL;
+	LinphoneAddress *fixed_uri=NULL;
 	gboolean show_presence=FALSE;
+	char *uri=linphone_address_as_string(addr);
+
+	lf=linphone_friend_new_with_address(uri);
+	ms_free(uri);
 
 	linphone_friend_set_inc_subscribe_policy(lf,LinphoneSPDeny);
 	linphone_friend_send_subscribe(lf,show_presence);
 
-	linphone_core_interpret_friend_uri(linphone_gtk_get_core(),uri,&fixed_uri);
+	fixed_uri = linphone_core_interpret_url(linphone_gtk_get_core(),uri);
 	if (fixed_uri==NULL){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
 		return ;
 	}
-	linphone_friend_set_addr(lf,addr);
+	linphone_friend_set_address(lf,addr);
 	linphone_core_add_friend(linphone_gtk_get_core(),lf);
-	ms_free(fixed_uri);
+	linphone_address_destroy(fixed_uri);
 	linphone_gtk_show_friends();
 }
 
@@ -463,12 +467,12 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 	GtkWidget *w;
 	gboolean send=TRUE;
 	/*GtkNotebook *notebook= ( GtkNotebook * ) linphone_gtk_get_widget ( main_window,"viewswitch" );*/
-	char *from=linphone_address_as_string ( linphone_chat_message_get_from ( msg ) );
+	const LinphoneAddress *from= linphone_chat_message_get_from ( msg );
 
 	w= ( GtkWidget* ) g_object_get_data ( G_OBJECT ( friendlist ),"chatview" );
 	if ( w!=NULL ) {
-		char *from_chatview= ( char * ) g_object_get_data ( G_OBJECT ( friendlist ),"from" );
-		if ( g_strcmp0 ( from,from_chatview ) ==0 ) {
+		const LinphoneAddress *from_chatview=linphone_gtk_friend_list_get_active_address();
+		if (linphone_address_weak_equal(from,from_chatview)) {
 			send=TRUE;
 		} else {
 			if ( !linphone_gtk_friend_list_is_contact ( linphone_chat_message_get_from ( msg ) ) ) {
@@ -483,7 +487,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 		}
 		w=linphone_gtk_init_chatroom ( room,linphone_chat_message_get_from ( msg ) );
 		g_object_set_data ( G_OBJECT ( friendlist ),"chatview", ( gpointer ) w );
-		g_object_set_data ( G_OBJECT ( friendlist ),"from",from );
+		linphone_gtk_friend_list_set_active_address(from);
 	}
 
 #ifdef HAVE_GTK_OSX

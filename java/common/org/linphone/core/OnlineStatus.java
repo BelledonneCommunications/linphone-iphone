@@ -23,7 +23,7 @@ import java.util.Vector;
 
 /**
  * Enum describing remote friend status
- *
+ * @deprecated Use #PresenceModel and #PresenceActivity instead
  */
 
 public class OnlineStatus {

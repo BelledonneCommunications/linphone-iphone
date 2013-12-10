@@ -84,12 +84,24 @@ public interface LinphoneProxyConfig {
 	 * @param prefix
 	 */
 	public void setDialPrefix(String prefix);
+	
+	/**
+	 * Returns the automatically added international prefix to e164 phone numbers
+	 */
+	public String getDialPrefix();
+	
 	/**
 	 * * Sets whether liblinphone should replace "+" by "00" in dialed numbers (passed to
 	 * {@link LinphoneCore#invite(String)}).
 	 * @param value default value is false
 	 */
 	public void setDialEscapePlus(boolean value);
+	
+	/**
+	 * Whether liblinphone should replace "+" by "00" in dialed numbers (passed to
+	 * {@link LinphoneCore#invite(String)}).
+	 */
+	public boolean getDialEscapePlus();
 	
 	/**
 	 * get domain host name or ip
@@ -135,6 +147,25 @@ public interface LinphoneProxyConfig {
 	void setExpires(int delay);
 	
 	/**
+	 * Gets the registration expiration time.
+	 * @return delay expiration time in seconds.
+	 */
+	int getExpires();
+	
+	/**
+	 * Set the privacy for all calls or chat sessions using the identity exposed by this LinphoneProxyConfig
+	 * @param privacy_mask a or'd int of values defined in interface {@link org.linphone.core.Privacy}
+	 */
+	void setPrivacy(int privacy_mask);
+	
+	/**
+	 * Get the privacy mask requested for this proxy config.
+	 * @return the privacy mask as defined in interface {@link org.linphone.core.Privacy}
+	 */
+	int getPrivacy();
+	
+	
+	/**
 	 * Sets parameters for the contact
 	 * @param parameters to add
 	 */
@@ -151,4 +182,10 @@ public interface LinphoneProxyConfig {
 	 * @param e164 phone number
 	 */
 	public int lookupCCCFromE164(String e164);
+	
+	/**
+	 * Return reason error code.
+	 * @return reason code.
+	 */
+	public Reason getError();
 }

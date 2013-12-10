@@ -26,7 +26,7 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+2 win32 bundle from http://www.gtk.org 
+Download lastest gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org 
 
 Install all these three package in /:
 
@@ -65,23 +65,19 @@ WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del t
  you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
 Kill it. Don't know what it is, but once killed, windows runs normally.
 
-#Compile and install tunnel (optional, available under proprietary licensing)
-
-cd tunnel && ./autogen.sh && ./configure --prefix=/usr --enable-shared --disable-static  && make && make install
-
 #Build linphone itself:
 #run autogen.sh after a git checkout or update
 
 ./autogen.sh
 
-./configure --prefix=/opt/linphone --enable-shared --disable-static
+./configure --prefix=/usr --enable-shared --disable-static
 #note: in order to use the tunnel, append --enable-tunnel to the configure line above.
 
 #compile:
 
 make
 
-#now install to /opt/linphone, required for compilation of plugins.
+#now install to /usr, required for compilation of plugins.
 
 make install
 
@@ -100,7 +96,7 @@ make setup.exe
 #build plugins
 cd mediastreamer2/plugins/msx264
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static
+PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
 #make a binary zip of this plugin
 make zip
 #or make an installer
@@ -109,7 +105,7 @@ make setup.exe
 #the buddylookup plugin enables lookup of buddies in a remote database using xml-rpc over http/https.
 cd coreapi/plugins/buddylookup
 ./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
+PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static 
 make
 #make a binary zip of this plugin
 make zip
@@ -125,13 +121,15 @@ These notes are useful if you want to upgrade part of the software that is inclu
 linphone-deps packages.
 
 List of software included in linphone-deps:
-libosip2  (compiled)
-libeXosip2 (compiled)
+antlr3c (compiled)
+polarssl (compiled
+belle-sip (compiled)
+libsrtp (compiled)
 libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all these from ffmpeg)
 libtheora (from the web)
 libx264 (compiled from the version distributed from linphone's web site)
 libogg (from the web)
-libspeex, libspeexdsp (compiled, statically to workaround a dll-related crash)
+libspeex, libspeexdsp (compiled)
 libgnutls (from the web)
 libgsm (from the web)
 libxml2 (compiled)
@@ -141,6 +139,45 @@ libsqlite3 (compiled)
 Remarks:
 For every package compiled that goes into linphone-deps, .la files (libtool files) must be removed to avoid libtool errors.
 When running "make install DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or space.
+
+- building antlr3c
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/antlr3.git
+  * compile and install
+    $ cd runtime/C
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/antlr3c-install
+    $ cp 
+
+- building polarssl
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/polarssl.git
+  * compile and install:
+    $ cd polarssl
+    $ make lib SHARED=1 WINDOWS=1
+    $ make install DESTDIR=/usr
+    $ make install DESTDIR=/home/<myuser>/polarssl-install
+
+- building belle-sip
+  * download the sources with:
+    $ git clone git://git.linphone.org/belle-sip.git
+  * compile and install, assuming you have already compiled polarssl and antlr3c and installed in /.
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static 
+    $ make && make install && make install DESTDIR=/home/<myuser>/belle-sip-install
+
+- building libsrtp
+  *  download the sources with
+    $ git clone git://git.linphone.org/srtp.git
+  * compile with 
+    $ autoconf
+    $ ./configure --prefix=/usr
+    $ make libsrtp.a
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/libsrtp-install
 
 - building sqlite3
   * download the sources on the following website:

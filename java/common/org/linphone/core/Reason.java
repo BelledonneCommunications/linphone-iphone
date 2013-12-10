@@ -32,7 +32,23 @@ public class Reason {
 	 * Call not answered (in time).
 	 */
 	static public Reason Busy = new Reason(6,"Busy");
-	
+	/**
+	 * Incompatible media
+	 * */
+	static public Reason Media = new Reason(7,"Media");
+	/**
+	 * Transport error: connection failures, disconnections etc...
+	 * */
+	static public Reason IOError = new Reason(8,"IOError");
+	/**
+	 * Transport error: connection failures, disconnections etc...
+	 * */
+	static public Reason DoNotDisturb = new Reason(9,"DoNotDisturb");
+	/**
+	 * Operation not authorized because no credentials found
+	 * */
+	static public Reason Unauthorized = new Reason(10,"Unauthorized");
+		
 	protected final int mValue;
 	private final String mStringValue;
 

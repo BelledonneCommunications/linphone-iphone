@@ -2,14 +2,17 @@
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/coreapi \
-	-I$(top_srcdir)/exosip
+	-I$(top_srcdir)/coreapi 
 
 COMMON_CFLAGS=\
 	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
 	$(STRICT_OPTIONS) \
 	$(LIBXML2_CFLAGS) 
+
+#-fpermissive to workaround a g++ bug on macos 32bit SDK.
+AM_CXXFLAGS=$(LIBXML2_CFLAGS) -fpermissive $(STRICT_OPTIONS) 
 
 EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
@@ -38,7 +41,7 @@ liblpc2xml_la_LIBADD=\
 libxml2lpc_la_LDFLAGS=-no-undefined
 liblpc2xml_la_LDFLAGS=-no-undefined
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -54,7 +57,15 @@ xml2lpc_test_LDADD=\
 lpc2xml_test_CFLAGS=$(COMMON_CFLAGS)
 lpc2xml_test_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la \
-	liblpc2xml.la 
+	liblpc2xml.la
+
+lp_gen_wrappers_SOURCES=genwrappers.cc \
+			software-desc.cc software-desc.hh \
+			generator.cc generator.hh
+
+lp_gen_wrappers_LDADD= \
+		$(LIBXML2_LIBS)
+
 endif
 
 

@@ -15,9 +15,12 @@
 #include "tunnel/client.hh"
 #include "linphonecore.h"
 
+#ifndef USE_BELLESIP
 extern "C" {
 	#include "eXosip2/eXosip_transport_hook.h"
 }
+#endif
+
 namespace belledonnecomm {
 class TunnelClient;
 class UdpMirrorClient;
@@ -159,8 +162,10 @@ class UdpMirrorClient;
 		void postEvent(const Event &ev);
 		LinphoneCore* mCore;
 		LCSipTransports mRegularTransport;
+#ifndef USE_BELLESIP
 		TunnelSocket *mSipSocket;
 		eXosip_transport_hooks_t mExosipTransport;
+#endif
 		StateCallback mCallback;
 		void * mCallbackData;
 		bool mEnabled;

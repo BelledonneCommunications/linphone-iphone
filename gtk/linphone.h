@@ -108,6 +108,8 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, Linpho
 void linphone_gtk_friend_list_update_chat_picture();
 void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la);
 gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);
+void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr);
+const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void);
 void linphone_gtk_notebook_tab_select(GtkNotebook *notebook,GtkWidget *page,guint page_num, gpointer data);
 void linphone_gtk_show_friends(void);
 void linphone_gtk_show_contact(LinphoneFriend *lf);

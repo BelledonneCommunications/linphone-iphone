@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "sal.h"
+#include "sal/sal.h"
 #include "offeranswer.h"
 #include "private.h"
 
@@ -40,7 +40,8 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		/* the compare between G729 and G729A is for some stupid uncompliant phone*/
-		if ( (strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
+		if ( pt->mime_type && refpt->mime_type &&
+			(strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
 		    (strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
 			&& pt->clock_rate==refpt->clock_rate){
 			candidate=pt;

@@ -292,4 +292,27 @@ public interface LinphoneCall {
 	 * Stop call recording.
 	 */
 	void stopRecording();
+	
+	/**
+	 * If a call transfer has been initiated for this call, returns the call state of the new call performed at the remote end as a result of the transfer request.
+	 * @return the call state of the new call performed by the referee to the refer target.
+	 */
+	State getTransferState();
+	
+	/**
+	 * Send an info message to remote peer.
+	 */
+	void sendInfoMessage(LinphoneInfoMessage msg);
+	
+	/**
+	 * Returns the transferer if this call was started automatically as a result of an incoming transfer request.
+	 * The call in which the transfer request was received is returned in this case.
+	 **/
+	LinphoneCall getTransfererCall();
+	
+	/**
+	 * When this call has received a transfer request, returns the new call that was automatically created as a result of the transfer.
+	**/
+	LinphoneCall getTransferTargetCall();
+	
 }

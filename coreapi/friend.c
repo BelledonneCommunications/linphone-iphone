@@ -62,6 +62,8 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		case LinphoneStatusPending:
 		str=_("Pending");
 		break;
+                case LinphoneStatusVacation:
+                str=_("Vacation");
 		default:
 		str=_("Unknown-bug");
 	}
@@ -71,16 +73,16 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 static int friend_compare(const void * a, const void * b){
 	LinphoneAddress *fa=((LinphoneFriend*)a)->uri;
 	LinphoneAddress *fb=((LinphoneFriend*)b)->uri;
-	if (linphone_address_weak_equal (fa,fb)) return 0;
+	if (linphone_address_weak_equal(fa,fb)) return 0;
 	return 1;
 }
 
 
-MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *friend, LinphoneFriend **lf){
+MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf){
 	MSList *res=NULL;
 	LinphoneFriend dummy;
 	if (lf!=NULL) *lf=NULL;
-	dummy.uri=(LinphoneAddress*)friend;
+	dummy.uri=(LinphoneAddress*)addr;
 	res=ms_list_find_custom(fl,friend_compare,&dummy);
 	if (lf!=NULL && res!=NULL) *lf=(LinphoneFriend*)res->data;
 	return res;
@@ -97,35 +99,20 @@ LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op){
 
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 	MSList *elem;
+	LinphoneFriend *lf;
 	for (elem=l;elem!=NULL;elem=elem->next){
-		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
+		lf=(LinphoneFriend*)elem->data;
 		if (lf->outsub==op) return lf;
 	}
 	return NULL;
 }
 
 void __linphone_friend_do_subscribe(LinphoneFriend *fr){
-	char *friend=NULL;
-	const char *route=NULL;
-	const char *from=NULL;
-	const char *fixed_contact=NULL;
-	LinphoneProxyConfig *cfg;
+	LinphoneCore *lc=fr->lc;
 	
-	friend=linphone_address_as_string(fr->uri);
-	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
-	if (cfg!=NULL){
-		route=linphone_proxy_config_get_route(cfg);
-		from=linphone_proxy_config_get_identity(cfg);
-		if (cfg->op){
-			fixed_contact=sal_op_get_contact(cfg->op);
-			if (fixed_contact) {
-				ms_message("Contact for subscribe has been fixed using proxy to %s",fixed_contact);
-			}
-		}
-	}else from=linphone_core_get_primary_contact(fr->lc);
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
-		fr->status=LinphoneStatusOffline;
+		fr->presence=NULL;
 		/*
 		if (fr->lc->vtable.notify_recv)
 			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
@@ -134,34 +121,40 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 		sal_op_release(fr->outsub);
 		fr->outsub=NULL;
 	}
-	fr->outsub=sal_op_new(fr->lc->sal);
-	sal_op_set_route(fr->outsub,route);
-	sal_op_set_contact(fr->outsub,fixed_contact);
-	sal_subscribe_presence(fr->outsub,from,friend);
+	fr->outsub=sal_op_new(lc->sal);
+	linphone_configure_op(lc,fr->outsub,fr->uri,NULL,TRUE);
+	sal_subscribe_presence(fr->outsub,NULL,NULL,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
 	fr->subscribe_active=TRUE;
-	ms_free(friend);
 }
 
 LinphoneFriend * linphone_friend_new(){
 	LinphoneFriend *obj=ms_new0(LinphoneFriend,1);
 	obj->pol=LinphoneSPAccept;
-	obj->status=LinphoneStatusOffline;
+	obj->presence=NULL;
 	obj->subscribe=TRUE;
 	return obj;	
 }
 
-LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
+LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 	LinphoneAddress* linphone_address = linphone_address_new(addr);
+	LinphoneFriend *fr;
+
 	if (linphone_address == NULL) {
 		ms_error("Cannot create friend for address [%s]",addr?addr:"null");
 		return NULL;
 	}
-	LinphoneFriend *fr=linphone_friend_new();
-	if (linphone_friend_set_addr(fr,linphone_address)<0){
-		linphone_friend_destroy(fr);
-		return NULL;
-	}
+	fr=linphone_friend_new();
+	linphone_friend_set_address(fr,linphone_address);
+	linphone_address_destroy(linphone_address);
 	return fr;
+}
+
+void linphone_friend_set_user_data(LinphoneFriend *lf, void *data){
+	lf->up=data;
+}
+
+void* linphone_friend_get_user_data(const LinphoneFriend *lf){
+	return lf->up;
 }
 
 bool_t linphone_friend_in_list(const LinphoneFriend *lf){
@@ -185,7 +178,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}else if (lc->default_proxy!=NULL){
 			/*try adding domain part from default current proxy*/
 			LinphoneAddress * id=linphone_address_new(linphone_core_get_identity(lc));
-			if (id!=NULL){
+			if ((id!=NULL) && (uri[0] != '\0')){
 				linphone_address_set_display_name(id,NULL);
 				linphone_address_set_username(id,uri);
 				*result=linphone_address_as_string(id);
@@ -198,14 +191,16 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}else{
 			ms_warning("Fail to interpret friend uri %s",uri);
 		}
-	}else *result=linphone_address_as_string(fr);
-	linphone_address_destroy(fr);
+	}else {
+		*result=linphone_address_as_string(fr);
+		linphone_address_destroy(fr);
+	}
 }
 
-int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){
+int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr=linphone_address_clone(addr);
 	linphone_address_clean(fr);
-	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);	
+	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	lf->uri=fr;
 	return 0;
 }
@@ -231,54 +226,12 @@ int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscri
 	return 0;
 }
 
-SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
-	switch(os){
-		case LinphoneStatusOffline:
-			return SalPresenceOffline;
-		break;
-		case LinphoneStatusOnline:
-			return SalPresenceOnline;
-		break;
-		case LinphoneStatusBusy:
-			return SalPresenceBusy;
-		break;
-		case LinphoneStatusBeRightBack:
-			return SalPresenceBerightback;
-		break;
-		case LinphoneStatusAway:
-			return SalPresenceAway;
-		break;
-		case LinphoneStatusOnThePhone:
-			return SalPresenceOnthephone;
-		break;
-		case LinphoneStatusOutToLunch:
-			return SalPresenceOuttolunch;
-		break;
-		case LinphoneStatusDoNotDisturb:
-			return SalPresenceDonotdisturb;
-		break;
-		case LinphoneStatusMoved:
-			return SalPresenceMoved;
-		break;
-		case LinphoneStatusAltService:
-			return SalPresenceAltService;
-		break;
-		case LinphoneStatusPending:
-			return SalPresenceOffline;
-		break;
-		default:
-			return SalPresenceOffline;
-		break;
-	}
-	return SalPresenceOffline;
-}
-
-void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os){
+void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence){
 	char *addr=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("Want to notify %s, insub=%p",addr,lf->insub);
 	ms_free(addr);
 	if (lf->insub!=NULL){
-		sal_notify_presence(lf->insub,linphone_online_status_to_sal(os),NULL);
+		sal_notify_presence(lf->insub,(SalPresenceModel *)presence);
 	}
 }
 
@@ -289,10 +242,19 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	}
 }
 
+static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
+	if (lf->outsub!=NULL) {
+		sal_op_release(lf->outsub);
+		lf->outsub=NULL;
+		lf->subscribe_active=FALSE;
+	}
+	lf->initial_subscribes_sent=FALSE;
+}
+
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	if (lf->insub){
-		sal_notify_close(lf->insub);
+		sal_notify_presence_close(lf->insub);
 		
 	}
 }
@@ -306,6 +268,7 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
 	}
+	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
@@ -313,6 +276,12 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 
 const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
 	return lf->uri;
+}
+
+const char * linphone_friend_get_name(const LinphoneFriend *lf) {
+	LinphoneAddress *fr = lf->uri;
+	if (fr == NULL) return NULL;
+	return linphone_address_get_display_name(fr);
 }
 
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf){
@@ -324,7 +293,87 @@ LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneF
 }
 
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
-	return lf->status;
+	LinphoneOnlineStatus online_status = LinphoneStatusOffline;
+	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
+	LinphonePresenceActivity *activity = NULL;
+	unsigned int nb_activities = 0;
+
+	if (lf->presence != NULL) {
+		basic_status = linphone_presence_model_get_basic_status(lf->presence);
+		nb_activities = linphone_presence_model_get_nb_activities(lf->presence);
+		online_status = (basic_status == LinphonePresenceBasicStatusOpen) ? LinphoneStatusOnline : LinphoneStatusOffline;
+		if (nb_activities > 1) {
+			char *tmp = NULL;
+			const LinphoneAddress *addr = linphone_friend_get_address(lf);
+			if (addr) tmp = linphone_address_as_string(addr);
+			ms_warning("Friend %s has several activities, get status from the first one", tmp ? tmp : "unknown");
+			if (tmp) ms_free(tmp);
+			nb_activities = 1;
+		}
+		if (nb_activities == 1) {
+			activity = linphone_presence_model_get_activity(lf->presence);
+			switch (linphone_presence_activity_get_type(activity)) {
+				case LinphonePresenceActivityBreakfast:
+				case LinphonePresenceActivityDinner:
+				case LinphonePresenceActivityLunch:
+				case LinphonePresenceActivityMeal:
+					online_status = LinphoneStatusOutToLunch;
+					break;
+				case LinphonePresenceActivityAppointment:
+				case LinphonePresenceActivityMeeting:
+				case LinphonePresenceActivityPerformance:
+				case LinphonePresenceActivityPresentation:
+				case LinphonePresenceActivitySpectator:
+				case LinphonePresenceActivityWorking:
+				case LinphonePresenceActivityWorship:
+					online_status = LinphoneStatusDoNotDisturb;
+					break;
+				case LinphonePresenceActivityAway:
+				case LinphonePresenceActivitySleeping:
+					online_status = LinphoneStatusAway;
+					break;
+				case LinphonePresenceActivityHoliday:
+				case LinphonePresenceActivityTravel:
+				case LinphonePresenceActivityVacation:
+					online_status = LinphoneStatusVacation;
+					break;
+				case LinphonePresenceActivityBusy:
+				case LinphonePresenceActivityLookingForWork:
+				case LinphonePresenceActivityPlaying:
+				case LinphonePresenceActivityShopping:
+				case LinphonePresenceActivityTV:
+					online_status = LinphoneStatusBusy;
+					break;
+				case LinphonePresenceActivityInTransit:
+				case LinphonePresenceActivitySteering:
+					online_status = LinphoneStatusBeRightBack;
+					break;
+				case LinphonePresenceActivityOnThePhone:
+					online_status = LinphoneStatusOnThePhone;
+					break;
+				case LinphonePresenceActivityOther:
+				case LinphonePresenceActivityPermanentAbsence:
+					online_status = LinphoneStatusMoved;
+					break;
+				case LinphonePresenceActivityUnknown:
+					/* Rely on the basic status information. */
+					break;
+				case LinphonePresenceActivityOnline:
+					/* Should not happen! */
+					ms_warning("LinphonePresenceActivityOnline should not happen here!");
+					break;
+				case LinphonePresenceActivityOffline:
+					online_status = LinphoneStatusOffline;
+					break;
+			}
+		}
+	}
+
+	return online_status;
+}
+
+const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf) {
+	return lf->presence;
 }
 
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
@@ -332,27 +381,28 @@ BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 }
 
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
+	LinphonePresenceModel *model;
+
 	if (fr->uri==NULL) {
 		ms_warning("No sip url defined.");
 		return;
 	}
-	fr->lc=lc;
-	
+
 	linphone_core_write_friends_config(lc);
 
 	if (fr->inc_subscribe_pending){
 		switch(fr->pol){
 			case LinphoneSPWait:
-				linphone_friend_notify(fr,LinphoneStatusPending);
+				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOther, "Waiting for user acceptance");
+				linphone_friend_notify(fr,model);
+				linphone_presence_model_unref(model);
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)
-				  {
-					linphone_friend_notify(fr,fr->lc->presence_mode);
-				  }
+					linphone_friend_notify(fr,fr->lc->presence_model);
 				break;
 			case LinphoneSPDeny:
-				linphone_friend_notify(fr,LinphoneStatusOffline);
+				linphone_friend_notify(fr,NULL);
 				break;
 		}
 		fr->inc_subscribe_pending=FALSE;
@@ -360,6 +410,8 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	if (fr->subscribe && fr->subscribe_active==FALSE){
 		ms_message("Sending a new SUBSCRIBE");
 		__linphone_friend_do_subscribe(fr);
+	}else if (fr->subscribe_active && !fr->subscribe){
+		linphone_friend_unsubscribe(fr);
 	}
 	ms_message("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
@@ -375,6 +427,14 @@ void linphone_friend_done(LinphoneFriend *fr){
 	linphone_friend_apply(fr,fr->lc);
 }
 
+LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {
+	return linphone_friend_new();
+}
+
+LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, const char *address) {
+	return linphone_friend_new_with_address(address);
+}
+
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 {
 	ms_return_if_fail(lf->lc==NULL);
@@ -388,27 +448,57 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 		return ;
 	}
 	lc->friends=ms_list_append(lc->friends,lf);
+	lf->lc=lc;
 	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
 	else lf->commit=TRUE;
 	return ;
 }
 
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
-	MSList *el=ms_list_find(lc->friends,(void *)fl);
+	MSList *el=ms_list_find(lc->friends,fl);
 	if (el!=NULL){
 		linphone_friend_destroy((LinphoneFriend*)el->data);
 		lc->friends=ms_list_remove_link(lc->friends,el);
 		linphone_core_write_friends_config(lc);
+	}else{
+		ms_error("linphone_core_remove_friend(): friend [%p] is not part of core's list.",fl);
 	}
 }
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc){
 	const MSList *elem;
+	if (lc->initial_subscribes_sent) return;
+	lc->initial_subscribes_sent=TRUE; /*set to true and see if looping on friends will change this status*/
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		if (f->commit)
+		LinphoneProxyConfig* cfg;
+		if (f->subscribe && !f->initial_subscribes_sent) {
+			lc->initial_subscribes_sent=FALSE; /*at least 1 was not sent */
+			if ((cfg=linphone_core_lookup_known_proxy(f->lc,linphone_friend_get_address(f)))) {
+				/*check if already registered*/
+				if (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk)
+					continue; /*skip this friend because not registered yet*/
+				else {
+					char* lf_string = linphone_address_as_string(linphone_friend_get_address(f));
+					ms_message("Identity [%s] registered, we can now subscribe to [%s]",linphone_proxy_config_get_identity(cfg),lf_string);
+					ms_free(lf_string);
+				}
+			}
 			linphone_friend_apply(f,lc);
+			f->initial_subscribes_sent=TRUE;
+		}
+
 	}
+
+}
+
+void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){
+	const MSList *elem;
+	for(elem=lc->friends;elem!=NULL;elem=elem->next){
+		LinphoneFriend *f=(LinphoneFriend*)elem->data;
+		linphone_friend_invalidate_subscription(f);
+	}
+	lc->initial_subscribes_sent=FALSE;
 }
 
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key){
@@ -426,38 +516,22 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf){
 	return lf->refkey;
 }
 
-static bool_t username_match(const char *u1, const char *u2){
-	if (u1==NULL && u2==NULL) return TRUE;
-	if (u1 && u2 && strcasecmp(u1,u2)==0) return TRUE;
-	return FALSE;
+LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr){
+	LinphoneFriend *lf=NULL;
+	MSList *elem;
+	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
+		lf=(LinphoneFriend*)elem->data;
+		if (linphone_address_weak_equal(lf->uri,addr))
+			break;
+		lf=NULL;
+	}
+	return lf;
 }
 
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
 	LinphoneAddress *puri=linphone_address_new(uri);
-	const MSList *elem;
-	const char *username;
-	const char *domain;
-	LinphoneFriend *lf=NULL;
-		
-	if (puri==NULL){
-		return NULL;
-	}
-	username=linphone_address_get_username(puri);
-	domain=linphone_address_get_domain(puri);
-	if (domain==NULL) {
-		linphone_address_destroy(puri);
-		return NULL;
-	}
-	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
-		lf=(LinphoneFriend*)elem->data;
-		const char *it_username=linphone_address_get_username(lf->uri);
-		const char *it_host=linphone_address_get_domain(lf->uri);;
-		if (strcasecmp(domain,it_host)==0 && username_match(username,it_username)){
-			break;
-		}
-		lf=NULL;
-	}
-	linphone_address_destroy(puri);
+	LinphoneFriend *lf=puri ? linphone_core_find_friend(lc,puri) : NULL;
+	if (puri) linphone_address_unref(puri);
 	return lf;
 }
 
@@ -511,7 +585,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	if (tmp==NULL) {
 		return NULL;
 	}
-	lf=linphone_friend_new_with_addr(tmp);
+	lf=linphone_friend_new_with_address(tmp);
 	if (lf==NULL) {
 		return NULL;
 	}

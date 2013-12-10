@@ -32,7 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 **/
 LinphoneAddress * linphone_address_new(const char *addr){
 	SalAddress *saddr=sal_address_new(addr);
-	if (saddr==NULL) ms_error("Cannot create LinphoneAddress, bad uri [%s]",addr);
+	if (saddr==NULL)
+		ms_error("Cannot create LinphoneAddress, bad uri [%s]",addr);
 	return saddr;
 }
 
@@ -41,6 +42,20 @@ LinphoneAddress * linphone_address_new(const char *addr){
 **/
 LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr){
 	return sal_address_clone(addr);
+}
+
+/**
+ * Increment reference count of LinphoneAddress object.
+**/
+LinphoneAddress * linphone_address_ref(LinphoneAddress *addr){
+	return sal_address_ref(addr);
+}
+
+/**
+ * Decrement reference count of LinphoneAddress object. When dropped to zero, memory is freed.
+**/
+void linphone_address_unref(LinphoneAddress *addr){
+	sal_address_unref(addr);
 }
 
 /**
@@ -92,18 +107,26 @@ void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
 	sal_address_set_domain(uri,host);
 }
 
-/**
- * Sets the port number.
-**/
-void linphone_address_set_port(LinphoneAddress *uri, const char *port){
-	sal_address_set_port(uri,port);
-}
 
 /**
  * Sets the port number.
 **/
-void linphone_address_set_port_int(LinphoneAddress *uri, int port){
-	sal_address_set_port_int(uri,port);
+void linphone_address_set_port(LinphoneAddress *uri, int port){
+	sal_address_set_port(uri,port);
+}
+
+/**
+ * Set a transport.
+**/
+void linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
+	sal_address_set_transport(uri,(SalTransport)tp);
+}
+
+/**
+ * Get the transport.
+**/
+LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri){
+	return (LinphoneTransportType)sal_address_get_transport(uri);
 }
 
 /**
@@ -129,6 +152,13 @@ char *linphone_address_as_string_uri_only(const LinphoneAddress *u){
 	return sal_address_as_string_uri_only(u);
 }
 
+/**
+ * Returns true if address refers to a secure location (sips)
+**/
+bool_t linphone_address_is_secure(const LinphoneAddress *uri){
+	return sal_address_is_secure(uri);
+}
+
 static bool_t strings_equals(const char *s1, const char *s2){
 	if (s1==NULL && s2==NULL) return TRUE;
 	if (s1!=NULL && s2!=NULL && strcmp(s1,s2)==0) return TRUE;
@@ -145,26 +175,33 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 	int p1,p2;
 	u1=linphone_address_get_username(a1);
 	u2=linphone_address_get_username(a2);
-	p1=linphone_address_get_port_int(a1);
-	p2=linphone_address_get_port_int(a2);
+	p1=linphone_address_get_port(a1);
+	p2=linphone_address_get_port(a2);
 	h1=linphone_address_get_domain(a1);
 	h2=linphone_address_get_domain(a2);
 	return strings_equals(u1,u2) && strings_equals(h1,h2) && p1==p2;
 }
 
 /**
- * Destroys a LinphoneAddress object.
+ * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
 **/
 void linphone_address_destroy(LinphoneAddress *u){
-	sal_address_destroy(u);
+	sal_address_unref(u);
 }
 
-int linphone_address_get_port_int(const LinphoneAddress *u) {
-	return sal_address_get_port_int(u);
-}
+/**
+ * Get port number as an integer value.
+ */
 
-const char* linphone_address_get_port(const LinphoneAddress *u) {
+/**
+ * Get port number, 0 if not present.
+ */
+int linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
+}
+
+LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
+	return linphone_address_new(address);
 }
 
 /** @} */

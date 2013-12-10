@@ -16,8 +16,11 @@
 #include "ortp/rtpsession.h"
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
+#ifndef USE_BELLESIP
 #include "eXosip2/eXosip_transport_hook.h"
+#endif
 #include "tunnel/udp_mirror.hh"
+#include "private.h"
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -26,6 +29,8 @@
 
 using namespace belledonnecomm;
 using namespace ::std;
+
+#ifndef USE_BELLESIP
 
 Mutex TunnelManager::sMutex;
 
@@ -99,6 +104,7 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 		return select(max_fds,s1,s2,s3,tv);
 	}
 }
+#endif
 
 
 void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay) {
@@ -181,7 +187,9 @@ void TunnelManager::start() {
 	}
 	mTunnelClient->start();
 
+#ifndef USE_BELLESIP
 	if (mSipSocket == NULL) mSipSocket =mTunnelClient->createSocket(5060);
+#endif
 }
 
 bool TunnelManager::isStarted() {
@@ -209,7 +217,9 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 
 TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mCore(lc)
+#ifndef USE_BELLESIP
 ,mSipSocket(NULL)
+#endif
 ,mCallback(NULL)
 ,mEnabled(false)
 ,mTunnelClient(NULL)
@@ -217,10 +227,12 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mReady(false)
 ,mHttpProxyPort(0){
 
+#ifndef USE_BELLESIP
 	mExosipTransport.data=this;
 	mExosipTransport.recvfrom=eXosipRecvfrom;
 	mExosipTransport.sendto=eXosipSendto;
 	mExosipTransport.select=eXosipSelect;
+#endif
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
 	mTransportFactories.audio_rtcp_func_data=this;
@@ -237,6 +249,9 @@ TunnelManager::~TunnelManager(){
 }
 
 void TunnelManager::stopClient(){
+#ifdef USE_BELLESIP
+	sal_disable_tunnel(mCore->sal);
+#else
 	eXosip_transport_hook_register(NULL);
 	if (mSipSocket != NULL){
 		sMutex.lock();
@@ -244,6 +259,7 @@ void TunnelManager::stopClient(){
 		mSipSocket = NULL;
 		sMutex.unlock();
 	}
+#endif
 	if (mTunnelClient){
 		delete mTunnelClient;
 		mTunnelClient=NULL;
@@ -258,16 +274,9 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		ms_message("Tunnel is up, registering now");
 		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
-		eXosip_transport_hook_register(&mExosipTransport);
-		//force transport to udp
-		LCSipTransports lTransport;
-		
-		lTransport.udp_port=(0xDFFF&random())+1024;
-		lTransport.tcp_port=0;
-		lTransport.tls_port=0;
-		lTransport.dtls_port=0;
-		
-		linphone_core_set_sip_transports(mCore, &lTransport);
+
+		sal_enable_tunnel(mCore->sal, mTunnelClient);
+
 		//register
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);
@@ -323,7 +332,15 @@ void TunnelManager::enable(bool isEnable) {
 		mReady=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
-		eXosip_transport_hook_register(NULL);
+		sal_disable_tunnel(mCore->sal);
+		// Set empty transports to force the setting of regular transport, otherwise it is not applied
+		LCSipTransports lTransport;
+		lTransport.udp_port = 0;
+		lTransport.tcp_port = 0;
+		lTransport.tls_port = 0;
+		lTransport.dtls_port = 0;
+		linphone_core_set_sip_transports(mCore, &lTransport);
+
 		//Restore transport and firewall policy
 		linphone_core_set_sip_transports(mCore, &mRegularTransport);
 		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
@@ -366,8 +383,12 @@ void TunnelManager::sOnIterate(TunnelManager *zis){
 }
 
 #ifdef ANDROID
-extern void linphone_android_log_handler(int prio, const char *fmt, va_list args);
+extern void linphone_android_log_handler(int prio, char *str);
 static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_list args) {
+	char str[4096];
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+
 	int prio;
 	switch(lev){
 	case TUNNEL_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
@@ -377,7 +398,7 @@ static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_lis
 	case TUNNEL_ERROR:	prio = ANDROID_LOG_ERROR;	break;
 	default:		prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	linphone_android_log_handler(prio, fmt, args);
+	linphone_android_log_handler(prio, str);
 }
 #endif /*ANDROID*/
 
@@ -390,7 +411,7 @@ void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 #ifdef ANDROID
 	else SetLogHandler(linphone_android_tunnel_log_handler);
 #else
-	else SetLogHandler(default_log_handler);
+	else SetLogHandler(tunnel_default_log_handler);
 #endif
 
 	if (isEnabled) {

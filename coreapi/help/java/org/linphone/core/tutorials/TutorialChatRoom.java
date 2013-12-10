@@ -24,6 +24,7 @@ import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
@@ -31,8 +32,12 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PublishState;
+import org.linphone.core.SubscriptionState;
 
 
 /**
@@ -115,7 +120,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 
 		try {
 			// Next step is to create a chat room
-			LinphoneChatRoom chatRoom = lc.createChatRoom(destinationSipAddress);
+			LinphoneChatRoom chatRoom = lc.getOrCreateChatRoom(destinationSipAddress);
 			
 			// Send message
 			LinphoneChatMessage chatMessage = chatRoom.createLinphoneChatMessage("Hello world");
@@ -161,6 +166,40 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg,
 			org.linphone.core.LinphoneChatMessage.State state) {
 		write("Sent message [" + msg.getText() + "] new state is " + state.toString());
+	}
+
+	@Override
+	public void transferState(LinphoneCore lc, LinphoneCall call,
+			State new_call_state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			SubscriptionState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
+			String eventName, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			PublishState state) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

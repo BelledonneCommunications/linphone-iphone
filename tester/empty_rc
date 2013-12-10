@@ -1,0 +1,6 @@
+[net]
+mtu=1300
+
+[sip]
+ping_with_options=0
+sip_random_port=1

@@ -20,8 +20,10 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-import org.linphone.core.LinphoneCall.State;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
+
+import android.view.SurfaceView;
 
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
@@ -327,6 +329,11 @@ public interface LinphoneCore {
 		 * Ko 
 		 */
 		static public UpnpState Ko = new UpnpState(6, "Ko");
+		/**
+		 * Blacklisted 
+		 */
+		static public UpnpState Blacklisted = new UpnpState(7, "Blacklisted");
+
 		protected final int mValue;
 		private final String mStringValue;
 
@@ -362,6 +369,13 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException
 	 */
 	public void addProxyConfig(LinphoneProxyConfig proxyCfg) throws LinphoneCoreException;
+	
+	/**
+	 * Removes a proxy configuration.
+	 * @param proxyCfg
+	 */
+	public void removeProxyConfig(LinphoneProxyConfig proxyCfg);
+	
 	/**
 	 * Sets the default proxy.
 	 *<br>
@@ -376,6 +390,21 @@ public interface LinphoneCore {
 	 * @return null if no default proxy config 
 	 */
 	public LinphoneProxyConfig getDefaultProxyConfig() ;
+	
+	/**
+	 * Returns an array with all the auth infos stored in LinphoneCore
+	 */
+	LinphoneAuthInfo[] getAuthInfosList();
+	
+	/**
+	 * Returns a matching auth info or null if no match found
+	 */
+	LinphoneAuthInfo findAuthInfo(String username, String realm, String domain);
+	/**
+	 * Removes a auth info.
+	 * @param authInfo
+	 */
+	public void removeAuthInfo(LinphoneAuthInfo authInfo);
 	
 	/**
 	 * clear all the added auth info
@@ -613,6 +642,12 @@ public interface LinphoneCore {
 	 *
 	 */
 	void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	
+	/**
+	 * Returns whether or not the payload is enabled in linphonecore.
+	 */
+	boolean isPayloadTypeEnabled(PayloadType pt);
+	
 	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
@@ -669,18 +704,36 @@ public interface LinphoneCore {
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 
 	/**
-	 * Set my presence status
-	 * @param minute_away how long in away
-	 * @param status sip uri used to redirect call in state LinphoneStatusMoved
+	 * @brief Set my presence status
+	 * @param minutes_away how long in away
+	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved
+	 * @param status OnlineStatus
+	 * @deprecated Use setPresenceModel() instead
 	 */
-	void setPresenceInfo(int minute_away,String alternative_contact, OnlineStatus status);
+	void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status);
+	/**
+	 * @brief Get my presence status
+	 * @return OnlineStatus
+	 * @deprecated Use getPresenceModel() instead
+	 */
+	OnlineStatus getPresenceInfo();
+	/**
+	 * @brief Set my presence status
+	 * @param presence #LinphonePresenceModel
+	 */
+	void setPresenceModel(PresenceModel presence);
+	/**
+	 * @brief Get my presence status
+	 * @return A #PresenceModel object, or null if no presence model has been set.
+	 */
+	PresenceModel getPresenceModel();
 	/**
 	 * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
 	 * @param to 	destination address for messages 
 	 *
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
-	LinphoneChatRoom createChatRoom(String to);
+	LinphoneChatRoom getOrCreateChatRoom(String to);
 	/**
 	 * Set the native video window id where the video is to be displayed.
 	 * On Android, it must be of type {@link AndroidVideoWindowImpl}
@@ -712,6 +765,13 @@ public interface LinphoneCore {
 	 * Returns the id of the currently active video device as found in {@link AndroidCameraConfiguration#retrieveCameras}.
 	**/
 	int getVideoDevice();
+	
+	
+	/**
+	 * Teturns true if the underlying sdk support video
+	 * 
+	 * */
+	boolean isVideoSupported();
 	
 	/**
 	 * Enables video globally.
@@ -839,6 +899,14 @@ public interface LinphoneCore {
 	**/
 	void setPreferredVideoSize(VideoSize vSize);
 	/**
+	 * Sets the preferred video size giving a known size name.
+	 *
+	 * This applies only to the stream that is captured and sent to the remote party,
+	 * since we accept all standard video size on the receive path.
+	 * @param name A known video name (eg. vga or 720p)
+	**/
+	void setPreferredVideoSizeByName(String name);
+	/**
 	 * get current preferred video size for sending.
 	 * @return  video size
 	 *
@@ -879,6 +947,9 @@ public interface LinphoneCore {
 	boolean needsEchoCalibration();
 	
 	void enableIpv6(boolean enable);
+	
+	boolean isIpv6Enabled();
+	
 	/**
 	 * @deprecated
 	 * @param i
@@ -1101,6 +1172,17 @@ public interface LinphoneCore {
 	 * @param autoAccept video shall be accepter by default for incoming calls
 	**/
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
+	
+	/**
+	 * Gets the policy for the autoInitiate video
+	 */
+	boolean getVideoAutoInitiatePolicy();
+	
+	/**
+	 * Gets the policy for the autoAccept video
+	 */
+	boolean getVideoAutoAcceptPolicy();
+	
 	/** Set static picture to be used when "Static picture" is the video device 
 	 * @param path to the static picture file
 	 * */
@@ -1220,14 +1302,34 @@ public interface LinphoneCore {
 	void setPrimaryContact(String displayName, String username);
 	
 	/**
+	 * Returns the username used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContactUsername();
+	
+	/**
+	 * Returns the display name used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContactDisplayName();
+	
+	/**
 	 * Enable/Disable the use of SIP INFO for DTMFs
 	 */
 	void setUseSipInfoForDtmfs(boolean use);
 	
 	/**
+	 * Returns the state of use of SIP INFO for DTMFs
+	 */
+	boolean getUseSipInfoForDtmfs();
+	
+	/**
 	 * Enable/Disable the use of inband DTMFs
 	 */
 	void setUseRfc2833ForDtmfs(boolean use);
+	
+	/**
+	 * Returns the state of use of inband DTMFs
+	 */
+	boolean getUseRfc2833ForDtmfs();
 
 	/**
 	 * @return returns LpConfig object to read/write to the config file: usefull if you wish to extend
@@ -1259,5 +1361,46 @@ public interface LinphoneCore {
 	 * the external ip address is not available return null. 
 	 */
 	public String getUpnpExternalIpaddress();
-
+	
+	/**
+	 * Create an empty INFO message.
+	 * It can later be sent using {@link LinphoneCall.sendInfoMessage() }.
+	 * @return the new info message.
+	 */
+	public LinphoneInfoMessage createInfoMessage();
+	
+	/**
+	 * Sends an outgoing subscription for a resource with given event, expiration period, and content.
+	 * The state changes of the new subscriptions can be followed thanks to { @link LinphoneCoreListener.subscriptionStateChanged() } and
+	 * { @link LinphoneCoreListener.notifyReceived }.
+	 * @param resource the address of the resource for which the event needs to be monitored.
+	 * @param event the event name, as specified in the event package RFC.
+	 * @param expires the expiration period in seconds.
+	 * @param content optional content of the subscription.
+	 * @return a LinphoneEvent representing the subscription context.
+	 */
+	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content );
+	
+	/**
+	 * Publish an event.
+	 * After the initial publication, updates can be done with { @link LinphoneEvent.updatePublish() }
+	 * @param resource the resource to which the event belongs.
+	 * @param event the event name as specified in the event package RFC.
+	 * @param expires valid time for the event.
+	 * @param content content of the publish.
+	 * @return a LinphoneEvent representing the publish context.
+	 */
+	public LinphoneEvent publish(LinphoneAddress resource, String event, int expires, LinphoneContent content);
+	
+	/**
+	 * Sets the path to the database where the chat messages will be stored (if enabled)
+	 * @param path the database where the chat messages will be stored.
+	 */
+	public void setChatDatabasePath(String path);
+	
+	/**
+	 * Gets the chat rooms
+	 * @return an array of LinphoneChatRoom
+	 */
+	public LinphoneChatRoom[] getChatRooms();
 }

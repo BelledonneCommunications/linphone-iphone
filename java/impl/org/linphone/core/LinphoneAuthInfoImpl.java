@@ -32,19 +32,28 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 	private native void setHa1(long ptr, String ha1);
 	private native String getUserId(long ptr);
 	private native String getHa1(long ptr);
+	private native String getDomain(long ptr);
+	private native void setDomain(long ptr, String domain);
 	
-	protected LinphoneAuthInfoImpl(String username,String password, String realm)  {
-		this(username,null,password,null,null);
+	boolean ownPtr = false;
+	protected LinphoneAuthInfoImpl(String username,String password, String realm, String domain)  {
+		this(username, null, password, null, null, domain);
 	}
-	protected LinphoneAuthInfoImpl(String username, String userid, String passwd, String ha1,String realm)  {
+	protected LinphoneAuthInfoImpl(String username, String userid, String passwd, String ha1, String realm, String domain)  {
 		nativePtr = newLinphoneAuthInfo();
 		this.setUsername(username);
 		this.setUserId(userid);
 		this.setPassword(passwd);
 		this.setHa1(ha1);
+		this.setDomain(domain);
+		ownPtr = true;
+	}
+	protected LinphoneAuthInfoImpl(long aNativePtr)  {
+		nativePtr = aNativePtr;
+		ownPtr = false;
 	}
 	protected void finalize() throws Throwable {
-		delete(nativePtr);
+		if (ownPtr) delete(nativePtr);
 	}
 	public String getPassword() {
 		return getPassword (nativePtr);
@@ -81,5 +90,24 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 	public void setHa1(String ha1) {
 		setHa1(nativePtr,ha1);
 		
+	}
+	@Override
+	public void setDomain(String domain) {
+		setDomain(nativePtr, domain);
+	}
+	@Override
+	public String getDomain() {
+		return getDomain(nativePtr);
+	}
+	
+	public LinphoneAuthInfo clone() {
+		LinphoneAuthInfo clone = LinphoneCoreFactory.instance().createAuthInfo(
+				getUsername(), 
+				getUserId(), 
+				getPassword(), 
+				getHa1(), 
+				getRealm(), 
+				getDomain());
+		return clone;
 	}
 }

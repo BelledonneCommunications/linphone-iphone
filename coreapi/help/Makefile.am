@@ -10,6 +10,7 @@ if HAVE_DOXYGEN
 # docdir & pkgdocdir are not always defined by automake
 pkgdocdir=$(docdir)/$(PACKAGE)-$(VERSION)
 doc_htmldir=$(pkgdocdir)/html
+doc_xmldir=$(pkgdocdir)/xml
 
 doc_html_DATA = $(top_builddir)/coreapi/help/doc/html/html.tar
 
@@ -20,21 +21,32 @@ $(top_builddir)/coreapi/help/doc/html/index.html: $(SOURCES) Doxyfile Makefile.a
 	rm -rf doc
 	$(DOXYGEN) Doxyfile
 
+doc_xml_DATA = $(top_builddir)/coreapi/help/doc/xml/xml.tar
+
+$(doc_xml_DATA): $(top_builddir)/coreapi/help/doc/xml/index.xml
+	cd $(top_builddir)/coreapi/help/doc/xml/ && tar cf xml.tar *
+
+$(top_builddir)/coreapi/help/doc/xml/index.xml: $(top_builddir)/coreapi/help/doc/html/index.html
+
+
 install-data-hook:
 	cd $(DESTDIR)$(doc_htmldir) && tar xf html.tar && rm -f html.tar
+	cd $(DESTDIR)$(doc_xmldir) && tar xf xml.tar && rm -f xml.tar
 
 uninstall-hook:
 	cd $(DESTDIR)$(doc_htmldir) && rm -f *
+	cd $(DESTDIR)$(doc_xmldir) && rm -f *
 
 endif
 
 clean-local:
 	rm -rf doc
 
-if ENABLE_TESTS
 #tutorials
-if BUILD_TESTS
-noinst_PROGRAMS=helloworld registration buddy_status chatroom
+
+if ENABLE_TUTORIALS
+
+noinst_PROGRAMS=helloworld registration buddy_status chatroom notify
 
 helloworld_SOURCES=helloworld.c
 LINPHONE_TUTOS=$(helloworld_SOURCES)
@@ -57,17 +69,18 @@ chatroom_SOURCES=chatroom.c
 LINPHONE_TUTOS+=$(chatroom_SOURCES)
 
 chatroom_LDADD=$(helloworld_LDADD)
-endif
-												
-endif
+
+notify_SOURCES=notify.c
+LINPHONE_TUTOS+=$(notify_SOURCES)
+
+notify_LDADD=$(helloworld_LDADD)
 
 AM_CFLAGS=\
+	-I$(top_srcdir)/coreapi \
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
-	$(OSIP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
-	$(EXOSIP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \
@@ -78,3 +91,4 @@ AM_CFLAGS=\
 tutodir=$(datadir)/tutorials/linphone
 
 tuto_DATA=$(LINPHONE_TUTOS)
+endif 

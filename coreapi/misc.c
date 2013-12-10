@@ -32,7 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if _MSC_VER
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #endif /*_WIN32_WCE*/
 
@@ -44,6 +48,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ifaddrs.h>
 #endif
 #include <math.h>
+#if _MSC_VER
+#define snprintf _snprintf
+#define popen _popen
+#define pclose _pclose
+#endif
 
 #if !defined(WIN32)
 
@@ -415,31 +424,38 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	return 0;
 }
 
-int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen){
-	struct addrinfo hints,*res=NULL;
-	int family = PF_INET;
-	int port_int = 3478;
-	int ret;
-	char port[6];
-	char host[NI_MAXHOST];
+int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port){
+	char tmphost[NI_MAXHOST]={0};
 	char *p1, *p2;
-	if ((sscanf(server, "[%64[^]]]:%d", host, &port_int) == 2) || (sscanf(server, "[%64[^]]]", host) == 1)) {
-		family = PF_INET6;
+	
+	if ((sscanf(input, "[%64[^]]]:%d", tmphost, port) == 2) || (sscanf(input, "[%64[^]]]", tmphost) == 1)) {
+		
 	} else {
-		p1 = strchr(server, ':');
-		p2 = strrchr(server, ':');
-		if (p1 && p2 && (p1 != p2)) {
-			family = PF_INET6;
-			host[NI_MAXHOST-1]='\0';
-			strncpy(host, server, sizeof(host) - 1);
-		} else if (sscanf(server, "%[^:]:%d", host, &port_int) != 2) {
-			host[NI_MAXHOST-1]='\0';
-			strncpy(host, server, sizeof(host) - 1);
+		p1 = strchr(input, ':');
+		p2 = strrchr(input, ':');
+		if (p1 && p2 && (p1 != p2)) {/* an ipv6 address without port*/
+			strncpy(tmphost, input, sizeof(tmphost) - 1);
+		} else if (sscanf(input, "%[^:]:%d", tmphost, port) != 2) {
+			/*no port*/
+			strncpy(tmphost, input, sizeof(tmphost) - 1);
 		}
 	}
+	strncpy(host,tmphost,hostlen);
+	return 0;
+}
+
+int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port){
+	struct addrinfo hints,*res=NULL;
+	char port[6];
+	char host[NI_MAXHOST];
+	int port_int=default_port;
+	int ret;
+	
+	linphone_parse_host_port(server,host,sizeof(host),&port_int);
+	
 	snprintf(port, sizeof(port), "%d", port_int);
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=family;
+	hints.ai_family=AF_UNSPEC;
 	hints.ai_socktype=SOCK_DGRAM;
 	hints.ai_protocol=IPPROTO_UDP;
 	ret=getaddrinfo(host,port,&hints,&res);
@@ -486,8 +502,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		return -1;
 	}
 	if (server!=NULL){
-		struct sockaddr_storage ss;
-		socklen_t ss_len;
+		const struct addrinfo *ai=linphone_core_get_stun_server_addrinfo(lc);
 		ortp_socket_t sock1=-1, sock2=-1;
 		int loops=0;
 		bool_t video_enabled=linphone_core_video_enabled(lc);
@@ -497,8 +512,8 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		double elapsed;
 		int ret=0;
 		
-		if (parse_hostname_to_addr(server,&ss,&ss_len)<0){
-			ms_error("Fail to parser stun server address: %s",server);
+		if (ai==NULL){
+			ms_error("Could not obtain stun server addrinfo.");
 			return -1;
 		}
 		if (lc->vtable.display_status!=NULL)
@@ -513,24 +528,20 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}
 		got_audio=FALSE;
 		got_video=FALSE;
-		gettimeofday(&init,NULL);
+		ortp_gettimeofday(&init,NULL);
 		do{
 			
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
-				sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,11,TRUE);
-				sendStunRequest(sock1,(struct sockaddr*)&ss,ss_len,1,FALSE);
+				sendStunRequest(sock1,ai->ai_addr,ai->ai_addrlen,11,TRUE);
+				sendStunRequest(sock1,ai->ai_addr,ai->ai_addrlen,1,FALSE);
 				if (sock2!=-1){
-					sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,22,TRUE);
-					sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2,FALSE);
+					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,22,TRUE);
+					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,2,FALSE);
 				}
 			}
-#ifdef WIN32
-			Sleep(10);
-#else
-			usleep(10000);
-#endif
+			ms_usleep(10000);
 
 			if (recvStunResponse(sock1,ac->addr,
 						&ac->port,&id)>0){
@@ -550,7 +561,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 					cone_video=TRUE;
 				got_video=TRUE;
 			}
-			gettimeofday(&cur,NULL);
+			ortp_gettimeofday(&cur,NULL);
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  {
 				ms_message("Stun responses timeout, going ahead.");
@@ -594,9 +605,10 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc){
 }
 
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
+	int threshold;
 	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
 		ms_message("Stun server ping time is %i ms",ping_time_ms);
-		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
+		threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
 		
 		if (ping_time_ms>threshold){
 			/* we might be in a 2G network*/
@@ -610,13 +622,60 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 	}
 }
 
+static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addrinfo *addrinfo){
+	if (lc->net_conf.stun_addrinfo){
+		freeaddrinfo(lc->net_conf.stun_addrinfo);
+		lc->net_conf.stun_addrinfo=NULL;
+	}
+	if (addrinfo){
+		ms_message("Stun server resolution successful.");
+	}else{
+		ms_warning("Stun server resolution failed.");
+	}
+	lc->net_conf.stun_addrinfo=addrinfo;
+	lc->net_conf.stun_res=NULL;
+}
 
+void linphone_core_resolve_stun_server(LinphoneCore *lc){
+	const char *server=lc->net_conf.stun_server;
+	if (lc->sal && server){
+		char host[NI_MAXHOST];
+		int port=3478;
+		linphone_parse_host_port(server,host,sizeof(host),&port);
+		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_UNSPEC,(SalResolverCallback)stun_server_resolved,lc);
+	}
+}
+
+/*
+ * This function returns the addrinfo representation of the stun server address.
+ * It is critical not to block for a long time if it can't be resolved, otherwise this stucks the main thread when making a call.
+ * On the contrary, a fully asynchronous call initiation is complex to develop.
+ * The compromise is then:
+ * - have a cache of the stun server addrinfo
+ * - this cached value is returned when it is non-null
+ * - an asynchronous resolution is asked each time this function is called to ensure frequent refreshes of the cached value.
+ * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is 
+ * changed.
+**/
+const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
+	const char *server=linphone_core_get_stun_server(lc);
+	if (server){
+		int wait_ms=0;
+		int wait_limit=1000;
+		linphone_core_resolve_stun_server(lc);
+		while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res!=NULL && wait_ms<wait_limit){
+			sal_iterate(lc->sal);
+			ms_usleep(50000);
+			wait_ms+=50;
+		}
+	}
+	return lc->net_conf.stun_addrinfo;
+}
 
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
 	char local_addr[64];
-	struct sockaddr_storage ss;
-	socklen_t ss_len;
+	const struct addrinfo *ai;
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
 	const char *server = linphone_core_get_stun_server(lc);
@@ -630,16 +689,16 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
 	}
-
-	if (parse_hostname_to_addr(server, &ss, &ss_len) < 0) {
-		ms_error("Fail to parser stun server address: %s", server);
+	ai=linphone_core_get_stun_server_addrinfo(lc);
+	if (ai==NULL){
+		ms_warning("Fail to resolve STUN server for ICE gathering.");
 		return -1;
 	}
 	if (lc->vtable.display_status != NULL)
 		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
 
 	/* Gather local host candidates. */
-	if (linphone_core_get_local_ip_for(AF_INET, server, local_addr) < 0) {
+	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
 		ms_error("Fail to get local ip");
 		return -1;
 	}
@@ -657,7 +716,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 
 	ms_message("ICE: gathering candidate from [%s]",server);
 	/* Gather local srflx candidates. */
-	ice_session_gather_candidates(call->ice_session, ss, ss_len);
+	ice_session_gather_candidates(call->ice_session, ai->ai_addr, ai->ai_addrlen);
 	return 0;
 }
 
@@ -903,6 +962,12 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				ice_check_list_set_state(cl, ICL_Failed);
 			} else if (stream->rtp_port == 0) {
 				ice_session_remove_check_list(call->ice_session, cl);
+#ifdef VIDEO_ENABLED
+				if (stream->type==SalVideo && call->videostream){
+					video_stream_stop(call->videostream);
+					call->videostream=NULL;
+				}
+#endif
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
@@ -1114,7 +1179,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
 	close_socket(sock);
-	ms_message("Local interface to reach %s is %s.",dest,result);
+
+
 	return 0;
 }
 
@@ -1134,7 +1200,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	 * try to find 'the' running interface with getifaddrs*/
 	
 #ifdef HAVE_GETIFADDRS
-
 	/*we use getifaddrs for lookup of default interface */
 	int found_ifs;
 
@@ -1149,26 +1214,102 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
       return 0;  
 }
 
-#ifndef WIN32
-#include <resolv.h>
-
-
-
-void _linphone_core_configure_resolver(){
-/*bionic declares _res but does not define nor export it !!*/
-#ifdef ANDROID
-	/*timeout and attempts are the same as retrans and retry, but are android specific names.*/
-	setenv("RES_OPTIONS","timeout:2 attempts:2 retrans:2 retry:2",1);
-#else
-	res_init();
-	_res.retrans=2; /*retransmit every two seconds*/
-	_res.retry=2; /*only two times per DNS server*/
-#endif
-}
-
-#else
 
 void _linphone_core_configure_resolver(){
 }
 
-#endif
+SalReason linphone_reason_to_sal(LinphoneReason reason){
+	switch(reason){
+		case LinphoneReasonNone:
+			return SalReasonUnknown;
+		case LinphoneReasonNoResponse:
+			return SalReasonUnknown;
+		case LinphoneReasonBadCredentials:
+			return SalReasonForbidden;
+		case LinphoneReasonDeclined:
+			return SalReasonDeclined;
+		case LinphoneReasonNotFound:
+			return SalReasonNotFound;
+		case LinphoneReasonNotAnswered:
+			return SalReasonTemporarilyUnavailable;
+		case LinphoneReasonBusy:
+			return SalReasonBusy;
+		case LinphoneReasonMedia:
+			return SalReasonMedia;
+		case LinphoneReasonIOError:
+			return SalReasonServiceUnavailable;
+		case LinphoneReasonDoNotDisturb:
+			return SalReasonDoNotDisturb;
+		case LinphoneReasonUnauthorized:
+			return SalReasonUnauthorized;
+		case LinphoneReasonNotAcceptable:
+			return SalReasonNotAcceptable;
+	}
+	return SalReasonUnknown;
+}
+
+LinphoneReason linphone_reason_from_sal(SalReason r){
+	LinphoneReason ret=LinphoneReasonNone;
+	switch(r){
+		case SalReasonUnknown:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonBusy:
+			ret=LinphoneReasonBusy;
+			break;
+		case SalReasonDeclined:
+			ret=LinphoneReasonDeclined;
+			break;
+		case SalReasonDoNotDisturb:
+			ret=LinphoneReasonDoNotDisturb;
+			break;
+		case SalReasonForbidden:
+			ret=LinphoneReasonBadCredentials;
+			break;
+		case SalReasonMedia:
+			ret=LinphoneReasonMedia;
+			break;
+		case SalReasonNotFound:
+			ret=LinphoneReasonNotFound;
+			break;
+		case SalReasonRedirect:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonTemporarilyUnavailable:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonServiceUnavailable:
+			ret=LinphoneReasonIOError;
+			break;
+		case SalReasonRequestPending:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonUnauthorized:
+			ret=LinphoneReasonUnauthorized;
+			break;
+		case SalReasonNotAcceptable:
+			ret=LinphoneReasonNotAcceptable;
+		break;
+	}
+	return ret;
+}
+
+/**
+ * Set the name of the mediastreamer2 filter to be used for rendering video.
+ * This is for advanced users of the library, mainly to workaround hardware/driver bugs.
+ * @ingroup media_parameters
+**/
+void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filter_name){
+	lp_config_set_string(lc->config,"video","displaytype",filter_name);
+}
+
+/**
+ * Get the name of the mediastreamer2 filter used for rendering video.
+ * @ingroup media_parameters
+**/
+const char *linphone_core_get_video_display_filter(LinphoneCore *lc){
+	return lp_config_get_string(lc->config,"video","displaytype",NULL);
+}
+
+
+

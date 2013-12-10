@@ -54,7 +54,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param userid user id as set in auth header
 	 * @param passwd
 	 * */
-	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
+	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm, String domain);
 	/**
 	 * create  {@link LinphoneAuthInfo}
 	 * @param username
@@ -63,7 +63,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param ha1
 	 * @param realm
 	 * */
-	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1,String realm);
+	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1, String realm, String domain);
 	
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
@@ -81,8 +81,9 @@ abstract public class LinphoneCoreFactory {
 	 * Constructs a LinphoneAddress object by parsing the user supplied address, given as a string.
 	 * @param address should be like sip:joe@sip.linphone.org
 	 * @return
+	 * @throws LinphoneCoreException if address cannot be parsed
 	 */
-	abstract public LinphoneAddress createLinphoneAddress(String address);
+	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
@@ -106,5 +107,34 @@ abstract public class LinphoneCoreFactory {
 	 */
 	abstract public LinphoneFriend createLinphoneFriend();
 	
+	/**
+	 * Create a LinphoneContent object from string data.
+	 */
+	abstract public LinphoneContent createLinphoneContent(String type, String subType, String data);
+
+	/**
+	 * Create a LinphoneContent object from byte array.
+	 */
+	abstract public LinphoneContent createLinphoneContent(String type, String subType,byte [] data, String encoding);
 	
+	/**
+	 * Create a PresenceActivity object.
+	 */
+	abstract public PresenceActivity createPresenceActivity(PresenceActivityType type, String description);
+
+	/**
+	 * Create a PresenceService object.
+	 * @param id The id of the presence service. Can be null to generate it automatically.
+	 * @param status The PresenceBasicStatus to set for the PresenceService object.
+	 * @param contact The contact to set for the PresenceService object. Can be null.
+	 * @return A new PresenceService object.
+	 */
+	abstract public PresenceService createPresenceService(String id, PresenceBasicStatus status, String contact);
+
+	/**
+	 * Create a PresenceModel object.
+	 */
+	abstract public PresenceModel createPresenceModel();
+	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description);
+	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang);
 }

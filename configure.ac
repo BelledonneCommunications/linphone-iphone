@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.6.1],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.6.99],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -23,6 +23,7 @@ LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to
 
 LIBLINPHONE_SO_VERSION=$LIBLINPHONE_SO_CURRENT:$LIBLINPHONE_SO_REVISION:$LIBLINPHONE_SO_AGE
 
+AC_SUBST(LIBLINPHONE_SO_CURRENT, $LIBLINPHONE_SO_CURRENT)
 AC_SUBST(LIBLINPHONE_SO_VERSION, $LIBLINPHONE_SO_VERSION)
 AC_SUBST(LINPHONE_VERSION)
 
@@ -35,9 +36,13 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
+dnl don't put anythingelse before AC_PROG_CC unless checking if macro still work for clang
+AC_PROG_CXX(["xcrun clang++" g++])
+AC_PROG_CC(["xcrun clang" gcc])
+
+gl_LD_OUTPUT_DEF
+
 AC_ISC_POSIX
-AC_PROG_CC
-AC_PROG_CXX
 AC_C_INLINE
 AC_HEADER_STDC
 AM_PROG_CC_C_O
@@ -59,10 +64,10 @@ case $target in
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
+		AC_CHECK_TOOL(WINDRES, windres)
 	;;
 	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
-		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
-		build_tests=no
+		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
 		ios_found=yes
 	;;
 	x86_64-apple-darwin*|i686-apple-darwin*)
@@ -74,14 +79,23 @@ case $target in
 
 esac
 
+
+
+
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)
 AC_SUBST(GUI_FLAGS)
 
+case "$build_os" in
+	*darwin*)
+		HTTPS_CA_DIR=`openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
+	;;
+esac
+
+AC_SUBST(HTTPS_CA_DIR)
+
 dnl localization tools
 IT_PROG_INTLTOOL([0.40], [no-xml])
-
-AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 
 dnl Initialize libtool
 LT_INIT([win32-dll shared disable-static])
@@ -127,13 +141,15 @@ if test "$mingw_found" != "yes" ; then
 	CPPFLAGS=$CPPFLAGS_save
 	LIBS="$LIBS $LIBINTL"
 else
-	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-	LIBS="$LIBS -lintl"
+	if test "$USE_NLS" = "yes" ; then
+		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+		LIBS="$LIBS -lintl"
+	fi
 fi
 
 GETTEXT_PACKAGE=linphone
-AC_SUBST(GETTEXT_PACKAGE)
+AC_SUBST([GETTEXT_PACKAGE])
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The name of the gettext package name])
 dnl AC_CHECK_LIB(intl,libintl_gettext)
 
@@ -203,15 +219,10 @@ if test "$build_upnp" != "false" ; then
 	AC_DEFINE(BUILD_UPNP, 1, [Define if upnp enabled])
 fi
 
-dnl check libxml2 (needed for tools)
-if test "$build_tools" != "false" ; then
-	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[],
-		[if test "$build_tools" = "true" ; then
-			AC_MSG_ERROR([Could not found libxml2, tools cannot be compiled.])
-		else
-			build_tools=false
-		fi]
-	)
+dnl check libxml2
+PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[libxml2_found=yes],foo=bar)
+if test "$libxml2_found" != "yes" ; then
+	AC_MSG_ERROR([libxml2 not found. Install it and try again (the package is usually named libxml2-dev in the Linux distributions)])
 fi
 
 AM_CONDITIONAL(BUILD_TOOLS, test x$build_tools != xfalse)
@@ -356,6 +367,25 @@ AC_ARG_ENABLE(debug,
 	esac],
 	[debug_enabled=no]
 )
+AS_CASE([$debug_enabled],
+		[yes],[
+			CFLAGS="$CFLAGS -g -DDEBUG"
+			CXXFLAGS="$CXXFLAGS -g -DDEBUG"
+			OBJCFLAGS="$OBJCFLAGS -g -DDEBUG"
+		],
+		[no],
+		[
+			case "$CFLAGS" in
+				*-O*)
+				;;
+				*)
+					CFLAGS="$CFLAGS -O2 -g"
+					CXXFLAGS="$CXXFLAGS -O2 -g"
+					OBJCFLAGS="$OBJCFLAGS -O2 -g"
+				;;
+			esac
+		],
+		[AC_MSG_ERROR([Bad value ($debug_enabled) for --enable-debug. Valid values are yes or no.])])
 
 dnl enable truespeech codec support
 AC_ARG_ENABLE(truespeech,
@@ -387,13 +417,6 @@ AC_ARG_ENABLE(nonstandard-gsm,
 	[exotic_gsm=no]
 )
 
-
-dnl support for RSVP (by Vincent Maury)
-AC_ARG_ENABLE(rsvp,
-	[AS_HELP_STRING([--enable-rsvp], [Enable support for QoS reservations.])],
-	AC_DEFINE(VINCENT_MAURY_RSVP,1,[Tell whether RSVP support should be compiled.])
-)
-
 if test "x${prefix}" = "xNONE"; then
 	package_prefix=${ac_default_prefix}
 else
@@ -423,26 +446,6 @@ AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${package_prefix}/${DATADIRNAME}/sounds/l
 
 dnl check if we have the getifaddrs() sytem call
 AC_CHECK_FUNCS(getifaddrs)
-
-dnl check for osip2
-LP_CHECK_OSIP2
-
-dnl conditionnal build for ssl
-AC_ARG_ENABLE(ssl,
-	[AS_HELP_STRING([--enable-ssl], [Turn on ssl support compiling. Required for sip tls. (default=false)])],
-	[case "${enableval}" in
-		yes)	build_ssl=true ;;
-		no)	build_ssl=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-ssl) ;;
-	esac],
-	[build_ssl=false]
-)
-
-if test "$build_ssl" = "true"; then
-	PKG_CHECK_MODULES(OPENSSL, libssl >= 0.9.8)
-fi
-dnl setup flags for exosip library
-LP_SETUP_EXOSIP
 
 if test "$console_ui" = "true" ; then
 	dnl check gnu readline
@@ -604,7 +607,15 @@ AC_ARG_ENABLE(strict,
 	[strictness=yes]
 )
 
-STRICT_OPTIONS="-Wall "
+STRICT_OPTIONS="-Wall"
+
+#for clang
+
+case $CC in 
+	*clang*)
+		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments"
+	;;
+esac
 
 if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
@@ -686,6 +697,15 @@ if test x$enable_msg_storage != xfalse; then
 	
 fi
 
+	
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.2.0])
+
+SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
+SIPSTACK_LIBS="$BELLESIP_LIBS"
+
+
+AC_SUBST(SIPSTACK_CFLAGS)
+AC_SUBST(SIPSTACK_LIBS)
 
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools, sgmltools, yes, no)
@@ -693,11 +713,8 @@ AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
 LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
-LINPHONE_LIBS="-L${libdir} -llinphone"
+LINPHONE_LIBS="-L${libdir} -llinphone -llpc2xml -lxml2lpc"
 
-if test x$mingw_found = xyes ; then
-	LINPHONE_LIBS="$LINPHONE_LIBS $OSIP_LIBS"
-fi
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
 
@@ -740,18 +757,62 @@ AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
-AC_ARG_ENABLE(tests_enabled,
+AC_ARG_ENABLE(tutorials,
+	[AS_HELP_STRING([--disable-tutorials], [Disable compilation of tutorials])],
+	[case "${enableval}" in
+		yes)	tutorials_enabled=true ;;
+		no)	tutorials_enabled=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-tutorials) ;;
+	esac],
+	[tutorials_enabled=yes]
+)
+AM_CONDITIONAL(ENABLE_TUTORIALS, test x$tutorials_enabled = xyes)
+
+AC_ARG_ENABLE(tests,
 	[AS_HELP_STRING([--disable-tests], [Disable compilation of tests])],
 	[case "${enableval}" in
 		yes)	tests_enabled=true ;;
 		no)	tests_enabled=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
 	esac],
-	[tests_enabled=false]
+	[tests_enabled=yes]
 )
 AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
 
+PKG_CHECK_MODULES(CUNIT, cunit, [found_cunit=yes],[found_cunit=no])
 
+if test "$found_cunit" = "no" ; then
+        AC_CHECK_HEADERS(CUnit/CUnit.h,
+                [
+                        AC_CHECK_LIB(cunit,CU_add_suite,[
+                                found_cunit=yes
+                                CUNIT_LIBS+=" -lcunit"
+                        ])
+
+                ])
+fi
+
+case "$target_os" in
+	*darwin*)
+		#hack for macport
+		CUNIT_LIBS+=" -lncurses"
+	;;
+esac
+AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$tests_enabled != xfalse])
+if test "$found_cunit" = "no" ; then
+        AC_MSG_WARN([Could not find cunit framework, tests are not compiled.])
+else
+        AC_CHECK_LIB(cunit,CU_curses_run_tests,[
+                                        AC_DEFINE(HAVE_CU_CURSES,1,[defined when CU_curses_run_tests is available])
+                                        ],[foo=bar],[$CUNIT_LIBS])
+fi
+
+case "$target_os" in
+	*linux*)
+		# Eliminate -lstdc++ addition to postdeps for cross compiles.
+		postdeps_CXX=`echo " $postdeps_CXX " | sed 's, -lstdc++ ,,g'`
+	;;
+esac
 
 dnl ##################################################
 dnl # Check for doxygen
@@ -769,9 +830,11 @@ AC_CONFIG_FILES([
 	m4/Makefile
 	po/Makefile.in
 	pixmaps/Makefile
+	include/Makefile
 	coreapi/Makefile
 	coreapi/help/Makefile
 	coreapi/help/Doxyfile
+	tester/Makefile
 	gtk/Makefile
 	console/Makefile
 	daemon/Makefile
@@ -804,7 +867,8 @@ printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 
 if test "$enable_tunnel" = "true" ; then
-	printf "* Tunnel support\t\ttrue\n"
+	printf "* %-30s %s\n" "Tunnel support" "true"
 fi
+
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."

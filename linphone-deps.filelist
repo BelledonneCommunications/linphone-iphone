@@ -1,13 +1,15 @@
 ./bin/avcodec-53.dll
+./bin/libspeex-1.dll
+./bin/libspeexdsp-1.dll
 ./bin/avutil-51.dll
 ./bin/libeay32.dll
 ./bin/ssleay32.dll
-./bin/libeXosip2-7.dll
+./bin/libbellesip-0.dll
+./bin/libantlr3c.dll
+./lib/libpolarssl.dll
 ./bin/libogg-0.dll
 ./bin/libtheora-0.dll
 ./bin/libxml2-2.dll
-./bin/libosip2-7.dll
-./bin/libosipparser2-7.dll
 ./bin/swscale-2.dll
 ./bin/libsoup-2.4-1.dll
 ./bin/libgcrypt-11.dll
@@ -16,3 +18,4 @@
 ./bin/libtasn1-3.dll
 ./bin/libsqlite3-0.dll
 ./bin/libzrtpcpp.dll
+./bin/libopus-0.dll

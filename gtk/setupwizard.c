@@ -59,7 +59,7 @@ static int all_account_information_entered(GtkWidget *w) {
 
 	if (gtk_entry_get_text_length(username) > 0 &&
 	gtk_entry_get_text_length(domain) > 0 &&
-	g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0) &&
+	g_regex_match_simple("^[a-zA-Z0-9]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0) &&
 	g_regex_match_simple("^(sip:)?([a-zA-Z0-9]+([\\.-][a-zA-Z0-9]+)*)$", gtk_entry_get_text(domain), 0, 0)) {
 		return 1;
 	}
@@ -416,7 +416,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_proxy_config_set_identity(cfg, creator->username);
 		linphone_proxy_config_set_server_addr(cfg, creator->domain);
 		linphone_proxy_config_set_route(cfg, creator->route);
-		linphone_proxy_config_expires(cfg, 3600);
+		linphone_proxy_config_set_expires(cfg, 3600);
 		linphone_proxy_config_enable_publish(cfg, FALSE);
 		linphone_proxy_config_enable_register(cfg, TRUE);
 
@@ -430,7 +430,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		}
 		gchar domain[128];
 		g_snprintf(domain, sizeof(domain), "\"%s\"", creator->domain + 4);
-		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, domain);
+		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, NULL, domain);
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		g_free(username);
 

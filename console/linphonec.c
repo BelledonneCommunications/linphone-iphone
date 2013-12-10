@@ -117,13 +117,12 @@ static char **linephonec_readline_completion(const char *text,
 #endif
 
 /* These are callback for linphone core */
-static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
-	const char *username);
+static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
-static void linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event);
+static void linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state);
 
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
@@ -256,7 +255,7 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
  * Linphone core callback
  */
 static void
-linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
+linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain)
 {
 	/* no prompt possible when using pipes or tcp mode*/
 	if (unix_socket){
@@ -272,7 +271,7 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
 			return;
 		}
 
-		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
+		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm,domain);
 		auth_stack.elem[auth_stack.nitems++]=pending_auth;
 	}
 }
@@ -281,13 +280,14 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event)
+linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state)
 {
-	if(!strcmp(event,"refer"))
-	{
-		linphonec_out("The distand endpoint %s of call %li has been transfered, you can safely close the call.\n",
-		              from,(long)linphone_call_get_user_pointer (call));
+	char *remote=linphone_call_get_remote_address_as_string(call);
+	if (new_call_state==LinphoneCallConnected){
+		linphonec_out("The distant endpoint %s of call %li has been transfered, you can safely close the call.\n",
+		              remote,(long)linphone_call_get_user_pointer (call));
 	}
+	ms_free(remote);
 }
 
 
@@ -628,8 +628,8 @@ int
 main (int argc, char *argv[]) {
 #endif
 	linphonec_vtable.call_state_changed=linphonec_call_state_changed;
-	linphonec_vtable.notify_presence_recv = linphonec_notify_presence_received;
-	linphonec_vtable.new_subscription_request = linphonec_new_unknown_subscriber;
+	linphonec_vtable.notify_presence_received = linphonec_notify_presence_received;
+	linphonec_vtable.new_subscription_requested = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
 	linphonec_vtable.display_status = linphonec_display_status;
 	linphonec_vtable.display_message=linphonec_display_something;
@@ -638,7 +638,7 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.text_received=linphonec_text_received;
 	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
 	linphonec_vtable.refer_received=linphonec_display_refer;
-	linphonec_vtable.notify_recv=linphonec_notify_received;
+	linphonec_vtable.transfer_state_changed=linphonec_transfer_state_changed;
 	linphonec_vtable.call_encryption_changed=linphonec_call_encryption_changed;
 	
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
@@ -734,7 +734,8 @@ linphonec_init(int argc, char **argv)
 	 */
 	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
 	linphone_core_set_zrtp_secrets_file(linphonec,zrtpsecrets);
-	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
+	linphone_core_enable_video_capture(linphonec, vcap_enabled);
+	linphone_core_enable_video_display(linphonec, display_enabled);
 	if (display_enabled && window_id != 0) 
 	{
 		printf ("Setting window_id: 0x%x\n", window_id);
@@ -1074,7 +1075,7 @@ linphonec_initialize_readline()
 	rl_attempted_completion_function = linephonec_readline_completion;
 
 	/* printf("Readline initialized.\n"); */
-        setlinebuf(stdout);
+	setlinebuf(stdout);
 	return 0;
 }
 

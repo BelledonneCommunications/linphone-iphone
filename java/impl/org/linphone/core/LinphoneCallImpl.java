@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
 class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
@@ -81,7 +80,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphoneAddress getRemoteAddress() {
 		long lNativePtr = getRemoteAddress(nativePtr);
 		if (lNativePtr!=0) {
-			return new LinphoneAddressImpl(lNativePtr); 
+			return new LinphoneAddressImpl(lNativePtr,LinphoneAddressImpl.WrapMode.FromConst); 
 		} else {
 			return null;
 		}
@@ -206,5 +205,25 @@ class LinphoneCallImpl implements LinphoneCall {
 	@Override
 	public void stopRecording() {
 		stopRecording(nativePtr);
+	}
+	private native int getTransferState(long nativePtr);
+	@Override
+	public State getTransferState() {
+		return State.fromInt(getTransferState(nativePtr));
+	}
+	private native int sendInfoMessage(long callPtr, long msgptr);
+	@Override
+	public void sendInfoMessage(LinphoneInfoMessage msg) {
+		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
+	}
+	private native Object getTransfererCall(long callPtr); 
+	@Override
+	public LinphoneCall getTransfererCall() {
+		return (LinphoneCall)getTransfererCall(nativePtr);
+	}
+	private native Object getTransferTargetCall(long callPtr);
+	@Override
+	public LinphoneCall getTransferTargetCall() {
+		return (LinphoneCall)getTransferTargetCall(nativePtr);
 	}
 }

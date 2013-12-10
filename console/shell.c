@@ -25,9 +25,9 @@
 
 
 #ifdef WIN32
+#include <ws2tcpip.h>
 #include <windows.h>
 #include <winbase.h>
-#include <ws2tcpip.h>
 #include <ctype.h>
 #include <conio.h>
 #else

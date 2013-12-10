@@ -32,6 +32,15 @@
  */
 
 /**
+ * Returns an array of chat rooms
+ * @param lc #LinphoneCore object
+ * @return An array of #LinpĥoneChatRoom
+**/
+MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
+	return lc->chatrooms;
+}
+
+/**
  * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
  * @param lc #LinphoneCore object
  * @param to destination address for messages
@@ -50,6 +59,32 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
 	}
 	return NULL;
 }
+
+bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
+	return linphone_address_weak_equal(cr->peer_url,from);
+}
+
+/**
+ * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org if not already existing, else return exisiting one
+ * @param lc #LinphoneCore object
+ * @param to destination address for messages
+ * @return #LinphoneChatRoom where messaging can take place.
+ */
+LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
+	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
+	LinphoneChatRoom *ret;
+	
+	if (to_addr==NULL){
+		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
+		return NULL;
+	}
+	ret=linphone_core_get_chat_room(lc,to_addr);
+	linphone_address_destroy(to_addr);
+	if (!ret){
+		ret=linphone_core_create_chat_room(lc,to);
+	}
+	return ret;
+}
  
 /**
  * Destroy a LinphoneChatRoom.
@@ -60,16 +95,16 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
+	ms_free(cr);
 }
 
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
-	const char *route=NULL;
-	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
+	const char *identity=NULL;
 	time_t t=time(NULL);
 	
 	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
@@ -82,19 +117,20 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 				ms_message("send SIP message through the existing call.");
 				op = call->op;
 				call->pending_message=msg;
+				identity=linphone_core_find_best_identity(cr->lc,linphone_call_get_remote_address(call));
 			}
 		}
 	}
 	msg->time=t;
 	if (op==NULL){
+		LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(cr->lc,cr->peer_url);
+		if (proxy){
+			identity=linphone_proxy_config_get_identity(proxy);
+		}else identity=linphone_core_get_primary_contact(cr->lc);
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
-		sal_op_set_route(op,route);
+		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,lp_config_get_int(cr->lc->config,"sip","chat_msg_with_contact",0));
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
-		if (msg->custom_headers){
-			sal_op_set_custom_header(op,msg->custom_headers);
-			msg->custom_headers=NULL; /*transfered to the SalOp*/
-		}
 	}
 	if (msg->external_body_url) {
 		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
@@ -105,7 +141,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	}
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
-	linphone_chat_message_store(msg);
+	msg->storage_id=linphone_chat_message_store(msg);
 }
 
 /**
@@ -116,12 +152,6 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 	_linphone_chat_room_send_message(cr,linphone_chat_room_create_message(cr,msg));
-}
-
-bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
-	if (linphone_address_get_username(cr->peer_url) && linphone_address_get_username(from) && 
-		strcmp(linphone_address_get_username(cr->peer_url),linphone_address_get_username(from))==0) return TRUE;
-	return FALSE;
 }
 
 void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
@@ -181,14 +211,15 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg->time=sal_msg->time;
 	msg->state=LinphoneChatMessageStateDelivered;
 	msg->is_read=FALSE;
-	ch=sal_op_get_custom_header(op);
+	msg->dir=LinphoneChatMessageIncoming;
+	ch=sal_op_get_recv_custom_header(op);
 	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
 	
 	if (sal_msg->url) {
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
 	linphone_address_destroy(addr);
-	linphone_chat_message_store(msg);
+	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
 	ms_free(from);
@@ -239,6 +270,41 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 }
 
 /**
+ * Create a message attached to a dedicated chat room;
+ * @param cr the chat room.
+ * @param message text message, NULL if absent.
+ * @param external_body_url the URL given in external body or NULL.
+ * @param state the LinphoneChatMessage.State of the message.
+ * @param time the time_t at which the message has been received/sent.
+ * @param is_read TRUE if the message should be flagged as read, FALSE otherwise.
+ * @param is_incoming TRUE if the message has been received, FALSE otherwise.
+ * @return a new #LinphoneChatMessage
+ */
+LinphoneChatMessage* linphone_chat_room_create_message_2(
+        LinphoneChatRoom *cr, const char* message, const char* external_body_url,
+        LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
+	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+
+	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
+	msg->chat_room=(LinphoneChatRoom*)cr;
+	msg->message=message?ms_strdup(message):NULL;
+	msg->external_body_url=external_body_url?ms_strdup(external_body_url):NULL;
+	msg->time=time;
+	msg->state=state;
+	msg->is_read=is_read;
+	if (is_incoming) {
+		msg->dir=LinphoneChatMessageIncoming;
+		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
+	} else {
+		msg->dir=LinphoneChatMessageOutgoing;
+		linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(lc)));
+	}
+	return msg;
+}
+
+/**
  * Send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
  * @param msg #LinphoneChatMessage message to be sent
@@ -246,7 +312,7 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
  * @param ud user data for the status cb.
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
  */
-void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb, void* ud) {
+void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb, void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
 	msg->state=LinphoneChatMessageStateInProgress;
@@ -261,7 +327,7 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle"; 
 		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
 		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
-		case  LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
+		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
 		default: return "Unknown state";
 	}
 	
@@ -337,6 +403,16 @@ const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage*
 }
 
 /**
+ * Set destination of the message
+ *@param message #LinphoneChatMessage obj
+ *@param to #LinphoneAddress destination of this message (copied)
+ */
+void linphone_chat_message_set_to(LinphoneChatMessage* message, const LinphoneAddress* to) {
+	if(message->to) linphone_address_destroy(message->to);
+	message->to=linphone_address_clone(to);
+}
+
+/**
  * Get destination of the message 
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
@@ -402,6 +478,31 @@ const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* messag
 }
 
 /**
+ * Returns TRUE if the message has been read, otherwise returns FALSE.
+ * @param message the message
+**/
+bool_t linphone_chat_message_is_read(LinphoneChatMessage* message) {
+	return message->is_read;
+}
+
+/**
+ * Returns TRUE if the message has been sent, returns FALSE if the message has been received.
+ * @param message the message
+**/
+bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
+	return message->dir == LinphoneChatMessageOutgoing;
+}
+
+/**
+ * Returns the id used to identify this message in the storage database
+ * @param message the message
+ * @return the id
+ */
+unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message) {
+    return message->storage_id;
+}
+
+/**
  * Duplicate a LinphoneChatMessage
 **/
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {
@@ -425,6 +526,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	new_message->cb=msg->cb;
 	new_message->time=msg->time;
 	new_message->state=msg->state;
+	new_message->storage_id=msg->storage_id;
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
 	return new_message;
 }

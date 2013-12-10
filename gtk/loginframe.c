@@ -102,7 +102,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 			linphone_address_set_username(from,username);
 	}
 	
-	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),linphone_address_get_username(from));
+	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),linphone_address_get_username(from),NULL);
 	/*display the last entered username, if not '?????'*/
 	if (linphone_address_get_username(from)[0]!='?')
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),

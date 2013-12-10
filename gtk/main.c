@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WIN32
 #define chdir _chdir
+#include "direct.h"
 #endif
 
 #if defined(HAVE_NOTIFY1) || defined(HAVE_NOTIFY4)
@@ -54,7 +55,7 @@ static GtkWidget *the_ui=NULL;
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
+static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
@@ -63,6 +64,7 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
+static void linphone_gtk_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
@@ -82,6 +84,7 @@ static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
 static gboolean workaround_gtk_entry_chinese_bug=FALSE;
+static gchar *custom_config_file=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -133,6 +136,13 @@ static GOptionEntry linphone_options[]={
 	    .arg_data = (gpointer) & workingdir,
 	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
 	},
+	{
+		.long_name = "config",
+		.short_name = '\0',
+		.arg = G_OPTION_ARG_FILENAME,
+		.arg_data = (gpointer) &custom_config_file,
+		.description = N_("Configuration file")
+	},
 	{0}
 };
 
@@ -155,7 +165,9 @@ char *linphone_gtk_get_config_file(const char *filename){
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(config_file,path_max,"%s",filename);
-	}else{
+	} else if (g_path_is_absolute(filename)) {
+		snprintf(config_file,path_max,"%s",filename);
+	} else{
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
@@ -226,8 +238,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
 	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
-	vtable.notify_presence_recv=linphone_gtk_notify_recv;
-	vtable.new_subscription_request=linphone_gtk_new_unknown_subscriber;
+	vtable.notify_presence_received=linphone_gtk_notify_recv;
+	vtable.new_subscription_requested=linphone_gtk_new_unknown_subscriber;
 	vtable.auth_info_requested=linphone_gtk_auth_info_requested;
 	vtable.display_status=linphone_gtk_display_status;
 	vtable.display_message=linphone_gtk_display_message;
@@ -240,14 +252,17 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
 	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
+	vtable.dtmf_received=linphone_gtk_dtmf_received;
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
+	
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
-	linphone_core_enable_video(the_core,TRUE,TRUE);
+	linphone_core_enable_video_capture(the_core, TRUE);
+	linphone_core_enable_video_display(the_core, TRUE);
 	if (no_video) {
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
@@ -784,6 +799,9 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 			date,
 			id);
 	}
+	if (!dir) {
+		ms_message ("No directory for music, using [%s] instead",dir=getenv("HOME"));
+	}
 	return g_build_filename(dir,filename,NULL);
 }
 
@@ -874,7 +892,8 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 void _linphone_gtk_enable_video(gboolean val){
 	LinphoneVideoPolicy policy={0};
 	policy.automatically_initiate=policy.automatically_accept=val;
-	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
+	linphone_core_enable_video_capture(linphone_gtk_get_core(), TRUE);
+	linphone_core_enable_video_display(linphone_gtk_get_core(), TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
 
 	if (val){
@@ -1007,7 +1026,7 @@ void linphone_gtk_password_ok(GtkWidget *w){
 	gtk_widget_destroy(window);
 }
 
-static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username){
+static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
 	GtkWidget *w=linphone_gtk_create_window("password");
 	GtkWidget *label=linphone_gtk_get_widget(w,"message");
 	LinphoneAuthInfo *info;
@@ -1020,16 +1039,20 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 		return;
 	}
 
-	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at domain <i>%s</i>:"),
+	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at realm <i>%s</i>:"),
 		username,realm);
 	gtk_label_set_markup(GTK_LABEL(label),msg);
 	g_free(msg);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"userid_entry")),username);
-	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm);
+	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm,domain);
 	g_object_set_data(G_OBJECT(w),"auth_info",info);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_auth_info_destroy,info);
 	gtk_widget_show(w);
 	auth_timeout_new(w);
+}
+
+static void linphone_gtk_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf){
+	ms_message("Dtmf %c received.",dtmf);
 }
 
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
@@ -1698,6 +1721,40 @@ void linphone_gtk_init_dtmf_table(GtkWidget *mw){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_*")),"label","*");
 }
 
+static gboolean key_allowed(guint32 code){
+	static const char *allowed="1234567890#*ABCD";
+	return code!=0 && strchr(allowed,(char)code)!=NULL;
+}
+
+static GtkButton *get_button_from_key(GtkWidget *w, GdkEvent *event){
+	guint keyval=event->key.keyval;
+	guint32 code=gdk_keyval_to_unicode(keyval);
+	code=g_unichar_toupper(code);
+	if (key_allowed(code)){
+		char widgetname[16];
+		w=gtk_widget_get_toplevel(w);
+		snprintf(widgetname,sizeof(widgetname),"dtmf_%c",code);
+		return GTK_BUTTON(linphone_gtk_get_widget(w,widgetname));
+	}
+	return NULL;
+}
+
+void linphone_gtk_keypad_key_pressed(GtkWidget *w, GdkEvent *event, gpointer userdata){
+	GtkButton *button=get_button_from_key(w,event);
+	if (button) {
+		linphone_gtk_dtmf_pressed(button);
+		/*g_signal_emit_by_name(button, "button-press-event");*/
+	}
+}
+
+void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer userdata){
+	GtkButton *button=get_button_from_key(w,event);
+	if (button) {
+		linphone_gtk_dtmf_released(button);
+		/*g_signal_emit_by_name(button, "button-release-event");*/
+	}
+}
+
 void linphone_gtk_create_keypad(GtkWidget *button){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
@@ -1913,6 +1970,14 @@ int main(int argc, char *argv[]){
 		gdk_threads_leave();
 		return -1;
 	}
+	if (config_file) free(config_file);
+	if (custom_config_file && !g_path_is_absolute(custom_config_file)) {
+		gchar *res = g_get_current_dir();
+		res = g_strjoin(G_DIR_SEPARATOR_S, res, custom_config_file, NULL);
+		free(custom_config_file);
+		custom_config_file = res;
+	}
+	config_file=linphone_gtk_get_config_file(custom_config_file);
 
 	settings=gtk_settings_get_default();
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));

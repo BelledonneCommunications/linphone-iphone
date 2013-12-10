@@ -30,6 +30,8 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native void enableSubscribes(long nativePtr,boolean value);
 	private native boolean isSubscribesEnabled(long nativePtr);
 	private native int getStatus(long nativePtr);
+	private native Object getPresenceModel(long nativePtr);
+	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native void edit(long nativePtr);
 	private native void done(long nativePtr);
 	
@@ -52,7 +54,7 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
 	}
 	public LinphoneAddress getAddress() {
-		return new LinphoneAddressImpl(getAddress(nativePtr));
+		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
 		setIncSubscribePolicy(nativePtr,policy.mValue);
@@ -68,6 +70,9 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	}
 	public OnlineStatus getStatus() {
 		return OnlineStatus.fromInt(getStatus(nativePtr));
+	}
+	public PresenceModel getPresenceModel() {
+		return (PresenceModel)getPresenceModel(nativePtr);
 	}
 	public void edit() {
 		edit(nativePtr);

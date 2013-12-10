@@ -1022,7 +1022,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		linphonec_friend_add(lc, name, addr);
 #else
 		LinphoneFriend *new_friend;
-		new_friend = linphone_friend_new_with_addr(args);
+		new_friend = linphone_friend_new_with_address(args);
 		linphone_core_add_friend(lc, new_friend);
 #endif
 		return 1;
@@ -1082,6 +1082,7 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 	}
 	else if (strcmp(arg1,"remove")==0)
 	{
+		if (arg2==NULL) return 0;
 		linphonec_proxy_remove(lc,atoi(arg2));
 	}
 	else if (strcmp(arg1,"use")==0)
@@ -1109,16 +1110,16 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 		{
 			if (strstr(arg2,"default"))
 			{
-		proxynum=linphone_core_get_default_proxy(lc, NULL);
-		if ( proxynum < 0 ) {
-			linphonec_out("No default proxy defined\n");
-			return 1;
-		}
-		linphonec_proxy_show(lc,proxynum);
+				proxynum=linphone_core_get_default_proxy(lc, NULL);
+				if ( proxynum < 0 ) {
+					linphonec_out("No default proxy defined\n");
+					return 1;
+				}
+				linphonec_proxy_show(lc,proxynum);
 			}
 			else
 			{
-		linphonec_proxy_show(lc, atoi(arg2));
+				linphonec_proxy_show(lc, atoi(arg2));
 			}
 		}
 		else return 0; /* syntax error */
@@ -1615,7 +1616,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 				continue;
 			}
 
-			linphone_proxy_config_expires(cfg, expires);
+			linphone_proxy_config_set_expires(cfg, expires);
 			linphonec_out("Expiration: %d seconds\n", linphone_proxy_config_get_expires (cfg));
 
 			free(input);
@@ -1852,7 +1853,7 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 	char url[PATH_MAX];
 
 	snprintf(url, PATH_MAX, "%s <%s>", name, addr);
-	newFriend = linphone_friend_new_with_addr(url);
+	newFriend = linphone_friend_new_with_address(url);
 	linphone_core_add_friend(lc, newFriend);
 	return 0;
 }
@@ -1929,9 +1930,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		LinphoneAddress *from;
 		LinphoneAuthInfo *info;
 		if ((from=linphone_address_new(identity))!=NULL){
-			char realm[128];
-			snprintf(realm,sizeof(realm)-1,"\"%s\"",linphone_address_get_domain(from));
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL);
+			info=linphone_auth_info_new(NULL,NULL,passwd,NULL,NULL,linphone_address_get_username(from));
 			linphone_core_add_auth_info(lc,info);
 			linphone_address_destroy(from);
 			linphone_auth_info_destroy(info);
@@ -1942,7 +1941,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		cfg=(LinphoneProxyConfig*)elem->data;
 		linphone_proxy_config_edit(cfg);
 	}
-	else cfg=linphone_proxy_config_new();
+	else cfg=linphone_core_create_proxy_config(lc);
 	linphone_proxy_config_set_identity(cfg,identity);
 	linphone_proxy_config_set_server_addr(cfg,proxy);
 	linphone_proxy_config_enable_register(cfg,TRUE);
@@ -2030,7 +2029,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 				if (linphone_call_get_dir(call)==LinphoneCallOutgoing){
 					linphonec_out("Call out, hook=%s duration=%i, muted=%s rtp-xmit-muted=%s\n", linphonec_get_callee(),
 					      linphone_core_get_current_call_duration(lc),
-					      linphone_core_is_mic_muted (lc) ? "yes" : "no",
+					      linphone_core_mic_enabled(lc) ? "no" : "yes",
 					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
 				}else{
 					linphonec_out("hook=answered duration=%i %s\n" ,
@@ -2110,7 +2109,13 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 	memset(voice,0,sizeof(voice));
 	sscanf(args,"%63s",voice);
 	sentence=args+strlen(voice);
+
+#ifdef __APPLE__
+	wavfile=mktemp("/tmp/linphonec-espeak-XXXXXX");
+#else
 	wavfile=tempnam("/tmp/","linphonec-espeak-");
+#endif
+
 	snprintf(cl,sizeof(cl),"espeak -v %s -s 100 -w %s --stdin",voice,wavfile);
 	file=popen(cl,"w");
 	if (file==NULL){

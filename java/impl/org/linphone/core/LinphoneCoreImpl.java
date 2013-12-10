@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 import static android.media.AudioManager.MODE_IN_CALL;
-import static android.media.AudioManager.MODE_RINGTONE;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,10 +44,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	private native void setDefaultProxyConfig(long nativePtr,long proxyCfgNativePtr);
 	private native int addProxyConfig(LinphoneProxyConfig jprtoxyCfg,long nativePtr,long proxyCfgNativePtr);
+	private native void removeProxyConfig(long nativePtr, long proxyCfg);
 	private native void clearAuthInfos(long nativePtr);
 	
 	private native void clearProxyConfigs(long nativePtr);
 	private native void addAuthInfo(long nativePtr,long authInfoNativePtr);
+	private native void removeAuthInfo(long nativePtr, long authInfoNativePtr);
 	private native Object invite(long nativePtr,String uri);
 	private native void terminateCall(long nativePtr, long call);
 	private native long getRemoteAddress(long nativePtr);
@@ -71,6 +72,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isMicMuted(long nativePtr);
 	private native long findPayloadType(long nativePtr, String mime, int clockRate, int channels);
 	private native int enablePayloadType(long nativePtr, long payloadType,	boolean enable);
+	private native boolean isPayloadTypeEnabled(long nativePtr, long payloadType);
 	private native void enableEchoCancellation(long nativePtr,boolean enable);
 	private native boolean isEchoCancellationEnabled(long nativePtr);
 	private native Object getCurrentCall(long nativePtr) ;
@@ -80,10 +82,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreviewWindowId(long nativePtr, Object wid);
 	private native void setDeviceRotation(long nativePtr, int rotation);
 	private native void addFriend(long nativePtr,long friend);
-	private native void setPresenceInfo(long nativePtr,int minute_away, String alternative_contact,int status);
-	private native long createChatRoom(long nativePtr,String to);
+	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
+	private native int getPresenceInfo(long nativePtr);
+	private native void setPresenceModel(long nativePtr, long presencePtr);
+	private native Object getPresenceModel(long nativePtr);
+	private native long getOrCreateChatRoom(long nativePtr,String to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
+	private native boolean isVideoSupported(long nativePtr);
 	private native void setFirewallPolicy(long nativePtr, int enum_value);
 	private native int getFirewallPolicy(long nativePtr);
 	private native void setStunServer(long nativePtr, String stun_server);
@@ -93,12 +99,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setUploadBandwidth(long nativePtr, int bw);
 	private native void setDownloadBandwidth(long nativePtr, int bw);
 	private native void setPreferredVideoSize(long nativePtr, int width, int heigth);
+	private native void setPreferredVideoSizeByName(long nativePtr, String name);
 	private native int[] getPreferredVideoSize(long nativePtr);
 	private native void setRing(long nativePtr, String path);
 	private native String getRing(long nativePtr);
 	private native void setRootCA(long nativePtr, String path);
 	private native long[] listVideoPayloadTypes(long nativePtr);
 	private native long[] getProxyConfigList(long nativePtr);
+	private native long[] getAuthInfosList(long nativePtr);
+	private native long findAuthInfos(long nativePtr, String username, String realm, String domain);
 	private native long[] listAudioPayloadTypes(long nativePtr);
 	private native void enableKeepAlive(long nativePtr,boolean enable);
 	private native boolean isKeepAliveEnabled(long nativePtr);
@@ -106,6 +115,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getSignalingTransportPort(long nativePtr, int code);
 	private native void setSignalingTransportPorts(long nativePtr, int udp, int tcp, int tls);
 	private native void enableIpv6(long nativePtr,boolean enable);
+	private native boolean isIpv6Enabled(long nativePtr);
 	private native int pauseCall(long nativePtr, long callPtr);
 	private native int pauseAllCalls(long nativePtr);
 	private native int resumeCall(long nativePtr, long callPtr);
@@ -130,13 +140,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setIncomingTimeout(long nativePtr, int timeout);
 	private native void setInCallTimeout(long nativePtr, int timeout);
 	private native void setPrimaryContact(long nativePtr, String displayName, String username);
+	private native String getPrimaryContactUsername(long nativePtr);
+	private native String getPrimaryContactDisplayName(long nativePtr);
+	private native void setChatDatabasePath(long nativePtr, String path);
+	private native long[] getChatRooms(long nativePtr);
 	
-	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
-		mListener=listener;
-		nativePtr = newLinphoneCore(listener,userConfig.getCanonicalPath(),factoryConfig.getCanonicalPath(),userdata);
+	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
+		mListener = listener;
+		String user = userConfig == null ? null : userConfig.getCanonicalPath();
+		String factory = factoryConfig == null ? null : factoryConfig.getCanonicalPath();
+		nativePtr = newLinphoneCore(listener, user, factory, userdata);
 	}
 	LinphoneCoreImpl(LinphoneCoreListener listener) throws IOException {
-		mListener=listener;
+		mListener = listener;
 		nativePtr = newLinphoneCore(listener,null,null,null);
 	}
 	
@@ -159,6 +175,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
 		isValid();
 		addAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
+	}
+
+	public synchronized void removeAuthInfo(LinphoneAuthInfo info) {
+		isValid();
+		removeAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
 	}
 
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
@@ -191,10 +212,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 			throw new LinphoneCoreException("bad proxy config");
 		}
 	}
+	public synchronized void removeProxyConfig(LinphoneProxyConfig proxyCfg) {
+		isValid();
+		removeProxyConfig(nativePtr, ((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
+	}
 	public synchronized void clearAuthInfos() {
 		isValid();
 		clearAuthInfos(nativePtr);
-		
 	}
 	public synchronized void clearProxyConfigs() {
 		isValid();
@@ -210,7 +234,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		if (ptr==0) {
 			return null;
 		} else {
-			return new LinphoneAddressImpl(ptr);
+			return new LinphoneAddressImpl(ptr,LinphoneAddressImpl.WrapMode.FromConst);
 		}
 	}
 	public synchronized  boolean isIncall() {
@@ -261,7 +285,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException {
 		long lAddress = interpretUrl(nativePtr,destination);
 		if (lAddress != 0) {
-			return new LinphoneAddressImpl(lAddress,true);
+			return new LinphoneAddressImpl(lAddress,LinphoneAddressImpl.WrapMode.FromNew);
 		} else {
 			throw new LinphoneCoreException("Cannot interpret ["+destination+"]");
 		}
@@ -300,6 +324,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 			throw new LinphoneCoreException("cannot enable payload type ["+pt+"]");
 		}
 		
+	}
+	public synchronized boolean isPayloadTypeEnabled(PayloadType pt) {
+		isValid();
+		return isPayloadTypeEnabled(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
 	public synchronized void enableEchoCancellation(boolean enable) {
 		isValid();
@@ -368,13 +396,21 @@ class LinphoneCoreImpl implements LinphoneCore {
 		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
 		
 	}
-	public synchronized void setPresenceInfo(int minute_away, String alternative_contact,
-			OnlineStatus status) {
-		setPresenceInfo(nativePtr,minute_away,alternative_contact,status.mValue);
+	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {
+		setPresenceInfo(nativePtr,minutes_away,alternative_contact,status.mValue);
 		
 	}
-	public synchronized LinphoneChatRoom createChatRoom(String to) {
-		return new LinphoneChatRoomImpl(createChatRoom(nativePtr,to));
+	public synchronized OnlineStatus getPresenceInfo() {
+		return OnlineStatus.fromInt(getPresenceInfo(nativePtr));
+	}
+	public synchronized void setPresenceModel(PresenceModel presence) {
+		setPresenceModel(nativePtr, ((PresenceModelImpl)presence).getNativePtr());
+	}
+	public synchronized PresenceModel getPresenceModel() {
+		return (PresenceModel)getPresenceModel(nativePtr);
+	}
+	public synchronized LinphoneChatRoom getOrCreateChatRoom(String to) {
+		return new LinphoneChatRoomImpl(getOrCreateChatRoom(nativePtr,to));
 	}
 	public synchronized void setPreviewWindow(Object w) {
 		setPreviewWindowId(nativePtr,w);
@@ -391,6 +427,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized boolean isVideoEnabled() {
 		return isVideoEnabled(nativePtr);
+	}
+	public synchronized boolean isVideoSupported() {
+		return isVideoSupported(nativePtr);
 	}
 	public synchronized FirewallPolicy getFirewallPolicy() {
 		return FirewallPolicy.fromInt(getFirewallPolicy(nativePtr));
@@ -437,6 +476,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void setPreferredVideoSize(VideoSize vSize) {
 		setPreferredVideoSize(nativePtr, vSize.width, vSize.height);
+	}
+
+	public synchronized void setPreferredVideoSizeByName(String name) {
+		setPreferredVideoSizeByName(nativePtr, name);
 	}
 
 	public synchronized VideoSize getPreferredVideoSize() {
@@ -525,6 +568,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void enableIpv6(boolean enable) {
 		enableIpv6(nativePtr,enable);
+	}
+	public synchronized boolean isIpv6Enabled() {
+		return isIpv6Enabled(nativePtr);
 	}
 	public synchronized void adjustSoftwareVolume(int i) {
 		//deprecated, does the same as setPlaybackGain().
@@ -750,6 +796,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void setVideoPolicy(boolean autoInitiate, boolean autoAccept) {
 		setVideoPolicy(nativePtr, autoInitiate, autoAccept);
 	}
+	private native boolean getVideoAutoInitiatePolicy(long nativePtr);
+	public synchronized boolean getVideoAutoInitiatePolicy() {
+		return getVideoAutoInitiatePolicy(nativePtr);
+	}
+	private native boolean getVideoAutoAcceptPolicy(long nativePtr);
+	public synchronized boolean getVideoAutoAcceptPolicy() {
+		return getVideoAutoAcceptPolicy(nativePtr);
+	}
+	
 	private native void setStaticPicture(long nativePtr, String path);
 	public synchronized void setStaticPicture(String path) {
 		setStaticPicture(nativePtr, path);
@@ -858,14 +913,32 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setPrimaryContact(nativePtr, displayName, username);
 	}
 	
+	public synchronized String getPrimaryContactUsername() {
+		return getPrimaryContactUsername(nativePtr);
+	}
+	
+	public synchronized String getPrimaryContactDisplayName() {
+		return getPrimaryContactDisplayName(nativePtr);
+	}
+	
 	private native void setUseSipInfoForDtmfs(long ptr, boolean use);
 	public synchronized void setUseSipInfoForDtmfs(boolean use) {
 		setUseSipInfoForDtmfs(nativePtr, use);
 	}
 	
+	private native boolean getUseSipInfoForDtmfs(long ptr);
+	public synchronized boolean getUseSipInfoForDtmfs() {
+		return getUseSipInfoForDtmfs(nativePtr);
+	}
+	
 	private native void setUseRfc2833ForDtmfs(long ptr, boolean use);
 	public synchronized void setUseRfc2833ForDtmfs(boolean use) {
 		setUseRfc2833ForDtmfs(nativePtr, use);
+	}
+	
+	private native boolean getUseRfc2833ForDtmfs(long ptr);
+	public synchronized boolean getUseRfc2833ForDtmfs() {
+		return getUseRfc2833ForDtmfs(nativePtr);
 	}
 
 	private native long getConfig(long ptr);
@@ -947,5 +1020,65 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public int getVideoDscp() {
 		return getVideoDscp(nativePtr);
+	}
+	
+	private native long createInfoMessage(long nativeptr);
+	@Override
+	public LinphoneInfoMessage createInfoMessage() {
+		return new LinphoneInfoMessageImpl(createInfoMessage(nativePtr));
+	}
+	
+	private native Object subscribe(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, byte data [], String encoding);
+	@Override
+	public LinphoneEvent subscribe(LinphoneAddress resource, String eventname,
+			int expires, LinphoneContent content) {
+		return (LinphoneEvent)subscribe(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getData() : null,
+						content!=null ? content.getEncoding() : null);
+	}
+	private native Object publish(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, byte data [], String encoding);
+	@Override
+	public LinphoneEvent publish(LinphoneAddress resource, String eventname,
+			int expires, LinphoneContent content) {
+		return (LinphoneEvent)publish(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getData() : null,
+						content!=null ? content.getEncoding() : null);
+	}
+	
+	public void setChatDatabasePath(String path) {
+		setChatDatabasePath(nativePtr, path);
+	}
+	
+	public synchronized LinphoneChatRoom[] getChatRooms() {
+		long[] typesPtr = getChatRooms(nativePtr);
+		if (typesPtr == null) return null;
+		
+		LinphoneChatRoom[] proxies = new LinphoneChatRoom[typesPtr.length];
+
+		for (int i=0; i < proxies.length; i++) {
+			proxies[i] = new LinphoneChatRoomImpl(typesPtr[i]);
+		}
+
+		return proxies;
+	}
+	public LinphoneAuthInfo[] getAuthInfosList() {
+		long[] typesPtr = getAuthInfosList(nativePtr);
+		if (typesPtr == null) return null;
+		
+		LinphoneAuthInfo[] authInfos = new LinphoneAuthInfo[typesPtr.length];
+
+		for (int i=0; i < authInfos.length; i++) {
+			authInfos[i] = new LinphoneAuthInfoImpl(typesPtr[i]);
+		}
+
+		return authInfos;
+	}
+	
+	public LinphoneAuthInfo findAuthInfo(String username, String realm, String domain) {
+		long ptr = findAuthInfos(nativePtr, username, realm, domain);
+		if (ptr == 0)
+			return null;
+		
+		return new LinphoneAuthInfoImpl(ptr);
 	}
 }

@@ -38,19 +38,19 @@
 /* #def HAVE_EXOSIP_DSCP */
 
 /* Defined when eXosip_get_version is available */
-#define HAVE_EXOSIP_GET_VERSION
+/* #undef HAVE_EXOSIP_GET_VERSION */
 
 /* Defined when eXosip_reset_transports is available */
-#define HAVE_EXOSIP_RESET_TRANSPORTS
+/* #undef HAVE_EXOSIP_RESET_TRANSPORTS */
 
 /* Defined when eXosip_tls_verify_certificate is available */
-#define HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE 
+/* #undef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE */
 
 /* Defined when eXosip_tls_verify_certificate is available */
 /* #undef HAVE_EXOSIP_TLS_VERIFY_CN */
 
 /* Defined when eXosip_get_socket is available */
-#define HAVE_EXOSIP_TRYLOCK
+/* #undef HAVE_EXOSIP_TRYLOCK */
 
 /* If present, the getenv function allows fim to read environment variables.
    */
