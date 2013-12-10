@@ -28,7 +28,7 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(notify,belle_sip_header_from_t);
 		contact_info=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
 		op->base.root->callbacks.convert_presence_to_xml_requested(op, presence, contact_info, &content);
-		ms_free(contact_info);
+		belle_sip_free(contact_info);
 		if (content == NULL) return;
 	}
 
