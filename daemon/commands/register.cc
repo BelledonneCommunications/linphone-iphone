@@ -36,7 +36,8 @@ void RegisterCommand::exec(Daemon *app, const char *args) {
 		if (password[0] != '\0') {
 			LinphoneAddress *from = linphone_address_new(identity);
 			if (from != NULL) {
-				LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from), userid, password, NULL, realm); /*create authentication structure from identity*/
+				LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from),
+																userid, password, NULL, realm, NULL);
 				linphone_core_add_auth_info(lc, info); /*add authentication info to LinphoneCore*/
 				linphone_address_destroy(from);
 				linphone_auth_info_destroy(info);
