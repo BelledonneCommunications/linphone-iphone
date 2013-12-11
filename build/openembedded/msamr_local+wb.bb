@@ -4,7 +4,6 @@ S = "${WORKDIR}/msamr-0.0.2"
 
 do_configure_prepend () {
         ./autogen.sh
-        libtoolize --copy --force
 }
 
 OVERRIDES_append = ":wideband"
