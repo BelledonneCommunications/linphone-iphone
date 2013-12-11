@@ -1,0 +1,14 @@
+diff -urN a/library/Makefile b/library/Makefile
+--- a/library/Makefile	2013-07-29 17:26:14.000000000 +0200
++++ b/library/Makefile	2013-07-29 17:26:58.000000000 +0200
+@@ -26,7 +26,9 @@
+ 
+ DLEXT=so
+ # OSX shared library extension:
+-# DLEXT=dylib
++ifdef DARWIN 
++DLEXT=dylib
++endif
+ 
+ # Windows shared library extension:
+ ifdef WINDOWS
