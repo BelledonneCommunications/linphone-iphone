@@ -79,8 +79,10 @@ AM_CFLAGS=$(READLINE_CFLAGS) -DIN_LINPHONE $(STRICT_OPTIONS)
 AM_CXXFLAGS=$(READLINE_CXXFLAGS) -DIN_LINPHONE $(STRICT_OPTIONS)
 
 INCLUDES = \
-	-I$(top_srcdir)\
-	-I$(top_srcdir)/coreapi\
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/coreapi \
+	-I$(top_srcdir)/include \
 	$(ORTP_CFLAGS) \
-	$(MEDIASTREAMER_CFLAGS)
+	$(MEDIASTREAMER_CFLAGS) \
+	$(BELLESIP_CFLAGS)
 
