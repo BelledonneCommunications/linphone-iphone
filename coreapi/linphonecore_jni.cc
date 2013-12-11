@@ -1435,6 +1435,7 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_edit(JNIEnv* env,
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_done(JNIEnv* env,jobject thiz,jlong proxyCfg) {
 	linphone_proxy_config_done((LinphoneProxyConfig*)proxyCfg);
 }
+
 extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhoneNumber(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jnumber) {
 	if (jnumber == 0) {
 		ms_error("cannot normalized null number");
