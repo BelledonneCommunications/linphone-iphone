@@ -6,7 +6,7 @@ SECTION_linphonec =  "console/network"
 
 SRC_URI_append_igep0020 = " file://alsa_8khz.patch"
 
-DEPENDS = "intltool-native readline libosip2 libexosip2 speex alsa-lib spandsp"
+DEPENDS = "intltool-native readline speex alsa-lib spandsp belle-sip"
 DEPENDS_append_video = " libxv ffmpeg libv4l"
 DEPENDS_append_gtk = " gtk+"
 DEPENDS_append_gsm = " libgsm"
@@ -15,7 +15,7 @@ DEPENDS_${PN}_append_gsm = " libgsm"
 DEPENDS_${PN}_append_gtk = " gtk+"
 DEPENDS_${PN}_append_video = " libxv"
 DEPENDS_${PN}c = "liblinphone readline"
-DEPENDS_liblinphone = "libmediastreamer libortp libosip2 libexosip2"
+DEPENDS_liblinphone = "libmediastreamer libortp belle-sip"
 DEPENDS_libmediastreamer = "speex alsa-lib libortp"
 DEPENDS_libmediastreamer_append_video = " ffmpeg libv4l"
 
