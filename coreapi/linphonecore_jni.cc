@@ -1397,10 +1397,25 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getProxy(JNIEn
 	}
 }
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setContactParameters(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jparams) {
-	const char* params = env->GetStringUTFChars(jparams, NULL);
+	const char* params = jparams ? env->GetStringUTFChars(jparams, NULL) : NULL;
 	linphone_proxy_config_set_contact_parameters((LinphoneProxyConfig*)proxyCfg, params);
-	env->ReleaseStringUTFChars(jparams, params);
+	if (jparams) env->ReleaseStringUTFChars(jparams, params);
 }
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setContactUriParameters(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jparams) {
+	const char* params = jparams ? env->GetStringUTFChars(jparams, NULL) : NULL;
+	linphone_proxy_config_set_contact_uri_parameters((LinphoneProxyConfig*)proxyCfg, params);
+	if (jparams) env->ReleaseStringUTFChars(jparams, params);
+}
+extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getContactParameters(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	const char* params = linphone_proxy_config_get_contact_parameters((LinphoneProxyConfig*)proxyCfg);
+	return params ? env->NewStringUTF(params) : NULL;
+}
+extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getContactUriParameters(JNIEnv* env,jobject thiz,jlong proxyCfg) {
+	const char* params = linphone_proxy_config_get_contact_uri_parameters((LinphoneProxyConfig*)proxyCfg);
+	return params ? env->NewStringUTF(params) : NULL;
+}
+
+
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
 	if (jroute != NULL) {
 		const char* route = env->GetStringUTFChars(jroute, NULL);

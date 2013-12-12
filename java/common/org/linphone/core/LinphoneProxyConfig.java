@@ -166,10 +166,34 @@ public interface LinphoneProxyConfig {
 	
 	
 	/**
-	 * Sets parameters for the contact
-	 * @param parameters to add
+	 * Set optional contact parameters that will be added to the contact information sent in the registration.
+	 * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+	 *
+	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or android push id.
+	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421>;android-push-id=43143-DFE23F-2323-FA2232.
+	**/
+	public void setContactParameters(String contact_params);
+	
+	/**
+	 * Get the contact's parameters.
+	 * @return
 	 */
-	public void setContactParameters(String params);
+	public String getContactParameters();
+	
+	/**
+	 * Set optional contact parameters that will be added to the contact information sent in the registration, inside the URI.
+	 * @param params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+	 *
+	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
+	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
+	**/
+	public void setContactUriParameters(String params);
+	
+	/**
+	 * Get the contact's uri parameters.
+	 * @return
+	 */
+	public String getContactUriParameters();
 	
 	/**
 	 * Return the international prefix for the given country

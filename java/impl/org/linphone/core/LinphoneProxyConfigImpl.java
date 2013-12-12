@@ -187,4 +187,22 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public int getPrivacy() {
 		return getPrivacy(nativePtr);
 	}
+	
+	private native String getContactParameters(long ptr);
+	@Override
+	public String getContactParameters() {
+		return getContactParameters(nativePtr);
+	}
+	
+	private native void setContactUriParameters(long ptr, String params);
+	@Override
+	public void setContactUriParameters(String params) {
+		setContactUriParameters(nativePtr,params);
+	}
+	
+	private native String getContactUriParameters(long ptr);
+	@Override
+	public String getContactUriParameters() {
+		return getContactUriParameters(nativePtr);
+	}
 }
