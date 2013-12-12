@@ -1896,7 +1896,7 @@ void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presen
 		if ((model == NULL) || (model->services == NULL)) {
 			err = write_xml_presence_service(writer, NULL, contact);
 		} else {
-			struct _presence_service_obj_st st;
+			struct _presence_service_obj_st st={0};
 			st.writer = writer;
 			st.contact = contact;
 			st.err = &err;
@@ -1904,13 +1904,13 @@ void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presen
 		}
 	}
 	if ((err >= 0) && (model != NULL)) {
-		struct _presence_person_obj_st st;
+		struct _presence_person_obj_st st={0};
 		st.writer = writer;
 		st.err = &err;
 		ms_list_for_each2(model->persons, (MSIterate2Func)write_xml_presence_person_obj, &st);
 	}
 	if ((err >= 0) && (model != NULL)) {
-		struct _presence_note_obj_st st;
+		struct _presence_note_obj_st st={0};
 		st.writer = writer;
 		st.ns = NULL;
 		st.err = &err;
@@ -1923,12 +1923,11 @@ void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presen
 	if (err >= 0) {
 		err = xmlTextWriterEndDocument(writer);
 	}
-
-	xmlFreeTextWriter(writer);
 	if (err > 0) {
 		/* xmlTextWriterEndDocument returns the size of the content. */
 		*content = ms_strdup((char *)buf->content);
 	}
+	xmlFreeTextWriter(writer);
 	xmlBufferFree(buf);
 }
 
