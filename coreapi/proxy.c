@@ -88,6 +88,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->op) sal_op_release(obj->op);
 	if (obj->publish_op) sal_op_release(obj->publish_op);
 	if (obj->contact_params) ms_free(obj->contact_params);
+	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	ms_free(obj);
 }
 
@@ -280,69 +281,37 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj){
 LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	LinphoneAddress *ret=NULL;
 	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
-
 	const char *host;
+	
 	if (proxy==NULL) return NULL;
-	host=linphone_address_get_domain (proxy);
+	host=linphone_address_get_domain(proxy);
 	if (host!=NULL){
 		int localport = -1;
 		const char *localip = NULL;
-		char *tmp;
-		char *tmp2;
-		LinphoneAddress *identity;
-		LinphoneAddress *contact;
+		LinphoneAddress *contact=linphone_address_new(obj->reg_identity);
 
 		if (obj->contact_params) {
 			// We want to add a list of contacts params to the linphone address
-			// We remove the display name in the identity (if present) to prevent a failure in the parsing of the address due to the quotes
-			identity = linphone_address_new(obj->reg_identity);
-			if (identity) {
-				tmp2 = linphone_address_as_string_uri_only(identity);
-				tmp = ms_strdup_printf("%s;%s", tmp2, obj->contact_params);
-				linphone_address_destroy(identity);
-				ms_free(tmp2);
-			} else {
-				tmp = ms_strdup_printf("%s;%s", obj->reg_identity, obj->contact_params);
-			}
+			sal_address_set_params(contact,obj->contact_params);
 		}
-		else {
-			tmp = strdup(obj->reg_identity);
+		if (obj->contact_uri_params){
+			sal_address_set_uri_params(contact,obj->contact_uri_params);
 		}
-		
-		contact = linphone_address_new(tmp);
-		if (!contact) {
-			ms_error("No valid contact_params for [%s]",linphone_address_get_domain(proxy));
-			return NULL;
-		}
-
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
 			LCSipTransports tr;
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
-			linphone_core_get_sip_transports(obj->lc,&tr);
-			if (tr.udp_port <= 0) {
-				if (tr.tcp_port>0) {
-					sal_address_set_param(contact,"transport","tcp");
-				} else if (tr.tls_port>0) {
-					sal_address_set_param(contact,"transport","tls");
-				}
-			}
-
 		}
 #endif //BUILD_UPNP
-
-
 		linphone_address_set_port(contact,localport);
 		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
 
 		ret=contact;
-
-		linphone_address_destroy (proxy);
-		ms_free(tmp);
 	}
+	linphone_address_destroy(proxy);
 	return ret;
 }
 
@@ -911,7 +880,7 @@ bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj){
  * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
  *
  * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
- * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
+ * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421>;apple-push-id=43143-DFE23F-2323-FA2232.
 **/
 void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params){
 	if (obj->contact_params) {
@@ -924,10 +893,35 @@ void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, cons
 }
 
 /**
+ * Set optional contact parameters that will be added to the contact information sent in the registration, inside the URI.
+ * @param obj the proxy config object
+ * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+ *
+ * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
+ * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
+**/
+void linphone_proxy_config_set_contact_uri_parameters(LinphoneProxyConfig *obj, const char *contact_uri_params){
+	if (obj->contact_uri_params) {
+		ms_free(obj->contact_uri_params);
+		obj->contact_uri_params=NULL;
+	}
+	if (contact_uri_params){
+		obj->contact_uri_params=ms_strdup(contact_uri_params);
+	}
+}
+
+/**
  * Returns previously set contact parameters.
 **/
 const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj){
 	return obj->contact_params;
+}
+
+/**
+ * Returns previously set contact URI parameters.
+**/
+const char *linphone_proxy_config_get_contact_uri_parameters(const LinphoneProxyConfig *obj){
+	return obj->contact_uri_params;
 }
 
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj){
@@ -1059,6 +1053,9 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->contact_params!=NULL){
 		lp_config_set_string(config,key,"contact_parameters",obj->contact_params);
 	}
+	if (obj->contact_uri_params!=NULL){
+		lp_config_set_string(config,key,"contact_uri_parameters",obj->contact_uri_params);
+	}
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
@@ -1095,6 +1092,8 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
 	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
+	
+	linphone_proxy_config_set_contact_uri_parameters(cfg,lp_config_get_string(config,key,"contact_uri_parameters",NULL));
 	
 	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",LP_CONFIG_DEFAULT_INT(config,"reg_expires",600)));
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));

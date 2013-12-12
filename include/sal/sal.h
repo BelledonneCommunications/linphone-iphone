@@ -94,12 +94,7 @@ const char* sal_address_get_transport_name(const SalAddress* addr);
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
 void sal_address_set_domain(SalAddress *addr, const char *host);
-#ifdef USE_BELLESIP
 void sal_address_set_port(SalAddress *uri, int port);
-#else
-void sal_address_set_port(SalAddress *addr, const char *port);
-void sal_address_set_port_int(SalAddress *uri, int port);
-#endif
 void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);
@@ -107,6 +102,8 @@ void sal_address_destroy(SalAddress *u);
 void sal_address_set_param(SalAddress *u,const char* name,const char* value);
 void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 void sal_address_set_transport_name(SalAddress* addr,const char* transport);
+void sal_address_set_params(SalAddress *addr, const char *params);
+void sal_address_set_uri_params(SalAddress *addr, const char *params);
 
 Sal * sal_init();
 void sal_uninit(Sal* sal);

@@ -392,6 +392,7 @@ struct _LinphoneProxyConfig
 	char *reg_route;
 	char *realm;
 	char *contact_params;
+	char *contact_uri_params;
 	int expires;
 	SalOp *op;
 	char *type;

@@ -150,6 +150,17 @@ void sal_address_set_param(SalAddress *addr,const char* name,const char* value){
 	return ;
 }
 
+
+void sal_address_set_params(SalAddress *addr, const char *params){
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(addr);
+	belle_sip_parameters_set(parameters,params);
+}
+
+void sal_address_set_uri_params(SalAddress *addr, const char *params){
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)));
+	belle_sip_parameters_set(parameters,params);
+}
+
 void sal_address_set_transport(SalAddress* addr,SalTransport transport){
 	if (!sal_address_is_secure(addr)){
 		SAL_ADDRESS_SET(addr,transport_param,sal_transport_to_string(transport));
