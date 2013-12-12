@@ -481,7 +481,7 @@ static void io_recv_error_late_recovery(){
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 	sal_set_send_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+3000));
 
 	linphone_core_manager_destroy(mgr);
 }

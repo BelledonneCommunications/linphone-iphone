@@ -320,11 +320,8 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
 		LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
 		char* proxy_string;
-#ifndef USE_BELLESIP
-		char *contact;
-#else
 		LinphoneAddress *contact;
-#endif
+
 		proxy_string=linphone_address_as_string_uri_only(proxy);
 		linphone_address_destroy(proxy);
 		if (obj->op)
@@ -332,11 +329,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		obj->op=sal_op_new(obj->lc->sal);
 		if ((contact=guess_contact_for_register(obj))) {
 			sal_op_set_contact(obj->op,contact);
-#ifndef USE_BELLESIP
-			ms_free(contact);
-#else
 			linphone_address_destroy(contact);
-#endif
 		}
 		sal_op_set_user_pointer(obj->op,obj);
 		if (sal_register(obj->op,proxy_string,obj->reg_identity,obj->expires)==0) {
