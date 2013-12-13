@@ -39,7 +39,7 @@ class Daemon;
 class DaemonCommandExample {
 public:
 	DaemonCommandExample(const char *command, const char *output);
-	~DaemonCommandExample() {};
+	~DaemonCommandExample() {}
 	const std::string &getCommand() const {
 		return mCommand;
 	}
@@ -53,8 +53,7 @@ private:
 
 class DaemonCommand {
 public:
-	virtual ~DaemonCommand() {
-	};
+	virtual ~DaemonCommand() {}
 	virtual void exec(Daemon *app, const char *args)=0;
 	bool matches(const char *name) const;
 	const std::string getHelp() const;
