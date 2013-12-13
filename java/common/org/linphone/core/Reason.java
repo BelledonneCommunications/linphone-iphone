@@ -48,7 +48,15 @@ public class Reason {
 	 * Operation not authorized because no credentials found
 	 * */
 	static public Reason Unauthorized = new Reason(10,"Unauthorized");
-		
+	/**
+	 * Operation was rejected by remote, for example a LinphoneCore.updateCall()
+	 */
+	static public Reason NotAcceptable = new Reason(11,"NotAcceptable");
+	/**
+	 * Operation was rejected by remote due to request unmatched to any context.
+	 */
+	static public Reason NoMatch = new Reason(12,"NoMatch");
+	
 	protected final int mValue;
 	private final String mStringValue;
 
