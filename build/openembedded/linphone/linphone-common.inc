@@ -24,6 +24,8 @@ PROVIDES_gtk = "linphone linphonec liblinphone libmediastreamer libortp"
 
 inherit autotools pkgconfig gettext
 
+INSANE_SKIP_linphone += "dev-deps"
+INSANE_SKIP_liblinphone += "dev-deps"
 
 LINPHONE_OE_ENABLE_TESTS = "--disable-tests"
 LINPHONE_OE_ENABLE_VIDEO = "--disable-video"

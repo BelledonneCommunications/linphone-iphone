@@ -18,7 +18,7 @@ do_fetch_prepend () {
     os.system("mkdir -p ${LINPHONE_TMP_DIR}")
 
     bb.note("Hack cloning linphone !recursively")
-    os.system("cd ${LINPHONE_TMP_DIR}; git clone --depth 1 --recursive ${L_GIT_SRC_URI} linphone")
+    os.system("cd ${LINPHONE_TMP_DIR}; git clone --recursive ${L_GIT_SRC_URI} linphone")
 
     bb.note("Hack launching autogen.sh manually")
     os.system("cd ${LINPHONE_TMP_DIR}/linphone; ./autogen.sh")
