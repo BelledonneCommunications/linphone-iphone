@@ -1108,6 +1108,8 @@ static void on_expire(SalOp *op){
 	
 	if (linphone_event_get_publish_state(lev)==LinphonePublishOk){
 		linphone_event_set_publish_state(lev,LinphonePublishExpiring);
+	}else if (linphone_event_get_subscription_state(lev)==LinphoneSubscriptionActive){
+		linphone_event_set_state(lev,LinphoneSubscriptionExpiring);
 	}
 }
 

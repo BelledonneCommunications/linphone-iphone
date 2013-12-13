@@ -52,6 +52,8 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 	if (status_code>=200){
 		sal_compute_sal_errors_from_code(status_code,&error,&sr);
 		op->base.root->callbacks.subscribe_response(op,sss,error,sr);
+	}else if (status_code==0){
+		op->base.root->callbacks.on_expire(op);
 	}
 	
 }

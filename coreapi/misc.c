@@ -1244,6 +1244,8 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonUnauthorized;
 		case LinphoneReasonNotAcceptable:
 			return SalReasonNotAcceptable;
+		case LinphoneReasonNoMatch:
+			return SalReasonNoMatch;
 	}
 	return SalReasonUnknown;
 }
@@ -1289,6 +1291,9 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			break;
 		case SalReasonNotAcceptable:
 			ret=LinphoneReasonNotAcceptable;
+		break;
+		case SalReasonNoMatch:
+			ret=LinphoneReasonNoMatch;
 		break;
 	}
 	return ret;

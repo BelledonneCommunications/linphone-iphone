@@ -5916,6 +5916,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Unauthorized";
 		case LinphoneReasonNotAcceptable:
 			return "Not acceptable here";
+		case LinphoneReasonNoMatch:
+			return "No match";
 	}
 	return "unknown error";
 }

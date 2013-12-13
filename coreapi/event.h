@@ -57,7 +57,8 @@ enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionPending, /**<Subscription is pending, waiting for user approval*/
 	LinphoneSubscriptionActive, /**<Subscription is accepted.*/
 	LinphoneSubscriptionTerminated, /**<Subscription is terminated normally*/
-	LinphoneSubscriptionError /**<Subscription encountered an error, indicated by linphone_event_get_reason()*/
+	LinphoneSubscriptionError, /**<Subscription encountered an error, indicated by linphone_event_get_reason()*/
+	LinphoneSubscriptionExpiring, /**<Subscription is about to expire, only sent if [sip]->refresh_generic_subscribe property is set to 0.*/
 };
 
 /**
@@ -72,7 +73,7 @@ LINPHONE_PUBLIC const char *linphone_subscription_state_to_string(LinphoneSubscr
 **/
 enum _LinphonePublishState{
 	LinphonePublishNone, /**< Initial state, do not use**/
-	LinphonePublishProgress, /**<An outgoing subcription was created*/
+	LinphonePublishProgress, /**<An outgoing publish was created and submitted*/
 	LinphonePublishOk, /**<Publish is accepted.*/
 	LinphonePublishError, /**<Publish encoutered an error, linphone_event_get_reason() gives reason code*/
 	LinphonePublishExpiring, /**<Publish is about to expire, only sent if [sip]->refresh_generic_publish property is set to 0.*/

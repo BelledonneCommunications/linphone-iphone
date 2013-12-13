@@ -358,6 +358,9 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonNotAcceptable:
 			ret=488;
 			break;
+		case SalReasonNoMatch:
+			ret=481;
+			break;
 	}
 	return ret;
 }
@@ -391,6 +394,9 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonTemporarilyUnavailable;
 		break;
+	case 481:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonNoMatch;
 	case 486:
 		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonBusy;

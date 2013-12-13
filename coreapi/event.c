@@ -40,6 +40,7 @@ const char *linphone_subscription_state_to_string(LinphoneSubscriptionState stat
 		case LinphoneSubscriptionActive: return "LinphoneSubscriptionActive";
 		case LinphoneSubscriptionTerminated: return "LinphoneSubscriptionTerminated";
 		case LinphoneSubscriptionError: return "LinphoneSubscriptionError";
+		case LinphoneSubscriptionExpiring: return "LinphoneSubscriptionExpiring";
 	}
 	return NULL;
 }
@@ -124,6 +125,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event);
 	SalBody salbody;
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
+	sal_op_set_manual_refresher_mode(lev->op,lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
 	lev->resource_addr=linphone_address_clone(resource);
 	lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
 	sal_subscribe(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));

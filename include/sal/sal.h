@@ -284,7 +284,8 @@ typedef enum SalReason{
 	SalReasonServiceUnavailable,
 	SalReasonRequestPending,
 	SalReasonUnauthorized,
-	SalReasonNotAcceptable
+	SalReasonNotAcceptable,
+	SalReasonNoMatch /*equivalent to 481 Transaction/Call leg does not exist*/
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);

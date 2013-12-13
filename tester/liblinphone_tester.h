@@ -163,6 +163,7 @@ typedef struct _stats {
 	int number_of_LinphoneSubscriptionActive;
 	int number_of_LinphoneSubscriptionTerminated;
 	int number_of_LinphoneSubscriptionError;
+	int number_of_LinphoneSubscriptionExpiring;
 
 	int number_of_LinphonePublishProgress;
 	int number_of_LinphonePublishOk;
