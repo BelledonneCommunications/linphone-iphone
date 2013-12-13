@@ -2364,21 +2364,39 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
-	if (call->refer_pending){
-		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
-		LinphoneCall *newcall;
-		cp->has_video = call->current_params.has_video; /*start the call to refer-target with video enabled if original call had video*/
-		cp->referer=call;
-		ms_message("Starting new call to refered address %s",call->refer_to);
-		call->refer_pending=FALSE;
-		newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
-		linphone_call_params_destroy(cp);
-		if (newcall) {
-			call->transfer_target=linphone_call_ref(newcall);
-			linphone_core_notify_refer_state(lc,call,newcall);
-		}
+/**
+ * Start a new call as a consequence of a transfer request received from a call.
+ * This function is for advanced usage: the execution of transfers is automatically managed by the LinphoneCore. However if an application
+ * wants to have control over the call parameters for the new call, it should call this function immediately during the LinphoneCallRefered notification.
+ * @see LinphoneCoreVTable::call_state_changed 
+ * @param lc the LinphoneCore
+ * @param call a call that has just been notified about LinphoneCallRefered state event.
+ * @param params the call parameters to be applied to the new call.
+ * @return a LinphoneCall corresponding to the new call that is attempted to the transfer destination.
+**/
+LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+	LinphoneCallParams *cp=params ? linphone_call_params_copy(params) : linphone_core_create_default_call_parameters(lc);
+	LinphoneCall *newcall;
+	
+	if (call->state!=LinphoneCallPaused){
+		ms_message("Automatically pausing current call to accept transfer.");
+		_linphone_core_pause_call(lc,call);
+		call->was_automatically_paused=TRUE;
 	}
+	
+	if (!params){
+		cp->has_video = call->current_params.has_video; /*start the call to refer-target with video enabled if original call had video*/
+	}
+	cp->referer=call;
+	ms_message("Starting new call to refered address %s",call->refer_to);
+	call->refer_pending=FALSE;
+	newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
+	linphone_call_params_destroy(cp);
+	if (newcall) {
+		call->transfer_target=linphone_call_ref(newcall);
+		linphone_core_notify_refer_state(lc,call,newcall);
+	}
+	return newcall;
 }
 
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall){

@@ -137,9 +137,11 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	
-	
 	lcs=ms_list_append(lcs,pauline->lc);
 
+	if (refresh_type==ManualRefresh){
+		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+	}
 
 	content.type="application";
 	content.subtype="somexml";
@@ -212,7 +214,7 @@ static void publish_test_with_args(bool_t refresh){
 	content.data=(char*)subscribe_content;
 	content.size=strlen(subscribe_content);
 	
-	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",!refresh);
+	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
 
 	lev=linphone_core_publish(marie->lc,pauline->identity,"dodo",5,&content);
 	linphone_event_ref(lev);

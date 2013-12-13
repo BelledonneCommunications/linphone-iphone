@@ -1286,6 +1286,8 @@ LINPHONE_PUBLIC	int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *
 
 LINPHONE_PUBLIC	int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest);
 
+LINPHONE_PUBLIC LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+
 LINPHONE_PUBLIC	bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
 LINPHONE_PUBLIC bool_t linphone_core_in_call(const LinphoneCore *lc);
