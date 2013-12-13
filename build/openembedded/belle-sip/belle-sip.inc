@@ -1,18 +1,18 @@
 DESCRIPTION = "SIP stack from Belledonne Communications"
 LICENSE = "GPL"
 
-RECIPE_TYPES = "machine native"
+DEPENDS = "polarssl antlr3c"
+RDEPENDS = "antlr3c"
 
-DEPENDS = "polarssl antlr3c libm"
+EXTRA_OECONF += "--with-antlr=${STAGING_DIR_HOST}${layout_exec_prefix}/usr --with-polarssl=${STAGING_DIR_HOST}${layout_exec_prefix}/usr"
+INSANE_SKIP_belle-sip += "dev-deps"
 
-EXTRA_OECONF += "--with-antlr=${BUILD_SYSROOT}${target_prefix} --with-polarssl=${BUILD_SYSROOT}${target_prefix}"
-
-inherit autotools-autoreconf pkgconfig library c
+inherit autotools pkgconfig
 
 do_autoreconf () {
-	./autogen.sh
+    ./autogen.sh
 }
 
 DEPENDS_${PN} += "${DEPENDS}"
-RDEPENDS_${PN} += "${DEPENDS}"
-RDEPENDS_${PN}-dev += "polarssl-dev antlr3c-dev"
+RDEPENDS_${PN} += "${RDEPENDS}"
+

@@ -30,6 +30,8 @@ LINPHONE_OE_ENABLE_VIDEO = "--disable-video"
 LINPHONE_OE_ENABLE_VIDEO_video = "--with-ffmpeg=${STAGING_DIR_HOST}${layout_exec_prefix} --enable-video"
 LINPHONE_OE_ENABLE_X11 = "--disable-x11 --disable-xv"
 LINPHONE_OE_ENABLE_X11_x11 = ""
+LINPHONE_OE_ENABLE_GL = "--disable-glx"
+LINPHONE_OE_ENABLE_GL_gl = ""
 
 LINPHONE_OE_ENABLE_CONSOLE_UI = "no"
 LINPHONE_OE_ENABLE_CONSOLE_UI_console = "yes"
@@ -38,13 +40,14 @@ LINPHONE_OE_ENABLE_GTK_UI = "no"
 LINPHONE_OE_ENABLE_GTK_UI_gtk = "yes"
 
 do_install_append(){
-        install -d ${D}${bindir}
+  install -d ${D}${bindir}
 }
 
 EXTRA_OECONF = " \
                 ${LINPHONE_OE_ENABLE_TESTS} \
                 ${LINPHONE_OE_ENABLE_VIDEO} \
                 ${LINPHONE_OE_ENABLE_X11} \
+                ${LINPHONE_OE_ENABLE_GL} \
                 --enable-alsa \
                 --with-osip=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-readline=${STAGING_DIR_HOST}${layout_exec_prefix} \
