@@ -1081,4 +1081,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 		
 		return new LinphoneAuthInfoImpl(ptr);
 	}
+	private native LinphoneCall startReferedCall(long corePtr, long callptr, long paramsPtr);
+	@Override
+	public LinphoneCall startReferedCall(LinphoneCall call,
+			LinphoneCallParams params) {
+		long ptrParams =((LinphoneCallParamsImpl)params).nativePtr;
+		return startReferedCall(nativePtr, getCallPtr(call), ptrParams);
+	}
 }

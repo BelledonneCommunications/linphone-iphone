@@ -367,7 +367,6 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);
-void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;

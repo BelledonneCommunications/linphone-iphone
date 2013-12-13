@@ -1088,6 +1088,16 @@ public interface LinphoneCore {
 	 * @param dest a running call whose remote person will receive the transfer
 	**/
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
+	
+	/**
+	 * Start a new call as a consequence of a transfer request received from a call.
+	 * This function is for advanced usage: the execution of transfers is automatically managed by the LinphoneCore. However if an application
+	 * wants to have control over the call parameters for the new call, it should call this function immediately during the LinphoneCallRefered notification.
+	 * @param call a call that has just been notified about LinphoneCallRefered state event.
+	 * @param params the call parameters to be applied to the new call.
+	 * @return a LinphoneCall corresponding to the new call that is attempted to the transfer destination.
+	**/
+	LinphoneCall startReferedCall(LinphoneCall call, LinphoneCallParams params);
 	/**
 	 * Search from the list of current calls if a remote address match uri
 	 * @param uri which should match call remote uri
