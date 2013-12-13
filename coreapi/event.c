@@ -125,7 +125,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event);
 	SalBody salbody;
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
-	sal_op_set_manual_refresher_mode(lev->op,lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
+	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
 	lev->resource_addr=linphone_address_clone(resource);
 	lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
 	sal_subscribe(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
@@ -189,7 +189,7 @@ LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *re
 	int err;
 	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event);
 	linphone_configure_op(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0));
-	sal_op_set_manual_refresher_mode(lev->op,lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
+	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	err=sal_publish(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
 	if (err==0){
 		linphone_event_set_publish_state(lev,LinphonePublishProgress);
