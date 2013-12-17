@@ -501,12 +501,32 @@ void linphone_call_create_op(LinphoneCall *call){
 	/*else privacy might be set by proxy */
 }
 
+/*
+ * Choose IP version we are going to use for RTP socket.
+ * The algorithm is as follows:
+ * - if ipv6 is disabled at the core level, it is always AF_INET
+ * - Otherwise, if the destination address for the call is an IPv6 address, use IPv6. 
+ * - Otherwise, if the call is done through a known proxy config, then use the information obtained during REGISTER
+ * to know if IPv6 is supported by the server.
+**/
+static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, LinphoneAddress *to, LinphoneProxyConfig *cfg){
+	if (linphone_core_ipv6_enabled(call->core)){
+		call->af=AF_INET;
+		if (sal_address_is_ipv6((SalAddress*)to)){
+			call->af=AF_INET6;
+		}else if (cfg && cfg->op){
+			call->af=sal_op_is_ipv6(cfg->op) ? AF_INET6 : AF_INET;
+		}
+	}else call->af=AF_INET;
+}
+
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
-	linphone_core_get_local_ip(lc,NULL,call->localip);
+	linphone_call_outgoing_select_ip_version(call,to,cfg);
+	linphone_core_get_local_ip(lc,call->af,call->localip);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
 	
@@ -535,6 +555,12 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	return call;
 }
 
+static void linphone_call_incoming_select_ip_version(LinphoneCall *call){
+	if (linphone_core_ipv6_enabled(call->core)){
+		call->af=sal_op_is_ipv6(call->op) ? AF_INET6 : AF_INET;
+	}else call->af=AF_INET;
+}
+
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
@@ -544,7 +570,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	sal_op_set_user_pointer(op,call);
 	call->op=op;
 	call->core=lc;
-
+	linphone_call_incoming_select_ip_version(call);
 
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
@@ -565,7 +591,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	linphone_address_clean(from);
-	linphone_core_get_local_ip(lc,NULL,call->localip);
+	linphone_core_get_local_ip(lc,call->af,call->localip);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
@@ -1331,7 +1357,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	int dscp;
 
 	if (call->audiostream != NULL) return;
-	call->audiostream=audiostream=audio_stream_new(call->audio_port,call->audio_port+1,linphone_core_ipv6_enabled(lc));
+	call->audiostream=audiostream=audio_stream_new(call->audio_port,call->audio_port+1,call->af==AF_INET6);
 	dscp=linphone_core_get_audio_dscp(lc);
 	if (dscp!=-1)
 		audio_stream_set_dscp(audiostream,dscp);
@@ -1395,7 +1421,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		int dscp=linphone_core_get_video_dscp(lc);
 		const char *display_filter=linphone_core_get_video_display_filter(lc);
 		
-		call->videostream=video_stream_new(call->video_port,call->video_port+1,linphone_core_ipv6_enabled(lc));
+		call->videostream=video_stream_new(call->video_port,call->video_port+1,call->af==AF_INET6);
 		if (dscp!=-1)
 			video_stream_set_dscp(call->videostream,dscp);
 		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));

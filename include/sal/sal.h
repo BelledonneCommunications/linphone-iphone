@@ -104,6 +104,7 @@ void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 void sal_address_set_transport_name(SalAddress* addr,const char* transport);
 void sal_address_set_params(SalAddress *addr, const char *params);
 void sal_address_set_uri_params(SalAddress *addr, const char *params);
+bool_t sal_address_is_ipv6(SalAddress *addr);
 
 Sal * sal_init();
 void sal_uninit(Sal* sal);
@@ -556,6 +557,7 @@ const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
 
 void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled);
+bool_t sal_op_is_ipv6(SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

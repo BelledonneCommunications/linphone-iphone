@@ -637,12 +637,16 @@ static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addr
 }
 
 void linphone_core_resolve_stun_server(LinphoneCore *lc){
+	/*
+	 * WARNING: stun server resolution only done in IPv4.
+	 * TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
+	 */
 	const char *server=lc->net_conf.stun_server;
 	if (lc->sal && server){
 		char host[NI_MAXHOST];
 		int port=3478;
 		linphone_parse_host_port(server,host,sizeof(host),&port);
-		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_UNSPEC,(SalResolverCallback)stun_server_resolved,lc);
+		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_INET,(SalResolverCallback)stun_server_resolved,lc);
 	}
 }
 
@@ -685,8 +689,8 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	video_check_list = ice_session_check_list(call->ice_session, 1);
 	if (audio_check_list == NULL) return -1;
 
-	if (lc->sip_conf.ipv6_enabled){
-		ms_warning("stun support is not implemented for ipv6");
+	if (call->af==AF_INET6){
+		ms_warning("Ice gathering is not implemented for ipv6");
 		return -1;
 	}
 	ai=linphone_core_get_stun_server_addrinfo(lc);
@@ -1133,12 +1137,12 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	socklen_t s;
 
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=(type==AF_INET6) ? PF_INET6 : PF_INET;
+	hints.ai_family=type;
 	hints.ai_socktype=SOCK_DGRAM;
 	/*hints.ai_flags=AI_NUMERICHOST|AI_CANONNAME;*/
 	err=getaddrinfo(dest,"5060",&hints,&res);
 	if (err!=0){
-		ms_error("getaddrinfo() error: %s",gai_strerror(err));
+		ms_error("getaddrinfo() error for %s : %s",dest, gai_strerror(err));
 		return -1;
 	}
 	if (res==NULL){
@@ -1153,7 +1157,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	}
 	err=connect(sock,res->ai_addr,res->ai_addrlen);
 	if (err<0) {
-		ms_error("Error in connect: %s",strerror(errno));
+		/*the network isn't reachable*/
+		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));
  		freeaddrinfo(res);
  		close_socket(sock);
 		return -1;

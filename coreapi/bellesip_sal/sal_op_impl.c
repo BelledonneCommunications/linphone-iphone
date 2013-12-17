@@ -612,3 +612,29 @@ bool_t sal_op_is_secure(const SalOp* op) {
 void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled){
 	op->manual_refresher=enabled;
 }
+
+bool_t sal_op_is_ipv6(SalOp *op){
+	belle_sip_transaction_t *tr=NULL;
+	belle_sip_header_address_t *contact;
+	belle_sip_request_t *req;
+	
+	if (op->refresher)
+		tr=(belle_sip_transaction_t *)belle_sip_refresher_get_transaction(op->refresher);
+
+	if (tr==NULL)
+		tr=(belle_sip_transaction_t *)op->pending_client_trans;
+	if (tr==NULL)
+		tr=(belle_sip_transaction_t *)op->pending_server_trans;
+	
+	if (tr==NULL){
+		ms_error("Unable to determine IP version from signaling operation.");
+		return FALSE;
+	}
+	req=belle_sip_transaction_get_request(tr);
+	contact=(belle_sip_header_address_t*)belle_sip_message_get_header_by_type(req,belle_sip_header_contact_t);
+	if (!contact){
+		ms_error("Unable to determine IP version from signaling operation, no contact header found.");
+	}
+	return sal_address_is_ipv6((SalAddress*)contact);
+}
+

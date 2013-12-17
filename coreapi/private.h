@@ -154,6 +154,7 @@ struct _LinphoneCall
 {
 	int magic; /*used to distinguish from proxy config*/
 	struct _LinphoneCore *core;
+	int af; /*the address family to prefer for RTP path, guessed from signaling path*/
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	LinphoneCallDir dir;
@@ -263,7 +264,7 @@ int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
 void check_sound_device(LinphoneCore *lc);
-void linphone_core_get_local_ip(LinphoneCore *lc, const char *to, char *result);
+void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
