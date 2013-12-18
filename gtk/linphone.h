@@ -28,6 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "linphonecore.h"
 
+#ifdef BUILD_LDAP
+#include "ldap/ldapprovider.h"
+#endif
+
+
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # undef _
@@ -46,6 +51,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
 
+enum {
+	COMPLETION_HISTORY,
+	COMPLETION_LDAP
+};
+
 GdkPixbuf * create_pixbuf(const gchar *filename);
 GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);
@@ -63,6 +73,8 @@ void linphone_gtk_show_assistant(void);
 void linphone_gtk_close_assistant(void);
 
 LinphoneCore *linphone_gtk_get_core(void);
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
 GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);

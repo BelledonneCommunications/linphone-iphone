@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 
 void linphone_gtk_login_frame_connect_clicked(GtkWidget *button);
+void test_button_clicked_cb(GtkWidget *button);
 void linphone_gtk_exit_login_frame(void);
 
 enum {

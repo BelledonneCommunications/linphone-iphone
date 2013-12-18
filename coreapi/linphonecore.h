@@ -32,6 +32,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "lpconfig.h"
 
+#include <belle-sip/object.h>
+#include <belle-sip/dict.h>
+
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
@@ -118,6 +121,8 @@ typedef enum _LinphoneTransportType LinphoneTransportType;
  */
 typedef struct SalAddress LinphoneAddress;
 
+typedef struct belle_sip_dict LinphoneDictionary;
+
 /**
  * The LinphoneContent struct holds data that can be embedded in a signaling message.
  * @ingroup misc
@@ -180,6 +185,37 @@ typedef enum _LinphoneReason LinphoneReason;
  * @ingroup misc
 **/
 const char *linphone_reason_to_string(LinphoneReason err);
+
+
+/* linphone dictionary */
+LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new();
+LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
+LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
+void linphone_dictionary_unref(LinphoneDictionary* obj);
+LINPHONE_PUBLIC void linphone_dictionary_set_int(LinphoneDictionary* obj, const char* key, int value);
+LINPHONE_PUBLIC int linphone_dictionary_get_int(LinphoneDictionary* obj, const char* key, int default_value);
+LINPHONE_PUBLIC void linphone_dictionary_set_string(LinphoneDictionary* obj, const char* key, const char*value);
+LINPHONE_PUBLIC const char* linphone_dictionary_get_string(LinphoneDictionary* obj, const char* key, const char* default_value);
+LINPHONE_PUBLIC void linphone_dictionary_set_int64(LinphoneDictionary* obj, const char* key, int64_t value);
+LINPHONE_PUBLIC int64_t linphone_dictionary_get_int64(LinphoneDictionary* obj, const char* key, int64_t default_value);
+LINPHONE_PUBLIC int linphone_dictionary_remove(LinphoneDictionary* obj, const char* key);
+LINPHONE_PUBLIC void linphone_dictionary_clear(LinphoneDictionary* obj);
+LINPHONE_PUBLIC int linphone_dictionary_haskey(const LinphoneDictionary* obj, const char* key);
+LINPHONE_PUBLIC void linphone_dictionary_foreach( const LinphoneDictionary* obj, void (*apply_func)(const char*key, void* value, void* userdata), void* userdata);
+/**
+ * Converts a config section into a dictionary.
+ * @return a #LinphoneDictionary with all the keys from a section, or NULL if the section doesn't exist
+ * @ingroup misc
+ */
+LinphoneDictionary* lp_config_section_to_dict( const LpConfig* lpconfig, const char* section );
+
+/**
+ * Loads a dictionary into a section of the lpconfig. If the section doesn't exist it is created.
+ * Overwrites existing keys, creates non-existing keys.
+ * @ingroup misc
+ */
+void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, const LinphoneDictionary* dict);
+
 
 #ifdef IN_LINPHONE
 #include "linphonefriend.h"
@@ -402,7 +438,7 @@ typedef enum _LinphonePrivacy {
 	 *
 	 **/
 	LinphonePrivacyCritical=0x10,
-	 
+
 	/**
 	 * Special keyword to use privacy as defined either globally or by proxy using linphone_proxy_config_set_privacy()
 	 */
@@ -442,7 +478,7 @@ LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_copy(const LinphoneIn
  * @ingroup media_parameters
 **/
 struct _LinphoneVideoPolicy{
-	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/ 
+	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/
 	bool_t automatically_accept; /**<Whether video shall be automatically accepted for incoming calls*/
 	bool_t unused[2];
 };
@@ -901,7 +937,7 @@ struct _LinphoneChatRoom;
  * <br> Can be created by linphone_chat_room_create_message().
  */
 typedef struct _LinphoneChatMessage LinphoneChatMessage;
-	
+
 /**
  * A chat room is the place where text messages are exchanged.
  * <br> Can be created by linphone_core_create_chat_room().
@@ -945,7 +981,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoo
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 LINPHONE_PUBLIC	void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
-LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc); 
+LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
@@ -1023,23 +1059,23 @@ typedef void (*LinphoneCoreCallEncryptionChangedCb)(LinphoneCore *lc, LinphoneCa
  * Registration state notification callback prototype
  * */
 typedef void (*LinphoneCoreRegistrationStateChangedCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
-/** Callback prototype 
- * @deprecated 
+/** Callback prototype
+ * @deprecated
  */
 typedef void (*ShowInterfaceCb)(LinphoneCore *lc);
-/** Callback prototype 
- * @deprecated 
+/** Callback prototype
+ * @deprecated
  */
 typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message);
-/** Callback prototype 
- * @deprecated 
+/** Callback prototype
+ * @deprecated
  */
 typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message);
-/** Callback prototype 
- * @deprecated 
+/** Callback prototype
+ * @deprecated
  */
 typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url);
-/** Callback prototype 
+/** Callback prototype
  */
 typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
 /**
@@ -1057,7 +1093,7 @@ typedef void (*LinphoneCoreNotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneF
  *  Callback prototype
  */
 typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-/** 
+/**
  * Callback for requesting authentication information to application or user.
  * @param lc the LinphoneCore
  * @param realm the realm (domain) on which authentication is required.
@@ -1066,7 +1102,7 @@ typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, Linphon
  */
 typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 
-/** 
+/**
  * Callback to notify a new call-log entry has been added.
  * This is done typically when a call terminates.
  * @param lc the LinphoneCore
@@ -1093,8 +1129,8 @@ typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChat
  * @param LinphoneChatMessage incoming message
  */
 typedef void (*LinphoneCoreMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
-	
-/** 
+
+/**
  * Callback for being notified of DTMFs received.
  * @param lc the linphone core
  * @param call the call that received the dtmf
@@ -1114,7 +1150,7 @@ typedef void (*LinphoneCoreBuddyInfoUpdatedCb)(LinphoneCore *lc, LinphoneFriend 
  */
 typedef void (*LinphoneCoreTransferStateChangedCb)(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 
-/** 
+/**
  * Callback for receiving quality statistics for calls.
  * @param lc the LinphoneCore
  * @param call the call
@@ -1122,11 +1158,11 @@ typedef void (*LinphoneCoreTransferStateChangedCb)(LinphoneCore *lc, LinphoneCal
  */
 typedef void (*LinphoneCoreCallStatsUpdatedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
-/** 
+/**
  * Callback prototype for receiving info messages.
  * @param lc the LinphoneCore
  * @param call the call whose info message belongs to.
- * @param msg the info message. 
+ * @param msg the info message.
  */
 typedef void (*LinphoneCoreInfoReceivedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 
@@ -1431,7 +1467,7 @@ LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadT
  * @param rate can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
  * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found.
- */	
+ */
 LINPHONE_PUBLIC	PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
 
 LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
@@ -1447,7 +1483,7 @@ LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *
  * @ingroup proxy
  */
 LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
-	
+
 LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
@@ -1604,28 +1640,28 @@ LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *l
  * @ingroup network_parameters
  * Return the availability of uPnP.
  *
- * @return true if uPnP is available otherwise return false. 
+ * @return true if uPnP is available otherwise return false.
  */
 bool_t linphone_core_upnp_available();
 
 /**
  * @ingroup network_parameters
- * Return the internal state of uPnP. 
+ * Return the internal state of uPnP.
  *
  * @param lc #LinphoneCore
- * @return an LinphoneUpnpState. 
+ * @return an LinphoneUpnpState.
  */
 LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
 
 /**
  * @ingroup network_parameters
- * Return the external ip address of router. 
+ * Return the external ip address of router.
  * In some cases the uPnP can have an external ip address but not a usable uPnP
- * (state different of Ok). 
+ * (state different of Ok).
  *
  * @param lc #LinphoneCore
  * @return a null terminated string containing the external ip address. If the
- * the external ip address is not available return null. 
+ * the external ip address is not available return null.
  */
 const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
 
@@ -2165,6 +2201,23 @@ LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
+
+
+/** Contact Providers
+  */
+BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
+BELLE_SIP_DECLARE_TYPES_END
+
+typedef unsigned int ContactSearchID;
+
+struct _LinphoneContactSearch;
+typedef struct _LinphoneContactSearch LinphoneContactSearch;
+
+typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
 
 
 #ifdef __cplusplus

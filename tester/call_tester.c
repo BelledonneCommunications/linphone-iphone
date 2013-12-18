@@ -1053,7 +1053,6 @@ static void early_media_call_forking(void) {
 	linphone_core_use_files (marie1->lc,TRUE);
 	linphone_core_set_play_file(marie1->lc,ringbackpath);
 
-	
 	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);

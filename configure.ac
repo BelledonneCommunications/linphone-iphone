@@ -165,6 +165,24 @@ AC_ARG_ENABLE(x11,
 	[enable_x11=true]
 )
 
+dnl conditional build of LDAP support
+AC_ARG_ENABLE(ldap,
+	[AS_HELP_STRING([--disable-ldap], [Disable LDAP support (default=no)])],
+	[case "${enableval}" in
+		yes)	enable_ldap=true ;;
+		no)		enable_ldap=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-ldap) ;;
+	esac],
+	[enable_ldap=true]
+)
+
+AM_CONDITIONAL(BUILD_LDAP, test x$enable_ldap != xfalse)
+if test "$enable_ldap" = "true"; then
+	AC_CHECK_LIB(ldap,ldap_initialize, LDAP_LIBS="-lldap")
+	AC_SUBST(LDAP_LIBS)
+	AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
+fi
+
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,
 	[AS_HELP_STRING([--enable-console_ui=[yes/no]], [Turn on or off compilation of console interface (default=yes)])],
@@ -864,6 +882,7 @@ printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
+printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"

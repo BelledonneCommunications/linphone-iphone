@@ -50,6 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
 static LinphoneCore *the_core=NULL;
+static LinphoneLDAPContactProvider* ldap_provider = NULL;
 static GtkWidget *the_ui=NULL;
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
@@ -69,7 +70,7 @@ void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpoi
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
-
+void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data);
 
 #ifndef HAVE_GTK_OSX
 static gint main_window_x=0;
@@ -231,6 +232,23 @@ static const char *linphone_gtk_get_factory_config_file(){
 	return _factory_config_file;
 }
 
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
+#ifdef BUILD_LDAP
+	return ldap_provider;
+#else
+	return NULL;
+#endif
+}
+
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
+{
+	if( ldap_provider )
+		belle_sip_object_unref(ldap_provider);
+
+	ldap_provider = ldap ? LINPHONE_LDAP_CONTACT_PROVIDER(belle_sip_object_ref( ldap ))
+						 : NULL;
+}
+
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
@@ -256,7 +274,16 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
-	
+
+
+#ifdef BUILD_LDAP
+	if( lp_config_has_section(linphone_core_get_config(the_core),"ldap") ){
+		LpConfig* cfg = linphone_core_get_config(the_core);
+		LinphoneDictionary* ldap_cfg = lp_config_section_to_dict(cfg, "ldap");
+		linphone_gtk_set_ldap( linphone_ldap_contact_provider_create(the_core, ldap_cfg) );
+	}
+#endif
+
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
@@ -279,7 +306,7 @@ GtkWidget *linphone_gtk_get_main_window(){
 }
 
 void linphone_gtk_destroy_main_window() {
-	linphone_gtk_destroy_window(the_ui);	
+	linphone_gtk_destroy_window(the_ui);
 	the_ui = NULL;
 }
 
@@ -629,12 +656,31 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	return TRUE;
 }
 
+static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, const gchar *key, GtkTreeIter *iter, gpointer user_data){
+	char* address = NULL;
+	gboolean ret  = FALSE;
+	gchar *tmp= NULL;
+	gtk_tree_model_get(gtk_entry_completion_get_model(completion),iter,0,&address,-1);
+
+	tmp = g_utf8_casefold(address,-1);
+	if (tmp){
+		if (strstr(tmp,key))
+			ret=TRUE;
+		g_free(tmp);
+	}
+
+	if( address)
+		g_free(address);
+
+	return ret;
+}
+
 static void load_uri_history(){
 	GtkEntry *uribar=GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
 	char key[20];
 	int i;
 	GtkEntryCompletion *gep=gtk_entry_completion_new();
-	GtkListStore *model=gtk_list_store_new(1,G_TYPE_STRING);
+	GtkListStore *model=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
 	for (i=0;;i++){
 		const char *uri;
 		snprintf(key,sizeof(key),"uri%i",i);
@@ -642,14 +688,18 @@ static void load_uri_history(){
 		if (uri!=NULL) {
 			GtkTreeIter iter;
 			gtk_list_store_append(model,&iter);
-			gtk_list_store_set(model,&iter,0,uri,-1);
+			gtk_list_store_set(model,&iter,0,uri,1,COMPLETION_HISTORY,-1);
 			if (i==0) gtk_entry_set_text(uribar,uri);
 		}
 		else break;
 	}
 	gtk_entry_completion_set_model(gep,GTK_TREE_MODEL(model));
 	gtk_entry_completion_set_text_column(gep,0);
+	gtk_entry_completion_set_popup_completion(gep, TRUE);
+	gtk_entry_completion_set_match_func(gep,uribar_completion_matchfunc, NULL, NULL);
+	gtk_entry_completion_set_minimum_key_length(gep,3);
 	gtk_entry_set_completion(uribar,gep);
+	g_signal_connect (G_OBJECT (uribar), "changed", G_CALLBACK(linphone_gtk_on_uribar_changed), NULL);
 }
 
 static void save_uri_history(){
@@ -697,8 +747,128 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	}
 	/* and prepend it on top of the list */
 	gtk_list_store_prepend(GTK_LIST_STORE(model),&iter);
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,text,-1);
+	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,text,1,COMPLETION_HISTORY,-1);
 	save_uri_history();
+}
+
+void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* friends, void* data )
+{
+	GtkTreeIter    iter;
+	GtkEntry*    uribar = GTK_ENTRY(data);
+	GtkEntryCompletion* compl = gtk_entry_get_completion(uribar);
+	GtkTreeModel* model = gtk_entry_completion_get_model(compl);
+	GtkListStore*  list = GTK_LIST_STORE(model);
+	gboolean valid;
+
+	// clear completion list from previous non-history entries
+	valid = gtk_tree_model_get_iter_first(model,&iter);
+	while(valid)
+	{
+		char* url;
+		int type;
+		gtk_tree_model_get(model,&iter, 0,&url, 1,&type, -1);
+
+		if (type != COMPLETION_HISTORY) {
+			valid = gtk_list_store_remove(list, &iter);
+		} else {
+			valid = gtk_tree_model_iter_next(model,&iter);
+		}
+
+		if( url ) g_free(url);
+		if( !valid ) break;
+	}
+
+	// add new non-history related matches
+	while( friends ){
+		LinphoneFriend* lf = friends->data;
+		if( lf ) {
+			const LinphoneAddress* la = linphone_friend_get_address(lf);
+			if( la ){
+				char *addr = linphone_address_as_string(la);
+
+				if( addr ){
+					ms_message("[LDAP]Insert match: %s",  addr);
+					gtk_list_store_insert_with_values(list, &iter, -1,
+													  0, addr,
+													  1, COMPLETION_LDAP, -1);
+					ms_free(addr);
+				}
+			}
+		}
+		friends = friends->next;
+	}
+	gtk_entry_completion_complete(compl);
+	// save the number of LDAP results to better decide if new results should be fetched when search predicate gets bigger
+	gtk_object_set_data(GTK_OBJECT(uribar), "ldap_res_cout",
+						GINT_TO_POINTER(
+							linphone_ldap_contact_search_result_count(LINPHONE_LDAP_CONTACT_SEARCH(req))
+							)
+						);
+
+	// Gtk bug? we need to emit a "changed" signal so that the completion appears if
+	// the list of results was previously empty
+	g_signal_handlers_block_by_func(uribar, linphone_gtk_on_uribar_changed, NULL);
+	g_signal_emit_by_name(uribar, "changed");
+	g_signal_handlers_unblock_by_func(uribar, linphone_gtk_on_uribar_changed, NULL);
+}
+
+struct CompletionTimeout {
+	guint timeout_id;
+};
+
+static gboolean launch_contact_provider_search(void *userdata)
+{
+	LinphoneLDAPContactProvider* ldap = linphone_gtk_get_ldap();
+	GtkWidget*      uribar = GTK_WIDGET(userdata);
+	const gchar* predicate = gtk_entry_get_text(GTK_ENTRY(uribar));
+	gchar* previous_search = gtk_object_get_data(GTK_OBJECT(uribar), "previous_search");
+	unsigned int prev_res_count = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "ldap_res_cout"));
+
+	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
+		unsigned int max_res_count = linphone_ldap_contact_provider_get_max_result(ldap);
+
+		if( previous_search  &&
+			(strstr(predicate, previous_search) == predicate) && // last search contained results from this one
+			(prev_res_count != max_res_count) ){ // and we didn't reach the max result limit
+
+			ms_message("Don't launch search on already searched data (current: %s, old search: %s), (%d/%d results)",
+					   predicate, previous_search, prev_res_count, max_res_count);
+			return FALSE;
+		}
+
+		// save current search
+		if( previous_search ) ms_free(previous_search);
+		gtk_object_set_data(GTK_OBJECT(uribar), "previous_search", ms_strdup(predicate));
+
+		ms_message("launch_contact_provider_search");
+		LinphoneContactSearch* search =
+				BELLE_SIP_OBJECT_VPTR(ldap,LinphoneContactProvider)->begin_search(
+					LINPHONE_CONTACT_PROVIDER(ldap),
+					predicate,
+					on_contact_provider_search_results,
+					uribar);
+
+		if(search)
+			belle_sip_object_ref(search);
+	}
+	return FALSE;
+}
+
+void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
+{
+#ifdef BUILD_LDAP
+	gchar* text = gtk_editable_get_chars(uribar, 0,-1);
+	gint timeout = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(uribar), "complete_timeout"));
+	if( text ) g_free(text);
+
+	if( timeout != 0 ) {
+		g_source_remove(timeout);
+	}
+
+	timeout = g_timeout_add_seconds(1,(GSourceFunc)launch_contact_provider_search, uribar);
+
+	gtk_object_set_data(GTK_OBJECT(uribar),"complete_timeout", GINT_TO_POINTER(timeout) );
+#endif
 }
 
 bool_t linphone_gtk_video_enabled(void){
@@ -1873,6 +2043,9 @@ static void linphone_gtk_quit(void){
 		g_source_remove_by_user_data(linphone_gtk_get_core());
 #ifdef BUILD_WIZARD
 		linphone_gtk_close_assistant();
+#endif
+#ifdef BUILD_LDAP
+		linphone_gtk_set_ldap(NULL);
 #endif
 		linphone_gtk_uninit_instance();
 		linphone_gtk_destroy_log_window();
