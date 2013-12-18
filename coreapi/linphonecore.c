@@ -2297,6 +2297,8 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	LinphoneProxyConfig *proxy=lc->default_proxy;
 	char *tmpurl;
 	LinphoneAddress *uri;
+	
+	if (*url=='\0') return NULL;
 
 	if (is_enum(url,&enum_domain)){
 		if (lc->vtable.display_status!=NULL)
