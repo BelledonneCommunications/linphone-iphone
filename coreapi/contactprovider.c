@@ -30,12 +30,9 @@ void linphone_contact_search_init(LinphoneContactSearch* obj,
 	obj->predicate = ms_strdup(predicate?predicate:"");
 	obj->cb   = cb;
 	obj->data = cb_data;
-	ms_message("LinphoneContactSearch@%p(id:%d, pred:%s, cb:%p, data:%p)",
-		obj, obj->id, obj->predicate, obj->cb, obj->data);
 }
 
 static void linphone_contact_search_destroy( LinphoneContactSearch* req) {
-	ms_message( "~LinphoneContactSearch(%p)", req);
 	if( req->predicate ) ms_free(req->predicate);
 }
 

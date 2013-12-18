@@ -138,7 +138,7 @@ unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch
 
 static void linphone_ldap_contact_search_destroy( LinphoneLDAPContactSearch* obj )
 {
-	ms_message("~LinphoneLDAPContactSearch(%p)", obj);
+	//ms_message("~LinphoneLDAPContactSearch(%p)", obj);
 	ms_list_for_each(obj->found_entries, linphone_ldap_contact_search_destroy_friend);
 	obj->found_entries = ms_list_free(obj->found_entries);
 	if( obj->filter ) ms_free(obj->filter);
@@ -195,7 +195,7 @@ static void linphone_ldap_contact_provider_destroy_request_cb(void *req)
 
 static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider* obj )
 {
-	ms_message("linphone_ldap_contact_provider_destroy");
+	//ms_message("linphone_ldap_contact_provider_destroy");
 	linphone_core_remove_iterate_hook(LINPHONE_CONTACT_PROVIDER(obj)->lc, linphone_ldap_contact_provider_iterate,obj);
 
 	// clean pending requests
@@ -216,10 +216,10 @@ static int linphone_ldap_contact_provider_parse_bind_results( LinphoneLDAPContac
 		ms_message("ANONYMOUS BIND OK");
 		ret = LDAP_SUCCESS;
 	} else {
-		ms_message("COMPLICATED BIND follow-up");
+		ms_message("Advanced BIND follow-up");
 		ret = ldap_sasl_interactive_bind(obj->ld,
 										 NULL, // dn, should be NULL
-										 "DIGEST-MD5",
+										 "DIGEST-MD5", // TODO: use defined auth
 										 NULL,NULL, // server and client controls
 										 LDAP_SASL_QUIET, // never prompt, only use callback
 										 linphone_ldap_contact_provider_bind_interact, // callback to call when info is needed
@@ -275,13 +275,6 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 			bool_t contact_complete = FALSE;
 			BerElement*  ber = NULL;
 			char*       attr = ldap_first_attribute(obj->ld, entry, &ber);
-			char*         dn = ldap_get_dn(obj->ld, entry);
-
-
-			if( dn ){
-				//ms_message("search result: dn: %s", dn);
-				ldap_memfree(dn);
-			}
 
 			while( attr ){
 				struct berval** values = ldap_get_values_len(obj->ld, entry, attr);
@@ -289,8 +282,6 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 
 				while( values && *it && (*it)->bv_val && (*it)->bv_len )
 				{
-					//ms_message("%s -> %s", attr, (*it)->bv_val);
-
 					contact_complete = linphone_ldap_contact_provider_complete_contact(obj, &ldap_data, attr, (*it)->bv_val);
 					if( contact_complete ) break;
 
@@ -351,8 +342,6 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 
 		int ret = ldap_result(obj->ld, LDAP_RES_ANY, LDAP_MSG_ONE, &timeout, &results);
 
-		if( ret != 0 && ret != -1) ms_message("ldap_result %x", ret);
-
 		switch( ret ){
 		case -1:
 		{
@@ -380,7 +369,6 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 			LDAPMessage* message = ldap_first_message(obj->ld, results);
 			LinphoneLDAPContactSearch* req = linphone_ldap_contact_provider_request_search(obj, ldap_msgid(message));
 			while( message != NULL ){
-				//ms_message("Message @%p:id %d / type %x / associated request: %p", message, ldap_msgid(message), ldap_msgtype(message), req);
 				linphone_ldap_contact_provider_handle_search_result(obj, req, message );
 				message = ldap_next_message(obj->ld, message);
 			}
@@ -629,7 +617,6 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 			obj = NULL;
 		} else {
 			// register our hook into iterate so that LDAP can do its magic asynchronously.
-			//linphone_ldap_contact_provider_bind(obj);
 			linphone_core_add_iterate_hook(lc, linphone_ldap_contact_provider_iterate, obj);
 		}
 	}
