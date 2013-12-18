@@ -204,13 +204,9 @@ MACAPPNAME=Linphone.app
 MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
-LIBICONV_HACK=$(top_builddir)/build/macos/libiconv.2.dylib
 
-$(LIBICONV_HACK):
-	cd $(top_builddir)/build/macos && \
-	wget http://download-mirror.savannah.gnu.org/releases/linphone/misc/libiconv.2.dylib
 
-bundle: $(LIBICONV_HACK)
+bundle:
 	rm -rf $(INSTALLDIR)
 	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
@@ -223,7 +219,6 @@ bundle: $(LIBICONV_HACK)
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
 	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
-	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 
 ###

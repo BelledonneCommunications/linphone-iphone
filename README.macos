@@ -14,32 +14,30 @@ You need:
 		+universal
 
 - Install build time dependencies
- $ sudo port install automake autoconf libtool intltool
+ $ sudo port install automake autoconf libtool intltool wget cunit
 
 - Install some linphone dependencies with macports
- $ sudo port install speex
+ $ sudo port install antlr3 speex libvpx readline sqlite3 libsoup openldap
  $ sudo port install ffmpeg-devel -gpl2
- $ sudo port install libvpx
- $ sudo port install readline
-
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
  $ sudo port install gtk2 +quartz +no_x11
  $ sudo port install gtk-osx-application -python27
  $ sudo port install hicolor-icon-theme
 
-- Install additional librairies required for wizard (linphone.org account creation assistant)
- $ sudo port install libsoup
-
-- Install sqlite3 for message storage
- $ sudo port install sqlite3
-
-The softwares below need to be compiled manually. To ensure compatibility with multiple mac os version it is recommended to do:
+The next pieces need to be compiled manually. To ensure compatibility with multiple mac os version it is recommended to do:
  $ export MACOSX_DEPLOYMENT_TARGET=10.6 
  $ export CFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
  $ export OBJCFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
  $ export CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
  $ export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
+
+- Install libantlr3c (library used by belle-sip for parsing)
+ $ wget http://www.antlr3.org/download/C/libantlr3c-3.4.tar.gz
+ $ tar -xvzf libantlr3c-3.4.tar.gz
+ $ cd libantlr3c-3.4
+ $ ./configure --disable-static --prefix=/opt/local --enable-64bit && make 
+ $ sudo make install
 
 - Install polarssl (encryption library used by belle-sip)
  $ git clone git://git.linphone.org/polarssl.git -b linphone
@@ -54,8 +52,6 @@ The softwares below need to be compiled manually. To ensure compatibility with m
  $ sudo make install
 
 - Install srtp (optional) for call encryption
- $ sudo port install srtp
- If that fails, get from source:
  $ git clone git://git.linphone.org/srtp.git
  $ cd srtp && autoconf && ./configure --prefix=/opt/local && make libsrtp.a
  $ sudo make install
@@ -104,6 +100,12 @@ Use git:
  #make this dummy charset.alias file for the bundler to be happy:
  $ sudo touch touch /opt/local/lib/charset.alias
 
+The bundler file in build/macos/linphone.bundle expects some plugins to be installed in /opt/local/lib/mediastreamer/plugins .
+If you don't need plugins, remove or comment out this line from the bundler file:
+  <binary >
+    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
+  </binary>
+
 Then run, inside linphone source tree:
  Run configure as told before but with "--enable-relativeprefix" appended.
  $ make
@@ -116,7 +118,7 @@ For a better appearance, you can install the gtk-quartz-engine (a gtk theme) tha
  $ git clone https://github.com/jralls/gtk-quartz-engine.git
  $ cd gtk-quartz-engine
  $ autoreconf -i 
- $ ./configure --prefix=/opt/local && make 
+ $ ./configure --prefix=/opt/local CFLAGS="-Wno-error" && make 
  $ sudo make install
 
 Generate a new bundle to have it included.
