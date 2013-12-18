@@ -661,7 +661,6 @@ static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, cons
 	gboolean ret  = FALSE;
 	gchar *tmp= NULL;
 	gtk_tree_model_get(gtk_entry_completion_get_model(completion),iter,0,&address,-1);
-	ms_message("In matchFunc(): key=%s, addr=%s",key,address);
 
 	tmp = g_utf8_casefold(address,-1);
 	if (tmp){
@@ -761,7 +760,7 @@ void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* fri
 	GtkListStore*  list = GTK_LIST_STORE(model);
 	gboolean valid;
 
-	// clear completion list from previous non-history completion suggestions
+	// clear completion list from previous non-history entries
 	valid = gtk_tree_model_get_iter_first(model,&iter);
 	while(valid)
 	{
