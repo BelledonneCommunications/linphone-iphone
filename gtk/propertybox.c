@@ -60,6 +60,7 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 		gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
 }
 
+#ifdef BUILD_LDAP
 static void linphone_gtk_ldap_load_settings(GtkWidget* param)
 {
 	GtkWidget *mw = linphone_gtk_get_main_window();
@@ -184,6 +185,8 @@ void linphone_gtk_ldap_save(GtkWidget *tabmgr)
 	// save the config to linphonerc:
 	lp_config_load_dict_to_section(conf, "ldap", dict);
 }
+
+#endif /* BUILD_LDAP */
 
 void linphone_gtk_fill_video_sizes(GtkWidget *combo){
 	const MSVideoSizeDef *def=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());;

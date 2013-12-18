@@ -167,21 +167,30 @@ AC_ARG_ENABLE(x11,
 
 dnl conditional build of LDAP support
 AC_ARG_ENABLE(ldap,
-	[AS_HELP_STRING([--disable-ldap], [Disable LDAP support (default=no)])],
+	[AS_HELP_STRING([--enable-ldap], [Enables LDAP support (default=no)])],
 	[case "${enableval}" in
 		yes)	enable_ldap=true ;;
 		no)		enable_ldap=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-ldap) ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-ldap) ;;
 	esac],
-	[enable_ldap=true]
+	[enable_ldap=false]
 )
 
-AM_CONDITIONAL(BUILD_LDAP, test x$enable_ldap != xfalse)
 if test "$enable_ldap" = "true"; then
-	AC_CHECK_LIB(ldap,ldap_initialize, LDAP_LIBS="-lldap")
+	AC_CHECK_LIB(sasl2, sasl_client_init , [foo=bar],
+		[AC_MSG_ERROR(You need SASL for LDAP support)]
+		)
+
+	AC_CHECK_LIB(ldap,ldap_initialize, LDAP_LIBS="-lldap -llber -lsasl2",
+		[AC_MSG_ERROR(You need libldap for LDAP support)]
+		)
+
+	AC_CHECK_HEADERS(ldap.h)
+	AC_CHECK_HEADERS(sasl/sasl.h)
 	AC_SUBST(LDAP_LIBS)
 	AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
 fi
+AM_CONDITIONAL(BUILD_LDAP, test x$enable_ldap != xfalse)
 
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,

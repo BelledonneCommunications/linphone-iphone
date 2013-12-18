@@ -50,8 +50,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
 static LinphoneCore *the_core=NULL;
-static LinphoneLDAPContactProvider* ldap_provider = NULL;
 static GtkWidget *the_ui=NULL;
+#ifdef BUILD_LDAP
+static LinphoneLDAPContactProvider* ldap_provider = NULL;
+#endif
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
@@ -232,12 +234,9 @@ static const char *linphone_gtk_get_factory_config_file(){
 	return _factory_config_file;
 }
 
-LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
 #ifdef BUILD_LDAP
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
 	return ldap_provider;
-#else
-	return NULL;
-#endif
 }
 
 void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
@@ -248,6 +247,7 @@ void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
 	ldap_provider = ldap ? LINPHONE_LDAP_CONTACT_PROVIDER(belle_sip_object_ref( ldap ))
 						 : NULL;
 }
+#endif /* BUILD_LDAP */
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
@@ -751,6 +751,7 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	save_uri_history();
 }
 
+#ifdef BUILD_LDAP
 void on_contact_provider_search_results( LinphoneContactSearch* req, MSList* friends, void* data )
 {
 	GtkTreeIter    iter;
@@ -853,6 +854,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 	}
 	return FALSE;
 }
+#endif /* BUILD_LDAP */
 
 void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
 {
@@ -868,7 +870,7 @@ void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data)
 	timeout = g_timeout_add_seconds(1,(GSourceFunc)launch_contact_provider_search, uribar);
 
 	gtk_object_set_data(GTK_OBJECT(uribar),"complete_timeout", GINT_TO_POINTER(timeout) );
-#endif
+#endif /* BUILD_LDAP */
 }
 
 bool_t linphone_gtk_video_enabled(void){

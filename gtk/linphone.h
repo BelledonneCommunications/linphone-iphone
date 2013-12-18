@@ -73,8 +73,6 @@ void linphone_gtk_show_assistant(void);
 void linphone_gtk_close_assistant(void);
 
 LinphoneCore *linphone_gtk_get_core(void);
-LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
-void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
 GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);
@@ -96,6 +94,12 @@ const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
 int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_set_ui_config_int(const char *key , int val);
 void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, GtkWidget *w, gboolean show);
+
+#ifdef BUILD_LDAP
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
+#endif
+
 
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);
