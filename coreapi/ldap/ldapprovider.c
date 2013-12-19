@@ -15,14 +15,12 @@
  */
 
 #include "ldapprovider.h"
-#include "linphonecore.h"
-#include "linphonecore_utils.h"
+#include "private.h"
 #include "lpconfig.h"
 #include "contact_providers_priv.h"
 #include <belle-sip/dict.h>
 
 #ifdef BUILD_LDAP
-
 #include <ldap.h>
 #include <sasl/sasl.h>
 
