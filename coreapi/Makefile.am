@@ -49,15 +49,12 @@ liblinphone_la_SOURCES=\
 	info.c \
 	event.c event.h \
 	contactprovider.c contactprovider.h \
+	ldap/ldapprovider.c ldap/ldapprovider.h \
 	dict.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
 liblinphone_la_SOURCES+=upnp.c upnp.h
-endif
-
-if BUILD_LDAP
-liblinphone_la_SOURCES+= ldap/ldapprovider.c ldap/ldapprovider.h
 endif
 	
 liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
