@@ -5677,13 +5677,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 #endif //BUILD_UPNP
 
-#ifdef BUILD_LDAP
-	if( lc->ldap != NULL ) {
-		belle_sip_object_unref(lc->ldap);
-		lc->ldap = NULL;
-	}
-#endif
-
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */

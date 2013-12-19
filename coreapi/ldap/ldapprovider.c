@@ -18,6 +18,7 @@
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
+#include "contact_providers_priv.h"
 #include <belle-sip/dict.h>
 
 #include <ldap.h>
@@ -571,7 +572,7 @@ static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj
 	} else {
 		int err;
 		ldap_get_option(obj->ld, LDAP_OPT_RESULT_CODE, &err);
-		ms_error("ldap_sasl_bind error returned %d, err %d (%s), auth_method: %s",
+		ms_error("ldap_sasl_bind error returned %x, err %x (%s), auth_method: %s",
 				 ret, err, ldap_err2string(err), auth_mechanism );
 	}
 
@@ -616,6 +617,10 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 			belle_sip_object_unref(obj);
 			obj = NULL;
 		} else {
+			// prevents blocking calls to bind() when the server is invalid, but this is not working for now..
+			// see bug https://bugzilla.mozilla.org/show_bug.cgi?id=79509
+			ldap_set_option( obj->ld, LDAP_OPT_CONNECT_ASYNC, LDAP_OPT_ON);
+
 			// register our hook into iterate so that LDAP can do its magic asynchronously.
 			linphone_core_add_iterate_hook(lc, linphone_ldap_contact_provider_iterate, obj);
 		}
@@ -740,6 +745,27 @@ static int linphone_ldap_contact_provider_marshal(LinphoneLDAPContactProvider* o
 
 }
 
+LinphoneLDAPContactProvider*linphone_ldap_contact_provider_ref(void* obj)
+{
+	return linphone_ldap_contact_provider_cast(belle_sip_object_ref(obj));
+}
+
+
+void linphone_ldap_contact_provider_unref(void* obj)
+{
+	belle_sip_object_unref(obj);
+}
+
+inline LinphoneLDAPContactSearch*linphone_ldap_contact_search_cast(void* obj)
+{
+	return BELLE_SIP_CAST(obj, LinphoneLDAPContactSearch);
+}
+
+
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast(void* obj)
+{
+	return BELLE_SIP_CAST(obj, LinphoneLDAPContactProvider);
+}
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneLDAPContactProvider);
 
@@ -757,4 +783,5 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneLDAPContactProvider)=
 		(LinphoneContactProviderCancelSearchMethod)linphone_ldap_contact_provider_cancel_search
 	}
 };
+
 

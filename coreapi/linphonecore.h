@@ -2203,8 +2203,9 @@ LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore 
 LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
 
 
-/** Contact Providers
+/** Belle Sip-based objects need unique ids
   */
+
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
@@ -2212,10 +2213,14 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
 BELLE_SIP_DECLARE_TYPES_END
 
+
+/** Contact Providers
+  */
+
 typedef unsigned int ContactSearchID;
 
-struct _LinphoneContactSearch;
 typedef struct _LinphoneContactSearch LinphoneContactSearch;
+typedef struct _LinphoneContactProvider LinphoneContactProvider;
 
 typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
 

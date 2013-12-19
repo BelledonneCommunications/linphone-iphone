@@ -14,50 +14,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <belle-sip/object.h>
 #include "linphonecore.h"
 
 /* LinphoneContactSearchRequest */
-
-struct _LinphoneContactSearch{
-	belle_sip_object_t base;
-	ContactSearchID id;
-	char* predicate;
-	ContactSearchCallback cb;
-	void* data;
-};
-
-#define LINPHONE_CONTACT_SEARCH(obj) BELLE_SIP_CAST(obj,LinphoneContactSearch)
-BELLE_SIP_DECLARE_VPTR(LinphoneContactSearch)
-
 
 void linphone_contact_search_init(LinphoneContactSearch* obj, const char* predicate, ContactSearchCallback cb, void* cb_data);
 ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj);
 const char* linphone_contact_search_get_predicate(LinphoneContactSearch* obj);
 void linphone_contact_search_invoke_cb(LinphoneContactSearch* req, MSList* friends);
-
+LinphoneContactSearch* linphone_contact_search_ref(void* obj);
+void                    linphone_contact_search_unref(void* obj);
+LinphoneContactSearch* linphone_contact_search_cast( void*obj );
 
 /* LinphoneContactProvider */
-
-struct _LinphoneContactProvider {
-	belle_sip_object_t base;
-	LinphoneCore* lc;
-};
-
-typedef struct _LinphoneContactProvider LinphoneContactProvider;
-typedef LinphoneContactSearch* (*LinphoneContactProviderStartSearchMethod)( LinphoneContactProvider* thiz, const char* predicate, ContactSearchCallback cb, void* data );
-typedef unsigned int           (*LinphoneContactProviderCancelSearchMethod)( LinphoneContactProvider* thiz, LinphoneContactSearch *request );
-#define LINPHONE_CONTACT_PROVIDER(obj) BELLE_SIP_CAST(obj,LinphoneContactProvider)
-
-BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider,belle_sip_object_t)
-	const char* name; /*!< Name of the contact provider (LDAP, Google, ...) */
-
-	/* pure virtual methods: inheriting objects must implement these */
-	LinphoneContactProviderStartSearchMethod  begin_search;
-	LinphoneContactProviderCancelSearchMethod cancel_search;
-BELLE_SIP_DECLARE_CUSTOM_VPTR_END
-
 
 void          linphone_contact_provider_init(LinphoneContactProvider* obj, LinphoneCore* lc);
 LinphoneCore* linphone_contact_provider_get_core(LinphoneContactProvider* obj);
 const char*   linphone_contact_provider_get_name(LinphoneContactProvider* obj);
+LinphoneContactProvider* linphone_contact_provider_ref(void* obj);
+void                     linphone_contact_provider_unref(void* obj);
+LinphoneContactProvider* linphone_contact_provider_cast( void*obj );
+
+LinphoneContactSearch* linphone_contact_provider_begin_search(LinphoneContactProvider* obj,
+															  const char* predicate,
+															  ContactSearchCallback cb,
+															  void* data);
+unsigned int           linphone_contact_provider_cancel_search(LinphoneContactProvider* obj,
+															   LinphoneContactSearch* request);

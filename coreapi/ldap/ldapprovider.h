@@ -16,15 +16,11 @@
 
 #include "contactprovider.h"
 
-#include <ldap.h>
 
 typedef struct _LinphoneLDAPContactProvider LinphoneLDAPContactProvider;
 
 /* LinphoneLDAPContactSearch */
 typedef struct _LinphoneLDAPContactSearch LinphoneLDAPContactSearch;
-
-#define LINPHONE_LDAP_CONTACT_SEARCH(obj) BELLE_SIP_CAST(obj,LinphoneLDAPContactSearch)
-BELLE_SIP_DECLARE_VPTR(LinphoneLDAPContactSearch)
 
 LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPContactProvider* ld,
 															   const char* predicate,
@@ -32,14 +28,13 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 															   void* cb_data);
 
 unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj);
+LinphoneLDAPContactSearch* linphone_ldap_contact_search_cast( void* obj );
 
 
 /* LinphoneLDAPContactProvider */
 
-#define LINPHONE_LDAP_CONTACT_PROVIDER(obj) BELLE_SIP_CAST(obj,LinphoneLDAPContactProvider)
-
-BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneLDAPContactProvider,LinphoneContactProvider)
-BELLE_SIP_DECLARE_CUSTOM_VPTR_END
-
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config);
-unsigned int linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);
+unsigned int                 linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj );
+void                         linphone_ldap_contact_provider_unref( void* obj );
+LinphoneLDAPContactProvider*   linphone_ldap_contact_provider_cast( void* obj );

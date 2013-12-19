@@ -14,11 +14,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "contact_providers_priv.h"
 #include "contactprovider.h"
 #include <linphonecore.h>
 
-/* LinphoneContactSearchRequest
- */
+/* ############################ *
+ * LinphoneContactSearchRequest *
+ * ############################ */
 
 void linphone_contact_search_init(LinphoneContactSearch* obj,
 								const char* predicate,
@@ -57,6 +59,21 @@ int linphone_contact_search_compare(const void* a, const void* b) {
 	return !(ra->id == rb->id); // return 0 if id is equal, 1 otherwise
 }
 
+LinphoneContactSearch*linphone_ldap_contact_search_ref(void* obj)
+{
+	return LINPHONE_CONTACT_SEARCH(belle_sip_object_ref(obj));
+}
+
+void linphone_ldap_contact_search_unref(void* obj)
+{
+	belle_sip_object_unref(obj);
+}
+
+LinphoneContactSearch* linphone_contact_search_cast(void* obj)
+{
+	return LINPHONE_CONTACT_SEARCH(obj);
+}
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneContactSearch);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneContactSearch,belle_sip_object_t,
@@ -66,9 +83,11 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneContactSearch,belle_sip_object_t,
 	FALSE
 );
 
-/*
- * LinphoneContactProvider
- */
+
+
+/* ####################### *
+ * LinphoneContactProvider *
+ * ####################### */
 
 
 void linphone_contact_provider_init(LinphoneContactProvider* obj, LinphoneCore* lc){
@@ -79,6 +98,30 @@ static void contact_provider_destroy(LinphoneContactProvider* obj){
 	(void)obj;
 }
 
+LinphoneContactSearch* linphone_contact_provider_begin_search(LinphoneContactProvider* obj, const char* predicate, ContactSearchCallback cb, void* data)
+{
+	return BELLE_SIP_OBJECT_VPTR(obj,LinphoneContactProvider)->begin_search( LINPHONE_CONTACT_PROVIDER(obj), predicate, cb, data);
+}
+
+unsigned int linphone_contact_provider_cancel_search(LinphoneContactProvider* obj, LinphoneContactSearch* request)
+{
+	return BELLE_SIP_OBJECT_VPTR(obj,LinphoneContactProvider)->cancel_search( LINPHONE_CONTACT_PROVIDER(obj), request);
+}
+
+LinphoneContactProvider* linphone_contact_provider_ref(void* obj)
+{
+	return LINPHONE_CONTACT_PROVIDER(belle_sip_object_ref(obj));
+}
+
+void linphone_contact_provider_unref(void* obj)
+{
+	belle_sip_object_unref(obj);
+}
+
+LinphoneContactProvider*linphone_contact_provider_cast(void* obj)
+{
+	return LINPHONE_CONTACT_PROVIDER(obj);
+}
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneContactProvider);
 BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneContactProvider)=
@@ -94,5 +137,4 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneContactProvider)=
 	NULL, /* begin_search -> pure virtual */
 	NULL  /* cancel_search -> pure virtual */
 };
-
 
