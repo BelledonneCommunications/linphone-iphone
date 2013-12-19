@@ -17,7 +17,7 @@ You need:
  $ sudo port install automake autoconf libtool intltool wget cunit
 
 - Install some linphone dependencies with macports
- $ sudo port install antlr3 speex libvpx readline sqlite3 libsoup openldap
+ $ sudo port install antlr3 speex opus libvpx readline sqlite3 libsoup openldap
  $ sudo port install ffmpeg-devel -gpl2
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
