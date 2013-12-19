@@ -24,6 +24,7 @@
 #include <ldap.h>
 #include <sasl/sasl.h>
 
+#ifdef BUILD_LDAP
 
 #define MAX_RUNNING_REQUESTS 10
 #define FILTER_MAX_SIZE      512
@@ -769,8 +770,7 @@ LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast(void* obj)
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneLDAPContactProvider);
 
-BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneLDAPContactProvider)=
-{
+BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_BEGIN(LinphoneLDAPContactProvider)
 	{
 		{
 			BELLE_SIP_VPTR_INIT(LinphoneLDAPContactProvider,LinphoneContactProvider,TRUE),
@@ -782,6 +782,31 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneLDAPContactProvider)=
 		(LinphoneContactProviderStartSearchMethod)linphone_ldap_contact_provider_begin_search,
 		(LinphoneContactProviderCancelSearchMethod)linphone_ldap_contact_provider_cancel_search
 	}
-};
+BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_END
+
+#else
+
+/* Stubbed implementation */
+
+LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPContactProvider* ld,
+															   const char* predicate,
+															   ContactSearchCallback cb,
+															   void* cb_data)
+{
+	return NULL;
+}
+
+unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj){ return 0; }
+LinphoneLDAPContactSearch* linphone_ldap_contact_search_cast( void* obj ){ return NULL; }
 
 
+/* LinphoneLDAPContactProvider */
+
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config){ return NULL; }
+unsigned int                 linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj){ return 0; }
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj ){ return NULL; }
+void                         linphone_ldap_contact_provider_unref( void* obj ){  }
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast( void* obj ){ return NULL; }
+
+
+#endif /* BUILD_LDAP */

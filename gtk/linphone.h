@@ -28,10 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "linphonecore.h"
 
-#ifdef BUILD_LDAP
 #include "ldap/ldapprovider.h"
-#endif
-
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -95,11 +92,8 @@ int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_set_ui_config_int(const char *key , int val);
 void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, GtkWidget *w, gboolean show);
 
-#ifdef BUILD_LDAP
 LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
 void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
-#endif
-
 
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);

@@ -124,8 +124,7 @@ LinphoneContactProvider*linphone_contact_provider_cast(void* obj)
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneContactProvider);
-BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneContactProvider)=
-{
+BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider)
 	{
 		BELLE_SIP_VPTR_INIT(LinphoneContactProvider,belle_sip_object_t,TRUE),
 		(belle_sip_object_destroy_t) contact_provider_destroy,
@@ -136,5 +135,5 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneContactProvider)=
 	// Pure virtual
 	NULL, /* begin_search -> pure virtual */
 	NULL  /* cancel_search -> pure virtual */
-};
+BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_END
 
