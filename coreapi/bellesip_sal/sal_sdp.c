@@ -315,6 +315,12 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 						; media_desc_it!=NULL
 			; media_desc_it=media_desc_it->next ) {
 		int nb_ice_candidates=0;
+	
+		if (desc->n_total_streams==SAL_MEDIA_DESCRIPTION_MAX_STREAMS){
+			ms_warning("Cannot convert mline at position [%i] from SDP to SalMediaDescription",desc->n_total_streams);
+			break;
+		}
+	
 		media_desc=BELLE_SDP_MEDIA_DESCRIPTION ( media_desc_it->data );
 		stream=&desc->streams[desc->n_total_streams];
 		media=belle_sdp_media_description_get_media ( media_desc );
