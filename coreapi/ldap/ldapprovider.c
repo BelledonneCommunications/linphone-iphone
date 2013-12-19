@@ -21,10 +21,11 @@
 #include "contact_providers_priv.h"
 #include <belle-sip/dict.h>
 
+#ifdef BUILD_LDAP
+
 #include <ldap.h>
 #include <sasl/sasl.h>
 
-#ifdef BUILD_LDAP
 
 #define MAX_RUNNING_REQUESTS 10
 #define FILTER_MAX_SIZE      512
