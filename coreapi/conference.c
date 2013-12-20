@@ -99,7 +99,7 @@ void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted){
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
 	call->params.has_video = FALSE;
-	call->camera_active = FALSE;
+	call->camera_enabled = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
 	ms_audio_conference_mute_member(conf->conf,ep,muted);

@@ -205,7 +205,7 @@ struct _LinphoneCall
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
-	bool_t camera_active;
+	bool_t camera_enabled;
 	
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;

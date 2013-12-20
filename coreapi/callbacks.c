@@ -98,7 +98,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 						if (call->audiostream)
 							linphone_core_enable_mic(lc, linphone_core_mic_enabled(lc));
 #ifdef VIDEO_ENABLED
-						if (call->videostream && call->camera_active)
+						if (call->videostream && call->camera_enabled)
 							video_stream_change_camera(call->videostream,lc->video_conf.device );
 #endif
 					}

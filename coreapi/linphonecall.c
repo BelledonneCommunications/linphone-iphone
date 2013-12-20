@@ -438,6 +438,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
+	call->camera_enabled=TRUE;
 	
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	if (min_port == max_port) {
@@ -544,7 +545,6 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 		}
 	}
 #endif //BUILD_UPNP
-	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
@@ -641,7 +641,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		default:
 			break;
 	}
-	call->camera_active=call->params.has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain(from));
 	return call;
@@ -1084,12 +1083,12 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 	if (call->videostream!=NULL && call->videostream->ms.ticker!=NULL){
 		LinphoneCore *lc=call->core;
 		MSWebCam *nowebcam=get_nowebcam_device();
-		if (call->camera_active!=enable && lc->video_conf.device!=nowebcam){
+		if (call->camera_enabled!=enable && lc->video_conf.device!=nowebcam){
 			video_stream_change_camera(call->videostream,
 			             enable ? lc->video_conf.device : nowebcam);
 		}
 	}
-	call->camera_active=enable;
+	call->camera_enabled=enable;
 #endif
 }
 
@@ -1120,10 +1119,10 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 }
 
 /**
- * Returns TRUE if camera pictures are sent to the remote party.
+ * Returns TRUE if camera pictures are allowed to be sent to the remote party.
 **/
 bool_t linphone_call_camera_enabled (const LinphoneCall *call){
-	return call->camera_active;
+	return call->camera_enabled;
 }
 
 /**
@@ -1849,7 +1848,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				/*either inactive or incompatible with local capabilities*/
 				is_inactive=TRUE;
 			}
-			if (call->camera_active==FALSE || all_inputs_muted){
+			if (call->camera_enabled==FALSE || all_inputs_muted){
 				cam=get_nowebcam_device();
 			}
 			if (!is_inactive){

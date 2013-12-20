@@ -2964,7 +2964,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
-	call->camera_active=call->params.has_video;
+
 	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
@@ -3065,7 +3065,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #ifdef VIDEO_ENABLED
 		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
-			if (call->camera_active && call->videostream->cam!=lc->video_conf.device){
+			if (call->camera_enabled && call->videostream->cam!=lc->video_conf.device){
 				video_stream_change_camera(call->videostream,lc->video_conf.device);
 			}else video_stream_update_video_params(call->videostream);
 		}
@@ -3177,7 +3177,6 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		call->params.has_video = FALSE;
 	}
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
-	call->camera_active=call->params.has_video;
 	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
@@ -3298,7 +3297,6 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
 		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
-		call->camera_active=call->params.has_video;
 		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
