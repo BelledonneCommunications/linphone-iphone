@@ -123,7 +123,10 @@ void sal_address_set_port(SalAddress *addr, int port){
 void sal_address_clean(SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri=belle_sip_header_address_get_uri(header_addr);
-	if (uri) belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(uri));
+	if (uri) {
+		belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(uri));
+		belle_sip_uri_headers_clean(uri);
+	}
 	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(header_addr));
 	return ;
 }

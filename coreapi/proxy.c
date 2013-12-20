@@ -289,6 +289,8 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		int localport = -1;
 		const char *localip = NULL;
 		LinphoneAddress *contact=linphone_address_new(obj->reg_identity);
+		
+		linphone_address_clean(contact);
 
 		if (obj->contact_params) {
 			// We want to add a list of contacts params to the linphone address
