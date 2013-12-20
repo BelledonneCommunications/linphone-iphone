@@ -302,7 +302,6 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
-			LCSipTransports tr;
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
 		}
