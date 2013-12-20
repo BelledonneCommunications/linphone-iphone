@@ -1428,7 +1428,7 @@ void linphone_gtk_show_parameters(void){
 	}
 
 	/* LDAP CONFIG */
-	if( linphone_gtk_get_ldap() ) { // if LDAP provider is available
+	if( linphone_gtk_is_ldap_supported() ) { // if LDAP provider is available
 		linphone_gtk_ldap_load_settings(pb);
 	} else {
 		// hide the LDAP tab

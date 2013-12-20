@@ -94,6 +94,8 @@ void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, G
 
 LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
 void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
+int linphone_gtk_is_ldap_supported(void);
+
 
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);

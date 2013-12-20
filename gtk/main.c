@@ -236,6 +236,10 @@ LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
 	return ldap_provider;
 }
 
+int linphone_gtk_is_ldap_supported(void){
+	return linphone_ldap_contact_provider_available();
+}
+
 void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap)
 {
 	if( ldap_provider )

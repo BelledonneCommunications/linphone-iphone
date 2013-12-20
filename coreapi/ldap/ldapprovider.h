@@ -37,4 +37,5 @@ LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore*
 unsigned int                 linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj );
 void                         linphone_ldap_contact_provider_unref( void* obj );
-LinphoneLDAPContactProvider*   linphone_ldap_contact_provider_cast( void* obj );
+LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast( void* obj );
+int                          linphone_ldap_contact_provider_available();

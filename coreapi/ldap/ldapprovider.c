@@ -767,6 +767,11 @@ LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast(void* obj)
 	return BELLE_SIP_CAST(obj, LinphoneLDAPContactProvider);
 }
 
+int linphone_ldap_contact_provider_available()
+{
+	return 1;
+}
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneLDAPContactProvider);
 
 BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_BEGIN(LinphoneLDAPContactProvider)
@@ -807,5 +812,8 @@ LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj ){ re
 void                         linphone_ldap_contact_provider_unref( void* obj ){  }
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast( void* obj ){ return NULL; }
 
+int linphone_ldap_contact_provider_available(){	return 0; }
+
 
 #endif /* BUILD_LDAP */
+
