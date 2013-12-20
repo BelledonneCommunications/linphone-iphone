@@ -33,10 +33,10 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
 
 - Install libantlr3c (library used by belle-sip for parsing)
- $ wget http://www.antlr3.org/download/C/libantlr3c-3.4.tar.gz
- $ tar -xvzf libantlr3c-3.4.tar.gz
- $ cd libantlr3c-3.4
- $ ./configure --disable-static --prefix=/opt/local --enable-64bit && make 
+ $ git clone -b linphone git://git.linphone.org/antlr3.git
+ $ cd antlr3/runtime/C
+ $ ./autogen.sh
+ $ ./configure --disable-static --prefix=/opt/local && make 
  $ sudo make install
 
 - Install polarssl (encryption library used by belle-sip)
@@ -60,14 +60,6 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ sudo port install cmake
  $ git clone git://git.linphone.org/zrtpcpp.git
  $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
- $ sudo make install
-
- ** WARNING 2013-03-06 glib-networking is currently broken in macports - generates crashes or hangs when used in a bundle **
- As a temporary workaround, build a newer version by yourself:
- $ wget http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.34/glib-networking-2.34.2.tar.xz
- $ tar -xvzf glib-networking-2.34.2.tar.xz
- $ cd glib-networking-2.34.2
- $ ./configure --prefix=/opt/local --without-ca-certificates && make 
  $ sudo make install
 
 - Compile and install the tunnel library (optional, proprietary extension only)
