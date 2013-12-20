@@ -62,10 +62,16 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
  $ sudo make install
 
+
+- Install gsm codec (optional)
+ $ git clone git://git.linphone.org/gsm.git
+ $ cd gsm
+ $ make CCFLAGS="$CFLAGS -c -O2 -DNeedFunctionPrototypes=1"
+ $ sudo make install INSTALL_ROOT=/opt/local GSM_INSTALL_INC=/opt/local/include
+
 - Compile and install the tunnel library (optional, proprietary extension only)
 
- If you got the source code from git, run ./autogen.sh first
-
+ If you got the source code from git, run ./autogen.sh first.
  Then or otherwise, do:
 
  $ ./configure --prefix=/opt/local && make && sudo make install
@@ -110,7 +116,7 @@ For a better appearance, you can install the gtk-quartz-engine (a gtk theme) tha
  $ git clone https://github.com/jralls/gtk-quartz-engine.git
  $ cd gtk-quartz-engine
  $ autoreconf -i 
- $ ./configure --prefix=/opt/local CFLAGS="-Wno-error" && make 
+ $ ./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make 
  $ sudo make install
 
 Generate a new bundle to have it included.
