@@ -48,7 +48,7 @@ liblinphone_la_SOURCES=\
 	message_storage.c \
 	info.c \
 	event.c event.h \
-	contactprovider.c contactprovider.h \
+	contactprovider.c contactprovider.h contact_providers_priv.h \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	dict.c \
 	$(GITVERSION_FILE)
