@@ -1092,16 +1092,16 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #endif
 }
 
-#ifdef VIDEO_ENABLED
 /**
  * Request remote side to send us a Video Fast Update.
 **/
 void linphone_call_send_vfu_request(LinphoneCall *call)
 {
+#ifdef VIDEO_ENABLED
 	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
 		sal_call_send_vfu_request(call->op);
-}
 #endif
+}
 
 
 /**

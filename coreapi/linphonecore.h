@@ -226,10 +226,10 @@ void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, co
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
-LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
-LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
-void linphone_address_unref(LinphoneAddress *addr);
-const char *linphone_address_get_scheme(const LinphoneAddress *u);
+LINPHONE_PUBLIC LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
+LINPHONE_PUBLIC LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_address_unref(LinphoneAddress *addr);
+LINPHONE_PUBLIC const char *linphone_address_get_scheme(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
@@ -615,7 +615,7 @@ LINPHONE_PUBLIC	const char *linphone_call_state_to_string(LinphoneCallState cs);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
-bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(LinphoneCore *lc);
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 LINPHONE_PUBLIC	char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
@@ -796,7 +796,7 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_contact_uri_parameters(con
  * @param[in] obj #LinphoneProxyConfig object.
  * @returns The #LinphoneCore object to which is associated the #LinphoneProxyConfig.
 **/
-LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
@@ -806,7 +806,7 @@ LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const Linphon
  * @param[in] cfg #LinphoneProxyConfig object.
  * @returns The reason why registration failed for this proxy config.
 **/
-LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
 /*
  * return the transport from either : service route, route, or addr
@@ -817,10 +817,10 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphonePr
 
 
 /* destruction is called automatically when removing the proxy config */
-void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
-void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
+LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
-SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
 /**
  * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
  */
@@ -922,8 +922,8 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo
 LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
 
 /* you don't need those function*/
-void linphone_auth_info_destroy(LinphoneAuthInfo *info);
-LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
+LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
+LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
 
 
 struct _LinphoneChatRoom;
@@ -1379,8 +1379,8 @@ LINPHONE_PUBLIC	const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
 
-void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
-bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
@@ -1394,8 +1394,8 @@ LINPHONE_PUBLIC	void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw
 LINPHONE_PUBLIC	int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 
-void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
-bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
+LINPHONE_PUBLIC bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
 LINPHONE_PUBLIC	int  linphone_core_get_download_ptime(LinphoneCore *lc);
@@ -1423,11 +1423,11 @@ LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 /* returns a MSList of PayloadType */
 LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
-int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
+LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
 /* returns a MSList of PayloadType */
 LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
-int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
+LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
 /**
  * Tells whether the specified payload type is enabled.
@@ -1529,7 +1529,7 @@ LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
  * @param[in] enable TRUE to enable the audio adaptive jitter compensation, FALSE to disable it.
  * @ingroup media_parameters
  */
-void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
+LINPHONE_PUBLIC void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
 
 /**
  * Tells whether the audio adaptive jitter compensation is enabled.
@@ -1537,11 +1537,11 @@ void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enabl
  * @returns TRUE if the audio adaptive jitter compensation is enabled, FALSE otherwise.
  * @ingroup media_parameters
  */
-bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore *lc);
 
-int linphone_core_get_audio_jittcomp(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_audio_jittcomp(LinphoneCore *lc);
 
-void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
+LINPHONE_PUBLIC void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
 
 /**
  * Enable or disable the video adaptive jitter compensation.
@@ -1549,7 +1549,7 @@ void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
  * @param[in] enable TRUE to enable the video adaptive jitter compensation, FALSE to disable it.
  * @ingroup media_parameters
  */
-void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
+LINPHONE_PUBLIC void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
 
 /**
  * Tells whether the video adaptive jitter compensation is enabled.
@@ -1557,11 +1557,11 @@ void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *lc, bool_t enabl
  * @returns TRUE if the video adaptive jitter compensation is enabled, FALSE otherwise.
  * @ingroup media_parameters
  */
-bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore *lc);
 
-int linphone_core_get_video_jittcomp(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_video_jittcomp(LinphoneCore *lc);
 
-void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
+LINPHONE_PUBLIC void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
 LINPHONE_PUBLIC	int linphone_core_get_audio_port(const LinphoneCore *lc);
 
@@ -1642,7 +1642,7 @@ LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *l
  *
  * @return true if uPnP is available otherwise return false.
  */
-bool_t linphone_core_upnp_available();
+LINPHONE_PUBLIC bool_t linphone_core_upnp_available();
 
 /**
  * @ingroup network_parameters
@@ -1651,7 +1651,7 @@ bool_t linphone_core_upnp_available();
  * @param lc #LinphoneCore
  * @return an LinphoneUpnpState.
  */
-LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
 
 /**
  * @ingroup network_parameters
@@ -1663,7 +1663,7 @@ LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
  * @return a null terminated string containing the external ip address. If the
  * the external ip address is not available return null.
  */
-const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
+LINPHONE_PUBLIC const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
 
 /**
  * Set the public IP address of NAT when using the firewall policy is set to use NAT.
@@ -1671,7 +1671,7 @@ const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
  * @param[in] addr The public IP address of NAT to use.
  * @ingroup network_parameters
  */
-void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
+LINPHONE_PUBLIC void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
 
 /**
  * Get the public IP address of NAT being used.
@@ -1679,7 +1679,7 @@ void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
  * @returns The public IP address of NAT being used.
  * @ingroup network_parameters
  */
-const char *linphone_core_get_nat_address(const LinphoneCore *lc);
+LINPHONE_PUBLIC const char *linphone_core_get_nat_address(const LinphoneCore *lc);
 
 /**
  * Set the policy to use to pass through firewalls.
@@ -1699,7 +1699,7 @@ LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const L
 
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */
-const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
+LINPHONE_PUBLIC const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
 
 /**
  * Update detection of sound devices.
@@ -1709,13 +1709,13 @@ const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
  * @param[in] lc #LinphoneCore object.
  * @ingroup media_parameters
  **/
-void linphone_core_reload_sound_devices(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_reload_sound_devices(LinphoneCore *lc);
 
-bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
-bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
+LINPHONE_PUBLIC bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
+LINPHONE_PUBLIC bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
 LINPHONE_PUBLIC	int linphone_core_get_ring_level(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_play_level(LinphoneCore *lc);
-int linphone_core_get_rec_level(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_rec_level(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_ring_level(LinphoneCore *lc, int level);
 LINPHONE_PUBLIC	void linphone_core_set_play_level(LinphoneCore *lc, int level);
 
@@ -1724,13 +1724,13 @@ LINPHONE_PUBLIC	float linphone_core_get_mic_gain_db(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
 LINPHONE_PUBLIC	float linphone_core_get_playback_gain_db(LinphoneCore *lc);
 
-void linphone_core_set_rec_level(LinphoneCore *lc, int level);
-const char * linphone_core_get_ringer_device(LinphoneCore *lc);
-const char * linphone_core_get_playback_device(LinphoneCore *lc);
-const char * linphone_core_get_capture_device(LinphoneCore *lc);
-int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid);
-int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid);
-int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid);
+LINPHONE_PUBLIC void linphone_core_set_rec_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC const char * linphone_core_get_ringer_device(LinphoneCore *lc);
+LINPHONE_PUBLIC const char * linphone_core_get_playback_device(LinphoneCore *lc);
+LINPHONE_PUBLIC const char * linphone_core_get_capture_device(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid);
+LINPHONE_PUBLIC int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid);
+LINPHONE_PUBLIC int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid);
 char linphone_core_get_sound_source(LinphoneCore *lc);
 void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 LINPHONE_PUBLIC void linphone_core_stop_ringing(LinphoneCore *lc);
@@ -1907,8 +1907,8 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MS
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 
-void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
-bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
@@ -1922,7 +1922,7 @@ LINPHONE_PUBLIC bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
  * @param[in] lc #LinphoneCore object.
  * @ingroup media_parameters
  **/
-void linphone_core_reload_video_devices(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_reload_video_devices(LinphoneCore *lc);
 
 /* returns a null terminated static array of string describing the webcams */
 LINPHONE_PUBLIC const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
@@ -1936,7 +1936,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_video_device(const LinphoneCore *l
  * @param[in] path The path to the image file to use.
  * @ingroup media_parameters
  */
-int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+LINPHONE_PUBLIC int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
 
 /**
  * Get the path to the image file streamed when "Static picture" is set as the video device.
@@ -1944,7 +1944,7 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
  * @returns The path to the image file streamed when "Static picture" is set as the video device.
  * @ingroup media_parameters
  */
-const char *linphone_core_get_static_picture(LinphoneCore *lc);
+LINPHONE_PUBLIC const char *linphone_core_get_static_picture(LinphoneCore *lc);
 
 /**
  * Set the frame rate for static picture.
@@ -1952,7 +1952,7 @@ const char *linphone_core_get_static_picture(LinphoneCore *lc);
  * @param[in] fps The new frame rate to use for static picture.
  * @ingroup media_parameters
  */
-int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
+LINPHONE_PUBLIC int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
 
 /**
  * Get the frame rate for static picture
@@ -1960,7 +1960,7 @@ int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
  * @return The frame rate used for static picture.
  * @ingroup media_parameters
  */
-float linphone_core_get_static_picture_fps(LinphoneCore *lc);
+LINPHONE_PUBLIC float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
 LINPHONE_PUBLIC unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
@@ -1998,7 +1998,7 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 /*play/record support: use files instead of soundcard*/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
-void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
+LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
 LINPHONE_PUBLIC void linphone_core_stop_dtmf(LinphoneCore *lc);
@@ -2006,7 +2006,7 @@ LINPHONE_PUBLIC void linphone_core_stop_dtmf(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 
 
-int linphone_core_get_mtu(const LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_mtu(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
 
 /**
@@ -2091,7 +2091,7 @@ LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
  * @param[in] file The path to the file to use to store the zrtp secrets cache.
  * @ingroup initializing
  */
-void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
+LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 
 /**
  * Get the path to the file storing the zrtp secrets cache.
@@ -2099,7 +2099,7 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
  * @returns The path to the file storing the zrtp secrets cache.
  * @ingroup initializing
  */
-const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 
 /**
  * Search from the list of current calls if a remote address match uri
