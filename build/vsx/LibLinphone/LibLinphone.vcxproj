@@ -234,6 +234,9 @@
     <ProjectReference Include="..\..\..\..\msilbc\build\windows\msilbc\msilbc\msilbc.vcxproj">
       <Project>{072fad20-7007-4da2-b2e7-16ce2b219f67}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\msisac\build\windows\msisac\msisac\msisac.vcxproj">
+      <Project>{b16b81a9-bef2-44c9-b603-1065183ae844}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\mssilk\build\windows\mssilk\mssilk\mssilk.vcxproj">
       <Project>{36b528f9-fb79-4078-a16b-0a7442581bb7}</Project>
     </ProjectReference>
