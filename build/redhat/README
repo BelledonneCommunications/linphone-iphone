@@ -24,6 +24,12 @@ Download and install the repo rpmforge :
 	$ sudo rpm -Uhv ftp://ftp.pbone.net/mirror/archive.fedoraproject.org/fedora/linux/releases/15/Everything/x86_64/os/Packages/antlr3-tool-3.2-14.fc15.noarch.rpm
 	$ sudo rpm -Uhv ftp://ftp.pbone.net/mirror/archive.fedoraproject.org/fedora/linux/releases/15/Fedora/i386/os/Packages/antlr3-java-3.2-14.fc15.noarch.rpm
 
+- Git repository
+
+	Belle-sip : git clone git://git.linphone.org/belle-sip.git
+	oRTP : git clone git://git.linphone.org/ortp.git
+	Mediastreamer : git clone git://git.linphone.org/mediastreamer2.git
+
 - Compile Belle-sip / oRTP / mediastreamer
 	$ ./autogen.sh
 	$ ./configure
