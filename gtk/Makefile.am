@@ -13,7 +13,8 @@ UI_FILES=	about.ui \
 		dscp_settings.ui \
 		call_statistics.ui \
 		ldap.ui \
-		config-uri.ui
+		config-uri.ui \
+		provisioning-fetch.ui
 
 PIXMAPS=	\
 		stock_people.png 
