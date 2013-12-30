@@ -167,7 +167,7 @@ LINPHONE_PUBLIC void lp_config_set_int(LpConfig *lpconfig,const char *section, c
  *
  * @ingroup misc
 **/
-void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value);
+LINPHONE_PUBLIC void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value);
 
 /**
  * Sets a 64 bits integer config item
@@ -220,7 +220,7 @@ void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, voi
 
 /*tells whether uncommited (with lp_config_sync()) modifications exist*/
 int lp_config_needs_commit(const LpConfig *lpconfig);
-void lp_config_destroy(LpConfig *cfg);
+LINPHONE_PUBLIC void lp_config_destroy(LpConfig *cfg);
 	
 #ifdef __cplusplus
 }

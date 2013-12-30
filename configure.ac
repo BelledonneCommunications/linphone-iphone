@@ -710,7 +710,7 @@ AC_ARG_ENABLE(msg-storage,
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 if test x$enable_msg_storage != xfalse; then
-	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[
+	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.6.0],[
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
 		AC_SUBST(SQLITE3_CFLAGS)
 		AC_SUBST(SQLITE3_LIBS)

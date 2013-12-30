@@ -289,6 +289,8 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		int localport = -1;
 		const char *localip = NULL;
 		LinphoneAddress *contact=linphone_address_new(obj->reg_identity);
+		
+		linphone_address_clean(contact);
 
 		if (obj->contact_params) {
 			// We want to add a list of contacts params to the linphone address
@@ -300,7 +302,6 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
-			LCSipTransports tr;
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
 		}
