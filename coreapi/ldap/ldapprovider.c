@@ -18,6 +18,7 @@
 #include "private.h"
 #include "lpconfig.h"
 #include "contact_providers_priv.h"
+#include "mediastreamer2/mscommon.h"
 #include <belle-sip/dict.h>
 
 #ifdef BUILD_LDAP
@@ -27,12 +28,6 @@
 
 #define MAX_RUNNING_REQUESTS 10
 #define FILTER_MAX_SIZE      512
-
-typedef enum {
-	ANONYMOUS,
-	PLAIN,
-	SASL
-} LDAPAuthMethod;
 
 struct LDAPFriendData {
 	char* name;
@@ -49,16 +44,19 @@ struct _LinphoneLDAPContactProvider
 	uint    req_count;
 
 	// bind transaction
-	int bind_msgid;
-	const char* auth_mechanism;
 	bool_t connected;
+	ms_thread_t bind_thread;
 
 	// config
 	int use_tls;
-	LDAPAuthMethod auth_method;
+	const char*  auth_method;
 	const char*  username;
 	const char*  password;
 	const char*  server;
+	const char*  bind_dn;
+
+	const char*  sasl_authname;
+	const char*  sasl_realm;
 
 	const char*  base_object;
 	const char*  sip_attr;
@@ -70,6 +68,7 @@ struct _LinphoneLDAPContactProvider
 	int    timeout;
 	int    deref_aliases;
 	int    max_results;
+
 };
 
 struct _LinphoneLDAPContactSearch
@@ -92,7 +91,6 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 {
 	LinphoneLDAPContactSearch* search = belle_sip_object_new(LinphoneLDAPContactSearch);
 	LinphoneContactSearch* base = LINPHONE_CONTACT_SEARCH(search);
-	struct timeval timeout = { cp->timeout, 0 };
 
 	linphone_contact_search_init(base, predicate, cb, cb_data);
 
@@ -102,27 +100,6 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 	snprintf(search->filter, FILTER_MAX_SIZE-1, cp->filter, predicate);
 	search->filter[FILTER_MAX_SIZE-1] = 0;
 
-	ms_message("Calling ldap_search_ext with predicate '%s' on base %s", search->filter, cp->base_object);
-
-	int ret = ldap_search_ext(search->ld,
-					cp->base_object, // base from which to start
-					LDAP_SCOPE_SUBTREE,
-					search->filter, // search predicate
-					cp->attributes, // which attributes to get
-					0,              // 0 = get attrs AND value, 1 = get attrs only
-					NULL,
-					NULL,
-					&timeout,       // server timeout for the search
-					cp->max_results,// max result number
-					&search->msgid );
-
-	if( ret != LDAP_SUCCESS ){
-		ms_error("Error ldap_search_ext returned %d (%s)", ret, ldap_err2string(ret));
-		belle_sip_object_unref(search);
-		return NULL;
-	} else {
-		ms_message("LinphoneLDAPContactSearch created @%p : msgid %d", search, search->msgid);
-	}
 	return search;
 }
 
@@ -135,7 +112,6 @@ unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch
 {
 	return obj->found_count;
 }
-
 
 static void linphone_ldap_contact_search_destroy( LinphoneLDAPContactSearch* obj )
 {
@@ -163,31 +139,7 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 static void linphone_ldap_contact_provider_conf_destroy(LinphoneLDAPContactProvider* obj );
 static bool_t linphone_ldap_contact_provider_iterate(void *data);
 static int linphone_ldap_contact_provider_bind_interact(LDAP *ld, unsigned flags, void *defaults, void *sasl_interact);
-
-
-/* Authentication methods */
-struct AuthMethodDescription{
-	LDAPAuthMethod method;
-	const char* description;
-};
-
-static struct AuthMethodDescription ldap_auth_method_description[] = {
-	{ANONYMOUS, "anonymous"},
-	{PLAIN,     "plain"},
-	{SASL,      "sasl"},
-	{0,         NULL}
-};
-
-static LDAPAuthMethod linphone_ldap_contact_provider_auth_method( const char* description )
-{
-	struct AuthMethodDescription* desc = ldap_auth_method_description;
-	while( desc && desc->description ){
-		if( strcmp(description, desc->description) == 0)
-			return desc->method;
-		desc++;
-	}
-	return ANONYMOUS;
-}
+static int linphone_ldap_contact_provider_perform_search( LinphoneLDAPContactProvider* obj, LinphoneLDAPContactSearch* req);
 
 static void linphone_ldap_contact_provider_destroy_request_cb(void *req)
 {
@@ -208,38 +160,6 @@ static void linphone_ldap_contact_provider_destroy( LinphoneLDAPContactProvider*
 	if( obj->config ) linphone_dictionary_unref(obj->config);
 
 	linphone_ldap_contact_provider_conf_destroy(obj);
-}
-
-static int linphone_ldap_contact_provider_parse_bind_results( LinphoneLDAPContactProvider* obj, LDAPMessage* results )
-{
-	int ret;
-	if( obj->auth_method == ANONYMOUS ) {
-		ms_message("ANONYMOUS BIND OK");
-		ret = LDAP_SUCCESS;
-	} else {
-		ms_message("Advanced BIND follow-up");
-		ret = ldap_sasl_interactive_bind(obj->ld,
-										 NULL, // dn, should be NULL
-										 "DIGEST-MD5", // TODO: use defined auth
-										 NULL,NULL, // server and client controls
-										 LDAP_SASL_QUIET, // never prompt, only use callback
-										 linphone_ldap_contact_provider_bind_interact, // callback to call when info is needed
-										 obj, // private data
-										 results, // result, to pass later on when a ldap_result() comes
-										 &obj->auth_mechanism,
-										 &obj->bind_msgid );
-		if( ret != LDAP_SUCCESS){
-			ms_error("ldap_parse_sasl_bind_result failed(%d)", ret);
-		}
-	}
-
-	if( ret == LDAP_SUCCESS ){
-		obj->connected  = TRUE;
-		obj->bind_msgid = 0;
-	}
-
-	return ret;
-
 }
 
 static int linphone_ldap_contact_provider_complete_contact( LinphoneLDAPContactProvider* obj, struct LDAPFriendData* lf, const char* attr_name, const char* attr_value)
@@ -335,7 +255,7 @@ static void linphone_ldap_contact_provider_handle_search_result( LinphoneLDAPCon
 static bool_t linphone_ldap_contact_provider_iterate(void *data)
 {
 	LinphoneLDAPContactProvider* obj = LINPHONE_LDAP_CONTACT_PROVIDER(data);
-	if( obj->ld && ((obj->req_count > 0) || (obj->bind_msgid != 0) )){
+	if( obj->ld && obj->connected && (obj->req_count > 0) ){
 
 		// never block
 		struct timeval timeout = {0,0};
@@ -346,19 +266,14 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		switch( ret ){
 		case -1:
 		{
-			ms_warning("Error in ldap_result : returned -1 (req_count %d, bind_msgid %d): %s", obj->req_count, obj->bind_msgid, ldap_err2string(errno));
+			ms_warning("Error in ldap_result : returned -1 (req_count %d): %s", obj->req_count, ldap_err2string(errno));
 			break;
 		}
 		case 0: break; // nothing to do
 
 		case LDAP_RES_BIND:
 		{
-			ms_message("iterate: LDAP_RES_BIND");
-			if( ldap_msgid( results ) != obj->bind_msgid ) {
-				ms_error("Bad msgid");
-			} else {
-				linphone_ldap_contact_provider_parse_bind_results( obj, results );
-			}
+			ms_error("iterate: unexpected LDAP_RES_BIND");
 			break;
 		}
 		case LDAP_RES_EXTENDED:
@@ -389,6 +304,20 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		if( results )
 			ldap_msgfree(results);
 	}
+
+	if( obj->ld && obj->connected ){
+		// check for pending searches
+		uint i;
+
+		for( i=0; i<obj->req_count; i++){
+			LinphoneLDAPContactSearch* search = (LinphoneLDAPContactSearch*)ms_list_nth_data( obj->requests, i );
+			if( search && search->msgid == 0){
+				ms_message("Found pending search %p (for %s), launching...", search, search->filter);
+				linphone_ldap_contact_provider_perform_search(obj, search);
+			}
+		}
+	}
+
 	return TRUE;
 }
 
@@ -410,6 +339,9 @@ static char* required_config_keys[] = {
 	"auth_method",
 	"username",
 	"password",
+	"bind_dn",
+	"sasl_authname",
+	"sasl_realm",
 
 	// search
 	"base_object",
@@ -455,24 +387,25 @@ static void linphone_ldap_contact_provider_loadconfig(LinphoneLDAPContactProvide
 	// clone new config into the dictionary
 	obj->config = linphone_dictionary_ref(linphone_dictionary_clone(dict));
 
+#if 0 // until sasl auth is set up, force anonymous auth.
+	linphone_dictionary_set_string(obj->config, "auth_method", "ANONYMOUS");
+#endif
+
 	obj->use_tls       = linphone_dictionary_get_int(obj->config, "use_tls",       0);
 	obj->timeout       = linphone_dictionary_get_int(obj->config, "timeout",       10);
 	obj->deref_aliases = linphone_dictionary_get_int(obj->config, "deref_aliases", 0);
 	obj->max_results   = linphone_dictionary_get_int(obj->config, "max_results",   50);
+	obj->auth_method   = linphone_dictionary_get_string(obj->config, "auth_method",    "ANONYMOUS");
 	obj->username      = linphone_dictionary_get_string(obj->config, "username",       "");
 	obj->password      = linphone_dictionary_get_string(obj->config, "password",       "");
+	obj->bind_dn       = linphone_dictionary_get_string(obj->config, "bind_dn",        "");
 	obj->base_object   = linphone_dictionary_get_string(obj->config, "base_object",    "dc=example,dc=com");
-	obj->server        = linphone_dictionary_get_string(obj->config, "server",         "ldap://192.168.0.230:10389");
+	obj->server        = linphone_dictionary_get_string(obj->config, "server",         "ldap://localhost");
 	obj->filter        = linphone_dictionary_get_string(obj->config, "filter",         "uid=*%s*");
 	obj->name_attr     = linphone_dictionary_get_string(obj->config, "name_attribute", "givenName");
 	obj->sip_attr      = linphone_dictionary_get_string(obj->config, "sip_attribute",  "mobile");
-
-	/*
-	 * Get authentication method
-	 */
-	obj->auth_method = linphone_ldap_contact_provider_auth_method(
-				linphone_dictionary_get_string(obj->config, "auth_method", "anonymous")
-				);
+	obj->sasl_authname = linphone_dictionary_get_string(obj->config, "sasl_authname",  "");
+	obj->sasl_realm    = linphone_dictionary_get_string(obj->config, "sasl_realm",  "");
 
 	/*
 	 * parse the attributes list
@@ -520,20 +453,23 @@ static int linphone_ldap_contact_provider_bind_interact(LDAP *ld,
 
 		switch( interact->id ) {
 		case SASL_CB_GETREALM:
-			ms_message("* SASL_CB_GETREALM");
-			dflt=NULL;
+			ms_message("* SASL_CB_GETREALM -> %s", obj->sasl_realm);
+			dflt = obj->sasl_realm;
+		break;
+		case SASL_CB_AUTHNAME:
+			ms_message("* SASL_CB_AUTHNAME -> %s", obj->sasl_authname);
+			dflt = obj->sasl_authname;
 		break;
 		case SASL_CB_USER:
-		case SASL_CB_AUTHNAME:
-			ms_message("* SASL_CB_AUTHNAME -> %s", obj->username);
-			dflt=obj->username;
+			ms_message("* SASL_CB_USER -> %s", obj->username);
+			dflt = obj->username;
 		break;
 		case SASL_CB_PASS:
-			ms_message("* SASL_CB_PASS -> %s", obj->password);
-			dflt=obj->password;
+			ms_message("* SASL_CB_PASS (hidden)");
+			dflt = obj->password;
 		break;
 		default:
-			ms_message("my_sasl_interact asked for unknown %lx\n",interact->id);
+			ms_message("SASL interact asked for unknown id %lx\n",interact->id);
 		}
 		interact->result = (dflt && *dflt) ? dflt : (const char*)"";
 		interact->len = strlen( (const char*)interact->result );
@@ -543,32 +479,42 @@ static int linphone_ldap_contact_provider_bind_interact(LDAP *ld,
 	return LDAP_SUCCESS;
 }
 
-static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj )
+static void* ldap_bind_thread_func( void*arg)
 {
+	LinphoneLDAPContactProvider* obj = linphone_ldap_contact_provider_ref(arg);
+	const char* auth_mechanism = obj->auth_method;
 	int ret;
-	const char* auth_mechanism = linphone_dictionary_get_string(obj->config, "auth_method", "anonymous");
-	LDAPAuthMethod method = obj->auth_method;
 
-	if( method == ANONYMOUS ){
-		// for anonymous authentication, use a simple sasl_bind
-		struct berval creds = {strlen(obj->password), ms_strdup(obj->password)};
-		ret = ldap_sasl_bind(obj->ld, obj->base_object, NULL, &creds, NULL, NULL, &obj->bind_msgid);
-		if(creds.bv_val) ms_free(creds.bv_val);
-	} else {
-		ret = ldap_sasl_interactive_bind(obj->ld,
-										 NULL, // dn, should be NULL
-										 "SIMPLE",//"DIGEST-MD5",
-										 NULL,NULL, // server and client controls
-										 LDAP_SASL_QUIET, // never prompt, only use callback
-										 linphone_ldap_contact_provider_bind_interact, // callback to call when info is needed
-										 obj, // private data
-										 NULL, // result, to pass later on when a ldap_result() comes
-										 &obj->auth_mechanism,
-										 &obj->bind_msgid );
+	if( (strcmp(auth_mechanism, "ANONYMOUS") == 0) || (strcmp(auth_mechanism, "SIMPLE") == 0) )
+	{
+		struct berval passwd = { strlen(obj->password), ms_strdup(obj->password)};
+		auth_mechanism = LDAP_SASL_SIMPLE;
+		ret = ldap_sasl_bind_s(obj->ld,
+							   obj->bind_dn,
+							   auth_mechanism,
+							   &passwd,
+							   NULL,
+							   NULL,
+							   NULL);
+
+		ms_free(passwd.bv_val);
 	}
-	if( ret == LDAP_SUCCESS || ret == LDAP_SASL_BIND_IN_PROGRESS ) {
-		if( ret == LDAP_SASL_BIND_IN_PROGRESS) ms_message("BIND_IN_PROGRESS");
-		ms_message("LDAP bind request sent, auth: %s, msgid %x", obj->auth_mechanism?obj->auth_mechanism:"-", obj->bind_msgid);
+	else
+	{
+
+		ms_message("LDAP interactive bind");
+		ret = ldap_sasl_interactive_bind_s(obj->ld,
+										   obj->bind_dn,
+										   auth_mechanism,
+										   NULL,NULL,
+										   LDAP_SASL_QUIET,
+										   linphone_ldap_contact_provider_bind_interact,
+										   obj);
+	}
+
+	if( ret == LDAP_SUCCESS ) {
+		ms_message("LDAP bind OK");
+		obj->connected = 1;
 	} else {
 		int err;
 		ldap_get_option(obj->ld, LDAP_OPT_RESULT_CODE, &err);
@@ -576,6 +522,15 @@ static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj
 				 ret, err, ldap_err2string(err), auth_mechanism );
 	}
 
+	obj->bind_thread = 0;
+	linphone_ldap_contact_provider_unref(obj);
+	return (void*)0;
+}
+
+static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj )
+{
+	// perform the bind in an alternate thread, so that we don't stall the main loop
+	ms_thread_create(&obj->bind_thread, NULL, ldap_bind_thread_func, obj);
 	return 0;
 }
 
@@ -619,7 +574,7 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 		} else {
 			// prevents blocking calls to bind() when the server is invalid, but this is not working for now..
 			// see bug https://bugzilla.mozilla.org/show_bug.cgi?id=79509
-			ldap_set_option( obj->ld, LDAP_OPT_CONNECT_ASYNC, LDAP_OPT_ON);
+			//ldap_set_option( obj->ld, LDAP_OPT_CONNECT_ASYNC, LDAP_OPT_ON);
 
 			// register our hook into iterate so that LDAP can do its magic asynchronously.
 			linphone_core_add_iterate_hook(lc, linphone_ldap_contact_provider_iterate, obj);
@@ -678,22 +633,67 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 	return ret;
 }
 
+static int linphone_ldap_contact_provider_perform_search( LinphoneLDAPContactProvider* obj, LinphoneLDAPContactSearch* req)
+{
+	int ret = -1;
+	struct timeval timeout = { obj->timeout, 0 };
+
+	if( req->msgid == 0 ){
+		ms_message ( "Calling ldap_search_ext with predicate '%s' on base %s", req->filter, obj->base_object );
+		ret = ldap_search_ext(obj->ld,
+						obj->base_object,// base from which to start
+						LDAP_SCOPE_SUBTREE,
+						req->filter,     // search predicate
+						obj->attributes, // which attributes to get
+						0,               // 0 = get attrs AND value, 1 = get attrs only
+						NULL,
+						NULL,
+						&timeout,        // server timeout for the search
+						obj->max_results,// max result number
+						&req->msgid );
+
+		if( ret != LDAP_SUCCESS ){
+			ms_error("Error ldap_search_ext returned %d (%s)", ret, ldap_err2string(ret));
+		} else {
+			ms_message("LinphoneLDAPContactSearch created @%p : msgid %d", req, req->msgid);
+		}
+
+	} else {
+		ms_warning( "LDAP Search already performed for %s, msgid %d", req->filter, req->msgid);
+	}
+	return ret;
+}
+
 static LinphoneLDAPContactSearch* linphone_ldap_contact_provider_begin_search ( LinphoneLDAPContactProvider* obj,
 		const char* predicate,
 		ContactSearchCallback cb,
 		void* cb_data )
 {
+	bool_t connected = obj->connected;
+
 	// if we're not yet connected, bind
-	if( !obj->connected ) linphone_ldap_contact_provider_bind(obj);
+	if( !connected ) {
+		if( !obj->bind_thread ) linphone_ldap_contact_provider_bind(obj);
+	}
 
-	LinphoneLDAPContactSearch* request = linphone_ldap_contact_search_create ( obj, predicate, cb, cb_data );
+	LinphoneLDAPContactSearch* request = linphone_ldap_contact_search_create( obj, predicate, cb, cb_data );
 
-	if ( request != NULL ) {
+	if( connected ){
+		int ret = linphone_ldap_contact_provider_perform_search(obj, request);
 		ms_message ( "Created search %d for '%s', msgid %d, @%p", obj->req_count, predicate, request->msgid, request );
+		if( ret != LDAP_SUCCESS ){
+			belle_sip_object_unref(request);
+			request = NULL;
+		}
+	} else {
+		ms_message("Delayed search, wait for connection");
+	}
 
-		obj->requests  = ms_list_append ( obj->requests, request );
+	if( request != NULL ) {
+		obj->requests = ms_list_append ( obj->requests, request );
 		obj->req_count++;
 	}
+
 	return request;
 }
 
@@ -708,13 +708,10 @@ static int linphone_ldap_contact_provider_marshal(LinphoneLDAPContactProvider* o
 	error = belle_sip_snprintf(buff, buff_size, offset, "req_count:%d,\n", obj->req_count);
 	if(error!= BELLE_SIP_OK) return error;
 
-	error = belle_sip_snprintf(buff, buff_size, offset, "bind_msgid:%d,\n", obj->bind_msgid);
-	if(error!= BELLE_SIP_OK) return error;
-
 	error = belle_sip_snprintf(buff, buff_size, offset,
 							   "CONFIG:\n"
 							   "tls: %d \n"
-							   "auth: %d \n"
+							   "auth: %s \n"
 							   "user: %s \n"
 							   "pass: %s \n"
 							   "server: %s \n"
