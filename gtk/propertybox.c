@@ -76,7 +76,7 @@ static void linphone_gtk_ldap_load_settings(GtkWidget* param)
 
 
 	entry = GTK_ENTRY(linphone_gtk_get_widget(pb,"ldap_server"));
-	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"server", "ldap://example.com") );
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"server", "ldap://localhost") );
 
 	entry = GTK_ENTRY(linphone_gtk_get_widget(pb,"ldap_username"));
 	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"username", "") );
@@ -86,7 +86,7 @@ static void linphone_gtk_ldap_load_settings(GtkWidget* param)
 
 	// TODO
 	//	GtkComboBox* cbox = GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"ldap_auth_method"));
-	//	gtk_combo_box_set_active(entry, linphone_dictionary_get_string(ldap_conf,"auth_method", "anonymous") );
+	//	gtk_combo_box_set_active(entry, linphone_dictionary_get_string(ldap_conf,"auth_method", "ANONYMOUS") );
 
 	entry = GTK_ENTRY(linphone_gtk_get_widget(pb,"ldap_base_object"));
 	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"base_object", "dc=example,dc=com") );
@@ -112,6 +112,9 @@ static void linphone_gtk_ldap_load_settings(GtkWidget* param)
 
 	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"ldap_timeout"));
 	gtk_spin_button_set_value(spin, linphone_dictionary_get_int(ldap_conf,"timeout", 10) );
+
+	// TODO: add missing LDAP components
+	// TODO: move this to an external box
 
 }
 
