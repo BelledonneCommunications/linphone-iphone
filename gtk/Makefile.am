@@ -11,7 +11,8 @@ UI_FILES=	about.ui \
 		tunnel_config.ui \
 		waiting.ui \
 		dscp_settings.ui \
-		call_statistics.ui
+		call_statistics.ui \
+		ldap.ui
 
 PIXMAPS=	\
 		stock_people.png 

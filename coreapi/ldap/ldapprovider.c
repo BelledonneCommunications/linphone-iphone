@@ -288,7 +288,10 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 				linphone_ldap_contact_provider_handle_search_result(obj, req, message );
 				message = ldap_next_message(obj->ld, message);
 			}
-			if( req && ret == LDAP_RES_SEARCH_RESULT) linphone_ldap_contact_provider_cancel_search(LINPHONE_CONTACT_PROVIDER(obj), LINPHONE_CONTACT_SEARCH(req));
+			if( req && ret == LDAP_RES_SEARCH_RESULT)
+				linphone_ldap_contact_provider_cancel_search(
+							LINPHONE_CONTACT_PROVIDER(obj),
+							LINPHONE_CONTACT_SEARCH(req));
 			break;
 		}
 		case LDAP_RES_MODIFY:
@@ -312,8 +315,14 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 		for( i=0; i<obj->req_count; i++){
 			LinphoneLDAPContactSearch* search = (LinphoneLDAPContactSearch*)ms_list_nth_data( obj->requests, i );
 			if( search && search->msgid == 0){
+				int ret;
 				ms_message("Found pending search %p (for %s), launching...", search, search->filter);
-				linphone_ldap_contact_provider_perform_search(obj, search);
+				ret = linphone_ldap_contact_provider_perform_search(obj, search);
+				if( ret != LDAP_SUCCESS ){
+					linphone_ldap_contact_provider_cancel_search(
+								LINPHONE_CONTACT_PROVIDER(obj),
+								LINPHONE_CONTACT_SEARCH(search));
+				}
 			}
 		}
 	}
@@ -623,6 +632,7 @@ static unsigned int linphone_ldap_contact_provider_cancel_search(LinphoneContact
 
 	MSList* list_entry = ms_list_find_custom(ldap_cp->requests, linphone_ldap_request_entry_compare_strong, req);
 	if( list_entry ) {
+		ms_message("Delete search %p", req);
 		ldap_cp->requests = ms_list_remove_link(ldap_cp->requests, list_entry);
 		ldap_cp->req_count--;
 		ret = 0; // return OK if we found it in the monitored requests
@@ -639,7 +649,7 @@ static int linphone_ldap_contact_provider_perform_search( LinphoneLDAPContactPro
 	struct timeval timeout = { obj->timeout, 0 };
 
 	if( req->msgid == 0 ){
-		ms_message ( "Calling ldap_search_ext with predicate '%s' on base %s", req->filter, obj->base_object );
+		ms_message ( "Calling ldap_search_ext with predicate '%s' on base '%s', ld %p, attrs '%s', maxres = %d", req->filter, obj->base_object, obj->ld, obj->attributes[0], obj->max_results );
 		ret = ldap_search_ext(obj->ld,
 						obj->base_object,// base from which to start
 						LDAP_SCOPE_SUBTREE,
