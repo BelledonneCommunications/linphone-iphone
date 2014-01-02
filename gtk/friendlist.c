@@ -87,6 +87,18 @@ static GdkPixbuf *create_chat_picture(){
 	return pixbuf;
 }
 
+static GdkPixbuf *create_composing_unread_msg(){
+	GdkPixbuf *pixbuf;
+	pixbuf = create_pixbuf("composing_active_chat.png");
+	return pixbuf;
+}
+
+static GdkPixbuf *create_composing_chat_picture(){
+	GdkPixbuf *pixbuf;
+	pixbuf = create_pixbuf("composing_chat.png");
+	return pixbuf;
+}
+
 /*
 void linphone_gtk_set_friend_status(GtkWidget *friendlist , LinphoneFriend * fid, const gchar *url, const gchar *status, const gchar *img){
 	GtkTreeIter iter;
@@ -227,15 +239,23 @@ void linphone_gtk_friend_list_update_chat_picture(){
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
 	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
 	LinphoneChatRoom *cr=NULL;
+	bool_t is_composing;
 	int nbmsg=0;
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
 			gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
 			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
+			is_composing=linphone_chat_room_is_remote_composing(cr);
 			if(nbmsg != 0){
-				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_unread_msg(),-1);
+				if (is_composing == TRUE)
+					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_composing_unread_msg(),-1);
+				else
+					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_unread_msg(),-1);
 			} else {
-				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_chat_picture(),-1);
+				if (is_composing == TRUE)
+					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_composing_chat_picture(),-1);
+				else
+					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_chat_picture(),-1);
 			}
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}

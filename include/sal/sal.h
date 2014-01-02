@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/mscommon.h"
 #include "ortp/ortp_srtp.h"
+#include "belle-sip/belle-sip.h"
 
 #ifndef LINPHONE_PUBLIC
 	#define LINPHONE_PUBLIC MS2_PUBLIC
@@ -224,6 +225,11 @@ typedef struct SalMessage{
 	time_t time;
 }SalMessage;
 
+typedef struct SalIsComposing {
+	const char *from;
+	const char *text;
+} SalIsComposing;
+
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new();
@@ -390,6 +396,7 @@ typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
+typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
@@ -425,6 +432,7 @@ typedef struct SalCallbacks{
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
 	SalOnTextDeliveryUpdate text_delivery_update;
+	SalOnIsComposingReceived is_composing_received;
 	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
@@ -690,6 +698,8 @@ LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
+belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
+void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer);
 
 int sal_body_has_type(const SalBody *body, const char *type, const char *subtype);
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/

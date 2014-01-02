@@ -338,6 +338,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
+void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -426,12 +427,22 @@ struct _LinphoneAuthInfo
 	bool_t works;
 };
 
+typedef enum _LinphoneIsComposingState {
+	LinphoneIsComposingIdle,
+	LinphoneIsComposingActive
+} LinphoneIsComposingState;
+
 struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
 	void * user_data;
 	MSList *messages_hist;
+	LinphoneIsComposingState remote_is_composing;
+	LinphoneIsComposingState is_composing;
+	belle_sip_source_t *remote_composing_refresh_timer;
+	belle_sip_source_t *composing_idle_timer;
+	belle_sip_source_t *composing_refresh_timer;
 };
 
 
@@ -787,6 +798,35 @@ void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+/*****************************************************************************
+ * XML UTILITY FUNCTIONS                                                     *
+ ****************************************************************************/
+
+#include <libxml/xmlreader.h>
+#include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
+#define XMLPARSING_BUFFER_LEN 2048
+#define MAX_XPATH_LENGTH 256
+
+typedef struct _xmlparsing_context {
+	xmlDoc *doc;
+	xmlXPathContextPtr xpath_ctx;
+	char errorBuffer[XMLPARSING_BUFFER_LEN];
+	char warningBuffer[XMLPARSING_BUFFER_LEN];
+} xmlparsing_context_t;
+
+xmlparsing_context_t * linphone_xmlparsing_context_new(void);
+void linphone_xmlparsing_context_destroy(xmlparsing_context_t *ctx);
+void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...);
+int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
+char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+void linphone_free_xml_text_content(const char *text);
+xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+
 
 #ifdef __cplusplus
 }

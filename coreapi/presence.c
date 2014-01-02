@@ -22,15 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 #include "linphonepresence.h"
 
-#include <libxml/xmlreader.h>
-#include <libxml/xmlwriter.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
-
-#define XMLPARSING_BUFFER_LEN	2048
-#define MAX_XPATH_LENGTH	256
-
 
 
 extern const char *__policy_enum_to_str(LinphoneSubscribePolicy pol);
@@ -83,13 +74,6 @@ struct _LinphonePresenceModel {
 	MSList *notes;		/**< A list of _LinphonePresenceNote structures. */
 };
 
-typedef struct _xmlparsing_context {
-	xmlDoc *doc;
-	xmlXPathContextPtr xpath_ctx;
-	char errorBuffer[XMLPARSING_BUFFER_LEN];
-	char warningBuffer[XMLPARSING_BUFFER_LEN];
-} xmlparsing_context_t;
-
 
 static const char *person_prefix = "/pidf:presence/dm:person";
 
@@ -97,38 +81,6 @@ static const char *person_prefix = "/pidf:presence/dm:person";
 /*****************************************************************************
  * PRIVATE FUNCTIONS                                                         *
  ****************************************************************************/
-
-static xmlparsing_context_t * xmlparsing_context_new() {
-	xmlparsing_context_t *xmlCtx = (xmlparsing_context_t *)malloc(sizeof(xmlparsing_context_t));
-	if (xmlCtx != NULL) {
-		xmlCtx->doc = NULL;
-		xmlCtx->xpath_ctx = NULL;
-		xmlCtx->errorBuffer[0] = '\0';
-		xmlCtx->warningBuffer[0] = '\0';
-	}
-	return xmlCtx;
-}
-
-static void xmlparsing_context_destroy(xmlparsing_context_t *ctx) {
-	if (ctx->doc != NULL) {
-		xmlFreeDoc(ctx->doc);
-		ctx->doc = NULL;
-	}
-	if (ctx->xpath_ctx != NULL) {
-		xmlXPathFreeContext(ctx->xpath_ctx);
-		ctx->xpath_ctx = NULL;
-	}
-	free(ctx);
-}
-
-static void xmlparsing_genericxml_error(void *ctx, const char *fmt, ...) {
-	xmlparsing_context_t *xmlCtx = (xmlparsing_context_t *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
-	va_list args;
-	va_start(args, fmt);
-	vsnprintf(xmlCtx->errorBuffer + sl, XMLPARSING_BUFFER_LEN - sl, fmt, args);
-	va_end(args);
-}
 
 static char presence_id_valid_characters[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -1183,45 +1135,6 @@ void * linphone_presence_note_get_user_data(LinphonePresenceNote *note) {
  * XML PRESENCE INTERNAL HANDLING                                            *
  ****************************************************************************/
 
-static int create_xml_xpath_context(xmlparsing_context_t *xml_ctx) {
-	if (xml_ctx->xpath_ctx != NULL) {
-		xmlXPathFreeContext(xml_ctx->xpath_ctx);
-	}
-	xml_ctx->xpath_ctx = xmlXPathNewContext(xml_ctx->doc);
-	if (xml_ctx->xpath_ctx == NULL) return -1;
-	return 0;
-}
-
-static char * get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression) {
-	xmlXPathObjectPtr xpath_obj;
-	xmlChar *text = NULL;
-	int i;
-
-	xpath_obj = xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
-	if (xpath_obj != NULL) {
-		if (xpath_obj->nodesetval != NULL) {
-			xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-			for (i = 0; i < nodes->nodeNr; i++) {
-				xmlNodePtr node = nodes->nodeTab[i];
-				if (node->children != NULL) {
-					text = xmlNodeListGetString(xml_ctx->doc, node->children, 1);
-				}
-			}
-		}
-		xmlXPathFreeObject(xpath_obj);
-	}
-
-	return (char *)text;
-}
-
-static void free_xml_text_content(const char *text) {
-	xmlFree((xmlChar *)text);
-}
-
-static xmlXPathObjectPtr get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression) {
-	return xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
-}
-
 static const char *service_prefix = "/pidf:presence/pidf:tuple";
 
 static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx, LinphonePresenceService *service, unsigned int service_idx) {
@@ -1233,19 +1146,19 @@ static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx
 	int i;
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note", service_prefix, service_idx);
-	note_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+	note_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note[%i]", service_prefix, service_idx, i);
-			note_str = get_xml_text_content(xml_ctx, xpath_str);
+			note_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note[%i]/@xml:lang", service_prefix, service_idx, i);
-			lang = get_xml_text_content(xml_ctx, xpath_str);
+			lang = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			note = linphone_presence_note_new(note_str, lang);
 			presence_service_add_note(service, note);
-			if (lang != NULL) free_xml_text_content(lang);
-			free_xml_text_content(note_str);
+			if (lang != NULL) linphone_free_xml_text_content(lang);
+			linphone_free_xml_text_content(note_str);
 		}
 	}
 	if (note_object != NULL) xmlXPathFreeObject(note_object);
@@ -1264,11 +1177,11 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 	LinphonePresenceBasicStatus basic_status;
 	int i;
 
-	service_object = get_xml_xpath_object_for_node_list(xml_ctx, service_prefix);
+	service_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, service_prefix);
 	if ((service_object != NULL) && (service_object->nodesetval != NULL)) {
 		for (i = 1; i <= service_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:status/pidf:basic", service_prefix, i);
-			basic_status_str = get_xml_text_content(xml_ctx, xpath_str);
+			basic_status_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (basic_status_str == NULL)
 				continue;
 
@@ -1278,33 +1191,33 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 				basic_status = LinphonePresenceBasicStatusClosed;
 			} else {
 				/* Invalid value for basic status. */
-				free_xml_text_content(basic_status_str);
+				linphone_free_xml_text_content(basic_status_str);
 				return -1;
 			}
 
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:timestamp", service_prefix, i);
-			timestamp_str = get_xml_text_content(xml_ctx, xpath_str);
+			timestamp_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:contact", service_prefix, i);
-			contact_str = get_xml_text_content(xml_ctx, xpath_str);
+			contact_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/@id", service_prefix, i);
-			service_id_str = get_xml_text_content(xml_ctx, xpath_str);
+			service_id_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			service = presence_service_new(service_id_str, basic_status);
 			if (service != NULL) {
 				if (timestamp_str != NULL) {
 					presence_service_set_timestamp(service, parse_timestamp(timestamp_str));
-					free_xml_text_content(timestamp_str);
+					linphone_free_xml_text_content(timestamp_str);
 				}
 				if (contact_str != NULL) {
 					linphone_presence_service_set_contact(service, contact_str);
-					free_xml_text_content(contact_str);
+					linphone_free_xml_text_content(contact_str);
 				}
 				process_pidf_xml_presence_service_notes(xml_ctx, service, i);
 				linphone_presence_model_add_service(model, service);
 			}
-			free_xml_text_content(basic_status_str);
-			if (service_id_str != NULL) free_xml_text_content(service_id_str);
+			linphone_free_xml_text_content(basic_status_str);
+			if (service_id_str != NULL) linphone_free_xml_text_content(service_id_str);
 		}
 	}
 	if (service_object != NULL) xmlXPathFreeObject(service_object);
@@ -1333,11 +1246,11 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 	int err = 0;
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities", person_prefix, person_idx);
-	activities_nodes_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+	activities_nodes_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((activities_nodes_object != NULL) && (activities_nodes_object->nodesetval != NULL)) {
 		for (i = 1; i <= activities_nodes_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities[%i]/rpid:*", person_prefix, person_idx, i);
-			activities_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+			activities_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 			if ((activities_object != NULL) && (activities_object->nodesetval != NULL)) {
 				for (j = 0; j < activities_object->nodesetval->nodeNr; j++) {
 					activity_node = activities_object->nodesetval->nodeTab[j];
@@ -1345,14 +1258,14 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 						LinphonePresenceActivityType acttype;
 						description = (const char *)xmlNodeGetContent(activity_node);
 						if ((description != NULL) && (description[0] == '\0')) {
-							free_xml_text_content(description);
+							linphone_free_xml_text_content(description);
 							description = NULL;
 						}
 						err = activity_name_to_presence_activity_type((const char *)activity_node->name, &acttype);
 						if (err < 0) break;
 						activity = linphone_presence_activity_new(acttype, description);
 						linphone_presence_person_add_activity(person, activity);
-						if (description != NULL) free_xml_text_content(description);
+						if (description != NULL) linphone_free_xml_text_content(description);
 					}
 				}
 			}
@@ -1374,37 +1287,37 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 	int i;
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities/rpid:note", person_prefix, person_idx);
-	note_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+	note_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities/rpid:note[%i]", person_prefix, person_idx, i);
-			note_str = get_xml_text_content(xml_ctx, xpath_str);
+			note_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities/rpid:note[%i]/@xml:lang", person_prefix, person_idx, i);
-			lang = get_xml_text_content(xml_ctx, xpath_str);
+			lang = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			note = linphone_presence_note_new(note_str, lang);
 			presence_person_add_activities_note(person, note);
-			if (lang != NULL) free_xml_text_content(lang);
-			free_xml_text_content(note_str);
+			if (lang != NULL) linphone_free_xml_text_content(lang);
+			linphone_free_xml_text_content(note_str);
 		}
 	}
 	if (note_object != NULL) xmlXPathFreeObject(note_object);
 
 	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note", person_prefix, person_idx);
-	note_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
+	note_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note[%i]", person_prefix, person_idx, i);
-			note_str = get_xml_text_content(xml_ctx, xpath_str);
+			note_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note[%i]/@xml:lang", person_prefix, person_idx, i);
-			lang = get_xml_text_content(xml_ctx, xpath_str);
+			lang = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			note = linphone_presence_note_new(note_str, lang);
 			presence_person_add_note(person, note);
-			if (lang != NULL) free_xml_text_content(lang);
-			free_xml_text_content(note_str);
+			if (lang != NULL) linphone_free_xml_text_content(lang);
+			linphone_free_xml_text_content(note_str);
 		}
 	}
 	if (note_object != NULL) xmlXPathFreeObject(note_object);
@@ -1422,13 +1335,13 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 	int i;
 	int err = 0;
 
-	person_object = get_xml_xpath_object_for_node_list(xml_ctx, person_prefix);
+	person_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, person_prefix);
 	if ((person_object != NULL) && (person_object->nodesetval != NULL)) {
 		for (i = 1; i <= person_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/@id", person_prefix, i);
-			person_id_str = get_xml_text_content(xml_ctx, xpath_str);
+			person_id_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:timestamp", person_prefix, i);
-			person_timestamp_str = get_xml_text_content(xml_ctx, xpath_str);
+			person_timestamp_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (person_timestamp_str == NULL)
 				timestamp = time(NULL);
 			else
@@ -1446,8 +1359,8 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 					break;
 				}
 			}
-			if (person_id_str != NULL) free_xml_text_content(person_id_str);
-			if (person_timestamp_str != NULL) free_xml_text_content(person_timestamp_str);
+			if (person_id_str != NULL) linphone_free_xml_text_content(person_id_str);
+			if (person_timestamp_str != NULL) linphone_free_xml_text_content(person_timestamp_str);
 		}
 	}
 	if (person_object != NULL) xmlXPathFreeObject(person_object);
@@ -1467,19 +1380,19 @@ static int process_pidf_xml_presence_notes(xmlparsing_context_t *xml_ctx, Linpho
 	const char *lang;
 	int i;
 
-	note_object = get_xml_xpath_object_for_node_list(xml_ctx, "/pidf:presence/pidf:note");
+	note_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/pidf:presence/pidf:note");
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
 			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/pidf:note[%i]", i);
-			note_str = get_xml_text_content(xml_ctx, xpath_str);
+			note_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
 			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/pidf:note[%i]/@xml:lang", i);
-			lang = get_xml_text_content(xml_ctx, xpath_str);
+			lang = linphone_get_xml_text_content(xml_ctx, xpath_str);
 
 			note = linphone_presence_note_new(note_str, lang);
 			presence_model_add_note(model, note);
-			if (lang != NULL) free_xml_text_content(lang);
-			free_xml_text_content(note_str);
+			if (lang != NULL) linphone_free_xml_text_content(lang);
+			linphone_free_xml_text_content(note_str);
 		}
 	}
 	if (note_object != NULL) xmlXPathFreeObject(note_object);
@@ -1491,7 +1404,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 	LinphonePresenceModel *model = NULL;
 	int err;
 
-	if (create_xml_xpath_context(xml_ctx) < 0)
+	if (linphone_create_xml_xpath_context(xml_ctx) < 0)
 		return NULL;
 
 	model = linphone_presence_model_new();
@@ -1606,15 +1519,15 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 	}
 
 	if (strcmp(content_subtype, "pidf+xml") == 0) {
-		xml_ctx = xmlparsing_context_new();
-		xmlSetGenericErrorFunc(xml_ctx, xmlparsing_genericxml_error);
+		xml_ctx = linphone_xmlparsing_context_new();
+		xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
 		xml_ctx->doc = xmlReadDoc((const unsigned char*)body, 0, NULL, 0);
 		if (xml_ctx->doc != NULL) {
 			model = process_pidf_xml_presence_notification(xml_ctx);
 		} else {
 			ms_warning("Wrongly formatted presence XML: %s", xml_ctx->errorBuffer);
 		}
-		xmlparsing_context_destroy(xml_ctx);
+		linphone_xmlparsing_context_destroy(xml_ctx);
 	} else {
 		ms_error("Unknown content type '%s/%s' for presence", content_type, content_subtype);
 	}

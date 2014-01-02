@@ -977,6 +977,20 @@ LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int 
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
+
+/**
+ * Notify the destination of the chat message being composed that the user is typing a new message.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which a new message is being typed.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_compose(LinphoneChatRoom *cr);
+
+/**
+ * Tells whether the remote is currently composing a message.
+ * @param[in] cr The "LinphoneChatRoom object corresponding to the conversation.
+ * @return TRUE if the remote is currently composing a message, FALSE otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr);
+
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
@@ -1131,6 +1145,14 @@ typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChat
 typedef void (*LinphoneCoreMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 
 /**
+ * Is composing notification callback prototype.
+ *
+ * @param[in] lc #LinphoneCore object
+ * @param[in] room #LinphoneChatRoom involved in the conversation.
+ */
+typedef void (*LinphoneCoreIsComposingReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room);
+
+/**
  * Callback for being notified of DTMFs received.
  * @param lc the linphone core
  * @param call the call that received the dtmf
@@ -1179,6 +1201,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /** a message is received, can be text or external body*/
+	LinphoneCoreIsComposingReceivedCb is_composing_received; /**< An is-composing notification has been received */
 	LinphoneCoreDtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
 	LinphoneCoreReferReceivedCb refer_received; /**< An out of call refer was received */
 	LinphoneCoreCallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
