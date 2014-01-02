@@ -285,7 +285,7 @@ bool DaemonCommand::matches(const char *name) const {
 }
 
 Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
-		mLSD(0), mLogFile(NULL), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
+		mLSD(0), mLogFile(NULL), mAutoVideo(0), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
 	ms_mutex_init(&mMutex, NULL);
 	mServerFd = -1;
 	mChildFd = -1;

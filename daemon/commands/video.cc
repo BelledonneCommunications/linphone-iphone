@@ -6,19 +6,19 @@ Video::Video() :
 				  "Toggles camera on current call."
 				  "If no call is specified, the current call is taken.")
 {
-	addExample(new DaemonCommandExample("video on 1",
+	addExample(new DaemonCommandExample("video 1",
 										"Status: Ok\n\n"
 										"Camera activated."));
 
-	addExample(new DaemonCommandExample("video off 1",
+	addExample(new DaemonCommandExample("video 1",
 										"Status: Ok\n\n"
 										"Camera deactivated."));
 
-	addExample(new DaemonCommandExample("video on",
+	addExample(new DaemonCommandExample("video",
 										"Status: Error\n\n"
 										"Reason: No current call available."));
 
-	addExample(new DaemonCommandExample("video on 2",
+	addExample(new DaemonCommandExample("video 2",
 										"Status: Error\n\n"
 										"Reason: No call with such id."));
 }
@@ -60,8 +60,8 @@ void Video::exec(Daemon* app, const char* args)
 		return;
 	}
 
-	app->sendResponse(Response(activate?"Camera deactivated.":
-										"Camera activated", Response::Ok));
+	app->sendResponse(Response(activate?"Camera activated.":
+										"Camera deactivated", Response::Ok));
 }
 
 
