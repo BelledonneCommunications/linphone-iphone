@@ -22,14 +22,13 @@ void CallMute::exec(Daemon* app, const char* args)
 	LinphoneCore *lc = app->getCore();
 	int muted = TRUE; // no arg means MUTE
 	LinphoneCall *call = linphone_core_get_current_call(lc);
-	int cid;
 
 	if( call == NULL ){
 		app->sendResponse(Response("No call in progress. Can't mute."));
 		return;
 	}
 
-	if (sscanf(args, "%i", &cid) == 1) {
+	if (sscanf(args, "%i", &muted) == 1) {
 		linphone_core_mute_mic(lc, (muted != 0));
 	} else {
 		linphone_core_mute_mic(lc, (muted != 0));
