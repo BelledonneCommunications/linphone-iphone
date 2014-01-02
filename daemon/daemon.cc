@@ -29,7 +29,7 @@
 #include "commands/call-pause.h"
 #include "commands/call-mute.h"
 #include "commands/call-resume.h"
-#include "commands/call-camera.h"
+#include "commands/video.h"
 #include "commands/call-transfer.h"
 #include "commands/conference.h"
 #include "commands/contact.h"
@@ -423,7 +423,9 @@ void Daemon::initCommands() {
 	mCommands.push_back(new CallMute());
 	mCommands.push_back(new CallResume());
 	mCommands.push_back(new CallTransfer());
-	mCommands.push_back(new CallCamera());
+	mCommands.push_back(new Video());
+	mCommands.push_back(new VideoSource());
+	mCommands.push_back(new AutoVideo());
 	mCommands.push_back(new Conference());
 	mCommands.push_back(new AudioCodecGetCommand());
 	mCommands.push_back(new AudioCodecEnableCommand());

@@ -18,7 +18,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call-pause.cc \
 			commands/call-resume.cc \
 			commands/call-mute.cc \
-			commands/call-camera.cc \
+			commands/video.cc \
 			commands/call-transfer.cc \
 			commands/conference.cc \
 			commands/dtmf.cc \
@@ -55,7 +55,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call-pause.h \
 			commands/call-resume.h \
 			commands/call-mute.h \
-			commands/call-camera.h \
+			commands/video.h \
 			commands/call-transfer.h \
 			commands/conference.h \
 			commands/dtmf.h \
