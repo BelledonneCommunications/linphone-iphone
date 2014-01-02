@@ -1383,6 +1383,7 @@ static void audioRouteChangeListenerCallback (
 #endif
 		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
+        linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
 	}
 }
 
