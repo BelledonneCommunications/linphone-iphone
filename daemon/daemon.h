@@ -93,6 +93,15 @@ public:
 			mReason = msg;
 		}
 	}
+	Response(const std::string& msg, Status status = Error):
+		mStatus(status) {
+		if( status == Ok) {
+			mBody = msg;
+		} else {
+			mReason = msg;
+		}
+	}
+
 	void setStatus(Status st) {
 		mStatus = st;
 	}
@@ -151,9 +160,9 @@ public:
 class PayloadTypeParser {
 public:
 	PayloadTypeParser(LinphoneCore *core, const std::string &mime_type, bool accept_all = false);
-	inline bool all() { return mAll; };
-	inline bool successful() { return mSuccesful; };
-	inline int payloadTypeNumber() { return mPayloadTypeNumber; };
+	inline bool all() { return mAll; }
+	inline bool successful() { return mSuccesful; }
+	inline int payloadTypeNumber() { return mPayloadTypeNumber; }
 private:
 	bool mAll;
 	bool mSuccesful;
@@ -195,12 +204,16 @@ public:
 	bool pullEvent();
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
-	inline int maxProxyId() { return mProxyIds; };
+	inline int maxProxyId() { return mProxyIds; }
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();
 	void enableStatsEvents(bool enabled);
 	void enableLSD(bool enabled);
+
+	void setAutoVideo( bool enabled ){ mAutoVideo = enabled; }
+	inline bool autoVideo(){ return mAutoVideo; }
+
 private:
 	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
@@ -229,6 +242,7 @@ private:
 	bool mRunning;
 	bool mUseStatsEvents;
 	FILE *mLogFile;
+	bool mAutoVideo;
 	int mCallIds;
 	int mProxyIds;
 	int mAudioStreamIds;

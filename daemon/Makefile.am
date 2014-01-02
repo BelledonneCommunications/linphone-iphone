@@ -15,6 +15,12 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.cc \
 			commands/call-stats.cc \
 			commands/call-status.cc \
+			commands/call-pause.cc \
+			commands/call-resume.cc \
+			commands/call-mute.cc \
+			commands/call-camera.cc \
+			commands/call-transfer.cc \
+			commands/conference.cc \
 			commands/dtmf.cc \
 			commands/firewall-policy.cc \
 			commands/help.cc \
@@ -46,6 +52,12 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.h \
 			commands/call-stats.h \
 			commands/call-status.h \
+			commands/call-pause.h \
+			commands/call-resume.h \
+			commands/call-mute.h \
+			commands/call-camera.h \
+			commands/call-transfer.h \
+			commands/conference.h \
 			commands/dtmf.h \
 			commands/firewall-policy.h \
 			commands/help.h \

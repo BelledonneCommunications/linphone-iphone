@@ -26,6 +26,12 @@
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
+#include "commands/call-pause.h"
+#include "commands/call-mute.h"
+#include "commands/call-resume.h"
+#include "commands/call-camera.h"
+#include "commands/call-transfer.h"
+#include "commands/conference.h"
 #include "commands/contact.h"
 #include "commands/dtmf.h"
 #include "commands/firewall-policy.h"
@@ -186,7 +192,7 @@ CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const L
 AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* stream,
 		const LinphoneCallStats *stats, bool event) {
 	const char *prefix = "";
-	
+
 	ostringstream ostr;
 	if (event) {
 		ostr << "Event-type: audio-stream-stats\n";
@@ -201,9 +207,9 @@ AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* 
 	} else {
 		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
 	}
-	
+
 	printCallStatsHelper(ostr, stats, prefix);
-	
+
 	setBody(ostr.str().c_str());
 }
 
@@ -413,6 +419,12 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AnswerCommand());
 	mCommands.push_back(new CallStatusCommand());
 	mCommands.push_back(new CallStatsCommand());
+	mCommands.push_back(new CallPause());
+	mCommands.push_back(new CallMute());
+	mCommands.push_back(new CallResume());
+	mCommands.push_back(new CallTransfer());
+	mCommands.push_back(new CallCamera());
+	mCommands.push_back(new Conference());
 	mCommands.push_back(new AudioCodecGetCommand());
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
@@ -459,8 +471,9 @@ bool Daemon::pullEvent() {
 
 void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg) {
 	switch (state) {
-	case LinphoneCallOutgoingProgress:
 	case LinphoneCallIncomingReceived:
+		linphone_call_enable_camera (call,mAutoVideo);
+	case LinphoneCallOutgoingProgress:
 	case LinphoneCallIncomingEarlyMedia:
 	case LinphoneCallConnected:
 	case LinphoneCallStreamsRunning:
