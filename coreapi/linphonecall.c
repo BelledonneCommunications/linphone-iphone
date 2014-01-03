@@ -2572,6 +2572,13 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params.in_conference;
 }
 
+AudioStream* linphone_call_get_audiostream(LinphoneCall* call) {
+	return call->audiostream;
+}
+
+VideoStream* linphone_call_get_videostream(LinphoneCall* call) {
+	return call->videostream;
+}
 
 /**
  * Perform a zoom of the video displayed during a call.

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msvideo.h"
+#include "mediastreamer2/mediastream.h"
 
 #ifdef IN_LINPHONE
 #include "sipsetup.h"
@@ -580,7 +581,6 @@ struct _LinphoneCallStats {
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 
-
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);
 
@@ -652,6 +652,9 @@ LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall 
 LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
+LINPHONE_PUBLIC AudioStream * linphone_call_get_audiostream(LinphoneCall *call);
+LINPHONE_PUBLIC VideoStream * linphone_call_get_videostream(LinphoneCall *call);
+
 /**
  * Return TRUE if this call is currently part of a conference
  * @param call #LinphoneCall
