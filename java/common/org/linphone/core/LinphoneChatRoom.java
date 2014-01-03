@@ -80,6 +80,17 @@ public interface LinphoneChatRoom {
 	 * Deletes all the messages associated with the peer of this chat room
 	 */
 	void deleteHistory();
+
+	/**
+	 * Notify the destination of the chat message being composed that the user is typing a new message.
+	 */
+	void compose();
+
+	/**
+	 * Tells whether the remote is currently composing a message.
+	 * @return true if the remote is currently composing a message, false otherwise.
+	 */
+	boolean isRemoteComposing();
 	
 	/**
 	 * Marks all the messages in this conversation as read

@@ -60,7 +60,8 @@ LOCAL_SRC_FILES := \
 	linphone_tunnel_config.c \
 	message_storage.c \
 	info.c \
-	event.c
+	event.c \
+	xml.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"

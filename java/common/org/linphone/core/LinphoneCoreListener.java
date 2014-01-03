@@ -92,6 +92,13 @@ public interface LinphoneCoreListener {
 	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
 	/**
+	 * invoked when a composing notification is received
+	 * @param lc LinphoneCore
+	 * @param room LinphoneChatRoom involved in the conversation.
+	 */
+	void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr);
+
+	/**
 	 * invoked when a new dtmf is received
 	 * @param lc 	LinphoneCore
 	 * @param call 	LinphoneCall involved in the dtmf sending

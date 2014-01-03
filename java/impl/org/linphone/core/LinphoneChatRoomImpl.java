@@ -31,6 +31,8 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
 	private native void deleteHistory(long ptr);
+	private native void compose(long ptr);
+	private native boolean isRemoteComposing(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
 	private native void updateUrl(long room, long message);
@@ -86,6 +88,14 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	
 	public void deleteHistory() {
 		deleteHistory(nativePtr);
+	}
+
+	public void compose() {
+		compose(nativePtr);
+	}
+
+	public boolean isRemoteComposing() {
+		return isRemoteComposing(nativePtr);
 	}
 	
 	public void markAsRead() {
