@@ -58,3 +58,6 @@
 [submodule "submodules/externals/libxml2"]
 	path = submodules/externals/libxml2
 	url = git://git.gnome.org/libxml2
+[submodule "submodules/msisac"]
+	path = submodules/msisac
+	url = git://git.linphone.org/msisac

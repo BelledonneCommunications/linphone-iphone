@@ -63,7 +63,7 @@ endif
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-msisac
 
 # setup the switches that might trigger a linphone reconfiguration
 
@@ -131,7 +131,7 @@ veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 # list of the submodules to build
-MS_MODULES      := msilbc libilbc msamr mssilk msx264
+MS_MODULES      := msilbc libilbc msamr mssilk msx264 msisac
 SUBMODULES_LIST := polarssl libantlr belle-sip srtp zrtpcpp speex libgsm libvpx libxml2 ffmpeg opus
 
 .NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
