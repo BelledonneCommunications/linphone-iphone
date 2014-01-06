@@ -2247,6 +2247,111 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return stats;
 }
 
+float linphone_call_stats_update_sender_loss_rate(LinphoneCallStats *stats) {
+	const report_block_t *srb = NULL;
+
+	if (!stats || !stats->sent_rtcp)
+		return 0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->sent_rtcp->b_cont != NULL)
+		msgpullup(stats->sent_rtcp, -1);
+	if (rtcp_is_SR(stats->sent_rtcp))
+		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+	else if (rtcp_is_RR(stats->sent_rtcp))
+		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+	if (!srb)
+		return 0.0;
+	return 100.0 * report_block_get_fraction_lost(srb) / 256.0;
+}
+
+float linphone_call_stats_update_receiver_loss_rate(LinphoneCallStats *stats) {
+	const report_block_t *rrb = NULL;
+
+	if (!stats || !stats->received_rtcp)
+		return 0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->received_rtcp->b_cont != NULL)
+		msgpullup(stats->received_rtcp, -1);
+	if (rtcp_is_RR(stats->received_rtcp))
+		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+	else if (rtcp_is_SR(stats->received_rtcp))
+		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+	if (!rrb)
+		return 0.0;
+	return 100.0 * report_block_get_fraction_lost(rrb) / 256.0;
+}
+
+float linphone_call_stats_update_sender_interarrival_jitter(LinphoneCallStats *stats, LinphoneCall *call) {
+	const LinphoneCallParams *params;
+	const PayloadType *pt;
+	const report_block_t *srb = NULL;
+
+	if (!stats || !call || !stats->sent_rtcp)
+		return 0.0;
+	params = linphone_call_get_current_params(call);
+	if (!params)
+		return 0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->sent_rtcp->b_cont != NULL)
+		msgpullup(stats->sent_rtcp, -1);
+	if (rtcp_is_SR(stats->sent_rtcp))
+		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+	else if (rtcp_is_RR(stats->sent_rtcp))
+		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+	if (!srb)
+		return 0.0;
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		pt = linphone_call_params_get_used_audio_codec(params);
+	else
+		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return 0.0;
+	return (float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate;
+}
+
+float linphone_call_stats_update_receiver_interarrival_jitter(LinphoneCallStats *stats, LinphoneCall *call) {
+	const LinphoneCallParams *params;
+	const PayloadType *pt;
+	const report_block_t *rrb = NULL;
+
+	if (!stats || !call || !stats->received_rtcp)
+		return 0.0;
+	params = linphone_call_get_current_params(call);
+	if (!params)
+		return 0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->received_rtcp->b_cont != NULL)
+		msgpullup(stats->received_rtcp, -1);
+	if (rtcp_is_SR(stats->received_rtcp))
+		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+	else if (rtcp_is_RR(stats->received_rtcp))
+		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+	if (!rrb)
+		return 0.0;
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		pt = linphone_call_params_get_used_audio_codec(params);
+	else
+		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return 0.0;
+	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
+}
+
+uint64_t linphone_call_stats_update_late_packets_cumulative_number(LinphoneCallStats *stats, LinphoneCall *call) {
+	rtp_stats_t rtp_stats;
+
+	if (!stats || !call)
+		return 0;
+	memset(&rtp_stats, 0, sizeof(rtp_stats));
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
+#ifdef VIDEO_ENABLED
+	else
+		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
+#endif
+	return rtp_stats.outoftime;
+}
+
 /**
  * Enable recording of the call (voice-only).
  * This function must be used before the call parameters are assigned to the call.
@@ -2570,14 +2675,6 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 
 bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params.in_conference;
-}
-
-AudioStream* linphone_call_get_audiostream(LinphoneCall* call) {
-	return call->audiostream;
-}
-
-VideoStream* linphone_call_get_videostream(LinphoneCall* call) {
-	return call->videostream;
 }
 
 /**
