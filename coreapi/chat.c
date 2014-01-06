@@ -198,7 +198,10 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 		//legacy API
 		if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, msg->from, msg->message);
 	if (lc->vtable.message_received!=NULL) lc->vtable.message_received(lc, cr,msg);
-	
+	if (cr->lc->vtable.is_composing_received != NULL) {
+		cr->remote_is_composing = LinphoneIsComposingIdle;
+		cr->lc->vtable.is_composing_received(cr->lc, cr);
+	}
 }
 
 /**
