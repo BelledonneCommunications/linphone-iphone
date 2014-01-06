@@ -2247,7 +2247,7 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return stats;
 }
 
-float linphone_call_stats_update_sender_loss_rate(LinphoneCallStats *stats) {
+float linphone_call_stats_update_sender_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
 
 	if (!stats || !stats->sent_rtcp)
@@ -2264,7 +2264,7 @@ float linphone_call_stats_update_sender_loss_rate(LinphoneCallStats *stats) {
 	return 100.0 * report_block_get_fraction_lost(srb) / 256.0;
 }
 
-float linphone_call_stats_update_receiver_loss_rate(LinphoneCallStats *stats) {
+float linphone_call_stats_update_receiver_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *rrb = NULL;
 
 	if (!stats || !stats->received_rtcp)
@@ -2281,7 +2281,7 @@ float linphone_call_stats_update_receiver_loss_rate(LinphoneCallStats *stats) {
 	return 100.0 * report_block_get_fraction_lost(rrb) / 256.0;
 }
 
-float linphone_call_stats_update_sender_interarrival_jitter(LinphoneCallStats *stats, LinphoneCall *call) {
+float linphone_call_stats_update_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *srb = NULL;
@@ -2309,7 +2309,7 @@ float linphone_call_stats_update_sender_interarrival_jitter(LinphoneCallStats *s
 	return (float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate;
 }
 
-float linphone_call_stats_update_receiver_interarrival_jitter(LinphoneCallStats *stats, LinphoneCall *call) {
+float linphone_call_stats_update_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *rrb = NULL;
@@ -2337,7 +2337,7 @@ float linphone_call_stats_update_receiver_interarrival_jitter(LinphoneCallStats 
 	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
 }
 
-uint64_t linphone_call_stats_update_late_packets_cumulative_number(LinphoneCallStats *stats, LinphoneCall *call) {
+uint64_t linphone_call_stats_update_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
 	rtp_stats_t rtp_stats;
 
 	if (!stats || !call)
