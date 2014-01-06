@@ -1239,16 +1239,16 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonTemporarilyUnavailable;
 		case LinphoneReasonBusy:
 			return SalReasonBusy;
-		case LinphoneReasonMedia:
-			return SalReasonMedia;
+		case LinphoneReasonNotAcceptable:
+			return SalReasonNotAcceptable;
 		case LinphoneReasonIOError:
 			return SalReasonServiceUnavailable;
 		case LinphoneReasonDoNotDisturb:
 			return SalReasonDoNotDisturb;
 		case LinphoneReasonUnauthorized:
 			return SalReasonUnauthorized;
-		case LinphoneReasonNotAcceptable:
-			return SalReasonNotAcceptable;
+		case LinphoneReasonUnsupportedContent:
+			return SalReasonUnsupportedContent;
 		case LinphoneReasonNoMatch:
 			return SalReasonNoMatch;
 	}
@@ -1273,8 +1273,8 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		case SalReasonForbidden:
 			ret=LinphoneReasonBadCredentials;
 			break;
-		case SalReasonMedia:
-			ret=LinphoneReasonMedia;
+		case SalReasonNotAcceptable:
+			ret=LinphoneReasonNotAcceptable;
 			break;
 		case SalReasonNotFound:
 			ret=LinphoneReasonNotFound;
@@ -1294,8 +1294,8 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		case SalReasonUnauthorized:
 			ret=LinphoneReasonUnauthorized;
 			break;
-		case SalReasonNotAcceptable:
-			ret=LinphoneReasonNotAcceptable;
+		case SalReasonUnsupportedContent:
+			ret=LinphoneReasonUnsupportedContent;
 		break;
 		case SalReasonNoMatch:
 			ret=LinphoneReasonNoMatch;

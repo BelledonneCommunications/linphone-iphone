@@ -247,11 +247,7 @@ typedef struct SalOpBase{
 	Sal *root;
 	char *route; /*or request-uri for REGISTER*/
 	MSList* route_addresses; /*list of SalAddress* */
-#ifndef USE_BELLESIP
-	char *contact;
-#else
 	SalAddress* contact_address;
-#endif
 	char *from;
 	SalAddress* from_address;
 	char *to;
@@ -285,7 +281,7 @@ typedef enum SalReason{
 	SalReasonTemporarilyUnavailable,
 	SalReasonNotFound,
 	SalReasonDoNotDisturb,
-	SalReasonMedia,
+	SalReasonUnsupportedContent,
 	SalReasonForbidden,
 	SalReasonUnknown,
 	SalReasonServiceUnavailable,

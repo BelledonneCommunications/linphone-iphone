@@ -334,7 +334,7 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonForbidden:
 			ret=403;
 			break;
-		case SalReasonMedia:
+		case SalReasonUnsupportedContent:
 			ret=415;
 			break;
 		case SalReasonNotFound:
@@ -356,7 +356,7 @@ SalReason sal_reason_to_sip_code(SalReason r){
 			ret=401;
 			break;
 		case SalReasonNotAcceptable:
-			ret=488;
+			ret=488; /*or maybe 606 Not Acceptable ?*/
 			break;
 		case SalReasonNoMatch:
 			ret=481;
@@ -385,7 +385,7 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 		break;
 	case 415:
 		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonMedia;
+		*sal_reason=SalReasonUnsupportedContent;
 		break;
 	case 422:
 		ms_error ("422 not implemented yet");;

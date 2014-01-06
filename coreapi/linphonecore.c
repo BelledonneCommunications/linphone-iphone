@@ -2903,7 +2903,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	md=sal_call_get_final_media_description(call->op);
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
-			sal_call_decline(call->op,SalReasonMedia,NULL);
+			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_stop_media_streams(call);
 			linphone_core_del_call(lc,call);
 			linphone_call_unref(call);

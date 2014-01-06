@@ -530,7 +530,7 @@ const char* sal_reason_to_string(const SalReason reason) {
 	case SalReasonTemporarilyUnavailable: return "SalReasonTemporarilyUnavailable";
 	case SalReasonNotFound: return "SalReasonNotFound";
 	case SalReasonDoNotDisturb: return "SalReasonDoNotDisturb";
-	case SalReasonMedia: return "SalReasonMedia";
+	case SalReasonUnsupportedContent: return "SalReasonUnsupportedContent";
 	case SalReasonForbidden: return "SalReasonForbidden";
 	case SalReasonUnknown: return "SalReasonUnknown";
 	case SalReasonServiceUnavailable: return "SalReasonServiceUnavailable";

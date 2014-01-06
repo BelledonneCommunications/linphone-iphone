@@ -612,7 +612,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg600);
 			break;
-			case SalReasonMedia:
+			case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
+			case SalReasonNotAcceptable:
 			//media_encryption_mandatory
 				if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
 					!linphone_core_is_media_encryption_mandatory(lc)) {

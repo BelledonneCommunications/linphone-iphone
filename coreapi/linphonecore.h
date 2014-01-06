@@ -167,13 +167,16 @@ enum _LinphoneReason{
 	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
 	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
 	LinphoneReasonBusy, /**<Phone line was busy */
-	LinphoneReasonMedia, /**<Incompatible media */
+	LinphoneReasonUnsupportedContent, /**<Unsupported content */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
 	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
 	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
 	LinphoneReasonNoMatch /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 };
+
+/*for compatibility*/
+#define LinphoneReasonMedia LinphoneReasonUnsupportedContent
 
 /**
  * Enum describing failure reasons.
