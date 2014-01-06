@@ -2873,17 +2873,21 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
-bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
-	if (linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP){
-		int i;
-		for(i=0;i<md->n_active_streams;i++){
-			SalStreamDescription *sd=&md->streams[i];
-			if (sd->proto!=SalProtoRtpSavp){
-				return TRUE;
-			}
+bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md){
+	int i;
+	if (md->n_active_streams==0) return FALSE;
+	
+	for(i=0;i<md->n_active_streams;i++){
+		const SalStreamDescription *sd=&md->streams[i];
+		if (sd->proto!=SalProtoRtpSavp){
+			return FALSE;
 		}
 	}
-	return FALSE;
+	return TRUE;
+}
+
+bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
+	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !linphone_core_media_description_has_srtp(md);
 }
 
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){

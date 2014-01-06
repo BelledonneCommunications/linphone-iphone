@@ -595,9 +595,14 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
+	
+	/*
+	 * Initialize call parameters according to incoming call parameters. This is to avoid to ask later (during reINVITEs) for features that the remote
+	 * end apparently does not support. This features are: privacy, video, srtp .
+	 */
 	/*set privacy*/
 	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
-
+	/*set video support */
 	md=sal_call_get_remote_media_description(op);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
 	if (md) {
@@ -605,6 +610,11 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// In this case WE chose the media parameters according to policy.
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	}
+	/*Init encryption support*/
+	if (call->params.media_encryption==LinphoneMediaEncryptionSRTP && md){
+		if (!linphone_core_media_description_has_srtp(md)) call->params.media_encryption=LinphoneMediaEncryptionNone;
+	}
+	
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
 			call->ice_session = ice_session_new();
@@ -2712,28 +2722,16 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
-#ifndef USE_BELLESIP
-static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
-#else
 static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
-#endif
 	LinphoneAddress *ctt=NULL;
-#ifdef USE_BELLESIP
 	LinphoneAddress *ret=NULL;
-#else
-	char* ret;
-#endif
 	const char *localip=call->localip;
 
 	/* first use user's supplied ip address if asked*/
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		linphone_address_set_domain(ctt,linphone_core_get_nat_address_resolved(lc));
-	#ifdef USE_BELLESIP
 		ret=ctt;
-	#else
-		ret=linphone_address_as_string(ctt);
-	#endif
 	} else if (call->op && sal_op_get_contact(call->op)!=NULL){
 		/* if already choosed, don't change it */
 		return NULL;
@@ -2741,19 +2739,11 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		/* if the ping OPTIONS request succeeded use the contact guessed from the
 		 received, rport*/
 		ms_message("Contact has been fixed using OPTIONS"/* to %s",guessed*/);
-#ifdef USE_BELLESIP
 		ret=linphone_address_clone(sal_op_get_contact(call->ping_op));;
-#else
-		ret=ms_strdup(sal_op_get_contact(call->ping_op));
-#endif
 	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact(dest_proxy->op)){
 	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
 		ms_message("Contact has been fixed using proxy" /*to %s",fixed_contact*/);
-#ifdef USE_BELLESIP
 		ret=linphone_address_clone(sal_op_get_contact(dest_proxy->op));
-#else
-		ret=ms_strdup(sal_op_get_contact(dest_proxy->op));
-#endif
 	} else {
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){
@@ -2761,16 +2751,9 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 			linphone_address_set_domain(ctt,localip);
 			linphone_address_set_port(ctt,linphone_core_get_sip_port(lc));
 			ms_message("Contact has been fixed using local ip"/* to %s",ret*/);
-#ifdef USE_BELLESIP
 			ret=ctt;
-#else
-			ret=linphone_address_as_string_uri_only(ctt);
-#endif
 		}
 	}
-#ifndef USE_BELLESIP
-	if (ctt) linphone_address_destroy(ctt);
-#endif
 	return ret;
 
 
