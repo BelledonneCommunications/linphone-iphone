@@ -37,6 +37,7 @@ set(SOURCE_FILES
 	siplogin.c
 	sipsetup.c
 	#TunnelManager.cc
+	xml.c
 	bellesip_sal/sal_impl.h
 	enum.h
 	event.h
