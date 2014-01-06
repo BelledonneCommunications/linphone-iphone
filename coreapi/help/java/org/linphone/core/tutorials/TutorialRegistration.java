@@ -237,6 +237,12 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		
 	}
 
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

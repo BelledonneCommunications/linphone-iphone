@@ -202,5 +202,13 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		
 	}
 
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		if (cr.isRemoteComposing())
+			write("Remote is writing a message");
+		else
+			write("Remote has stop writing");
+	}
+
 
 }
