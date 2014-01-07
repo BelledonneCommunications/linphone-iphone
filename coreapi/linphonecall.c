@@ -598,7 +598,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	
 	/*
 	 * Initialize call parameters according to incoming call parameters. This is to avoid to ask later (during reINVITEs) for features that the remote
-	 * end apparently does not support. This features are: privacy, video, srtp .
+	 * end apparently does not support. This features are: privacy, video
 	 */
 	/*set privacy*/
 	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
@@ -609,10 +609,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
-	}
-	/*Init encryption support*/
-	if (call->params.media_encryption==LinphoneMediaEncryptionSRTP && md){
-		if (!linphone_core_media_description_has_srtp(md)) call->params.media_encryption=LinphoneMediaEncryptionNone;
 	}
 	
 	switch (linphone_core_get_firewall_policy(call->core)) {
@@ -1770,21 +1766,20 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			
 			/* valid local tags are > 0 */
 			if (stream->proto == SalProtoRtpSavp) {
-			local_st_desc=sal_media_description_find_stream(call->localdesc,
-													SalProtoRtpSavp,SalAudio);
-			crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
+				local_st_desc=sal_media_description_find_stream(call->localdesc,SalProtoRtpSavp,SalAudio);
+				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
-			if (crypto_idx >= 0) {
-				audio_stream_enable_srtp(
-							call->audiostream, 
-							stream->crypto[0].algo,
-							local_st_desc->crypto[crypto_idx].master_key,
-							stream->crypto[0].master_key);
-				call->audiostream_encrypted=TRUE;
-			} else {
-				ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
-				call->audiostream_encrypted=FALSE;
-			}
+				if (crypto_idx >= 0) {
+					audio_stream_enable_srtp(
+								call->audiostream, 
+								stream->crypto[0].algo,
+								local_st_desc->crypto[crypto_idx].master_key,
+								stream->crypto[0].master_key);
+					call->audiostream_encrypted=TRUE;
+				} else {
+					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
+					call->audiostream_encrypted=FALSE;
+				}
 			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
@@ -1939,7 +1934,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
-	}else if (call->params.media_encryption==LinphoneMediaEncryptionSRTP){
+	}else{
 		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
 			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}

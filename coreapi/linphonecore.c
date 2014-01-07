@@ -3329,6 +3329,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
 	linphone_core_update_streams(lc, call, new_md);
+	linphone_call_fix_call_parameters(call);
 	if (new_md){
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->media_pending=TRUE;
