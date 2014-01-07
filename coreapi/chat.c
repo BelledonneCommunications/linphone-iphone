@@ -336,14 +336,10 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 }
 
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
-	LinphoneChatRoom *cr = NULL;
-	LinphoneAddress *addr = linphone_address_new(is_composing->from);
-	linphone_address_clean(addr);
-	cr = linphone_core_get_chat_room(lc, addr);
+	LinphoneChatRoom *cr = linphone_core_get_or_create_chat_room(lc, is_composing->from);
 	if (cr != NULL) {
 		linphone_chat_room_notify_is_composing(cr, is_composing->text);
 	}
-	linphone_address_destroy(addr);
 }
 
 bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
