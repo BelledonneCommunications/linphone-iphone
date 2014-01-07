@@ -27,6 +27,7 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/call_statistics.ui
 [type: gettext/glade]gtk/tunnel_config.ui
 [type: gettext/glade]gtk/keypad.ui
+[type: gettext/glade]gtk/ldap.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
