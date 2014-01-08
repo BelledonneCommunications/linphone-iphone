@@ -352,21 +352,36 @@ static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_descriptio
 	return 0;
 }
 
+static int is_media_description_acceptable(SalMediaDescription *md){
+	if (md->n_total_streams==0){
+		ms_warning("Media description does not define any stream.");
+		return FALSE;
+	}
+	return TRUE;
+}
+
 static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
+	int err=0;
 	SalReason reason;
 	if (extract_sdp(BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
 			op->sdp_offering=FALSE;
 			op->base.remote_media=sal_media_description_new();
 			sdp_to_media_description(sdp,op->base.remote_media);
+			/*make some sanity check about the SDP received*/
+			if (!is_media_description_acceptable(op->base.remote_media)){
+				err=-1;
+				reason=SalReasonNotAcceptable;
+			}
 			belle_sip_object_unref(sdp);
 		}else op->sdp_offering=TRUE; /*INVITE without SDP*/
-		return 0;
-	}else{
+	}else err=-1;
+	
+	if (err==-1){
 		sal_call_decline(op,reason,NULL);
-		return -1;
 	}
+	return err;
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
