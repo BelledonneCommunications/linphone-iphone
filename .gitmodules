@@ -33,7 +33,7 @@
 	url = http://git.chromium.org/webm/libvpx.git
 [submodule "submodules/externals/zrtpcpp"]
 	path = submodules/externals/zrtpcpp
-	url = git://git.linphone.org/zrtpcpp.git
+	url =  https://github.com/wernerd/ZRTPCPP.git 
 [submodule "submodules/mssilk"]
 	path = submodules/mssilk
 	url = git://git.linphone.org/mssilk.git
