@@ -95,6 +95,7 @@ typedef struct _LCSipTransports{
 
 /**
  * Enum describing transport type for LinphoneAddress.
+ * @ingroup linphone_address
 **/
 enum _LinphoneTransportType{
 	LinphoneTransportUdp,
