@@ -50,7 +50,7 @@ EXTRA_OECONF = " \
                 ${LINPHONE_OE_ENABLE_VIDEO} \
                 ${LINPHONE_OE_ENABLE_X11} \
                 ${LINPHONE_OE_ENABLE_GL} \
-                --enable-alsa \
+                --enable-alsa --disable-pulseaudio \
                 --with-osip=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-readline=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-speex=${STAGING_DIR_HOST}${layout_exec_prefix} \
@@ -68,7 +68,7 @@ PACKAGES = "${PN}-dbg ${PN}-dev ${PN}c linphone-rings liblinphone libmediastream
 FILES_${PN} = " \ 
             ${bindir}/linphone \
             ${datadir}/linphone \
-             ${datadir}/pixmaps \
+            ${datadir}/pixmaps \
             ${datadir}/applications \
             ${datadir}/gnome/apps \
             ${datadir}/sounds/linphone/hello8000.wav \
