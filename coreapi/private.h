@@ -34,6 +34,9 @@ extern "C" {
 #include "sal/sal.h"
 #include "sipsetup.h"
 
+#include <belle-sip/object.h>
+#include <belle-sip/dict.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -201,22 +204,22 @@ struct _LinphoneCall
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	int localdesc_changed;
-	
+
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
 	bool_t camera_enabled;
-	
+
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
 	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
-	
+
 	bool_t videostream_encrypted;
 	bool_t audiostream_encrypted;
 	bool_t auth_token_verified;
 	bool_t defer_update;
-	
+
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
 	bool_t record_active;
@@ -381,9 +384,9 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 
 static const int linphone_proxy_config_magic=0x7979;
 
-/*chat*/	
+/*chat*/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-/**/	
+/**/
 
 struct _LinphoneProxyConfig
 {
@@ -447,7 +450,7 @@ struct _LinphoneChatRoom{
 };
 
 
-	
+
 struct _LinphoneFriend{
 	LinphoneAddress *uri;
 	SalOp *insub;
@@ -499,7 +502,7 @@ typedef struct rtp_config
 	int nortp_timeout;
 	int disable_upnp;
 	bool_t rtp_no_xmit_on_audio_mute;
-                              /* stop rtp xmit when audio muted */
+							  /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
 	bool_t pad;
@@ -645,12 +648,12 @@ struct _LinphoneCore
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
 	bool_t bl_refresh;
-	
+
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
-	
+
 	time_t network_last_check;
 	bool_t network_last_status;
 
@@ -827,6 +830,17 @@ int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
 char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+
+
+/** Belle Sip-based objects need unique ids
+  */
+
+BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
+BELLE_SIP_DECLARE_TYPES_END
 
 
 #ifdef __cplusplus

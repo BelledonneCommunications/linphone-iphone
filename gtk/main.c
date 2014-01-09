@@ -847,7 +847,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 					);
 
 		if(search)
-			belle_sip_object_ref(search);
+			linphone_contact_search_ref(search);
 	}
 	return FALSE;
 }

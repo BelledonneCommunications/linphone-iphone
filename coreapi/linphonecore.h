@@ -33,9 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "lpconfig.h"
 
-#include <belle-sip/object.h>
-#include <belle-sip/dict.h>
-
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
@@ -2234,18 +2231,6 @@ LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
-
-
-/** Belle Sip-based objects need unique ids
-  */
-
-BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
-BELLE_SIP_TYPE_ID(LinphoneContactSearch),
-BELLE_SIP_TYPE_ID(LinphoneContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
-BELLE_SIP_DECLARE_TYPES_END
-
 
 /** Contact Providers
   */
