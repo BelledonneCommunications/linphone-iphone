@@ -102,6 +102,10 @@ enum _LinphoneTransportType{
 };
 /*this enum MUST be kept in sync with the SalTransport from sal.h*/
 
+/**
+ * Typedef for transport type enum.
+ * @ingroup linphone_address
+**/
 typedef enum _LinphoneTransportType LinphoneTransportType;
 
 /**
