@@ -6272,7 +6272,7 @@ void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp){
  * 
 **/
 int linphone_core_get_video_dscp(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"rtp","video_dscp",0x2e);
+	return lp_config_get_int(lc->config,"rtp","video_dscp",0);
 }
 
 
