@@ -238,7 +238,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(remoteAddress != nil) {
         [remoteAddress release];
     }
-    if ([aRemoteAddress hasPrefix:@"sip:"]) {
+    if ([aRemoteAddress hasPrefix:@"sip:"] || [aRemoteAddress hasPrefix:@"sips:"]) {
         remoteAddress = [aRemoteAddress copy];
     } else {
         char normalizedUserName[256];

@@ -1294,7 +1294,7 @@ static void audioRouteChangeListenerCallback (
 	LinphoneCall* call=NULL;
 	
 	if ([address length] == 0) return; //just return
-	if ([address hasPrefix:@"sip:"]) {
+	if ([address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"]) {
         LinphoneAddress* linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);  
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);

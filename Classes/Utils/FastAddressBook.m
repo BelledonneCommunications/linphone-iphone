@@ -57,7 +57,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (BOOL)isSipURI:(NSString*)address {
-    return [address hasPrefix:@"sip:"];
+    return [address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"];
 }
 
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number {
