@@ -284,7 +284,7 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 	xmlXPathObjectPtr iscomposing_object;
 	const char *state_str = NULL;
 	const char *refresh_str = NULL;
-	int refresh_duration = COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT;
+	int refresh_duration = lp_config_get_int(cr->lc->config, "sip", "composing_remote_refresh_timeout", COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT);
 	int i;
 	LinphoneIsComposingState state = LinphoneIsComposingIdle;
 
@@ -475,7 +475,8 @@ static char * linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
 	}
 	if ((err >= 0) && (cr->is_composing == LinphoneIsComposingActive)) {
 		char refresh_str[4] = { 0 };
-		snprintf(refresh_str, sizeof(refresh_str), "%u", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+		int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+		snprintf(refresh_str, sizeof(refresh_str), "%u", refresh_timeout);
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)refresh_str);
 	}
 	if (err >= 0) {
@@ -547,19 +548,21 @@ static int linphone_chat_room_refresh_composing(void *data, unsigned int revents
 }
 
 void linphone_chat_room_compose(LinphoneChatRoom *cr) {
+	int idle_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_idle_timeout", COMPOSING_DEFAULT_IDLE_TIMEOUT);
+	int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
 	if (cr->is_composing == LinphoneIsComposingIdle) {
 		cr->is_composing = LinphoneIsComposingActive;
 		linphone_chat_room_send_is_composing_notification(cr);
 		if (!cr->composing_refresh_timer) {
-			cr->composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_refresh_composing, cr, COMPOSING_DEFAULT_REFRESH_TIMEOUT * 1000, "composing refresh timeout");
+			cr->composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_refresh_composing, cr, refresh_timeout * 1000, "composing refresh timeout");
 		} else {
-			belle_sip_source_set_timeout(cr->composing_refresh_timer, COMPOSING_DEFAULT_REFRESH_TIMEOUT * 1000);
+			belle_sip_source_set_timeout(cr->composing_refresh_timer, refresh_timeout * 1000);
 		}
 		if (!cr->composing_idle_timer) {
-			cr->composing_idle_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_stop_composing, cr, COMPOSING_DEFAULT_IDLE_TIMEOUT * 1000, "composing idle timeout");
+			cr->composing_idle_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_stop_composing, cr, idle_timeout * 1000, "composing idle timeout");
 		}
 	}
-	belle_sip_source_set_timeout(cr->composing_idle_timer, COMPOSING_DEFAULT_IDLE_TIMEOUT * 1000);
+	belle_sip_source_set_timeout(cr->composing_idle_timer, idle_timeout * 1000);
 }
 
 /**
