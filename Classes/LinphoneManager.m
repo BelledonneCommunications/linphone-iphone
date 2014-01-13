@@ -1165,7 +1165,8 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
             [route isEqualToString: @"Headphone"] ||
             [route isEqualToString: @"HeadphonesAndMicrophone"] ||
             [route isEqualToString: @"HeadsetInOut"] ||
-            [route isEqualToString: @"Lineout"];
+            [route isEqualToString: @"Lineout"] ||
+            [LinphoneManager runningOnIpad];
         CFRelease(lNewRoute);
     }
     return !notallow;
@@ -1187,7 +1188,9 @@ static void audioRouteChangeListenerCallback (
     if (!lStatus && lNewRouteSize > 0) {
         NSString *route = (NSString *) lNewRoute;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        speakerEnabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+
+        speakerEnabled = [route isEqualToString: @"Speaker"] ||
+                         [route isEqualToString: @"SpeakerAndMicrophone"];
         if (![LinphoneManager runningOnIpad] && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
             lm.bluetoothEnabled = TRUE;
             lm.bluetoothAvailable = TRUE;
