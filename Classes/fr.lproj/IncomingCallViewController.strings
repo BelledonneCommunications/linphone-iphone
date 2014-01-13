@@ -1,0 +1,21 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Refuser"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Refuser";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Accepter"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Accepter";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Nom du contact"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Nom du contact";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "9"; */
+"9.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Avatar du contact"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Avatar du contact";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Appel entrant"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Appel entrant";
+
+/* Class = "IBUILabel"; text = "Appel entrant"; ObjectID = "31"; */
+"31.text" = "Appel entrant";

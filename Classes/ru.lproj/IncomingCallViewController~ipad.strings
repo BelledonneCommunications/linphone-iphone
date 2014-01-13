@@ -1,0 +1,42 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Отклонить"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Отклонить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Принять"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Принять";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Имя контакта"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Имя контакта";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "9"; */
+"9.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Аватар контакта"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Аватар контакта";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Входящий контакт"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Входящий контакт";
+
+/* Class = "IBUILabel"; text = "Входящий контакт"; ObjectID = "31"; */
+"31.text" = "Входящий контакт";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Принять"; ObjectID = "64"; */
+"64.accessibilityLabel" = "Принять";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Отклонить"; ObjectID = "65"; */
+"65.accessibilityLabel" = "Отклонить";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Входящий звонок"; ObjectID = "67"; */
+"67.accessibilityLabel" = "Входящий звонок";
+
+/* Class = "IBUILabel"; text = "Входящий звонок"; ObjectID = "67"; */
+"67.text" = "Входящий звонок";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Имя контакта"; ObjectID = "69"; */
+"69.accessibilityLabel" = "Имя контакта";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "69"; */
+"69.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Аватар контакта"; ObjectID = "71"; */
+"71.accessibilityLabel" = "Аватар контакта";

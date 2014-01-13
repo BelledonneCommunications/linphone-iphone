@@ -1,0 +1,78 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Клавиатура"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Клавиатура";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Чат"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Чат";
+
+/* Class = "IBUIButton"; normalTitle = "Чат"; ObjectID = "7"; */
+"7.normalTitle" = "Чат";
+
+/* Class = "IBUIButton"; accessibilityLabel = "История"; ObjectID = "8"; */
+"8.accessibilityLabel" = "История";
+
+/* Class = "IBUIButton"; normalTitle = "История"; ObjectID = "8"; */
+"8.normalTitle" = "История";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Контакты"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Контакты";
+
+/* Class = "IBUIButton"; normalTitle = "Контакты"; ObjectID = "9"; */
+"9.normalTitle" = "Контакты";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Настройки"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Настройки";
+
+/* Class = "IBUIButton"; normalTitle = "Настройки"; ObjectID = "10"; */
+"10.normalTitle" = "Настройки";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Пропущенные звонки"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Пропущенные звонки";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "11"; */
+"11.text" = "99";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Пропущенные сообщения"; ObjectID = "14"; */
+"14.accessibilityLabel" = "Пропущенные сообщения";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "14"; */
+"14.text" = "99";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Настройки"; ObjectID = "30"; */
+"30.accessibilityLabel" = "Настройки";
+
+/* Class = "IBUIButton"; normalTitle = "Настройки"; ObjectID = "30"; */
+"30.normalTitle" = "Настройки";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Контакты"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Контакты";
+
+/* Class = "IBUIButton"; normalTitle = "Контакты"; ObjectID = "31"; */
+"31.normalTitle" = "Контакты";
+
+/* Class = "IBUIButton"; accessibilityLabel = "История"; ObjectID = "32"; */
+"32.accessibilityLabel" = "История";
+
+/* Class = "IBUIButton"; normalTitle = "История"; ObjectID = "32"; */
+"32.normalTitle" = "История";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Чат"; ObjectID = "33"; */
+"33.accessibilityLabel" = "Чат";
+
+/* Class = "IBUIButton"; normalTitle = "Чат"; ObjectID = "33"; */
+"33.normalTitle" = "Чат";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Клавиатура"; ObjectID = "35"; */
+"35.accessibilityLabel" = "Клавиатура";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Пропущенные звонки"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Пропущенные звонки";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "38"; */
+"38.text" = "99";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Пропущенные сообщения"; ObjectID = "39"; */
+"39.accessibilityLabel" = "Пропущенные сообщения";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "39"; */
+"39.text" = "99";

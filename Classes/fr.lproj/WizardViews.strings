@@ -1,0 +1,159 @@
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Icône de l'assistant de configuration de compte"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Icône de l'assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Cet assistant va vous aider à utiliser votre compte SIP pour vos appels."; ObjectID = "22"; */
+"22.text" = "Cet assistant va vous aider à utiliser votre compte SIP pour vos appels.";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Créer un compte linphone.org"; ObjectID = "36"; */
+"36.accessibilityLabel" = "Créer un compte linphone.org";
+
+/* Class = "IBUIButton"; normalTitle = "Créer un compte sur linphone.org"; ObjectID = "36"; */
+"36.normalTitle" = "Créer un compte sur linphone.org";
+
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer sur un compte linphone.org"; ObjectID = "38"; */
+"38.accessibilityLabel" = "S'enregistrer sur un compte linphone.org";
+
+/* Class = "IBUIButton"; normalTitle = "J'ai déjà un compte linphone.org"; ObjectID = "38"; */
+"38.normalTitle" = "J'ai déjà un compte linphone.org";
+
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer sur un compte SIP"; ObjectID = "39"; */
+"39.accessibilityLabel" = "S'enregistrer sur un compte SIP";
+
+/* Class = "IBUIButton"; normalTitle = "J'ai déjà un compte SIP"; ObjectID = "39"; */
+"39.normalTitle" = "J'ai déjà un compte SIP";
+
+/* Class = "IBUILabel"; text = "Entrez votre nom d'utilisateur, votre mot de passe ainsi que votre domaine SIP."; ObjectID = "58"; */
+"58.text" = "Entrez votre nom d'utilisateur, votre mot de passe ainsi que votre domaine SIP.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Nom d'utilisateur"; ObjectID = "59"; */
+"59.accessibilityLabel" = "Nom d'utilisateur";
+
+/* Class = "IBUITextField"; placeholder = "Nom d'utilisateur"; ObjectID = "59"; */
+"59.placeholder" = "Nom d'utilisateur";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Mot de passe"; ObjectID = "60"; */
+"60.accessibilityLabel" = "Mot de passe";
+
+/* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "60"; */
+"60.placeholder" = "Mot de passe";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Domaine"; ObjectID = "61"; */
+"61.accessibilityLabel" = "Domaine";
+
+/* Class = "IBUITextField"; placeholder = "Domaine"; ObjectID = "61"; */
+"61.placeholder" = "Domaine";
+
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer"; ObjectID = "62"; */
+"62.accessibilityLabel" = "S'enregistrer";
+
+/* Class = "IBUIButton"; normalTitle = "S'enregistrer"; ObjectID = "62"; */
+"62.normalTitle" = "S'enregistrer";
+
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer"; ObjectID = "64"; */
+"64.accessibilityLabel" = "S'enregistrer";
+
+/* Class = "IBUIButton"; normalTitle = "S'enregistrer"; ObjectID = "64"; */
+"64.normalTitle" = "S'enregistrer";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Mot de passe"; ObjectID = "66"; */
+"66.accessibilityLabel" = "Mot de passe";
+
+/* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "66"; */
+"66.placeholder" = "Mot de passe";
+
+/* Class = "IBUILabel"; text = "Entrez votre nom d'utilisateur et votre mot de passe de votre compte linphone.org."; ObjectID = "67"; */
+"67.text" = "Entrez votre nom d'utilisateur et votre mot de passe de votre compte linphone.org.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Nom d'utilisateur"; ObjectID = "68"; */
+"68.accessibilityLabel" = "Nom d'utilisateur";
+
+/* Class = "IBUITextField"; placeholder = "Nom d'utilisateur"; ObjectID = "68"; */
+"68.placeholder" = "Nom d'utilisateur";
+
+/* Class = "IBUILabel"; text = "Entrez votre nom d'utilsateur, votre mot de passe ainsi que votre adresse email."; ObjectID = "73"; */
+"73.text" = "Entrez votre nom d'utilsateur, votre mot de passe ainsi que votre adresse email.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Nom d'utilisateur"; ObjectID = "74"; */
+"74.accessibilityLabel" = "Nom d'utilisateur";
+
+/* Class = "IBUITextField"; placeholder = "Nom d'utilisateur"; ObjectID = "74"; */
+"74.placeholder" = "Nom d'utilisateur";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Mot de passe"; ObjectID = "75"; */
+"75.accessibilityLabel" = "Mot de passe";
+
+/* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "75"; */
+"75.placeholder" = "Mot de passe";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Mot de passe à nouveau"; ObjectID = "76"; */
+"76.accessibilityLabel" = "Mot de passe à nouveau";
+
+/* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "76"; */
+"76.placeholder" = "Mot de passe";
+
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer"; ObjectID = "77"; */
+"77.accessibilityLabel" = "S'enregistrer";
+
+/* Class = "IBUIButton"; normalTitle = "S'enregistrer"; ObjectID = "77"; */
+"77.normalTitle" = "S'enregistrer";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Email"; ObjectID = "79"; */
+"79.accessibilityLabel" = "Email";
+
+/* Class = "IBUITextField"; placeholder = "Email"; ObjectID = "79"; */
+"79.placeholder" = "Email";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Vérifier la validation"; ObjectID = "103"; */
+"103.accessibilityLabel" = "Vérifier la validation";
+
+/* Class = "IBUIButton"; normalTitle = "Vérifier la validation"; ObjectID = "103"; */
+"103.normalTitle" = "Vérifier la validation";
+
+/* Class = "IBUITextField"; placeholder = "Nom d'utilisateur"; ObjectID = "104"; */
+"104.placeholder" = "Nom d'utilisateur";
+
+/* Class = "IBUILabel"; text = "Votre compte est crée. Vérifier vos emails pour valider votre compte."; ObjectID = "105"; */
+"105.text" = "Votre compte est crée. Vérifier vos emails pour valider votre compte.";
+
+/* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "106"; */
+"106.placeholder" = "Mot de passe";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "117"; */
+"117.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "117"; */
+"117.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "122"; */
+"122.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "122"; */
+"122.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "123"; */
+"123.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "123"; */
+"123.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "124"; */
+"124.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "124"; */
+"124.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "126"; */
+"126.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "126"; */
+"126.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Assistant de configuration de compte"; ObjectID = "127"; */
+"127.accessibilityLabel" = "Assistant de configuration de compte";
+
+/* Class = "IBUILabel"; text = "Assistant de configuration de compte"; ObjectID = "127"; */
+"127.text" = "Assistant de configuration de compte";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Icône de l'assistant de configuration de compte"; ObjectID = "128"; */
+"128.accessibilityLabel" = "Icône de l'assistant de configuration de compte";

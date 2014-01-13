@@ -1,0 +1,6 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Supprimer"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Supprimer";
+
+/* Class = "IBUIButton"; normalTitle = "Supprimer le Contact"; ObjectID = "5"; */
+"5.normalTitle" = "Supprimer le Contact";

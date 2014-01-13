@@ -1,0 +1,21 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Отклонить"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Отклонить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Принять"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Принять";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Имя контакта"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Имя контакта";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "9"; */
+"9.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Аватар контакта"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Аватар контакта";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Входящий звонок"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Входящий звонок";
+
+/* Class = "IBUILabel"; text = "Входящий звонок"; ObjectID = "31"; */
+"31.text" = "Входящий звонок";
