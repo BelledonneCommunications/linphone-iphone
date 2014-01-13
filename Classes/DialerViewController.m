@@ -135,9 +135,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
                                                object:nil];
-
-    initialPreviewAngle = [self orientationToAngleRad:self.interfaceOrientation];
-
     // Update on show
     if([LinphoneManager isLcReady]) {
         LinphoneCore* lc = [LinphoneManager getLc];
@@ -214,38 +211,26 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidUnload];
 }
 
-- (CGFloat)orientationToAngleRad:(UIInterfaceOrientation)orientation {
-    CGFloat angle=0;
-    switch (orientation) {
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    CGRect frame = [videoPreview frame];
+    switch (toInterfaceOrientation) {
         case UIInterfaceOrientationPortrait:
-            angle = 0;
+            [videoPreview setTransform: CGAffineTransformMakeRotation(0)];
             break;
         case UIInterfaceOrientationPortraitUpsideDown:
-            angle = M_PI;
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
             break;
         case UIInterfaceOrientationLandscapeLeft:
-            angle = M_PI / 2;
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
             break;
         case UIInterfaceOrientationLandscapeRight:
-            angle = -M_PI / 2;
+            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
             break;
         default:
             break;
     }
-    return angle;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    UIInterfaceOrientation old = self.interfaceOrientation;
-    CGFloat angle = 0;
-    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-
-    if( old != toInterfaceOrientation ){
-        CGRect frame = [videoPreview frame];
-        angle = [self orientationToAngleRad:toInterfaceOrientation] - initialPreviewAngle;
-        [videoPreview setTransform: CGAffineTransformMakeRotation(angle)];
-        [videoPreview setFrame:frame];
-    }
+    [videoPreview setFrame:frame];
 }
 
 

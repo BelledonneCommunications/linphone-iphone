@@ -28,8 +28,6 @@
 #import "UIDigitButton.h"
 
 @interface DialerViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
-
-    CGFloat initialPreviewAngle;
 }
 
 - (void)setAddress:(NSString*)address;
