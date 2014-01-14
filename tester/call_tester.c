@@ -916,19 +916,23 @@ static void simple_conference(void) {
 }
 
 
-static void srtp_call(void) {
+static void encrypted_call(LinphoneMediaEncryption mode) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionSRTP)) {
-		linphone_core_set_media_encryption(marie->lc,LinphoneMediaEncryptionSRTP);
-		linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
+	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
+		linphone_core_set_media_encryption(marie->lc,mode);
+		linphone_core_set_media_encryption(pauline->lc,mode);
 
 		CU_ASSERT_TRUE(call(pauline,marie));
 
-		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),LinphoneMediaEncryptionSRTP);
-		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(pauline->lc),LinphoneMediaEncryptionSRTP);
-
+		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),mode);
+		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(pauline->lc),mode);
+		if (linphone_core_get_media_encryption(pauline->lc) == linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP) {
+			/*check SAS*/
+			CU_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
+							,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
+		}
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(marie->lc);
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -939,6 +943,16 @@ static void srtp_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void srtp_call(LinphoneMediaEncryptionSRTP) {
+	encrypted_call(LinphoneMediaEncryptionSRTP);
+}
+
+/*
+ * futur work
+static void zrtp_call(LinphoneMediaEncryptionSRTP) {
+	encrypted_call(LinphoneMediaEncryptionZRTP);
+}*/
+
 static void call_with_declined_srtp(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1005,6 +1019,9 @@ static void srtp_ice_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+
+
 
 
 static void early_media_call(void) {
@@ -1476,6 +1493,7 @@ test_t call_tests[] = {
 	{ "Call paused resumed", call_paused_resumed },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
 	{ "SRTP call", srtp_call },
+	/*{ "ZRTP call",zrtp_call}, futur work*/
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
 #ifdef VIDEO_ENABLED
 	{ "Simple video call",video_call},
