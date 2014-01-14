@@ -44,11 +44,12 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
  		$ sudo make install
 
 	+ Install zrtpcpp (optional), for unbreakable call encryption
- 		$ sudo apt-get install cmake libssl-dev
- 		$ git clone git://git.linphone.org/zrtpcpp.git
-		$ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
+ 		$ sudo apt-get install cmake
+		$ git clone https://github.com/wernerd/ZRTPCPP.git
+		$ cd ZRTPCPP 
+		$ cmake -DCORE_LIB=true -DSDES=false . && make
  		$ sudo make install
-
+		If you get this error: "cc1plus: error: unrecognized command line option ‘-std=c++11’", edit CMakeLists.txt and replace c++11 by c++0x .
 
 - Compile linphone
 
