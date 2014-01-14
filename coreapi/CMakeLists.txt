@@ -1,3 +1,38 @@
+find_program(GIT git)
+
+set(GIT_VERSION "unknown")
+if(GIT)
+	execute_process(
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${GIT} describe --always
+		OUTPUT_VARIABLE GIT_DESCRIBE
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${GIT} describe --abbrev=0
+		OUTPUT_VARIABLE GIT_TAG
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${GIT} rev-parse HEAD
+		OUTPUT_VARIABLE GIT_REVISION
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	if(GIT_DESCRIBE)
+		set(GIT_VERSION ${GIT_DESCRIBE})
+	else(GIT_DESCRIBE)
+		if(GIT_REVISION)
+			set(GIT_VERSION ${GIT_REVISION})
+		endif(GIT_REVISION)
+	endif(GIT_DESCRIBE)
+endif(GIT)
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"${GIT_VERSION}\""
+	OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
+)
+
 set(SOURCE_FILES
 	address.c
 	authentication.c
@@ -66,6 +101,7 @@ add_definitions(
 if(WIN32)
 add_definitions(
 	-DWINDOW_NATIVE
+	/FIliblinphone_gitversion.h
 )
 
 set(LIBS ws2_32)
