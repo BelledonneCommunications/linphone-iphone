@@ -612,7 +612,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg600);
 			break;
-			case SalReasonMedia:
+			case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
+			case SalReasonNotAcceptable:
 			//media_encryption_mandatory
 				if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
 					!linphone_core_is_media_encryption_mandatory(lc)) {
@@ -843,6 +844,11 @@ static void text_received(SalOp *op, const SalMessage *msg){
 	}
 }
 
+static void is_composing_received(SalOp *op, const SalIsComposing *is_composing) {
+	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	linphone_core_is_composing_received(lc, op, is_composing);
+}
+
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
 	linphone_notify_parse_presence(op, content_type, content_subtype, body, result);
 }
@@ -1001,8 +1007,14 @@ static int op_equals(LinphoneCall *a, SalOp *b) {
 
 static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
-	const MSList* calls = linphone_core_get_calls(chat_msg->chat_room->lc);
-	
+	const MSList* calls;
+
+	if (chat_msg == NULL) {
+		// Do not handle delivery status for isComposing messages.
+		return;
+	}
+	calls = linphone_core_get_calls(chat_msg->chat_room->lc);
+
 	chat_msg->state=chatStatusSal2Linphone(status);
 	linphone_chat_message_store_state(chat_msg);
 	if (chat_msg && chat_msg->cb) {
@@ -1123,6 +1135,7 @@ SalCallbacks linphone_sal_callbacks={
 	refer_received,
 	text_received,
 	text_delivery_update,
+	is_composing_received,
 	notify_refer,
 	subscribe_received,
 	subscribe_closed,

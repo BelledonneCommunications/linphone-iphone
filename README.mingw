@@ -9,7 +9,7 @@ In the feature list, select:
 * Mingw developer toolkit
 Let the installer fetch and install everything.
 
-In mingw shell, run
+In mingw shell (also refered as msys), run
 
 mingw-get install msys-zip
 mingw-get install msys-unzip
@@ -45,70 +45,63 @@ libintl.a libintl.la libintl.dll.a
 
 * Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
 
-Get Linphone source code
-************************
+* Install msys-git from (http://code.google.com/p/msysgit/). During installation you are asked to make a choice about how line endings are treated by git. Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
 
-Install msys-git from (http://code.google.com/p/msysgit/). During installation you are asked to make a choice about how line endings are treated by git.
-Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
 
-It is recommended that you create a directory somewhere with a path without any spaces or ~ characters, for example
-c:\sources\
-Within msys-git bash, do
+General rules for compilation
+*****************************
+
+- It is recommended that you create a directory somewhere with a path without any spaces or ~ characters, for example c:\sources\.
+  This is the place where source code must be compiled.
+- git commands (to retrieve source code) must be performed within msys-git terminal.
+- all other commands (configure, autogen.sh, make) must be done within the mingw shell (msys).
+In both msys and msys-git windows, change into the directory you created for sources:
 cd /c/sources
-git clone git://git.linphone.org/linphone.git --recursive
 
+Building belle-sip
+******************
+  * download the sources with msys-git shell using the following command:
+    $ git clone git://git.linphone.org/belle-sip.git
+  * compile and install 
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make && make install
 
-Building
-********
+Building Linphone
+*****************
 
-WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor,
- you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
-Kill it. Don't know what it is, but once killed, windows runs normally.
+  * download the sources using the following command:
+    $ git clone git://git.linphone.org/linphone.git --recursive
 
-#Build linphone itself:
-#run autogen.sh after a git checkout or update
+  * compile  
+  #always run autogen.sh after a git checkout or update
+    $ ./autogen.sh
 
-./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+      #note: in order to use the tunnel (commercial extension), append --enable-tunnel to the configure line above.
 
-./configure --prefix=/usr --enable-shared --disable-static
-#note: in order to use the tunnel, append --enable-tunnel to the configure line above.
+    $ make
+    $ make install
 
-#compile:
+    #Option: make a portable binary zip of linphone
+    $ make zip
 
-make
+    #additionally you can make binary installer if you have Inno Setup 5 installed in its default path
 
-#now install to /usr, required for compilation of plugins.
+    $ make setup.exe
+    #now you're done, you have a fresh linphone windows installer in the current directory.
 
-make install
+Building plugins (optional)
+***************************
 
-#make a binary zip of linphone
-
-make zip
-
-#additionally you can make binary installer if you have Inno Setup 5 installed in its default path
-
-make setup.exe
-
-#now you're done, you have a fresh linphone windows installer in the current directory.
-
-
-
-#build plugins
-cd mediastreamer2/plugins/msx264
-./autogen.sh
-PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
-#make a binary zip of this plugin
-make zip
-#or make an installer
-make setup.exe
-
-#the buddylookup plugin enables lookup of buddies in a remote database using xml-rpc over http/https.
-cd coreapi/plugins/buddylookup
-./autogen.sh
-PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static 
-make
-#make a binary zip of this plugin
-make zip
+  This the example for msx264 (H264 plugin), the same applies for other linphone plugins.
+  $ cd mediastreamer2/plugins/msx264
+  $ ./autogen.sh
+  $ PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
+  #make a binary zip of this plugin
+  $ make zip
+  #or make an installer
+  $ make setup.exe
 
 
 ******************************************************
@@ -160,14 +153,6 @@ When running "make install DESTDIR=<somepath>", somepath must be absolute and sh
     $ make lib SHARED=1 WINDOWS=1
     $ make install DESTDIR=/usr
     $ make install DESTDIR=/home/<myuser>/polarssl-install
-
-- building belle-sip
-  * download the sources with:
-    $ git clone git://git.linphone.org/belle-sip.git
-  * compile and install, assuming you have already compiled polarssl and antlr3c and installed in /.
-    $ ./autogen.sh
-    $ ./configure --prefix=/usr --enable-shared --disable-static 
-    $ make && make install && make install DESTDIR=/home/<myuser>/belle-sip-install
 
 - building libsrtp
   *  download the sources with

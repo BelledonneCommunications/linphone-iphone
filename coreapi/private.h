@@ -34,6 +34,9 @@ extern "C" {
 #include "sal/sal.h"
 #include "sipsetup.h"
 
+#include <belle-sip/object.h>
+#include <belle-sip/dict.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -201,22 +204,22 @@ struct _LinphoneCall
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	int localdesc_changed;
-	
+
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
 	bool_t camera_enabled;
-	
+
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
 	bool_t owns_call_log;
 	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
-	
+
 	bool_t videostream_encrypted;
 	bool_t audiostream_encrypted;
 	bool_t auth_token_verified;
 	bool_t defer_update;
-	
+
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
 	bool_t record_active;
@@ -320,6 +323,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
+bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -338,6 +342,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
+void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -379,9 +384,9 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 
 static const int linphone_proxy_config_magic=0x7979;
 
-/*chat*/	
+/*chat*/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-/**/	
+/**/
 
 struct _LinphoneProxyConfig
 {
@@ -426,16 +431,26 @@ struct _LinphoneAuthInfo
 	bool_t works;
 };
 
+typedef enum _LinphoneIsComposingState {
+	LinphoneIsComposingIdle,
+	LinphoneIsComposingActive
+} LinphoneIsComposingState;
+
 struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
 	void * user_data;
 	MSList *messages_hist;
+	LinphoneIsComposingState remote_is_composing;
+	LinphoneIsComposingState is_composing;
+	belle_sip_source_t *remote_composing_refresh_timer;
+	belle_sip_source_t *composing_idle_timer;
+	belle_sip_source_t *composing_refresh_timer;
 };
 
 
-	
+
 struct _LinphoneFriend{
 	LinphoneAddress *uri;
 	SalOp *insub;
@@ -487,7 +502,7 @@ typedef struct rtp_config
 	int nortp_timeout;
 	int disable_upnp;
 	bool_t rtp_no_xmit_on_audio_mute;
-                              /* stop rtp xmit when audio muted */
+							  /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
 	bool_t pad;
@@ -633,12 +648,12 @@ struct _LinphoneCore
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
 	bool_t bl_refresh;
-	
+
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t use_preview_window;
-	
+
 	time_t network_last_check;
 	bool_t network_last_status;
 
@@ -787,6 +802,46 @@ void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+/*****************************************************************************
+ * XML UTILITY FUNCTIONS                                                     *
+ ****************************************************************************/
+
+#include <libxml/xmlreader.h>
+#include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
+#define XMLPARSING_BUFFER_LEN 2048
+#define MAX_XPATH_LENGTH 256
+
+typedef struct _xmlparsing_context {
+	xmlDoc *doc;
+	xmlXPathContextPtr xpath_ctx;
+	char errorBuffer[XMLPARSING_BUFFER_LEN];
+	char warningBuffer[XMLPARSING_BUFFER_LEN];
+} xmlparsing_context_t;
+
+xmlparsing_context_t * linphone_xmlparsing_context_new(void);
+void linphone_xmlparsing_context_destroy(xmlparsing_context_t *ctx);
+void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...);
+int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
+char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+void linphone_free_xml_text_content(const char *text);
+xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+
+
+/** Belle Sip-based objects need unique ids
+  */
+
+BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
+BELLE_SIP_DECLARE_TYPES_END
+
 
 #ifdef __cplusplus
 }

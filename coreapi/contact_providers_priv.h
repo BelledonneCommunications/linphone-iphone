@@ -17,7 +17,7 @@
 #ifndef CONTACT_PROVIDERS_PRIV_H
 #define CONTACT_PROVIDERS_PRIV_H
 
-#include <belle-sip/object.h>
+#include "private.h"
 #include "linphonecore.h"
 
 /* Base for contact search and contact provider */

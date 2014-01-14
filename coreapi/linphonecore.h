@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ortp/payloadtype.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msvideo.h"
+#include "mediastreamer2/mediastream.h"
 
 #ifdef IN_LINPHONE
 #include "sipsetup.h"
@@ -31,9 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "lpconfig.h"
-
-#include <belle-sip/object.h>
-#include <belle-sip/dict.h>
 
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
@@ -94,6 +92,7 @@ typedef struct _LCSipTransports{
 
 /**
  * Enum describing transport type for LinphoneAddress.
+ * @ingroup linphone_address
 **/
 enum _LinphoneTransportType{
 	LinphoneTransportUdp,
@@ -103,6 +102,10 @@ enum _LinphoneTransportType{
 };
 /*this enum MUST be kept in sync with the SalTransport from sal.h*/
 
+/**
+ * Typedef for transport type enum.
+ * @ingroup linphone_address
+**/
 typedef enum _LinphoneTransportType LinphoneTransportType;
 
 /**
@@ -166,13 +169,16 @@ enum _LinphoneReason{
 	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
 	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
 	LinphoneReasonBusy, /**<Phone line was busy */
-	LinphoneReasonMedia, /**<Incompatible media */
+	LinphoneReasonUnsupportedContent, /**<Unsupported content */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
 	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
 	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
 	LinphoneReasonNoMatch /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 };
+
+/*for compatibility*/
+#define LinphoneReasonMedia LinphoneReasonUnsupportedContent
 
 /**
  * Enum describing failure reasons.
@@ -579,7 +585,11 @@ struct _LinphoneCallStats {
 
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
-
+LINPHONE_PUBLIC float linphone_call_stats_update_sender_loss_rate(const LinphoneCallStats *stats);
+LINPHONE_PUBLIC float linphone_call_stats_update_receiver_loss_rate(const LinphoneCallStats *stats);
+LINPHONE_PUBLIC float linphone_call_stats_update_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_stats_update_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC uint64_t linphone_call_stats_update_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
 
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);
@@ -652,6 +662,7 @@ LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall 
 LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
+
 /**
  * Return TRUE if this call is currently part of a conference
  * @param call #LinphoneCall
@@ -977,6 +988,20 @@ LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int 
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
+
+/**
+ * Notify the destination of the chat message being composed that the user is typing a new message.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which a new message is being typed.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_compose(LinphoneChatRoom *cr);
+
+/**
+ * Tells whether the remote is currently composing a message.
+ * @param[in] cr The "LinphoneChatRoom object corresponding to the conversation.
+ * @return TRUE if the remote is currently composing a message, FALSE otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr);
+
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
@@ -1131,6 +1156,14 @@ typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChat
 typedef void (*LinphoneCoreMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 
 /**
+ * Is composing notification callback prototype.
+ *
+ * @param[in] lc #LinphoneCore object
+ * @param[in] room #LinphoneChatRoom involved in the conversation.
+ */
+typedef void (*LinphoneCoreIsComposingReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room);
+
+/**
  * Callback for being notified of DTMFs received.
  * @param lc the linphone core
  * @param call the call that received the dtmf
@@ -1179,6 +1212,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /** a message is received, can be text or external body*/
+	LinphoneCoreIsComposingReceivedCb is_composing_received; /**< An is-composing notification has been received */
 	LinphoneCoreDtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
 	LinphoneCoreReferReceivedCb refer_received; /**< An out of call refer was received */
 	LinphoneCoreCallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
@@ -2201,18 +2235,6 @@ LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
-
-
-/** Belle Sip-based objects need unique ids
-  */
-
-BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
-BELLE_SIP_TYPE_ID(LinphoneContactSearch),
-BELLE_SIP_TYPE_ID(LinphoneContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
-BELLE_SIP_DECLARE_TYPES_END
-
 
 /** Contact Providers
   */

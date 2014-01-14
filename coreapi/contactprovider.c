@@ -59,7 +59,7 @@ int linphone_contact_search_compare(const void* a, const void* b) {
 	return !(ra->id == rb->id); // return 0 if id is equal, 1 otherwise
 }
 
-LinphoneContactSearch*linphone_ldap_contact_search_ref(void* obj)
+LinphoneContactSearch*linphone_contact_search_ref(void* obj)
 {
 	return LINPHONE_CONTACT_SEARCH(belle_sip_object_ref(obj));
 }
@@ -136,4 +136,3 @@ BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider)
 	NULL, /* begin_search -> pure virtual */
 	NULL  /* cancel_search -> pure virtual */
 BELLE_SIP_INSTANCIATE_CUSTOM_VPTR_END
-

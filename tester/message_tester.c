@@ -44,6 +44,15 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	}
 }
 
+void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
+	stats *counters = get_stats(lc);
+	if (room->remote_is_composing == LinphoneIsComposingActive) {
+		counters->number_of_LinphoneIsComposingActiveReceived++;
+	} else {
+		counters->number_of_LinphoneIsComposingIdleReceived++;
+	}
+}
+
 void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	LinphoneCore* lc=(LinphoneCore*)ud;
 	stats* counters = get_stats(lc);
@@ -264,6 +273,24 @@ static void info_message_with_body(){
 	info_message_with_args(TRUE);
 }
 
+static void is_composing_notification(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc, to);
+	int dummy = 0;
+
+	ms_free(to);
+	linphone_chat_room_compose(chat_room);
+	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 1500); /*just to sleep while iterating*/
+	linphone_chat_room_send_message(chat_room, "Composing a message");
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t message_tests[] = {
 	{ "Text message", text_message },
 	{ "Text message with privacy", text_message_with_privacy },
@@ -272,7 +299,8 @@ test_t message_tests[] = {
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body },
 	{ "Info message", info_message },
-	{ "Info message with body", info_message_with_body }
+	{ "Info message with body", info_message_with_body },
+	{ "IsComposing notification", is_composing_notification }
 };
 
 test_suite_t message_test_suite = {

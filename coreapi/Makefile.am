@@ -51,6 +51,7 @@ liblinphone_la_SOURCES=\
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	dict.c \
+	xml.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

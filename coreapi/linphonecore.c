@@ -2873,17 +2873,21 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
-bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
-	if (linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP){
-		int i;
-		for(i=0;i<md->n_active_streams;i++){
-			SalStreamDescription *sd=&md->streams[i];
-			if (sd->proto!=SalProtoRtpSavp){
-				return TRUE;
-			}
+bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md){
+	int i;
+	if (md->n_active_streams==0) return FALSE;
+	
+	for(i=0;i<md->n_active_streams;i++){
+		const SalStreamDescription *sd=&md->streams[i];
+		if (sd->proto!=SalProtoRtpSavp){
+			return FALSE;
 		}
 	}
-	return FALSE;
+	return TRUE;
+}
+
+bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
+	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !linphone_core_media_description_has_srtp(md);
 }
 
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
@@ -2899,7 +2903,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	md=sal_call_get_final_media_description(call->op);
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
-			sal_call_decline(call->op,SalReasonMedia,NULL);
+			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
 			linphone_call_stop_media_streams(call);
 			linphone_core_del_call(lc,call);
 			linphone_call_unref(call);
@@ -3325,6 +3329,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
 	linphone_core_update_streams(lc, call, new_md);
+	linphone_call_fix_call_parameters(call);
 	if (new_md){
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->media_pending=TRUE;
@@ -6267,7 +6272,7 @@ void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp){
  * 
 **/
 int linphone_core_get_video_dscp(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"rtp","video_dscp",0x2e);
+	return lp_config_get_int(lc->config,"rtp","video_dscp",0);
 }
 
 

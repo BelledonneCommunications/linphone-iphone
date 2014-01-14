@@ -464,6 +464,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.subscribe_presence_received=(SalOnSubscribePresenceReceived)unimplemented_stub;
 	if (ctx->callbacks.text_received==NULL)
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
+	if (ctx->callbacks.is_composing_received==NULL)
+		ctx->callbacks.is_composing_received=(SalOnIsComposingReceived)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL)
@@ -915,5 +917,12 @@ unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
 	return belle_sip_random_bytes(ret,size);
 }
 
+belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name) {
+	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
+	return belle_sip_main_loop_create_timeout(ml, func, data, timeout_value_ms, timer_name);
+}
 
-
+void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
+	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
+	belle_sip_main_loop_remove_source(ml, timer);
+}

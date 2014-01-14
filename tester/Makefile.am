@@ -23,11 +23,11 @@ liblinphone_tester_SOURCES=	liblinphone_tester.c liblinphone_tester.h\
 
 AM_CPPFLAGS=-I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 
-LDADD=$(top_builddir)/coreapi/liblinphone.la $(BELLESIP_LIBS)
+LDADD=$(top_builddir)/coreapi/liblinphone.la $(BELLESIP_LIBS) $(LIBXML2_LIBS)
 
 AM_LDFLAGS=$(CUNIT_LIBS)
 
-AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS)
+AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS)
 
 test: liblinphone_tester
 	./liblinphone_tester  --config $(abs_srcdir) 

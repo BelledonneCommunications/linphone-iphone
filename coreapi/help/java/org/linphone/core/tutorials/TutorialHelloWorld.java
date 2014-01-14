@@ -206,5 +206,11 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		
 	}
 
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

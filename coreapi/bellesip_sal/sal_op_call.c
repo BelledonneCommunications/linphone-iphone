@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 #include "offeranswer.h"
 
+static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
+
 /*used for calls terminated before creation of a dialog*/
 static void call_set_released(SalOp* op){
 	if (!op->call_released){
@@ -84,8 +86,8 @@ static void sdp_process(SalOp *h){
 			}
 		}
 	}
-
 }
+
 static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
@@ -159,10 +161,13 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 
 static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	belle_sdp_session_description_t* sdp;
-	if ((sdp=belle_sdp_session_description_create(BELLE_SIP_MESSAGE(response)))) {
-		op->base.remote_media=sal_media_description_new();
-		sdp_to_media_description(sdp,op->base.remote_media);
-		if (op->base.local_media) sdp_process(op);
+	SalReason reason;
+	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
+		if (sdp){
+			op->base.remote_media=sal_media_description_new();
+			sdp_to_media_description(sdp,op->base.remote_media);
+			if (op->base.local_media) sdp_process(op);
+		}/*if no sdp in response, what can we do ?*/
 	}
 }
 
@@ -322,15 +327,61 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
 	return;
 }
 
-static void process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
+/*
+ * Extract the sdp from a sip message.
+ * If there is no body in the message, the session_desc is set to null, 0 is returned.
+ * If body was present is not a SDP or parsing of SDP failed, -1 is returned and SalReason is set appropriately.
+ * 
+**/
+static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
+	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
+	if (content_type){
+		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
+			&& strcmp("sdp",belle_sip_header_content_type_get_subtype(content_type))==0) {
+			*session_desc=belle_sdp_session_description_parse(belle_sip_message_get_body(message));
+			if (*session_desc==NULL) {
+				ms_error("Failed to parse SDP message.");
+				*error=SalReasonNotAcceptable;
+				return -1;
+			}
+		}else{
+			*error=SalReasonUnsupportedContent;
+			return -1;
+		}
+	}else *session_desc=NULL;
+	return 0;
+}
+
+static int is_media_description_acceptable(SalMediaDescription *md){
+	if (md->n_total_streams==0){
+		ms_warning("Media description does not define any stream.");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
-	if ((sdp=belle_sdp_session_description_create(BELLE_SIP_MESSAGE(invite)))) {
-		op->sdp_offering=FALSE;
-		op->base.remote_media=sal_media_description_new();
-		sdp_to_media_description(sdp,op->base.remote_media);
-		belle_sip_object_unref(sdp);
-	}else
-		op->sdp_offering=TRUE;
+	int err=0;
+	SalReason reason;
+	if (extract_sdp(BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
+		if (sdp){
+			op->sdp_offering=FALSE;
+			op->base.remote_media=sal_media_description_new();
+			sdp_to_media_description(sdp,op->base.remote_media);
+			/*make some sanity check about the SDP received*/
+			if (!is_media_description_acceptable(op->base.remote_media)){
+				err=-1;
+				reason=SalReasonNotAcceptable;
+			}
+			belle_sip_object_unref(sdp);
+		}else op->sdp_offering=TRUE; /*INVITE without SDP*/
+	}else err=-1;
+	
+	if (err==-1){
+		sal_call_decline(op,reason,NULL);
+	}
+	return err;
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
@@ -415,13 +466,18 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		/*great ACK received*/
 		if (strcmp("ACK",belle_sip_request_get_method(req))==0) {
 			if (op->sdp_offering){
-				if ((sdp=belle_sdp_session_description_create(BELLE_SIP_MESSAGE(req)))){
-					if (op->base.remote_media)
-						sal_media_description_unref(op->base.remote_media);
-					op->base.remote_media=sal_media_description_new();
-					sdp_to_media_description(sdp,op->base.remote_media);
-					sdp_process(op);
-					belle_sip_object_unref(sdp);
+				SalReason reason;
+				if (extract_sdp(BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
+					if (sdp){
+						if (op->base.remote_media)
+							sal_media_description_unref(op->base.remote_media);
+						op->base.remote_media=sal_media_description_new();
+						sdp_to_media_description(sdp,op->base.remote_media);
+						sdp_process(op);
+						belle_sip_object_unref(sdp);
+					}else{
+						ms_warning("SDP expected in ACK but not found.");
+					}
 				}
 			}
 			/*FIXME
@@ -445,9 +501,8 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				sal_media_description_unref(op->result);
 				op->result=NULL;
 			}
-			process_sdp_for_invite(op,req);
-
-			op->base.root->callbacks.call_updating(op);
+			if (process_sdp_for_invite(op,req)==0)
+				op->base.root->callbacks.call_updating(op);
 		} else if (strcmp("INFO",belle_sip_request_get_method(req))==0){
 			if (belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
 				&&	strstr(belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)),"picture_fast_update")) {

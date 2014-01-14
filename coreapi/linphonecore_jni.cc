@@ -170,6 +170,7 @@ public:
 		vTable.call_encryption_changed = callEncryptionChange;
 		vTable.text_received = text_received;
 		vTable.message_received = message_received;
+		vTable.is_composing_received = is_composing_received;
 		vTable.dtmf_received = dtmf_received;
 		vTable.new_subscription_requested = new_subscription_requested;
 		vTable.notify_presence_received = notify_presence_received;
@@ -225,6 +226,7 @@ public:
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
+		isComposingReceivedId = env->GetMethodID(listenerClass,"isComposingReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;)V");
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
 		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived",
 										  "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneInfoMessage;)V");
@@ -307,6 +309,7 @@ public:
 	jmethodID notifyPresenceReceivedId;
 	jmethodID textReceivedId;
 	jmethodID messageReceivedId;
+	jmethodID isComposingReceivedId;
 	jmethodID dtmfReceivedId;
 	jmethodID callStatsUpdatedId;
 	jmethodID transferStateId;
@@ -550,6 +553,19 @@ public:
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
                                 ,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
 		}
+	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->isComposingReceivedId
+							,lcData->core
+							,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room));
+	}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
@@ -2310,6 +2326,12 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteHistory(JNIEnv
                                                                     ,jobject  thiz
                                                                     ,jlong ptr) {
     linphone_chat_room_delete_history((LinphoneChatRoom*)ptr);
+}
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneChatRoomImpl_compose(JNIEnv *env, jobject thiz, jlong ptr) {
+	linphone_chat_room_compose((LinphoneChatRoom *)ptr);
+}
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneChatRoomImpl_isRemoteComposing(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jboolean)linphone_chat_room_is_remote_composing((LinphoneChatRoom *)ptr);
 }
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteMessage(JNIEnv*  env
                                                                     ,jobject  thiz

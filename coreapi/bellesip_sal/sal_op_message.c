@@ -76,6 +76,10 @@ static bool_t is_external_body(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
+static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
+	return strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
+			&&	strcmp("im-iscomposing+xml",belle_sip_header_content_type_get_subtype(content_type))==0;
+}
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
@@ -88,8 +92,6 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_header_call_id_t* call_id = belle_sip_message_get_header_by_type(req,belle_sip_header_call_id_t);
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
 	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
-	SalMessage salmsg;
-	char message_id[256]={0};
 	int response_code=501;
 	char* from;
 	bool_t plain_text=FALSE;
@@ -99,7 +101,8 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	if (content_type && ((plain_text=is_plain_text(content_type))
 						|| (external_body=is_external_body(content_type)))) {
-
+		SalMessage salmsg;
+		char message_id[256]={0};
 		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
 				,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
 		from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
@@ -120,6 +123,17 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
 		if (salmsg.url) ms_free((char*)salmsg.url);
+		response_code=200;
+	} else if (content_type && is_im_iscomposing(content_type)) {
+		SalIsComposing saliscomposing;
+		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+				,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
+		saliscomposing.from=from;
+		saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
+		op->base.root->callbacks.is_composing_received(op,&saliscomposing);
+		belle_sip_object_unref(address);
+		belle_sip_free(from);
 		response_code=200;
 	} else {
 		ms_error("Unsupported MESSAGE with content type [%s/%s]",belle_sip_header_content_type_get_type(content_type)

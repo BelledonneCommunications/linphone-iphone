@@ -116,6 +116,7 @@ void linphone_gtk_send_text();
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
 LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+void linphone_gtk_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 
 void linphone_gtk_friend_list_update_chat_picture();
 void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la);

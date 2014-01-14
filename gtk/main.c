@@ -266,6 +266,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.call_log_updated=linphone_gtk_call_log_updated;
 	//vtable.text_received=linphone_gtk_text_received;
 	vtable.message_received=linphone_gtk_text_received;
+	vtable.is_composing_received=linphone_gtk_is_composing_received;
 	vtable.refer_received=linphone_gtk_refer_received;
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
@@ -846,7 +847,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 					);
 
 		if(search)
-			belle_sip_object_ref(search);
+			linphone_contact_search_ref(search);
 	}
 	return FALSE;
 }

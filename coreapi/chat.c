@@ -26,6 +26,12 @@
 #include "private.h"
 #include "lpconfig.h"
 
+#include <libxml/xmlwriter.h>
+
+#define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
+#define COMPOSING_DEFAULT_REFRESH_TIMEOUT 60
+#define COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT 120
+
 /**
  * @addtogroup chatroom
  * @{
@@ -85,13 +91,40 @@ LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const 
 	}
 	return ret;
 }
- 
+
+static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
+	if (cr->composing_idle_timer) {
+		sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
+		belle_sip_object_unref(cr->composing_idle_timer);
+		cr->composing_idle_timer = NULL;
+	}
+}
+
+static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *cr) {
+	if (cr->composing_refresh_timer) {
+		sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
+		belle_sip_object_unref(cr->composing_refresh_timer);
+		cr->composing_refresh_timer = NULL;
+	}
+}
+
+static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneChatRoom *cr) {
+	if (cr->remote_composing_refresh_timer) {
+		sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
+		belle_sip_object_unref(cr->remote_composing_refresh_timer);
+		cr->remote_composing_refresh_timer = NULL;
+	}
+}
+
 /**
  * Destroy a LinphoneChatRoom.
  * @param cr #LinphoneChatRoom object
  */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	LinphoneCore *lc=cr->lc;
+	linphone_chat_room_delete_composing_idle_timer(cr);
+	linphone_chat_room_delete_composing_refresh_timer(cr);
+	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
@@ -142,6 +175,12 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
 	msg->storage_id=linphone_chat_message_store(msg);
+
+	if (cr->is_composing == LinphoneIsComposingActive) {
+		cr->is_composing = LinphoneIsComposingIdle;
+	}
+	linphone_chat_room_delete_composing_idle_timer(cr);
+	linphone_chat_room_delete_composing_refresh_timer(cr);
 }
 
 /**
@@ -159,7 +198,10 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 		//legacy API
 		if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, msg->from, msg->message);
 	if (lc->vtable.message_received!=NULL) lc->vtable.message_received(lc, cr,msg);
-	
+	if (cr->lc->vtable.is_composing_received != NULL) {
+		cr->remote_is_composing = LinphoneIsComposingIdle;
+		cr->lc->vtable.is_composing_received(cr->lc, cr);
+	}
 }
 
 /**
@@ -223,6 +265,85 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
 	ms_free(from);
+}
+
+static int linphone_chat_room_remote_refresh_composing_expired(void *data, unsigned int revents) {
+	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
+	belle_sip_object_unref(cr->remote_composing_refresh_timer);
+	cr->remote_composing_refresh_timer = NULL;
+	cr->remote_is_composing = LinphoneIsComposingIdle;
+	if (cr->lc->vtable.is_composing_received != NULL)
+		cr->lc->vtable.is_composing_received(cr->lc, cr);
+	return BELLE_SIP_STOP;
+}
+
+static const char *iscomposing_prefix = "/xsi:isComposing";
+
+static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsing_context_t *xml_ctx) {
+	char xpath_str[MAX_XPATH_LENGTH];
+	xmlXPathObjectPtr iscomposing_object;
+	const char *state_str = NULL;
+	const char *refresh_str = NULL;
+	int refresh_duration = lp_config_get_int(cr->lc->config, "sip", "composing_remote_refresh_timeout", COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT);
+	int i;
+	LinphoneIsComposingState state = LinphoneIsComposingIdle;
+
+	if (linphone_create_xml_xpath_context(xml_ctx) < 0) return;
+
+	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"xsi", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
+	iscomposing_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, iscomposing_prefix);
+	if ((iscomposing_object != NULL) && (iscomposing_object->nodesetval != NULL)) {
+		for (i = 1; i <= iscomposing_object->nodesetval->nodeNr; i++) {
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:state", iscomposing_prefix, i);
+			state_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+			if (state_str == NULL) continue;
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:refresh", iscomposing_prefix, i);
+			refresh_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+		}
+	}
+
+	if (state_str != NULL) {
+		if (strcmp(state_str, "active") == 0) {
+			state = LinphoneIsComposingActive;
+			if (refresh_str != NULL) {
+				refresh_duration = atoi(refresh_str);
+			}
+			if (!cr->remote_composing_refresh_timer) {
+				cr->remote_composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_remote_refresh_composing_expired, cr, refresh_duration * 1000, "composing remote refresh timeout");
+			} else {
+				belle_sip_source_set_timeout(cr->remote_composing_refresh_timer, refresh_duration * 1000);
+			}
+		} else {
+			linphone_chat_room_delete_remote_composing_refresh_timer(cr);
+		}
+
+		cr->remote_is_composing = state;
+		if (cr->lc->vtable.is_composing_received != NULL)
+			cr->lc->vtable.is_composing_received(cr->lc, cr);
+	}
+}
+
+static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const char *text) {
+	xmlparsing_context_t *xml_ctx = linphone_xmlparsing_context_new();
+	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
+	xml_ctx->doc = xmlReadDoc((const unsigned char*)text, 0, NULL, 0);
+	if (xml_ctx->doc != NULL) {
+		process_im_is_composing_notification(cr, xml_ctx);
+	} else {
+		ms_warning("Wrongly formatted presence XML: %s", xml_ctx->errorBuffer);
+	}
+	linphone_xmlparsing_context_destroy(xml_ctx);
+}
+
+void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
+	LinphoneChatRoom *cr = linphone_core_get_or_create_chat_room(lc, is_composing->from);
+	if (cr != NULL) {
+		linphone_chat_room_notify_is_composing(cr, is_composing->text);
+	}
+}
+
+bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
+	return (cr->remote_is_composing == LinphoneIsComposingActive) ? TRUE : FALSE;
 }
 
 /**
@@ -317,6 +438,131 @@ void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage*
 	msg->cb_ud=ud;
 	msg->state=LinphoneChatMessageStateInProgress;
 	_linphone_chat_room_send_message(cr, msg);
+}
+
+static char * linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
+	xmlBufferPtr buf;
+	xmlTextWriterPtr writer;
+	int err;
+	char *content = NULL;
+
+	buf = xmlBufferCreate();
+	if (buf == NULL) {
+		ms_error("Error creating the XML buffer");
+		return content;
+	}
+	writer = xmlNewTextWriterMemory(buf, 0);
+	if (writer == NULL) {
+		ms_error("Error creating the XML writer");
+		return content;
+	}
+
+	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
+	if (err >= 0) {
+		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"isComposing", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi",
+			NULL, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xsi", (const xmlChar *)"schemaLocation",
+			NULL, (const xmlChar *)"urn:ietf:params:xml:ns:im-composing iscomposing.xsd");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"state",
+			(cr->is_composing == LinphoneIsComposingActive) ? (const xmlChar *)"active" : (const xmlChar *)"idle");
+	}
+	if ((err >= 0) && (cr->is_composing == LinphoneIsComposingActive)) {
+		char refresh_str[4] = { 0 };
+		int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+		snprintf(refresh_str, sizeof(refresh_str), "%u", refresh_timeout);
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)refresh_str);
+	}
+	if (err >= 0) {
+		/* Close the "isComposing" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterEndDocument(writer);
+	}
+	if (err > 0) {
+		/* xmlTextWriterEndDocument returns the size of the content. */
+		content = ms_strdup((char *)buf->content);
+	}
+	xmlFreeTextWriter(writer);
+	xmlBufferFree(buf);
+	return content;
+}
+
+static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *cr) {
+	SalOp *op = NULL;
+	LinphoneCall *call;
+	const char *identity = NULL;
+	char *content = NULL;
+
+	if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
+		if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
+			if (call->state == LinphoneCallConnected ||
+			call->state == LinphoneCallStreamsRunning ||
+			call->state == LinphoneCallPaused ||
+			call->state == LinphoneCallPausing ||
+			call->state == LinphoneCallPausedByRemote) {
+				ms_message("send SIP message through the existing call.");
+				op = call->op;
+				identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
+			}
+		}
+	}
+	if (op == NULL) {
+		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+		if (proxy)
+			identity = linphone_proxy_config_get_identity(proxy);
+		else
+			identity = linphone_core_get_primary_contact(cr->lc);
+		/*sending out of calls*/
+		op = sal_op_new(cr->lc->sal);
+		linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+	}
+	content = linphone_chat_room_create_is_composing_xml(cr);
+	if (content != NULL) {
+		sal_message_send(op, identity, cr->peer, "application/im-iscomposing+xml", content);
+		ms_free(content);
+	}
+}
+
+static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {
+	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
+	cr->is_composing = LinphoneIsComposingIdle;
+	linphone_chat_room_send_is_composing_notification(cr);
+	linphone_chat_room_delete_composing_refresh_timer(cr);
+	belle_sip_object_unref(cr->composing_idle_timer);
+	cr->composing_idle_timer = NULL;
+	return BELLE_SIP_STOP;
+}
+
+static int linphone_chat_room_refresh_composing(void *data, unsigned int revents) {
+	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
+	linphone_chat_room_send_is_composing_notification(cr);
+	return BELLE_SIP_CONTINUE;
+}
+
+void linphone_chat_room_compose(LinphoneChatRoom *cr) {
+	int idle_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_idle_timeout", COMPOSING_DEFAULT_IDLE_TIMEOUT);
+	int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+	if (cr->is_composing == LinphoneIsComposingIdle) {
+		cr->is_composing = LinphoneIsComposingActive;
+		linphone_chat_room_send_is_composing_notification(cr);
+		if (!cr->composing_refresh_timer) {
+			cr->composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_refresh_composing, cr, refresh_timeout * 1000, "composing refresh timeout");
+		} else {
+			belle_sip_source_set_timeout(cr->composing_refresh_timer, refresh_timeout * 1000);
+		}
+		if (!cr->composing_idle_timer) {
+			cr->composing_idle_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_stop_composing, cr, idle_timeout * 1000, "composing idle timeout");
+		}
+	}
+	belle_sip_source_set_timeout(cr->composing_idle_timer, idle_timeout * 1000);
 }
 
 /**
