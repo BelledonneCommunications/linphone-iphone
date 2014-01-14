@@ -98,6 +98,10 @@ add_definitions(
 	-DLINPHONE_PLUGINS_DIR=""
 )
 
+if(LINPHONE_ENABLE_VIDEO)
+	add_definitions(-DVIDEO_ENABLED)
+endif(LINPHONE_ENABLE_VIDEO)
+
 if(WIN32)
 add_definitions(
 	-DWINDOW_NATIVE

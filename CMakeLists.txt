@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(LINPHONE C)
 
+option(LINPHONE_ENABLE_VIDEO "Build linphone with video support." ON)
+
 if(NOT ORTP_ROOT_DIR)
 	set(ORTP_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/oRTP)
 endif()
