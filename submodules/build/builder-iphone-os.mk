@@ -29,8 +29,6 @@ linphone_configure_controls=  \
                               --with-readline=none  \
                               --enable-gtk_ui=no \
                               --enable-console_ui=no \
-                              --enable-ssl-hmac=no \
-                              --enable-ssl=no \
 			      --disable-theora \
 			      --disable-sdl \
 			      --disable-x11 \
@@ -38,6 +36,7 @@ linphone_configure_controls=  \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
 			      --disable-tutorials \
+			      --disable-tools \
                               --with-srtp=$(prefix) \
                               --with-antlr=$(prefix) \
                               --disable-msg-storage 

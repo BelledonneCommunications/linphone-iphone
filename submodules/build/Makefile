@@ -20,7 +20,7 @@
 #
 ############################################################################
 enable_gpl_third_parties=yes
-enable_zrtp=no
+enable_zrtp=yes
 enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
@@ -31,7 +31,8 @@ enable_debug=no
 CHECKOPT_MSG := ""
 
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
-	CHECKOPT_MSG += "ZRTP is not available in non-gpl build.\n"
+	CHECKOPT_MSG += "ZRTP is not available in non-gpl build. disabling\n"
+	enable_zrtp=yes
 endif
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
@@ -42,7 +43,6 @@ endif
 ifneq ($(CHECKOPT_MSG),"")
 check_options:
 	@echo $(CHECKOPT_MSG)
-	@exit -1
 else
 check_options:
 endif
