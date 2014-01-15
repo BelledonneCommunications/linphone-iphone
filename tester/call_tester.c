@@ -928,7 +928,8 @@ static void encrypted_call(LinphoneMediaEncryption mode) {
 
 		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),mode);
 		CU_ASSERT_EQUAL(linphone_core_get_media_encryption(pauline->lc),mode);
-		if (linphone_core_get_media_encryption(pauline->lc) == linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP) {
+		if (linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP 
+			&& linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP) {
 			/*check SAS*/
 			CU_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
 							,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
