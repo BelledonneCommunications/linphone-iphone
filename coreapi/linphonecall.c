@@ -688,7 +688,8 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 
 void linphone_call_fix_call_parameters(LinphoneCall *call){
 	call->params.has_video=call->current_params.has_video;
-	call->params.media_encryption=call->current_params.media_encryption;
+	if (call->params.media_encryption != LinphoneMediaEncryptionZRTP) /*in case of ZRTP call parameter are handle after zrtp negociation*/
+		call->params.media_encryption=call->current_params.media_encryption;
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){

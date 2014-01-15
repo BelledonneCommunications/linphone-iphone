@@ -58,8 +58,9 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
 
 - Install zrtpcpp (optional), for unbreakable call encryption
  $ sudo port install cmake
- $ git clone git://git.linphone.org/zrtpcpp.git
- $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
+ $ git clone https://github.com/wernerd/ZRTPCPP.git
+ $ cd ZRTPCPP
+ $ cmake -DCORE_LIB=true -DSDES=false . && make
  $ sudo make install
 
 
@@ -82,7 +83,7 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
 
  Then or otherwise, do:
 	
- $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
+ $ PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
  Install to /opt/local
 
