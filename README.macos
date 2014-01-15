@@ -30,7 +30,7 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ export CFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
  $ export OBJCFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
  $ export CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
- $ export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5 -Wl,-headerpad_max_install_names"
+ $ export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5 -Wl,-headerpad_max_install_names -Wl,-read_only_relocs -Wl,suppress"
 
 - Install libantlr3c (library used by belle-sip for parsing)
  $ git clone -b linphone git://git.linphone.org/antlr3.git
