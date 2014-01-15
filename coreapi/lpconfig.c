@@ -79,13 +79,13 @@ LpSection *lp_section_new(const char *name){
 
 void lp_item_destroy(void *pitem){
 	LpItem *item=(LpItem*)pitem;
-	free(item->key);
-	free(item->value);
+	ortp_free(item->key);
+	ortp_free(item->value);
 	free(item);
 }
 
 void lp_section_destroy(LpSection *sec){
-	free(sec->name);
+	ortp_free(sec->name);
 	ms_list_for_each(sec->items,lp_item_destroy);
 	ms_list_free(sec->items);
 	free(sec);
@@ -263,13 +263,13 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 }
 
 void lp_item_set_value(LpItem *item, const char *value){
-	free(item->value);
+	ortp_free(item->value);
 	item->value=ortp_strdup(value);
 }
 
 
 void lp_config_destroy(LpConfig *lpconfig){
-	if (lpconfig->filename!=NULL) free(lpconfig->filename);
+	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
 	ms_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
 	ms_list_free(lpconfig->sections);
 	free(lpconfig);
