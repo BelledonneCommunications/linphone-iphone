@@ -41,12 +41,6 @@ linphone_configure_controls=  \
                               --with-antlr=$(prefix) \
                               --disable-msg-storage 
 
-
-ifeq ($(enable_zrtp),yes)
-	linphone_configure_controls+= --enable-zrtp
-else
-	linphone_configure_controls+= --disable-zrtp
-endif
                               
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -68,6 +62,7 @@ all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msb
 
 enable_gpl_third_parties?=yes
 enable_ffmpeg?=yes
+enable_zrtp?=yes
 
 SWITCHES:=
 
@@ -82,6 +77,14 @@ ifeq ($(enable_gpl_third_parties),yes)
 		SWITCHES += disable_ffmpeg
 	endif
 
+	ifeq ($(enable_zrtp), yes)
+		linphone_configure_controls+= --enable-zrtp
+		SWITCHES += enable_zrtp
+	else
+		linphone_configure_controls+= --disable-zrtp
+		SWITCHES += disable_zrtp
+	endif
+
 else # !enable gpl
 	linphone_configure_controls+= --disable-ffmpeg 
 	SWITCHES += disable_gpl_third_parties disable_ffmpeg
@@ -91,6 +94,7 @@ SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
 
 mode_switch_check: $(SWITCHES)
 
+#generic rule to force recompilation of linphone if some options require it
 $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
 	cd $(LINPHONE_BUILD_DIR) && rm -f *able_$*
