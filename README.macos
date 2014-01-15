@@ -64,7 +64,7 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ sudo port install cmake
  $ git clone https://github.com/wernerd/ZRTPCPP.git
  $ cd ZRTPCPP
- $ cmake -DCORE_LIB=true -DSDES=false . && make
+ $ cmake -DCORE_LIB=true -DSDES=false -DCMAKE_INSTALL_NAME_DIR=/usr/local/lib . && make
  $ sudo make install
 
 
