@@ -64,8 +64,8 @@ The next pieces need to be compiled manually. To ensure compatibility with multi
  $ sudo port install cmake
  $ git clone https://github.com/wernerd/ZRTPCPP.git
  $ cd ZRTPCPP
- $ cmake -DCORE_LIB=true -DSDES=false -DCMAKE_INSTALL_NAME_DIR=/usr/local/lib . && make
- $ sudo make install
+ $ cmake -DCORE_LIB=true -DSDES=false CMAKE_INSTALL_NAME_DIR=/usr/local/lib/ -DCMAKE_C_FLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5" -DCMAKE_CXX_FLAGS="-arch i386 -arch x86_64 --stdlib=libstdc++ -std=c++11 -lstdc++ -mmacosx-version-min=10.5"  -DCMAKE_C_COMPILER=`xcrun --find clang` -DCMAKE_CXX_COMPILER=`xcrun --find clang` . 
+$ sudo make install
 
 
 - Install gsm codec (optional)
