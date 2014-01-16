@@ -256,14 +256,25 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	const char *audio_media_connectivity = _("Direct or through server");
 	const char *video_media_connectivity = _("Direct or through server");
 	gboolean has_video=linphone_call_params_video_enabled(linphone_call_get_current_params(call));
+	MSVideoSize size_received = linphone_call_params_get_received_video_size(linphone_call_get_current_params(call));
+	MSVideoSize size_sent = linphone_call_params_get_sent_video_size(linphone_call_get_current_params(call));
 	gchar *tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
 		as->download_bandwidth,as->upload_bandwidth);
 	
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
 	g_free(tmp);
-	if (has_video)
+	if (has_video){
+		gchar *size_r=g_strdup_printf(_("%ix%i"),size_received.width,size_received.height);
+		gchar *size_s=g_strdup_printf(_("%ix%i"),size_sent.width,size_sent.height);
+		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_recv")),size_r);
+		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_sent")),size_s);
+		
 		tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),vs->download_bandwidth,vs->upload_bandwidth);
-	else tmp=NULL;
+		g_free(size_r);
+		g_free(size_s);
+	} else {
+		tmp=NULL;
+	}
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_bandwidth_usage")),tmp);
 	if (tmp) g_free(tmp);
 	if(as->upnp_state != LinphoneUpnpStateNotAvailable && as->upnp_state != LinphoneUpnpStateIdle) {
