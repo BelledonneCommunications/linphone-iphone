@@ -313,6 +313,15 @@ if test "$gtk_ui" = "true" ; then
 	fi
 fi
 
+case "$target" in
+        #macosx 64 bits
+        x86_64-apple-darwin*)
+                LIBS="$LIBS -mmacosx-version-min=10.6"
+                CXXFLAGS="$CXXFLAGS -mmacosx-version-min=10.6"
+                CFLAGS="$CFLAGS -mmacosx-version-min=10.6"
+        ;;
+esac
+
 dnl os-specific problems not handled by existing macros.
 case "$host_os" in
 	*freebsd*)
