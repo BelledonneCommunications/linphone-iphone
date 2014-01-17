@@ -298,5 +298,5 @@
 /* No comment provided by engineer. */
 "© 2010-2012 Belledonne Communications " = "© 2010-2012 Belledonne Communications ";
 
-/* Enter an address placeholder in Dialer */
+/* Placeholder for the address in DialerView */
 "Enter an address" = "Entrez une addresse SIP ou un numéro de téléphone...";
