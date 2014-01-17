@@ -19,7 +19,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 		- libavcodec (ffmpeg) 
 		- libswscale (part of ffmpeg too) for better scaling performance
 		- libxv (x11 video extension)
-		- ligl1-mesa (OpenGL API -- GLX development files)
+		- libgl1-mesa (OpenGL API -- GLX development files)
 		- libglew (OpenGL Extension Wrangler library)
 		- libv4l (Video for linux)
 		- libx11 (x11)
