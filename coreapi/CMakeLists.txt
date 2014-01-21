@@ -1,3 +1,9 @@
+find_library(LIBORTP NAMES ortp)
+find_library(LIBMEDIASTREAMER_BASE NAMES mediastreamer_base)
+find_library(LIBMEDIASTREAMER_VOIP NAMES mediastreamer_voip)
+find_library(LIBBELLESIP NAMES bellesip)
+find_library(LIBXML2 NAMES xml2)
+
 find_program(GIT git)
 
 set(GIT_VERSION "unknown")
@@ -91,7 +97,6 @@ add_definitions(
 	-DIN_LINPHONE
 	-DUSE_BELLESIP
 	#-DTUNNEL_ENABLED
-	#-DVIDEO_ENABLED
 	-DLINPHONE_PACKAGE_NAME="linphone"
 	-DLINPHONE_VERSION="Devel"
 	-DLIBLINPHONE_EXPORTS
@@ -110,39 +115,28 @@ add_definitions(
 
 set(LIBS ws2_32)
 endif(WIN32)
-set(LIBS ${LIBS} libortp libmediastreamer_base libmediastreamer_voip libbellesip libxml2)
+set(LIBS ${LIBS} ${LIBORTP} ${LIBMEDIASTREAMER_BASE} ${LIBMEDIASTREAMER_VOIP} ${LIBBELLESIP} ${LIBXML2})
 
-add_library(liblinphone SHARED ${SOURCE_FILES})
-set_target_properties(liblinphone PROPERTIES VERSION 3.6.99 SOVERSION 5)
+add_library(linphone SHARED ${SOURCE_FILES})
+set_target_properties(linphone PROPERTIES VERSION 3.6.99 SOVERSION 5)
 
-target_link_libraries(liblinphone ${LIBS})
+target_link_libraries(linphone ${LIBS})
 
-install(TARGETS liblinphone
-		COMPONENT COMP_liblinphone
+install(TARGETS linphone
         DESTINATION ${LIB_INSTALL_DIR}
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-if(USE_INSTALLED_COMPONENTS)
-	add_dependencies(liblinphone
-		INSTALL_libortp
-		INSTALL_libmediastreamer2
-		INSTALL_libbellesip
-		INSTALL_libxml2)
-endif()
 
 
 
 file(GLOB HEADER_FILES "*.h")
 
 install(FILES ${HEADER_FILES}
-	COMPONENT COMP_liblinphone
 	DESTINATION include/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 if(WIN32)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/liblinphone.pdb
-	COMPONENT COMP_liblinphone
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/linphone.pdb
 	DESTINATION ${LIB_INSTALL_DIR}
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
