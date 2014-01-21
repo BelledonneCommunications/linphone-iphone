@@ -5470,24 +5470,25 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 
-
-	for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
-		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-		linphone_proxy_config_edit(cfg);	/* to unregister */
-	}
-	
-	ms_message("Unregistration started.");
-
-	for (i=0;i<20&&still_registered;i++){
-		still_registered=FALSE;
-		sal_iterate(lc->sal);
+	if (lc->network_reachable) {
 		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-			still_registered|=linphone_proxy_config_is_registered(cfg);
+			linphone_proxy_config_edit(cfg);	/* to unregister */
 		}
-		ms_usleep(100000);
+	
+		ms_message("Unregistration started.");
+
+		for (i=0;i<20&&still_registered;i++){
+			still_registered=FALSE;
+			sal_iterate(lc->sal);
+			for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
+				LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
+				still_registered|=linphone_proxy_config_is_registered(cfg);
+			}
+			ms_usleep(100000);
+		}
+		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
-	if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
 	ms_list_free(config->proxies);
 	config->proxies=NULL;
