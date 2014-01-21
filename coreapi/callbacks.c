@@ -555,6 +555,23 @@ static void call_terminated(SalOp *op, const char *from){
 	linphone_call_set_state(call, LinphoneCallEnd,"Call ended");
 }
 
+static int resume_call_after_failed_transfer(LinphoneCall *call){
+	ms_message("!!!!!!!!!!resume_call_after_failed_transfer");
+	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
+		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
+	
+	if (call->was_automatically_paused && call->state==LinphoneCallPaused){
+		if (sal_op_is_idle(call->op)){
+			linphone_core_resume_call(call->core,call);
+		}else {
+			ms_message("!!!!!!!!!!resume_call_after_failed_transfer, salop was busy");
+			return BELLE_SIP_CONTINUE;
+		}
+	}
+	linphone_call_unref(call);
+	return BELLE_SIP_STOP;
+}
+
 static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details, int code){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	char *msg486=_("User is busy.");
@@ -682,19 +699,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 	
 	if (referer){
-		/*
-		 * 1- resume call automatically if we had to pause it before to execute the transfer
-		 * 2- notify other party of the transfer faillure
-		 * This must be done at the end because transferer call can't be resumed until transfer-target call is changed to error state.
-		 * This must be done in this order because if the notify transaction will prevent the resume transaction to take place.
-		 * On the contrary, the notify transaction is queued and then executed after the resume completes.
-		**/
-		if (linphone_call_get_state(referer)==LinphoneCallPaused && referer->was_automatically_paused){
-			/*resume to the call that send us the refer automatically*/
-			linphone_core_resume_call(lc,referer);
-			referer->was_automatically_paused=FALSE;
-		}
+		/*notify referer of the failure*/
 		linphone_core_notify_refer_state(lc,referer,call);
+		/*schedule automatic resume of the call. This must be done only after the notifications are completed due to dialog serialization of requests.*/
+		linphone_core_queue_task(lc,(belle_sip_source_func_t)resume_call_after_failed_transfer,linphone_call_ref(referer),"Automatic call resuming after failed transfer");
 	}
 }
 

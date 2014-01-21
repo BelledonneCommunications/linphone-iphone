@@ -3594,10 +3594,8 @@ void linphone_core_preempt_sound_resources(LinphoneCore *lc){
  *
  * @ingroup call_control
 **/
-int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
-{
+int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	char temp[255]={0};
-	LinphoneCall *call = the_call;
 	const char *subject="Call resuming";
 	
 	if(call->state!=LinphoneCallPaused ){
@@ -3606,18 +3604,20 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	if (call->params.in_conference==FALSE){
 		if (linphone_core_sound_resources_locked(lc)){
-			ms_warning("Cannot resume call %p because another call is locking the sound resources.",the_call);
+			ms_warning("Cannot resume call %p because another call is locking the sound resources.",call);
 			return -1;
 		}
 		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
 
+	call->was_automatically_paused=FALSE;
+	
 	/* Stop playing music immediately. If remote side is a conference it
 	 prevents the participants to hear it while the 200OK comes back.*/
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
-	linphone_call_make_local_media_description(lc,the_call);
+	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}

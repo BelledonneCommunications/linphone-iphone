@@ -539,12 +539,8 @@ const char *sal_op_get_from(const SalOp *op);
 const SalAddress *sal_op_get_from_address(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const SalAddress *sal_op_get_to_address(const SalOp *op);
-#ifndef USE_BELLESIP
-const char *sal_op_get_contact(const SalOp *op);
-#else
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
 #define sal_op_get_contact sal_op_get_contact_address /*for liblinphone compatibility*/
-#endif
 const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
@@ -562,6 +558,8 @@ void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
 
 void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled);
 bool_t sal_op_is_ipv6(SalOp *op);
+/*returns TRUE if there is no pending request that may block a future one */
+bool_t sal_op_is_idle(SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

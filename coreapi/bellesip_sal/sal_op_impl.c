@@ -638,3 +638,11 @@ bool_t sal_op_is_ipv6(SalOp *op){
 	return sal_address_is_ipv6((SalAddress*)contact);
 }
 
+bool_t sal_op_is_idle(SalOp *op){
+	if (op->dialog){
+		return !belle_sip_dialog_request_pending(op->dialog);
+	}
+	return TRUE;
+}
+
+

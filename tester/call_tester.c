@@ -1257,6 +1257,12 @@ static void unattended_call_transfer_with_error(void) {
 	/*the error must be reported back to marie*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallError,1,2000));
 
+	/*and pauline should resume the call automatically*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallResuming,1,2000));
+	
+	/*and call should be resumed*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,2000));
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_list_free(lcs);
