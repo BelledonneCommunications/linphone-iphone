@@ -382,6 +382,8 @@ bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 LinphoneCall * is_a_linphone_call(void *user_pointer);
 LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 
+void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
+
 static const int linphone_proxy_config_magic=0x7979;
 
 /*chat*/

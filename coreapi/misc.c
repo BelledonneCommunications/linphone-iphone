@@ -1321,5 +1321,13 @@ const char *linphone_core_get_video_display_filter(LinphoneCore *lc){
 	return lp_config_get_string(lc->config,"video","displaytype",NULL);
 }
 
+/**
+ * Queue a task into the main loop. The data pointer must remain valid until the task is completed.
+ * task_fun must return BELLE_SIP_STOP when job is finished.
+**/
+void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description){
+	belle_sip_source_t *s=sal_create_timer(lc->sal,task_fun,data, 20, task_description);
+	belle_sip_object_unref(s);
+}
 
 
