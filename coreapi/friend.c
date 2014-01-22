@@ -656,3 +656,7 @@ void linphone_core_write_friends_config(LinphoneCore* lc)
 	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
 }
 
+LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr){
+	return fr->lc;
+}
+

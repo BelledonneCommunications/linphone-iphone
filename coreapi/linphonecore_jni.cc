@@ -2222,6 +2222,16 @@ extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getStatus(JNIEnv*  env
 																		,jlong ptr) {
 	return (jint)linphone_friend_get_status((LinphoneFriend*)ptr);
 }
+extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneCore *lc=linphone_friend_get_core((LinphoneFriend*)ptr);
+	if (lc!=NULL){
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		return lcData->core;
+	}
+	return NULL;
+}
 
 /*
  * Class:     org_linphone_core_LinphoneFriendImpl
