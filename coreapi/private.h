@@ -66,7 +66,7 @@ extern "C" {
 #ifdef HAVE_GETTEXT
 #include <libintl.h>
 #ifndef _
-#define _(String) gettext(String)
+#define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif
 #else
 #ifndef _

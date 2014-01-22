@@ -361,6 +361,8 @@ GtkWidget *linphone_gtk_create_window(const char *window_name){
 
 	if (get_ui_file(window_name,path,sizeof(path))==-1) return NULL;
 
+	gtk_builder_set_translation_domain(builder,GETTEXT_PACKAGE);
+
 	if (!gtk_builder_add_from_file (builder, path, &error)){
 		g_error("Couldn't load builder file: %s", error->message);
 		g_error_free (error);
@@ -387,6 +389,9 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	object_ids[1]=NULL;
 
 	if (get_ui_file(filename,path,sizeof(path))==-1) return NULL;
+	
+	gtk_builder_set_translation_domain(builder,GETTEXT_PACKAGE);
+	
 	if (!gtk_builder_add_objects_from_file(builder,path,object_ids,&error)){
 		g_error("Couldn't load %s from builder file %s: %s", widget_name,path,error->message);
 		g_error_free (error);
@@ -2070,9 +2075,6 @@ static gboolean on_block_termination(void){
 #endif
 
 int main(int argc, char *argv[]){
-#ifdef ENABLE_NLS
-	void *p;
-#endif
 	char *config_file;
 	const char *factory_config_file;
 	const char *lang;
@@ -2122,10 +2124,11 @@ int main(int argc, char *argv[]){
 	}
 
 #ifdef ENABLE_NLS
-	p=bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-	if (p==NULL) perror("bindtextdomain failed");
+	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
+	setlocale(LC_ALL,"");
+	/*do not use textdomain(): this sets a global default domain. On Mac OS bundle, it breaks gtk translations (obscure bug somewhere)*/
+	/*textdomain (GETTEXT_PACKAGE);*/
 #else
 	g_message("NLS disabled.\n");
 #endif
@@ -2159,7 +2162,18 @@ int main(int argc, char *argv[]){
 			g_error("Could not change directory to %s : %s",workingdir,strerror(errno));
 		}
 	}
-
+	
+#if defined(__APPLE__) && defined(ENABLE_NLS)
+	/*workaround for bundles. GTK is unable to find translations in the bundle (obscure bug again).
+	So we help it:*/
+	{
+		if (g_file_test(PACKAGE_LOCALE_DIR, G_FILE_TEST_IS_DIR)){
+			bindtextdomain("gtk20",PACKAGE_LOCALE_DIR);
+			bindtextdomain("gdk-pixbuf",PACKAGE_LOCALE_DIR);
+			bindtextdomain("glib20",PACKAGE_LOCALE_DIR);
+		}
+	}
+#endif
 	/* Now, look for the factory configuration file, we do it this late
 		 since we want to have had time to change directory and to parse
 		 the options, in case we needed to access the working directory */

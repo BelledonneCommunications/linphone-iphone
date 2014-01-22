@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # undef _
-# define _(String) gettext (String)
+# define _(String) dgettext (GETTEXT_PACKAGE,String)
 #else
 # define _(String) (String)
 # define ngettext(singular,plural,number) ((number>1) ? (plural) : (singular) )

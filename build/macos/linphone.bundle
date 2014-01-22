@@ -92,6 +92,9 @@
   <binary>
     ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so
   </binary>
+  <binary>
+    ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/immodules/*.so
+  </binary>
   <!-- Copy GIO modules, required for https access for wizard-->
   <binary>
      ${prefix}/lib/gio/modules/libgiognutls.so
@@ -102,6 +105,12 @@
        optional, as usual. Bundler will find all translations of that
        library/program under the indicated directory and copy them.-->
   <translations name="linphone">
+    ${prefix}/share/locale
+  </translations>
+<translations name="gdk-pixbuf">
+    ${prefix}/share/locale
+  </translations>
+<translations name="glib20">
     ${prefix}/share/locale
   </translations>
   <translations name="gtk20">
