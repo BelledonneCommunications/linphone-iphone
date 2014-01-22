@@ -210,7 +210,7 @@ static void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg){
 		belle_sip_message_add_header(msg,h);
 }
 
-static void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
+void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
 	if (op->base.sent_custom_headers){
 		belle_sip_message_t *ch=(belle_sip_message_t*)op->base.sent_custom_headers;
 		belle_sip_list_t *l=belle_sip_message_get_all_headers(ch);

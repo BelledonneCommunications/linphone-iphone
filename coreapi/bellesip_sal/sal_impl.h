@@ -159,4 +159,6 @@ SalReason sal_reason_to_sip_code(SalReason r);
 
 belle_sip_header_t * sal_make_supported_header(Sal *sal);
 
+void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
+
 #endif /* SAL_IMPL_H_ */

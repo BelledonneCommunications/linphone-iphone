@@ -709,6 +709,8 @@ int sal_call_accept(SalOp*h){
 	if ((contact_header=sal_op_create_contact(h))) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact_header));
 	}
+	
+	_sal_op_add_custom_headers(h, BELLE_SIP_MESSAGE(response));
 
 	handle_offer_answer_response(h,response);
 

@@ -3303,6 +3303,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
+		sal_op_set_sent_custom_header(call->op,params->custom_headers);
 	}
 	
 	if (call->audiostream==NULL)
