@@ -89,6 +89,10 @@ ipa: build
 	&&  make -f  builder-iphone-os.mk  ipa \
 	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin ipa \
 
+zipres:
+	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
+	@echo Archive 'ios_assets.tar.gz' placed in root directory
+
 clean:
 	make -f  builder-iphone-simulator.mk  clean \
 	&&  make -f  builder-iphone-os.mk  clean \
