@@ -177,19 +177,39 @@ AC_ARG_ENABLE(ldap,
 )
 
 if test "$enable_ldap" = "true"; then
-	AC_CHECK_LIB(sasl2, sasl_client_init , [foo=bar],
-		[AC_MSG_ERROR(You need SASL for LDAP support)]
+	PKG_CHECK_MODULES(LDAP, [openldap],[found_ldap=yes], [found_ldap=no])
+	if test  "$found_ldap" = "no"; then
+		AC_CHECK_LIB(ldap,ldap_initialize, [LDAP_LIBS="-lldap -llber"],
+			[AC_MSG_ERROR([You need libldap for LDAP support])]
 		)
-
-	AC_CHECK_LIB(ldap,ldap_initialize, LDAP_LIBS="-lldap -llber -lsasl2",
-		[AC_MSG_ERROR(You need libldap for LDAP support)]
-		)
-
-	AC_CHECK_HEADERS(ldap.h)
-	AC_CHECK_HEADERS(sasl/sasl.h)
+		AC_CHECK_HEADERS(ldap.h, [foo=bar], [AC_MSG_ERROR( [ldap.h not found] ) ] )
+		found_ldap=yes		
+	fi
+	
+	PKG_CHECK_MODULES(SASL, [libsasl2],[found_sasl=yes],[found_sasl=no] )
+	
+	if test "$found_sasl" = "no"; then
+		AC_CHECK_LIB(sasl2, sasl_client_init , [SASL_LIBS="-lsasl2"],
+			[AC_MSG_ERROR([You need SASL for LDAP support] ) ]
+			)
+		AC_CHECK_HEADERS(sasl/sasl.h,foo=bar, [AC_MSG_ERROR([sasl/sasl.h not found])])
+		found_sasl=yes	
+	fi
+	
+	AC_SUBST(LDAP_CFLAGS)
 	AC_SUBST(LDAP_LIBS)
-	AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
+	
+	AC_SUBST(SASL_CFLAGS)
+	AC_SUBST(SASL_LIBS)
+	
+	if test "$found_ldap$found_sasl" = "yesyes"; then
+		AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
+	else
+		AC_MSG_ERROR([Can't use LDAP due to previous errors])
+	fi
+
 fi
+
 AM_CONDITIONAL(BUILD_LDAP, test x$enable_ldap != xfalse)
 
 dnl conditionnal build of console interface.
