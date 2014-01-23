@@ -113,7 +113,7 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 		
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this);
+		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
 
 
 		

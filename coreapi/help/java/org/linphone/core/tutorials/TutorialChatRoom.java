@@ -116,7 +116,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this);
+		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
 
 		try {
 			// Next step is to create a chat room

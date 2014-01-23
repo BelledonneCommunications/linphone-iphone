@@ -118,7 +118,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = lcFactory.createLinphoneCore(this);
+		LinphoneCore lc = lcFactory.createLinphoneCore(this, null);
 
 	
 		try {

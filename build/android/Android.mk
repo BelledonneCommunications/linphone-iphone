@@ -105,7 +105,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
 	$(LOCAL_PATH)/../../externals/build/libxml2
 
-LOCAL_LDLIBS += -llog -ldl
+LOCAL_LDLIBS += -llog -lOpenSLES -ldl
 
 LOCAL_STATIC_LIBRARIES := \
 	cpufeatures \

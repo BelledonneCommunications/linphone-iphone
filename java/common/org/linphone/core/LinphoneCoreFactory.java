@@ -22,6 +22,7 @@ package org.linphone.core;
 
 
 
+
 abstract public class LinphoneCoreFactory {
 	
 	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
@@ -65,8 +66,8 @@ abstract public class LinphoneCoreFactory {
 	 * */
 	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1, String realm, String domain);
 	
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata, Object context) throws LinphoneCoreException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException;
 
 
 	/**
