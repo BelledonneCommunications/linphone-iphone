@@ -41,7 +41,7 @@ struct _LinphoneLDAPContactProvider
 
 	LDAP*   ld;
 	MSList* requests;
-	uint    req_count;
+	unsigned int    req_count;
 
 	// bind transaction
 	bool_t connected;
@@ -310,7 +310,7 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 
 	if( obj->ld && obj->connected ){
 		// check for pending searches
-		uint i;
+		unsigned int i;
 
 		for( i=0; i<obj->req_count; i++){
 			LinphoneLDAPContactSearch* search = (LinphoneLDAPContactSearch*)ms_list_nth_data( obj->requests, i );
