@@ -74,14 +74,28 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
 	SalMediaDescription *oldmd=call->resultdesc;
+	bool_t all_muted=FALSE;
+	bool_t send_ringbacktone=FALSE;
 	
 	linphone_core_stop_ringing(lc);
-	if (new_md!=NULL){
-		sal_media_description_ref(new_md);
-		call->media_pending=FALSE;
-	}else{
-		call->media_pending=TRUE;
+	if (!new_md) {
+		ms_error("linphone_core_update_streams() called with null media description");
+		return;
 	}
+	if (call->biggestdesc==NULL || new_md->n_total_streams>call->biggestdesc->n_total_streams){
+		/*we have been offered and now are ready to proceed, or we added a new stream*/
+		/*store the media description to remember the mapping of calls*/
+		if (call->biggestdesc){
+			sal_media_description_unref(call->biggestdesc);
+			call->biggestdesc=NULL;
+		}
+		if (sal_call_is_offerer(call->op))
+			call->biggestdesc=sal_media_description_ref(call->localdesc);
+		else
+			call->biggestdesc=sal_media_description_ref(sal_call_get_remote_media_description(call->op));
+	}
+	sal_media_description_ref(new_md);
+	call->expect_media_in_ack=FALSE;
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.ticker) || (call->videostream && call->videostream->ms.ticker)){
 		/* we already started media: check if we really need to restart it*/
@@ -121,23 +135,18 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_call_init_media_streams (call);
 	}
 	
-	if (new_md) {
-		bool_t all_muted=FALSE;
-		bool_t send_ringbacktone=FALSE;
-		
-		if (call->audiostream==NULL){
-			/*this happens after pausing the call locally. The streams are destroyed and then we wait the 200Ok to recreate them*/
-			linphone_call_init_media_streams (call);
-		}
-		if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
-			send_ringbacktone=TRUE;
-		}
-		if (call->state==LinphoneCallIncomingEarlyMedia ||
-		    (call->state==LinphoneCallOutgoingEarlyMedia && !call->params.real_early_media)){
-			all_muted=TRUE;
-		}
-		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
+	if (call->audiostream==NULL){
+		/*this happens after pausing the call locally. The streams are destroyed and then we wait the 200Ok to recreate them*/
+		linphone_call_init_media_streams (call);
 	}
+	if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
+		send_ringbacktone=TRUE;
+	}
+	if (call->state==LinphoneCallIncomingEarlyMedia ||
+		(call->state==LinphoneCallOutgoingEarlyMedia && !call->params.real_early_media)){
+		all_muted=TRUE;
+	}
+	linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
@@ -413,10 +422,10 @@ static void call_ack(SalOp *op){
 		ms_warning("No call to be ACK'd");
 		return ;
 	}
-	if (call->media_pending){
+	if (call->expect_media_in_ack){
 		SalMediaDescription *md=sal_call_get_final_media_description(op);
 		if (md && !sal_media_description_empty(md)){
-			linphone_core_update_streams (lc,call,md);
+			linphone_core_update_streams(lc,call,md);
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
 			/*send a bye*/
@@ -430,7 +439,7 @@ static void call_ack(SalOp *op){
 static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 	SalMediaDescription *md;
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
-	if ((rmd!=NULL) && (call->ice_session!=NULL)) {
+	if (rmd!=NULL && call->ice_session!=NULL) {
 		linphone_core_update_ice_from_remote_media_description(call,rmd);
 		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
 	}
@@ -492,7 +501,7 @@ static void call_updating(SalOp *op){
 	if (rmd==NULL){
 		/* case of a reINVITE without SDP */
 		call_accept_update(lc,call);
-		call->media_pending=TRUE;
+		call->expect_media_in_ack=TRUE;
 		return;
 	}
 

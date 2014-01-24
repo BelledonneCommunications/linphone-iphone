@@ -233,7 +233,7 @@ typedef struct SalIsComposing {
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new();
-void sal_media_description_ref(SalMediaDescription *md);
+SalMediaDescription * sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
 int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);

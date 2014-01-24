@@ -68,8 +68,9 @@ static void sal_media_description_destroy(SalMediaDescription *md){
 	ms_free(md);
 }
 
-void sal_media_description_ref(SalMediaDescription *md){
+SalMediaDescription * sal_media_description_ref(SalMediaDescription *md){
 	md->refcount++;
+	return md;
 }
 
 void sal_media_description_unref(SalMediaDescription *md){

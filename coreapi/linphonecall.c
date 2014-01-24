@@ -229,6 +229,35 @@ static void update_media_description_from_stun(SalMediaDescription *md, const St
 	}
 }
 
+static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
+	LinphoneCore *lc=call->core;
+	int i;
+	SalMediaDescription *old_md=call->localdesc;
+	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
+	
+	for(i=0; i<md->n_active_streams; i++) {
+		if (md->streams[i].proto == SalProtoRtpSavp) {
+			if (keep_srtp_keys && old_md && old_md->streams[i].proto==SalProtoRtpSavp){
+				int j;
+				ms_message("Keeping same crypto keys.");
+				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
+					memcpy(&md->streams[i].crypto[j],&old_md->streams[i].crypto[j],sizeof(SalSrtpCryptoAlgo));
+				}
+			}else{
+				md->streams[i].crypto[0].tag = 1;
+				md->streams[i].crypto[0].algo = AES_128_SHA1_80;
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key, SAL_SRTP_KEY_SIZE))
+					md->streams[i].crypto[0].algo = 0;
+				md->streams[i].crypto[1].tag = 2;
+				md->streams[i].crypto[1].algo = AES_128_SHA1_32;
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key, SAL_SRTP_KEY_SIZE))
+					md->streams[i].crypto[1].algo = 0;
+				md->streams[i].crypto[2].algo = 0;
+			}
+		}
+	}
+}
+
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;
@@ -237,7 +266,6 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	const char *me;
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
-	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
 	char* local_ip=call->localip;
 
 	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
@@ -250,8 +278,8 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
-	md->n_total_streams=(old_md ? old_md->n_total_streams : 1);
-	md->n_active_streams=1;
+	md->n_total_streams=(call->biggestdesc ? call->biggestdesc->n_total_streams : 1);
+	
 	strncpy(md->addr,local_ip,sizeof(md->addr));
 	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
 	
@@ -260,6 +288,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	else md->bandwidth=linphone_core_get_download_bandwidth(lc);
 
 	/*set audio capabilities */
+	md->n_active_streams=1;
 	strncpy(md->streams[0].rtp_addr,local_ip,sizeof(md->streams[0].rtp_addr));
 	strncpy(md->streams[0].rtcp_addr,local_ip,sizeof(md->streams[0].rtcp_addr));
 	md->streams[0].rtp_port=call->audio_port;
@@ -292,34 +321,15 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	for (i = md->n_active_streams; i < md->n_total_streams; i++) {
 		md->streams[i].rtp_port = 0;
 		md->streams[i].rtcp_port = 0;
-		md->streams[i].proto = SalProtoRtpAvp;
-		md->streams[i].type = old_md->streams[i].type;
+		md->streams[i].proto = call->biggestdesc->streams[i].proto;
+		md->streams[i].type = call->biggestdesc->streams[i].type;
 		md->streams[i].dir = SalStreamInactive;
 		l = make_codec_list(lc, lc->codecs_conf.video_codecs, 0, NULL, 1);
 		md->streams[i].payloads = l;
 	}
 
-	for(i=0; i<md->n_active_streams; i++) {
-		if (md->streams[i].proto == SalProtoRtpSavp) {
-			if (keep_srtp_keys && old_md && old_md->streams[i].proto==SalProtoRtpSavp){
-				int j;
-				ms_message("Keeping same crypto keys.");
-				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
-					memcpy(&md->streams[i].crypto[j],&old_md->streams[i].crypto[j],sizeof(SalSrtpCryptoAlgo));
-				}
-			}else{
-				md->streams[i].crypto[0].tag = 1;
-				md->streams[i].crypto[0].algo = AES_128_SHA1_80;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key, SAL_SRTP_KEY_SIZE))
-					md->streams[i].crypto[0].algo = 0;
-				md->streams[i].crypto[1].tag = 2;
-				md->streams[i].crypto[1].algo = AES_128_SHA1_32;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key, SAL_SRTP_KEY_SIZE))
-					md->streams[i].crypto[1].algo = 0;
-				md->streams[i].crypto[2].algo = 0;
-			}
-		}
-	}
+	setup_encryption_keys(call,md);
+	
 	update_media_description_from_stun(md,&call->ac,&call->vc);
 	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
@@ -816,6 +826,10 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
+	}
+	if (obj->biggestdesc!=NULL){
+		sal_media_description_unref(obj->biggestdesc);
+		obj->biggestdesc=NULL;
 	}
 	if (obj->resultdesc!=NULL) {
 		sal_media_description_unref(obj->resultdesc);

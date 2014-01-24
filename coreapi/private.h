@@ -158,9 +158,10 @@ struct _LinphoneCall
 	int magic; /*used to distinguish from proxy config*/
 	struct _LinphoneCore *core;
 	int af; /*the address family to prefer for RTP path, guessed from signaling path*/
+	LinphoneCallDir dir;
+	SalMediaDescription *biggestdesc; /*media description with all already proposed streams, used to remember the mapping of streams*/
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
-	LinphoneCallDir dir;
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
@@ -206,7 +207,7 @@ struct _LinphoneCall
 	int localdesc_changed;
 
 	bool_t refer_pending;
-	bool_t media_pending;
+	bool_t expect_media_in_ack;
 	bool_t audio_muted;
 	bool_t camera_enabled;
 

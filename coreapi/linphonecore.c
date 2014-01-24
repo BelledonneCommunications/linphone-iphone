@@ -2558,20 +2558,22 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 			audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 		}
 	}
-
-	if (!lc->sip_conf.sdp_200_ack){
-		call->media_pending=TRUE;
-		sal_call_set_local_media_description(call->op,call->localdesc);
-	}
 	real_url=linphone_address_as_string(call->log->to);
 	from=linphone_address_as_string(call->log->from);
-	err=sal_call(call->op,from,real_url);
-	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
-
-	if (lc->sip_conf.sdp_200_ack){
-		call->media_pending=TRUE;
+	
+	if (!lc->sip_conf.sdp_200_ack){
+		/*we are offering, set local media description before sending the call*/
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
+	err=sal_call(call->op,from,real_url);
+	if (lc->sip_conf.sdp_200_ack){
+		/*we are NOT offering, set local media description after sending the call so that we are ready to 
+		 process the remote offer when it will arrive*/
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	
+	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
+
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,barmsg);
@@ -2954,7 +2956,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 		if (propose_early_media || ringback_tone!=NULL){
 			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
 			md=sal_call_get_final_media_description(call->op);
-			linphone_core_update_streams(lc,call,md);
+			if (md) linphone_core_update_streams(lc,call,md);
 		}
 		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
 			linphone_core_accept_call(lc,call);
@@ -3329,11 +3331,11 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	lc->current_call=call;
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
-	linphone_core_update_streams(lc, call, new_md);
-	linphone_call_fix_call_parameters(call);
 	if (new_md){
+		linphone_core_update_streams(lc, call, new_md);
+		linphone_call_fix_call_parameters(call);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
-	}else call->media_pending=TRUE;
+	}else call->expect_media_in_ack=TRUE;
 
 	ms_message("call answered.");
 	return 0;
