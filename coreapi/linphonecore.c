@@ -1281,12 +1281,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 
 #ifdef VIDEO_ENABLED
-/* we disable H263 on mobiles because this codec only supports CIF family sizes, and number of cameras don't support it. */
-#if !defined(ANDROID) && !defined(__ios) 
+
 	linphone_core_assign_payload_type(lc,&payload_type_h263,34,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_h263_1998,98,"CIF=1;QCIF=1");
-#endif
-	
 	linphone_core_assign_payload_type(lc,&payload_type_mp4v,99,"profile-level-id=3");
 	linphone_core_assign_payload_type(lc,&payload_type_h264,102,"profile-level-id=42801F");
 	linphone_core_assign_payload_type(lc,&payload_type_vp8,103,NULL);
