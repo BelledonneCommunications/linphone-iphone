@@ -48,6 +48,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #endif
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
 
 /*#define UNSTANDART_GSM_11K 1*/
 
@@ -5094,21 +5097,32 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 }
 
 static MSVideoSizeDef supported_resolutions[]={
-	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }			,	"1080p"	},
-	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }				,	"uxga"	},
+#if !ANDROID & !TARGET_OS_IPHONE
+	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
+#endif
+#if !ANDROID & !TARGET_OS_MAC /*limite to most common size because mac card cannot list supported resolutions*/
+	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
 	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
-	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }				,	"720p"	},
-	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }				,	"xga"	},
-	{	{ MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }				,	"svga"	},
-	{	{ MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }				,	"4cif"	},
-	{	{ MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }				,	"vga"	},
-#ifdef __ios
+#endif
+	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
+#if !ANDROID & !TARGET_OS_MAC
+	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
+#endif
+#if !ANDROID && !TARGET_OS_IPHONE
+	{	{ MS_VIDEO_SIZE_SVGA_W, MS_VIDEO_SIZE_SVGA_H }	,	"svga"	},
+	{	{ MS_VIDEO_SIZE_4CIF_W, MS_VIDEO_SIZE_4CIF_H }	,	"4cif"	},
+#endif
+
+	{	{ MS_VIDEO_SIZE_VGA_W, MS_VIDEO_SIZE_VGA_H }	,	"vga"	},
+#if TARGET_OS_IPHONE
 	{	{ MS_VIDEO_SIZE_IOS_MEDIUM_H, MS_VIDEO_SIZE_IOS_MEDIUM_W }	,	"ios-medium"	},
 #endif
-	{	{ MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }				,	"cif"	},
-	{	{ MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H }				,	"qvga"	},
-	{	{ MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }				,	"qcif"	},
-	{	{ 0,0 }														, 	NULL	}
+	{	{ MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H }	,	"cif"	},
+#if !TARGET_OS_MAC
+	{	{ MS_VIDEO_SIZE_QVGA_W, MS_VIDEO_SIZE_QVGA_H }	,	"qvga"	},
+#endif
+	{	{ MS_VIDEO_SIZE_QCIF_W, MS_VIDEO_SIZE_QCIF_H }	,	"qcif"	},	
+	{	{ 0,0 }			,	NULL	}
 };
 
 /**

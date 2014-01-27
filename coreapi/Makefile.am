@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS = subdir-objects
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
 GITDESCRIBE=`cd $(top_srcdir) && git describe --always`
