@@ -1088,4 +1088,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		long ptrParams =((LinphoneCallParamsImpl)params).nativePtr;
 		return startReferedCall(nativePtr, getCallPtr(call), ptrParams);
 	}
+	
+	private native String[] listSupportedVideoResolutions(long ptr);
+	@Override
+	public String[] getSupportedVideoSizes() {
+		return listSupportedVideoResolutions(nativePtr);
+	}
 }

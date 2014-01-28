@@ -2979,6 +2979,26 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getVideoDevice(JNIEnv *e
 	return 0;
 }
 
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_listSupportedVideoResolutions(JNIEnv *env, jobject thiz, jlong lc) {
+	const MSVideoSizeDef *pdef = linphone_core_get_supported_video_sizes((LinphoneCore *)lc);
+	int count = 0;
+	int i = 0;
+	for (; pdef->name!=NULL; pdef++) {
+		i++;
+	}
+	count = i;
+
+	jobjectArray resolutions = (jobjectArray) env->NewObjectArray(count, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+	pdef = linphone_core_get_supported_video_sizes((LinphoneCore *)lc);
+	i = 0;
+	for (; pdef->name!=NULL; pdef++) {
+		env->SetObjectArrayElement(resolutions, i, env->NewStringUTF(pdef->name));
+		i++;
+	}
+
+	return resolutions;
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getAuthenticationToken(JNIEnv*  env,jobject thiz,jlong ptr) {
 	LinphoneCall *call = (LinphoneCall *) ptr;
 	const char* token = linphone_call_get_authentication_token(call);

@@ -1413,4 +1413,10 @@ public interface LinphoneCore {
 	 * @return an array of LinphoneChatRoom
 	 */
 	public LinphoneChatRoom[] getChatRooms();
+	
+	/**
+	 * Gets the linphonecore supported resolutions for video
+	 * @return an array of String
+	 */
+	public String[] getSupportedVideoSizes();
 }
