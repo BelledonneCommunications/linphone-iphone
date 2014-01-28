@@ -109,6 +109,7 @@ extern  void libmsbcg729_init();
 @synthesize bluetoothAvailable;
 @synthesize bluetoothEnabled;
 @synthesize photoLibrary;
+@synthesize silentPushCompletion;
 
 struct codec_name_pref_table{
     const char *name;
@@ -408,7 +409,16 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
         data = [[LinphoneCallAppData alloc] init];
         linphone_call_set_user_pointer(call, data);
     }
-	
+
+    if (silentPushCompletion) {
+
+        // we were woken up by a silent push. Call the completion handler with NEWDATA
+        // so that the push is notified to the user
+        NSLog(@"onCall - handler %p", silentPushCompletion);
+        silentPushCompletion(UIBackgroundFetchResultNewData);
+        silentPushCompletion = nil;
+    }
+
     const LinphoneAddress *addr = linphone_call_get_remote_address(call);
     NSString* address = nil;
     if(addr != NULL) {
@@ -587,6 +597,15 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     char *fromStr = linphone_address_as_string_uri_only(linphone_chat_message_get_from(msg));
     if(fromStr == NULL)
         return;
+
+    if (silentPushCompletion) {
+
+        // we were woken up by a silent push. Call the completion handler with NEWDATA
+        // so that the push is notified to the user
+        NSLog(@"onMessageReceived - handler %p", silentPushCompletion);
+        silentPushCompletion(UIBackgroundFetchResultNewData);
+        silentPushCompletion = nil;
+    }
     
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
@@ -1384,7 +1403,13 @@ static void audioRouteChangeListenerCallback (
 #else
 #define APPMODE_SUFFIX @"prod"
 #endif
-		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
+        NSString *params;
+        if( [[[UIDevice currentDevice] systemVersion] doubleValue] >= 7 ){ /// use silent push for ios7 devices
+            params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IC_SIL;pn-call-str=IC_SIL;pn-call-snd=empty;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
+        } else {
+            params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
+        }
+
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
         linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
 	}
@@ -1491,6 +1516,14 @@ static void audioRouteChangeListenerCallback (
 
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
 	return [self lpConfigIntForKey:key forSection:section] == 1;
+}
+- (void)silentPushFailed:(NSTimer*)timer
+{
+    NSLog(@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion);
+    if( silentPushCompletion ){
+        silentPushCompletion(UIBackgroundFetchResultNoData);
+        silentPushCompletion = nil;
+    }
 }
 
 #pragma GSM management

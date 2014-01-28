@@ -60,6 +60,10 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
+#ifdef DEBUG_PUSH
+    // simulate a lost socket when going in background
+    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+#endif
 	if(![LinphoneManager isLcReady]) return;
 	[[LinphoneManager instance] enterBackgroundMode];
 }
@@ -91,15 +95,19 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
+
     [self startApplication];
     LinphoneManager* instance = [LinphoneManager instance];
 
 	[instance becomeActive];
     
-    
+#ifdef DEBUG_PUSH
+    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+#endif
+
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    
+
 	if (call){
 		if (call == instance->currentCallContextBeforeGoingBackground.call) {
 			const LinphoneCallParams* params = linphone_call_get_current_params(call);
@@ -121,7 +129,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability];
     
 	//work around until we can access lpconfig without linphonecore
 	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -255,6 +263,25 @@
             [controller setCallLogId:callLog];
         }
     }
+}
+
+// this method is implemented for iOS7. It is invoked when receiving a push notification for a call and it has "content-available" in the aps section.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    LinphoneManager* lm = [LinphoneManager instance];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification: Receive %@", userInfo];
+
+    // save the completion handler for later execution.
+    // 2 outcomes:
+    // - if a new call/message is received, the completion handler will be called with "NEWDATA"
+    // - if nothing happens for 15 seconds, the completion handler will be called with "NODATA"
+    lm.silentPushCompletion = completionHandler;
+    [NSTimer scheduledTimerWithTimeInterval:15.0 target:lm selector:@selector(silentPushFailed:) userInfo:nil repeats:FALSE];
+
+    // Force Linphone to drop the current socket, this will trigger a refresh registers
+    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+    linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
+    [lm refreshRegisters];
 }
 
 

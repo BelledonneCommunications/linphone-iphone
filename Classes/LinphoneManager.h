@@ -155,7 +155,7 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)lpConfigBoolForKey:(NSString*)key;
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
-
+- (void)silentPushFailed:(NSTimer*)timer;
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
@@ -172,6 +172,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) ALAssetsLibrary *photoLibrary;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
+@property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
 
 @end
 
