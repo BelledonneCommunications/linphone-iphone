@@ -146,11 +146,12 @@ void sal_process_authentication(SalOp *op) {
 			belle_sip_object_unref(new_request);
 		}
 		if (op->auth_info) sal_auth_info_delete(op->auth_info);
-		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
-		op->auth_info=sal_auth_info_create(auth_event);
-		belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
+		if (auth_list){
+			auth_event=(belle_sip_auth_event_t*)(auth_list->data);
+			op->auth_info=sal_auth_info_create(auth_event);
+			belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
+		}
 	}
-
 }
 
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
