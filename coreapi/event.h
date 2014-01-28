@@ -231,6 +231,11 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_get_from(const LinphoneEve
 LINPHONE_PUBLIC const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev);
 
 /**
+ * Returns back pointer to the LinphoneCore that created this LinphoneEvent
+**/
+LINPHONE_PUBLIC LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev);
+
+/**
  * @}
 **/
 

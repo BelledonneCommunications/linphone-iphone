@@ -136,9 +136,23 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 
 int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
-	if (lev->subscription_state!=LinphoneSubscriptionActive){
-		ms_error("linphone_event_update_subscribe(): cannot update subscription if subscription wasn't accepted.");
-		return -1;
+	switch (lev->subscription_state){
+		case LinphoneSubscriptionNone:
+			ms_error("linphone_event_update_subscribe(): this is not a subscribed event.");
+			return -1;
+		break;
+		case LinphoneSubscriptionIncomingReceived:
+		case LinphoneSubscriptionOutoingInit:
+		case LinphoneSubscriptionTerminated:
+			ms_error("linphone_event_update_subscribe(): cannot update subscription while in state [%s]", linphone_subscription_state_to_string(lev->subscription_state));
+			return -1;
+		break;
+		case LinphoneSubscriptionActive:
+		case LinphoneSubscriptionExpiring:
+		case LinphoneSubscriptionError:
+		case LinphoneSubscriptionPending:
+			/*those states are ok*/
+		break;
 	}
 	if (lev->dir!=LinphoneSubscriptionOutgoing){
 		ms_error("linphone_event_deny_subscription(): cannot update an incoming subscription.");
@@ -203,6 +217,12 @@ LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *re
 int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
 	int err;
+	
+	if (lev->publish_state==LinphonePublishNone){
+		ms_error("linphone_event_update_publish(): this is not a PUBLISH event.");
+		return -1;
+	}
+	
 	err=sal_publish(lev->op,NULL,NULL,NULL,-1,sal_body_from_content(&salbody,body));
 	if (err==0){
 		linphone_event_set_publish_state(lev,LinphonePublishProgress);
@@ -280,5 +300,9 @@ const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
 
 const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
 	return lev->resource_addr;
+}
+
+LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){
+	return lev->lc;
 }
 
