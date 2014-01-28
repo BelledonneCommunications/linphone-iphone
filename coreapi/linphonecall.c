@@ -614,7 +614,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 	/*set video support */
 	md=sal_call_get_remote_media_description(op);
-	call->params.has_video &= !!lc->video_policy.automatically_accept;
+	call->params.has_video = !!lc->video_policy.automatically_accept;
 	if (md) {
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
