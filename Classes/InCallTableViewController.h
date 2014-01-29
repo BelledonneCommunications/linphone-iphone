@@ -26,6 +26,7 @@
 @interface InCallTableViewController : UITableViewController {
     @private
     NSTimer *updateTime;
+    BOOL minimized;
 }
 
 - (void)minimizeAll;

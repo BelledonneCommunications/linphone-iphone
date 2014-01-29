@@ -37,7 +37,7 @@ typedef enum _UICallCellOtherView {
     LinphoneCall *call;
 }   
 
-- (id)init:(LinphoneCall*) call;
+- (id)init:(LinphoneCall*) call minimized:(BOOL)minimized;
 
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) NSString *address;

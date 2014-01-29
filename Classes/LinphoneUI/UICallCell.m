@@ -29,10 +29,10 @@
 @synthesize address;
 @synthesize image;
 
-- (id)init:(LinphoneCall*) acall {
+- (id)init:(LinphoneCall*)acall minimized:(BOOL)minimized{
     self = [super init];
     if(self != nil) {
-        self->minimize = false;
+        self->minimize = minimized;
         self->view = UICallCellOtherView_Avatar;
         self->call = acall;
         image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
