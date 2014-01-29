@@ -219,6 +219,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", 1) forKey:@"animations_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", 0) forKey:@"wifi_only_preference"];
 	[self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "sharing_server_preference", NULL) forKey:@"sharing_server_preference"];
+
+    [self setBool:lp_config_get_int(linphone_core_get_config(lc), "sip", "use_ipv6", 0) forKey:@"use_ipv6"];
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = TRUE;
@@ -347,7 +349,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
 		}
 	}
-	
+
+    BOOL enable_ipv6 = [self boolForKey:@"use_ipv6"];
+    lp_config_set_int(linphone_core_get_config(lc), "sip", "use_ipv6", enable_ipv6);
+    if( linphone_core_ipv6_enabled(lc) != enable_ipv6){
+        [LinphoneLogger logc:LinphoneLoggerDebug format:"%@ IPV6", enable_ipv6?@"ENABLING":@"DISABLING"];
+        linphone_core_enable_ipv6(lc, enable_ipv6);
+    }
+
+
 	//configure sip account
 	
 	//mandatory parameters
@@ -496,6 +506,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
                 || [self valueChangedForKey:@"random_port_preference"]
 				|| [self valueChangedForKey:@"prefix_preference"]
 				|| [self valueChangedForKey:@"substitute_+_by_00_preference"]
+                || [self valueChangedForKey:@"use_ipv6"]
                 || [self valueChangedForKey:@"pushnotification_preference"];
 	
 	if (account_changed)

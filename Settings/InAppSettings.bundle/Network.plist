@@ -125,6 +125,16 @@
 			</array>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Use IPv6</string>
+			<key>Key</key>
+			<string>use_ipv6</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>None</string>
 			<key>Key</key>
