@@ -2244,12 +2244,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 				linphone_core_decline_call(lc,call,decline_reason);
 			}
 		}
-		if (lc->sip_conf.in_call_timeout > 0 && elapsed>lc->sip_conf.in_call_timeout) {
+		if ( (lc->sip_conf.in_call_timeout > 0)
+			 && (call->media_start_time != 0)
+			 && ((curtime - call->media_start_time) > lc->sip_conf.in_call_timeout))
+		{
 			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
 			linphone_core_terminate_call(lc,call);
 		}
 	}
-		
+
 	if (linphone_core_video_preview_enabled(lc)){
 		if (lc->previewstream==NULL && lc->calls==NULL)
 			toggle_video_preview(lc,TRUE);
