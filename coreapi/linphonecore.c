@@ -1199,7 +1199,8 @@ static void linphone_core_handle_static_payloads(LinphoneCore *lc){
 	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(prof,i);
 		if (pt){
-			if (payload_type_get_number(pt)!=i){
+			// insert static payload only if no profile exists
+			if (rtp_profile_get_payload(lc->default_profile,i) == NULL){
 				linphone_core_assign_payload_type(lc,pt,i,NULL);
 			}
 		}
