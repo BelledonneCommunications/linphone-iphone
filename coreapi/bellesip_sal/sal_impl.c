@@ -116,8 +116,7 @@ void sal_process_authentication(SalOp *op) {
 	belle_sip_auth_event_t* auth_event;
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)op->pending_auth_transaction);
 	
-	sal_add_pending_auth(op->base.root,op);
-	
+
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
 		new_request = belle_sip_dialog_create_request_from(op->dialog,initial_request);
 		if (!new_request)
@@ -142,6 +141,8 @@ void sal_process_authentication(SalOp *op) {
 		sal_remove_pending_auth(op->base.root,op);
 	}else {
 		ms_message("No auth info found for [%s]",sal_op_get_from(op));
+		sal_add_pending_auth(op->base.root,op);
+
 		if (is_within_dialog) {
 			belle_sip_object_unref(new_request);
 		}
@@ -326,14 +327,24 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 							belle_sip_object_unref(op->pending_auth_transaction);
 							op->pending_auth_transaction=NULL;
 						}
-						op->pending_auth_transaction=(belle_sip_client_transaction_t*)belle_sip_object_ref(client_transaction);
-						sal_process_authentication(op);
-						return;
+						if (++op->auth_requests > 2) {
+							ms_warning("Auth info cannot be found for op [%s] after 2 attempts, giving up",sal_op_get_from(op));
+							op->base.root->callbacks.auth_failure(op,op->auth_info);
+							sal_remove_pending_auth(op->base.root,op);
+						} else {
+							op->pending_auth_transaction=(belle_sip_client_transaction_t*)belle_sip_object_ref(client_transaction);
+							sal_process_authentication(op);
+							return;
+						}
 					}
 					break;
 				case 403:
 					if (op->auth_info) op->base.root->callbacks.auth_failure(op,op->auth_info);
 					break;
+			}
+			if (response_code !=401 && response_code !=407 && response_code !=403) {
+				/*not an auth request*/
+				op->auth_requests=0;
 			}
 			op->callbacks.process_response_event(op,event);
 		} else {

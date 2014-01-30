@@ -1479,6 +1479,43 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_rejected_because_wrong_credentials_with_params(const char* user_agent) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneAuthInfo* good_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
+	LinphoneAuthInfo* wrong_auth_info=linphone_auth_info_clone(good_auth_info);
+
+	if (user_agent) {
+		linphone_core_set_user_agent(marie->lc,user_agent,NULL);
+	}
+	linphone_core_clear_all_auth_info(marie->lc);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(marie->lc,marie->identity));
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_auth_info_requested,1));
+
+	linphone_auth_info_set_passwd(wrong_auth_info,"passecretdutout");
+
+	/*automatically re-inititae the call*/
+	linphone_core_add_auth_info(marie->lc,wrong_auth_info);
+
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCallError,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_auth_info_requested,2);
+
+	/*to make sure unregister will work*/
+	linphone_core_clear_all_auth_info(marie->lc);
+	linphone_core_add_auth_info(marie->lc,good_auth_info);
+
+	linphone_core_manager_destroy(marie);
+}
+static void call_rejected_because_wrong_credentials() {
+	call_rejected_because_wrong_credentials_with_params(NULL);
+}
+
+static void call_rejected_without_403_because_wrong_credentials() {
+	call_rejected_because_wrong_credentials_with_params("tester-no-403");
+}
+
 #ifdef VIDEO_ENABLED
 #endif
 
@@ -1511,6 +1548,8 @@ test_t call_tests[] = {
 	{ "SRTP ice call", srtp_ice_call },
 #endif
 	{ "Call with privacy", call_with_privacy },
+	{ "Call rejected because of wrong credential", call_rejected_because_wrong_credentials},
+	{ "Call rejected without 403 because of wrong credential", call_rejected_without_403_because_wrong_credentials},
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Unattended call transfer", unattended_call_transfer },

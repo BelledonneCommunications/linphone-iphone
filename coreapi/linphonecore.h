@@ -918,6 +918,13 @@ typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 		const char *passwd, const char *ha1,const char *realm, const char *domain);
+/**
+ * @addtogroup authentication
+ * Instanciate a new auth info with values from source
+ * @param source auth info object to be cloned
+ * @return newly created auth info
+ */
+LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo* source);
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);

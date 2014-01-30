@@ -198,7 +198,6 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state);
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);

@@ -57,7 +57,7 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
-static LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
+LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
 	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
 	if (ai->username) obj->username=ms_strdup(ai->username);
 	if (ai->userid) obj->userid=ms_strdup(ai->userid);

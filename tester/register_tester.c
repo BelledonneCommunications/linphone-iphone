@@ -22,6 +22,26 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	stats* counters;
+
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
+					,username
+					,realm);
+	counters = get_stats(lc);
+	counters->number_of_auth_info_requested++;
+
+}
+
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	LinphoneAuthInfo *info;
+	auth_info_requested2(lc,realm,username,domain);
+	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain); /*create authentication structure from identity*/
+	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+}
+
+
+
 static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL);
 	
@@ -108,7 +128,8 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 			}
 		}
-		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials)
+		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials
+				|| (counters->number_of_auth_info_requested>2 &&linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonUnauthorized)) /*no need to continue if auth cannot be found*/
 			break; /*no need to continue*/
 		ms_usleep(100000);
 	}
@@ -261,6 +282,8 @@ static void authenticated_register_with_no_initial_credentials(){
 	
 	mgr = linphone_core_manager_new(NULL);
 	
+	mgr->lc->vtable.auth_info_requested=auth_info_requested;
+
 	counters= get_stats(mgr->lc);
 	counters->number_of_auth_info_requested=0;
 	register_with_refresh(mgr,FALSE,auth_domain,route);
@@ -268,14 +291,6 @@ static void authenticated_register_with_no_initial_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
-static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-	stats* counters;
-	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-					,username
-					,realm);
-	counters = get_stats(lc);
-	counters->number_of_auth_info_requested++;
-}
 
 static void authenticated_register_with_late_credentials(){
 	LinphoneCoreManager *mgr;
@@ -286,10 +301,10 @@ static void authenticated_register_with_late_credentials(){
 	sprintf(route,"sip:%s",test_route);
 	
 	mgr =  linphone_core_manager_new(NULL);
-	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
+
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_2(mgr->lc,FALSE,auth_domain,route,TRUE,transport);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2); /*1 registration error = 2 auth requested*/
 	linphone_core_manager_destroy(mgr);
 }
 
@@ -306,10 +321,10 @@ static void authenticated_register_with_wrong_late_credentials(){
 	sprintf(route,"sip:%s",test_route);
 
 	mgr =  linphone_core_manager_new(NULL);
-	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
+
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_3(mgr->lc,FALSE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,3);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,2);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,2);
 	test_password=saved_test_passwd;
@@ -317,7 +332,7 @@ static void authenticated_register_with_wrong_late_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
-static void authenticated_register_with_wrong_credentials(){
+static void authenticated_register_with_wrong_credentials_with_params(const char* user_agent) {
 	LinphoneCoreManager *mgr;
 	stats* counters;
 	LCSipTransports transport = {5070,5070,0,5071};
@@ -327,15 +342,28 @@ static void authenticated_register_with_wrong_credentials(){
 	sprintf(route,"sip:%s",test_route);
 	
 	mgr=linphone_core_manager_new(NULL);
+
 	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
-	
+
+	sal_set_refresher_retry_after(mgr->lc->sal,500);
+	if (user_agent) {
+		linphone_core_set_user_agent(mgr->lc,user_agent,NULL);
+	}
 	linphone_core_add_auth_info(mgr->lc,info); /*add wrong authentication info to LinphoneCore*/
 	counters = get_stats(mgr->lc);
-	register_with_refresh_base_3(mgr->lc,TRUE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+	register_with_refresh_base_3(mgr->lc,TRUE,auth_domain,route,FALSE,transport,LinphoneRegistrationFailed);
+	//CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,3); register_with_refresh_base_3 does not alow to precisely check number of number_of_auth_info_requested
+	/*wait for retry*/
+	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_auth_info_requested,4));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
 	linphone_core_manager_destroy(mgr);
 }
-
+static void authenticated_register_with_wrong_credentials() {
+	authenticated_register_with_wrong_credentials_with_params(NULL);
+}
+static void authenticated_register_with_wrong_credentials_without_403() {
+	authenticated_register_with_wrong_credentials_with_params("tester-no-403");
+}
 static LinphoneCoreManager* configure_lcm(void) {
 	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_lrc");
 	stats *counters=&mgr->stat;
@@ -611,6 +639,7 @@ test_t register_tests[] = {
 	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
 	{ "Digest auth with wrong credentials", authenticated_register_with_wrong_credentials },
+	{ "Digest auth with wrong credentials without 403", authenticated_register_with_wrong_credentials_without_403},
 	{ "Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials},
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },
