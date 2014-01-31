@@ -164,7 +164,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	}else if (refresh_type==ManualRefresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
-		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,2000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,2000));
 	}
 
 	if (terminated_by_subscriber){
