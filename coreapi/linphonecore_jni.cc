@@ -3673,7 +3673,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_unref(JNIEnv *en
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_newPresenceModelImpl__(JNIEnv *env, jobject jobj) {
-	return (jlong)linphone_presence_model_new();
+	LinphonePresenceModel *model = linphone_presence_model_new();
+	model = linphone_presence_model_ref(model);
+	return (jlong)model;
 }
 
 /*
@@ -3685,6 +3687,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_newPresenceMode
 	LinphonePresenceModel *model;
 	const char *cdescription = description ? env->GetStringUTFChars(description, NULL) : NULL;
 	model = linphone_presence_model_new_with_activity((LinphonePresenceActivityType)type, cdescription);
+	model = linphone_presence_model_ref(model);
 	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
 	return (jlong)model;
 }
@@ -3701,6 +3704,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_newPresenceMode
 	const char *cnote = note ? env->GetStringUTFChars(note, NULL) : NULL;
 	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
 	model = linphone_presence_model_new_with_activity_and_note((LinphonePresenceActivityType)type, cdescription, cnote, clang);
+	model = linphone_presence_model_ref(model);
 	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
 	if (cnote) env->ReleaseStringUTFChars(note, cnote);
 	if (clang) env->ReleaseStringUTFChars(lang, clang);
@@ -3969,6 +3973,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceActivityImpl_newPresenceA
 	LinphonePresenceActivity *activity;
 	const char *cdescription = description ? env->GetStringUTFChars(description, NULL) : NULL;
 	activity = linphone_presence_activity_new((LinphonePresenceActivityType)type, cdescription);
+	activity = linphone_presence_activity_ref(activity);
 	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
 	return (jlong)activity;
 }
@@ -4049,6 +4054,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceServiceImpl_newPresenceSe
 	const char *cid = id ? env->GetStringUTFChars(id, NULL) : NULL;
 	const char *ccontact = contact ? env->GetStringUTFChars(contact, NULL) : NULL;
 	service = linphone_presence_service_new(cid, (LinphonePresenceBasicStatus)basic_status, ccontact);
+	service = linphone_presence_service_ref(service);
 	if (cid) env->ReleaseStringUTFChars(id, cid);
 	if (ccontact) env->ReleaseStringUTFChars(contact, ccontact);
 	return (jlong)service;
@@ -4184,6 +4190,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_newPresencePer
 	LinphonePresencePerson *person;
 	const char *cid = id ? env->GetStringUTFChars(id, NULL) : NULL;
 	person = linphone_presence_person_new(cid);
+	person = linphone_presence_person_ref(person);
 	if (cid) env->ReleaseStringUTFChars(id, cid);
 	return (jlong)person;
 }
@@ -4356,6 +4363,7 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceNoteImpl_newPresenceNoteI
 	const char *ccontent = content ? env->GetStringUTFChars(content, NULL) : NULL;
 	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
 	note = linphone_presence_note_new(ccontent, clang);
+	note = linphone_presence_note_ref(note);
 	if (clang) env->ReleaseStringUTFChars(lang, clang);
 	if (ccontent) env->ReleaseStringUTFChars(content, ccontent);
 	return (jlong)note;
