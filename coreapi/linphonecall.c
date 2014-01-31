@@ -1083,6 +1083,17 @@ int linphone_call_get_duration(const LinphoneCall *call){
 }
 
 /**
+ * Returns the call ring duration in seconds. This is only useful if the call is in state #LinphoneCallOutgoingRinging
+ * @param call the call
+ * @return ringing time
+ */
+int linphone_call_get_ring_duration(const LinphoneCall* call){
+	if( call->start_time == 0) return 0;
+	return time(NULL)-call->start_time;
+}
+
+
+/**
  * Returns the call object this call is replacing, if any.
  * Call replacement can occur during call transfers.
  * By default, the core automatically terminates the replaced call and accept the new one.
