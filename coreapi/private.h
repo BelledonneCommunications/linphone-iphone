@@ -168,7 +168,6 @@ struct _LinphoneCall
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
-	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;

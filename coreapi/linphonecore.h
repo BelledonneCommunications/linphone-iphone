@@ -639,7 +639,6 @@ LINPHONE_PUBLIC LinphoneCall *linphone_call_get_transferer_call(const LinphoneCa
 LINPHONE_PUBLIC LinphoneCall *linphone_call_get_transfer_target_call(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_call_get_duration(const LinphoneCall *call);
-LINPHONE_PUBLIC	int linphone_call_get_ring_duration(const LinphoneCall* call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);

@@ -120,7 +120,7 @@ static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
 	cl->dir=call->dir;
-	cl->start_date_time=call->start_time;
+	cl->start_date_time=time(NULL);
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 	cl->to=to;
@@ -2211,7 +2211,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	calls= lc->calls;
 	while(calls!= NULL){
 		call = (LinphoneCall *)calls->data;
-		elapsed = curtime-call->start_time;
+		elapsed = curtime-call->log->start_date_time;
 		 /* get immediately a reference to next one in case the one
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
@@ -2766,7 +2766,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		/* Defer the start of the call after the ICE gathering process. */
 		linphone_call_init_media_streams(call);
 		linphone_call_start_media_streams_for_ice_gathering(call);
-		call->start_time=time(NULL);
+		call->log->start_date_time=time(NULL);
 		if (linphone_core_gather_ice_candidates(lc,call)<0) {
 			/* Ice candidates gathering failed, proceed with the call anyway. */
 			linphone_call_delete_ice_session(call);
@@ -2778,7 +2778,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
 		linphone_call_init_media_streams(call);
-		call->start_time=time(NULL);
+		call->log->start_date_time=time(NULL);
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
 			linphone_call_delete_upnp_session(call);
@@ -2800,7 +2800,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			call->ping_op=sal_op_new(lc->sal);
 			sal_ping(call->ping_op,from,real_url);
 			sal_op_set_user_pointer(call->ping_op,call);
-			call->start_time=time(NULL);
+			call->log->start_date_time=time(NULL);
 			defer = TRUE;
 		}
 	}
