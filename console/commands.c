@@ -558,10 +558,12 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		opt2=strstr(args,"--early-media");
 		if (opt1){
 			opt1[0]='\0';
+			while(--opt1 > args && opt1[0]==' ') opt1[0]='\0';
 			linphone_call_params_enable_video (cp,FALSE);
 		}
 		if (opt2){
 			opt2[0]='\0';
+			while(--opt2 > args && opt2[0]==' ') opt2[0]='\0';
 			linphone_call_params_enable_early_media_sending(cp,TRUE);
 		}
 		if ( NULL == (call=linphone_core_invite_with_params(lc, args,cp)) )
