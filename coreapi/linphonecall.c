@@ -1100,7 +1100,8 @@ LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #ifdef VIDEO_ENABLED
-	if (call->videostream!=NULL && call->videostream->ms.ticker!=NULL){
+	if ((call->state==LinphoneCallStreamsRunning || call->state==LinphoneCallOutgoingEarlyMedia || call->state==LinphoneCallIncomingEarlyMedia)
+		&& call->videostream!=NULL ){
 		LinphoneCore *lc=call->core;
 		MSWebCam *nowebcam=get_nowebcam_device();
 		if (call->camera_enabled!=enable && lc->video_conf.device!=nowebcam){
