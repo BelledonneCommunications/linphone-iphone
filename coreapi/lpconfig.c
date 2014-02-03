@@ -200,8 +200,8 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 							if (item==NULL){
 								lp_section_add_item(cur,lp_item_new(key,pos1));
 							}else{
-								ms_free(item->value);
-								item->value=strdup(pos1);
+								ortp_free(item->value);
+								item->value=ortp_strdup(pos1);
 							}
 							/*ms_message("Found %s=%s",key,pos1);*/
 						}else{
