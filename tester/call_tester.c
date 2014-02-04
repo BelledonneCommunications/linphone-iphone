@@ -1033,11 +1033,19 @@ static void early_media_call(void) {
 
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
+	
+	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+	
+	/*added because a bug related to early-media caused the Connected state to be reached two times*/
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected,1);
+	
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 
+	
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
