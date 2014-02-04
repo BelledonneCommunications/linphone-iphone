@@ -171,6 +171,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(belle_sip_io_error_event_get_source(event),belle_sip_client_transaction_t)) {
 		client_transaction=BELLE_SIP_CLIENT_TRANSACTION(belle_sip_io_error_event_get_source(event));
 		op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
+		/*also reset auth count on IO error*/
+		op->auth_requests=0;
 		if (op->callbacks.process_io_error) {
 				op->callbacks.process_io_error(op,event);
 		}
@@ -328,7 +330,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 							op->pending_auth_transaction=NULL;
 						}
 						if (++op->auth_requests > 2) {
-							ms_warning("Auth info cannot be found for op [%s] after 2 attempts, giving up",sal_op_get_from(op));
+							ms_warning("Auth info cannot be found for op [%s/%s] after 2 attempts, giving up",sal_op_get_from(op)
+																												,sal_op_get_to(op));
 							op->base.root->callbacks.auth_failure(op,op->auth_info);
 							sal_remove_pending_auth(op->base.root,op);
 						} else {
