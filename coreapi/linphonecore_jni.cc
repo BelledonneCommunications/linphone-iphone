@@ -1878,95 +1878,21 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getUploadBandwidt
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	const report_block_t *srb = NULL;
-
-	if (!stats || !stats->sent_rtcp)
-		return (jfloat)0.0;
-	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
-	if (stats->sent_rtcp->b_cont != NULL)
-		msgpullup(stats->sent_rtcp, -1);
-	if (rtcp_is_SR(stats->sent_rtcp))
-		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
-	else if (rtcp_is_RR(stats->sent_rtcp))
-		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
-	if (!srb)
-		return (jfloat)0.0;
-	return (jfloat)(100.0 * report_block_get_fraction_lost(srb) / 256.0);
+	return (jfloat) linphone_call_stats_get_sender_loss_rate(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	const report_block_t *rrb = NULL;
-
-	if (!stats || !stats->received_rtcp)
-		return (jfloat)0.0;
-	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
-	if (stats->received_rtcp->b_cont != NULL)
-		msgpullup(stats->received_rtcp, -1);
-	if (rtcp_is_RR(stats->received_rtcp))
-		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
-	else if (rtcp_is_SR(stats->received_rtcp))
-		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
-	if (!rrb)
-		return (jfloat)0.0;
-	return (jfloat)(100.0 * report_block_get_fraction_lost(rrb) / 256.0);
+	return (jfloat) linphone_call_stats_get_receiver_loss_rate(stats);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	const LinphoneCallParams *params;
-	const PayloadType *pt;
-	const report_block_t *srb = NULL;
-
-	if (!stats || !call || !stats->sent_rtcp)
-		return (jfloat)0.0;
-	params = linphone_call_get_current_params(call);
-	if (!params)
-		return (jfloat)0.0;
-	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
-	if (stats->sent_rtcp->b_cont != NULL)
-		msgpullup(stats->sent_rtcp, -1);
-	if (rtcp_is_SR(stats->sent_rtcp))
-		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
-	else if (rtcp_is_RR(stats->sent_rtcp))
-		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
-	if (!srb)
-		return (jfloat)0.0;
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-		pt = linphone_call_params_get_used_audio_codec(params);
-	else
-		pt = linphone_call_params_get_used_video_codec(params);
-	if (!pt || (pt->clock_rate == 0))
-		return (jfloat)0.0;
-	return (jfloat)((float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate);
+	return (jfloat) linphone_call_stats_get_sender_interarrival_jitter(stats, call);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	const LinphoneCallParams *params;
-	const PayloadType *pt;
-	const report_block_t *rrb = NULL;
-
-	if (!stats || !call || !stats->received_rtcp)
-		return (jfloat)0.0;
-	params = linphone_call_get_current_params(call);
-	if (!params)
-		return (jfloat)0.0;
-	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
-	if (stats->received_rtcp->b_cont != NULL)
-		msgpullup(stats->received_rtcp, -1);
-	if (rtcp_is_SR(stats->received_rtcp))
-		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
-	else if (rtcp_is_RR(stats->received_rtcp))
-		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
-	if (!rrb)
-		return (jfloat)0.0;
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-		pt = linphone_call_params_get_used_audio_codec(params);
-	else
-		pt = linphone_call_params_get_used_video_codec(params);
-	if (!pt || (pt->clock_rate == 0))
-		return (jfloat)0.0;
-	return (jfloat)((float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate);
+	return (jfloat) linphone_call_stats_get_receiver_interarrival_jitter(stats, call);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jfloat)((LinphoneCallStats *)stats_ptr)->round_trip_delay;
@@ -1974,18 +1900,7 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay
 extern "C" jlong Java_org_linphone_core_LinphoneCallStatsImpl_getLatePacketsCumulativeNumber(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	LinphoneCall *call = (LinphoneCall *)call_ptr;
-	rtp_stats_t rtp_stats;
-
-	if (!stats || !call)
-		return (jlong)0;
-	memset(&rtp_stats, 0, sizeof(rtp_stats));
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
-		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
-#ifdef VIDEO_ENABLED
-	else
-		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
-#endif
-	return (jlong)rtp_stats.outoftime;
+	return (jlong) linphone_call_stats_get_late_packets_cumulative_number(stats, call);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getJitterBufferSize(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jfloat)((LinphoneCallStats *)stats_ptr)->jitter_stats.jitter_buffer_size_ms;

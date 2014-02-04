@@ -585,11 +585,11 @@ struct _LinphoneCallStats {
 
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
-LINPHONE_PUBLIC float linphone_call_stats_update_sender_loss_rate(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC float linphone_call_stats_update_receiver_loss_rate(const LinphoneCallStats *stats);
-LINPHONE_PUBLIC float linphone_call_stats_update_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC float linphone_call_stats_update_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC uint64_t linphone_call_stats_update_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats);
+LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats);
+LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
+LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
 
 /** Callback prototype */
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);

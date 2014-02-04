@@ -2270,7 +2270,11 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return stats;
 }
 
-float linphone_call_stats_update_sender_loss_rate(const LinphoneCallStats *stats) {
+/**
+ * Get the local loss rate since last report
+ * @return The sender loss rate
+**/
+float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *srb = NULL;
 
 	if (!stats || !stats->sent_rtcp)
@@ -2287,7 +2291,11 @@ float linphone_call_stats_update_sender_loss_rate(const LinphoneCallStats *stats
 	return 100.0 * report_block_get_fraction_lost(srb) / 256.0;
 }
 
-float linphone_call_stats_update_receiver_loss_rate(const LinphoneCallStats *stats) {
+/**
+ * Gets the remote reported loss rate since last report
+ * @return The receiver loss rate
+**/
+float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats) {
 	const report_block_t *rrb = NULL;
 
 	if (!stats || !stats->received_rtcp)
@@ -2304,7 +2312,11 @@ float linphone_call_stats_update_receiver_loss_rate(const LinphoneCallStats *sta
 	return 100.0 * report_block_get_fraction_lost(rrb) / 256.0;
 }
 
-float linphone_call_stats_update_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
+/**
+ * Gets the local interarrival jitter
+ * @return The interarrival jitter at last emitted sender report
+**/
+float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *srb = NULL;
@@ -2332,7 +2344,11 @@ float linphone_call_stats_update_sender_interarrival_jitter(const LinphoneCallSt
 	return (float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate;
 }
 
-float linphone_call_stats_update_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
+/**
+ * Gets the remote reported interarrival jitter
+ * @return The interarrival jitter at last received receiver report
+**/
+float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call) {
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *rrb = NULL;
@@ -2360,7 +2376,11 @@ float linphone_call_stats_update_receiver_interarrival_jitter(const LinphoneCall
 	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
 }
 
-uint64_t linphone_call_stats_update_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
+/**
+ * Gets the cumulative number of late packets
+ * @return The cumulative number of late packets
+**/
+uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
 	rtp_stats_t rtp_stats;
 
 	if (!stats || !call)
