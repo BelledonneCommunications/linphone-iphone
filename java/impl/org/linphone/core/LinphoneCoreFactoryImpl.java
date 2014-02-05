@@ -57,11 +57,6 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			loadOptionalLibrary("avcodec-linphone-arm");
 		}
 
-		// OPENSSL (cryptography)
-		// linphone suffix avoids collision with libs in /system/lib
-		loadOptionalLibrary("crypto-linphone-" + eabi);
-		loadOptionalLibrary("ssl-linphone-" + eabi);
-
 		// Secure RTP and key negotiation
 		loadOptionalLibrary("srtp-" + eabi);
 		loadOptionalLibrary("zrtpcpp-" + eabi); // GPLv3+
