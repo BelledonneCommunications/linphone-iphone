@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
@@ -321,6 +322,7 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&upnp_test_suite);
 #endif
 	add_test_suite(&event_test_suite);
+	add_test_suite(&flexisip_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {
@@ -423,6 +425,7 @@ void helper(const char *name) {
 			"\t\t\t--auth-domain <test auth domain>\n"
 			"\t\t\t--suite <suite name>\n"
 			"\t\t\t--test <test name>\n"
+			"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif
@@ -468,7 +471,10 @@ int main (int argc, char *argv[]) {
 		} else if (strcmp(argv[i],"--config")==0){
 			CHECK_ARG("--config", ++i, argc);
 			liblinphone_tester_file_prefix=argv[i];
-		} else if (strcmp(argv[i],"--suite")==0){
+		}else if (strcmp(argv[i],"--dns-hosts")==0){
+			CHECK_ARG("--dns-hosts", ++i, argc);
+			userhostsfile=argv[i];
+		}else if (strcmp(argv[i],"--suite")==0){
 			CHECK_ARG("--suite", ++i, argc);
 			suite_name=argv[i];
 		} else if (strcmp(argv[i],"--list-suites")==0){

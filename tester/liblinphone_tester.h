@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #ifndef LIBLINPHONE_TESTER_H_
 #define LIBLINPHONE_TESTER_H_
@@ -52,6 +53,7 @@ extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
 extern test_suite_t upnp_test_suite;
 extern test_suite_t event_test_suite;
+extern test_suite_t flexisip_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -61,7 +63,6 @@ extern const char * liblinphone_tester_test_name(const char *suite_name, int tes
 extern void liblinphone_tester_init(void);
 extern void liblinphone_tester_uninit(void);
 extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
-
 
 #ifdef __cplusplus
 };
@@ -210,6 +211,10 @@ bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int va
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
+const char *liblinphone_tester_get_subscribe_content(void);
+const char *liblinphone_tester_get_notify_content(void);
+void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

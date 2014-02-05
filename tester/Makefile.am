@@ -1,5 +1,5 @@
 EXTRA_DIST=	empty_rc laure_rc marie_early_rc marie_no_sdp_rc marie_rc multi_account_lrc pauline_alt_rc \
-		pauline_rc pauline_wild_rc tester_hosts sounds images certificates
+		pauline_rc pauline_wild_rc pauline_rc_tcp tester_hosts sounds images certificates
 
 
 if BUILD_CUNIT_TESTS
@@ -13,7 +13,8 @@ liblinphone_tester_SOURCES=	liblinphone_tester.c liblinphone_tester.h\
 				call_tester.c \
 				presence_tester.c \
 				upnp_tester.c \
-				eventapi_tester.c
+				eventapi_tester.c \
+				flexisip_tester.c
 
 
 #liblinphone_tester_CFLAGS=$(CUNIT_CFLAGS)

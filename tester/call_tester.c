@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
@@ -95,13 +96,18 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 }
 #endif
 
-static void check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
+void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
 	LinphoneCall *c1,*c2;
 	int i;
 	int dummy=0;
 
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
+	
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+	
+	if (!c1 || !c2) return;
 
 	for (i=0; i<24 /*=12s need at least one exchange of SR to maybe 10s*/; i++) {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
@@ -214,7 +220,7 @@ static void simple_call(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	CU_ASSERT_TRUE(call(pauline,marie));
-	check_rtcp(marie,pauline);
+	liblinphone_tester_check_rtcp(marie,pauline);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -527,7 +533,7 @@ static void call_with_ice(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
-	check_rtcp(marie,pauline);
+	liblinphone_tester_check_rtcp(marie,pauline);
 
 
 	/*then close the call*/
@@ -765,7 +771,7 @@ static void video_call(void) {
 	linphone_call_send_vfu_request(marie_call);
 	CU_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
 
-	check_rtcp(marie,pauline);
+	liblinphone_tester_check_rtcp(marie,pauline);
 
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -782,11 +788,11 @@ static void call_with_media_relay(void) {
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
 	CU_ASSERT_TRUE(call(pauline,marie));
-	check_rtcp(pauline,marie);
+	liblinphone_tester_check_rtcp(pauline,marie);
 
 #ifdef VIDEO_ENABLED
 	CU_ASSERT_TRUE(add_video(pauline,marie));
-	check_rtcp(pauline,marie);
+	liblinphone_tester_check_rtcp(pauline,marie);
 #endif
 
 	/*just to sleep*/
@@ -1004,7 +1010,7 @@ static void srtp_ice_call(void) {
 		add_video(pauline,marie);
 
 		CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
-		check_rtcp(marie,pauline);
+		liblinphone_tester_check_rtcp(marie,pauline);
 		/*wait for ice to found the direct path*/
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
 #endif
@@ -1050,89 +1056,6 @@ static void early_media_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void early_media_call_forking(void) {
-	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
-	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
-	MSList *lcs=NULL;
-	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
-	LinphoneVideoPolicy pol;
-	LinphoneCall *marie1_call;
-	LinphoneCall *marie2_call;
-	LinphoneCall *pauline_call;
-	int dummy=0;
-	char ringbackpath[256];
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-	
-	pol.automatically_accept=1;
-	pol.automatically_initiate=1;
-	
-	linphone_core_set_user_agent(marie1->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
-	
-	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
-	
-	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
-	linphone_core_set_video_policy(marie1->lc,&pol);
-	/*use playfile for marie1 to avoid locking on capture card*/
-	linphone_core_use_files (marie1->lc,TRUE);
-	linphone_core_set_play_file(marie1->lc,ringbackpath);
-
-	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
-	linphone_core_set_video_policy(marie2->lc,&pol);
-	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
-	linphone_core_set_video_port_range(marie2->lc,40400,40500);
-	/*use playfile for marie2 to avoid locking on capture card*/
-	linphone_core_use_files (marie2->lc,TRUE);
-	linphone_core_set_play_file(marie2->lc,ringbackpath);
-	
-	
-	lcs=ms_list_append(lcs,marie1->lc);
-	lcs=ms_list_append(lcs,marie2->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-
-	linphone_call_params_enable_early_media_sending(params,TRUE);
-	linphone_call_params_enable_video(params,TRUE);
-	
-	linphone_core_invite_address_with_params(pauline->lc,marie1->identity,params);
-	linphone_call_params_destroy(params);
-
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
-	
-	pauline_call=linphone_core_get_current_call(pauline->lc);
-	marie1_call=linphone_core_get_current_call(marie1->lc);
-	marie2_call=linphone_core_get_current_call(marie2->lc);
-	
-	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,3000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
-	
-	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-	
-	/*marie2 should get her call terminated*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
-	
-	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,1000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
-	
-	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
-
-	ms_list_free(lcs);
-	linphone_core_manager_destroy(marie1);
-	linphone_core_manager_destroy(marie2);
-	linphone_core_manager_destroy(pauline);
-}
 
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1539,7 +1462,6 @@ test_t call_tests[] = {
 	{ "Call with media relay", call_with_media_relay},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
-	{ "Early-media call forking", early_media_call_forking },
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call without SDP", call_with_no_sdp},
 	{ "Call paused resumed", call_paused_resumed },
