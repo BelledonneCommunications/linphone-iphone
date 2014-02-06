@@ -833,6 +833,17 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_iterate(theLinphoneCore);
 }
 
+
+- (void)audioSessionInterrupted:(NSNotification *)notification
+{
+    int interruptionType = [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue];
+    if (interruptionType == AVAudioSessionInterruptionTypeBegan) {
+        [self beginInterruption];
+    } else if (interruptionType == AVAudioSessionInterruptionTypeEnded) {
+        [self endInterruption];
+    }
+}
+
 - (void)startLibLinphone {
     if (theLinphoneCore != nil) {
         [LinphoneLogger logc:LinphoneLoggerLog format:"linphonecore is already created"];
@@ -904,16 +915,23 @@ static LinphoneCoreVTable linphonec_vtable = {
 													repeats:YES];
 	//init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-	BOOL bAudioInputAvailable= [audioSession inputIsAvailable];
-    [audioSession setDelegate:self];
-	
+	BOOL bAudioInputAvailable= audioSession.inputAvailable;
 	NSError* err;
-	[audioSession setActive:NO error: &err]; 
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(audioSessionInterrupted:)
+                                                 name:AVAudioSessionInterruptionNotification
+                                               object:nil];
+
+
+	if( ![audioSession setActive:NO error: &err] && err ){
+        NSLog(@"audioSession setActive failed: %@", [err description]);
+    }
 	if(!bAudioInputAvailable){
-		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"No microphone",nil)
-														message:NSLocalizedString(@"You need to plug a microphone to your device to use this application.",nil) 
-													   delegate:nil 
-											  cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No microphone",nil)
+														message:NSLocalizedString(@"You need to plug a microphone to your device to use this application.",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Ok",nil)
 											  otherButtonTitles:nil ,nil];
 		[error show];
         [error release];
@@ -974,8 +992,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	//just in case
 	[self removeCTCallCenterCb];
 	
-	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-	[audioSession setDelegate:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
@@ -1146,7 +1163,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 - (void)beginInterruption {
     LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
     [LinphoneLogger logc:LinphoneLoggerLog format:"Sound interruption detected!"];
-    if (c) {
+    if (c && linphone_call_get_state(c) == LinphoneCallStreamsRunning) {
         linphone_core_pause_call(theLinphoneCore, c);
     }
 }

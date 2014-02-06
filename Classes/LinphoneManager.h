@@ -87,7 +87,7 @@ typedef struct _LinphoneManagerSounds {
     SystemSoundID message;
 } LinphoneManagerSounds;
 
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
+@interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
     
