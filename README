@@ -27,9 +27,6 @@ Link macport libtoolize to glibtoolize
 
 Link host's strings to simulator SDK 
 
-	For Xcode prior to 4.3:
-	$ sudo ln -s  /usr/bin/strings /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
-	For newer XCode:
 	$ sudo ln -s  /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
 
 
