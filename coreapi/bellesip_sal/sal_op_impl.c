@@ -205,16 +205,29 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	sal_op_send_request(op,request);
 }
 
-static void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg){
-	if (belle_sip_message_get_header(msg,belle_sip_header_get_name(h))==NULL)
-		belle_sip_message_add_header(msg,h);
+static void add_headers(SalOp *op, belle_sip_header_t *h, belle_sip_message_t *msg){
+	
+	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_contact_t)){
+		belle_sip_header_contact_t* newct;
+		/*special case for contact, we want to keep everything from the custom contact but set automatic mode and add our own parameters as well*/
+		sal_op_set_contact(op,(SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
+		newct = sal_op_create_contact(op);
+		belle_sip_message_set_header(BELLE_SIP_MESSAGE(msg),BELLE_SIP_HEADER(newct));
+		return;
+	}
+	/*if a header already exists in the message, replace it*/
+	belle_sip_message_set_header(msg,h);
+	
 }
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
 	if (op->base.sent_custom_headers){
 		belle_sip_message_t *ch=(belle_sip_message_t*)op->base.sent_custom_headers;
 		belle_sip_list_t *l=belle_sip_message_get_all_headers(ch);
-		belle_sip_list_for_each2(l,(void (*)(void *, void *))add_headers,msg);
+		belle_sip_list_t *elem;
+		for(elem=l;elem!=NULL;elem=elem->next){
+			add_headers(op,(belle_sip_header_t*)elem->data,msg);
+		}
 		belle_sip_list_free(l);
 	}
 }
@@ -226,6 +239,11 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	belle_sip_header_contact_t* contact;
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
+	
+	if (add_contact) {
+		contact = sal_op_create_contact(op);
+		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
+	}
 	
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 	
@@ -276,10 +294,6 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	if (belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_user_agent_t)==NULL)
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(op->base.root->user_agent));
 
-	if (add_contact) {
-		contact = sal_op_create_contact(op);
-		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
-	}
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
