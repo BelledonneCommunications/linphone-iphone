@@ -185,7 +185,7 @@ ifeq ($(BUILD_SRTP), 1)
 	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
 endif
 
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+ifneq ($(TARGET_ARCH_ABI),armeabi)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
 LOCAL_STATIC_LIBRARIES += libmsilbc
 endif
