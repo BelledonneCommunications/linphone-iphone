@@ -146,12 +146,13 @@ void sal_process_authentication(SalOp *op) {
 		if (is_within_dialog) {
 			belle_sip_object_unref(new_request);
 		}
-		if (op->auth_info) sal_auth_info_delete(op->auth_info);
-		if (auth_list){
-			auth_event=(belle_sip_auth_event_t*)(auth_list->data);
-			op->auth_info=sal_auth_info_create(auth_event);
-			belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
-		}
+	}
+	/*always store auth info, for case of wrong credential*/
+	if (op->auth_info) sal_auth_info_delete(op->auth_info);
+	if (auth_list){
+		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
+		op->auth_info=sal_auth_info_create(auth_event);
+		belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
 	}
 }
 
@@ -345,7 +346,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					if (op->auth_info) op->base.root->callbacks.auth_failure(op,op->auth_info);
 					break;
 			}
-			if (response_code !=401 && response_code !=407 && response_code !=403) {
+			if (response_code >= 180 && response_code !=401 && response_code !=407 && response_code !=403) {
 				/*not an auth request*/
 				op->auth_requests=0;
 			}
