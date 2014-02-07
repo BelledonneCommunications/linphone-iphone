@@ -588,7 +588,6 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_ringback(lc,tmpbuf);
 
 	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
-	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 #ifndef __ios 
 	tmp=TRUE;
