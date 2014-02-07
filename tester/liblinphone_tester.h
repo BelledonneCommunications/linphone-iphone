@@ -7,13 +7,13 @@
     the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -54,6 +54,7 @@ extern test_suite_t presence_test_suite;
 extern test_suite_t upnp_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t flexisip_test_suite;
+extern test_suite_t stun_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -155,7 +156,7 @@ typedef struct _stats {
 	int number_of_LinphonePresenceActivityWorking;
 	int number_of_LinphonePresenceActivityWorship;
 	const LinphonePresenceModel *last_received_presence;
-	
+
 	int number_of_inforeceived;
 	LinphoneInfoMessage* last_received_info_message;
 

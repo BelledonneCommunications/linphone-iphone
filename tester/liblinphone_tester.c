@@ -7,13 +7,13 @@
     the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
@@ -53,7 +53,7 @@ const char *userhostsfile = "tester_hosts";
 
 #ifdef ANDROID
 extern void AndroidPrintf(FILE *stream, const char *fmt, ...);
-#define fprintf(file, fmt, ...) AndroidPrintf(file, fmt, ##__VA_ARGS__)  
+#define fprintf(file, fmt, ...) AndroidPrintf(file, fmt, ##__VA_ARGS__)
 #endif
 
 
@@ -94,14 +94,14 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	char rootcapath[256]={0};
 	char dnsuserhostspath[256]={0};
 	char nowebcampath[256]={0};
-	
+
 	if (path==NULL) path=".";
 
 	if (file){
 		sprintf(filepath, "%s/%s", path, file);
 		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
 	}
-	
+
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
 
 	sal_enable_test_features(lc->sal,TRUE);
@@ -182,7 +182,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	LinphoneProxyConfig* proxy;
 	int proxy_count;
 	int retry=0;
-	
+
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -211,7 +211,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	}
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
 	enable_codec(mgr->lc,"PCMU",8000);
-	
+
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
 	if (proxy) {
 		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
@@ -277,7 +277,7 @@ static int test_suite_index(const char *suite_name) {
 
 static int test_index(const char *suite_name, const char *test_name) {
 	int j,i;
-	
+
 	j = test_suite_index(suite_name);
 	if(j != -1) {
 		for (i = 0; i < test_suite[j]->nb_tests; i++) {
@@ -321,6 +321,7 @@ void liblinphone_tester_init(void) {
 #ifdef UPNP
 	add_test_suite(&upnp_test_suite);
 #endif
+	add_test_suite(&stun_test_suite);
 	add_test_suite(&event_test_suite);
 	add_test_suite(&flexisip_test_suite);
 }
@@ -444,7 +445,7 @@ int main (int argc, char *argv[]) {
 	int ret;
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
-	
+
 	liblinphone_tester_init();
 
 	for(i=1;i<argc;++i){
@@ -482,14 +483,14 @@ int main (int argc, char *argv[]) {
 				suite_name = liblinphone_tester_test_suite_name(j);
 				fprintf(stdout, "%s\n", suite_name);
 			}
-			return 0;	
+			return 0;
 		} else if (strcmp(argv[i],"--list-tests")==0){
 			CHECK_ARG("--list-tests", ++i, argc);
 			suite_name = argv[i];
 			for(j=0;j<liblinphone_tester_nb_tests(suite_name);j++) {
 				test_name = liblinphone_tester_test_name(suite_name, j);
 				fprintf(stdout, "%s\n", test_name);
-			}	
+			}
 			return 0;
 		} else {
 			helper(argv[0]);
@@ -502,15 +503,15 @@ int main (int argc, char *argv[]) {
 		if(test_suite_index(suite_name) == -1) {
 			fprintf(stderr, "Suite \"%s\" not found\n", suite_name);
 			return -1;
-		}		
+		}
 		if(test_name != NULL) {
 			if(test_index(suite_name, test_name) == -1) {
 				fprintf(stderr, "Test \"%s\" not found\n", test_name);
 				return -1;
-			}		
+			}
 		}
 	}
-	
+
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
 	return ret;
@@ -537,7 +538,7 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	(*env)->DeleteLocalRef(env,javaString);
 }
 
-JNIEXPORT 
+JNIEXPORT
 
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
 	int i, ret;

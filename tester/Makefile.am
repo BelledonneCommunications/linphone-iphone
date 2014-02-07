@@ -14,7 +14,8 @@ liblinphone_tester_SOURCES=	liblinphone_tester.c liblinphone_tester.h\
 				presence_tester.c \
 				upnp_tester.c \
 				eventapi_tester.c \
-				flexisip_tester.c
+				flexisip_tester.c \
+				stun_tester.c
 
 
 #liblinphone_tester_CFLAGS=$(CUNIT_CFLAGS)
