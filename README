@@ -75,11 +75,11 @@ The liblinphone-sdk is compiled with third parties code that are subject to pate
 Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_X264 positioned in xcode project.
 Before embeding these 4 codecs in the final application, make sure to have the right to do so.
 
-TRANSLATER THE APPLICATION
-**************************
+TRANSLATE THE APPLICATION
+*************************
 
 You have to download the application Localization Suite(http://www.loc-suite.org/)
-Each modification in a xib have to be scanned and synchronized
+Each modification in a xib has to be scanned and synchronized
 
 
 LIMITATIONS, KNOWN BUGS
