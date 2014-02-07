@@ -573,6 +573,7 @@ static void tls_certificate_failure(){
 	linphone_core_destroy(mgr->lc);
 }
 
+/*the purpose of this test is to check that will not block the proxy config during SSL handshake for entire life in case of mistaken configuration*/
 static void tls_with_non_tls_server(){
 	LinphoneCoreManager *mgr;
 	LinphoneProxyConfig* proxy_cfg;
@@ -582,6 +583,7 @@ static void tls_with_non_tls_server(){
 	
 	mgr=linphone_core_manager_new2( "marie_rc", 0);
 	lc=mgr->lc;
+	sal_set_transport_timeout(lc->sal,3000);
 	linphone_core_get_default_proxy(lc,&proxy_cfg);
 	linphone_proxy_config_edit(proxy_cfg);
 	addr=linphone_address_new(linphone_proxy_config_get_addr(proxy_cfg));
@@ -590,9 +592,7 @@ static void tls_with_non_tls_server(){
 	linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
 	linphone_proxy_config_done(proxy_cfg);
 	linphone_address_destroy(addr);
-	/* FIXME http://git.linphone.org/mantis/view.php?id=758
-	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1));
-	*/
+	CU_ASSERT_TRUE(wait_for_until(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1,5000));
 	linphone_core_manager_destroy(mgr);
 }
 

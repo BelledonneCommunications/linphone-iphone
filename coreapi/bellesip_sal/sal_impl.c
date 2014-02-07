@@ -722,6 +722,13 @@ void sal_set_dns_timeout(Sal* sal,int timeout) {
 int sal_get_dns_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_dns_timeout(sal->stack);
 }
+
+void sal_set_transport_timeout(Sal* sal,int timeout) {
+	belle_sip_stack_set_transport_timeout(sal->stack, timeout);
+}
+int sal_get_transport_timeout(const Sal* sal)  {
+	return belle_sip_stack_get_transport_timeout(sal->stack);
+}
 void sal_enable_dns_srv(Sal *sal, bool_t enable) {
 	belle_sip_stack_enable_dns_srv(sal->stack, (unsigned char)enable);
 }
