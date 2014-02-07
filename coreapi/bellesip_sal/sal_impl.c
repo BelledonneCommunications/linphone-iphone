@@ -786,7 +786,7 @@ SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name,
 		msg=(belle_sip_message_t*)belle_sip_request_new();
 		belle_sip_object_ref(msg);
 	}
-	h=BELLE_SIP_HEADER(belle_sip_header_extension_parse(tmp));
+	h=belle_sip_header_parse(tmp);
 	ms_free(tmp);
 	if (h==NULL){
 		belle_sip_error("Fail to parse extension header.");
@@ -801,11 +801,7 @@ const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
 		belle_sip_header_t *h=belle_sip_message_get_header((belle_sip_message_t*)ch,name);
 		
 		if (h){
-			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_extension_t)){
-				return belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(h));
-			}else{
-				return belle_sip_header_get_unparsed_value(h);
-			}
+			return belle_sip_header_get_unparsed_value(h);
 		}
 	}
 	return NULL;

@@ -223,7 +223,7 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 
 	ms_message("Receiving NOTIFY request on op [%p]",op);
 	if (header_event
-	&& strncasecmp(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(header_event)),"refer",strlen("refer"))==0
+	&& strncasecmp(belle_sip_header_get_unparsed_value(header_event),"refer",strlen("refer"))==0
 	&& content_type
 	&& strcmp(belle_sip_header_content_type_get_type(content_type),"message")==0
 	&& strcmp(belle_sip_header_content_type_get_subtype(content_type),"sipfrag")==0

@@ -462,7 +462,7 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 				,reason_size
 				,"%s %s"
 				,belle_sip_response_get_reason_phrase(response)
-				,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
+				,belle_sip_header_get_unparsed_value(reason_header));
 	} else {
 		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
 	}

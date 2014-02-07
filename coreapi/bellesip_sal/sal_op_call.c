@@ -44,7 +44,7 @@ static void call_set_error(SalOp* op,belle_sip_response_t* response){
 	char* reason=(char*)belle_sip_response_get_reason_phrase(response);
 	int code = belle_sip_response_get_status_code(response);
 	if (reason_header){
-		reason = ms_strdup_printf("%s %s",reason,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
+		reason = ms_strdup_printf("%s %s",reason,belle_sip_header_get_unparsed_value(reason_header));
 	}
 	sal_compute_sal_errors_from_code(code,&error,&sr);
 	op->base.root->callbacks.call_failure(op,error,sr,reason,code);
@@ -424,7 +424,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			process_sdp_for_invite(op,req);
 
 			if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
-				if( strstr(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(call_info)),"answer-after=") != NULL) {
+				if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
 					op->auto_answer_asked=TRUE;
 					ms_message("The caller asked to automatically answer the call(Emergency?)\n");
 				}
@@ -662,9 +662,8 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	if (require) tags=belle_sip_header_get_unparsed_value(require);
 	/* if client requires 100rel, then add necessary stuff*/
 	if (tags && strstr(tags,"100rel")!=0) {
-		
-		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("Require","100rel")));
-		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("RSeq","1")));
+		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,belle_sip_header_create("Require","100rel"));
+		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,belle_sip_header_create("RSeq","1"));
 	}
 
 #ifndef SAL_OP_CALL_FORCE_CONTACT_IN_RINGING
