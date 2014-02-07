@@ -202,6 +202,7 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 
 MACAPPNAME=Linphone.app
 MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
+MACAPPDMG=$(PACKAGE)-$(VERSION).dmg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 
@@ -220,6 +221,7 @@ bundle:
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
 	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
+	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 ###
 ### CLEAN
