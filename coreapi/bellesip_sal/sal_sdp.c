@@ -379,7 +379,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 				; mime_param_it=mime_param_it->next ) {
 			mime_param=BELLE_SDP_MIME_PARAMETER ( mime_param_it->data )
 
-					   pt=payload_type_new();
+			pt=payload_type_new();
 			payload_type_set_number ( pt,belle_sdp_mime_parameter_get_media_format ( mime_param ) );
 			pt->clock_rate=belle_sdp_mime_parameter_get_rate ( mime_param );
 			pt->mime_type=ms_strdup ( belle_sdp_mime_parameter_get_type ( mime_param ) );
