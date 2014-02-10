@@ -1751,6 +1751,23 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				audio_stream_mixed_record_open(call->audiostream,call->params.record_file);
 				call->current_params.record_file=ms_strdup(call->params.record_file);
 			}
+			/* valid local tags are > 0 */
+			if (stream->proto == SalProtoRtpSavp) {
+				local_st_desc=sal_media_description_find_stream(call->localdesc,SalProtoRtpSavp,SalAudio);
+				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
+
+				if (crypto_idx >= 0) {
+					audio_stream_enable_srtp(
+								call->audiostream,
+								stream->crypto[0].algo,
+								local_st_desc->crypto[crypto_idx].master_key,
+								stream->crypto[0].master_key);
+					call->audiostream_encrypted=TRUE;
+				} else {
+					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
+					call->audiostream_encrypted=FALSE;
+				}
+			}else call->audiostream_encrypted=FALSE;
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1779,23 +1796,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}
 			audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 
-			/* valid local tags are > 0 */
-			if (stream->proto == SalProtoRtpSavp) {
-				local_st_desc=sal_media_description_find_stream(call->localdesc,SalProtoRtpSavp,SalAudio);
-				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
-
-				if (crypto_idx >= 0) {
-					audio_stream_enable_srtp(
-								call->audiostream,
-								stream->crypto[0].algo,
-								local_st_desc->crypto[crypto_idx].master_key,
-								stream->crypto[0].master_key);
-					call->audiostream_encrypted=TRUE;
-				} else {
-					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
-					call->audiostream_encrypted=FALSE;
-				}
-			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
 				mute=stream->dir==SalStreamRecvOnly;
@@ -1811,6 +1811,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
+	
 	/* look for savp stream first */
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 							SalProtoRtpSavp,SalVideo);
@@ -1831,6 +1832,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->rtp_port!=0) {
 		const char *rtp_addr=vstream->rtp_addr[0]!='\0' ? vstream->rtp_addr : call->resultdesc->addr;
 		const char *rtcp_addr=vstream->rtcp_addr[0]!='\0' ? vstream->rtcp_addr : call->resultdesc->addr;
+		const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,vstream->proto,SalVideo);
+		
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
 			VideoStreamDir dir=VideoStreamSendRecv;
@@ -1852,7 +1855,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
 
 			if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-				cam=get_nowebcam_device();
+				if (local_st_desc->dir==SalStreamSendOnly){
+					/* localdesc stream dir to SendOnly is when we want to put on hold, so use nowebcam in this case*/
+					cam=get_nowebcam_device();
+				}
 				dir=VideoStreamSendOnly;
 			}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 				dir=VideoStreamRecvOnly;
@@ -1872,6 +1878,18 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				cam=get_nowebcam_device();
 			}
 			if (!is_inactive){
+				if (vstream->proto == SalProtoRtpSavp) {
+					video_stream_enable_strp(
+						call->videostream,
+						vstream->crypto[0].algo,
+						local_st_desc->crypto[0].master_key,
+						vstream->crypto[0].master_key
+					);
+					call->videostream_encrypted=TRUE;
+				}else{
+					call->videostream_encrypted=FALSE;
+				}
+				
 				call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
@@ -1882,21 +1900,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 					linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
 					used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				video_stream_set_rtcp_information(call->videostream, cname,rtcp_tool);
-			}
-
-			if (vstream->proto == SalProtoRtpSavp) {
-				const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
-							SalProtoRtpSavp,SalVideo);
-
-				video_stream_enable_strp(
-					call->videostream,
-					vstream->crypto[0].algo,
-					local_st_desc->crypto[0].master_key,
-					vstream->crypto[0].master_key
-					);
-				call->videostream_encrypted=TRUE;
-			}else{
-				call->videostream_encrypted=FALSE;
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{

@@ -1093,10 +1093,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
       return 0;  
 }
 
-
-void _linphone_core_configure_resolver(){
-}
-
 SalReason linphone_reason_to_sal(LinphoneReason reason){
 	switch(reason){
 		case LinphoneReasonNone:

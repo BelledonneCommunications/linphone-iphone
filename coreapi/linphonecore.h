@@ -316,6 +316,12 @@ enum _LinphoneMediaEncryption {
 **/
 typedef enum _LinphoneMediaEncryption LinphoneMediaEncryption;
 
+/**
+ * Convert enum member to string.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc);
+
 /*public: */
 LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);

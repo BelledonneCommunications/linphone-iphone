@@ -1263,14 +1263,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_telephone_event,101,"0-15");
 	linphone_core_assign_payload_type(lc,&payload_type_g722,9,NULL);
 
-#if defined(ANDROID) || defined (__IPHONE_OS_VERSION_MIN_REQUIRED)
-	/*shorten the DNS lookup time and send more retransmissions on mobiles:
-	 - to workaround potential packet losses
-	 - to avoid hanging for 30 seconds when the network doesn't work despite the phone thinks it does.
-	 */
-	_linphone_core_configure_resolver();
-#endif
-
 #ifdef ENABLE_NONSTANDARD_GSM
 	{
 		PayloadType *pt;
@@ -1340,7 +1332,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	net_config_read(lc);
 	rtp_config_read(lc);
 	codecs_config_read(lc);
-	sip_config_read(lc); /* this will start eXosip*/
+	sip_config_read(lc);
 	video_config_read(lc);
 	//autoreplier_config_init(&lc->autoreplier_conf);
 	lc->presence_model=linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL);
@@ -6147,6 +6139,18 @@ bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 
 void linphone_core_set_srtp_enabled(LinphoneCore *lc, bool_t enabled) {
 	lp_config_set_int(lc->config,"sip","srtp",(int)enabled);
+}
+
+const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
+	switch(menc){
+		case LinphoneMediaEncryptionSRTP:
+			return "LinphoneMediaEncryptionSRTP";
+		case LinphoneMediaEncryptionZRTP:
+			return "LinphoneMediaEncryptionZRTP";
+		case LinphoneMediaEncryptionNone:
+			return "LinphoneMediaEncryptionNone";
+	}
+	return "INVALID";
 }
 
 /**
