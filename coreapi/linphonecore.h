@@ -1062,7 +1062,8 @@ typedef enum _LinphoneGlobalState{
 	LinphoneGlobalOff,
 	LinphoneGlobalStartup,
 	LinphoneGlobalOn,
-	LinphoneGlobalShutdown
+	LinphoneGlobalShutdown,
+	LinphoneGlobalConfiguring
 }LinphoneGlobalState;
 
 const char *linphone_global_state_to_string(LinphoneGlobalState gs);
@@ -1213,6 +1214,23 @@ typedef void (*LinphoneCoreCallStatsUpdatedCb)(LinphoneCore *lc, LinphoneCall *c
 typedef void (*LinphoneCoreInfoReceivedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 
 /**
+ * LinphoneGlobalState describes the global state of the LinphoneCore object.
+ * It is notified via the LinphoneCoreVTable::global_state_changed
+**/
+typedef enum _LinphoneConfiguringState {
+	LinphoneConfiguringSuccessful,
+	LinphoneConfiguringFailed,
+	LinphoneConfiguringSkipped
+} LinphoneConfiguringState;
+
+/**
+ * Callback prototype for configuring status changes notification
+ * @param lc the LinphoneCore
+ * @param message informational message.
+ */
+typedef void (*LinphoneCoreConfiguringStatusCb)(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
+
+/**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
@@ -1236,6 +1254,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
 	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
+	LinphoneCoreConfiguringStatusCb configuring_status; /** Notifies configuring status changes */
 	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
@@ -2259,6 +2278,16 @@ typedef struct _LinphoneContactProvider LinphoneContactProvider;
 
 typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
 
+/** Remote provisioning
+ */
+
+/**
+ * Download a remote provisioning file from the given uri and applies it to current lp config.
+ * A restart is requiered for the changes to be applied.
+ * @param lc the LinphoneCore
+ * @param remote_provisioning_uri the URI at which the remote provisioning file is available
+ */
+LINPHONE_PUBLIC LinphoneConfiguringState linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
 
 #ifdef __cplusplus
 }

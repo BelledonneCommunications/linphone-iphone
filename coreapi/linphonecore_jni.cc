@@ -180,6 +180,7 @@ public:
 		vTable.subscription_state_changed=subscriptionStateChanged;
 		vTable.notify_received=notifyReceived;
 		vTable.publish_state_changed=publishStateChanged;
+		vTable.configuring_status=configuringStatus;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -276,6 +277,10 @@ public:
 		
 		subscriptionDirClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionDir"));
 		subscriptionDirFromIntId = env->GetStaticMethodID(subscriptionDirClass,"fromInt","(I)Lorg/linphone/core/SubscriptionDir;");
+		
+		configuringStateId = env->GetMethodID(listenerClass,"configuringStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;Ljava/lang/String;)V");
+		configuringStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RemoteProvisioningState"));
+		configuringStateFromIntId = env->GetStaticMethodID(globalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;");
 	}
 
 	~LinphoneCoreData() {
@@ -286,6 +291,7 @@ public:
 		if (userdata) env->DeleteGlobalRef(userdata);
 		env->DeleteGlobalRef(listenerClass);
 		env->DeleteGlobalRef(globalStateClass);
+		env->DeleteGlobalRef(configuringStateClass);
 		env->DeleteGlobalRef(registrationStateClass);
 		env->DeleteGlobalRef(callStateClass);
 		env->DeleteGlobalRef(chatMessageStateClass);
@@ -317,6 +323,10 @@ public:
 	jmethodID subscriptionStateId;
 	jmethodID publishStateId;
 	jmethodID notifyRecvId;
+	
+	jclass configuringStateClass;
+	jmethodID configuringStateId;
+	jmethodID configuringStateFromIntId;
 
 	jclass globalStateClass;
 	jmethodID globalStateId;
@@ -707,6 +717,17 @@ public:
 							,env->NewStringUTF(evname)
 							,content ? create_java_linphone_content(env,content) : NULL
 							);
+	}
+	
+	static void configuringStatus(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener, lcData->configuringStateId, lcData->core, env->CallStaticObjectMethod(lcData->configuringStateClass,lcData->configuringStateFromIntId,(jint)status), message ? env->NewStringUTF(message) : NULL);
 	}
 };
 

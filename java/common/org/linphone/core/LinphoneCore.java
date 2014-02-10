@@ -53,6 +53,10 @@ public interface LinphoneCore {
 		 * Shutdown
 		 */
 		static public GlobalState GlobalShutdown = new GlobalState(3,"GlobalShutdown");
+		/**
+		 * Configuring
+		 */
+		static public GlobalState GlobalConfiguring = new GlobalState(4,"GlobalConfiguring");
 
 		private final int mValue;
 		private final String mStringValue;
@@ -67,6 +71,46 @@ public interface LinphoneCore {
 
 			for (int i=0; i<values.size();i++) {
 				GlobalState state = (GlobalState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * linphone remote provisioning states
+	 */
+	static public class RemoteProvisioningState {
+		
+		static private Vector<RemoteProvisioningState> values = new Vector<RemoteProvisioningState>();
+		/**
+		 * Off
+		 */
+		static public RemoteProvisioningState ConfiguringSuccessful = new RemoteProvisioningState(0,"ConfiguringSuccessful");       
+		/**
+		 * Startup
+		 */
+		static public RemoteProvisioningState ConfiguringFailed = new RemoteProvisioningState(1,"ConfiguringFailed");
+		/**
+		 * On
+		 */
+		static public RemoteProvisioningState ConfiguringSkipped = new RemoteProvisioningState(2,"ConfiguringSkipped");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		
+		private RemoteProvisioningState(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static RemoteProvisioningState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				RemoteProvisioningState state = (RemoteProvisioningState) values.elementAt(i);
 				if (state.mValue == value) return state;
 			}
 			throw new RuntimeException("state not found ["+value+"]");

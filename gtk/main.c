@@ -58,6 +58,7 @@ static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
+static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
@@ -272,6 +273,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
 	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
 	vtable.dtmf_received=linphone_gtk_dtmf_received;
+	vtable.configuring_status=linphone_gtk_configuring_status;
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
@@ -1235,6 +1237,12 @@ static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
 	gtk_statusbar_push(GTK_STATUSBAR(status_bar),
 			gtk_statusbar_get_context_id(GTK_STATUSBAR(status_bar),""),
 			status);
+}
+
+static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
+	if (status == LinphoneConfiguringFailed) {
+	  linphone_gtk_display_something(GTK_MESSAGE_ERROR, message);
+	}
 }
 
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg){

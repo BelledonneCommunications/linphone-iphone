@@ -68,6 +68,7 @@ static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
+#include "contact_providers_priv.h"
 
 
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
@@ -610,6 +611,17 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_get_audio_features(lc);
 }
 
+static void certificates_config_read(LinphoneCore *lc)
+{
+#ifdef __linux
+	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+#else
+	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
+#endif
+	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
+	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE)); 
+}
+
 static void sip_config_read(LinphoneCore *lc)
 {
 	char *contact;
@@ -635,14 +647,7 @@ static void sip_config_read(LinphoneCore *lc)
 	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
 	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
 	
-
-#ifdef __linux
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
-#else
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
-#endif
-	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
-	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
+	certificates_config_read(lc);
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
 	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
@@ -1221,7 +1226,7 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 	}
 }
 
-static void misc_config_read (LinphoneCore *lc) {
+static void misc_config_read(LinphoneCore *lc) {
 	LpConfig *config=lc->config;
 	const char *uuid;
 	
@@ -1237,10 +1242,30 @@ static void misc_config_read (LinphoneCore *lc) {
 		sal_set_uuid(lc->sal, uuid);
 }
 
+static void linphone_core_start(LinphoneCore * lc) {
+	sip_setup_register_all();
+	sound_config_read(lc);
+	net_config_read(lc);
+	rtp_config_read(lc);
+	codecs_config_read(lc);
+	sip_config_read(lc);
+	video_config_read(lc);
+	//autoreplier_config_init(&lc->autoreplier_conf);
+	lc->presence_model=linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL);
+	misc_config_read(lc);
+	ui_config_read(lc);
+#ifdef TUNNEL_ENABLED
+	lc->tunnel=linphone_core_tunnel_new(lc);
+	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
+#endif
 
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Ready"));
+	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
+	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
+}
 
-
-static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
+static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
@@ -1344,9 +1369,19 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 
 	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Ready"));
-	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
-	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
+		lc->vtable.display_status(lc, _("Configuring"));
+	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
+	
+	const char *remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
+	LinphoneConfiguringState configuring_result = LinphoneConfiguringSkipped;
+	if (remote_provisioning_uri) {
+	    certificates_config_read(lc);
+	}
+	
+	if (lc->vtable.configuring_status)
+	    lc->vtable.configuring_status(lc, configuring_result, configuring_result == LinphoneConfiguringFailed ? _("Configuring failed") : NULL);
+	
+	linphone_core_start(lc);
 }
 
 /**
@@ -5923,6 +5958,8 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs){
 		break;
 		case LinphoneGlobalShutdown:
 			return "LinphoneGlobalShutdown";
+		case LinphoneGlobalConfiguring:
+			return "LinphoneGlobalConfiguring";
 		break;
 	}
 	return NULL;
