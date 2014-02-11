@@ -727,10 +727,12 @@ static void auth_failure(SalOp *op, SalAuthInfo* info) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
 	if (ai){
 		ms_message("%s/%s/%s authentication fails.",info->realm,info->username,info->domain);
+		/*ask again for password if auth info was already supplied but apparently not working*/
+		if (lc->vtable.auth_info_requested) {
+			lc->vtable.auth_info_requested(lc,info->realm,info->username,info->domain);
+		}
 	}
-	if (lc->vtable.auth_info_requested) {
-		lc->vtable.auth_info_requested(lc,info->realm,info->username,info->domain);
-	}
+	
 }
 
 static void register_success(SalOp *op, bool_t registered){

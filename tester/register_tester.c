@@ -304,7 +304,7 @@ static void authenticated_register_with_late_credentials(){
 
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_2(mgr->lc,FALSE,auth_domain,route,TRUE,transport);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2); /*1 registration error = 2 auth requested*/
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 	linphone_core_manager_destroy(mgr);
 }
 
@@ -314,7 +314,7 @@ static void authenticated_register_with_wrong_late_credentials(){
 	LCSipTransports transport = {5070,5070,0,5071};
 	char route[256];
 	const char* saved_test_passwd=test_password;
-	char* wrong_passwd="mot de pass tout pourrit";
+	char* wrong_passwd="mot de pass tout pourri";
 
 	test_password=wrong_passwd;
 
@@ -324,7 +324,7 @@ static void authenticated_register_with_wrong_late_credentials(){
 
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_3(mgr->lc,FALSE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,3);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,2);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,2);
 	test_password=saved_test_passwd;
