@@ -33,9 +33,11 @@ void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const Linph
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message) {
 	char* from=linphone_address_as_string(linphone_chat_message_get_from(message));
 	stats* counters;
-	ms_message("Message from [%s]  is [%s] , external URL [%s]",from
-																,linphone_chat_message_get_text(message)
-																,linphone_chat_message_get_external_body_url(message));
+	const char *text=linphone_chat_message_get_text(message);
+	const char *external_body_url=linphone_chat_message_get_external_body_url(message);
+	ms_message("Message from [%s]  is [%s] , external URL [%s]",from?from:""
+																,text?text:""
+																,external_body_url?external_body_url:"");
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;

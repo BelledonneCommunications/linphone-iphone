@@ -1874,7 +1874,7 @@ static void apply_user_agent(LinphoneCore *lc){
 void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char *ver){
 #if USE_BELLESIP
 	char ua_string[256];
-	snprintf(ua_string, sizeof(ua_string) - 1, "%s/%s", name, ver);
+	snprintf(ua_string, sizeof(ua_string) - 1, "%s/%s", name?name:"", ver?ver:"");
 	if (lc->sal) {
 		sal_set_user_agent(lc->sal, ua_string);
 		sal_append_stack_string_to_user_agent(lc->sal);
