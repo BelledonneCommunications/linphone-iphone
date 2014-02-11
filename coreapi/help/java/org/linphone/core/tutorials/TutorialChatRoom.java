@@ -29,6 +29,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -208,6 +209,13 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 			write("Remote is writing a message");
 		else
 			write("Remote has stop writing");
+	}
+
+	@Override
+	public void configuringStatus(LinphoneCore lc,
+			RemoteProvisioningState state, String message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -29,6 +29,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -282,6 +283,13 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void configuringStatus(LinphoneCore lc,
+			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
 		
 	}

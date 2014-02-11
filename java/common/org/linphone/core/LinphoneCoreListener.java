@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.core;
 
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+
 
 /**
  * 
@@ -162,6 +164,15 @@ public interface LinphoneCoreListener {
 	 * @param state the publish state
 	 */
 	void publishStateChanged(LinphoneCore lc, LinphoneEvent ev, PublishState state);
+	
+	/**
+	 * Notifies the changes about the remote provisioning step
+	 * @param lc the LinphoneCore
+	 * @param state the RemoteProvisioningState
+	 * @param message the error message if state == Failed
+	 */
+	void configuringStatus(LinphoneCore lc, RemoteProvisioningState state,
+			String message);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */
