@@ -8,7 +8,9 @@ common_SRC_FILES := \
 	register_tester.c \
 	setup_tester.c \
 	upnp_tester.c \
-	eventapi_tester.c
+	eventapi_tester.c \
+	stun_tester.c \
+	flexisip_tester.c
  
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
