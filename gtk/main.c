@@ -1240,9 +1240,7 @@ static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
 }
 
 static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
-	if (status == LinphoneConfiguringFailed) {
-	  linphone_gtk_display_something(GTK_MESSAGE_ERROR, message);
-	}
+
 }
 
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg){

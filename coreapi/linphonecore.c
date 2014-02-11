@@ -1265,6 +1265,13 @@ static void linphone_core_start(LinphoneCore * lc) {
 	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
+static void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message) {
+	if (lc->vtable.configuring_status)
+		lc->vtable.configuring_status(lc, state, message);
+	
+	linphone_core_start(lc);
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
@@ -1357,15 +1364,12 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 	
 	const char *remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
-	LinphoneConfiguringState configuring_result = LinphoneConfiguringSkipped;
 	if (remote_provisioning_uri) {
 		certificates_config_read(lc);
+		linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri, linphone_configuring_terminated);
+	} else {
+		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	}
-	
-	if (lc->vtable.configuring_status)
-	    lc->vtable.configuring_status(lc, configuring_result, configuring_result == LinphoneConfiguringFailed ? _("Configuring failed") : NULL);
-	
-	linphone_core_start(lc);
 }
 
 /**

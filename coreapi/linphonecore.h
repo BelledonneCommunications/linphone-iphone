@@ -2281,13 +2281,15 @@ typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friend
 /** Remote provisioning
  */
 
+typedef void (*ConfiguringCallback)(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
+
 /**
  * Download a remote provisioning file from the given uri and applies it to current lp config.
  * A restart is requiered for the changes to be applied.
  * @param lc the LinphoneCore
  * @param remote_provisioning_uri the URI at which the remote provisioning file is available
  */
-LINPHONE_PUBLIC LinphoneConfiguringState linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
+LINPHONE_PUBLIC void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri, ConfiguringCallback cb);
 
 #ifdef __cplusplus
 }

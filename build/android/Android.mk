@@ -209,8 +209,8 @@ ifeq ($(BUILD_REMOTE_PROVISIONING),1)
 LOCAL_SRC_FILES += 	../coreapi/xml2lpc.c \
 			../tools/xml2lpc_jni.cc \
 			../coreapi/lpc2xml.c \
-        		../tools/lpc2xml_jni.cc 
- 
+        		../tools/lpc2xml_jni.cc \
+			../coreapi/remote_provisioning.c
 endif
 
 ifeq ($(BUILD_SQLITE),1)

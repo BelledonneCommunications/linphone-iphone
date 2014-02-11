@@ -55,6 +55,7 @@ liblinphone_la_SOURCES=\
 	xml.c \
 	xml2lpc.c \
 	lpc2xml.c \
+	remote_provisioning.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
