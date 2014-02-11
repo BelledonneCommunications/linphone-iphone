@@ -491,7 +491,14 @@ if test "$relativeprefix" = "yes" ; then
 fi
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.
-DATADIRNAME=share
+case "$target_os" in
+	*qnx*)
+		DATADIRNAME=app/native/assets
+	;;
+	*)
+		DATADIRNAME=share
+	;;
+esac
 AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${package_prefix}/${DATADIRNAME}/locale",[Defines the place where locales can be found])
 
 AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${package_prefix}/${DATADIRNAME}",[Defines the place where data are found])
