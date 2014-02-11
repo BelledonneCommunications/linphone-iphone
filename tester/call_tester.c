@@ -174,7 +174,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
-	if (!linphone_core_get_current_call_remote_address(callee_mgr->lc))
+	if(!linphone_core_get_current_call(caller_mgr->lc) || !linphone_core_get_current_call(callee_mgr->lc) || !linphone_core_get_current_call_remote_address(callee_mgr->lc))
 		return 0;
 	else {
 		LinphoneAddress* callee_from=linphone_address_clone(caller_mgr->identity);
@@ -690,7 +690,7 @@ static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee)
 		/*send vfu*/
 		linphone_call_send_vfu_request(call_obj);
 		return wait_for(caller->lc,callee->lc,&callee->stat.number_of_IframeDecoded,initial_callee_stat.number_of_IframeDecoded+1);
-	} else return -1;
+	} else return 0;
 }
 static void call_with_video_added(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
