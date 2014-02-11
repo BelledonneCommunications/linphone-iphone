@@ -36,7 +36,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     addressBookMap  = [[OrderedDictionary alloc] init];
     avatarMap = [[NSMutableDictionary alloc] init];
     
-    addressBook = ABAddressBookCreate();
+    addressBook = ABAddressBookCreateWithOptions(nil, nil);
 	
     ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
