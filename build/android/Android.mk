@@ -206,9 +206,9 @@ ifeq ($(BUILD_SRTP),1)
 endif
 
 ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
+LOCAL_SRC_FILES += 	../coreapi/xml2lpc.c \
 			../tools/xml2lpc_jni.cc \
-			../tools/lpc2xml.c \
+			../coreapi/lpc2xml.c \
         		../tools/lpc2xml_jni.cc 
  
 endif
