@@ -1352,22 +1352,6 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
         lc->network_last_check = 0;
         lc->network_last_status = FALSE;
 
-	sip_setup_register_all();
-	sound_config_read(lc);
-	net_config_read(lc);
-	rtp_config_read(lc);
-	codecs_config_read(lc);
-	sip_config_read(lc);
-	video_config_read(lc);
-	//autoreplier_config_init(&lc->autoreplier_conf);
-	lc->presence_model=linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL);
-	misc_config_read(lc);
-	ui_config_read(lc);
-#ifdef TUNNEL_ENABLED
-	lc->tunnel=linphone_core_tunnel_new(lc);
-	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
-#endif
-
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc, _("Configuring"));
 	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
@@ -1375,7 +1359,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	const char *remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
 	LinphoneConfiguringState configuring_result = LinphoneConfiguringSkipped;
 	if (remote_provisioning_uri) {
-	    certificates_config_read(lc);
+		certificates_config_read(lc);
 	}
 	
 	if (lc->vtable.configuring_status)
