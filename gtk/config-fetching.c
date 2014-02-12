@@ -72,6 +72,7 @@ void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState s
 	if (state==LinphoneConfiguringFailed){
 		GtkWidget *msg=gtk_message_dialog_new(NULL,0,GTK_MESSAGE_ERROR,GTK_BUTTONS_CLOSE,_("Downloading of remote configuration from %s failed."),
 			linphone_core_get_provisioning_uri(lc));
+		g_signal_connect(G_OBJECT(msg),"response",(GCallback)gtk_widget_destroy,NULL);
 		gtk_widget_show(msg);
 	}
 }
