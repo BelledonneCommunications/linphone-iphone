@@ -140,7 +140,10 @@ void sal_process_authentication(SalOp *op) {
 		}
 		sal_remove_pending_auth(op->base.root,op);
 	}else {
-		ms_message("No auth info found for [%s]",sal_op_get_from(op));
+		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(response,belle_sip_header_from_t);
+		char *tmp=belle_sip_object_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
+		ms_message("No auth info found for [%s]",tmp);
+		belle_sip_free(tmp);
 		sal_add_pending_auth(op->base.root,op);
 
 		if (is_within_dialog) {

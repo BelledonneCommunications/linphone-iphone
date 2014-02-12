@@ -12,7 +12,8 @@ UI_FILES=	about.ui \
 		waiting.ui \
 		dscp_settings.ui \
 		call_statistics.ui \
-		ldap.ui
+		ldap.ui \
+		config-uri.ui
 
 PIXMAPS=	\
 		stock_people.png 
@@ -49,6 +50,7 @@ linphone_SOURCES=	\
 			loginframe.c \
 			singleinstance.c \
 			conference.c \
+			config-fetching.c \
 			linphone.h 
 if BUILD_WIZARD
 linphone_SOURCES+=	\

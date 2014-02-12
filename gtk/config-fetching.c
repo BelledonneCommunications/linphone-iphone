@@ -1,0 +1,48 @@
+/*
+linphone, gtk-glade interface.
+Copyright (C) 2008  Simon MORLAT (simon.morlat@linphone.org)
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include "linphone.h"
+#include "lpconfig.h"
+
+
+void linphone_gtk_set_configuration_uri(GtkWidget *item){
+	GtkWidget *w=linphone_gtk_create_window("config-uri");
+	gtk_widget_show(w);
+}
+
+void linphone_gtk_config_uri_changed(GtkWidget *button){
+	GtkWidget *w=gtk_widget_get_toplevel(button);
+	GtkWidget *entry=linphone_gtk_get_widget(w,"uri_entry");
+	const char *uri=gtk_entry_get_text(GTK_ENTRY(entry));
+	if (uri){
+		/*set provisionning uri to the core*/
+		gtk_widget_destroy(w);
+	}
+	
+	if (uri){
+		linphone_gtk_schedule_restart();
+		gtk_main_quit();
+	}
+}
+
+void linphone_gtk_config_uri_cancel(GtkWidget *button){
+	GtkWidget *w=gtk_widget_get_toplevel(button);
+	gtk_widget_destroy(w);
+}
+

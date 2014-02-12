@@ -859,6 +859,16 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="provisionning_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Set configuration URI</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="linphone_gtk_set_configuration_uri" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="disconnect_item">
                         <property name="label">gtk-disconnect</property>
                         <property name="can_focus">False</property>
