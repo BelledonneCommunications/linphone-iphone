@@ -25,6 +25,7 @@
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
 #ifdef __cplusplus
+
 extern "C" {
 #endif
 #include "linphonecore.h"
@@ -145,6 +146,8 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageState state;
 	bool_t is_read;
 	unsigned int storage_id;
+	int response_code;
+	char *response_reason;
 };
 
 typedef struct StunCandidate{
