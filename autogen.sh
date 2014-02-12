@@ -1,5 +1,11 @@
 #!/bin/sh
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+
+THEDIR=`pwd`
+cd $srcdir
+
 #AM_VERSION="1.10"
 if ! type aclocal-$AM_VERSION 1>/dev/null 2>&1; then
 	# automake-1.10 (recommended) is not available on Fedora 8
@@ -42,12 +48,17 @@ autoheader
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf
 
-if [ -x oRTP/autogen.sh ]; then
-	echo "Generating build scripts in oRTP..."
-	( cd oRTP && ./autogen.sh )
+set +x
+if [ "$srcdir" = "." ]; then
+	if [ -x oRTP/autogen.sh ]; then
+		echo "Generating build scripts in oRTP..."
+		( cd oRTP && ./autogen.sh )
+	fi
+
+	if [ -x mediastreamer2/autogen.sh ]; then
+		echo "Generating build scripts in mediastreamer2..."
+		( cd mediastreamer2 && ./autogen.sh )
+	fi
 fi
 
-if [ -x mediastreamer2/autogen.sh ]; then
-	echo "Generating build scripts in mediastreamer2..."
-	( cd mediastreamer2 && ./autogen.sh )
-fi
+cd $THEDIR
