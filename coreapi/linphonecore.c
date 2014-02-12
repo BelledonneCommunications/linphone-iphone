@@ -1265,7 +1265,7 @@ static void linphone_core_start(LinphoneCore * lc) {
 	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
-static void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message) {
+void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message) {
 	if (lc->vtable.configuring_status)
 		lc->vtable.configuring_status(lc, state, message);
 	
@@ -1274,6 +1274,7 @@ static void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfigurin
 
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
+	const char *remote_provisioning_uri = NULL;
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->config=config;
@@ -1358,15 +1359,21 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
         lc->network_last_check = 0;
         lc->network_last_status = FALSE;
+	
+	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
+	
+	certificates_config_read(lc);
+	belle_tls_verify_policy_t *tls_policy = belle_tls_verify_policy_new();
+	belle_tls_verify_policy_set_root_ca(tls_policy, sal_get_root_ca(lc->sal));
+	belle_http_provider_set_tls_verify_policy(lc->http_provider, tls_policy);
 
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc, _("Configuring"));
 	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 	
-	const char *remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
+	remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
 	if (remote_provisioning_uri) {
-		certificates_config_read(lc);
-		linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri, linphone_configuring_terminated);
+		linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
 	} else {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	}
@@ -5470,6 +5477,9 @@ void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
 
+	if (lc->http_provider) {
+		belle_sip_object_unref(lc->http_provider);
+	}
 	if (config->stun_server!=NULL){
 		ms_free(config->stun_server);
 	}

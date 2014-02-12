@@ -673,6 +673,7 @@ struct _LinphoneCore
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
+	belle_http_provider_t *http_provider;
 };
 
 
@@ -804,6 +805,14 @@ void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+/*****************************************************************************
+ * REMOTE PROVISIONING FUNCTIONS                                                     *
+ ****************************************************************************/
+
+void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
+void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
 
 
 /*****************************************************************************

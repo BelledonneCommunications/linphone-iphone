@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 #include "sal/sal.h"
+#include "bellesip_sal/sal_impl.h"
 
 #include <ctype.h>
 
@@ -626,5 +627,7 @@ int sal_body_has_type(const SalBody *body, const char *type, const char *subtype
 		&& strcmp(body->subtype,subtype)==0;
 }
 
-
+belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {
+	return sal->stack;
+}
 

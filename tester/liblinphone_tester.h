@@ -55,6 +55,7 @@ extern test_suite_t upnp_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t flexisip_test_suite;
 extern test_suite_t stun_test_suite;
+extern test_suite_t remote_provisioning_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -173,6 +174,10 @@ typedef struct _stats {
 	int number_of_LinphonePublishExpiring;
 	int number_of_LinphonePublishError;
 	int number_of_LinphonePublishCleared;
+	
+	int number_of_LinphoneConfiguringSkipped;
+	int number_of_LinphoneConfiguringFailed;
+	int number_of_LinphoneConfiguringSuccessful;
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -203,6 +208,7 @@ void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state);
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
+void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
 
 LinphoneAddress * create_linphone_address(const char * domain);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);

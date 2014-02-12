@@ -2303,16 +2303,6 @@ LINPHONE_PUBLIC void linphone_core_set_provisioning_uri(LinphoneCore *lc, const 
 **/
 LINPHONE_PUBLIC const char* linphone_core_get_provisioning_uri(const LinphoneCore *lc);
 
-typedef void (*ConfiguringCallback)(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
-
-/**
- * Download a remote provisioning file from the given uri and applies it to current lp config.
- * A restart is requiered for the changes to be applied.
- * @param lc the LinphoneCore
- * @param remote_provisioning_uri the URI at which the remote provisioning file is available
- */
-LINPHONE_PUBLIC void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri, ConfiguringCallback cb);
-
 #ifdef __cplusplus
 }
 #endif

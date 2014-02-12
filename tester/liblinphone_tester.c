@@ -25,7 +25,7 @@
 #include "CUnit/CUCurses.h"
 #endif
 
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file);
+static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
@@ -90,7 +90,7 @@ void reset_counters( stats* counters) {
 	memset(counters,0,sizeof(stats));
 }
 
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file) {
+static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
 	LinphoneCore* lc;
 	char filepath[256]={0};
 	char ringpath[256]={0};
@@ -106,7 +106,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
 	}
 
-	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
+	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL, user_data);
 
 	sal_enable_test_features(lc->sal,TRUE);
 	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cafile.pem", path);
@@ -200,9 +200,10 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
 	mgr->v_table.notify_received=linphone_notify_received;
 	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
-	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_file);
-	linphone_core_set_user_data(mgr->lc,mgr);
+	mgr->v_table.configuring_status=linphone_configuration_status;
+	
 	reset_counters(&mgr->stat);
+	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_file, mgr);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
@@ -328,6 +329,7 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&stun_test_suite);
 	add_test_suite(&event_test_suite);
 	add_test_suite(&flexisip_test_suite);
+	add_test_suite(&remote_provisioning_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {
