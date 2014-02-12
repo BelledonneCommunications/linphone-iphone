@@ -84,16 +84,18 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	private native int lookupCCCFromIso(long nativePtr, String iso);
 	private native int lookupCCCFromE164(long nativePtr, String e164);
 	
-	public void enableRegister(boolean value) {
+	public LinphoneProxyConfig enableRegister(boolean value) {
 		enableRegister(nativePtr,value);
+		return this;
 	}
 
 	public void done() {
 		done(nativePtr);
 	}
 
-	public void edit() {
+	public LinphoneProxyConfig edit() {
 		edit(nativePtr);
+		return this;
 	}
 
 	public void setIdentity(String identity) throws LinphoneCoreException {

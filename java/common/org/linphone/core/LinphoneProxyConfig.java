@@ -30,7 +30,7 @@ public interface LinphoneProxyConfig {
 	 *Because proxy configuration must be consistent, applications MUST call {@link #edit()} before doing any attempts to modify proxy configuration (such as identity, proxy address and so on). 
 	 *Once the modifications are done, then the application must call {@link #done()} to commit the changes.
 	 */
-	public void edit();
+	public LinphoneProxyConfig edit();
 	/**
 	 * Commits modification made to the proxy configuration.
 	 */
@@ -65,9 +65,8 @@ public interface LinphoneProxyConfig {
 	 * Enable register for this proxy config.
 	 * Register message is issued after call to {@link #done()}
 	 * @param value
-	 * @throws LinphoneCoreException
 	 */	
-	public void enableRegister(boolean value) throws LinphoneCoreException;
+	public LinphoneProxyConfig enableRegister(boolean value);
 	/**
 	 * @return true if registration to the proxy is enabled.
 	 */
