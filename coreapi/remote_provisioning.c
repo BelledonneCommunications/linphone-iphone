@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "linphonecore.h"
-#include "bellesip_sal/sal_impl.h"
+#include "private.h"
 #include "xml2lpc.h"
 
 #define XML2LPC_CALLBACK_BUFFER_SIZE  1024
@@ -137,4 +136,14 @@ static void linphone_remote_provisioning_download(LinphoneCore *lc, const char *
 void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri, ConfiguringCallback cb) {
 	linphone_callback = cb;
 	linphone_remote_provisioning_download(lc, remote_provisioning_uri);
+}
+
+void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri){
+	if (linphone_core_ready(lc)){
+		lp_config_set_string(lc->config,"misc","config-uri",uri);
+	}
+}
+
+const char*linphone_core_get_provisioning_uri(const LinphoneCore *lc){
+	return lp_config_get_string(lc->config,"misc","config-uri",NULL);
 }

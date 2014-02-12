@@ -2280,8 +2280,28 @@ typedef struct _LinphoneContactProvider LinphoneContactProvider;
 
 typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
 
-/** Remote provisioning
+/*
+ * Remote provisioning
  */
+
+/**
+ * Set URI where to download xml configuration file at startup.
+ * This can also be set from configuration file or factory config file, from [misc] section, item "config-uri".
+ * Calling this function does not load the configuration. It will write the value into configuration so that configuration
+ * from remote URI will take place at next LinphoneCore start.
+ * @param lc the linphone core
+ * @param uri the http or https uri to use in order to download the configuration.
+ * @ingroup initializing
+**/
+LINPHONE_PUBLIC void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri);
+
+/**
+ * Get provisioning URI.
+ * @param lc the linphone core
+ * @return the provisioning URI.
+ * @ingroup initializing
+**/
+LINPHONE_PUBLIC const char* linphone_core_get_provisioning_uri(const LinphoneCore *lc);
 
 typedef void (*ConfiguringCallback)(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
 

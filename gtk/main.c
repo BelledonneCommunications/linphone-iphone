@@ -90,6 +90,7 @@ gchar *linphone_logfile=NULL;
 static gboolean workaround_gtk_entry_chinese_bug=FALSE;
 static gchar *custom_config_file=NULL;
 static gboolean restart=FALSE;
+static GtkWidget *config_fetching_dialog=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -1248,7 +1249,8 @@ static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
 }
 
 static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
-
+	if (config_fetching_dialog) linphone_gtk_close_config_fetching(config_fetching_dialog, status);
+	config_fetching_dialog=NULL;
 }
 
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg){
@@ -1362,8 +1364,16 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 
 static void linphone_gtk_global_state_changed(LinphoneCore *lc, LinphoneGlobalState state, const char*str){
 	switch(state){
+		case LinphoneGlobalStartup:
+			the_core=lc;
+		break;
+		case LinphoneGlobalConfiguring:
+			if (linphone_core_get_provisioning_uri(lc)){
+				config_fetching_dialog=linphone_gtk_show_config_fetching();
+			}
+		break;
 		case LinphoneGlobalOn:
-			if (the_core) linphone_gtk_init_ui();
+			linphone_gtk_init_ui();
 		break;
 		default:
 		break;
