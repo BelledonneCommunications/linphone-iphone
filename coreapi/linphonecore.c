@@ -1371,7 +1371,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 		lc->vtable.display_status(lc, _("Configuring"));
 	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 	
-	remote_provisioning_uri = lp_config_get_string(lc->config, "app", "remote_provisioning", NULL);
+	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri) {
 		linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
 	} else {
