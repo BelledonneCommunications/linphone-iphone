@@ -14,8 +14,6 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native boolean isOutgoing(long ptr);
 	private native void store(long ptr);
 	private native int getStorageId(long ptr);
-	private native int getResponseCode(long ptr);
-	private native String getResponseReason(long ptr);
 	
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -96,12 +94,4 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public int getStorageId() {
 		return getStorageId(nativePtr);
 	}
-
-	public int getResponseCode() {
-            return getResponseCode(nativePtr);
-        }
-
-        public String getResponseReason() {
-            return getResponseReason(nativePtr);
-        }
 }

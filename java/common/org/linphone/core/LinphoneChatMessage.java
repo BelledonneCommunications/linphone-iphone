@@ -141,14 +141,4 @@ public interface LinphoneChatMessage {
 	 * @return the id used to id this message in the database
 	 */
 	int getStorageId();
-
-	/**
-	 * @return the response code or 0 if no response received
-	 */
-	int getResponseCode();
-
-	 /**
-         * @return the response reason or null if no response received
-         */
-        String getResponseReason();
 }

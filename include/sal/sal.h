@@ -391,7 +391,7 @@ typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
-typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, int code, const char *reason);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason);

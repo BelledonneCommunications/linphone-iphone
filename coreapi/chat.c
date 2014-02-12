@@ -786,17 +786,9 @@ void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->from) linphone_address_destroy(msg->from);
 	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
-	if (msg->response_reason) ms_free(msg->response_reason);
 	ms_free(msg);
 }
 
-int linphone_chat_message_get_response_code(LinphoneChatMessage* msg) {
-	return msg->response_code;
-}
-
-const char *linphone_chat_message_get_response_reason(LinphoneChatMessage* msg) {
-	return msg->response_reason;
-}
 
 /**
  * @}

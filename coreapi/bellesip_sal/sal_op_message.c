@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void process_error( SalOp* op) {
 	if (op->dir == SalOpDirOutgoing) {
-		op->base.root->callbacks.text_delivery_update(op,403, "process error");
+		op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
 	} else {
 		ms_warning("unexpected io error for incoming message on op [%p]",op);
 	}
@@ -54,8 +54,19 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 	SalOp* op = (SalOp*)op_base;
 	/*belle_sip_client_transaction_t *client_transaction=belle_sip_response_event_get_client_transaction(event);*/
 	int code = belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
-	const char *reason = belle_sip_response_get_reason_phrase(belle_sip_response_event_get_response(event));
-	op->base.root->callbacks.text_delivery_update(op,code, reason);
+	SalTextDeliveryStatus status;
+	if (code>=100 && code <200)
+		status=SalTextDeliveryInProgress;
+	else if (code>=200 && code <300)
+		status=SalTextDeliveryDone;
+	else
+		status=SalTextDeliveryFailed;
+	if (status != SalTextDeliveryInProgress) {
+		/*reset op to make sure transaction terminated does not need op
+		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*/
+	}
+	op->base.root->callbacks.text_delivery_update(op,status);
+
 }
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 	return strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
