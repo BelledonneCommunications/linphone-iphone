@@ -69,11 +69,29 @@
 - (void)touchUp:(id) sender {
     NSString *address = [addressField text];
     NSString *displayName = nil;
-    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-    if(contact) {
-        displayName = [FastAddressBook getContactDisplayName:contact];
+
+    if( [address length] == 0){
+        const MSList* logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+        while( logs ){
+            LinphoneCallLog* log = logs->data;
+            if( linphone_call_log_get_dir(log) == LinphoneCallOutgoing ){
+                LinphoneAddress* to = linphone_call_log_get_to(log);
+                [addressField setText:[NSString stringWithUTF8String:linphone_address_as_string(to)]];
+                address = [addressField text];
+                // only fill thge address, let the user confirm the call by pressing again
+                return;
+            }
+            logs = ms_list_next(logs);
+        }
     }
-    [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
+
+    if( [address length] > 0){
+        ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+        if(contact) {
+            displayName = [FastAddressBook getContactDisplayName:contact];
+        }
+        [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
+    }
 }
 
 @end
