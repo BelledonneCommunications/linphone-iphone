@@ -2494,11 +2494,12 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 		}
 	}
 
-	/*otherwise iterate through the other proxy config and return the first matching*/
+	/*otherwise iterate through the other proxy config and return the first enabled matching*/
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		const char *domain=linphone_proxy_config_get_domain(cfg);
-		if (domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
+		bool_t enabled = linphone_proxy_config_register_enabled(cfg);
+		if (enabled && domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
 			found_cfg=cfg;
 			goto end;
 		}
@@ -2506,7 +2507,8 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 end:
 	if (found_cfg!=NULL && found_cfg!=default_cfg){
 		ms_debug("Overriding default proxy setting for this call/message/subscribe operation.");
-	}else found_cfg=default_cfg;
+	}
+	else found_cfg=default_cfg;
 	
 	return found_cfg;
 }
