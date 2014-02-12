@@ -94,6 +94,42 @@ static void text_message(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
+static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	stats* counters;
+	ms_message("text_message_with_credential_from_auth_cb:Auth info requested  for user id [%s] at realm [%s]\n"
+						,username
+						,realm);
+	counters = get_stats(lc);
+	counters->number_of_auth_info_requested++;
+	linphone_core_add_auth_info(lc,text_message_with_credential_from_auth_cb_auth_info); /*add stored authentication info to LinphoneCore*/
+}
+
+
+static void text_message_with_credential_from_auth_cb(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
+
+	/*to force cb to be called*/
+	linphone_core_clear_all_auth_info(marie->lc);
+	marie->lc->vtable.auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
+
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
+
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,1);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void text_message_with_privacy(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -296,6 +332,7 @@ static void is_composing_notification(void) {
 
 test_t message_tests[] = {
 	{ "Text message", text_message },
+	{ "Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
 	{ "Text message with privacy", text_message_with_privacy },
 	{ "Text message compatibility mode", text_message_compatibility_mode },
 	{ "Text message with ack", text_message_with_ack },
