@@ -19,16 +19,12 @@ all_p=armv6-darwin-gcc    #neon Cortex-A8
 all_p+=armv7-darwin-gcc    #neon Cortex-A8
 all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
-$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
-	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
-	&& touch $@
 
 $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& export all_platforms="${all_p}" &&  $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) --sdk-path=$$SDK_BIN_PATH/../../ --libc=$$SYSROOT_PATH $(libvpx_configure_options) --extra-cflags="-O3 -fno-strict-aliasing"
+	&& export all_platforms="${all_p}" &&  $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) --sdk-path=$$SDK_BIN_PATH/../../ --libc=$$SYSROOT_PATH $(libvpx_configure_options) --extra-cflags="-O1 -fno-strict-aliasing"
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) \
@@ -41,8 +37,7 @@ clean-libvpx:
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git clean -f && git reset --hard \
-	&& rm -f patched.stamp 
+	&& git clean -f && git reset --hard
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
