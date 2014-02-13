@@ -23,6 +23,8 @@
 #include "liblinphone_tester.h"
 
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
+	ms_message("Configuring state = %i with message %s", status, message);
+	
 	stats* counters = get_stats(lc);
 	if (status == LinphoneConfiguringSkipped) {
 		counters->number_of_LinphoneConfiguringSkipped++;
@@ -42,6 +44,7 @@ static void remote_provisioning_skipped(void) {
 static void remote_provisioning_http(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_remote_rc");
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
 	linphone_core_manager_destroy(marie);
 }
 

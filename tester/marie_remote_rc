@@ -1,2 +1,2 @@
-[app]
-remote_provisioning=http://smtp.linphone.org/marie_xml
+[misc]
+config-uri=http://smtp.linphone.org/marie_xml
