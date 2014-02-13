@@ -20,7 +20,7 @@ all_p+=armv7-darwin-gcc    #neon Cortex-A8
 all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
