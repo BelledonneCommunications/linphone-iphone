@@ -55,6 +55,9 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 	/*belle_sip_client_transaction_t *client_transaction=belle_sip_response_event_get_client_transaction(event);*/
 	int code = belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
 	SalTextDeliveryStatus status;
+	SalReason reason=SalReasonUnknown;
+	SalError err=SalErrorNone;
+	
 	if (code>=100 && code <200)
 		status=SalTextDeliveryInProgress;
 	else if (code>=200 && code <300)
@@ -65,8 +68,7 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 		/*reset op to make sure transaction terminated does not need op
 		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*/
 	}
-
-	SalReason reason = code == 403 ? SalReasonForbidden : SalReasonUnknown;
+	sal_compute_sal_errors_from_code(code,&err,&reason);
 	op->base.root->callbacks.text_delivery_update(op,status, reason);
 }
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
