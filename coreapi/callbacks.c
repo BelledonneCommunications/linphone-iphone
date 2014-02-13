@@ -1024,7 +1024,7 @@ static int op_equals(LinphoneCall *a, SalOp *b) {
 	return a->op !=b; /*return 0 if equals*/
 }
 
-static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
+static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status, SalReason reason){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
 	const MSList* calls;
 
@@ -1035,6 +1035,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	calls = linphone_core_get_calls(chat_msg->chat_room->lc);
 
 	chat_msg->state=chatStatusSal2Linphone(status);
+	chat_msg->reason=reason;
 	linphone_chat_message_store_state(chat_msg);
 	if (chat_msg && chat_msg->cb) {
 		ms_message("Notifying text delivery with status %i",chat_msg->state);

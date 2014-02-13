@@ -790,6 +790,10 @@ void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 }
 
 
+LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
+	return linphone_reason_from_sal(msg->reason);
+}
+
 /**
  * @}
  */

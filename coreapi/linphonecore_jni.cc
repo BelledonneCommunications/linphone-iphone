@@ -2324,6 +2324,12 @@ extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNIEnv
 	return jvalue;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getReason(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return linphone_chat_message_get_reason((LinphoneChatMessage*)ptr);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getCustomHeader(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr, jstring jheader_name) {

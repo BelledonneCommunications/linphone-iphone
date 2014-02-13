@@ -94,4 +94,10 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public int getStorageId() {
 		return getStorageId(nativePtr);
 	}
+
+	private native int getReason(long ptr);
+
+        public Reason getReason() {
+            return Reason.fromInt(getReason(nativePtr));
+        }
 }

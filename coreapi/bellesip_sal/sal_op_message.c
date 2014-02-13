@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void process_error( SalOp* op) {
 	if (op->dir == SalOpDirOutgoing) {
-		op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
+		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed, SalReasonUnknown);
 	} else {
 		ms_warning("unexpected io error for incoming message on op [%p]",op);
 	}
@@ -65,8 +65,9 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 		/*reset op to make sure transaction terminated does not need op
 		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*/
 	}
-	op->base.root->callbacks.text_delivery_update(op,status);
 
+	SalReason reason = code == 403 ? SalReasonForbidden : SalReasonUnknown;
+	op->base.root->callbacks.text_delivery_update(op,status, reason);
 }
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 	return strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
