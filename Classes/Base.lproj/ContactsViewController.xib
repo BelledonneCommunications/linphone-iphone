@@ -11,8 +11,7 @@
                 <outlet property="allButton" destination="4" id="27"/>
                 <outlet property="backButton" destination="87" id="90"/>
                 <outlet property="linphoneButton" destination="5" id="31"/>
-                <outlet property="tableController" destination="76" id="83"/>
-                <outlet property="tableView" destination="69" id="84"/>
+                <outlet property="toolBar" destination="3" id="n95-dF-EoN"/>
                 <outlet property="view" destination="2" id="16"/>
             </connections>
         </placeholder>
@@ -113,32 +112,9 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="69" userLabel="tableView">
-                    <rect key="frame" x="0.0" y="44" width="320" height="416"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
-                    <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
-                    <color key="separatorColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
-                    <connections>
-                        <outlet property="dataSource" destination="76" id="81"/>
-                        <outlet property="delegate" destination="76" id="82"/>
-                    </connections>
-                </tableView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
-        <tableViewController autoresizesArchivedViewToFullSize="NO" id="76" userLabel="tableController" customClass="ContactsTableViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-            <nil key="simulatedTopBarMetrics"/>
-            <nil key="simulatedBottomBarMetrics"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
-            <nil key="simulatedDestinationMetrics"/>
-            <connections>
-                <outlet property="view" destination="69" id="80"/>
-            </connections>
-        </tableViewController>
     </objects>
     <resources>
         <image name="contacts_add_default.png" width="214" height="88"/>

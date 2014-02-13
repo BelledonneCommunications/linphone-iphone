@@ -76,10 +76,13 @@ static BOOL sEmailFilter = FALSE;
 @synthesize tableController;
 @synthesize tableView;
 
+@synthesize sysViewController;
+
 @synthesize allButton;
 @synthesize linphoneButton;
 @synthesize backButton;
 @synthesize addButton;
+@synthesize toolBar;
 
 typedef enum _HistoryView {
     History_All,
@@ -130,25 +133,43 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:animated];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:animated];
-    }   
     
-    [self update];
+    BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
+    if( use_system && !self.sysViewController){// use system contacts
+        ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
+        picker.peoplePickerDelegate = self;
+        picker.view.frame = self.view.frame;
+
+        [self.view addSubview:picker.view];
+
+        self.sysViewController = picker;
+
+    } else if( !use_system && !self.tableController ){
+
+        CGRect subViewFrame= self.view.frame;
+        // let the toolBar be visible
+        subViewFrame.origin.y += self.toolBar.frame.size.height;
+
+        self.tableController = [[ContactsTableViewController alloc] init];
+        self.tableView = [[UITableView alloc] init];
+
+        self.tableController.view = self.tableView;
+        self.tableView.frame = subViewFrame;
+
+        self.tableView.dataSource = self.tableController;
+        self.tableView.delegate = self.tableController;
+
+        [self.view addSubview:tableView];
+        [self update];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:animated];
-    }
     if(![FastAddressBook isAuthorized]) {
         UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Address book",nil)
 														message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
@@ -164,9 +185,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:animated];
-    }  
 }
 
 - (void)viewDidLoad {
@@ -205,10 +223,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else {
         allButton.selected = FALSE;
     }
-    
+
     if(view == History_Linphone) {
         [ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
-	[ContactSelection setEmailFilter:FALSE];
+        [ContactSelection setEmailFilter:FALSE];
         [tableController loadData];
         linphoneButton.selected = TRUE;
     } else {
@@ -265,4 +283,42 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[PhoneMainView instance] popCurrentView];
 }
 
+
+#pragma mark - ABPeoplePickerDelegate
+
+-(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
+{
+    [[PhoneMainView instance] popCurrentView];
+    return;
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+	  shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+	return true;
+
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+	  shouldContinueAfterSelectingPerson:(ABRecordRef)person
+								property:(ABPropertyID)property
+							  identifier:(ABMultiValueIdentifier)identifier {
+
+	CFTypeRef multiValue = ABRecordCopyValue(person, property);
+	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
+	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
+    // Go to dialer view
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+    if(controller != nil) {
+        [controller call:phoneNumber displayName:(NSString*)ABRecordCopyCompositeName(person)];
+    }
+    [phoneNumber release];
+    CFRelease(multiValue);
+	return false;
+}
+
+
+- (void)viewDidUnload {
+[self setToolBar:nil];
+[super viewDidUnload];
+}
 @end
