@@ -119,6 +119,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+
+    BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
+    if( use_system ){
+        [addContactButton setHidden:TRUE];
+    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(update) 
@@ -242,9 +247,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [addressLabel setText:address];
     
     // Hide/Show add button
+    BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
     if(contact) {
         [addContactButton setHidden:TRUE];
-    } else {
+    } else if (!use_system) {
         [addContactButton setHidden:FALSE];
     }
     
