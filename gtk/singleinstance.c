@@ -65,7 +65,9 @@ static void linphone_gtk_init_pipe(const char *name){
 	server_pipe=ortp_server_pipe_create(name);
 	if (server_pipe==(ortp_pipe_t)-1){
 		g_warning("Fail to create server pipe for name %s: %s",name,strerror(errno));
+		return;
 	}
+	server_pipe_running=TRUE;
 	ms_thread_create(&pipe_thread,NULL,server_pipe_thread,NULL);
 }
 

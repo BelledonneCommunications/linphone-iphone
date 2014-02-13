@@ -1656,7 +1656,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkLabel" id="label13">
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">Internet connection:</property>
                                       </object>
@@ -1700,7 +1699,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkComboBox" id="login_internet_kind">
-                                        <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="model">model4</property>
                                         <property name="active">0</property>

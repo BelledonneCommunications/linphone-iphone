@@ -80,6 +80,7 @@ static gint main_window_x=0;
 static gint main_window_y=0;
 #endif
 static gboolean verbose=0;
+static gboolean quit_done=FALSE;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
 static gboolean no_video=FALSE;
@@ -2085,11 +2086,12 @@ static void linphone_gtk_quit_core(void){
 }
 
 static void linphone_gtk_quit(void){
-	static gboolean quit_done=FALSE;
 	if (!quit_done){
 		quit_done=TRUE;
 		linphone_gtk_quit_core();
 		linphone_gtk_uninit_instance();
+		g_object_unref(icon);
+		icon=NULL;
 #ifdef HAVE_NOTIFY
 		notify_uninit();
 #endif
@@ -2291,12 +2293,13 @@ core_start:
 	linphone_gtk_quit();
 	
 	if (restart){
+		quit_done=FALSE;
 		restart=FALSE;
 		goto core_start;
 	}
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
-	gtk_status_icon_set_visible(icon,FALSE);
+	if (icon) gtk_status_icon_set_visible(icon,FALSE);
 #endif
 	free(progpath);
 	return 0;

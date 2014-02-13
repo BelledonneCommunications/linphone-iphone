@@ -23,10 +23,6 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button);
 void test_button_clicked_cb(GtkWidget *button);
 void linphone_gtk_exit_login_frame(void);
 
-enum {
-	NetworkKindAdsl,
-	NetworkKindOpticalFiber
-};
 
 static void do_login(SipSetupContext *ssctx, const char *identity, const char * passwd){
 	if (sip_setup_context_login_account(ssctx,identity,passwd)==0){
@@ -61,16 +57,8 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	gchar *str;
 	LinphoneAddress *from;
 	LinphoneCore *lc=linphone_gtk_get_core();
-	int nettype;
 	const char *passwd=NULL;
 
-	
-	if (linphone_core_get_download_bandwidth(lc)==512 &&
-		linphone_core_get_upload_bandwidth(lc)==512)
-		nettype=NetworkKindOpticalFiber;
-	else nettype=NetworkKindAdsl;
-	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"login_internet_kind")),nettype);
-	//gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(mw,"internet_kind")),nettype);
 	
 	if (linphone_gtk_get_ui_config_int("automatic_login",0) ){
 		g_timeout_add(250,(GSourceFunc)do_login_noprompt,cfg);
@@ -78,7 +66,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	}
 
 	{
-		const char *login_image=linphone_gtk_get_ui_config("login_image",NULL);
+		const char *login_image=linphone_gtk_get_ui_config("login_image","linphone-banner.png");
 		if (login_image){
 			GdkPixbuf *pbuf=create_pixbuf (login_image);
 			gtk_image_set_from_pixbuf (GTK_IMAGE(linphone_gtk_get_widget(mw,"login_image")),
@@ -165,16 +153,4 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	do_login(ssctx,identity,password);
 	/*we need to refresh the identities since the proxy config may have changed.*/
 	linphone_gtk_load_identities();
-}
-
-void linphone_gtk_internet_kind_changed(GtkWidget *combo){
-	int netkind_id=gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-	LinphoneCore *lc=linphone_gtk_get_core();
-	if (netkind_id==NetworkKindAdsl){
-		linphone_core_set_upload_bandwidth(lc,256);
-		linphone_core_set_download_bandwidth(lc,512);
-	}else if (netkind_id==NetworkKindOpticalFiber){
-		linphone_core_set_upload_bandwidth(lc,512);
-		linphone_core_set_download_bandwidth(lc,512);
-	}
 }
