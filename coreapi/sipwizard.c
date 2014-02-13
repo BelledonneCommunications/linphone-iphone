@@ -197,7 +197,7 @@ static void guess_display_name(LinphoneAddress *from){
 	ms_free(dn);
 }
 
-static int sip_wizard_do_login(SipSetupContext * ctx, const char *uri, const char *passwd){
+static int sip_wizard_do_login(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	LinphoneAuthInfo *auth;

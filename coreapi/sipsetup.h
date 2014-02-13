@@ -98,7 +98,7 @@ struct _SipSetup{
 	void (*uninit_instance)(SipSetupContext *ctx);
 	int (*account_exists)(SipSetupContext *ctx, const char *uri);
 	int (*create_account)(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
-	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
+	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd, const char *userid);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
@@ -135,7 +135,7 @@ int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri);
 int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri);
 int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
 int sip_setup_context_get_capabilities(SipSetupContext *ctx);
-int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
+int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);

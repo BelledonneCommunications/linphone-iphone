@@ -1120,7 +1120,7 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	}
 	caps=sip_setup_context_get_capabilities(ssc);
 	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
-		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)!=0){
+		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0){
 			if (lc->vtable.display_warning){
 				char *tmp=ms_strdup_printf(_("Could not login as %s"),cfg->reg_identity);
 				lc->vtable.display_warning(lc,tmp);
