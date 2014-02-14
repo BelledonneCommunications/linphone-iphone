@@ -10,7 +10,8 @@ common_SRC_FILES := \
 	upnp_tester.c \
 	eventapi_tester.c \
 	stun_tester.c \
-	flexisip_tester.c
+	flexisip_tester.c \
+	remote_provisioning_tester.c
  
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
