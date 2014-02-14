@@ -2090,8 +2090,10 @@ static void linphone_gtk_quit(void){
 		quit_done=TRUE;
 		linphone_gtk_quit_core();
 		linphone_gtk_uninit_instance();
+#ifndef HAVE_GTK_OSX
 		g_object_unref(icon);
 		icon=NULL;
+#endif
 #ifdef HAVE_NOTIFY
 		notify_uninit();
 #endif

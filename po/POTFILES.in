@@ -12,6 +12,7 @@ gtk/buddylookup.c
 gtk/setupwizard.c
 gtk/incall_view.c
 gtk/loginframe.c
+gtk/config-fetching.c
 [type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/about.ui
 [type: gettext/glade]gtk/contact.ui
@@ -28,6 +29,8 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/tunnel_config.ui
 [type: gettext/glade]gtk/keypad.ui
 [type: gettext/glade]gtk/ldap.ui
+[type: gettext/glade]gtk/config-uri.ui
+[type: gettext/glade]gtk/provisioning-fetch.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
