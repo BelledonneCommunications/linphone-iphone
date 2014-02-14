@@ -23,8 +23,8 @@
 #include "liblinphone_tester.h"
 
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
-	ms_message("Configuring state = %i with message %s", status, message);
-	
+	ms_message("Configuring state = %i with message %s", status, message?message:"");
+
 	stats* counters = get_stats(lc);
 	if (status == LinphoneConfiguringSkipped) {
 		counters->number_of_LinphoneConfiguringSkipped++;
