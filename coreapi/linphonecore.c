@@ -1374,7 +1374,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri) {
-		linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
+		int err=linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
+		if (err==-1){
+			linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "Bad URI");
+		}
 	} else {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	}

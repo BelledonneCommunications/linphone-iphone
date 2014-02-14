@@ -427,9 +427,6 @@ struct _LinphoneAuthInfo
 	char *passwd;
 	char *ha1;
 	char *domain;
-	int usecount;
-	time_t last_use_time;
-	bool_t works;
 };
 
 typedef enum _LinphoneIsComposingState {
@@ -811,7 +808,7 @@ void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
  ****************************************************************************/
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
-void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
+int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
 
 
 /*****************************************************************************

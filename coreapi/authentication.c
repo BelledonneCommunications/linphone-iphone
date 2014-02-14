@@ -53,7 +53,6 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
 	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
 	if (domain!=NULL && (strlen(domain)>0)) obj->domain=ms_strdup(domain);
-	obj->works=FALSE;
 	return obj;
 }
 
@@ -65,8 +64,6 @@ LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
 	if (ai->ha1)	obj->ha1=ms_strdup(ai->ha1);
 	if (ai->realm)	obj->realm=ms_strdup(ai->realm);
 	if (ai->domain)	obj->domain=ms_strdup(ai->domain);
-	obj->works=FALSE;
-	obj->usecount=0;
 	return obj;
 }
 
@@ -337,19 +334,26 @@ LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *
  * 
  * This information will be used during all SIP transacations that require authentication.
 **/
-void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
-{
+void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *ai;
 	MSList *elem;
 	MSList *l;
+	int restarted_op_count=0;
+	bool_t updating=FALSE;
 	
+	if (info->ha1==NULL && info->passwd==NULL){
+		ms_error("linphone_core_add_auth_info(): info supplied with empty password or ha1.");
+		return;
+	}
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
 	if (ai!=NULL && ai->domain && info->domain && strcmp(ai->domain, info->domain)==0){
 		lc->auth_info=ms_list_remove(lc->auth_info,ai);
 		linphone_auth_info_destroy(ai);
+		updating=TRUE;
 	}
 	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
+
 	/* retry pending authentication operations */
 	for(l=elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
 		SalOp *op=(SalOp*)elem->data;
@@ -372,8 +376,19 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 				}
 			}
 			sal_op_authenticate(op,&sai);
-			ai->usecount++;
+			restarted_op_count++;
 		}
+	}
+	if (l){
+		ms_message("linphone_core_add_auth_info(): restarted [%i] operation(s) after %s auth info for\n"
+			"\tusername: [%s]\n"
+			"\trealm [%s]\n"
+			"\tdomain [%s]\n",
+			restarted_op_count,
+			updating ? "updating" : "adding",
+			info->username ? info->username : "",
+			info->realm ? info->realm : "",
+			info->domain ? info->domain : "");
 	}
 	ms_list_free(l);
 	write_auth_infos(lc);

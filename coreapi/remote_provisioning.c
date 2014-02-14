@@ -79,22 +79,24 @@ static void belle_request_process_auth_requested(void *ctx, belle_sip_auth_event
 	linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "http auth requested");
 }
 
-void linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri) {
+int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri) {
+	belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
 	belle_http_request_listener_callbacks_t belle_request_listener = {
 		belle_request_process_response_event,
 		belle_request_process_io_error,
 		belle_request_process_timeout,
 		belle_request_process_auth_requested
 	};
-
 	belle_http_request_listener_t *listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
-	belle_http_request_t *request = belle_http_request_create(
-		"GET",
-		belle_generic_uri_parse(remote_provisioning_uri),  
-		NULL
-	);
+	belle_http_request_t *request;
 	
+	if (uri==NULL) {
+		belle_sip_error("Invalid provisioning URI [%s]",remote_provisioning_uri);
+		return -1;
+	}
+	request=belle_http_request_create("GET",uri, NULL);
 	belle_http_provider_send_request(lc->http_provider, request, listener);
+	return 0;
 }
 
 void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri){

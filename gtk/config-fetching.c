@@ -33,11 +33,11 @@ void linphone_gtk_config_uri_changed(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	GtkWidget *entry=linphone_gtk_get_widget(w,"uri_entry");
 	const char *uri=gtk_entry_get_text(GTK_ENTRY(entry));
-	if (uri && strcmp(uri,"https://")!=0){/*not just the hint text*/
-		/*set provisionning uri to the core*/
-		linphone_core_set_provisioning_uri(linphone_gtk_get_core(),uri);
-		gtk_widget_destroy(w);
-	}
+	
+	if (uri && (strlen(uri)==0 || strcmp(uri,"https://")==0)) uri=NULL;
+	
+	linphone_core_set_provisioning_uri(linphone_gtk_get_core(),uri);
+	gtk_widget_destroy(w);
 	
 	if (uri){
 		linphone_gtk_schedule_restart();
