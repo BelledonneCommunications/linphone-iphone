@@ -643,9 +643,10 @@ static void sip_config_read(LinphoneCore *lc)
 	linphone_core_enable_ipv6(lc,ipv6);
 	memset(&tr,0,sizeof(tr));
 	
-	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",0);
-	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
-	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
+	tr.udp_port=lp_config_get_int(lc->config,"sip","sip_port",5060);
+	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",5060);
+	/*we are not listening inbound connection for tls, port has no meaning*/
+	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",LC_SIP_TRANSPORT_RANDOM);
 	
 	certificates_config_read(lc);
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
@@ -3416,7 +3417,7 @@ int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char
 	}else{
 		ms_error("Bad state for call redirection.");
 		return -1;
-    }
+	}
 	return 0;
 }
 

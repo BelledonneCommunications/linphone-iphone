@@ -21,11 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 
 
-void linphone_gtk_set_configuration_uri(GtkWidget *item){
+void linphone_gtk_set_configuration_uri(void){
 	GtkWidget *w=linphone_gtk_create_window("config-uri");
 	GtkWidget *entry=linphone_gtk_get_widget(w,"uri_entry");
 	const char *uri=linphone_core_get_provisioning_uri(linphone_gtk_get_core());
-	gtk_entry_set_text(GTK_ENTRY(entry),uri);
+	if (uri) gtk_entry_set_text(GTK_ENTRY(entry),uri);
 	gtk_widget_show(w);
 }
 

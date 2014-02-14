@@ -43,13 +43,17 @@ static GtkWidget *create_setup_signin_choice(){
 	GtkWidget *t1=gtk_radio_button_new_with_label(NULL,_("Create an account on linphone.org"));
 	GtkWidget *t2=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I have already a linphone.org account and I just want to use it"));
 	GtkWidget *t3=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I have already a sip account and I just want to use it"));
+	GtkWidget *t4=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I want to specify a remote configuration URI"));
+	
 	gtk_box_pack_start (GTK_BOX (vbox), t1, TRUE, TRUE, 2);
 	gtk_box_pack_start (GTK_BOX (vbox), t2, TRUE, TRUE, 2);
 	gtk_box_pack_start (GTK_BOX (vbox), t3, TRUE, TRUE, 2);
+	gtk_box_pack_start (GTK_BOX (vbox), t4, TRUE, TRUE, 2);
 	gtk_widget_show_all(vbox);
 	g_object_set_data(G_OBJECT(vbox),"create_account",t1);
 	g_object_set_data(G_OBJECT(vbox),"setup_linphone_account",t2);
 	g_object_set_data(G_OBJECT(vbox),"setup_account",t3);
+	g_object_set_data(G_OBJECT(vbox),"config-uri",t4);
 	return vbox;
 }
 
@@ -434,24 +438,31 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		g_free(username);
 
+		// If account created on sip.linphone.org, we configure linphone to use TLS by default
+		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 && linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
+			LinphoneAddress *addr=linphone_address_new(creator->domain);
+			char *tmp;
+			linphone_address_set_transport(addr, LinphoneTransportTls);
+			tmp=linphone_address_as_string(addr);
+			linphone_proxy_config_set_server_addr(cfg,tmp);
+			linphone_proxy_config_set_route(cfg,tmp);
+			ms_free(tmp);
+			linphone_address_destroy(addr);
+		}
+		
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
 			return;
 
 		linphone_core_set_default_proxy(linphone_gtk_get_core(),cfg);
 		linphone_gtk_load_identities();
 
-		// If account created on sip.linphone.org, we configure linphone to use TLS by default
-		g_warning("Domain : %s", creator->domain);
-		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0) {
-			LCSipTransports tr;
-			LinphoneCore* lc = linphone_gtk_get_core();
-			linphone_core_get_sip_transports(lc,&tr);
-			tr.tls_port = tr.udp_port + tr.tcp_port + tr.tls_port;
-			tr.udp_port = 0;
-			tr.tcp_port = 0;
-			linphone_core_set_sip_transports(lc,&tr);
-		}
+		
 	}
+}
+
+static gint destroy_assistant(GtkWidget* w){
+	gtk_widget_destroy(w);
+	return FALSE;
 }
 
 static int linphone_gtk_assistant_forward(int curpage, gpointer data){
@@ -461,6 +472,7 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 		GtkWidget *create_button=(GtkWidget*)g_object_get_data(G_OBJECT(box),"create_account");
 		GtkWidget *setup_linphone_account=(GtkWidget*)g_object_get_data(G_OBJECT(box),"setup_linphone_account");
 		GtkWidget *setup_account=(GtkWidget*)g_object_get_data(G_OBJECT(box),"setup_account");
+		GtkWidget *config_uri=(GtkWidget*)g_object_get_data(G_OBJECT(box),"config-uri");
 
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(create_button))) {
 			curpage += 3; // Going to P33
@@ -470,6 +482,13 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 		}
 		else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(setup_account))) {
 			curpage += 1; // Going to P31
+		}
+		else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(config_uri))) {
+			/*destroy the assistant and popup config-uri dialog*/
+			gtk_widget_hide(w);
+			linphone_gtk_set_configuration_uri();
+			curpage=0;
+			g_idle_add((GSourceFunc)destroy_assistant,w);
 		}
 	}
 	else if (curpage == 2) { // Account's informations entered
@@ -541,7 +560,7 @@ static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w){
 void linphone_gtk_close_assistant(void){
 	if(the_assistant==NULL)
 		return;
-	gtk_widget_destroy(the_assistant);	
+	gtk_widget_destroy(the_assistant);
 	the_assistant = NULL;
 }
 
@@ -550,6 +569,7 @@ void linphone_gtk_show_assistant(void){
 		return;
 	GtkWidget *w=the_assistant=gtk_assistant_new();
 	gtk_window_set_resizable (GTK_WINDOW(w), FALSE);
+	gtk_window_set_title(GTK_WINDOW(w),_("SIP account configuration assistant"));
 
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));

@@ -37,8 +37,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	if (ssctx==NULL) return TRUE;/*not ready ?*/
 	username=linphone_gtk_get_ui_config ("login_username",NULL);
 	if (username==NULL) {
-		linphone_gtk_set_ui_config_int("automatic_login",0);
-		linphone_gtk_show_login_frame(cfg);
+		linphone_gtk_show_login_frame(cfg,TRUE);
 		return FALSE;
 	}
 	addr=linphone_address_new(linphone_proxy_config_get_identity(cfg));
@@ -50,7 +49,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 	return FALSE;
 }
 
-void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
+void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_auto_login){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *label=linphone_gtk_get_widget(mw,"login_label");
 	const LinphoneAuthInfo *ai;
@@ -58,13 +57,16 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	LinphoneAddress *from;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	const char *passwd=NULL;
-
+	const char *userid=NULL;
+	gboolean auto_login=linphone_gtk_get_ui_config_int("automatic_login",0);
 	
-	if (linphone_gtk_get_ui_config_int("automatic_login",0) ){
+	if (auto_login && !disable_auto_login){
 		g_timeout_add(250,(GSourceFunc)do_login_noprompt,cfg);
 		return;
 	}
 
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")),auto_login);
+	
 	{
 		const char *login_image=linphone_gtk_get_ui_config("login_image","linphone-banner.png");
 		if (login_image){
@@ -100,9 +102,14 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg){
 	if (linphone_address_get_username(from)[0]!='?')
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")),
 			linphone_address_get_username(from));
-	if (ai) passwd=linphone_auth_info_get_passwd(ai);
+	if (ai) {
+		passwd=linphone_auth_info_get_passwd(ai);
+		userid=linphone_auth_info_get_userid(ai);
+	}
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")),
 		passwd!=NULL ? passwd : "");
+	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_userid")),
+		userid ? userid : "");
 	
 	linphone_address_destroy(from);
 }
@@ -123,8 +130,7 @@ void linphone_gtk_logout_clicked(){
 		SipSetupContext *ss=linphone_proxy_config_get_sip_setup_context(cfg);
 		if (ss){
 			sip_setup_context_logout(ss);
-			linphone_gtk_set_ui_config_int("automatic_login",FALSE);
-			linphone_gtk_show_login_frame(cfg);
+			linphone_gtk_show_login_frame(cfg,TRUE);
 		}
 	}
 }
@@ -152,7 +158,6 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	autologin=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")));
 	linphone_gtk_set_ui_config_int("automatic_login",autologin);
 	linphone_gtk_set_ui_config("login_username",username);
-	linphone_gtk_set_ui_config("login_userid",userid);
 
 	from=linphone_address_new(linphone_proxy_config_get_identity(cfg));
 	linphone_address_set_username(from,username);

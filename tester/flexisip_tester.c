@@ -462,6 +462,44 @@ static void call_forking_with_push_notification_multiple(void){
 	linphone_core_manager_destroy(marie2);
 }
 
+void call_forking_not_responded(void){
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_tcp");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
+	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	
+	lcs=ms_list_append(lcs,marie->lc);
+	lcs=ms_list_append(lcs,marie2->lc);
+	lcs=ms_list_append(lcs,marie3->lc);
+	
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	
+	linphone_core_invite_address(pauline->lc,marie->identity);
+	/*pauline should hear ringback*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+	/*all devices from Marie should be ringing*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	
+	/*nobody answers, flexisip should close the call after XX seconds*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallError,1,22000));
+	/*all devices should stop ringing*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallEnd,1,1000));
+	
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie3);
+	ms_list_free(lcs);
+}
+
 static void early_media_call_forking(void) {
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
@@ -559,6 +597,7 @@ test_t flexisip_tests[] = {
 	{ "Call forking with urgent reply", call_forking_with_urgent_reply },
 	{ "Call forking with push notification (single)", call_forking_with_push_notification_single },
 	{ "Call forking with push notification (multiple)", call_forking_with_push_notification_multiple },
+	{ "Call forking not responded", call_forking_not_responded },
 	{ "Early-media call forking", early_media_call_forking },
 };
 

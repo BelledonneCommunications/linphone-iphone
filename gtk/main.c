@@ -1874,7 +1874,7 @@ void linphone_gtk_manage_login(void){
 	if (cfg){
 		SipSetup *ss=linphone_proxy_config_get_sip_setup(cfg);
 		if (ss && (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_LOGIN)){
-			linphone_gtk_show_login_frame(cfg);
+			linphone_gtk_show_login_frame(cfg,FALSE);
 		}
 	}
 }

@@ -153,7 +153,7 @@ void linphone_gtk_update_video_button(LinphoneCall *call);
 typedef float (*get_volume_t)(void *data);
 void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data);
 
-void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
+void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_auto_login);
 void linphone_gtk_exit_login_frame(void);
 void linphone_gtk_set_ui_config(const char *key, const char *value);
 
@@ -167,6 +167,7 @@ void linphone_gtk_unmonitor_usb(void);
 gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
 void linphone_gtk_schedule_restart(void);
 
+void linphone_gtk_set_configuration_uri(void);
 GtkWidget * linphone_gtk_show_config_fetching(void);
 void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState state);
 

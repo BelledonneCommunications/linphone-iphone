@@ -80,6 +80,7 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 
 static int sip_login_do_logout(SipSetupContext * ctx){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
+	linphone_proxy_config_edit(cfg);
 	linphone_proxy_config_enable_register(cfg,FALSE);
 	linphone_proxy_config_done(cfg);
 	return 0;
