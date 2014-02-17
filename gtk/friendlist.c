@@ -910,7 +910,11 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		linphone_friend_set_inc_subscribe_policy(lf,allow_presence ? LinphoneSPAccept : LinphoneSPDeny);
 		linphone_friend_send_subscribe(lf,show_presence);
 	}
-	name=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")));
+
+	name = NULL;
+	if(gtk_entry_get_text_length(GTK_ENTRY(linphone_gtk_get_widget(w,"name"))) != 0){
+		name=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")));
+	}
 	uri=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")));
 	show_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")));
 	allow_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")));
@@ -919,9 +923,10 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
 		return ;
 	}
-	linphone_address_set_display_name(friend_address,name);
-	linphone_friend_set_address(lf,friend_address);
 
+	linphone_address_set_display_name(friend_address,name);
+	linphone_friend_set_name(lf,name);
+	linphone_friend_set_address(lf,friend_address);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {
@@ -931,7 +936,6 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		lf2=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
 		ms_free(uri);
 		if(lf2==NULL){
-			linphone_friend_set_name(lf,name);
 			linphone_core_add_friend(linphone_gtk_get_core(),lf);
 		}
 	}
