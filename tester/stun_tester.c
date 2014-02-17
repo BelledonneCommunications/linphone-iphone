@@ -88,15 +88,19 @@ static void linphone_stun_test_grab_ip()
 
 	CU_ASSERT( dummy_call.ac.addr[0] != '\0');
 	CU_ASSERT( dummy_call.ac.port != 0);
+#ifdef VIDEO_ENABLED
 	CU_ASSERT( dummy_call.vc.addr[0] != '\0');
 	CU_ASSERT( dummy_call.vc.port != 0);
+#endif
 
 	ms_message("STUN test result: local audio port maps to %s:%i",
 			dummy_call.ac.addr,
 			dummy_call.ac.port);
+#ifdef VIDEO_ENABLED
 	ms_message("STUN test result: local video port maps to %s:%i",
 			dummy_call.vc.addr,
 			dummy_call.vc.port);
+#endif
 
 	linphone_core_manager_destroy(lc_stun);
 }
