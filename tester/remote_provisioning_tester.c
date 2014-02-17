@@ -49,12 +49,13 @@ static void remote_provisioning_http(void) {
 }
 
 static void remote_provisioning_https(void) {
-	LinphoneCoreManager* pauline = linphone_core_manager_new2("pauline_remote_rc", FALSE);
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
 	char rootcapath[256] = {0};
 	snprintf(rootcapath, sizeof(rootcapath), "%s/rootca.pem", liblinphone_tester_file_prefix);
-	linphone_core_set_root_ca(pauline->lc, rootcapath);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneConfiguringSuccessful,1));
-	linphone_core_manager_destroy(pauline);
+	linphone_core_set_root_ca(marie->lc, rootcapath);
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
+	linphone_core_manager_destroy(marie);
 }
 
 static void remote_provisioning_not_found(void) {
