@@ -1,6 +1,6 @@
 EXTRA_DIST=	empty_rc laure_rc marie_early_rc marie_no_sdp_rc marie_rc multi_account_lrc pauline_alt_rc \
 		marie_remote_rc pauline_remote_rc marie_remote_404_rc marie_remote_invalid_rc \
-		pauline_rc pauline_wild_rc pauline_rc_tcp tester_hosts sounds images certificates
+		pauline_rc pauline_wild_rc pauline_tcp_rc tester_hosts sounds images certificates
 
 
 if BUILD_CUNIT_TESTS

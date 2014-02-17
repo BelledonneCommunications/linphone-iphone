@@ -42,26 +42,29 @@ static void remote_provisioning_skipped(void) {
 }
 
 static void remote_provisioning_http(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_remote_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_rc", FALSE);
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
 	linphone_core_manager_destroy(marie);
 }
 
 static void remote_provisioning_https(void) {
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_remote_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new2("pauline_remote_rc", FALSE);
+	char rootcapath[256] = {0};
+	snprintf(rootcapath, sizeof(rootcapath), "%s/rootca.pem", liblinphone_tester_file_prefix);
+	linphone_core_set_root_ca(pauline->lc, rootcapath);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneConfiguringSuccessful,1));
 	linphone_core_manager_destroy(pauline);
 }
 
 static void remote_provisioning_not_found(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_remote_404_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_404_rc", FALSE);
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringFailed,1));
 	linphone_core_manager_destroy(marie);
 }
 
 static void remote_provisioning_invalid(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_remote_invalid_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_invalid_rc", FALSE);
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringFailed,1));
 	linphone_core_manager_destroy(marie);
 }

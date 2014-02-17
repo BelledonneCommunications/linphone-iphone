@@ -47,8 +47,8 @@ static void core_sip_transport_test(void) {
 	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_get_sip_transports(lc,&tr);
 	CU_ASSERT_EQUAL(tr.udp_port,5060); /*default config*/
-	CU_ASSERT_EQUAL(tr.tcp_port,0); /*default config*/
-	CU_ASSERT_EQUAL(tr.tls_port,0); /*default config*/
+	CU_ASSERT_EQUAL(tr.tcp_port,5060); /*default config*/
+	CU_ASSERT_EQUAL(tr.tls_port,LC_SIP_TRANSPORT_RANDOM); /*default config*/
 
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
@@ -58,8 +58,7 @@ static void core_sip_transport_test(void) {
 	linphone_core_get_sip_transports(lc,&tr);
 
 	CU_ASSERT_NOT_EQUAL(tr.udp_port,5060); /*default config*/
-	CU_ASSERT_NOT_EQUAL(tr.tcp_port,0); /*default config*/
-	CU_ASSERT_NOT_EQUAL(tr.tls_port,0); /*default config*/
+	CU_ASSERT_NOT_EQUAL(tr.tcp_port,5060); /*default config*/
 
 	CU_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_port",-2),LC_SIP_TRANSPORT_RANDOM);
 	CU_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tcp_port",-2),LC_SIP_TRANSPORT_RANDOM);
