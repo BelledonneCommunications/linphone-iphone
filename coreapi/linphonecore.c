@@ -1364,23 +1364,11 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
 	
 	certificates_config_read(lc);
-	belle_tls_verify_policy_t *tls_policy = belle_tls_verify_policy_new();
-	belle_tls_verify_policy_set_root_ca(tls_policy, sal_get_root_ca(lc->sal));
-	belle_http_provider_set_tls_verify_policy(lc->http_provider, tls_policy);
-
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc, _("Configuring"));
-	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 	
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
-	if (remote_provisioning_uri) {
-		int err=linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
-		if (err==-1){
-			linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "Bad URI");
-		}
-	} else {
+	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
-	}
+	} // else linphone_core_start will be called after the remote provisioining (see linphone_core_iterate)
 }
 
 /**
@@ -2188,6 +2176,27 @@ void linphone_core_iterate(LinphoneCore *lc){
 	time_t curtime=time(NULL);
 	int elapsed;
 	bool_t one_second_elapsed=FALSE;
+	const char *remote_provisioning_uri = NULL;
+	
+	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
+		if (sal_get_root_ca(lc->sal)) {
+			belle_tls_verify_policy_t *tls_policy = belle_tls_verify_policy_new();
+			belle_tls_verify_policy_set_root_ca(tls_policy, sal_get_root_ca(lc->sal));
+			belle_http_provider_set_tls_verify_policy(lc->http_provider, tls_policy);
+		}
+
+		if (lc->vtable.display_status)
+			lc->vtable.display_status(lc, _("Configuring"));
+		linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
+		
+		remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
+		if (remote_provisioning_uri) {
+			int err = linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
+			if (err == -1) {
+				linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "Bad URI");
+			}
+		} // else linphone_configuring_terminated has already been called in linphone_core_init
+	}
 
 	if (curtime-lc->prevtime>=1){
 		lc->prevtime=curtime;
