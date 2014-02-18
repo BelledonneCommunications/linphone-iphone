@@ -2289,8 +2289,6 @@ core_start:
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
 	
-	if (linphone_core_get_global_state(the_core)==LinphoneGlobalOn) linphone_gtk_init_ui();
-
 	gtk_main();
 	linphone_gtk_quit();
 	
