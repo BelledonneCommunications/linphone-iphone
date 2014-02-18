@@ -306,6 +306,7 @@ static void call_forking_cancelled(void){
 }
 
 static void call_forking_declined(bool_t declined_globaly){
+	char hellopath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -320,6 +321,11 @@ static void call_forking_declined(bool_t declined_globaly){
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (pauline->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(pauline->lc,hellopath);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	/*pauline should hear ringback*/
@@ -369,6 +375,7 @@ static void call_forking_declined_localy(void){
 }
 
 static void call_forking_with_push_notification_single(void){
+	char hellopath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	
@@ -381,6 +388,11 @@ static void call_forking_with_push_notification_single(void){
 	
 	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
+	
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (pauline->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(pauline->lc,hellopath);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	
@@ -411,6 +423,7 @@ static void call_forking_with_push_notification_single(void){
 }
 
 static void call_forking_with_push_notification_multiple(void){
+	char hellopath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -426,6 +439,13 @@ static void call_forking_with_push_notification_multiple(void){
 	
 	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
+	
+	/*use playfile for callee to avoid locking on capture card*/
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_use_files (marie->lc,TRUE);
+	linphone_core_set_play_file(marie->lc,hellopath);
+	linphone_core_use_files (marie2->lc,TRUE);
+	linphone_core_set_play_file(marie2->lc,hellopath);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	
