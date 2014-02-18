@@ -56,11 +56,13 @@ void linphone_gtk_call_log_chat_selected(GtkWidget *w){
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
 		if (gtk_tree_selection_get_selected (select,&model,&iter)){
-			gpointer pla;
+			gpointer pcl;
 			LinphoneAddress *la;
-			gtk_tree_model_get(model,&iter,2,&pla,-1);
-			la=(LinphoneAddress*)pla;
-			if (la!=NULL){
+			LinphoneCallLog *cl;
+			gtk_tree_model_get(model,&iter,2,&pcl,-1);
+			cl = (LinphoneCallLog *)pcl;
+			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
+			if (la != NULL){
 				linphone_gtk_friend_list_set_chat_conversation(la);
 			}
 		}
@@ -75,12 +77,14 @@ void linphone_gtk_call_log_add_contact(GtkWidget *w){
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
 		if (gtk_tree_selection_get_selected (select,&model,&iter)){
-			gpointer pla;
+			gpointer pcl;
 			LinphoneAddress *la;
+			LinphoneCallLog *cl;
 			LinphoneFriend *lf;
-			gtk_tree_model_get(model,&iter,2,&pla,-1);
-			la=(LinphoneAddress*)pla;
-			if (la!=NULL){
+			gtk_tree_model_get(model,&iter,2,&pcl,-1);
+			cl = (LinphoneCallLog *)pcl;
+			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
+			if (la != NULL){
 				char *uri=linphone_address_as_string(la);
 				lf=linphone_friend_new_with_address(uri);
 				linphone_gtk_show_contact(lf);
@@ -92,16 +96,19 @@ void linphone_gtk_call_log_add_contact(GtkWidget *w){
 
 static bool_t put_selection_to_uribar(GtkWidget *treeview){
 	GtkTreeSelection *sel;
-	
 	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	if (sel!=NULL){
 		GtkTreeModel *model=NULL;
 		GtkTreeIter iter;
 		if (gtk_tree_selection_get_selected (sel,&model,&iter)){
 			char *tmp;
+			gpointer pcl;
 			LinphoneAddress *la;
-			gtk_tree_model_get(model,&iter,2,&la,-1);
-			tmp=linphone_address_as_string(la);
+			LinphoneCallLog *cl;
+			gtk_tree_model_get(model,&iter,2,&pcl,-1);
+			cl = (LinphoneCallLog *)pcl;
+			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
+			tmp = linphone_address_as_string(la);
 			if(tmp!=NULL) 
 				gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),tmp);
 			ms_free(tmp);
@@ -131,10 +138,12 @@ static GtkWidget *linphone_gtk_create_call_log_menu(GtkWidget *call_log){
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
 		if (gtk_tree_selection_get_selected (select,&model,&iter)){
-			gpointer pla;
+			gpointer pcl;
 			LinphoneAddress *la;
-			gtk_tree_model_get(model,&iter,2,&pla,-1);
-			la=(LinphoneAddress*)pla;
+			LinphoneCallLog *cl;
+			gtk_tree_model_get(model,&iter,2,&pcl,-1);
+			cl = (LinphoneCallLog *)pcl;
+			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
 			name=linphone_address_as_string(la);
 			call_label=g_strdup_printf(_("Call %s"),name);
 			text_label=g_strdup_printf(_("Send text to %s"),name);
@@ -262,7 +271,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 	for (logs=linphone_core_get_call_logs(linphone_gtk_get_core());logs!=NULL;logs=logs->next){
 		LinphoneCallLog *cl=(LinphoneCallLog*)logs->data;
 		GtkTreeIter iter, iter2;
-		const LinphoneAddress *la=linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
+		LinphoneAddress *la=linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
 		char *addr= linphone_address_as_string(la);
 		const char *display;
 		gchar *logtxt, *headtxt, *minutes, *seconds;
@@ -284,8 +293,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 #endif
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){
-			la=linphone_friend_get_address(lf);
-			display=linphone_address_get_display_name(la);
+			display=linphone_address_get_display_name(linphone_friend_get_address(lf));
 		} else {
 			display=linphone_address_get_display_name(la);
 		}
@@ -294,6 +302,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			if (display==NULL){
 				display=linphone_address_get_domain (la);
 			}
+		} else {
+			linphone_address_set_display_name(la,display);
 		}
 		if (linphone_call_log_get_quality(cl)!=-1){
 			snprintf(quality,sizeof(quality),"%.1f",linphone_call_log_get_quality(cl));
@@ -338,9 +348,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		GdkPixbuf *outgoing = create_pixbuf("call_status_outgoing.png");
 		gtk_tree_store_set (store,&iter,
 		               0, linphone_call_log_get_dir(cl)==LinphoneCallOutgoing ? outgoing : incoming,
-		               1, headtxt,2,la,-1);	
+		               1, headtxt,2,cl,-1);
 		gtk_tree_store_append (store,&iter2,&iter);
-		gtk_tree_store_set (store,&iter2,1,logtxt,2,la,-1);
+		gtk_tree_store_set (store,&iter2,1,logtxt,-1);
 		ms_free(addr);
 		g_free(logtxt);
 		g_free(headtxt);
