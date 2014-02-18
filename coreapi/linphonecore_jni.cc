@@ -1804,6 +1804,12 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_getDomain(JNIEnv* 
 		return NULL;
 	}
 }
+extern "C" jint Java_org_linphone_core_LinphoneAddressImpl_getTransport(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneTransportType transporttype = linphone_address_get_transport((LinphoneAddress*)ptr);
+	return (jint)transporttype;
+}
 extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toString(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -1844,7 +1850,12 @@ extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDomain(JNIEnv*  en
 	linphone_address_set_domain((LinphoneAddress*)address,domain);
 	if (domain != NULL) env->ReleaseStringUTFChars(jdomain, domain);
 }
-
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setTransport(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong address
+																		,jint jtransport) {
+	linphone_address_set_transport((LinphoneAddress*)address, (LinphoneTransportType) jtransport);
+}
 
 //CallLog
 extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getFrom(JNIEnv*  env

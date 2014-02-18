@@ -34,10 +34,12 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native String getDisplayName(long ptr);
 	private native String getUserName(long ptr);
 	private native String getDomain(long ptr);
+	private native int getTransport(long ptr);
 	private native String toUri(long ptr);
 	private native void setDisplayName(long ptr,String name);
 	private native void setDomain(long ptr,String domain);
 	private native void setUserName(long ptr,String username);
+	private native void setTransport(long ptr, int transport);
 	private native String toString(long ptr);
 	
 	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
@@ -84,6 +86,9 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	public String getUserName() {
 		return getUserName(nativePtr);
 	}
+	public TransportType getTransport() {
+		return TransportType.fromInt(getTransport(nativePtr));
+	}
 	
 	public String toString() {
 		return toString(nativePtr);
@@ -121,5 +126,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	public void setUserName(String username) {
 		setUserName(nativePtr,username);
 	}
- 
+	public void setTransport(TransportType transport) {
+		setTransport(nativePtr, transport.toInt());
+	}
 }
