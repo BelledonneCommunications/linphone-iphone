@@ -1143,6 +1143,9 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 		&& callList // at least one call in a non active state
 		&& ms_list_find_custom((MSList*)callList, (MSCompareFunc) comp_call_state_paused, NULL)) {
 		[self startCallPausedLongRunningTask];
+	}
+	if (callList){
+		/*if at least one call exist, enter normal bg mode */
 		shouldEnterBgMode=TRUE;
 	}
 	
