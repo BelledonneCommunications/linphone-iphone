@@ -105,4 +105,15 @@ public interface LinphoneCallParams {
 	 * @return the privacy mask as defined in interface {@link org.linphone.core.Privacy}
 	 */
 	int getPrivacy();
+	
+	/**
+	 * Set the session name of the media session (ie in SDP). Subject from the SIP message can be retrieved using linphone_call_params_get_custom_header().
+	 * @param name the session name
+	**/
+	void setSessionName(String name);
+	/**
+	 * Get the session name of the media session (ie in SDP). Subject from the SIP message can be retrieved using linphone_call_params_get_custom_header().
+	 * @return the session name
+	**/
+	String getSessionName();
 }

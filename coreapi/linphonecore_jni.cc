@@ -2583,6 +2583,23 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setPrivacy(JNIEnv*
 	linphone_call_params_set_privacy((LinphoneCallParams*)cp,privacy);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getSessionName(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong cp
+																			) {
+	const char* name = linphone_call_params_get_session_name((LinphoneCallParams*)cp);
+	return name ? env->NewStringUTF(name) : NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setSessionName(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong cp
+																			,jstring jname) {
+	const char *name = jname ? env->GetStringUTFChars(jname,NULL) : NULL;
+	linphone_call_params_set_session_name((LinphoneCallParams*)cp,name);
+	if (name) env->ReleaseStringUTFChars(jname,name);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_audioBandwidth(JNIEnv *env, jobject thiz, jlong lcp, jint bw){
 	linphone_call_params_set_audio_bandwidth_limit((LinphoneCallParams*)lcp, bw);
 }
