@@ -60,10 +60,6 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
-#ifdef DEBUG_PUSH
-    // simulate a lost socket when going in background
-    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
-#endif
 	if(![LinphoneManager isLcReady]) return;
 	[[LinphoneManager instance] enterBackgroundMode];
 }
@@ -101,10 +97,6 @@
 
 	[instance becomeActive];
     
-#ifdef DEBUG_PUSH
-    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
-#endif
-
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
 
@@ -216,8 +208,9 @@
 			/*if we receive a remote notification, it is because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			LinphoneCore *lc = [LinphoneManager getLc];
-			linphone_core_set_network_reachable(lc, FALSE);
-			linphone_core_set_network_reachable(lc, TRUE);
+			linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+			[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
+			//linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
                     [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
@@ -280,7 +273,8 @@
 
     // Force Linphone to drop the current socket, this will trigger a refresh registers
     linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
-    linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
+    lm.connectivity=none; /*force connectivity to be discovered again*/
+	//linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
     [lm refreshRegisters];
 }
 

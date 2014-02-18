@@ -414,7 +414,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 
         // we were woken up by a silent push. Call the completion handler with NEWDATA
         // so that the push is notified to the user
-        NSLog(@"onCall - handler %p", silentPushCompletion);
+        [LinphoneLogger log:LinphoneLoggerLog format:@"onCall - handler %p", silentPushCompletion];
         silentPushCompletion(UIBackgroundFetchResultNewData);
         silentPushCompletion = nil;
     }
@@ -1093,55 +1093,74 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 }
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
+	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
+	BOOL shouldEnterBgMode=FALSE;
 	
-	
-	if ((proxyCfg || linphone_core_get_calls_nb(theLinphoneCore) > 0) &&
-        [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
-        
-        if(proxyCfg != NULL) {
-            //For registration register
-            [self refreshRegisters];
-            //wait for registration answer
-            int i=0;
-            while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
-                linphone_core_iterate(theLinphoneCore);
-                usleep(100000);
-            }
-        }
-		//register keepalive
-		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
-														   handler:^{
-															   [LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler"];
-															   if (theLinphoneCore == nil) {
-																   [LinphoneLogger logc:LinphoneLoggerWarning format:"It seems that Linphone BG mode was deactivated, just skipping"];
-																   return;
+	//handle proxy config if any
+	if (proxyCfg) {
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]
+			||
+			[[LinphoneManager instance] lpConfigBoolForKey:@"pushnotification_preference"]) {
+			
+			//For registration register
+			[self refreshRegisters];
+			//wait for registration answer
+			int i=0;
+			while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
+				linphone_core_iterate(theLinphoneCore);
+				usleep(100000);
+			}
+		}
+		
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]) {
+			
+			//register keepalive
+			if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
+															   handler:^{
+																   [LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler"];
+																   if (theLinphoneCore == nil) {
+																	   [LinphoneLogger logc:LinphoneLoggerWarning format:"It seems that Linphone BG mode was deactivated, just skipping"];
+																	   return;
+																   }
+																   //kick up network cnx, just in case
+																   [self refreshRegisters];
+																   linphone_core_iterate(theLinphoneCore);
 															   }
-															   //kick up network cnx, just in case
-															   [self refreshRegisters];
-															   linphone_core_iterate(theLinphoneCore);
-														   }
-			 ]) {
-			
-			
-			[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler succesfully registered"]; 
-		} else {
-			[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler cannot be registered"];
+				 ]) {
+				
+				
+				[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler succesfully registered"];
+			} else {
+				[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler cannot be registered"];
+			}
+			shouldEnterBgMode=TRUE;
 		}
-		LinphoneCall* currentCall = linphone_core_get_current_call(theLinphoneCore);
-		const MSList* callList = linphone_core_get_calls(theLinphoneCore);
-		if (!currentCall //no active call
-			&& callList // at least one call in a non active state
-			&& ms_list_find_custom((MSList*)callList, (MSCompareFunc) comp_call_state_paused, NULL)) {
-			[self startCallPausedLongRunningTask];
-		}
-		return YES;
 	}
-	else {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Entering lite bg mode"];
+	
+	LinphoneCall* currentCall = linphone_core_get_current_call(theLinphoneCore);
+	const MSList* callList = linphone_core_get_calls(theLinphoneCore);
+	if (!currentCall //no active call
+		&& callList // at least one call in a non active state
+		&& ms_list_find_custom((MSList*)callList, (MSCompareFunc) comp_call_state_paused, NULL)) {
+		[self startCallPausedLongRunningTask];
+		shouldEnterBgMode=TRUE;
+	}
+	
+	[LinphoneLogger logc:LinphoneLoggerLog format:"Entering [%s] bg mode",shouldEnterBgMode?"normal":"lite"];
+	
+	if (!shouldEnterBgMode ) {
+		if([[LinphoneManager instance] lpConfigBoolForKey:@"pushnotification_preference"]) {
+			[LinphoneLogger logc:LinphoneLoggerLog format:"Keeping lc core to handle push"];
+			/*destroy voip socket if any and reset connectivity mode*/
+			connectivity=none;
+			linphone_core_set_network_reachable(theLinphoneCore, FALSE);
+			return YES;
+		}
 		[self destroyLibLinphone];
-        return NO;
-	}
+		return NO;
+		
+	} else
+		return YES;
 }
 
 - (void)becomeActive {
