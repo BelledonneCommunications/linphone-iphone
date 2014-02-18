@@ -2265,7 +2265,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				linphone_call_delete_upnp_session(call);
 			}
 #endif //BUILD_UPNP
-			linphone_core_start_invite(lc,call);
+			linphone_core_start_invite(lc,call, NULL);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
 			if (one_second_elapsed) ms_message("incoming call ringing for %i seconds",elapsed);
@@ -2572,17 +2572,17 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	}
 
 	if ((ice_ready == TRUE) && (upnp_ready == TRUE) && (ping_ready == TRUE)) {
-		return linphone_core_start_invite(lc, call);
+		return linphone_core_start_invite(lc, call, NULL);
 	}
 	return 0;
 }
 
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_create_op(call);
-	return linphone_core_start_invite(lc,call);
+	return linphone_core_start_invite(lc,call, NULL);
 }
 
-int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
+int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const LinphoneAddress* destination /* = NULL if to be taken from the call log */){
 	int err;
 	char *real_url,*barmsg;
 	char *from;
@@ -2592,7 +2592,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_stop_dtmf_stream(lc);
 	linphone_call_init_media_streams(call);
 	linphone_call_make_local_media_description(lc,call);
-	
+
 	if (lc->ringstream==NULL) {
 		if (lc->sound_conf.play_sndcard && lc->sound_conf.capt_sndcard){
 			/*give a chance a set card prefered sampling frequency*/
@@ -2602,20 +2602,20 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 			audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 		}
 	}
-	real_url=linphone_address_as_string(call->log->to);
+	real_url=linphone_address_as_string( destination ? destination : call->log->to);
 	from=linphone_address_as_string(call->log->from);
-	
+
 	if (!lc->sip_conf.sdp_200_ack){
 		/*we are offering, set local media description before sending the call*/
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	err=sal_call(call->op,from,real_url);
 	if (lc->sip_conf.sdp_200_ack){
-		/*we are NOT offering, set local media description after sending the call so that we are ready to 
+		/*we are NOT offering, set local media description after sending the call so that we are ready to
 		 process the remote offer when it will arrive*/
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
-	
+
 	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
 
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
@@ -2735,12 +2735,12 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_set_sent_custom_header(op,headers);
 	if (with_contact && proxy && proxy->op){
 		const SalAddress *contact;
-		if ((contact=sal_op_get_contact(proxy->op))){
+		if ((contact=sal_op_get_contact_address(proxy->op))){
 			SalTransport tport=sal_address_get_transport((SalAddress*)contact);
 			SalAddress *new_contact=sal_address_clone(contact);
 			sal_address_clean(new_contact); /* clean out contact_params that come from proxy config*/
 			sal_address_set_transport(new_contact,tport);
-			sal_op_set_contact(op,new_contact);
+			sal_op_set_contact_address(op,new_contact);
 			sal_address_destroy(new_contact);
 		}
 	}
@@ -2791,14 +2791,14 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	parsed_url2=linphone_address_new(from);
 
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params,proxy);
-	
+
 	if(linphone_core_add_call(lc,call)!= 0)
 	{
 		ms_warning("we had a problem in adding the call into the invite ... weird");
 		linphone_call_unref(call);
 		return NULL;
 	}
-	
+
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
@@ -2845,7 +2845,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		}
 	}
 	
-	if (defer==FALSE) linphone_core_start_invite(lc,call);
+	if (defer==FALSE) linphone_core_start_invite(lc,call,NULL);
 
 	if (real_url!=NULL) ms_free(real_url);
 	return call;
@@ -3033,8 +3033,8 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	sal_call_set_local_media_description (call->op,call->localdesc);
 	if (call->dest_proxy && call->dest_proxy->op){
 		/*give a chance to update the contact address if connectivity has changed*/
-		sal_op_set_contact(call->op,sal_op_get_contact(call->dest_proxy->op));
-	}else sal_op_set_contact(call->op,NULL);
+		sal_op_set_contact_address(call->op,sal_op_get_contact_address(call->dest_proxy->op));
+	}else sal_op_set_contact_address(call->op,NULL);
 	return sal_call_update(call->op,subject);
 }
 

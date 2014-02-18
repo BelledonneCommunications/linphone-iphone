@@ -548,10 +548,15 @@ static void call_with_ice(void) {
 static void call_with_custom_headers(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall *c1,*c2;
+	LinphoneCall *call_marie,*call_pauline;
 	LinphoneCallParams *params;
 	const LinphoneCallParams *remote_params;
 	const char *hvalue;
+	const char	*pauline_remote_contact_header,
+				*pauline_remote_contact,
+				*marie_remote_contact,
+				*marie_remote_contact_header;
+
 	char* tmp=linphone_address_as_string_uri_only(marie->identity);
 	char tmp2[256];
 	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
@@ -567,13 +572,13 @@ static void call_with_custom_headers(void) {
 	CU_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
 	linphone_call_params_destroy(params);
 	
-	c1=linphone_core_get_current_call(marie->lc);
-	c2=linphone_core_get_current_call(pauline->lc);
+	call_marie=linphone_core_get_current_call(marie->lc);
+	call_pauline=linphone_core_get_current_call(pauline->lc);
 	
-	CU_ASSERT_PTR_NOT_NULL(c1);
-	CU_ASSERT_PTR_NOT_NULL(c2);
+	CU_ASSERT_PTR_NOT_NULL(call_marie);
+	CU_ASSERT_PTR_NOT_NULL(call_pauline);
 
-	remote_params=linphone_call_get_remote_params(c1);
+	remote_params=linphone_call_get_remote_params(call_marie);
 	hvalue=linphone_call_params_get_custom_header(remote_params,"Weather");
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
 	CU_ASSERT_STRING_EQUAL(hvalue,"bad");
@@ -581,8 +586,18 @@ static void call_with_custom_headers(void) {
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
 	CU_ASSERT_STRING_EQUAL(hvalue,"myUriHeader");
 
-	CU_ASSERT_PTR_NOT_NULL(linphone_call_get_remote_contact(c1));
-	
+
+	pauline_remote_contact_header = linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_pauline), "Contact");
+	pauline_remote_contact = linphone_call_get_remote_contact(call_pauline);
+	marie_remote_contact = linphone_call_get_remote_contact(call_marie);
+	marie_remote_contact_header = linphone_call_params_get_custom_header(remote_params, "Contact");
+	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact);
+	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact_header);
+	CU_ASSERT_PTR_NOT_NULL(marie_remote_contact);
+	CU_ASSERT_PTR_NOT_NULL(marie_remote_contact_header);
+	CU_ASSERT_STRING_EQUAL(pauline_remote_contact,pauline_remote_contact_header);
+	CU_ASSERT_STRING_EQUAL(marie_remote_contact,marie_remote_contact_header);
+
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -1377,6 +1392,56 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_redirect(void){
+	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc");
+	MSList* lcs = NULL;
+	char *margaux_url = NULL;
+	LinphoneCall* marie_call;
+
+	lcs = ms_list_append(lcs,marie->lc);
+	lcs = ms_list_append(lcs,pauline->lc);
+	lcs = ms_list_append(lcs,laure->lc);
+	/*
+		Marie calls Pauline, which will redirect the call to Laure via a 302
+	*/
+
+	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+
+	margaux_url = linphone_address_as_string(laure->identity);
+	linphone_core_redirect_call(pauline->lc, linphone_core_get_current_call(pauline->lc), margaux_url);
+	ms_free(margaux_url);
+
+	/* laure should be ringing now */
+	CU_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallIncomingReceived,1,6000));
+	/* pauline should have ended the call */
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	/* the call should still be ringing on marie's side */
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1,1000));
+
+	linphone_core_accept_call(laure->lc, linphone_core_get_current_call(laure->lc));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+
+	CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+
+	liblinphone_tester_check_rtcp(marie, laure);
+
+	linphone_core_terminate_all_calls(laure->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+
+}
+
 static void call_established_with_rejected_reinvite_with_error(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1503,7 +1568,8 @@ test_t call_tests[] = {
 	{ "Call established with rejected INFO",call_established_with_rejected_info},
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
-	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error}
+	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
+	{ "Call redirected by callee", call_redirect}
 };
 
 test_suite_t call_test_suite = {

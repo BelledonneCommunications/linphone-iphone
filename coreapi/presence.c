@@ -1476,8 +1476,8 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	cfg=linphone_core_lookup_known_proxy(lc,uri);
 	if (cfg!=NULL){
 		if (cfg->op){
-			if (sal_op_get_contact(cfg->op)) {
-				sal_op_set_contact (op,sal_op_get_contact(cfg->op));
+			if (sal_op_get_contact_address(cfg->op)) {
+				sal_op_set_contact_address (op,sal_op_get_contact_address(cfg->op));
 				ms_message("Contact for next subscribe answer has been fixed using proxy "/*to %s",fixed_contact*/);
 			}
 		}

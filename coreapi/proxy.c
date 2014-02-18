@@ -329,7 +329,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
 		if ((contact=guess_contact_for_register(obj))) {
-			sal_op_set_contact(obj->op,contact);
+			sal_op_set_contact_address(obj->op,contact);
 			linphone_address_destroy(contact);
 		}
 		sal_op_set_user_pointer(obj->op,obj);
@@ -815,7 +815,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
 				SalAddress *addr=sal_address_new(linphone_proxy_config_get_identity(proxy));
-				sal_op_set_contact(proxy->publish_op,addr);
+				sal_op_set_contact_address(proxy->publish_op,addr);
 				sal_address_unref(addr);
 			}
 		}

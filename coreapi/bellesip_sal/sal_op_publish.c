@@ -72,7 +72,7 @@ int sal_publish_presence(SalOp *op, const char *from, const char *to, int expire
 
 		op->type=SalOpPublish;
 		req=sal_op_build_request(op,"PUBLISH");
-		if (sal_op_get_contact(op)){
+		if (sal_op_get_contact_address(op)){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
@@ -97,7 +97,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 
 		sal_op_publish_fill_cbs(op);
 		req=sal_op_build_request(op,"PUBLISH");
-		if (sal_op_get_contact(op)){
+		if (sal_op_get_contact_address(op)){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event",eventname));

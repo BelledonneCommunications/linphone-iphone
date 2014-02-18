@@ -655,6 +655,7 @@ LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const 
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);

@@ -256,11 +256,12 @@ typedef struct SalOpBase{
 	char *origin;
 	SalAddress* origin_address;
 	char *remote_ua;
+	SalAddress* remote_contact_address;
+	char *remote_contact;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
 	const char* call_id;
-	char *remote_contact;
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
 	SalCustomHeader *sent_custom_headers;
 	SalCustomHeader *recv_custom_headers;
@@ -517,7 +518,6 @@ SalOp * sal_op_new(Sal *sal);
 
 /*generic SalOp API, working for all operations */
 Sal *sal_op_get_sal(const SalOp *op);
-#define sal_op_set_contact sal_op_set_contact_address /*for liblinphone compatibility*/
 void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
 void sal_op_set_route(SalOp *op, const char *route);
 void sal_op_set_route_address(SalOp *op, const SalAddress* address);
@@ -537,11 +537,11 @@ const SalAddress *sal_op_get_from_address(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const SalAddress *sal_op_get_to_address(const SalOp *op);
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
-#define sal_op_get_contact sal_op_get_contact_address /*for liblinphone compatibility*/
 const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 const char *sal_op_get_remote_contact(const SalOp *op);
+const SalAddress* sal_op_get_remote_contact_address(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
 const SalAddress *sal_op_get_network_origin_address(const SalOp *op);

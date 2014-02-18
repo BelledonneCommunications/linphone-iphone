@@ -1065,6 +1065,17 @@ const char *linphone_call_get_remote_contact(LinphoneCall *call){
 }
 
 /**
+ * Returns the far end's sip contact as a string, if available.
+**/
+LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call){
+	if (call->op){
+		return (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
+	}
+	return NULL;
+}
+
+
+/**
  * Returns true if this calls has received a transfer that has not been
  * executed yet.
  * Pending transfers are executed when this call is being paused or closed,
@@ -2792,18 +2803,18 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		linphone_address_set_domain(ctt,linphone_core_get_nat_address_resolved(lc));
 		ret=ctt;
-	} else if (call->op && sal_op_get_contact(call->op)!=NULL){
+	} else if (call->op && sal_op_get_contact_address(call->op)!=NULL){
 		/* if already choosed, don't change it */
 		return NULL;
-	} else if (call->ping_op && sal_op_get_contact(call->ping_op)) {
+	} else if (call->ping_op && sal_op_get_contact_address(call->ping_op)) {
 		/* if the ping OPTIONS request succeeded use the contact guessed from the
 		 received, rport*/
 		ms_message("Contact has been fixed using OPTIONS"/* to %s",guessed*/);
-		ret=linphone_address_clone(sal_op_get_contact(call->ping_op));;
-	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact(dest_proxy->op)){
+		ret=linphone_address_clone(sal_op_get_contact_address(call->ping_op));;
+	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact_address(dest_proxy->op)){
 	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
 		ms_message("Contact has been fixed using proxy" /*to %s",fixed_contact*/);
-		ret=linphone_address_clone(sal_op_get_contact(dest_proxy->op));
+		ret=linphone_address_clone(sal_op_get_contact_address(dest_proxy->op));
 	} else {
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){
@@ -2832,7 +2843,7 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 		SalTransport tport=sal_address_get_transport((SalAddress*)contact);
 		sal_address_clean((SalAddress*)contact); /* clean out contact_params that come from proxy config*/
 		sal_address_set_transport((SalAddress*)contact,tport);
-		sal_op_set_contact(call->op, contact);
+		sal_op_set_contact_address(call->op, contact);
 		linphone_address_destroy(contact);
 	}
 }

@@ -198,6 +198,7 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	belle_sip_response_t* resp;
 	belle_sip_header_t *evh;
 	const char *method=belle_sip_request_get_method(req);
+	belle_sip_header_contact_t* remote_contact = belle_sip_message_get_header_by_type(req, belle_sip_header_contact_t);
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 
@@ -257,6 +258,9 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 		belle_sip_object_unref(address);
 	}
 
+	if( remote_contact ){
+		__sal_op_set_remote_contact(op, belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(remote_contact)));
+	}
 
 	if (!op->base.to_address) {
 		to=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_to_t);
@@ -303,6 +307,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	} else {
 		SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 		belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+		belle_sip_header_contact_t* remote_contact = belle_sip_message_get_header_by_type(response, belle_sip_header_contact_t);
 
 		if (op->state == SalOpStateTerminated) {
 			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
@@ -311,6 +316,11 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		if (!op->base.remote_ua) {
 			sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
 		}
+
+		if(remote_contact) {
+			__sal_op_set_remote_contact(op, belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(remote_contact)));
+		}
+
 		if (!op->base.call_id) {
 			op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(response), belle_sip_header_call_id_t))));
 		}

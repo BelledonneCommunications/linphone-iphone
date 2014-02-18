@@ -725,7 +725,7 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	if (reason==SalReasonRedirect){
 		if (redirection!=NULL) {
 			if (strstr(redirection,"sip:")!=0) status=302;
-			status=380;
+			else status=380;
 			contact= belle_sip_header_contact_new();
 			belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact),belle_sip_uri_parse(redirection));
 		} else {

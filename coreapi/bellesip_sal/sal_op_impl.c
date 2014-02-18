@@ -210,7 +210,7 @@ static void add_headers(SalOp *op, belle_sip_header_t *h, belle_sip_message_t *m
 	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_contact_t)){
 		belle_sip_header_contact_t* newct;
 		/*special case for contact, we want to keep everything from the custom contact but set automatic mode and add our own parameters as well*/
-		sal_op_set_contact(op,(SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
+		sal_op_set_contact_address(op,(SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
 		newct = sal_op_create_contact(op);
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(msg),BELLE_SIP_HEADER(newct));
 		return;
@@ -381,6 +381,10 @@ SalReason sal_reason_to_sip_code(SalReason r){
 
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
 	switch(code) {
+	case 302:
+		*sal_reason=SalReasonRedirect;
+		*sal_err=SalErrorFailure;
+		break;
 	case 400:
 		*sal_err=SalErrorUnknown;
 		break;
@@ -560,7 +564,9 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
 }
 
 const char *sal_op_get_remote_contact(const SalOp *op){
-	return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
+	// remote contact is filled in process_response
+//	return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
+	return op->base.remote_contact;
 }
 
 void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body){

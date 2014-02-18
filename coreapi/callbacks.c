@@ -76,7 +76,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	SalMediaDescription *oldmd=call->resultdesc;
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
-	
+
 	linphone_core_stop_ringing(lc);
 	if (!new_md) {
 		ms_error("linphone_core_update_streams() called with null media description");
@@ -620,9 +620,27 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					lc->vtable.display_status(lc,msg486);
 			break;
 			case SalReasonRedirect:
+			{
+				ms_error("case SalReasonRedirect");
+				linphone_call_stop_media_streams(call);
+				if (	call->state==LinphoneCallOutgoingInit
+						|| call->state==LinphoneCallOutgoingProgress
+						|| call->state==LinphoneCallOutgoingRinging /*push case*/
+						|| call->state==LinphoneCallOutgoingEarlyMedia){
+					LinphoneAddress* redirection_to = linphone_call_get_remote_contact_address(call);
+					if( redirection_to ){
+						char* url = linphone_address_as_string(redirection_to);
+						ms_error("Redirecting call [%p] to %s",call, url);
+						ms_free(url);
+						linphone_call_create_op(call);
+						linphone_core_start_invite(lc, call, redirection_to);
+						return;
+					}
+				}
 				msg=_("Redirected");
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
+			}
 			break;
 			case SalReasonTemporarilyUnavailable:
 				msg=msg480;
