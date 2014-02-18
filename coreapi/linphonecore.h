@@ -371,6 +371,8 @@ LINPHONE_PUBLIC	bool_t linphone_call_params_low_bandwidth_enabled(const Linphone
 LINPHONE_PUBLIC	void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *subject);
 
 /**
  * Add a custom SIP header in the INVITE for a call.
@@ -2302,6 +2304,8 @@ LINPHONE_PUBLIC void linphone_core_set_provisioning_uri(LinphoneCore *lc, const 
 **/
 LINPHONE_PUBLIC const char* linphone_core_get_provisioning_uri(const LinphoneCore *lc);
 
+
+LINPHONE_PUBLIC int linphone_core_migrate_to_multi_transport(LinphoneCore *lc);
 #ifdef __cplusplus
 }
 #endif

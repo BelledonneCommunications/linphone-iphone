@@ -91,11 +91,11 @@ struct _LinphoneCallParams{
 	int down_ptime;
 	int up_ptime;
 	char *record_file;
+	char *subject;
 	SalCustomHeader *custom_headers;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
-	bool_t pad;
 	bool_t low_bandwidth;
 	LinphonePrivacyMask privacy;
 };

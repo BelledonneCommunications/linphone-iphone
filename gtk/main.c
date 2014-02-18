@@ -286,6 +286,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.configuring_status=linphone_gtk_configuring_status;
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
+	linphone_core_migrate_to_multi_transport(the_core);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
 
 

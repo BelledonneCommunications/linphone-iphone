@@ -267,6 +267,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
 	char* local_ip=call->localip;
+	const char *subject=linphone_call_params_get_session_name(&call->params);
 
 	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 
@@ -282,6 +283,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 
 	strncpy(md->addr,local_ip,sizeof(md->addr));
 	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
+	strncpy(md->name,subject,sizeof(md->name));
 
 	if (call->params.down_bw)
 		md->bandwidth=call->params.down_bw;
@@ -943,6 +945,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 					cp->low_bandwidth=TRUE;
 				}
 			}
+			if (md->name[0]!='\0') linphone_call_params_set_session_name(cp,md->name);
 		}
 		cp->custom_headers=(SalCustomHeader*)sal_op_get_recv_custom_header(call->op);
 		return cp;
@@ -1260,10 +1263,31 @@ const char *linphone_call_params_get_custom_header(const LinphoneCallParams *par
 	return sal_custom_header_find(params->custom_headers,header_name);
 }
 
+/**
+ * Returns the subject of the media session (ie in SDP). Subject from the SIP message can be retrieved using linphone_call_params_get_custom_header().
+ * @param cp the call parameters.
+**/
+const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp){
+	return cp->subject;
+}
+
+/**
+ * Set the subject of the media session (ie in SDP). Subject from the SIP message can be set using linphone_call_params_set_custom_header().
+ * @param cp the call parameters.
+**/
+void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *subject){
+	if (cp->subject){
+		ms_free(cp->subject);
+		cp->subject=NULL;
+	}
+	if (subject) cp->subject=ms_strdup(subject);
+}
+
 void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParams *cp){
 	if (ncp==cp) return;
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
+	if (cp->subject) ncp->subject=ms_strdup(cp->subject);
 	/*
 	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
 	 */

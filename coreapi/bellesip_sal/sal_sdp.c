@@ -218,7 +218,8 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 
 	belle_sdp_session_description_set_origin ( session_desc,origin );
 
-	belle_sdp_session_description_set_session_name ( session_desc,belle_sdp_session_name_create ( "Talk" ) );
+	belle_sdp_session_description_set_session_name ( session_desc,
+		belle_sdp_session_name_create ( desc->name[0]!='\0' ? desc->name : "Talk" ) );
 
 	if ( (!sal_media_description_has_dir ( desc,SalStreamSendOnly ) && !sal_media_description_has_dir ( desc,SalStreamInactive )) 
 		|| desc->ice_ufrag[0] != '\0' ) {
@@ -251,21 +252,10 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 
 
 int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, SalMediaDescription *desc ) {
-	/*
-	typedef struct SalMediaDescription{
-		int refcount;
-		char addr[64];
-		char username[64];
-		int nstreams;
-		int bandwidth;
-		unsigned int session_ver;
-		unsigned int session_id;
-		SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
-	} SalMediaDescription;
-	 */
 	belle_sdp_connection_t* cnx;
 	belle_sip_list_t* media_desc_it;
 	belle_sdp_media_description_t* media_desc;
+	belle_sdp_session_name_t *sname;
 	const char *mtype,*proto;
 	SalStreamDescription *stream;
 	belle_sdp_media_t* media;
@@ -287,9 +277,14 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	if ( ( cnx=belle_sdp_session_description_get_connection ( session_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
 		strncpy ( desc->addr,belle_sdp_connection_get_address ( cnx ),sizeof ( desc->addr ) );
 	}
+	if ( (sname=belle_sdp_session_description_get_session_name(session_desc)) && belle_sdp_session_name_get_value(sname) ){
+		strncpy(desc->name,belle_sdp_session_name_get_value(sname),sizeof(desc->name));
+	}
+	
 	if ( belle_sdp_session_description_get_bandwidth ( session_desc,"AS" ) >0 ) {
 		desc->bandwidth=belle_sdp_session_description_get_bandwidth ( session_desc,"AS" );
 	}
+	
 	/*in some very rare case, session attribute may set stream dir*/
 	if ( belle_sdp_session_description_get_attribute ( session_desc,"sendrecv" ) ) {
 		stream_dir=SalStreamSendRecv;

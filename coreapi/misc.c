@@ -1200,4 +1200,79 @@ void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun
 	belle_sip_object_unref(s);
 }
 
+static int get_unique_transport(LinphoneCore *lc, LinphoneTransportType *type, int *port){
+	LCSipTransports tp;
+	linphone_core_get_sip_transports(lc,&tp);
+	if (tp.tcp_port==0 && tp.tls_port==0 && tp.udp_port!=0){
+		*type=LinphoneTransportUdp;
+		*port=tp.udp_port;
+		return 0;
+	}else if (tp.tcp_port==0 && tp.udp_port==0 && tp.tls_port!=0){
+		*type=LinphoneTransportTls;
+		*port=tp.tls_port;
+		return 0;
+	}else if (tp.tcp_port!=0 && tp.udp_port==0 && tp.tls_port==0){
+		*type=LinphoneTransportTcp;
+		*port=tp.tcp_port;
+		return 0;
+	}
+	return -1;
+}
+
+static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTransportType type){
+	const MSList *elem;
+	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		const char *proxy=linphone_proxy_config_get_addr(cfg);
+		const char *route=linphone_proxy_config_get_route(cfg);
+		LinphoneAddress *proxy_addr=linphone_address_new(proxy);
+		LinphoneAddress *route_addr=NULL;
+		char *tmp;
+		if (route) route_addr=linphone_address_new(route);
+		if (proxy_addr){
+			linphone_address_set_transport(proxy_addr,type);
+			tmp=linphone_address_as_string(proxy_addr);
+			linphone_proxy_config_set_server_addr(cfg,tmp);
+			ms_free(tmp);
+			linphone_address_destroy(proxy_addr);
+		}
+		if (route_addr){
+			linphone_address_set_transport(route_addr,type);
+			tmp=linphone_address_as_string(route_addr);
+			linphone_proxy_config_set_route(cfg,tmp);
+			ms_free(tmp);
+			linphone_address_destroy(route_addr);
+		}
+	}
+}
+
+/**
+ * Migrate configuration so that all SIP transports are enabled.
+ * Versions of linphone < 3.7 did not support using multiple SIP transport simultaneously.
+ * This function helps application to migrate the configuration so that all transports are enabled.
+ * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
+ * This function must be used just after creating the core, before any call to linphone_core_iterate()
+ * @param lc the linphone core
+ * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+ * @ingroup initializing
+**/
+int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
+	if (!lp_config_get_int(lc->config,"sip","multi_transport_migration_done",0)){
+		LinphoneTransportType tpt;
+		int port;
+		if (get_unique_transport(lc,&tpt,&port)==0){
+			LCSipTransports newtp={0};
+			ms_message("Core is using a single SIP transport, migrating proxy config and enabling multi-transport.");
+			linphone_core_migrate_proxy_config(lc,tpt);
+			newtp.udp_port=port;
+			newtp.tcp_port=port;
+			newtp.tls_port=LC_SIP_TRANSPORT_RANDOM;
+			linphone_core_set_sip_transports(lc,&newtp);
+		}
+		lp_config_set_int(lc->config,"sip","multi_transport_migration_done",1);
+		return 1;
+	}
+	return 0;
+}
+
 

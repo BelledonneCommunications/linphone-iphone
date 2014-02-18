@@ -203,6 +203,7 @@ typedef struct SalStreamDescription{
 
 typedef struct SalMediaDescription{
 	int refcount;
+	char name[64];
 	char addr[64];
 	char username[64];
 	int n_active_streams;
