@@ -173,7 +173,7 @@
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-	
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Application Will Terminate"];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
