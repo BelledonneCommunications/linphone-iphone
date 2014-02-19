@@ -1,4 +1,4 @@
-linphone-3.7...??
+linphone-3.7.0 -- February 20th, 2014
 	Application level improvements:
 	* It is now possible to configure multiple proxy accounts with different transports (UDP, TCP, TLS)
 	* can work with IPv6 and IPv4 simultaneously
@@ -7,6 +7,9 @@ linphone-3.7...??
 	* Keyboard can be used for DTMF input
 	* Faster and higly responsive UI thanks to fully asynchronous operation of the liblinphone.
 	* Addon of opus codec
+	* Possibility to specify a remote provisionning http URI for configuration
+	* LDAP search integration for Linux and MacOSX
+	* is-composing notification in chat area 
 
 	Liblinphone level improvements thanks to new "belle-sip" SIP stack:
 	* multiple SIP transports simultaneously now allowed
@@ -20,7 +23,12 @@ linphone-3.7...??
 	* Privacy API (RFC3323, RFC3325)
 	* Full support of rich presence in (RFC4480)
 	* Better handling of sips scheme in URIs.
+	* Messaging: support of is-composing (RFC3994)
+	* Call transfer fixes in error cases
+	* Add API for managing SIP SUBSCRIBES/NOTIFY/PUBLISH (linphonecore/event.h)
+	* bugfixes
 
+	Requires: mediastreamer2 = 2.10.0, ortp = 0.23.0, belle-sip = 1.3.0
 
 linphone-3.6.1 -- June 17, 2013
 	* fix memory leak with some video cameras on windows.

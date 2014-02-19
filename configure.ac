@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.6.99],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.7.0],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=5 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=6 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -584,17 +584,6 @@ AC_ARG_ENABLE(zrtp,
 	[zrtp=false]
 )
 
-
-AC_ARG_ENABLE(portaudio,
-	[AS_HELP_STRING([--enable-portaudio], [Turn on portaudio native support compiling])],
-	[case "${enableval}" in
-		yes)	portaudio=true ;;
-		no)	portaudio=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-portaudio) ;;
-	esac],
-	[portaudio=false]
-)
-
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -696,7 +685,7 @@ AC_ARG_ENABLE([external-mediastreamer],
 
 AS_CASE($enable_external_mediastreamer,
 	[yes],
-	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer])
+	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer>=2.10.0])
 	MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`],
 	[no],
 	[AC_CONFIG_SUBDIRS( mediastreamer2 )
@@ -761,7 +750,7 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 	
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.2.0])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.0])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"
@@ -798,7 +787,7 @@ AC_ARG_ENABLE(external-ortp,
 )
 
 if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp])
+	PKG_CHECK_MODULES([ORTP], [ortp>=0.23.0])
 	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
 else
 	AC_CONFIG_SUBDIRS( oRTP )

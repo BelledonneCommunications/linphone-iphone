@@ -8,7 +8,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 	- intltool
 
 - you need at least:
- 	- belle-sip>=1.0.0
+ 	- belle-sip>=1.3.0
 	- speex>=1.2.0 (including libspeexdsp part)
 	- libxml2
 	
