@@ -3077,10 +3077,12 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 #endif //BUILD_UPNP
 		}
-		
+#endif /* VIDEO_ENABLED */
+
 		_linphone_call_params_copy(&call->params,params);
 		linphone_call_make_local_media_description(lc, call);
 
+#ifdef VIDEO_ENABLED
 		// Video adding
 		if (!has_video && call->params.has_video) {
 			if (call->ice_session != NULL) {
