@@ -800,16 +800,14 @@ int sal_auth_compute_ha1(const char* userid,const char* realm,const char* passwo
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
 	belle_sip_message_t *msg=(belle_sip_message_t*)ch;
 	belle_sip_header_t *h;
-	char *tmp=ms_strdup_printf("%s: %s\r\n",name,value);
 	
 	if (msg==NULL){
 		msg=(belle_sip_message_t*)belle_sip_request_new();
 		belle_sip_object_ref(msg);
 	}
-	h=belle_sip_header_parse(tmp);
-	ms_free(tmp);
+	h=belle_sip_header_create(name,value);
 	if (h==NULL){
-		belle_sip_error("Fail to parse extension header.");
+		belle_sip_error("Fail to parse custom header.");
 		return (SalCustomHeader*)msg;
 	}
 	belle_sip_message_add_header(msg,h);
