@@ -779,6 +779,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
 	delete lcData;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_migrateToMultiTransport(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	return (jint) linphone_core_migrate_to_multi_transport((LinphoneCore *)lc);
+}
+
 /*
  * Class:     org_linphone_core_LinphoneCoreImpl
  * Method:    createInfoMessage

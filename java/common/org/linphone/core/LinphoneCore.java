@@ -1463,4 +1463,14 @@ public interface LinphoneCore {
 	 * @return an array of String
 	 */
 	public String[] getSupportedVideoSizes();
+	
+	/**
+	 * Migrate configuration so that all SIP transports are enabled.
+	 * Versions of linphone < 3.7 did not support using multiple SIP transport simultaneously.
+	 * This function helps application to migrate the configuration so that all transports are enabled.
+	 * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
+	 * This function must be used just after creating the core, before any call to linphone_core_iterate()
+	 * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+	 */
+	public int migrateToMultiTransport();
 }

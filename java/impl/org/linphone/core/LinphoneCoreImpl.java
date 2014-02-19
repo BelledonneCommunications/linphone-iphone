@@ -144,6 +144,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native String getPrimaryContactDisplayName(long nativePtr);
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
+	private native int migrateToMultiTransport(long nativePtr);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -396,10 +397,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
 		
 	}
+	@SuppressWarnings("deprecation")
 	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {
 		setPresenceInfo(nativePtr,minutes_away,alternative_contact,status.mValue);
 		
 	}
+	@SuppressWarnings("deprecation")
 	public synchronized OnlineStatus getPresenceInfo() {
 		return OnlineStatus.fromInt(getPresenceInfo(nativePtr));
 	}
@@ -1093,5 +1096,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public String[] getSupportedVideoSizes() {
 		return listSupportedVideoResolutions(nativePtr);
+	}
+
+	@Override
+	public int migrateToMultiTransport() {
+		return migrateToMultiTransport(nativePtr);
 	}
 }
