@@ -602,7 +602,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
         // we were woken up by a silent push. Call the completion handler with NEWDATA
         // so that the push is notified to the user
-        NSLog(@"onMessageReceived - handler %p", silentPushCompletion);
+        [LinphoneLogger log:LinphoneLoggerLog format:@"onMessageReceived - handler %p", silentPushCompletion];
         silentPushCompletion(UIBackgroundFetchResultNewData);
         silentPushCompletion = nil;
     }
@@ -1558,7 +1558,7 @@ static void audioRouteChangeListenerCallback (
 }
 - (void)silentPushFailed:(NSTimer*)timer
 {
-    NSLog(@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion);
+    [LinphoneLogger log:LinphoneLoggerLog format:@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion ];
     if( silentPushCompletion ){
         silentPushCompletion(UIBackgroundFetchResultNoData);
         silentPushCompletion = nil;
