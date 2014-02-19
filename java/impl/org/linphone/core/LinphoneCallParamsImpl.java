@@ -118,5 +118,17 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public int getPrivacy() {
 		return getPrivacy(nativePtr);
 	}
+
+	private native void setSessionName(long nativePtr, String name);
+	@Override
+	public void setSessionName(String name) {
+		setSessionName(nativePtr,name);
+	}
+
+	private native String getSessionName(long nativePtr);
+	@Override
+	public String getSessionName() {
+		return getSessionName(nativePtr);
+	}
 	
 }
