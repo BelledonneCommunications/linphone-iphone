@@ -3191,7 +3191,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
  * @param lc the linphone core object.
  * @param call the LinphoneCall object
  * @param params a LinphoneCallParams object describing the call parameters to accept.
- * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
+ * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *remote_desc;

@@ -1,13 +1,16 @@
 Software to install
 *******************
 
-Download lastest mingw-get-inst.exe from http://www.mingw.org
-Run mingw-get-inst.exe. Choose "download lastest catalogues".
-In the feature list, select:
-* C compiler
-* C++ compiler
-* Mingw developer toolkit
-Let the installer fetch and install everything.
+Download lastest mingw-get-setup.exe from http://www.mingw.org
+Run mingw-get-setup.exe.
+In the package list, select and install:
+* mingw32-developer-tool
+* mingw32-base
+* mingw32-gcc-g++
+* msys-base
+
+For more information:
+http://www.mingw.org/wiki/Getting_Started
 
 In mingw shell (also refered as msys), run
 
@@ -37,7 +40,7 @@ unzip <path to linphone-deps>
 
 #Install GTK+ Outcrop theme, the one used by linphone for distribution.
 cd /share/themes
-wget http://art.gnome.org/download/themes/gtk2/1122/GTK2-Outcrop.tar.gz
+wget ftp://ftp.gnome.org/mirror/gnome.org/teams/art.gnome.org/themes/gtk2/GTK2-Outcrop.tar.gz
 tar -xvzf GTK2-Outcrop.tar.gz
 
 #To get the translations working, remove from C:/MinGW/lib :

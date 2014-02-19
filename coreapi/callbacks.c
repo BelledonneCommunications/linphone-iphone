@@ -764,7 +764,7 @@ static void register_success(SalOp *op, bool_t registered){
 	}
 	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
-	                                registered ? "Registration sucessful" : "Unregistration done");
+	                                registered ? "Registration successful" : "Unregistration done");
 	if (lc->vtable.display_status){
 		if (registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 		else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
