@@ -134,14 +134,20 @@
 #endif
                                  nil];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
-	
+
+    BOOL background_mode = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
+    BOOL start_at_boot   = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"];
+
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
-        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
-            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
-            // autoboot disabled, doing nothing
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground)
+    {
+        // we've been woken up directly to background;
+        if( !start_at_boot || !background_mode ) {
+            // autoboot disabled or no background, and no push: do nothing and wait for a real launch
             return YES;
         }
+
+    }
     
     [self startApplication];
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -208,9 +214,8 @@
 			/*if we receive a remote notification, it is because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			LinphoneCore *lc = [LinphoneManager getLc];
-			linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+			linphone_core_set_network_reachable(lc, FALSE);
 			[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
-			//linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
                     [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
@@ -262,7 +267,11 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     LinphoneManager* lm = [LinphoneManager instance];
-	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification: Receive %@", userInfo];
+
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification; userInfo %@", userInfo];
+    // check that linphone is still running
+    if( ![LinphoneManager isLcReady] )
+        [lm startLibLinphone];
 
     // save the completion handler for later execution.
     // 2 outcomes:
@@ -274,7 +283,6 @@
     // Force Linphone to drop the current socket, this will trigger a refresh registers
     linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
     lm.connectivity=none; /*force connectivity to be discovered again*/
-	//linphone_core_set_network_reachable([LinphoneManager getLc], TRUE);
     [lm refreshRegisters];
 }
 
