@@ -91,7 +91,7 @@ struct _LinphoneCallParams{
 	int down_ptime;
 	int up_ptime;
 	char *record_file;
-	char *subject;
+	char *session_name;
 	SalCustomHeader *custom_headers;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/

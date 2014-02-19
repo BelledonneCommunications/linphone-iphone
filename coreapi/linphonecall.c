@@ -283,7 +283,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 
 	strncpy(md->addr,local_ip,sizeof(md->addr));
 	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
-	strncpy(md->name,subject,sizeof(md->name));
+	if (subject) strncpy(md->name,subject,sizeof(md->name));
 
 	if (call->params.down_bw)
 		md->bandwidth=call->params.down_bw;
@@ -1275,30 +1275,31 @@ const char *linphone_call_params_get_custom_header(const LinphoneCallParams *par
 }
 
 /**
- * Returns the subject of the media session (ie in SDP). Subject from the SIP message can be retrieved using linphone_call_params_get_custom_header().
+ * Returns the session name of the media session (ie in SDP). Subject from the SIP message can be retrieved using linphone_call_params_get_custom_header() and is different.
  * @param cp the call parameters.
 **/
 const char *linphone_call_params_get_session_name(const LinphoneCallParams *cp){
-	return cp->subject;
+	return cp->session_name;
 }
 
 /**
- * Set the subject of the media session (ie in SDP). Subject from the SIP message can be set using linphone_call_params_set_custom_header().
+ * Set the session name of the media session (ie in SDP). Subject from the SIP message (which is different) can be set using linphone_call_params_set_custom_header().
  * @param cp the call parameters.
+ * @param name the session name 
 **/
-void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *subject){
-	if (cp->subject){
-		ms_free(cp->subject);
-		cp->subject=NULL;
+void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *name){
+	if (cp->session_name){
+		ms_free(cp->session_name);
+		cp->session_name=NULL;
 	}
-	if (subject) cp->subject=ms_strdup(subject);
+	if (name) cp->session_name=ms_strdup(name);
 }
 
 void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParams *cp){
 	if (ncp==cp) return;
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
-	if (cp->subject) ncp->subject=ms_strdup(cp->subject);
+	if (cp->session_name) ncp->session_name=ms_strdup(cp->session_name);
 	/*
 	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
 	 */
