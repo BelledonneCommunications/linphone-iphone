@@ -1516,7 +1516,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 			continue;
 		}
 
-		cfg=linphone_proxy_config_new();
+		cfg=linphone_core_create_proxy_config(lc);
 		if (linphone_proxy_config_set_server_addr(cfg,clean)<0)
 		{
 			linphonec_out("Invalid sip address (sip:sip.domain.tld).\n");
