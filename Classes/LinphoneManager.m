@@ -1558,8 +1558,8 @@ static void audioRouteChangeListenerCallback (
 }
 - (void)silentPushFailed:(NSTimer*)timer
 {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion ];
     if( silentPushCompletion ){
+        [LinphoneLogger log:LinphoneLoggerLog format:@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion ];
         silentPushCompletion(UIBackgroundFetchResultNoData);
         silentPushCompletion = nil;
     }

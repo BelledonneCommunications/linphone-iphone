@@ -268,10 +268,11 @@
 {
     LinphoneManager* lm = [LinphoneManager instance];
 
-	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification; userInfo %@", userInfo];
     // check that linphone is still running
     if( ![LinphoneManager isLcReady] )
         [lm startLibLinphone];
+
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification; userInfo %@", userInfo];
 
     // save the completion handler for later execution.
     // 2 outcomes:
