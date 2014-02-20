@@ -424,6 +424,12 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 }
 #endif
 
+#ifdef __QNX__
+static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	ortp_qnx_log_handler("liblinphone_tester", lev, fmt, args);
+}
+#endif /* __QNX__ */
+
 void helper(const char *name) {
 	fprintf(stderr,"%s \t--help\n"
 			"\t\t\t--verbose\n"
@@ -455,6 +461,14 @@ int main (int argc, char *argv[]) {
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
 
+#if defined(ANDROID)
+	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
+#elif defined(__QNX__)
+	linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
+#else
+	linphone_core_set_log_file(NULL);
+#endif
+
 	liblinphone_tester_init();
 
 	for(i=1;i<argc;++i){
@@ -462,13 +476,9 @@ int main (int argc, char *argv[]) {
 			helper(argv[0]);
 			return 0;
 		} else if (strcmp(argv[i],"--verbose")==0){
-#ifndef ANDROID
-			linphone_core_enable_logs(NULL);
-#else
-			linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
-#endif
+			linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 		} else if (strcmp(argv[i],"--silent")==0){
-			ortp_set_log_level_mask(ORTP_FATAL);
+			linphone_core_set_log_level(ORTP_FATAL);
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];
