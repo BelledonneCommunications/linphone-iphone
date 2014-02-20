@@ -11,7 +11,7 @@ $(SRC_DIR)/$(polarssl_dir)/Makefile: $(SRC_DIR)/$(polarssl_dir)/configure
 	mkdir -p $(BUILD_DIR)/$(polarssl_dir)
 	cd $(BUILD_DIR)/$(polarssl_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(SRC_DIR)/build/$(config_site) \
-	$(SRC_DIR)/$(polarssl_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
+	$(SRC_DIR)/$(polarssl_dir)/configure --prefix=$(prefix) --host=$(host) ${library_mode}  
 
 update-tree:  $(SRC_DIR)/$(polarssl_dir)/Makefile
 	mkdir -p $(BUILD_DIR)/$(polarssl_dir)
@@ -20,7 +20,7 @@ update-tree:  $(SRC_DIR)/$(polarssl_dir)/Makefile
 
 build-polarssl: update-tree
 	host_alias=$(host) && . /$(SRC_DIR)/build/$(config_site) && \
-	cd $(BUILD_DIR)/$(polarssl_dir) && make && make install DESTDIR=$(prefix)
+	cd $(BUILD_DIR)/$(polarssl_dir) && make && make install
 
 clean-polarssl:
 	-cd $(BUILD_DIR)/$(polarssl_dir) && make clean
