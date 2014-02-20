@@ -1058,18 +1058,12 @@ const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
  * Returns the far end's sip contact as a string, if available.
 **/
 const char *linphone_call_get_remote_contact(LinphoneCall *call){
-	if (call->op){
-		return sal_op_get_remote_contact(call->op);
-	}
-	return NULL;
-}
-
-/**
- * Returns the far end's sip contact as a string, if available.
-**/
-LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call){
-	if (call->op){
-		return (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
+	const LinphoneCallParams* lcp = linphone_call_get_remote_params(call);
+	if( lcp ){
+		// we're not using sal_op_get_remote_contact() here because the returned value is stripped from
+		// params that we need, like the instanceid. Getting it from the headers will make sure we
+		// get everything
+		return linphone_call_params_get_custom_header(lcp, "Contact");
 	}
 	return NULL;
 }

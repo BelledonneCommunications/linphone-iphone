@@ -627,7 +627,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 						|| call->state==LinphoneCallOutgoingProgress
 						|| call->state==LinphoneCallOutgoingRinging /*push case*/
 						|| call->state==LinphoneCallOutgoingEarlyMedia){
-					LinphoneAddress* redirection_to = linphone_call_get_remote_contact_address(call);
+					LinphoneAddress* redirection_to = (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
 					if( redirection_to ){
 						char* url = linphone_address_as_string(redirection_to);
 						ms_error("Redirecting call [%p] to %s",call, url);

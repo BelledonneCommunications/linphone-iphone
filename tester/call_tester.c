@@ -550,9 +550,9 @@ static void call_with_custom_headers(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall *call_marie,*call_pauline;
 	LinphoneCallParams *params;
-	const LinphoneCallParams *remote_params;
+	const LinphoneCallParams *marie_remote_params;
 	const char *hvalue;
-	const char	*pauline_remote_contact_header,
+	char	*pauline_remote_contact_header,
 				*pauline_remote_contact,
 				*marie_remote_contact,
 				*marie_remote_contact_header;
@@ -578,25 +578,34 @@ static void call_with_custom_headers(void) {
 	CU_ASSERT_PTR_NOT_NULL(call_marie);
 	CU_ASSERT_PTR_NOT_NULL(call_pauline);
 
-	remote_params=linphone_call_get_remote_params(call_marie);
-	hvalue=linphone_call_params_get_custom_header(remote_params,"Weather");
+	marie_remote_params=linphone_call_get_remote_params(call_marie);
+	hvalue=linphone_call_params_get_custom_header(marie_remote_params,"Weather");
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
 	CU_ASSERT_STRING_EQUAL(hvalue,"bad");
-	hvalue=linphone_call_params_get_custom_header(remote_params,"uriHeader");
+	hvalue=linphone_call_params_get_custom_header(marie_remote_params,"uriHeader");
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
 	CU_ASSERT_STRING_EQUAL(hvalue,"myUriHeader");
 
 
-	pauline_remote_contact_header = linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_pauline), "Contact");
-	pauline_remote_contact = linphone_call_get_remote_contact(call_pauline);
-	marie_remote_contact = linphone_call_get_remote_contact(call_marie);
-	marie_remote_contact_header = linphone_call_params_get_custom_header(remote_params, "Contact");
+	// FIXME: we have to strdup because successive calls to get_remote_params erase the returned const char*!!
+	pauline_remote_contact        = ms_strdup(linphone_call_get_remote_contact(call_pauline));
+	pauline_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_pauline), "Contact"));
+
+	marie_remote_contact        = ms_strdup(linphone_call_get_remote_contact(call_marie));
+	marie_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(marie_remote_params, "Contact"));
+
 	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact);
 	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact_header);
 	CU_ASSERT_PTR_NOT_NULL(marie_remote_contact);
 	CU_ASSERT_PTR_NOT_NULL(marie_remote_contact_header);
 	CU_ASSERT_STRING_EQUAL(pauline_remote_contact,pauline_remote_contact_header);
 	CU_ASSERT_STRING_EQUAL(marie_remote_contact,marie_remote_contact_header);
+
+	ms_free(pauline_remote_contact);
+	ms_free(pauline_remote_contact_header);
+	ms_free(marie_remote_contact);
+	ms_free(marie_remote_contact_header);
+
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
