@@ -365,7 +365,7 @@ static void authenticated_register_with_wrong_credentials_without_403() {
 	authenticated_register_with_wrong_credentials_with_params("tester-no-403");
 }
 static LinphoneCoreManager* configure_lcm(void) {
-	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_lrc");
+	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_rc");
 	stats *counters=&mgr->stat;
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(mgr->lc))));
 	return mgr;
@@ -487,7 +487,7 @@ static void io_recv_error_late_recovery(){
 	int number_of_udp_proxy=0;
 	MSList* lcs;
 
-	mgr=linphone_core_manager_new2( "multi_account_lrc",FALSE); /*to make sure iterates are not call yet*/
+	mgr=linphone_core_manager_new2( "multi_account_rc",FALSE); /*to make sure iterates are not call yet*/
 	lc=mgr->lc;
 	sal_set_refresher_retry_after(lc->sal,1000);
 	counters=&mgr->stat;

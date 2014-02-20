@@ -184,6 +184,7 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	LinphoneProxyConfig* proxy;
+	char *rc_path = NULL;
 	int proxy_count;
 	int retry=0;
 
@@ -203,7 +204,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.configuring_status=linphone_configuration_status;
 	
 	reset_counters(&mgr->stat);
-	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_file, mgr);
+	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
+	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_path, mgr);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
@@ -222,6 +224,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
 		linphone_address_clean(mgr->identity);
 	}
+	if (rc_path) ms_free(rc_path);
 	return mgr;
 }
 
