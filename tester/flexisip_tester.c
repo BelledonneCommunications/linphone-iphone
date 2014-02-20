@@ -108,14 +108,14 @@ static void message_forking_with_unreachable_recipients(void) {
 	CU_ASSERT_TRUE( marie3->stat.number_of_LinphoneMessageReceived==0);
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
 	
 	/*wait a long time so that all transactions are expired*/
 	wait_for_list(lcs,NULL,0,32000);
 	
 	/*marie 3 goes online now*/
 	linphone_core_set_network_reachable(marie3->lc,TRUE);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneMessageReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneMessageReceived,1,3000));
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -154,18 +154,18 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	
 	/*marie 1 goes online */
 	linphone_core_set_network_reachable(marie->lc,TRUE);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
 	
 	/*wait a long time so that all transactions are expired*/
 	wait_for_list(lcs,NULL,0,32000);
 	
 	/*marie 3 goes online now*/
 	linphone_core_set_network_reachable(marie3->lc,TRUE);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneMessageReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneMessageReceived,1,3000));
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
