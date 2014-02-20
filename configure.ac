@@ -685,7 +685,7 @@ AC_ARG_ENABLE([external-mediastreamer],
 
 AS_CASE($enable_external_mediastreamer,
 	[yes],
-	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer>=2.10.0])
+	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.10.0])
 	MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`],
 	[no],
 	[AC_CONFIG_SUBDIRS( mediastreamer2 )
@@ -787,7 +787,7 @@ AC_ARG_ENABLE(external-ortp,
 )
 
 if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp>=0.23.0])
+	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
 	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
 else
 	AC_CONFIG_SUBDIRS( oRTP )
