@@ -118,7 +118,7 @@ endif(WIN32)
 set(LIBS ${LIBS} ${LIBORTP} ${LIBMEDIASTREAMER_BASE} ${LIBMEDIASTREAMER_VOIP} ${LIBBELLESIP} ${LIBXML2})
 
 add_library(linphone SHARED ${SOURCE_FILES})
-set_target_properties(linphone PROPERTIES VERSION 3.6.99 SOVERSION 5)
+set_target_properties(linphone PROPERTIES VERSION 3.7.0 SOVERSION 5)
 
 target_link_libraries(linphone ${LIBS})
 
