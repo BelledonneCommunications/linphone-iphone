@@ -31,9 +31,11 @@ SalAddress * sal_address_new(const char *uri){
 	if (result) belle_sip_object_ref(result);
 	return (SalAddress *)result;
 }
+
 SalAddress * sal_address_clone(const SalAddress *addr){
 	return (SalAddress *) belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(addr)));
 }
+
 const char *sal_address_get_scheme(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
