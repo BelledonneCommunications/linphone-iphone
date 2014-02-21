@@ -26,4 +26,13 @@
     [self sendActionsForControlEvents:UIControlEventEditingChanged];
 }
 
+-(BOOL)canPerformAction:(SEL)action withSender:(id)sender{
+    // disable "define" option, since it messes with the keyboard
+    if ([[NSStringFromSelector(action) lowercaseString] rangeOfString:@"define"].location != NSNotFound) {
+        return NO;
+    } else {
+        return [super canPerformAction:action withSender:sender];
+    }
+}
+
 @end
