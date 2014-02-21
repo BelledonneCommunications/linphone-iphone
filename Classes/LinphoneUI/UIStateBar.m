@@ -266,14 +266,15 @@ NSTimer *callSecurityTimer;
                     message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with the peer:\n%s",nil),
                                linphone_call_get_authentication_token(call)];
                 }
-                if(securitySheet == nil) {
+                if( securitySheet == nil ){
                     securitySheet = [[DTActionSheet alloc] initWithTitle:message];
+                    [securitySheet setDelegate:self];
                     [securitySheet addButtonWithTitle:NSLocalizedString(@"Ok",nil) block:^(){
                         linphone_call_set_authentication_token_verified(call, !valid);
                         [securitySheet release];
                         securitySheet = nil;
                     }];
-                    
+
                     [securitySheet addDestructiveButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:^(){
                         [securitySheet release];
                         securitySheet = nil;
@@ -285,6 +286,10 @@ NSTimer *callSecurityTimer;
     }
 }
 
+-(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    [securitySheet release];
+    securitySheet = nil;
+}
 
 #pragma mark - TPMultiLayoutViewController Functions
 
