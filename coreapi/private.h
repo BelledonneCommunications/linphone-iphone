@@ -677,6 +677,7 @@ struct _LinphoneEvent{
 	LinphoneSubscriptionDir dir;
 	LinphoneCore *lc;
 	SalOp *op;
+	SalCustomHeader *send_custom_headers;
 	LinphoneSubscriptionState subscription_state;
 	LinphonePublishState publish_state;
 	LinphoneReason reason;
@@ -685,6 +686,7 @@ struct _LinphoneEvent{
 	char *name;
 	LinphoneAddress *from;
 	LinphoneAddress *resource_addr;
+	int expires;
 	bool_t terminating;
 };
 
@@ -793,7 +795,7 @@ LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const
 SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
-LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name);
+LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
