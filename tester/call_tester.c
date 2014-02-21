@@ -1101,7 +1101,7 @@ static void early_media_call_with_ringing(void){
 
 	/* send a 183 to initiate the early media */
 
-	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc), TRUE);
+	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
 	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
 	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );

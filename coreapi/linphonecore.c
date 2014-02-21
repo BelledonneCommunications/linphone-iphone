@@ -2995,13 +2995,11 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallIncomingReceived){
 		/*try to be best-effort in giving real local or routable contact address for 100Rel case*/
 		linphone_call_set_contact_op(call);
-		sal_call_notify_ringing(call->op,propose_early_media || ringback_tone!=NULL);
-
+		
 		if (propose_early_media || ringback_tone!=NULL){
-			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
-			md=sal_call_get_final_media_description(call->op);
-			if (md) linphone_core_update_streams(lc,call,md);
-		}
+			linphone_core_accept_early_media(lc,call);
+		}else sal_call_notify_ringing(call->op,FALSE);
+		
 		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
 			linphone_core_accept_call(lc,call);
 		}
@@ -3012,7 +3010,19 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	ms_free(tmp);
 }
 
-int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, bool_t early_media, LinphoneCallParams* params) {
+
+/**
+ * When receiving an incoming, accept to start a media session as early-media.
+ * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
+ * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
+ * The call can then later be fully accepted using linphone_core_accept_call() or linphone_core_accept_call_with_params().
+ * @param lc the linphonecore
+ * @param call the call
+ * @param params the call params, can be NULL.
+ * @return 0 if successful, -1 otherwise.
+ * @ingroup call_control
+**/
+int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, const LinphoneCallParams* params) {
 	if (call->state==LinphoneCallIncomingReceived){
 		SalMediaDescription* md;
 		
@@ -3023,34 +3033,35 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 		if ( params ) {
 			md = sal_call_get_remote_media_description ( call->op );
 			_linphone_call_params_copy ( &call->params,params );
-
-			// There might not be a md if the INVITE was lacking an SDP
-			// In this case we use the parameters as is.
-			if ( md ) call->params.has_video &= linphone_core_media_description_contains_video_stream ( md );
-
 			linphone_call_make_local_media_description ( lc,call );
 			sal_call_set_local_media_description ( call->op,call->localdesc );
 			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
 		}
 		
-		sal_call_notify_ringing(call->op,early_media);
+		sal_call_notify_ringing(call->op,TRUE);
 
-		if (early_media){
-			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
-			md=sal_call_get_final_media_description(call->op);
-			if (md) linphone_core_update_streams(lc,call,md);
-		}
-		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
-			linphone_core_accept_call(lc,call);
-		}
+		linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+		md=sal_call_get_final_media_description(call->op);
+		if (md) linphone_core_update_streams(lc,call,md);
 		return 0;
+	}else{
+		ms_error("Bad state %s for linphone_core_accept_early_media_with_params()", linphone_call_state_to_string(call->state));
 	}
 
 	return -1;
 }
 
-int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call, bool_t early_media){
-	return linphone_core_accept_early_media_with_params(lc, call, early_media, NULL);
+/**
+ * Accept an early media session for an incoming call.
+ * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
+ * @see linphone_core_accept_early_media_with_params()
+ * @param lc the core
+ * @param call the incoming call
+ * @return 0 if successful, -1 otherwise.
+ * @ingroup call_control
+**/
+int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call){
+	return linphone_core_accept_early_media_with_params(lc, call, NULL);
 }
 
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
