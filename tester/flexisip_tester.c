@@ -243,7 +243,7 @@ static void call_forking_with_urgent_reply(void){
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	/*pauline should hear ringback, after 5 seconds, when it will retry without SRTP*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,6000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,9000));
 	/*Marie should be ringing*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,1000));
 	
