@@ -1080,6 +1080,54 @@ static void early_media_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_with_ringing(void){
+
+	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	MSList* lcs = NULL;
+	LinphoneCall* marie_call;
+
+	lcs = ms_list_append(lcs,marie->lc);
+	lcs = ms_list_append(lcs,pauline->lc);
+	/*
+		Marie calls Pauline, and after the call has rung, transitions to an early_media session
+	*/
+
+	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+
+
+	/* send a 183 to initiate the early media */
+
+	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc), TRUE);
+
+	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+
+	liblinphone_tester_check_rtcp(marie, pauline);
+
+	linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+
+	CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+
+	liblinphone_tester_check_rtcp(marie, pauline);
+
+	linphone_core_terminate_all_calls(pauline->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+
+
+	ms_list_free(lcs);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1548,6 +1596,7 @@ test_t call_tests[] = {
 	{ "Call with media relay", call_with_media_relay},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
+	{ "Early-media call with ringing", early_media_call_with_ringing },
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call without SDP", call_with_no_sdp},
 	{ "Call paused resumed", call_paused_resumed },

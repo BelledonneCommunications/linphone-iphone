@@ -3012,6 +3012,47 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	ms_free(tmp);
 }
 
+int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, bool_t early_media, LinphoneCallParams* params) {
+	if (call->state==LinphoneCallIncomingReceived){
+		SalMediaDescription* md;
+		
+		/*try to be best-effort in giving real local or routable contact address for 100Rel case*/
+		linphone_call_set_contact_op(call);
+
+		// if parameters are passed, update the media description
+		if ( params ) {
+			md = sal_call_get_remote_media_description ( call->op );
+			_linphone_call_params_copy ( &call->params,params );
+
+			// There might not be a md if the INVITE was lacking an SDP
+			// In this case we use the parameters as is.
+			if ( md ) call->params.has_video &= linphone_core_media_description_contains_video_stream ( md );
+
+			linphone_call_make_local_media_description ( lc,call );
+			sal_call_set_local_media_description ( call->op,call->localdesc );
+			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
+		}
+		
+		sal_call_notify_ringing(call->op,early_media);
+
+		if (early_media){
+			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+			md=sal_call_get_final_media_description(call->op);
+			if (md) linphone_core_update_streams(lc,call,md);
+		}
+		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+			linphone_core_accept_call(lc,call);
+		}
+		return 0;
+	}
+
+	return -1;
+}
+
+int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call, bool_t early_media){
+	return linphone_core_accept_early_media_with_params(lc, call, early_media, NULL);
+}
+
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
 
