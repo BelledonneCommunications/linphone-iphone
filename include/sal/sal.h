@@ -211,6 +211,7 @@ typedef struct SalMediaDescription{
 	int bandwidth;
 	unsigned int session_ver;
 	unsigned int session_id;
+	SalStreamDir dir;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
