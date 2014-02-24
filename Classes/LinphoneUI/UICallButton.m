@@ -76,9 +76,10 @@
             LinphoneCallLog* log = logs->data;
             if( linphone_call_log_get_dir(log) == LinphoneCallOutgoing ){
                 LinphoneAddress* to = linphone_call_log_get_to(log);
-                [addressField setText:[NSString stringWithUTF8String:linphone_address_as_string(to)]];
-                address = [addressField text];
-                // only fill thge address, let the user confirm the call by pressing again
+                char *bis_address = linphone_address_as_string_uri_only(to);
+                [addressField setText:[NSString stringWithUTF8String:bis_address]];
+                ms_free(bis_address);
+                // return after filling the address, let the user confirm the call by pressing again
                 return;
             }
             logs = ms_list_next(logs);
