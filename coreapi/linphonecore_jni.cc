@@ -3173,7 +3173,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getUpnpExternalIpaddr
  * Signature: (JJLjava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_subscribe(JNIEnv *env, jobject jcore, jlong coreptr, jlong addrptr, 
-																			jstring jevname, jint expires, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
+		jstring jevname, jint expires, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
 	LinphoneCore *lc=(LinphoneCore*)coreptr;
 	LinphoneAddress *addr=(LinphoneAddress*)addrptr;
 	LinphoneContent content={0};
@@ -3185,7 +3185,7 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_subscribe(JNIE
 	if (jtype){
 		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
 		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jsubtype,NULL) : NULL;
+		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jencoding,NULL) : NULL;
 		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
 		content.size=env->GetArrayLength(jdata);
 	}
@@ -3221,7 +3221,7 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_publish(JNIEnv
 	if (jtype){
 		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
 		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jsubtype,NULL) : NULL;
+		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jencoding,NULL) : NULL;
 		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
 		content.size=env->GetArrayLength(jdata);
 	}
@@ -3631,6 +3631,90 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_getSubscriptionD
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_getSubscriptionState(JNIEnv *env, jobject jobj, jlong evptr){
 	LinphoneEvent *ev=(LinphoneEvent*)evptr;
 	return linphone_event_get_subscription_state(ev);
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createSubscribe(JNIEnv *env, jobject thiz, jlong jcore, jlong jaddr, jstring jeventname, jint expires) {
+	LinphoneCore *lc = (LinphoneCore*) jcore;
+	LinphoneCoreData* lcData = (LinphoneCoreData*) linphone_core_get_user_data(lc);
+	LinphoneAddress *addr = (LinphoneAddress*) jaddr;
+	LinphoneEvent *event;
+	jobject jevent = NULL;
+	const char *event_name = env->GetStringUTFChars(jeventname, NULL);
+
+	event = linphone_core_create_subscribe(lc, addr, event_name, expires);
+	env->ReleaseStringUTFChars(jeventname, event_name);
+	if (event) {
+		jevent = lcData->getEvent(env, event);
+	}
+	return jevent;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_sendSubscribe(JNIEnv *env, jobject thiz, jlong jevent, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding) {
+	LinphoneContent content = {0};
+	if (jtype) {
+		content.type = (char*) env->GetStringUTFChars(jtype, NULL);
+		content.subtype = (char*) env->GetStringUTFChars(jsubtype, NULL);
+		content.encoding = jencoding ? (char*) env->GetStringUTFChars(jencoding, NULL) : NULL;
+		content.data = (void*) env->GetByteArrayElements(jdata, NULL);
+		content.size = env->GetArrayLength(jdata);
+	}
+	linphone_event_send_subscribe((LinphoneEvent*) jevent, content.type ? &content : NULL);
+	if (jtype) {
+		env->ReleaseStringUTFChars(jtype, content.type);
+		env->ReleaseStringUTFChars(jsubtype, content.subtype);
+		if (jencoding) env->ReleaseStringUTFChars(jencoding, content.encoding);
+		env->ReleaseByteArrayElements(jdata, (jbyte*) content.data, JNI_ABORT);
+	}
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createPublish(JNIEnv *env, jobject thiz, jlong jcore, jlong jaddr, jstring jeventname, jint expires) {
+	LinphoneCore *lc = (LinphoneCore*) jcore;
+	LinphoneCoreData* lcData = (LinphoneCoreData*) linphone_core_get_user_data(lc);
+	LinphoneAddress *addr = (LinphoneAddress*) jaddr;
+	LinphoneEvent *event;
+	jobject jevent = NULL;
+	const char *event_name = env->GetStringUTFChars(jeventname, NULL);
+
+	event = linphone_core_create_publish(lc, addr, event_name, expires);
+	env->ReleaseStringUTFChars(jeventname, event_name);
+	if (event) {
+		jevent = lcData->getEvent(env, event);
+	}
+	return jevent;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_sendPublish(JNIEnv *env, jobject thiz, jlong jevent, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding) {
+	LinphoneContent content = {0};
+	if (jtype) {
+		content.type = (char*) env->GetStringUTFChars(jtype, NULL);
+		content.subtype = (char*) env->GetStringUTFChars(jsubtype, NULL);
+		content.encoding = jencoding ? (char*) env->GetStringUTFChars(jencoding, NULL) : NULL;
+		content.data = (void*) env->GetByteArrayElements(jdata, NULL);
+		content.size = env->GetArrayLength(jdata);
+	}
+	linphone_event_send_publish((LinphoneEvent*) jevent, content.type ? &content : NULL);
+	if (jtype) {
+		env->ReleaseStringUTFChars(jtype, content.type);
+		env->ReleaseStringUTFChars(jsubtype, content.subtype);
+		if (jencoding) env->ReleaseStringUTFChars(jencoding, content.encoding);
+		env->ReleaseByteArrayElements(jdata, (jbyte*) content.data, JNI_ABORT);
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_addCustomHeader(JNIEnv *env, jobject thiz, jlong jevent, jstring jname, jstring jvalue) {
+	const char *name = jname ? env->GetStringUTFChars(jname, NULL) : NULL;
+	const char *value = jvalue ? env->GetStringUTFChars(jvalue, NULL) : NULL;
+	linphone_event_add_custom_header((LinphoneEvent*) jevent, name, value);
+	if (jname) env->ReleaseStringUTFChars(jname, name);
+	if (jvalue) env->ReleaseStringUTFChars(jvalue, value);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneEventImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong jevent, jstring jname) {
+	const char *name = jname ? env->GetStringUTFChars(jname, NULL) : NULL;
+	const char *header = linphone_event_get_custom_header((LinphoneEvent*) jevent, name);
+	jstring jheader = header ? env->NewStringUTF(header) : NULL;
+	if (jname) env->ReleaseStringUTFChars(jname, name);
+	return jheader;
 }
 
 /*

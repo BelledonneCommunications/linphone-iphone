@@ -1,5 +1,6 @@
 package org.linphone.core;
 
+
 public class LinphoneEventImpl implements LinphoneEvent {
 	private Object mUserContext;
 	private long mNativePtr;
@@ -86,6 +87,36 @@ public class LinphoneEventImpl implements LinphoneEvent {
 	private native void unref(long nativeptr);
 	protected void finalize(){
 		unref(mNativePtr);
+	}
+
+	private native void addCustomHeader(long ptr, String name, String value);
+	@Override
+	public void addCustomHeader(String name, String value) {
+		addCustomHeader(mNativePtr, name, value);
+	}
+
+	private native String getCustomHeader(long ptr, String name);
+	@Override
+	public String getCustomHeader(String name) {
+		return getCustomHeader(mNativePtr, name);
+	}
+
+	private native void sendSubscribe(long ptr, String type, String subtype, byte data [], String encoding);
+	@Override
+	public void sendSubscribe(LinphoneContent body) {
+		if (body != null)
+			sendSubscribe(mNativePtr, body.getType(), body.getSubtype(), body.getData(), body.getEncoding());
+		else
+			sendSubscribe(mNativePtr, null, null, null, null);
+	}
+	
+	private native void sendPublish(long ptr, String type, String subtype, byte data [], String encoding);
+	@Override
+	public void sendPublish(LinphoneContent body) {
+		if (body != null)
+			sendPublish(mNativePtr, body.getType(), body.getSubtype(), body.getData(), body.getEncoding());
+		else
+			sendPublish(mNativePtr, null, null, null, null);
 	}
 
 }

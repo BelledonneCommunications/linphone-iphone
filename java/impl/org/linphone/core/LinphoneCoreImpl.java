@@ -1047,6 +1047,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getData() : null,
 						content!=null ? content.getEncoding() : null);
 	}
+
+	private native Object createSubscribe(long core, long addr, String event, int expires);
+	@Override
+	public LinphoneEvent createSubscribe(LinphoneAddress resource,
+			String event, int expires) {
+		return (LinphoneEvent)createSubscribe(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, event, expires);
+	}
+	private native Object createPublish(long core, long addr, String event, int expires);
+	@Override
+	public LinphoneEvent createPublish(LinphoneAddress resource,
+			String event, int expires) {
+		return (LinphoneEvent)createPublish(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, event, expires);
+	}
 	
 	public void setChatDatabasePath(String path) {
 		setChatDatabasePath(nativePtr, path);

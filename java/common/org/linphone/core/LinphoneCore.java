@@ -1433,7 +1433,30 @@ public interface LinphoneCore {
 	 * @param content optional content of the subscription.
 	 * @return a LinphoneEvent representing the subscription context.
 	 */
-	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content );
+	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content);
+	
+	/**
+	 * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
+	 * If accepted, the subscription runs for a finite period, but is automatically renewed if not terminated before.
+	 * Unlike linphone_core_subscribe() the subscription isn't sent immediately. It will be send when calling linphone_event_send_subscribe().
+	 * @param resource the destination resource
+	 * @param event the event name
+	 * @param expires the whished duration of the subscription
+	 * @param body an optional body, may be NULL.
+	 * @return a LinphoneEvent holding the context of the created subcription.
+	 */
+	public LinphoneEvent createSubscribe(LinphoneAddress resource, String event, int expires);
+	
+	/**
+	 * Create a publish context for an event state.
+	 * After being created, the publish must be sent using linphone_event_send_publish().
+	 * After expiry, the publication is refreshed unless it is terminated before.
+	 * @param resource the resource uri for the event
+	 * @param event the event name
+	 * @param expires the lifetime of the publication
+	 * @return the LinphoneEvent holding the context of the publish.
+	 */
+	public LinphoneEvent createPublish(LinphoneAddress resource, String event, int expires);
 	
 	/**
 	 * Publish an event.

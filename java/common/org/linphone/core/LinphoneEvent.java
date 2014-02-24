@@ -68,4 +68,30 @@ public interface LinphoneEvent {
 	 * @return
 	 */
 	Object getUserContext();
+	
+	/**
+	 * Add a custom header to an outgoing susbscription or publish.
+	 * @param name header's name
+	 * @param value the header's value.
+	 */
+	void addCustomHeader(String name, String value);
+	
+	/**
+	 * Obtain the value of a given header for an incoming subscription.
+	 * @param name header's name
+	 * @return the header's value or NULL if such header doesn't exist.
+	 */
+	String getCustomHeader(String name);
+	
+	/**
+	 * Send a subscription previously created by linphone_core_create_subscribe().
+	 * @param body optional content to attach with the subscription.
+	 */
+	void sendSubscribe(LinphoneContent body);
+	
+	/**
+	 * Send a publish created by linphone_core_create_publish().
+	 * @param body the new data to be published
+	 */
+	void sendPublish(LinphoneContent body);
 }
