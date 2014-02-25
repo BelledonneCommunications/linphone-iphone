@@ -84,6 +84,10 @@
         UITextField *label = (UITextField*)view;
         UIFont *font = [label font];
         [label setFont:[UIFont fontWithName:font.fontName size:font.pointSize * mult]];
+    } else if([view isKindOfClass:[UIButton class]]) {
+        UIButton* button = (UIButton*)view;
+        UIFont* font = button.titleLabel.font;
+        [button.titleLabel setFont:[UIFont fontWithName:font.fontName size:font.pointSize*mult]];
     } else {
         for(UIView *subView in [view subviews]) {
             [LinphoneUtils adjustFontSize:subView mult:mult];
