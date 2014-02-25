@@ -278,7 +278,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         case LinphoneCallEnd:
         case LinphoneCallError:
         {
-            if(linphone_core_get_calls_nb(lc) <= 2) {
+            if(linphone_core_get_calls_nb(lc) <= 2 && !videoShown) {
                 [callTableController maximizeAll];
             }
             break;
@@ -301,6 +301,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView setAnimationDuration:0.3];
         [[PhoneMainView instance] showTabBar: true];
         [[PhoneMainView instance] showStateBar: true];
+        [callTableView setAlpha:1.0];
         [videoCameraSwitch setAlpha:1.0];
         [UIView commitAnimations];
         
@@ -323,6 +324,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
         [videoCameraSwitch setAlpha:0.0];
+        [callTableView setAlpha:0.0];
         [UIView commitAnimations];
         
         
@@ -360,6 +362,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoGroup setAlpha:1.0];
     [callTableView setAlpha:0.0];
     
+    UIEdgeInsets insets = {33, 0, 25, 0};
+    [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
+    [callTableController minimizeAll];
+
     if(animation) {
         [UIView commitAnimations];
     }
@@ -407,6 +414,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
+
+    UIEdgeInsets insets = {10, 0, 25, 0};
+    [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
+    [callTableView setAlpha:1.0];
+    if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 2) {
+        [callTableController maximizeAll];
+    }
+
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setHidden:TRUE];
     
