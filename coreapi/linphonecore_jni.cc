@@ -3318,11 +3318,11 @@ extern "C" void Java_org_linphone_core_LpConfigImpl_setString(JNIEnv *env, jobje
         jstring section, jstring key, jstring value) {
         const char *csection = env->GetStringUTFChars(section, NULL);
         const char *ckey = env->GetStringUTFChars(key, NULL);
-        const char *cvalue = env->GetStringUTFChars(value, NULL);
+        const char *cvalue = value ? env->GetStringUTFChars(value, NULL) : NULL;
         lp_config_set_string((LpConfig *)lpc, csection, ckey, cvalue);
         env->ReleaseStringUTFChars(section, csection);
         env->ReleaseStringUTFChars(key, ckey);
-        env->ReleaseStringUTFChars(value, cvalue);
+        if (value) env->ReleaseStringUTFChars(value, cvalue);
 }
 
 extern "C" jstring Java_org_linphone_core_LpConfigImpl_getString(JNIEnv *env, jobject thiz, jlong lpc,
