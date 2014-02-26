@@ -141,8 +141,8 @@
 		[((IASKSwitchEx*)cell.accessoryView) addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
         [((IASKSwitchEx*)cell.accessoryView) setOnTintColor:LINPHONE_MAIN_COLOR];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
-        cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
+        cell.textLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont systemFontSize];
+        cell.detailTextLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont systemFontSize];
 	} else {
         cell = [super newCellForIdentifier:identifier];
     }
@@ -361,7 +361,7 @@
     labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     labelTitleView.font = [UIFont boldSystemFontOfSize:20];
     labelTitleView.shadowOffset = CGSizeMake(0,1);
-    labelTitleView.textAlignment = UITextAlignmentCenter;
+    labelTitleView.textAlignment = NSTextAlignmentCenter;
     labelTitleView.text = viewController.title;
     [labelTitleView sizeToFit];
     viewController.navigationItem.titleView = labelTitleView;
