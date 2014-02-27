@@ -130,5 +130,24 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public String getSessionName() {
 		return getSessionName(nativePtr);
 	}
-	
+
+	private native int[] getSentVideoSize(long nativePtr);
+	@Override
+	public VideoSize getSentVideoSize() {
+		int[] nativeSize = getSentVideoSize(nativePtr);
+		VideoSize vSize = new VideoSize();
+		vSize.width = nativeSize[0];
+		vSize.height = nativeSize[1];
+		return vSize;
+	}
+
+	private native int[] getReceivedVideoSize(long nativePtr);
+	@Override
+	public VideoSize getReceivedVideoSize() {
+		int[] nativeSize = getReceivedVideoSize(nativePtr);
+		VideoSize vSize = new VideoSize();
+		vSize.width = nativeSize[0];
+		vSize.height = nativeSize[1];
+		return vSize;
+	}
 }

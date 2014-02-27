@@ -116,4 +116,16 @@ public interface LinphoneCallParams {
 	 * @return the session name
 	**/
 	String getSessionName();
+	
+	/**
+	 * Gets the size of the video that is sent.
+	 * @return The sent video size.
+	 */	
+	VideoSize getSentVideoSize();
+	
+	/**
+	 * Gets the size of the video that is received.
+	 * @return The received video size.
+	 */
+	VideoSize getReceivedVideoSize();
 }

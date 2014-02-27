@@ -78,7 +78,9 @@ public final class VideoSize {
 		return true;
 	}
 	
-	
+	public String toDisplayableString() {
+		return width + "x" + height;
+	}
 	public String toString() {
 		return "width = "+width + " height = " + height;
 	}

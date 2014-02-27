@@ -2660,6 +2660,24 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setRecordFile(JNIE
 	}else linphone_call_params_set_record_file((LinphoneCallParams*)lcp,NULL);
 }
 
+extern "C" jintArray Java_org_linphone_core_LinphoneCallParamsImpl_getSentVideoSize(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	MSVideoSize vsize = linphone_call_params_get_sent_video_size(params);
+	jintArray arr = env->NewIntArray(2);
+	int tVsize [2]= {vsize.width,vsize.height};
+	env->SetIntArrayRegion(arr, 0, 2, tVsize);
+	return arr;
+}
+
+extern "C" jintArray Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedVideoSize(JNIEnv *env, jobject thiz, jlong lcp) {
+	const LinphoneCallParams *params = (LinphoneCallParams *) lcp;
+	MSVideoSize vsize = linphone_call_params_get_received_video_size(params);
+	jintArray arr = env->NewIntArray(2);
+	int tVsize [2]= {vsize.width,vsize.height};
+	env->SetIntArrayRegion(arr, 0, 2, tVsize);
+	return arr;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
 	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
