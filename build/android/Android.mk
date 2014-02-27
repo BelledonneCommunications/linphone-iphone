@@ -61,7 +61,10 @@ LOCAL_SRC_FILES := \
 	message_storage.c \
 	info.c \
 	event.c \
-	xml.c
+	xml.c \
+	xml2lpc.c \
+	lpc2xml.c \
+	remote_provisioning.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -203,14 +206,6 @@ endif
 
 ifeq ($(BUILD_SRTP),1)
 	LOCAL_SHARED_LIBRARIES += libsrtp
-endif
-
-ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-LOCAL_SRC_FILES += 	../coreapi/xml2lpc.c \
-			../tools/xml2lpc_jni.cc \
-			../coreapi/lpc2xml.c \
-        		../tools/lpc2xml_jni.cc \
-			../coreapi/remote_provisioning.c
 endif
 
 ifeq ($(BUILD_SQLITE),1)
