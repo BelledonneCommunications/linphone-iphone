@@ -1081,7 +1081,7 @@ static void early_media_call(void) {
 }
 
 static void early_media_call_with_ringing(void){
-
+	char hellopath[256];
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
@@ -1092,6 +1092,11 @@ static void early_media_call_with_ringing(void){
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
+	
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (pauline->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(pauline->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
@@ -1450,6 +1455,7 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 }
 
 static void call_redirect(void){
+	char hellopath[256];
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc");
@@ -1463,6 +1469,13 @@ static void call_redirect(void){
 	/*
 		Marie calls Pauline, which will redirect the call to Laure via a 302
 	*/
+	
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (pauline->lc,TRUE);
+	linphone_core_use_files (laure->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(pauline->lc,hellopath);
+	linphone_core_set_play_file(laure->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
