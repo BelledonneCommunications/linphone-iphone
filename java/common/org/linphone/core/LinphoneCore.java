@@ -1496,4 +1496,26 @@ public interface LinphoneCore {
 	 * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
 	 */
 	public int migrateToMultiTransport();
+	
+	/**
+	 * When receiving an incoming, accept to start a media session as early-media.
+	 * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
+	 * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
+	 * The call can then later be fully accepted using linphone_core_accept_call() or linphone_core_accept_call_with_params().
+	 * @param lc the linphonecore
+	 * @param call the call
+	 * @param params the call params, can be NULL.
+	 * @return true if successful, false otherwise.
+	 */
+	public boolean acceptEarlyMedia(LinphoneCall call);
+	
+	/**
+	 * Accept an early media session for an incoming call.
+	 * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
+	 * @see linphone_core_accept_early_media_with_params()
+	 * @param lc the core
+	 * @param call the incoming call
+	 * @return true if successful, false otherwise.
+	 */
+	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);
 }

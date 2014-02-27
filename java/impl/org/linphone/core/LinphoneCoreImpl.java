@@ -1115,4 +1115,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int migrateToMultiTransport() {
 		return migrateToMultiTransport(nativePtr);
 	}
+	
+	private native boolean acceptEarlyMedia(long lc, long call);
+	@Override
+	public boolean acceptEarlyMedia(LinphoneCall call) {
+		return acceptEarlyMedia(nativePtr, getCallPtr(call));
+	}
+	
+	private native boolean acceptEarlyMediaWithParams(long lc, long call, long params);
+	@Override
+	public boolean acceptEarlyMediaWithParams(LinphoneCall call,
+			LinphoneCallParams params) {
+		long ptrParams = params != null ? ((LinphoneCallParamsImpl) params).nativePtr : 0;
+		return acceptEarlyMediaWithParams(nativePtr, getCallPtr(call), ptrParams);
+	}
 }

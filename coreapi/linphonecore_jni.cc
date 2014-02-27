@@ -1015,6 +1015,21 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_deferCallUpdate(JNIEnv *
 	linphone_core_defer_call_update((LinphoneCore*)lc,(LinphoneCall*)call);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_acceptEarlyMedia(JNIEnv *env, jobject thiz, jlong lc, jlong c) {
+	LinphoneCore *core = (LinphoneCore *)lc;
+	LinphoneCall *call = (LinphoneCall *)c;
+	int ret = linphone_core_accept_early_media(core, call);
+	return (jboolean) ret == 0;
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_acceptEarlyMediaWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong c, jlong params) {
+	LinphoneCore *core = (LinphoneCore *)lc;
+	LinphoneCall *call = (LinphoneCall *)c;
+	const LinphoneCallParams *call_params = (LinphoneCallParams *) params;
+	int ret = linphone_core_accept_early_media_with_params(core, call, call_params);
+	return (jboolean) ret == 0;
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getCallLog(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
