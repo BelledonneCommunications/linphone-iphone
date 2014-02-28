@@ -1270,6 +1270,11 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	if (lc->vtable.configuring_status)
 		lc->vtable.configuring_status(lc, state, message);
 	
+	if (state == LinphoneConfiguringSuccessful) {
+		if (linphone_core_is_provisioning_transient(lc) == TRUE)
+			linphone_core_set_provisioning_uri(lc, NULL);
+	}
+	
 	linphone_core_start(lc);
 }
 

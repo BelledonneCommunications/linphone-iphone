@@ -2309,6 +2309,12 @@ LINPHONE_PUBLIC void linphone_core_set_provisioning_uri(LinphoneCore *lc, const 
 **/
 LINPHONE_PUBLIC const char* linphone_core_get_provisioning_uri(const LinphoneCore *lc);
 
+/**
+ * Gets if the provisioning URI should be removed after it's been applied successfully
+ * @param lc the linphone core
+ * @return TRUE if the provisioning URI should be removed, FALSE otherwise
+ */
+LINPHONE_PUBLIC bool_t linphone_core_is_provisioning_transient(LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_migrate_to_multi_transport(LinphoneCore *lc);
 #ifdef __cplusplus

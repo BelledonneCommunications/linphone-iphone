@@ -99,12 +99,14 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 	return 0;
 }
 
-void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri){
-	if (linphone_core_ready(lc)){
-		lp_config_set_string(lc->config,"misc","config-uri",uri);
-	}
+void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *uri) {
+	lp_config_set_string(lc->config,"misc","config-uri",uri);
 }
 
 const char*linphone_core_get_provisioning_uri(const LinphoneCore *lc){
 	return lp_config_get_string(lc->config,"misc","config-uri",NULL);
+}
+
+bool_t linphone_core_is_provisioning_transient(LinphoneCore *lc) {
+	return lp_config_get_int(lc->config, "misc", "transient_provisioning", 0) == 1;
 }

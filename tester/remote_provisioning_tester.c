@@ -48,6 +48,15 @@ static void remote_provisioning_http(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void remote_provisioning_transient(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_transient_remote_rc", FALSE);
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
+	CU_ASSERT_TRUE(linphone_core_is_provisioning_transient(marie->lc) == TRUE);
+	CU_ASSERT_TRUE(linphone_core_get_provisioning_uri(marie->lc) == NULL);
+	linphone_core_manager_destroy(marie);
+}
+
 static void remote_provisioning_https(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
@@ -72,7 +81,8 @@ test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning successful behind http", remote_provisioning_http },
 	{ "Remote provisioning successful behind https", remote_provisioning_https },
 	{ "Remote provisioning 404 not found", remote_provisioning_not_found },
-	{ "Remote provisioning invalid", remote_provisioning_invalid }
+	{ "Remote provisioning invalid", remote_provisioning_invalid },
+	{ "Remote provisioning transient successful", remote_provisioning_transient }
 };
 
 test_suite_t remote_provisioning_test_suite = {
