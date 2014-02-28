@@ -293,6 +293,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->n_active_streams=1;
 	strncpy(md->streams[0].rtp_addr,local_ip,sizeof(md->streams[0].rtp_addr));
 	strncpy(md->streams[0].rtcp_addr,local_ip,sizeof(md->streams[0].rtcp_addr));
+	strncpy(md->streams[0].name,"Audio",sizeof(md->streams[0].name)-1);
 	md->streams[0].rtp_port=call->audio_port;
 	md->streams[0].rtcp_port=call->audio_port+1;
 	md->streams[0].proto=(call->params.media_encryption == LinphoneMediaEncryptionSRTP) ?
@@ -309,6 +310,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 
 	if (call->params.has_video){
 		md->n_active_streams++;
+		strncpy(md->streams[0].name,"Video",sizeof(md->streams[0].name)-1);
 		md->streams[1].rtp_port=call->video_port;
 		md->streams[1].rtcp_port=call->video_port+1;
 		md->streams[1].proto=md->streams[0].proto;

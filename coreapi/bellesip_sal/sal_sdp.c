@@ -87,7 +87,7 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMedia
 	rtp_port=stream->rtp_port;
 	rtcp_port=stream->rtcp_port;
 	
-	media_desc = belle_sdp_media_description_create ( sal_stream_type_to_string ( stream->type )
+	media_desc = belle_sdp_media_description_create ( sal_stream_description_get_type_as_string(stream)
 				 ,stream->rtp_port
 				 ,1
 				 ,sal_media_proto_to_string ( stream->proto )
@@ -351,7 +351,7 @@ static void sdp_parse_ice_media_parameters(belle_sdp_media_description_t *media_
 			while (3 == sscanf(ptr, "%u %s %u%n", &componentID, candidate.addr, &candidate.port, &offset)) {
 				if ((componentID > 0) && (componentID <= SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES)) {
 					SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[componentID - 1];
-					strncpy(remote_candidate->addr, candidate.addr, sizeof(remote_candidate->addr));
+					strncpy(remote_candidate->addr, candidate.addr, sizeof(remote_candidate->addr)-1);
 					remote_candidate->port = candidate.port;
 				}
 				ptr += offset;
@@ -360,9 +360,9 @@ static void sdp_parse_ice_media_parameters(belle_sdp_media_description_t *media_
 				} else break;
 			}
 		} else if ((keywordcmp("ice-ufrag", att_name) == 0) && (value != NULL)) {
-			strncpy(stream->ice_ufrag, value, sizeof(stream->ice_ufrag));
+			strncpy(stream->ice_ufrag, value, sizeof(stream->ice_ufrag)-1);
 		} else if ((keywordcmp("ice-pwd", att_name) == 0) && (value != NULL)) {
-			strncpy(stream->ice_pwd, value, sizeof(stream->ice_pwd));
+			strncpy(stream->ice_pwd, value, sizeof(stream->ice_pwd) -1);
 		} else if (keywordcmp("ice-mismatch", att_name) == 0) {
 			stream->ice_mismatch = TRUE;
 		}
@@ -383,16 +383,18 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	memset ( stream,0,sizeof ( *stream ) );
 
 	proto = belle_sdp_media_get_protocol ( media );
-	stream->proto=SalProtoUnknown;
+	stream->proto=SalProtoOther;
 	if ( proto ) {
 		if ( strcasecmp ( proto,"RTP/AVP" ) ==0 )
 			stream->proto=SalProtoRtpAvp;
 		else if ( strcasecmp ( proto,"RTP/SAVP" ) ==0 ) {
 			stream->proto=SalProtoRtpSavp;
+		}else{
+			strncpy(stream->proto_other,proto,sizeof(stream->proto_other)-1);
 		}
 	}
 	if ( ( cnx=belle_sdp_media_description_get_connection ( media_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
-		strncpy ( stream->rtp_addr,belle_sdp_connection_get_address ( cnx ),sizeof ( stream->rtp_addr ) );
+		strncpy ( stream->rtp_addr,belle_sdp_connection_get_address ( cnx ), sizeof ( stream->rtp_addr ) -1 );
 	}
 
 	stream->rtp_port=belle_sdp_media_get_media_port ( media );
@@ -439,7 +441,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 		if (nb == 1) {
 			/* SDP rtcp attribute only contains the port */
 		} else if (nb == 2) {
-			strncpy(stream->rtcp_addr, tmp, sizeof(stream->rtcp_addr));
+			strncpy(stream->rtcp_addr, tmp, sizeof(stream->rtcp_addr)-1);
 		} else {
 			ms_warning("sdp has a strange a=rtcp line (%s) nb=%i", value, nb);
 		}
@@ -470,10 +472,10 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	desc->dir = SalStreamSendRecv;
 
 	if ( ( cnx=belle_sdp_session_description_get_connection ( session_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
-		strncpy ( desc->addr,belle_sdp_connection_get_address ( cnx ),sizeof ( desc->addr ) );
+		strncpy ( desc->addr,belle_sdp_connection_get_address ( cnx ),sizeof ( desc->addr ) -1  );
 	}
 	if ( (sname=belle_sdp_session_description_get_session_name(session_desc)) && belle_sdp_session_name_get_value(sname) ){
-		strncpy(desc->name,belle_sdp_session_name_get_value(sname),sizeof(desc->name));
+		strncpy(desc->name,belle_sdp_session_name_get_value(sname),sizeof(desc->name) - 1);
 	}
 	
 	if ( belle_sdp_session_description_get_bandwidth ( session_desc,"AS" ) >0 ) {
@@ -493,10 +495,10 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 
 	/* Get ICE remote ufrag and remote pwd, and ice_lite flag */
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"ice-ufrag");
-	if (value) strncpy(desc->ice_ufrag, value, sizeof(desc->ice_ufrag));
+	if (value) strncpy(desc->ice_ufrag, value, sizeof(desc->ice_ufrag) - 1);
 	
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"ice-pwd");
-	if (value) strncpy(desc->ice_pwd, value, sizeof(desc->ice_pwd));
+	if (value) strncpy(desc->ice_pwd, value, sizeof(desc->ice_pwd)-1);
 	
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"ice-lite");
 	if (value) desc->ice_lite = TRUE;

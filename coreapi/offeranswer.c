@@ -262,6 +262,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->ice_completed = local_cap->ice_completed;
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
+	strcpy(result->name,local_cap->name);
 }
 
 /**
@@ -291,6 +292,35 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	return 0;
 }
 
+static bool_t local_stream_not_already_used(const SalMediaDescription *result, const SalStreamDescription *stream){
+	int i;
+	for(i=0;i<result->n_total_streams;++i){
+		const SalStreamDescription *ss=&result->streams[i];
+		if (strcmp(ss->name,stream->name)==0){
+			ms_message("video stream already used in answer");
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+/*in answering mode, we consider that if we are able to make SAVP, then we can do AVP as well*/
+static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote){
+	if (local==remote) return TRUE;
+	if (remote==SalProtoRtpAvp && local==SalProtoRtpSavp) return TRUE;
+	return FALSE;
+}
+
+static const SalStreamDescription *find_local_matching_stream(const SalMediaDescription *result, const SalMediaDescription *local_capabilities, const SalStreamDescription *remote_stream){
+	int i;
+	for(i=0;i<local_capabilities->n_active_streams;++i){
+		const SalStreamDescription *ss=&local_capabilities->streams[i];
+		if (ss->type==remote_stream->type && proto_compatible(ss->proto,remote_stream->proto)
+			&& local_stream_not_already_used(result,ss)) return ss;
+	}
+	return NULL;
+}
+
 /**
  * Returns a media description to run the streams with, based on the local capabilities and
  * and the received offer.
@@ -305,17 +335,14 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	result->n_active_streams=0;
 	for(i=0;i<remote_offer->n_total_streams;++i){
 		rs=&remote_offer->streams[i];
-		if (rs->proto!=SalProtoUnknown){
-			ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
-			/* if matching failed, and remote proposes Avp only, ask for local Savp streams */ 
-			if (!ls && rs->proto == SalProtoRtpAvp) {
-				ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,SalProtoRtpSavp,rs->type);
-			}
+		if (rs->proto!=SalProtoOther){
+			ls=find_local_matching_stream(result,local_capabilities,rs);
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
 			if (result->streams[i].rtp_port!=0) result->n_active_streams++;
 		}else {
+			ms_message("Declining mline %i, no corresponding stream in local capabilities description.",i);
 			/* create an inactive stream for the answer, as there where no matching stream in local capabilities */
 			result->streams[i].dir=SalStreamInactive;
 			result->streams[i].rtp_port=0;
@@ -323,6 +350,9 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			result->streams[i].proto=rs->proto;
 			if (rs->type==SalOther){
 				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
+			}
+			if (rs->proto==SalProtoOther){
+				strncpy(result->streams[i].proto_other,rs->proto_other,sizeof(rs->proto_other)-1);
 			}
 		}
 	}

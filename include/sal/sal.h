@@ -121,9 +121,9 @@ typedef enum {
 const char* sal_stream_type_to_string(SalStreamType type);
 
 typedef enum{
-	SalProtoUnknown,
 	SalProtoRtpAvp,
-	SalProtoRtpSavp
+	SalProtoRtpSavp,
+	SalProtoOther
 }SalMediaProto;
 const char* sal_media_proto_to_string(SalMediaProto type);
 
@@ -177,9 +177,11 @@ typedef struct SalSrtpCryptoAlgo {
 #define SAL_CRYPTO_ALGO_MAX 4
 
 typedef struct SalStreamDescription{
+	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
 	SalMediaProto proto;
 	SalStreamType type;
 	char typeother[32];
+	char proto_other[32];
 	char rtp_addr[64];
 	char rtcp_addr[64];
 	int rtp_port;
@@ -197,9 +199,13 @@ typedef struct SalStreamDescription{
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_mismatch;
 	bool_t ice_completed;
+	bool_t pad[2];
 } SalStreamDescription;
 
-#define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
+const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc);
+const char *sal_stream_description_get_proto_as_string(const SalStreamDescription *desc);
+
+#define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 8
 
 typedef struct SalMediaDescription{
 	int refcount;
@@ -217,6 +223,7 @@ typedef struct SalMediaDescription{
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_lite;
 	bool_t ice_completed;
+	bool_t pad[2];
 } SalMediaDescription;
 
 typedef struct SalMessage{
@@ -691,6 +698,7 @@ LINPHONE_PUBLIC void sal_enable_dns_srv(Sal *sal, bool_t enable);
 LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
+unsigned int sal_get_random(void);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
 belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
 void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer);

@@ -42,10 +42,12 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 }
 
 static void linphone_proxy_config_init(LinphoneCore* lc,LinphoneProxyConfig *obj){
+	const char *dial_prefix;
 	memset(obj,0,sizeof(LinphoneProxyConfig));
 	obj->magic=linphone_proxy_config_magic;
 	obj->expires=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"reg_expires",3600);
-	obj->dial_prefix=ms_strdup(LP_CONFIG_DEFAULT_STRING((lc?lc->config:NULL),"dial_prefix",'\0'));
+	dial_prefix=LP_CONFIG_DEFAULT_STRING((lc?lc->config:NULL),"dial_prefix",NULL);
+	if (dial_prefix) obj->dial_prefix=ms_strdup(dial_prefix);
 	obj->dial_escape_plus=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"dial_escape_plus",0);
 	obj->privacy=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"privacy",LinphonePrivacyDefault);
 }

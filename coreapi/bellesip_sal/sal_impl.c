@@ -947,6 +947,12 @@ unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
 	return belle_sip_random_bytes(ret,size);
 }
 
+unsigned int sal_get_random(void){
+	unsigned int ret=0;
+	belle_sip_random_bytes((unsigned char*)&ret,4);
+	return ret;
+}
+
 belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	return belle_sip_main_loop_create_timeout(ml, func, data, timeout_value_ms, timer_name);

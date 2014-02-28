@@ -498,12 +498,22 @@ const char* sal_stream_type_to_string(SalStreamType type) {
 	}
 }
 
+const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc){
+	if (desc->type==SalOther) return desc->typeother;
+	else return sal_stream_type_to_string(desc->type);
+}
+
 const char* sal_media_proto_to_string(SalMediaProto type) {
 	switch (type) {
 	case SalProtoRtpAvp:return "RTP/AVP";
 	case SalProtoRtpSavp:return "RTP/SAVP";
 	default: return "unknown";
 	}
+}
+
+const char *sal_stream_description_get_proto_as_string(const SalStreamDescription *desc){
+	if (desc->proto==SalProtoOther) return desc->proto_other;
+	else return sal_media_proto_to_string(desc->proto);
 }
 
 
