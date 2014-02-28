@@ -61,3 +61,6 @@
 [submodule "submodules/msisac"]
 	path = submodules/msisac
 	url = git://git.linphone.org/msisac
+[submodule "submodules/cunit"]
+	path = submodules/cunit
+	url = git://git.linphone.org/cunit.git
