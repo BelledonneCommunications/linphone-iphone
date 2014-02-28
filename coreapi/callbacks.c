@@ -924,25 +924,9 @@ static void ping_reply(SalOp *op){
 	}
 }
 
-static const char *get_client_cert_path(LinphoneCore *lc) {
-	static char cldir[200] = {0};
-	#ifdef HAVE_GETENV
-	if (!cldir[0]) {
-		static char default_path[200] = {0};
-		snprintf(default_path, sizeof(default_path), "%s%s", getenv("HOME"), "/linphone_certs");
-		snprintf(cldir, sizeof(cldir), "%s", lp_config_get_string(lc->config,"sip","client_certificates_dir", default_path));
-	}
-	#endif
-	return cldir;
-}
 static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
-		char chain_file[200];
-		char key_file[200];
-		const char *path = get_client_cert_path(lc);
-
-		snprintf(chain_file, sizeof(chain_file), "%s%s", path, "/chain.pem");
-
-		snprintf(key_file, sizeof(key_file), "%s%s", path, "/key.pem");
+		const char *chain_file = lp_config_get_string(lc->config,"sip","client_cert_chain", 0);
+		const char *key_file = lp_config_get_string(lc->config,"sip","client_cert_key", 0);;
 
 #ifndef WIN32
 		{
