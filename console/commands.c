@@ -617,8 +617,6 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 	}
 	LinphoneChatRoom *cr = linphone_core_create_chat_room(lc,arg1);
 	linphone_chat_room_send_message(cr,arg2);
-	linphone_chat_room_destroy(cr);
-
 	return 1;
 }
 
