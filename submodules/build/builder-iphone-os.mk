@@ -24,20 +24,20 @@ host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
-				--disable-strict \
-				--disable-nls \
 				--with-readline=none  \
 				--enable-gtk_ui=no \
 				--enable-console_ui=no \
+				--enable-bellesip \
+				--with-gsm=$(prefix) \
+				--with-srtp=$(prefix) \
+				--with-antlr=$(prefix) \
+				--disable-strict \
+				--disable-nls \
 				--disable-theora \
 				--disable-sdl \
 				--disable-x11 \
-				--enable-bellesip \
-				--with-gsm=$(prefix) \
 				--disable-tutorials \
 				--disable-tools \
-				--with-srtp=$(prefix) \
-				--with-antlr=$(prefix) \
 				--disable-msg-storage
 
                               
