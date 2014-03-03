@@ -2510,6 +2510,7 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	{
 		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
 	}
+	ms_message("On call [%p] %s",call,temp);
 	if (lc->vtable.display_warning!=NULL)
 		lc->vtable.display_warning(lc,temp);
 	linphone_core_terminate_call(lc,call);
