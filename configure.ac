@@ -49,6 +49,8 @@ AM_PROG_CC_C_O
 AC_CHECK_PROGS(MD5SUM,[md5sum md5])
 AM_CONDITIONAL(HAVE_MD5SUM,test -n $MD5SUM)
 
+ios_found=no
+
 case $target in
 	*mingw32ce)
 		CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501"
@@ -68,7 +70,9 @@ case $target in
 	;;
 	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
+		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
+		AC_PROG_OBJC
 	;;
 	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
@@ -79,8 +83,7 @@ case $target in
 
 esac
 
-
-
+AM_CONDITIONAL(BUILD_IOS, test x$ios_found = xyes)
 
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)

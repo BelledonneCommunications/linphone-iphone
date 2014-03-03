@@ -1,20 +1,20 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+ liblinphone_tester - liblinphone test suite
+ Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
@@ -35,6 +35,9 @@ static int nb_test_suites = 0;
 static unsigned char curses = 0;
 #endif
 
+#if TARGET_OS_IPHONE
+#include "liblinphonetester_ios.h"
+#endif
 
 
 const char* test_domain="sipopen.example.org";
@@ -45,12 +48,10 @@ const char* test_route="sip2.linphone.org";
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
-#else
-#ifdef __QNX__
+#elif defined(__QNX__)
 const char *liblinphone_tester_file_prefix="./app/native/assets/";
 #else
 const char *liblinphone_tester_file_prefix=".";
-#endif
 #endif
 
 const char *userhostsfile = "tester_hosts";
@@ -78,8 +79,8 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-					,username
-					,realm);
+               ,username
+               ,realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
@@ -146,9 +147,9 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	int retry=0;
 	MSList* iterator;
 	while ((counter==NULL || *counter<value) && retry++ <timeout_ms/100) {
-		 for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
-			 linphone_core_iterate((LinphoneCore*)(iterator->data));
-		 }
+        for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
+            linphone_core_iterate((LinphoneCore*)(iterator->data));
+        }
 		ms_usleep(100000);
 	}
 	if(counter && *counter<value) return FALSE;
@@ -160,7 +161,7 @@ static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t e
 	MSList* codecs_it;
 	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
-			linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
+        linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
 	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
@@ -202,7 +203,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.notify_received=linphone_notify_received;
 	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
 	mgr->v_table.configuring_status=linphone_configuration_status;
-	
+
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
 	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_path, mgr);
@@ -413,12 +414,12 @@ void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
 	int prio;
 	switch(lev){
-	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
-	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
-	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
-	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
-	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
-	default:		prio = ANDROID_LOG_DEFAULT;	break;
+        case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+        case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+        case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
+        case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+        case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+        default:		prio = ANDROID_LOG_DEFAULT;	break;
 	}
 	linphone_android_log_handler(prio, fmt, args);
 }
@@ -429,6 +430,7 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 	ortp_qnx_log_handler("liblinphone_tester", lev, fmt, args);
 }
 #endif /* __QNX__ */
+
 
 void helper(const char *name) {
 	fprintf(stderr,"%s \t--help\n"
@@ -449,13 +451,21 @@ void helper(const char *name) {
 }
 
 #define CHECK_ARG(argument, index, argc)                                      \
-	if(index >= argc) {                                                   \
-		fprintf(stderr, "Missing argument for \"%s\"\n", argument);   \
-		return -1;                                                    \
-	}                                                                     \
+if(index >= argc) {                                                   \
+fprintf(stderr, "Missing argument for \"%s\"\n", argument);   \
+return -1;                                                    \
+}                                                                     \
 
 #ifndef WINAPI_FAMILY_PHONE_APP
-int main (int argc, char *argv[]) {
+
+
+#if TARGET_OS_IPHONE
+int ios_tester_main(int argc, char * argv[])
+#else
+int main (int argc, char *argv[])
+#endif
+
+{
 	int i,j;
 	int ret;
 	const char *suite_name=NULL;
@@ -465,6 +475,8 @@ int main (int argc, char *argv[]) {
 	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
 #elif defined(__QNX__)
 	linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
+#elif TARGET_OS_IPHONE
+	linphone_core_set_log_handler(liblinphone_tester_ios_log_handler);
 #else
 	linphone_core_set_log_file(NULL);
 #endif
