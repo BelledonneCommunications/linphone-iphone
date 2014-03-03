@@ -461,3 +461,37 @@ void lp_config_clean_section(LpConfig *lpconfig, const char *section){
 int lp_config_needs_commit(const LpConfig *lpconfig){
 	return lpconfig->modified>0;
 }
+
+static const char *DEFAULT_VALUES_SUFFIX = "_default_values";
+
+int lp_config_get_default_int(const LpConfig *lpconfig, const char *section, const char *key, int default_value) {
+	char default_section[MAX_LEN];
+	strcpy(default_section, section);
+	strcat(default_section, DEFAULT_VALUES_SUFFIX);
+	
+	return lp_config_get_int(lpconfig, default_section, key, default_value);
+}
+
+int64_t lp_config_get_default_int64(const LpConfig *lpconfig, const char *section, const char *key, int64_t default_value) {
+	char default_section[MAX_LEN];
+	strcpy(default_section, section);
+	strcat(default_section, DEFAULT_VALUES_SUFFIX);
+	
+	return lp_config_get_int64(lpconfig, default_section, key, default_value);
+}
+
+float lp_config_get_default_float(const LpConfig *lpconfig, const char *section, const char *key, float default_value) {
+	char default_section[MAX_LEN];
+	strcpy(default_section, section);
+	strcat(default_section, DEFAULT_VALUES_SUFFIX);
+	
+	return lp_config_get_float(lpconfig, default_section, key, default_value);
+}
+
+const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value) {
+	char default_section[MAX_LEN];
+	strcpy(default_section, section);
+	strcat(default_section, DEFAULT_VALUES_SUFFIX);
+	
+	return lp_config_get_string(lpconfig, default_section, key, default_value);
+}

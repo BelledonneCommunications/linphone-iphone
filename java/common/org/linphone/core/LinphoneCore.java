@@ -1518,4 +1518,10 @@ public interface LinphoneCore {
 	 * @return true if successful, false otherwise.
 	 */
 	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public LinphoneProxyConfig createProxyConfig();
 }

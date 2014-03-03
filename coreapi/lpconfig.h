@@ -55,20 +55,6 @@ typedef struct _LpConfig LpConfig;
 extern "C" {
 #endif
 
-
-#define LP_CONFIG_DEFAULT_STRING(config, name, default) \
-	(config) ? (lp_config_get_string(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_INT(config, name, default) \
-	(config) ? (lp_config_get_int(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_INT64(config, name, default) \
-	(config) ? (lp_config_get_int64(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_FLOAT(config, name, default) \
-	(config) ? (lp_config_get_float(config, "default_values", name, default)) : (default)
-
-
 /**
  * Instantiates a LpConfig object from a user config file.
  *
@@ -220,7 +206,40 @@ void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, voi
 
 /*tells whether uncommited (with lp_config_sync()) modifications exist*/
 int lp_config_needs_commit(const LpConfig *lpconfig);
+
 LINPHONE_PUBLIC void lp_config_destroy(LpConfig *cfg);
+
+/**
+ * Retrieves a default configuration item as an integer, given its section, key, and default value.
+ * 
+ * @ingroup misc
+ * The default integer value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC int lp_config_get_default_int(const LpConfig *lpconfig, const char *section, const char *key, int default_value);
+
+/**
+ * Retrieves a default configuration item as a 64 bit integer, given its section, key, and default value.
+ * 
+ * @ingroup misc
+ * The default integer value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC int64_t lp_config_get_default_int64(const LpConfig *lpconfig, const char *section, const char *key, int64_t default_value);
+
+/**
+ * Retrieves a default configuration item as a float, given its section, key, and default value.
+ * 
+ * @ingroup misc
+ * The default float value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC float lp_config_get_default_float(const LpConfig *lpconfig, const char *section, const char *key, float default_value);
+
+/**
+ * Retrieves a default configuration item as a string, given its section, key, and default value.
+ * 
+ * @ingroup misc
+ * The default value string is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
 	
 #ifdef __cplusplus
 }

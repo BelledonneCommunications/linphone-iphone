@@ -87,7 +87,8 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	
-	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
+	abstract public LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
+	
 	/**
 	 * Enable verbose traces
 	 * @param enable 
@@ -96,12 +97,14 @@ abstract public class LinphoneCoreFactory {
 	abstract public  void setDebugMode(boolean enable, String tag);
 	
 	abstract public void setLogHandler(LinphoneLogHandler handler);
+	
 	/**
 	 * Create a LinphoneFriend, similar to {@link #createLinphoneFriend()} + {@link LinphoneFriend#setAddress(LinphoneAddress)} 
 	 * @param friendUri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
 	 * @return a new LinphoneFriend with address initialized
 	 */
 	abstract public LinphoneFriend createLinphoneFriend(String friendUri);
+	
 	/**
 	 * Create a new LinphoneFriend
 	 * @return

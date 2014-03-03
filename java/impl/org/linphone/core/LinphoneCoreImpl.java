@@ -145,6 +145,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
 	private native int migrateToMultiTransport(long nativePtr);
+	private native long createProxyConfig(long nativePtr);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1128,5 +1129,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 			LinphoneCallParams params) {
 		long ptrParams = params != null ? ((LinphoneCallParamsImpl) params).nativePtr : 0;
 		return acceptEarlyMediaWithParams(nativePtr, getCallPtr(call), ptrParams);
+	}
+	@Override
+	public LinphoneProxyConfig createProxyConfig() {
+		return new LinphoneProxyConfigImpl(createProxyConfig(nativePtr));
 	}
 }
