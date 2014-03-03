@@ -52,6 +52,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	memset(obj, 0, sizeof(LinphoneProxyConfig));
 	obj->magic = linphone_proxy_config_magic;
 	obj->expires = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_expires", 3600) : 3600;
+	obj->reg_sendregister = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 0) : 0;
 	obj->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
 	obj->dial_escape_plus = lc ? lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
 	obj->privacy = lc ? lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;

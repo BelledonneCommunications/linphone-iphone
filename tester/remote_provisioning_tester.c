@@ -76,13 +76,25 @@ static void remote_provisioning_invalid(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void remote_provisioning_default_values(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_default_values_rc", FALSE);
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+	LinphoneProxyConfig *lpc = linphone_core_create_proxy_config(marie->lc);
+	CU_ASSERT_TRUE(lpc->reg_sendregister == 1);
+	CU_ASSERT_TRUE(lpc->expires == 604800);
+	CU_ASSERT_TRUE(strcmp(lpc->reg_proxy, "<sip:sip.linphone.org:5223;transport=tls>") == 0);
+	CU_ASSERT_TRUE(strcmp(lpc->reg_identity, "sip:?@sip.linphone.org") == 0);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning skipped", remote_provisioning_skipped },
 	{ "Remote provisioning successful behind http", remote_provisioning_http },
 	{ "Remote provisioning successful behind https", remote_provisioning_https },
 	{ "Remote provisioning 404 not found", remote_provisioning_not_found },
 	{ "Remote provisioning invalid", remote_provisioning_invalid },
-	{ "Remote provisioning transient successful", remote_provisioning_transient }
+	{ "Remote provisioning transient successful", remote_provisioning_transient },
+	{ "Remote provisioning default values", remote_provisioning_default_values }
 };
 
 test_suite_t remote_provisioning_test_suite = {
