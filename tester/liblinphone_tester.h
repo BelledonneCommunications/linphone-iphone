@@ -71,11 +71,11 @@ extern int liblinphone_tester_run_tests(const char *suite_name, const char *test
 #endif
 
 
-const char* test_domain;
-const char* auth_domain;
-const char* test_username;
-const char* test_password;
-const char* test_route;
+extern const char* test_domain;
+extern const char* auth_domain;
+extern const char* test_username;
+extern const char* test_password;
+extern const char* test_route;
 
 
 typedef struct _stats {
