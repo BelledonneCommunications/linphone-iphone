@@ -154,7 +154,7 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	memset(&tone,0,sizeof(tone));
 	memset(&expected_tone,0,sizeof(expected_tone));
 
-	ms_filter_set_notify_callback(ecc->det,on_tone_received,ecc);
+	ms_filter_add_notify_callback(ecc->det,on_tone_received,ecc,TRUE);
 
 	/* configure the tones to be scanned */
 	
@@ -188,7 +188,7 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(2);
 
-	ms_filter_set_notify_callback(ecc->gen,on_tone_sent,ecc);
+	ms_filter_add_notify_callback(ecc->gen,on_tone_sent,ecc,TRUE);
 	
 	/* play the three tones*/
 	

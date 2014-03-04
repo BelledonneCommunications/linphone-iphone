@@ -528,6 +528,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 		linphone_gtk_push_text ( w,linphone_chat_message_get_from ( msg ),
 								 FALSE,room,msg,FALSE );
 	}
+	linphone_core_play_local(lc,linphone_gtk_get_sound_path("incoming_chat.wav"));
 	linphone_gtk_show_friends();
 	
 }

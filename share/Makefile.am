@@ -1,7 +1,7 @@
 
 SUBDIRS=C fr it ja cs xml
 
-LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav
+LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav incoming_chat.wav
 LINPHONE_RINGS=rings/orig.wav \
 				rings/oldphone.wav \
 				rings/oldphone-mono.wav \

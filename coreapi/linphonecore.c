@@ -609,6 +609,8 @@ static void sound_config_read(LinphoneCore *lc)
 
 	/*just parse requested stream feature once at start to print out eventual errors*/
 	linphone_core_get_audio_features(lc);
+	
+	_linphone_core_set_call_error_tone(lc,LinphoneReasonBusy,LinphoneToneBusy,NULL);
 }
 
 static void certificates_config_read(LinphoneCore *lc)
@@ -5356,17 +5358,24 @@ void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	}
 }
 
+typedef enum{
+	LinphoneToneGenerator,
+	LinphoneLocalPlayer
+}LinphoneAudioResourceType;
 
-static MSFilter *get_dtmf_gen(LinphoneCore *lc){
+static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype){
 	LinphoneCall *call=linphone_core_get_current_call (lc);
 	AudioStream *stream=NULL;
+	RingStream *ringstream;
 	if (call){
 		stream=call->audiostream;
 	}else if (linphone_core_is_in_conference(lc)){
 		stream=lc->conf_ctx.local_participant;
 	}
 	if (stream){
-		return stream->dtmfgen;
+		if (rtype==LinphoneToneGenerator) return stream->dtmfgen;
+		if (rtype==LinphoneLocalPlayer) return stream->local_player;
+		return NULL;
 	}
 	if (lc->ringstream==NULL){
 		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1);
@@ -5374,14 +5383,21 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 		if (ringcard == NULL)
 			return NULL;
 
-		lc->ringstream=ring_start(NULL,0,ringcard);
+		ringstream=lc->ringstream=ring_start(NULL,0,ringcard);
 		ms_filter_call_method(lc->ringstream->gendtmf,MS_DTMF_GEN_SET_DEFAULT_AMPLITUDE,&amp);
 		lc->dmfs_playing_start_time=time(NULL);
 	}else{
+		ringstream=lc->ringstream;
 		if (lc->dmfs_playing_start_time!=0)
 			lc->dmfs_playing_start_time=time(NULL);
 	}
-	return lc->ringstream->gendtmf;
+	if (rtype==LinphoneToneGenerator) return ringstream->gendtmf;
+	if (rtype==LinphoneLocalPlayer) return ringstream->source;
+	return NULL;
+}
+
+static MSFilter *get_dtmf_gen(LinphoneCore *lc){
+	return get_audio_resource(lc,LinphoneToneGenerator);
 }
 
 /**
@@ -5401,6 +5417,26 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	if (duration_ms > 0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
+}
+
+/**
+ * Plays an audio file to the local user.
+ * This function works at any time, during calls, or when no calls are running.
+ * It doesn't request the underlying audio system to support multiple playback streams.
+ * @param lc the linphone core
+ * @param audiofile path to audio file in wav PCM 16 bit format.
+ * @ingroup misc
+**/
+int linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
+	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer);
+	int loopms=-1;
+	if (!f) return -1;
+	ms_filter_call_method(f,MS_PLAYER_SET_LOOP,&loopms);
+	if (ms_filter_call_method(f,MS_PLAYER_OPEN,(void*)audiofile)!=0){
+		return -1;
+	}
+	ms_filter_call_method_noarg(f,MS_PLAYER_START);
+	return 0;
 }
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
@@ -5440,6 +5476,19 @@ void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 		}
 		if (def.duration>0)
 			ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
+	}
+}
+
+void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason){
+	if (linphone_core_tone_indications_enabled(lc)){
+		LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
+		if (tone){
+			if (tone->audiofile){
+				linphone_core_play_local(lc,tone->audiofile);
+			}else if (tone->toneid!=LinphoneToneUndefined){
+				linphone_core_play_named_tone(lc,tone->toneid);
+			}
+		}
 	}
 }
 
@@ -5672,7 +5721,7 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
-
+	lc->tones=ms_list_free_with_data(lc->tones, (void (*)(void*))linphone_tone_description_destroy);
 }
 
 static void video_config_uninit(LinphoneCore *lc)
@@ -6057,7 +6106,7 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "No error";
 		case LinphoneReasonNoResponse:
 			return "No response";
-		case LinphoneReasonBadCredentials:
+		case LinphoneReasonForbidden:
 			return "Bad credentials";
 		case LinphoneReasonDeclined:
 			return "Call declined";
@@ -6079,6 +6128,20 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Not acceptable here";
 		case LinphoneReasonNoMatch:
 			return "No match";
+		case LinphoneReasonMovedPermanently:
+			return "Moved permanently";
+		case LinphoneReasonGone:
+			return "Gone";
+		case LinphoneReasonTemporarilyUnavailable:
+			return "Temporarily unavailable";
+		case LinphoneReasonAddressIncomplete:
+			return "Address incomplete";
+		case LinphoneReasonNotImplemented:
+			return "Not implemented";
+		case LinphoneReasonBadGateway:
+			return "Bad gateway";
+		case LinphoneReasonServerTimeout:
+			return "Server timeout";
 	}
 	return "unknown error";
 }

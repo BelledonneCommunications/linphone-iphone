@@ -343,8 +343,6 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
 
-void linphone_core_play_tone(LinphoneCore *lc);
-
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 void linphone_call_fix_call_parameters(LinphoneCall *call);
 void linphone_call_init_audio_stream(LinphoneCall *call);
@@ -588,6 +586,26 @@ struct _LinphoneConference{
 	bool_t local_muted;
 };
 
+typedef enum _LinphoneToneID{
+	LinphoneToneUndefined,
+	LinphoneToneBusy,
+	LinphoneToneCallWaiting,
+	LinphoneToneCallOnHold,
+	LinphoneToneCallFailed
+}LinphoneToneID;
+
+typedef struct _LinphoneToneDescription{
+	LinphoneReason reason;
+	LinphoneToneID toneid;
+	char *audiofile;
+}LinphoneToneDescription;
+
+LinphoneToneDescription * linphone_tone_description_new(LinphoneReason reason, LinphoneToneID id, const char *audiofile);
+void linphone_tone_description_destroy(LinphoneToneDescription *obj);
+LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason);
+void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason);
+void _linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile);
+
 typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore
@@ -653,10 +671,10 @@ struct _LinphoneCore
 	bool_t use_preview_window;
 
 	time_t network_last_check;
+	
 	bool_t network_last_status;
-
 	bool_t ringstream_autorelease;
-	bool_t pad[3];
+	bool_t pad[2];
 	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
@@ -670,6 +688,7 @@ struct _LinphoneCore
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
 	belle_http_provider_t *http_provider;
+	MSList *tones;
 };
 
 
@@ -779,12 +798,6 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
 
-typedef enum _LinphoneToneID{
-	LinphoneToneBusy,
-	LinphoneToneCallWaiting,
-	LinphoneToneCallOnHold,
-	LinphoneToneCallFailed
-}LinphoneToneID;
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 const char *linphone_core_create_uuid(LinphoneCore *lc);

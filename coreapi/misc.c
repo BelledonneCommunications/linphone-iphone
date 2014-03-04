@@ -1099,13 +1099,13 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonUnknown;
 		case LinphoneReasonNoResponse:
 			return SalReasonUnknown;
-		case LinphoneReasonBadCredentials:
+		case LinphoneReasonForbidden:
 			return SalReasonForbidden;
 		case LinphoneReasonDeclined:
 			return SalReasonDeclined;
 		case LinphoneReasonNotFound:
 			return SalReasonNotFound;
-		case LinphoneReasonNotAnswered:
+		case LinphoneReasonTemporarilyUnavailable:
 			return SalReasonTemporarilyUnavailable;
 		case LinphoneReasonBusy:
 			return SalReasonBusy;
@@ -1121,6 +1121,20 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonUnsupportedContent;
 		case LinphoneReasonNoMatch:
 			return SalReasonNoMatch;
+		case LinphoneReasonMovedPermanently:
+			return SalReasonMovedPermanently;
+		case LinphoneReasonGone:
+			return SalReasonGone;
+		case LinphoneReasonAddressIncomplete:
+			return SalReasonAddressIncomplete;
+		case LinphoneReasonNotImplemented:
+			return SalReasonNotImplemented;
+		case LinphoneReasonBadGateway:
+			return SalReasonBadGateway;
+		case LinphoneReasonServerTimeout:
+			return SalReasonServerTimeout;
+		case LinphoneReasonNotAnswered:
+			return SalReasonRequestTimeout;
 	}
 	return SalReasonUnknown;
 }
@@ -1153,7 +1167,7 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			ret=LinphoneReasonNone;
 			break;
 		case SalReasonTemporarilyUnavailable:
-			ret=LinphoneReasonNone;
+			ret=LinphoneReasonTemporarilyUnavailable;
 			break;
 		case SalReasonServiceUnavailable:
 			ret=LinphoneReasonIOError;
@@ -1169,6 +1183,27 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		break;
 		case SalReasonNoMatch:
 			ret=LinphoneReasonNoMatch;
+		break;
+		case SalReasonRequestTimeout:
+			ret=LinphoneReasonNotAnswered;
+		break;
+		case SalReasonMovedPermanently:
+			ret=LinphoneReasonMovedPermanently;
+		break;
+		case SalReasonGone:
+			ret=LinphoneReasonGone;
+		break;
+		case SalReasonAddressIncomplete:
+			ret=LinphoneReasonAddressIncomplete;
+		break;
+		case SalReasonNotImplemented:
+			ret=LinphoneReasonNotImplemented;
+		break;
+		case SalReasonBadGateway:
+			ret=LinphoneReasonBadGateway;
+		break;
+		case SalReasonServerTimeout:
+			ret=LinphoneReasonServerTimeout;
 		break;
 	}
 	return ret;
@@ -1275,4 +1310,45 @@ int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 	return 0;
 }
 
+LinphoneToneDescription * linphone_tone_description_new(LinphoneReason reason, LinphoneToneID id, const char *audiofile){
+	LinphoneToneDescription *obj=ms_new0(LinphoneToneDescription,1);
+	obj->reason=reason;
+	obj->toneid=id;
+	obj->audiofile=audiofile ? ms_strdup(audiofile) : NULL;
+	return obj;
+}
 
+void linphone_tone_description_destroy(LinphoneToneDescription *obj){
+	if (obj->audiofile) ms_free(obj->audiofile);
+	ms_free(obj);
+}
+
+LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason){
+	const MSList *elem;
+	for (elem=lc->tones;elem!=NULL;elem=elem->next){
+		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
+		if (tone->reason==reason) return tone;
+	}
+	return NULL;
+}
+
+void _linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
+	LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
+	if (tone){
+		lc->tones=ms_list_remove(lc->tones,tone);
+		linphone_tone_description_destroy(tone);
+	}
+	tone=linphone_tone_description_new(reason,id,audiofile);
+	lc->tones=ms_list_append(lc->tones,tone);
+}
+
+/**
+ * Assign an audio file to played locally upon call failure, for a given reason.
+ * @param lc the core
+ * @param reason the #LinphoneReason representing the failure error code.
+ * @param audiofile a wav file to be played when such call failure happens.
+ * @ingroup misc
+**/
+void linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, const char *audiofile){
+	_linphone_core_set_call_error_tone(lc,reason,LinphoneToneUndefined, audiofile);
+}

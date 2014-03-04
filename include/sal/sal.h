@@ -314,6 +314,7 @@ typedef enum SalReason{
 	SalReasonBusy,
 	SalReasonRedirect,
 	SalReasonTemporarilyUnavailable,
+	SalReasonRequestTimeout,
 	SalReasonNotFound,
 	SalReasonDoNotDisturb,
 	SalReasonUnsupportedContent,
@@ -323,7 +324,13 @@ typedef enum SalReason{
 	SalReasonRequestPending,
 	SalReasonUnauthorized,
 	SalReasonNotAcceptable,
-	SalReasonNoMatch /*equivalent to 481 Transaction/Call leg does not exist*/
+	SalReasonNoMatch, /*equivalent to 481 Transaction/Call leg does not exist*/
+	SalReasonMovedPermanently,
+	SalReasonGone,
+	SalReasonAddressIncomplete,
+	SalReasonNotImplemented,
+	SalReasonBadGateway,
+	SalReasonServerTimeout
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);

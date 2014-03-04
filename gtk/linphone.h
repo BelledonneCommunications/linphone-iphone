@@ -170,4 +170,5 @@ void linphone_gtk_schedule_restart(void);
 void linphone_gtk_set_configuration_uri(void);
 GtkWidget * linphone_gtk_show_config_fetching(void);
 void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState state);
+const char *linphone_gtk_get_sound_path(const char *file);
 

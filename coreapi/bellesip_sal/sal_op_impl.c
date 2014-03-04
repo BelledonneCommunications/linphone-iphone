@@ -375,70 +375,98 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonNoMatch:
 			ret=481;
 			break;
+		case SalReasonRequestTimeout:
+			ret=408;
+			break;
+		case SalReasonMovedPermanently:
+			ret=301;
+			break;
+		case SalReasonGone:
+			ret=410;
+			break;
+		case SalReasonAddressIncomplete:
+			ret=484;
+			break;
+		case SalReasonNotImplemented:
+			ret=501;
+			break;
+		case SalReasonServerTimeout:
+			ret=504;
+			break;
+		case SalReasonBadGateway:
+			ret=502;
+			break;
 	}
 	return ret;
 }
 
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
+	*sal_err=SalErrorFailure;
 	switch(code) {
+	case 301:
+		*sal_reason=SalReasonMovedPermanently;
+		break;
 	case 302:
 		*sal_reason=SalReasonRedirect;
-		*sal_err=SalErrorFailure;
-		break;
-	case 400:
-		*sal_err=SalErrorUnknown;
 		break;
 	case 401:
 	case 407:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonUnauthorized;
 		break;
 	case 403:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonForbidden;
 		break;
 	case 404:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonNotFound;
 		break;
+	case 408:
+		*sal_reason=SalReasonRequestTimeout;
+		break;
+	case 410:
+		*sal_reason=SalReasonGone;
+		break;
 	case 415:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonUnsupportedContent;
 		break;
 	case 422:
 		ms_error ("422 not implemented yet");;
 		break;
 	case 480:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonTemporarilyUnavailable;
 		break;
 	case 481:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonNoMatch;
+		break;
+	case 484:
+		*sal_reason=SalReasonAddressIncomplete;
+		break;
 	case 486:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonBusy;
 		break;
 	case 487:
 		break;
 	case 488:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonNotAcceptable;
 		break;
 	case 491:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonRequestPending;
 		break;
+	case 501:
+		*sal_reason=SalReasonNotImplemented;
+		break;
+	case 502:
+		*sal_reason=SalReasonBadGateway;
+		break;
+	case 504:
+		*sal_reason=SalReasonServerTimeout;
+		break;
 	case 600:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonDoNotDisturb;
 		break;
 	case 603:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonDeclined;
 		break;
 	case 503:
-		*sal_err=SalErrorFailure;
 		*sal_reason=SalReasonServiceUnavailable;
 		break;
 	default:

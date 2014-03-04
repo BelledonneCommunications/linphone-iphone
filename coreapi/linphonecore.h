@@ -164,18 +164,27 @@ typedef struct _LinphoneCall LinphoneCall;
 enum _LinphoneReason{
 	LinphoneReasonNone,
 	LinphoneReasonNoResponse, /**<No response received from remote*/
-	LinphoneReasonBadCredentials, /**<Authentication failed due to bad*/
+	LinphoneReasonForbidden, /**<Authentication failed due to bad credentials or resource forbidden*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
-	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
-	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
+	LinphoneReasonNotFound, /**<Destination of the call was not found.*/
+	LinphoneReasonNotAnswered, /**<The call was not answered in time (request timeout)*/
 	LinphoneReasonBusy, /**<Phone line was busy */
 	LinphoneReasonUnsupportedContent, /**<Unsupported content */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
 	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
 	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
-	LinphoneReasonNoMatch /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
+	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
+	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
+	LinphoneReasonGone, /**<Resource no longer exists*/ 
+	LinphoneReasonTemporarilyUnavailable, /**<Temporarily unavailable*/
+	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
+	LinphoneReasonNotImplemented, /**<Not implemented*/
+	LinphoneReasonBadGateway, /**<Bad gateway*/
+	LinphoneReasonServerTimeout /**<Server timeout*/
 };
+
+#define LinphoneReasonBadCredentials LinphoneReasonForbidden
 
 /*for compatibility*/
 #define LinphoneReasonMedia LinphoneReasonUnsupportedContent
@@ -1821,6 +1830,7 @@ LINPHONE_PUBLIC void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,con
 LINPHONE_PUBLIC const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
+LINPHONE_PUBLIC int linphone_core_play_local(LinphoneCore *lc, const char *audiofile);
 LINPHONE_PUBLIC	void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC	bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
 
@@ -2317,6 +2327,8 @@ LINPHONE_PUBLIC const char* linphone_core_get_provisioning_uri(const LinphoneCor
 LINPHONE_PUBLIC bool_t linphone_core_is_provisioning_transient(LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_migrate_to_multi_transport(LinphoneCore *lc);
+
+LINPHONE_PUBLIC void linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, const char *audiofile);
 #ifdef __cplusplus
 }
 #endif

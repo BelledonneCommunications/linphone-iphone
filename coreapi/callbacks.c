@@ -721,9 +721,8 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
 	}else{
 		linphone_call_set_state(call,LinphoneCallError,details);
-		if (sr==SalReasonBusy)
-			linphone_core_play_named_tone(lc,LinphoneToneBusy);
 	}
+	linphone_core_play_call_error_tone(lc,call->reason);
 	
 	if (referer){
 		/*notify referer of the failure*/
