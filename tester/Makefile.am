@@ -32,7 +32,7 @@ noinst_PROGRAMS = liblinphone_tester
 
 liblinphone_tester_LDFLAGS = $(CUNIT_LIBS)
 liblinphone_tester_SOURCES = liblinphone_tester.c 
-liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la $(BELLESIP_LIBS) $(LIBXML2_LIBS) liblinphonetester.la
+liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la liblinphonetester.la $(SIPSTACK_LIBS) $(LIBXML2_LIBS)
 
 endif
 
