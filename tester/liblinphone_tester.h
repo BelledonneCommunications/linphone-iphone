@@ -78,6 +78,7 @@ extern const char* auth_domain;
 extern const char* test_username;
 extern const char* test_password;
 extern const char* test_route;
+extern const char* userhostsfile;
 
 
 typedef struct _stats {
