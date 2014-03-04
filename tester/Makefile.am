@@ -26,14 +26,7 @@ liblinphonetester_la_SOURCES = tester.c \
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = $(STRICT_OPTIONS) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS)
 
-if BUILD_IOS
-
-#we build the liblinphonetester as a library, not as an executable, so that it is usable in XCode
-liblinphonetester_la_OBJCFLAGS = $(AM_CFLAGS)
-liblinphonetester_la_SOURCES  += liblinphonetester_ios.m liblinphonetester_ios.h
-liblinphonetester_la_LDFLAGS   = -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation $(CUNIT_LIBS)
-
-else
+if !BUILD_IOS
 
 noinst_PROGRAMS = liblinphone_tester
 

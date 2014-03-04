@@ -39,7 +39,6 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl don't put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
-AC_PROG_OBJC(["xcrun clang" gcc])
 
 gl_LD_OUTPUT_DEF
 
