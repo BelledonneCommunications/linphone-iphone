@@ -74,11 +74,13 @@ set(SOURCE_FILES
 	offeranswer.c
 	presence.c
 	proxy.c
+	remote_provisioning.c
 	sal.c
 	siplogin.c
 	sipsetup.c
 	#TunnelManager.cc
 	xml.c
+	xml2lpc.c
 	bellesip_sal/sal_impl.h
 	enum.h
 	event.h
@@ -90,6 +92,7 @@ set(SOURCE_FILES
 	offeranswer.h
 	private.h
 	sipsetup.h
+	xml2lpc.h
 )
 
 add_definitions(

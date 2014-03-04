@@ -7,7 +7,6 @@ include_directories(
 	include/
 	coreapi/
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
-	${CMAKE_CURRENT_SOURCE_DIR}/../cmake/libxml2/
 )
 
 include_directories(
