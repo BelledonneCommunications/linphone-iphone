@@ -259,7 +259,7 @@ static void sdp_parse_payload_types(belle_sdp_media_description_t *media_desc, S
 	for ( mime_param_it=mime_params
 						; mime_param_it!=NULL
 			; mime_param_it=mime_param_it->next ) {
-		mime_param=BELLE_SDP_MIME_PARAMETER ( mime_param_it->data )
+		mime_param=BELLE_SDP_MIME_PARAMETER ( mime_param_it->data );
 
 		pt=payload_type_new();
 		payload_type_set_number ( pt,belle_sdp_mime_parameter_get_media_format ( mime_param ) );
@@ -278,6 +278,7 @@ static void sdp_parse_payload_types(belle_sdp_media_description_t *media_desc, S
 static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
 	const belle_sdp_attribute_t *attribute;
+	const belle_sdp_raw_attribute_t *raw_attribute;
 	char tmp[256], tmp2[256];
 	int valid_count = 0;
 	int nb;
@@ -287,9 +288,10 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 						; valid_count < SAL_CRYPTO_ALGO_MAX && attribute_it!=NULL;
 			attribute_it=attribute_it->next ) {
 		attribute=BELLE_SDP_ATTRIBUTE ( attribute_it->data );
+		raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
 
-		if ( keywordcmp ( "crypto",belle_sdp_attribute_get_name ( attribute ) ) ==0 && belle_sdp_attribute_get_value ( attribute ) !=NULL ) {
-			nb = sscanf ( belle_sdp_attribute_get_value ( attribute ), "%d %256s inline:%256s",
+		if ( keywordcmp ( "crypto",belle_sdp_attribute_get_name ( attribute ) ) ==0 && belle_sdp_raw_attribute_get_value ( raw_attribute ) !=NULL ) {
+			nb = sscanf ( belle_sdp_raw_attribute_get_value ( raw_attribute ), "%d %256s inline:%256s",
 							&stream->crypto[valid_count].tag,
 							tmp,
 							tmp2 );
@@ -316,7 +318,7 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 					valid_count++;
 				}
 			} else {
-				ms_warning ( "sdp has a strange a= line (%s) nb=%i",belle_sdp_attribute_get_value ( attribute ),nb );
+				ms_warning ( "sdp has a strange a= line (%s) nb=%i",belle_sdp_raw_attribute_get_value ( raw_attribute ),nb );
 			}
 		}
 	}
@@ -326,14 +328,16 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 static void sdp_parse_ice_media_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
 	const belle_sdp_attribute_t *attribute;
+	const belle_sdp_raw_attribute_t *raw_attribute;
 	const char *att_name;
 	const char *value;
 	int nb_ice_candidates = 0;
 
 	for (attribute_it = belle_sdp_media_description_get_attributes(media_desc); attribute_it != NULL; attribute_it=attribute_it->next) {
-		attribute=(belle_sdp_attribute_t*)attribute_it->data;
+		attribute=BELLE_SDP_ATTRIBUTE(attribute_it->data);
+		raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
 		att_name = belle_sdp_attribute_get_name(attribute);
-		value = belle_sdp_attribute_get_value(attribute);
+		value = belle_sdp_raw_attribute_get_value(raw_attribute);
 
 		if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
 			SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
@@ -374,6 +378,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	belle_sdp_connection_t* cnx;
 	belle_sdp_media_t* media;
 	const belle_sdp_attribute_t* attribute;
+	const belle_sdp_raw_attribute_t* raw_attribute;
 	const char* value;
 	const char *mtype,*proto;
 
@@ -435,7 +440,8 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	stream->rtcp_port = stream->rtp_port + 1;
 	snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), "%s", stream->rtp_addr);
 	attribute=belle_sdp_media_description_get_attribute(media_desc,"rtcp");
-	if (attribute && (value=belle_sdp_attribute_get_value(attribute))!=NULL){
+	raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
+	if (attribute && (value=belle_sdp_raw_attribute_get_value(raw_attribute))!=NULL){
 		char tmp[256];
 		int nb = sscanf(value, "%d IN IP4 %s", &stream->rtcp_port, tmp);
 		if (nb == 1) {
