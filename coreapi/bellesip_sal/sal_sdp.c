@@ -68,6 +68,25 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
+static belle_sdp_attribute_t * create_rtcp_xr_attribute(const SalRtcpXrDescription *desc) {
+	belle_sdp_rtcp_xr_attribute_t *attribute = belle_sdp_rtcp_xr_attribute_new();
+	if (desc->rcvr_rtt_mode != SalRtcpXrRcvrRttNone) {
+		if (desc->rcvr_rtt_mode == SalRtcpXrRcvrRttAll) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "all");
+		else if (desc->rcvr_rtt_mode == SalRtcpXrRcvrRttSender) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "sender");
+		belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_max_size(attribute, desc->rcvr_rtt_max_size);
+	}
+	belle_sdp_rtcp_xr_attribute_set_stat_summary(attribute, (desc->stat_summary_enabled == TRUE));
+	if (desc->stat_summary_enabled == TRUE) {
+		if (desc->stat_summary_flags & SalRtcpXrStatSummaryLoss) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "loss");
+		if (desc->stat_summary_flags & SalRtcpXrStatSummaryDup) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "dup");
+		if (desc->stat_summary_flags & SalRtcpXrStatSummaryJitt) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "jitt");
+		if (desc->stat_summary_flags & SalRtcpXrStatSummaryTTL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "TTL");
+		if (desc->stat_summary_flags & SalRtcpXrStatSummaryHL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "HL");
+	}
+	belle_sdp_rtcp_xr_attribute_set_voip_metrics(attribute, (desc->voip_metrics_enabled == TRUE));
+	return BELLE_SDP_ATTRIBUTE(attribute);
+}
+
 static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMediaDescription *md, const SalStreamDescription *stream ) {
 	belle_sdp_mime_parameter_t* mime_param;
 	belle_sdp_media_description_t* media_desc;
@@ -194,7 +213,11 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMedia
 			add_ice_remote_candidates(media_desc,stream);
 		}
 	}
-	
+
+	if (stream->rtcp_xr.enabled == TRUE) {
+		belle_sdp_media_description_add_attribute(media_desc, create_rtcp_xr_attribute(&stream->rtcp_xr));
+	}
+
 	return media_desc;
 }
 
@@ -243,7 +266,11 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 	if (desc->ice_completed == TRUE) belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("nortpproxy","yes"));
 	if (desc->ice_pwd[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-pwd",desc->ice_pwd));
 	if (desc->ice_ufrag[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-ufrag",desc->ice_ufrag));
-	
+
+	if (desc->rtcp_xr.enabled == TRUE) {
+		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
+	}
+
 	for ( i=0; i<desc->n_total_streams; i++ ) {
 		belle_sdp_session_description_add_media_description ( session_desc,stream_description_to_sdp(desc,&desc->streams[i]));
 	}
@@ -325,7 +352,7 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 	ms_message ( "Found: %d valid crypto lines", valid_count );
 }
 
-static void sdp_parse_ice_media_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
+static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
 	const belle_sdp_attribute_t *attribute;
 	const belle_sdp_raw_attribute_t *raw_attribute;
@@ -371,6 +398,57 @@ static void sdp_parse_ice_media_parameters(belle_sdp_media_description_t *media_
 			stream->ice_mismatch = TRUE;
 		}
 	}
+}
+
+static void sal_init_rtcp_xr_description(SalRtcpXrDescription *desc) {
+	desc->enabled = FALSE;
+	desc->rcvr_rtt_mode = SalRtcpXrRcvrRttNone;
+	desc->rcvr_rtt_max_size = -1;
+	desc->stat_summary_flags = 0;
+	desc->voip_metrics_enabled = FALSE;
+}
+
+static void sdp_parse_rtcp_xr_parameters(const belle_sdp_attribute_t *attribute, SalRtcpXrDescription *desc) {
+	sal_init_rtcp_xr_description(desc);
+
+	if (attribute != NULL) {
+		const belle_sdp_rtcp_xr_attribute_t *xr_attr = BELLE_SDP_RTCP_XR_ATTRIBUTE(attribute);
+		const char *rcvr_rtt_mode = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_mode(xr_attr);
+		if (rcvr_rtt_mode != NULL) {
+			if (strcasecmp(rcvr_rtt_mode, "all") == 0) {
+				desc->rcvr_rtt_mode = SalRtcpXrRcvrRttAll;
+			} else if (strcasecmp(rcvr_rtt_mode, "sender") == 0) {
+				desc->rcvr_rtt_mode = SalRtcpXrRcvrRttSender;
+			}
+			desc->rcvr_rtt_max_size = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_max_size(xr_attr);
+		}
+		desc->stat_summary_enabled = (belle_sdp_rtcp_xr_attribute_has_stat_summary(xr_attr) != 0);
+		if (desc->stat_summary_enabled) {
+			belle_sip_list_t *stat_summary_flag_it;
+			for (stat_summary_flag_it = belle_sdp_rtcp_xr_attribute_get_stat_summary_flags(xr_attr); stat_summary_flag_it != NULL; stat_summary_flag_it = stat_summary_flag_it->next ) {
+				const char *flag = (const char *)stat_summary_flag_it->data;
+				if (flag != NULL) {
+					if (strcasecmp(flag, "loss") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryLoss;
+					else if (strcasecmp(flag, "dup") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryDup;
+					else if (strcasecmp(flag, "jitt") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryJitt;
+					else if (strcasecmp(flag, "TTL") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryTTL;
+					else if (strcasecmp(flag, "HL") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryHL;
+				}
+			}
+		}
+		desc->voip_metrics_enabled = (belle_sdp_rtcp_xr_attribute_has_voip_metrics(xr_attr) != 0);
+		desc->enabled = TRUE;
+	}
+}
+
+static void sdp_parse_session_rtcp_xr_parameters(belle_sdp_session_description_t *session_desc, SalRtcpXrDescription *desc) {
+	const belle_sdp_attribute_t *attribute = belle_sdp_session_description_get_attribute(session_desc, "rtcp-xr");
+	sdp_parse_rtcp_xr_parameters(attribute, desc);
+}
+
+static void sdp_parse_media_rtcp_xr_parameters(belle_sdp_media_description_t *media_desc, SalRtcpXrDescription *desc) {
+	const belle_sdp_attribute_t *attribute = belle_sdp_media_description_get_attribute(media_desc, "rtcp-xr");
+	sdp_parse_rtcp_xr_parameters(attribute, desc);
 }
 
 static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md, belle_sdp_media_description_t *media_desc) {
@@ -459,7 +537,10 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 
 	/* Get ICE candidate attributes if any */
-	sdp_parse_ice_media_parameters(media_desc, stream);
+	sdp_parse_media_ice_parameters(media_desc, stream);
+
+	/* Get RTCP-XR attributes if any */
+	sdp_parse_media_rtcp_xr_parameters(media_desc, &stream->rtcp_xr);
 
 	md->n_total_streams++;
 	return stream;
@@ -508,7 +589,10 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"ice-lite");
 	if (value) desc->ice_lite = TRUE;
-	
+
+	/* Get session RTCP-XR attributes if any */
+	sdp_parse_session_rtcp_xr_parameters(session_desc, &desc->rtcp_xr);
+
 	for ( media_desc_it=belle_sdp_session_description_get_media_descriptions ( session_desc )
 						; media_desc_it!=NULL
 			; media_desc_it=media_desc_it->next ) {

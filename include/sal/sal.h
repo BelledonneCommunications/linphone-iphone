@@ -135,6 +135,20 @@ typedef enum{
 }SalStreamDir;
 const char* sal_stream_dir_to_string(SalStreamDir type);
 
+typedef enum {
+	SalRtcpXrRcvrRttNone,
+	SalRtcpXrRcvrRttAll,
+	SalRtcpXrRcvrRttSender
+} SalRtcpXrRcvrRttMode;
+
+typedef enum {
+	SalRtcpXrStatSummaryLoss = (1 << 0),
+	SalRtcpXrStatSummaryDup = (1 << 1),
+	SalRtcpXrStatSummaryJitt = (1 << 2),
+	SalRtcpXrStatSummaryTTL = (1 << 3),
+	SalRtcpXrStatSummaryHL = (1 << 4)
+} SalRtcpXrStatSummaryFlag;
+
 
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
@@ -176,6 +190,15 @@ typedef struct SalSrtpCryptoAlgo {
 
 #define SAL_CRYPTO_ALGO_MAX 4
 
+typedef struct SalRtcpXrDescription {
+	bool_t enabled;
+	bool_t stat_summary_enabled;
+	bool_t voip_metrics_enabled;
+	SalRtcpXrRcvrRttMode rcvr_rtt_mode;
+	int rcvr_rtt_max_size;
+	SalRtcpXrStatSummaryFlag stat_summary_flags;
+} SalRtcpXrDescription;
+
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
 	SalMediaProto proto;
@@ -193,6 +216,7 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
+	SalRtcpXrDescription rtcp_xr;
 	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
 	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
@@ -219,6 +243,7 @@ typedef struct SalMediaDescription{
 	unsigned int session_id;
 	SalStreamDir dir;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	SalRtcpXrDescription rtcp_xr;
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_lite;
