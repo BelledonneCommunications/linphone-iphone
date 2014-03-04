@@ -44,9 +44,3 @@ void liblinphone_tester_ios_log_handler(OrtpLogLevel level, const char* fmt, va_
 {
     NSLogv([NSString stringWithUTF8String:fmt], args);
 }
-
-#ifdef NO_XCODE /* when compiling under xcode the main is elsewhere */
-int main( int argc, char* argv[]){
-    return ios_tester_main(argc, argv);
-}
-#endif
