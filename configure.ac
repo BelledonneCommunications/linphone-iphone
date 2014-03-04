@@ -39,6 +39,7 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl don't put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
+AC_PROG_OBJC
 
 gl_LD_OUTPUT_DEF
 
@@ -72,7 +73,6 @@ case $target in
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
 		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
-		AC_PROG_OBJC
 	;;
 	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
