@@ -35,11 +35,6 @@ static int nb_test_suites = 0;
 static unsigned char curses = 0;
 #endif
 
-#if TARGET_OS_IPHONE
-#include "liblinphonetester_ios.h"
-#endif
-
-
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
