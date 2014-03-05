@@ -1393,6 +1393,8 @@
 		F03A9C7418C0E2ED00C4D7FE /* userdb.conf in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6B18C0E2ED00C4D7FE /* userdb.conf */; };
 		F03A9C7518C46E7700C4D7FE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
 		F03A9C7618C46EAF00C4D7FE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
+		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
+		F03CA84418C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F0489300180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
@@ -2486,6 +2488,8 @@
 		F03A9C6918C0E2ED00C4D7FE /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = submodules/linphone/tester/sounds; sourceTree = SOURCE_ROOT; };
 		F03A9C6A18C0E2ED00C4D7FE /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
 		F03A9C6B18C0E2ED00C4D7FE /* userdb.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = userdb.conf; path = submodules/linphone/tester/userdb.conf; sourceTree = SOURCE_ROOT; };
+		F03CA84118C72F1A0008889D /* UITextViewNoDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITextViewNoDefine.h; sourceTree = "<group>"; };
+		F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITextViewNoDefine.m; sourceTree = "<group>"; };
 		F04892FE180C3296002FED35 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ImageOptim.sh; sourceTree = "<group>"; };
 		F066515317F9A02E0064280C /* UITransparentTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentTVCell.h; sourceTree = "<group>"; };
 		F066515417F9A02E0064280C /* UITransparentTVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentTVCell.m; sourceTree = "<group>"; };
@@ -3006,6 +3010,8 @@
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				F066515317F9A02E0064280C /* UITransparentTVCell.h */,
 				F066515417F9A02E0064280C /* UITransparentTVCell.m */,
+				F03CA84118C72F1A0008889D /* UITextViewNoDefine.h */,
+				F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -5425,6 +5431,7 @@
 				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
+				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */,
@@ -5524,6 +5531,7 @@
 				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7598159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */,
+				F03CA84418C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				D37DC6C21594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */,
 				D3EA540E1598528B0037DC6B /* ChatTableViewController.m in Sources */,

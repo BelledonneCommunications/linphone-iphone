@@ -612,6 +612,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     return FALSE;
 }
 
+- (void)resendChat:(NSString *)message {
+    [self sendMessage:message withExterlBodyUrl:nil withInternalUrl:nil];
+}
 
 #pragma mark ImageSharingDelegate
 

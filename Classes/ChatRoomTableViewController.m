@@ -170,7 +170,7 @@
         ChatModel *chat = [data objectAtIndex:[indexPath row]];
         [data removeObjectAtIndex:[indexPath row]];
         [chat delete];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
         [tableView endUpdates];
     }
 }
