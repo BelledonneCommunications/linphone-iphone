@@ -1034,7 +1034,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status, SalRea
 	calls = linphone_core_get_calls(chat_msg->chat_room->lc);
 
 	chat_msg->state=chatStatusSal2Linphone(status);
-	chat_msg->reason=reason;
+	chat_msg->reason=linphone_reason_from_sal(reason);
 	linphone_chat_message_store_state(chat_msg);
 	if (chat_msg && chat_msg->cb) {
 		ms_message("Notifying text delivery with status %i",chat_msg->state);

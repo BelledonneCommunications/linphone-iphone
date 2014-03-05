@@ -603,23 +603,10 @@ static void update_video_title(){
 	video_needs_update=TRUE;
 }
 
-static gboolean linphone_gtk_iterate(LinphoneCore *lc){
-	static gboolean first_time=TRUE;
+static void update_video_titles(LinphoneCore *lc){
 	unsigned long id;
 	static unsigned long previd=0;
 	static unsigned long preview_previd=0;
-	static gboolean in_iterate=FALSE;
-
-	/*avoid reentrancy*/
-	if (in_iterate) return TRUE;
-	in_iterate=TRUE;
-	linphone_core_iterate(lc);
-	if (first_time){
-		/*after the first call to iterate, SipSetupContexts should be ready, so take actions:*/
-		linphone_gtk_show_directory_search();
-		first_time=FALSE;
-	}
-
 	id=linphone_core_get_native_video_window_id(lc);
 	if (id!=previd || video_needs_update){
 		GdkWindow *w;
@@ -658,6 +645,23 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 			if (video_needs_update) video_needs_update=FALSE;
 		}
 	}
+}
+
+static gboolean linphone_gtk_iterate(LinphoneCore *lc){
+	static gboolean first_time=TRUE;
+	static gboolean in_iterate=FALSE;
+
+	/*avoid reentrancy*/
+	if (in_iterate) return TRUE;
+	in_iterate=TRUE;
+	linphone_core_iterate(lc);
+	if (first_time){
+		/*after the first call to iterate, SipSetupContexts should be ready, so take actions:*/
+		linphone_gtk_show_directory_search();
+		first_time=FALSE;
+	}
+
+	update_video_titles(lc);
 	if (addr_to_call!=NULL){
 		/*make sure we are not showing the login screen*/
 		GtkWidget *mw=linphone_gtk_get_main_window();
