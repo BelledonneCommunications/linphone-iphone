@@ -1297,11 +1297,14 @@ int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 		int port;
 		if (get_unique_transport(lc,&tpt,&port)==0){
 			LCSipTransports newtp={0};
+			if (lp_config_get_int(lc->config,"sip","sip_random_port",0))
+				port=-1;
 			ms_message("Core is using a single SIP transport, migrating proxy config and enabling multi-transport.");
 			linphone_core_migrate_proxy_config(lc,tpt);
 			newtp.udp_port=port;
 			newtp.tcp_port=port;
 			newtp.tls_port=LC_SIP_TRANSPORT_RANDOM;
+			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); //remove
 			linphone_core_set_sip_transports(lc,&newtp);
 		}
 		lp_config_set_int(lc->config,"sip","multi_transport_migration_done",1);
