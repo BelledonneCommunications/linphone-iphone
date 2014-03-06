@@ -233,6 +233,8 @@
 - (void)textViewDidChange:(UITextView *)textView
 {
     [self refreshHeight];
+    if( [delegate respondsToSelector:@selector(growingTextChanged:text:)])
+        [delegate growingTextChanged:self text:[textView text]];
 }
 
 - (void)refreshHeight
@@ -626,9 +628,6 @@
 
 	//weird 1 pixel bug when clicking backspace when textView is empty
 	if(![textView hasText] && [atext isEqualToString:@""]) return NO;
-
-    if( [delegate respondsToSelector:@selector(growingTextChanged:text:)])
-        [delegate growingTextChanged:self text:atext];
 
 	//Added by bretdabaker: sometimes we want to handle this ourselves
     if ([delegate respondsToSelector:@selector(growingTextView:shouldChangeTextInRange:replacementText:)])

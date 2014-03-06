@@ -263,9 +263,17 @@ static UICompositeViewDescription *compositeDescription = nil;
         linphone_address_destroy(linphoneAddress);
     }
     [messageField setText:@""];
+
+    if( chatRoom != NULL ){
+        linphone_chat_room_destroy(chatRoom);
+        chatRoom = NULL;
+    }
+
+    chatRoom = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     [self update];
 	[tableController setRemoteAddress: remoteAddress];
     [ChatModel readConversation:remoteAddress];
+    [self checkComposeForRoom:chatRoom];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
@@ -434,6 +442,21 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     });
 }
 
+- (void)checkComposeForRoom:(LinphoneChatRoom*)room {
+    if( room && room == chatRoom ){
+        BOOL composing = linphone_chat_room_is_remote_composing(room);
+
+        if( composing ){
+            [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
+            [composeLabel setAlpha:0];
+            [composeLabel setHidden:FALSE];
+            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 1.0; }];
+        } else {
+            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 0.0; } completion:^(BOOL f) { [composeLabel setHidden:TRUE]; }];
+        }
+    }
+}
+
 
 #pragma mark - Event Functions
 
@@ -471,25 +494,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (void)textComposeEvent:(NSNotification*)notif {
     LinphoneChatRoom* room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
-    if( room ){
-        const LinphoneAddress* remote_peer = linphone_chat_room_get_peer_address(room);
-        LinphoneAddress* current_peer= linphone_address_new([remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-
-        BOOL composing = linphone_chat_room_is_remote_composing(room);
-
-        if( composing && linphone_address_weak_equal(remote_peer, current_peer) ){
-            [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
-            [composeLabel setAlpha:0];
-            [composeLabel setHidden:FALSE];
-            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 1.0; }];
-        } else {
-            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 0.0; } completion:^(BOOL f) { [composeLabel setHidden:TRUE]; }];
-        }
-
-        linphone_address_destroy(current_peer);
-    }
+    [self checkComposeForRoom:room];
 }
-
 
 #pragma mark - UITextFieldDelegate Functions
 
