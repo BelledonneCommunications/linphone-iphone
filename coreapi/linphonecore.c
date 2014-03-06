@@ -2526,6 +2526,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		const char *domain=linphone_proxy_config_get_domain(cfg);
+/*		ms_warning("Checking %s / %s %s", domain, linphone_address_get_domain(uri), linphone_proxy_config_get_route(cfg)); */
 		if (domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
 			if (linphone_proxy_config_register_enabled(cfg)) {
 				found_cfg=cfg;
@@ -2536,11 +2537,10 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 		}
 	}
 end:
-	if (found_noreg_cfg) found_cfg = found_noreg_cfg;
-	if (found_cfg!=NULL && found_cfg!=default_cfg){
+	if (!found_cfg && found_noreg_cfg) found_cfg = found_noreg_cfg;
+	if (found_cfg && found_cfg!=default_cfg){
 		ms_debug("Overriding default proxy setting for this call/message/subscribe operation.");
-	}else found_cfg=default_cfg;
-	
+	}
 	return found_cfg;
 }
 
