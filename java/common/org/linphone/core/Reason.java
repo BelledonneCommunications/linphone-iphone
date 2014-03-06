@@ -56,6 +56,34 @@ public class Reason {
 	 * Operation was rejected by remote due to request unmatched to any context.
 	 */
 	static public Reason NoMatch = new Reason(12,"NoMatch");
+	/**
+	 * Resource moved permanently
+	 */
+	static public Reason MovedPermanently = new Reason(13,"MovedPermanently");
+	/**
+	 * Resource no longer exists
+	 */
+	static public Reason Gone = new Reason(14,"Gone");
+	/**
+	 * Temporarily unavailable
+	 */
+	static public Reason TemporarilyUnavailable = new Reason(15,"TemporarilyUnavailable");
+	/**
+	 * Address incomplete
+	 */
+	static public Reason AddressIncomplete = new Reason(16,"AddressIncomplete");
+	/**
+	 * Not implemented
+	 */
+	static public Reason NotImplemented = new Reason(17,"NotImplemented");
+	/**
+	 * Bad gateway
+	 */
+	static public Reason BadGateway = new Reason(18,"BadGateway");
+	/**
+	 * Server timeout
+	 */
+	static public Reason ServerTimeout = new Reason(19,"ServerTimeout");
 	
 	protected final int mValue;
 	private final String mStringValue;

@@ -146,6 +146,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long[] getChatRooms(long nativePtr);
 	private native int migrateToMultiTransport(long nativePtr);
 	private native long createProxyConfig(long nativePtr);
+	private native void setCallErrorTone(long nativePtr, int reason, String path);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1133,5 +1134,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public LinphoneProxyConfig createProxyConfig() {
 		return new LinphoneProxyConfigImpl(createProxyConfig(nativePtr));
+	}
+	@Override
+	public void setCallErrorTone(Reason reason, String path) {
+		setCallErrorTone(nativePtr, reason.mValue, path);
 	}
 }

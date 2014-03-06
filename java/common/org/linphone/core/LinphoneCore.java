@@ -1520,8 +1520,15 @@ public interface LinphoneCore {
 	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);
 	
 	/**
-	 * 
-	 * @return
+	 * Creates a proxy config using the default values if they exists
+	 * @return a default proxy config
 	 */
 	public LinphoneProxyConfig createProxyConfig();
+	
+	/**
+	 * Assign an audio file to played locally upon call failure, for a given reason.
+	 * @param reason the #LinphoneReason representing the failure error code.
+	 * @param path a wav file to be played when such call failure happens.
+	 */
+	public void setCallErrorTone(Reason reason, String path);
 }

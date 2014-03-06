@@ -1334,6 +1334,15 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRing(JNIEnv*  env
 		return NULL;
 	}
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCallErrorTone(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jint reason
+																			,jstring jpath) {
+	const char* path = jpath ? env->GetStringUTFChars(jpath, NULL) : NULL;
+	linphone_core_set_call_error_tone((LinphoneCore *)lc, (LinphoneReason)reason, path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRootCA(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
