@@ -45,6 +45,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libnotify/notify.h>
 #endif
 
+#ifdef ENABLE_NLS
+#include <locale.h>
+#endif
 #define LINPHONE_ICON "linphone.png"
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
