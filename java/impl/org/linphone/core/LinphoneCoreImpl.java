@@ -207,7 +207,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void setDefaultProxyConfig(LinphoneProxyConfig proxyCfg) {
 		isValid();
-		setDefaultProxyConfig(nativePtr,((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
+		long proxyPtr=proxyCfg != null ? ((LinphoneProxyConfigImpl)proxyCfg).nativePtr : 0;
+		setDefaultProxyConfig(nativePtr, proxyPtr);
 	}
 	public synchronized void addProxyConfig(LinphoneProxyConfig proxyCfg) throws LinphoneCoreException{
 		isValid();

@@ -424,7 +424,8 @@ public interface LinphoneCore {
 	 * Sets the default proxy.
 	 *<br>
 	 * This default proxy must be part of the list of already entered {@link LinphoneProxyConfig}. 
-	 * Toggling it as default will make LinphoneCore use the identity associated with the proxy configuration in all incoming and outgoing calls.
+	 * Toggling it as default will make LinphoneCore favor the identity associated with the proxy configuration in all incoming and outgoing calls.
+	 * Better proxy configuration match may override this choice. Pass null to unset the default proxy.
 	 * @param proxyCfg 
 	 */
 	public void setDefaultProxyConfig(LinphoneProxyConfig proxyCfg);
