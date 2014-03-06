@@ -11,6 +11,7 @@
                 <outlet property="avatarImage" destination="41" id="44"/>
                 <outlet property="cancelTransferButton" destination="75" id="85"/>
                 <outlet property="chatView" destination="49" id="54"/>
+                <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="editButton" destination="10" id="35"/>
                 <outlet property="headerView" destination="39" id="45"/>
                 <outlet property="imageTransferProgressBar" destination="74" id="79"/>
@@ -74,6 +75,13 @@
                                 <outlet property="delegate" destination="29" id="31"/>
                             </connections>
                         </tableView>
+                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
+                            <rect key="frame" x="0.0" y="338" width="320" height="21"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label=""/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <view hidden="YES" contentMode="scaleToFill" id="72" userLabel="transferView">
                             <rect key="frame" x="0.0" y="359" width="320" height="57"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

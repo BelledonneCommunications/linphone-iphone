@@ -34,6 +34,7 @@
 @synthesize editButton;
 @synthesize remoteAddress;
 @synthesize addressLabel;
+@synthesize composeLabel;
 @synthesize avatarImage;
 @synthesize headerView;
 @synthesize chatView;
@@ -88,6 +89,7 @@
     [imageQualities release];
     [waitView release];
     
+    [composeLabel release];
     [super dealloc];
 }
 
@@ -163,7 +165,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(onMessageChange:) 
 												 name:UITextViewTextDidChangeNotification 
 											   object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textComposeEvent:)
+                                                 name:kLinphoneTextComposeEvent
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
@@ -195,6 +200,9 @@ static UICompositeViewDescription *compositeDescription = nil;
         linphone_chat_room_destroy(chatRoom);
         chatRoom = NULL;
     }
+
+    [composeLabel setHidden:TRUE];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidBecomeActiveNotification
                                                   object:nil];
@@ -213,6 +221,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
+												  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneTextComposeEvent
 												  object:nil];
 }
 
@@ -458,6 +469,27 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     }
 }
 
+- (void)textComposeEvent:(NSNotification*)notif {
+    LinphoneChatRoom* room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
+    if( room ){
+        const LinphoneAddress* remote_peer = linphone_chat_room_get_peer_address(room);
+        LinphoneAddress* current_peer= linphone_address_new([remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+
+        BOOL composing = linphone_chat_room_is_remote_composing(room);
+
+        if( composing && linphone_address_weak_equal(remote_peer, current_peer) ){
+            [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
+            [composeLabel setAlpha:0];
+            [composeLabel setHidden:FALSE];
+            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 1.0; }];
+        } else {
+            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 0.0; } completion:^(BOOL f) { [composeLabel setHidden:TRUE]; }];
+        }
+
+        linphone_address_destroy(current_peer);
+    }
+}
+
 
 #pragma mark - UITextFieldDelegate Functions
 
@@ -473,6 +505,11 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (BOOL)growingTextViewShouldEndEditing:(HPGrowingTextView *)growingTextView {
     [listTapGestureRecognizer setEnabled:FALSE];
     return TRUE;
+}
+
+- (void)growingTextChanged:(HPGrowingTextView *)growingTextView text:(NSString *)text {
+    if( [text length] > 0 && chatRoom )
+        linphone_chat_room_compose(chatRoom);
 }
 
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
@@ -500,6 +537,12 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         
         [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                      forNinePatchNamed:@"chat_message_background"]];
+        // if we're showing the compose message, update it position
+        if ( ![composeLabel isHidden] ) {
+            CGRect frame = [composeLabel frame];
+            frame.origin.y -= diff;
+            [composeLabel setFrame:frame];
+        }
     }
 }
 

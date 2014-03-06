@@ -1,4 +1,4 @@
-﻿/* No comment provided by engineer. */
+/* No comment provided by engineer. */
 " (Aborted)" = " (Annulé)";
 
 /* No comment provided by engineer. */
@@ -300,3 +300,5 @@
 
 /* Placeholder for the address in DialerView */
 "Enter an address" = "Entrez une addresse SIP ou un numéro de téléphone...";
+"%@ is composing..." = "%@ rédige un message...";
+"Resend" = "Renvoyer";

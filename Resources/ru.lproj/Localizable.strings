@@ -1,4 +1,4 @@
-﻿/* No comment provided by engineer. */
+/* No comment provided by engineer. */
 " (Aborted)" = " (Прервано)";
 
 /* No comment provided by engineer. */
@@ -300,3 +300,5 @@
 
 /* Placeholder for the address in DialerView */
 "Enter an address" = "Введите адрес SIP или номер телефона...";
+"%@ is composing..." = "%@ is composing...";
+"Resend" = "Resend";

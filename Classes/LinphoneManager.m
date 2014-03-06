@@ -50,6 +50,7 @@ const char *const LINPHONERC_APPLICATION_KEY = "app";
 NSString *const kLinphoneCoreUpdate = @"LinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
+NSString *const kLinphoneTextComposeEvent = @"LinphoneTextComposeStarted";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
@@ -672,6 +673,19 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
     [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
 }
 
+#pragma mark - Message composition start 
+
+- (void)onMessageComposeReceived:(LinphoneCore*)core forRoom:(LinphoneChatRoom*)room {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextComposeEvent
+                                                        object:self
+                                                      userInfo:@{@"room":[NSValue valueWithPointer:room]}];
+}
+
+static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room){
+    [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageComposeReceived:lc forRoom:room];
+}
+
+
 
 #pragma mark - Network Functions
 
@@ -825,7 +839,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.text_received=NULL,
 	.message_received=linphone_iphone_message_received,
 	.dtmf_received=NULL,
-    .transfer_state_changed=linphone_iphone_transfer_state_changed
+    .transfer_state_changed=linphone_iphone_transfer_state_changed,
+    .is_composing_received = linphone_iphone_is_composing_received
 };
 
 //scheduling loop
