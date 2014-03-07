@@ -35,6 +35,7 @@
 @synthesize remoteAddress;
 @synthesize addressLabel;
 @synthesize composeLabel;
+@synthesize composeIndicatorView;
 @synthesize avatarImage;
 @synthesize headerView;
 @synthesize chatView;
@@ -90,6 +91,7 @@
     [waitView release];
     
     [composeLabel release];
+    [composeIndicatorView release];
     [super dealloc];
 }
 
@@ -177,7 +179,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
-    
+
     [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                forNinePatchNamed:@"chat_message_background"]];
     
@@ -201,7 +203,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         chatRoom = NULL;
     }
 
-    [composeLabel setHidden:TRUE];
+    [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidBecomeActiveNotification
@@ -264,16 +266,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     [messageField setText:@""];
 
-    if( chatRoom != NULL ){
-        linphone_chat_room_destroy(chatRoom);
-        chatRoom = NULL;
-    }
-
     chatRoom = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     [self update];
 	[tableController setRemoteAddress: remoteAddress];
     [ChatModel readConversation:remoteAddress];
-    [self checkComposeForRoom:chatRoom];
+    [self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
@@ -442,19 +439,30 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     });
 }
 
-- (void)checkComposeForRoom:(LinphoneChatRoom*)room {
-    if( room && room == chatRoom ){
-        BOOL composing = linphone_chat_room_is_remote_composing(room);
+- (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
+    CGRect keyboardFrame = [self.messageView frame];
+    CGRect newComposingFrame = [self.composeIndicatorView frame];
+    CGRect newTableFrame = [self.tableController.tableView frame];
 
-        if( composing ){
-            [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
-            [composeLabel setAlpha:0];
-            [composeLabel setHidden:FALSE];
-            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 1.0; }];
-        } else {
-            [UIView animateWithDuration:0.3 animations:^{ composeLabel.alpha = 0.0; } completion:^(BOOL f) { [composeLabel setHidden:TRUE]; }];
-        }
+    if( visible ){
+        [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
+        // pull up the composing frame and shrink the table view
+
+        newTableFrame.size.height -= newComposingFrame.size.height;
+        newComposingFrame.origin.y = keyboardFrame.origin.y - newComposingFrame.size.height;
+    } else {
+        // pull down the composing frame and widen the tableview
+        newTableFrame.size.height += newComposingFrame.size.height;
+        newComposingFrame.origin.y = keyboardFrame.origin.y;
     }
+    [UIView animateWithDuration:delay
+                     animations:^{
+                         self.tableController.tableView.frame = newTableFrame;
+                         self.composeIndicatorView.frame = newComposingFrame;
+                     } completion:^(BOOL finished) {
+                         [self.tableController scrollToBottom:TRUE];
+                     }];
+
 }
 
 
@@ -494,7 +502,10 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (void)textComposeEvent:(NSNotification*)notif {
     LinphoneChatRoom* room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
-    [self checkComposeForRoom:room];
+    if( room && room == chatRoom ){
+        BOOL composing = linphone_chat_room_is_remote_composing(room);
+        [self setComposingVisible:composing withDelay:0.3];
+    }
 }
 
 #pragma mark - UITextFieldDelegate Functions

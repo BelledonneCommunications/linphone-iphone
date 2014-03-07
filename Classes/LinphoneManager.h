@@ -47,6 +47,7 @@ extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
+extern NSString *const kLinphoneConfiguringStateUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,

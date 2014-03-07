@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1072" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <objects>
@@ -11,6 +10,7 @@
                 <outlet property="avatarImage" destination="41" id="44"/>
                 <outlet property="cancelTransferButton" destination="75" id="85"/>
                 <outlet property="chatView" destination="49" id="54"/>
+                <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="editButton" destination="10" id="35"/>
                 <outlet property="headerView" destination="39" id="45"/>
@@ -66,7 +66,7 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="tableView">
-                            <rect key="frame" x="0.0" y="80" width="320" height="279"/>
+                            <rect key="frame" x="0.0" y="80" width="320" height="257"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <gestureRecognizers/>
@@ -75,13 +75,20 @@
                                 <outlet property="delegate" destination="29" id="31"/>
                             </connections>
                         </tableView>
-                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
-                            <rect key="frame" x="0.0" y="338" width="320" height="21"/>
+                        <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
+                            <rect key="frame" x="0.0" y="337" width="320" height="22"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label=""/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
+                            <subviews>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
+                                    <rect key="frame" x="0.0" y="1" width="320" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label=""/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
                         <view hidden="YES" contentMode="scaleToFill" id="72" userLabel="transferView">
                             <rect key="frame" x="0.0" y="359" width="320" height="57"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
