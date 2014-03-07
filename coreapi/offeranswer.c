@@ -281,6 +281,9 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
 		if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
+			if ((ls->rtcp_xr.enabled == TRUE) && (rs->rtcp_xr.enabled == FALSE)) {
+				memset(&result->streams[j].rtcp_xr, 0, sizeof(result->streams[j].rtcp_xr));
+			}
 			++j;
 		}
 		else ms_warning("No matching stream for %i",i);
@@ -289,6 +292,10 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	result->n_total_streams=local_offer->n_total_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
+	if ((local_offer->rtcp_xr.enabled == TRUE) && (remote_answer->rtcp_xr.enabled == FALSE)) {
+		memset(&result->rtcp_xr, 0, sizeof(result->rtcp_xr));
+	}
+
 	return 0;
 }
 
@@ -341,6 +348,18 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
 			if (result->streams[i].rtp_port!=0) result->n_active_streams++;
+
+			// Handle media RTCP XR attribute
+			memset(&result->streams[i].rtcp_xr, 0, sizeof(result->streams[i].rtcp_xr));
+			if (rs->rtcp_xr.enabled == TRUE) {
+				if (ls->rtcp_xr.enabled == TRUE) {
+					memcpy(&result->streams[i].rtcp_xr, &ls->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
+				} else if (local_capabilities->rtcp_xr.enabled == TRUE) {
+					memcpy(&result->streams[i].rtcp_xr, &local_capabilities->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
+				} else {
+					result->streams[i].rtcp_xr.enabled = TRUE;
+				}
+			}
 		}else {
 			ms_message("Declining mline %i, no corresponding stream in local capabilities description.",i);
 			/* create an inactive stream for the answer, as there where no matching stream in local capabilities */
@@ -366,5 +385,16 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
 	result->ice_completed = local_capabilities->ice_completed;
+
+	// Handle session RTCP XR attribute
+	memset(&result->rtcp_xr, 0, sizeof(result->rtcp_xr));
+	if (remote_offer->rtcp_xr.enabled == TRUE) {
+		if (local_capabilities->rtcp_xr.enabled == TRUE) {
+			memcpy(&result->rtcp_xr, &local_capabilities->rtcp_xr, sizeof(result->rtcp_xr));
+		} else {
+			result->rtcp_xr.enabled = TRUE;
+		}
+	}
+
 	return 0;
 }
