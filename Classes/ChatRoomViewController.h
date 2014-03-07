@@ -35,6 +35,7 @@
     ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
     BOOL scrollOnGrowingEnabled;
+    BOOL composingVisible;
 }
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;

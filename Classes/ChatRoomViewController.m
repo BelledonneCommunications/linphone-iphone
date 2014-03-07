@@ -62,6 +62,7 @@
                                 [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
                                 [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
+        self->composingVisible = TRUE;
     }
     return self;
 }
@@ -440,6 +441,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
+
+    if( composingVisible == visible ) return;
+
     CGRect keyboardFrame = [self.messageView frame];
     CGRect newComposingFrame = [self.composeIndicatorView frame];
     CGRect newTableFrame = [self.tableController.tableView frame];
@@ -459,10 +463,11 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                      animations:^{
                          self.tableController.tableView.frame = newTableFrame;
                          self.composeIndicatorView.frame = newComposingFrame;
-                     } completion:^(BOOL finished) {
+                     }
+                     completion:^(BOOL finished) {
+                         composingVisible = visible;
                          [self.tableController scrollToBottom:TRUE];
                      }];
-
 }
 
 
