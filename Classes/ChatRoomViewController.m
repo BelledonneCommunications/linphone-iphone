@@ -198,11 +198,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     [messageField resignFirstResponder];
-    
-    if(chatRoom != NULL) {
-        linphone_chat_room_destroy(chatRoom);
-        chatRoom = NULL;
-    }
+
+    chatRoom = NULL;
 
     [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
