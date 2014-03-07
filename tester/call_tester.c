@@ -1532,7 +1532,7 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
-	CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonNone); /*might be change later*/
+	CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable); /*might be change later*/
 
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
 	check_call_state(pauline,LinphoneCallStreamsRunning);
