@@ -258,6 +258,26 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	}
 }
 
+static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
+	LinphoneCore *lc = call->core;
+
+	md->rtcp_xr.enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_enabled", 0);
+	if (md->rtcp_xr.enabled == TRUE) {
+		const char *rcvr_rtt_mode = lp_config_get_string(lc->config, "rtp", "rtcp_xr_rcvr_rtt_mode", "none");
+		if (strcasecmp(rcvr_rtt_mode, "all") == 0) md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttAll;
+		else if (strcasecmp(rcvr_rtt_mode, "sender") == 0) md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttSender;
+		else md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttNone;
+		if (md->rtcp_xr.rcvr_rtt_mode != SalRtcpXrRcvrRttNone) {
+			md->rtcp_xr.rcvr_rtt_max_size = lp_config_get_int(lc->config, "rtp", "rtcp_xr_rcvr_rtt_max_size", 0);
+		}
+		md->rtcp_xr.stat_summary_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_stat_summary_enabled", 0);
+		if (md->rtcp_xr.stat_summary_enabled == TRUE) {
+			md->rtcp_xr.stat_summary_flags = SalRtcpXrStatSummaryLoss | SalRtcpXrStatSummaryDup | SalRtcpXrStatSummaryJitt | SalRtcpXrStatSummaryTTL;
+		}
+		md->rtcp_xr.voip_metrics_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_enabled", 0);
+	}
+}
+
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;
@@ -333,6 +353,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	}
 
 	setup_encryption_keys(call,md);
+	setup_rtcp_xr(call, md);
 
 	update_media_description_from_stun(md,&call->ac,&call->vc);
 	if (call->ice_session != NULL) {
