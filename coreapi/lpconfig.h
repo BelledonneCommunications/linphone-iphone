@@ -240,6 +240,14 @@ LINPHONE_PUBLIC float lp_config_get_default_float(const LpConfig *lpconfig, cons
  * The default value string is returned if the config item isn't found.
 **/
 LINPHONE_PUBLIC const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
+
+/**
+ * Retrieves a section parameter item as a string, given its section and key.
+ * 
+ * @ingroup misc
+ * The default value string is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC const char* lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
 	
 #ifdef __cplusplus
 }

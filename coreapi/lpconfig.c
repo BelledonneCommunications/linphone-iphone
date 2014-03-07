@@ -51,9 +51,15 @@ typedef struct _LpItem{
 	char *value;
 } LpItem;
 
+typedef struct _LpSectionParam{
+	char *key;
+	char *value;
+} LpSectionParam;
+
 typedef struct _LpSection{
 	char *name;
 	MSList *items;
+	MSList *params;
 } LpSection;
 
 struct _LpConfig{
@@ -71,6 +77,13 @@ LpItem * lp_item_new(const char *key, const char *value){
 	return item;
 }
 
+LpSectionParam *lp_section_param_new(const char *key, const char *value){
+	LpSectionParam *param = lp_new0(LpSectionParam, 1);
+	param->key = ortp_strdup(key);
+	param->value = ortp_strdup(value);
+	return param;
+}
+
 LpSection *lp_section_new(const char *name){
 	LpSection *sec=lp_new0(LpSection,1);
 	sec->name=ortp_strdup(name);
@@ -84,9 +97,17 @@ void lp_item_destroy(void *pitem){
 	free(item);
 }
 
+void lp_section_param_destroy(void *section_param){
+	LpSectionParam *param = (LpSectionParam*)section_param;
+	ortp_free(param->key);
+	ortp_free(param->value);
+	free(param);
+}
+
 void lp_section_destroy(LpSection *sec){
 	ortp_free(sec->name);
 	ms_list_for_each(sec->items,lp_item_destroy);
+	ms_list_for_each(sec->params,lp_section_param_destroy);
 	ms_list_free(sec->items);
 	free(sec);
 }
@@ -97,6 +118,10 @@ void lp_section_add_item(LpSection *sec,LpItem *item){
 
 void lp_config_add_section(LpConfig *lpconfig, LpSection *section){
 	lpconfig->sections=ms_list_append(lpconfig->sections,(void *)section);
+}
+
+void lp_config_add_section_param(LpSection *section, LpSectionParam *param){
+	section->params = ms_list_append(section->params, (void *)param);
 }
 
 void lp_config_remove_section(LpConfig *lpconfig, LpSection *section){
@@ -126,6 +151,18 @@ LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 	return NULL;
 }
 
+LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
+	MSList *elem;
+	LpSectionParam *param;
+	for (elem = sec->params; elem != NULL; elem = ms_list_next(elem)){
+		param = (LpSectionParam*)elem->data;
+		if (strcmp(param->key, key) == 0) {
+			return param;
+		}
+	}
+	return NULL;
+}
+
 LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	MSList *elem;
 	LpItem *item;
@@ -143,10 +180,12 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 void lp_config_parse(LpConfig *lpconfig, FILE *file){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection *cur=NULL;
+	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
 	char secname[MAX_LEN];
 	char key[MAX_LEN];
+	char value[MAX_LEN];
 	LpItem *item;
 
 	if (file==NULL) return;
@@ -160,16 +199,38 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 				secname[0]='\0';
 				/* found section */
 				*pos2='\0';
-				nbs = sscanf(pos1+1,"%s",secname);
-				if (nbs == 1 ){
-					if (strlen(secname)>0){
-						cur=lp_config_find_section (lpconfig,secname);
-						if (cur==NULL){
-							cur=lp_section_new(secname);
-							lp_config_add_section(lpconfig,cur);
+				nbs = sscanf(pos1+1, "%s", secname);
+				if (nbs >= 1) {
+					if (strlen(secname) > 0) {
+						cur = lp_config_find_section (lpconfig,secname);
+						if (cur == NULL) {
+							cur = lp_section_new(secname);
+							lp_config_add_section(lpconfig, cur);
+						}
+						
+						if (pos2 > pos1 + 1 + strlen(secname)) {
+							/* found at least one section param */
+							pos2 = pos1 + 1 + strlen(secname) + 1; // Remove the white space after the secname
+							pos1 = strchr(pos2, '=');
+							while (pos1 != NULL) {
+								/* for each section param */
+								key[0] = '\0';
+								value[0] = '\0';
+								*pos1 = ' ';
+								if (sscanf(pos2, "%s %s", key, value) == 2) {
+									params = lp_section_param_new(key, value);
+									lp_config_add_section_param(cur, params);
+									
+									pos2 += strlen(key) + strlen(value) + 2; // Remove the = sign + the white space after each param
+									pos1 = strchr(pos2, '=');
+								} else {
+									ms_warning("parse section params error !");
+									pos1 = NULL;
+								}
+							}
 						}
 					}
-				}else{
+				} else {
 					ms_warning("parse error!");
 				}
 			}
@@ -278,6 +339,17 @@ void lp_config_destroy(LpConfig *lpconfig){
 void lp_section_remove_item(LpSection *sec, LpItem *item){
 	sec->items=ms_list_remove(sec->items,(void *)item);
 	lp_item_destroy(item);
+}
+
+const char *lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value){
+	LpSection *sec;
+	LpSectionParam *param;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		param = lp_section_find_param(sec, key);
+		if (param != NULL) return param->value;
+	}
+	return default_value;
 }
 
 const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string){
@@ -398,10 +470,16 @@ void lp_item_write(LpItem *item, FILE *file){
 	fprintf(file,"%s=%s\n",item->key,item->value);
 }
 
+void lp_section_param_write(LpSectionParam *param, FILE *file){
+	fprintf(file, " %s=%s", param->key, param->value);
+}
+
 void lp_section_write(LpSection *sec, FILE *file){
-	fprintf(file,"[%s]\n",sec->name);
-	ms_list_for_each2(sec->items,(void (*)(void*, void*))lp_item_write,(void *)file);
-	fprintf(file,"\n");
+	fprintf(file, "[%s",sec->name);
+	ms_list_for_each2(sec->params, (void (*)(void*, void*))lp_section_param_write, (void *)file);
+	fprintf(file, "]\n");
+	ms_list_for_each2(sec->items, (void (*)(void*, void*))lp_item_write, (void *)file);
+	fprintf(file, "\n");
 }
 
 int lp_config_sync(LpConfig *lpconfig){
