@@ -1057,9 +1057,13 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	if (err!=0){
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
+	/*avoid ipv6 link-local addresses*/
+	if (type==AF_INET6 && strchr(result,'%')!=NULL){
+		strcpy(result,"::1");
+		close_socket(sock);
+		return -1;
+	}
 	close_socket(sock);
-
-
 	return 0;
 }
 
@@ -1090,7 +1094,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 		return -1;
 	}
 #endif
-      return 0;  
+	return 0;  
 }
 
 SalReason linphone_reason_to_sal(LinphoneReason reason){

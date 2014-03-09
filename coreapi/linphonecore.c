@@ -1488,7 +1488,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
 			has_ipv6=linphone_core_get_local_ip_for(AF_INET6,NULL,result)==0;
 			if (strcmp(result,"::1")!=0)
 				return; /*this machine has real ipv6 connectivity*/
-			if (linphone_core_get_local_ip_for(AF_INET,NULL,result)==0 && strcmp(result,"::1")!=0)
+			if (linphone_core_get_local_ip_for(AF_INET,NULL,result)==0 && strcmp(result,"127.0.0.1")!=0)
 				return; /*this machine has only ipv4 connectivity*/
 			if (has_ipv6){
 				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
