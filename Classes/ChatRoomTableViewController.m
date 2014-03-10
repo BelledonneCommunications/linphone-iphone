@@ -94,9 +94,11 @@
 
 - (void)scrollToBottom:(BOOL)animated {
     [self.tableView reloadData];
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
-                          atScrollPosition:UITableViewScrollPositionBottom
-                                  animated:YES];
+    if( [data count] ){
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
+                              atScrollPosition:UITableViewScrollPositionBottom
+                                      animated:YES];
+    }
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
