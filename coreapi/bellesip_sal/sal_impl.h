@@ -137,7 +137,7 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/
 void sal_op_message_fill_cbs(SalOp*op);
-
+void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event);
 void sal_op_subscribe_fill_cbs(SalOp*op);
 
 /*call transfer*/

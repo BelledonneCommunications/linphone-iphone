@@ -94,6 +94,27 @@ static void text_message(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void text_message_within_dialog(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	
+	lp_config_set_int(pauline->lc->config,"sip","chat_use_call_dialogs",1);
+
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
 static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
@@ -332,6 +353,7 @@ static void is_composing_notification(void) {
 
 test_t message_tests[] = {
 	{ "Text message", text_message },
+	{ "Text message within call's dialog", text_message_within_dialog},
 	{ "Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
 	{ "Text message with privacy", text_message_with_privacy },
 	{ "Text message compatibility mode", text_message_compatibility_mode },

@@ -2845,8 +2845,6 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		}
 	}
 	return ret;
-
-
 }
 
 void linphone_call_set_contact_op(LinphoneCall* call) {

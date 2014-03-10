@@ -149,7 +149,6 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 			call->state==LinphoneCallPausedByRemote){
 				ms_message("send SIP message through the existing call.");
 				op = call->op;
-				call->pending_message=msg;
 				identity=linphone_core_find_best_identity(cr->lc,linphone_call_get_remote_address(call));
 			}
 		}
@@ -224,7 +223,6 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 }
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg){
-	
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
 	char *cleanfrom;

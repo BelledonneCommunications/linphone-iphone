@@ -199,7 +199,6 @@ struct _LinphoneCall
 	UpnpSession *upnp_session;
 #endif //BUILD_UPNP
 	IceSession *ice_session;
-	LinphoneChatMessage* pending_message;
 	int ping_time;
 	unsigned int remote_session_id;
 	unsigned int remote_session_ver;
