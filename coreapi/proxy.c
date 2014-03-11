@@ -1319,14 +1319,21 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
-
-
+	bool_t update_friends=FALSE;
+	if (linphone_core_should_subscribe_friends_only_when_registered(lc)){
+		update_friends=(state==LinphoneRegistrationOk && cfg->state!=LinphoneRegistrationOk)
+			|| (state!=LinphoneRegistrationOk && cfg->state==LinphoneRegistrationOk);
+	}
 	ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
 								linphone_proxy_config_get_identity(cfg),
 								linphone_registration_state_to_string(cfg->state),
 								linphone_registration_state_to_string(state));
 	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
 		cfg->state=state;
+		
+		if (update_friends){
+			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
+		}
 		if (lc && lc->vtable.registration_state_changed){
 			lc->vtable.registration_state_changed(lc,cfg,state,message);
 		}

@@ -695,4 +695,9 @@ bool_t sal_op_is_idle(SalOp *op){
 	return TRUE;
 }
 
+void sal_op_stop_refreshing(SalOp *op){
+	if (op->refresher){
+		belle_sip_refresher_stop(op->refresher);
+	}
+}
 
