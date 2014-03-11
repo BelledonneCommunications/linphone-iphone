@@ -5364,7 +5364,7 @@ typedef enum{
 }LinphoneAudioResourceType;
 
 static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype){
-	LinphoneCall *call=linphone_core_get_current_call (lc);
+	LinphoneCall *call=linphone_core_get_current_call(lc);
 	AudioStream *stream=NULL;
 	RingStream *ringstream;
 	if (call){
@@ -6186,11 +6186,16 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
  * @ingroup media_parameters
 **/
 void linphone_core_stop_ringing(LinphoneCore* lc) {
+	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (lc->ringstream) {
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
 		lc->dmfs_playing_start_time=0;
 		lc->ringstream_autorelease=TRUE;
+	}
+	if (call && call->ringing_beep){
+		linphone_core_stop_dtmf(lc);
+		call->ringing_beep=FALSE;
 	}
 }
 
