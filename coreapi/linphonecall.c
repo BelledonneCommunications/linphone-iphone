@@ -710,9 +710,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		ms_error("Could not remove the call from the list !!!");
 	}
 
-	if (ms_list_size(lc->calls)==0)
-		linphone_core_send_presence(lc,lc->presence_model);
-
 	linphone_core_conference_check_uninit(lc);
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
