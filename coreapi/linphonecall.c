@@ -805,13 +805,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			linphone_call_set_terminated(call);
 		}
 		if (cstate == LinphoneCallConnected) {
-			if (ms_list_size(lc->calls)==1){
-				LinphonePresenceModel *model;
-				/*there were no call, and now there is a call, send an on-the-phone presence notification automatically*/
-				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
-				linphone_core_send_presence(call->core,model);
-				linphone_presence_model_unref(model);
-			}
 			call->log->status=LinphoneCallSuccess;
 			call->media_start_time=time(NULL);
 		}
