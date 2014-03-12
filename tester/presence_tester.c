@@ -226,6 +226,8 @@ static void unsubscribe_while_subscribing(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+#if 0
+/* the core no longer changes the presence status when a call is ongoing, this is left to the application*/
 static void call_with_presence(void) {
 	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
@@ -246,6 +248,8 @@ static void call_with_presence(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+#endif
 
 static void presence_information(void) {
 	const char *bike_description = "Riding my bike";
@@ -336,7 +340,7 @@ static void presence_information(void) {
 test_t presence_tests[] = {
 	{ "Simple Subscribe", simple_subscribe },
 	{ "Simple Publish", simple_publish },
-	{ "Call with presence", call_with_presence },
+	/*{ "Call with presence", call_with_presence },*/
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },
 	{ "App managed presence failure", subscribe_failure_handle_by_app },
