@@ -11,6 +11,7 @@ common_SRC_FILES := \
 	eventapi_tester.c \
 	stun_tester.c \
 	flexisip_tester.c \
+	tester.c \
 	remote_provisioning_tester.c
  
 common_C_INCLUDES += \
