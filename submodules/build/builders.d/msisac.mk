@@ -20,6 +20,9 @@
 #
 ############################################################################
 msisac_dir?=msisac
+
+
+
 $(BUILDER_SRC_DIR)/$(msisac_dir)/configure:
 	cd $(BUILDER_SRC_DIR)/$(msisac_dir) && ./autogen.sh
 
@@ -27,7 +30,7 @@ $(BUILDER_BUILD_DIR)/$(msisac_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msisac_dir)/co
 	mkdir -p $(BUILDER_BUILD_DIR)/$(msisac_dir)
 	cd $(BUILDER_BUILD_DIR)/$(msisac_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(msisac_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
+	$(BUILDER_SRC_DIR)/$(msisac_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-Wno-error"
 
 build-msisac: $(BUILDER_BUILD_DIR)/$(msisac_dir)/Makefile
 	cd $(BUILDER_BUILD_DIR)/$(msisac_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
