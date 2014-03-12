@@ -225,7 +225,8 @@ const char *liblinphone_tester_get_subscribe_content(void);
 const char *liblinphone_tester_get_notify_content(void);
 void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
-
+void liblinphone_tester_clock_start(MSTimeSpec *start);
+bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms); 
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

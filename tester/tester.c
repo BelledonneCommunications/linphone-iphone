@@ -51,6 +51,18 @@ const char *liblinphone_tester_file_prefix=".";
 
 const char *userhostsfile = "tester_hosts";
 
+void liblinphone_tester_clock_start(MSTimeSpec *start){
+	ms_get_cur_time(start);
+}
+
+bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
+	MSTimeSpec current;
+	ms_get_cur_time(&current);
+	if ((((current.tv_sec-start->tv_sec)*1000LL) + ((current.tv_nsec-start->tv_nsec)/1000000LL))>=value_ms)
+		return TRUE;
+	return FALSE;
+}
+
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
@@ -133,12 +145,14 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 }
 
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
-	int retry=0;
 	MSList* iterator;
-	while ((counter==NULL || *counter<value) && retry++ <timeout_ms/100) {
-        for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
-            linphone_core_iterate((LinphoneCore*)(iterator->data));
-        }
+	MSTimeSpec start;
+	
+	liblinphone_tester_clock_start(&start);
+	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
+		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
+			linphone_core_iterate((LinphoneCore*)(iterator->data));
+		}
 		ms_usleep(100000);
 	}
 	if(counter && *counter<value) return FALSE;
@@ -176,7 +190,6 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	LinphoneProxyConfig* proxy;
 	char *rc_path = NULL;
 	int proxy_count;
-	int retry=0;
 
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
@@ -202,10 +215,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	else
 		proxy_count=0;
 
-	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <(30+ (proxy_count>2?(proxy_count-2)*10:0))) {
-		linphone_core_iterate(mgr->lc);
-		ms_usleep(100000);
-	}
+	if (proxy_count)
+		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,3000*proxy_count);
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
 	enable_codec(mgr->lc,"PCMU",8000);
 
