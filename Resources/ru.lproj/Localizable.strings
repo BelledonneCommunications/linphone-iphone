@@ -302,3 +302,4 @@
 "Enter an address" = "Введите адрес SIP или номер телефона...";
 "%@ is composing..." = "%@ is composing...";
 "Resend" = "Resend";
+"Fetching remote configuration" = "Fetching remote configuration";
