@@ -119,7 +119,6 @@
 		226183AE1472527D0037138E /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		226183B0147259670037138E /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
-		226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADD14E2D0B800513B67 /* libbcg729.a */; };
 		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 226EF06B15FA256B005865C7 /* MobileCoreServices.framework */; };
 		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
@@ -1615,7 +1614,6 @@
 		226183AB1472527D0037138E /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		226183AF147259670037138E /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		226CDADD14E2D0B800513B67 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		226CDADE14E2D0B800513B67 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		226EF06B15FA256B005865C7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
@@ -2610,7 +2608,6 @@
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
 				22276E8313C73D3100210156 /* libavcodec.a in Frameworks */,
 				22276E8413C73D3100210156 /* libavutil.a in Frameworks */,
-				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
 				220FAD3210765B400068D98F /* libgsm.a in Frameworks */,
 				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
@@ -3298,7 +3295,6 @@
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
-				226CDADD14E2D0B800513B67 /* libbcg729.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
