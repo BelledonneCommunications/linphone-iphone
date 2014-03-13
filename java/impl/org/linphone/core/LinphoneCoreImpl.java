@@ -1140,4 +1140,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void setCallErrorTone(Reason reason, String path) {
 		setCallErrorTone(nativePtr, reason.mValue, path);
 	}
+	private native void setMtu(long nativePtr, int mtu);
+	@Override
+	public void setMtu(int mtu) {
+		setMtu(nativePtr,mtu);
+	}
+	private native int getMtu(long nativePtr);
+	@Override
+	public int getMtu() {
+		return getMtu(nativePtr);
+	}
 }

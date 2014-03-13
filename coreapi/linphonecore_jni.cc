@@ -1041,6 +1041,20 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getNumberOfCallLogs(	JNI
 		,jlong lc) {
 		return (jint)ms_list_size(linphone_core_get_call_logs((LinphoneCore*)lc));
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMtu(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jint mtu) {
+		linphone_core_set_mtu((LinphoneCore*)lc,mtu);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMtu(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return linphone_core_get_mtu((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
