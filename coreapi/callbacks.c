@@ -116,6 +116,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 							video_stream_change_camera(call->videostream,lc->video_conf.device );
 #endif
 					}
+					/*FIXME ZRTP might be restarted in any cases ? */
 					ms_message("No need to restart streams, SDP is unchanged.");
 					goto end;
 				}else {
