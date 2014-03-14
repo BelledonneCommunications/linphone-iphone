@@ -264,15 +264,15 @@ static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
 	md->rtcp_xr.enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_enabled", 0);
 	if (md->rtcp_xr.enabled == TRUE) {
 		const char *rcvr_rtt_mode = lp_config_get_string(lc->config, "rtp", "rtcp_xr_rcvr_rtt_mode", "none");
-		if (strcasecmp(rcvr_rtt_mode, "all") == 0) md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttAll;
-		else if (strcasecmp(rcvr_rtt_mode, "sender") == 0) md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttSender;
-		else md->rtcp_xr.rcvr_rtt_mode = SalRtcpXrRcvrRttNone;
-		if (md->rtcp_xr.rcvr_rtt_mode != SalRtcpXrRcvrRttNone) {
+		if (strcasecmp(rcvr_rtt_mode, "all") == 0) md->rtcp_xr.rcvr_rtt_mode = OrtpRtcpXrRcvrRttAll;
+		else if (strcasecmp(rcvr_rtt_mode, "sender") == 0) md->rtcp_xr.rcvr_rtt_mode = OrtpRtcpXrRcvrRttSender;
+		else md->rtcp_xr.rcvr_rtt_mode = OrtpRtcpXrRcvrRttNone;
+		if (md->rtcp_xr.rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
 			md->rtcp_xr.rcvr_rtt_max_size = lp_config_get_int(lc->config, "rtp", "rtcp_xr_rcvr_rtt_max_size", 0);
 		}
 		md->rtcp_xr.stat_summary_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_stat_summary_enabled", 0);
 		if (md->rtcp_xr.stat_summary_enabled == TRUE) {
-			md->rtcp_xr.stat_summary_flags = SalRtcpXrStatSummaryLoss | SalRtcpXrStatSummaryDup | SalRtcpXrStatSummaryJitt | SalRtcpXrStatSummaryTTL;
+			md->rtcp_xr.stat_summary_flags = OrtpRtcpXrStatSummaryLoss | OrtpRtcpXrStatSummaryDup | OrtpRtcpXrStatSummaryJitt | OrtpRtcpXrStatSummaryTTL;
 		}
 		md->rtcp_xr.voip_metrics_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_enabled", 0);
 	}
