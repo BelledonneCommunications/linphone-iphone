@@ -1508,6 +1508,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			ice_check_list_set_rtp_session(call->videostream->ms.ice_check_list, call->videostream->ms.session);
 			ms_message ("creating new ice video check list [%p] for session [%p]",call->videostream->ms.ice_check_list,call->videostream->ms.session);
 		}
+
 		call->videostream_app_evq = ortp_ev_queue_new();
 		rtp_session_register_event_queue(call->videostream->ms.session,call->videostream_app_evq);
 #ifdef TEST_EXT_RENDERER
@@ -1811,6 +1812,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 					call->audiostream_encrypted=FALSE;
 				}
 			}else call->audiostream_encrypted=FALSE;
+			rtp_session_configure_rtcp_xr(call->audiostream->ms.session, &stream->rtcp_xr);
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1932,7 +1934,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				}else{
 					call->videostream_encrypted=FALSE;
 				}
-				
+				rtp_session_configure_rtcp_xr(call->videostream->ms.session, &vstream->rtcp_xr);
+
 				call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);

@@ -409,11 +409,12 @@ static void sal_init_rtcp_xr_description(OrtpRtcpXrConfiguration *config) {
 }
 
 static void sdp_parse_rtcp_xr_parameters(const belle_sdp_attribute_t *attribute, OrtpRtcpXrConfiguration *config) {
-	sal_init_rtcp_xr_description(config);
-
 	if (attribute != NULL) {
-		const belle_sdp_rtcp_xr_attribute_t *xr_attr = BELLE_SDP_RTCP_XR_ATTRIBUTE(attribute);
-		const char *rcvr_rtt_mode = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_mode(xr_attr);
+		const belle_sdp_rtcp_xr_attribute_t *xr_attr;
+		const char *rcvr_rtt_mode;
+		sal_init_rtcp_xr_description(config);
+		xr_attr = BELLE_SDP_RTCP_XR_ATTRIBUTE(attribute);
+		rcvr_rtt_mode = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_mode(xr_attr);
 		if (rcvr_rtt_mode != NULL) {
 			if (strcasecmp(rcvr_rtt_mode, "all") == 0) {
 				config->rcvr_rtt_mode = OrtpRtcpXrRcvrRttAll;
@@ -540,6 +541,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	sdp_parse_media_ice_parameters(media_desc, stream);
 
 	/* Get RTCP-XR attributes if any */
+	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined
 	sdp_parse_media_rtcp_xr_parameters(media_desc, &stream->rtcp_xr);
 
 	md->n_total_streams++;
