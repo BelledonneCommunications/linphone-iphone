@@ -1532,4 +1532,17 @@ public interface LinphoneCore {
 	 * @param path a wav file to be played when such call failure happens.
 	 */
 	public void setCallErrorTone(Reason reason, String path);
+	
+	/**
+	 * Inform the core about the maximum transmission unit of the network.
+	 * This is used for fragmenting video RTP packets to a size compatible with the network.
+	 * @param mtu the MTU in bytes.
+	 */
+	public void setMtu(int mtu);
+	/**
+	 * Returns the mtu value previously set by setMtu().
+	 * 
+	 * @return the MTU in bytes.
+	 */
+	public int getMtu();
 }
