@@ -87,7 +87,7 @@ static belle_sdp_attribute_t * create_rtcp_xr_attribute(const OrtpRtcpXrConfigur
 	return BELLE_SDP_ATTRIBUTE(attribute);
 }
 
-static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMediaDescription *md, const SalStreamDescription *stream ) {
+static void stream_description_to_sdp ( belle_sdp_session_description_t *session_desc, const SalMediaDescription *md, const SalStreamDescription *stream ) {
 	belle_sdp_mime_parameter_t* mime_param;
 	belle_sdp_media_description_t* media_desc;
 	int j;
@@ -215,10 +215,27 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMedia
 	}
 
 	if (stream->rtcp_xr.enabled == TRUE) {
-		belle_sdp_media_description_add_attribute(media_desc, create_rtcp_xr_attribute(&stream->rtcp_xr));
+		char sastr[1024] = {0};
+		char mastr[1024] = {0};
+		size_t saoff = 0;
+		size_t maoff = 0;
+		const belle_sdp_attribute_t *session_attribute = belle_sdp_session_description_get_attribute(session_desc, "rtcp-xr");
+		belle_sdp_attribute_t *media_attribute;
+		if (session_attribute != NULL) {
+			belle_sip_object_marshal((belle_sip_object_t*)session_attribute, sastr, sizeof(sastr), &saoff);
+		}
+		media_attribute = create_rtcp_xr_attribute(&stream->rtcp_xr);
+		if (media_attribute != NULL) {
+			belle_sip_object_marshal((belle_sip_object_t*)media_attribute, mastr, sizeof(mastr), &maoff);
+		}
+		if (strcmp(sastr, mastr) != 0) {
+			belle_sdp_media_description_add_attribute(media_desc, media_attribute);
+		} else {
+			belle_sip_object_unref((belle_sip_object_t*)media_attribute);
+		}
 	}
 
-	return media_desc;
+	belle_sdp_session_description_add_media_description(session_desc, media_desc);
 }
 
 belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescription *desc ) {
@@ -272,7 +289,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 	}
 
 	for ( i=0; i<desc->n_total_streams; i++ ) {
-		belle_sdp_session_description_add_media_description ( session_desc,stream_description_to_sdp(desc,&desc->streams[i]));
+		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;
 }
