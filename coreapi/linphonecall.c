@@ -1718,6 +1718,19 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 	return -1;
 }
 
+static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, RtpSession *session, const OrtpRtcpXrConfiguration *config) {
+	rtp_session_configure_rtcp_xr(session, config);
+	if (config->rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
+		rtp_session_set_rtcp_xr_rcvr_rtt_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_rcvr_rtt_interval_duration", 5000));
+	}
+	if (config->stat_summary_enabled == TRUE) {
+		rtp_session_set_rtcp_xr_stat_summary_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_stat_summary_interval_duration", 5000));
+	}
+	if (config->voip_metrics_enabled == TRUE) {
+		rtp_session_set_rtcp_xr_voip_metrics_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_interval_duration", 5000));
+	}
+}
+
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
@@ -1812,7 +1825,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 					call->audiostream_encrypted=FALSE;
 				}
 			}else call->audiostream_encrypted=FALSE;
-			rtp_session_configure_rtcp_xr(call->audiostream->ms.session, &stream->rtcp_xr);
+			configure_rtp_session_for_rtcp_xr(lc, call->audiostream->ms.session, &stream->rtcp_xr);
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1934,7 +1947,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				}else{
 					call->videostream_encrypted=FALSE;
 				}
-				rtp_session_configure_rtcp_xr(call->videostream->ms.session, &vstream->rtcp_xr);
+				configure_rtp_session_for_rtcp_xr(lc, call->videostream->ms.session, &vstream->rtcp_xr);
 
 				call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);
