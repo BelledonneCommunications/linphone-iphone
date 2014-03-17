@@ -1297,6 +1297,8 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
 	GtkTreeModel *model=GTK_TREE_MODEL(store=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING));
 	
+	if (current_renderer==NULL) current_renderer=video_stream_get_default_video_renderer();
+	
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
 	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
