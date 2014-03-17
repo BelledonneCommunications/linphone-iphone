@@ -1718,15 +1718,45 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 	return -1;
 }
 
-static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, RtpSession *session, const OrtpRtcpXrConfiguration *config) {
-	rtp_session_configure_rtcp_xr(session, config);
-	if (config->rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
+static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *call, SalStreamType type) {
+	RtpSession *session;
+	const OrtpRtcpXrConfiguration *localconfig;
+	const OrtpRtcpXrConfiguration *remoteconfig;
+	OrtpRtcpXrConfiguration currentconfig;
+	const SalStreamDescription *localstream;
+	const SalStreamDescription *remotestream;
+
+	localstream = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, type);
+	if (!localstream) localstream = sal_media_description_find_stream(call->localdesc, SalProtoRtpAvp, type);
+	if (!localstream) return;
+	localconfig = &localstream->rtcp_xr;
+	remotestream = sal_media_description_find_stream(sal_call_get_remote_media_description(call->op), SalProtoRtpSavp, type);
+	if (!remotestream) remotestream = sal_media_description_find_stream(sal_call_get_remote_media_description(call->op), SalProtoRtpAvp, type);
+	if (!remotestream) return;
+	remoteconfig = &remotestream->rtcp_xr;
+
+	if (localstream->dir == SalStreamInactive) return;
+	else if (localstream->dir == SalStreamRecvOnly) {
+		/* Use local config for unilateral parameters and remote config for collaborative parameters. */
+		memcpy(&currentconfig, localconfig, sizeof(currentconfig));
+		currentconfig.rcvr_rtt_mode = remoteconfig->rcvr_rtt_mode;
+		currentconfig.rcvr_rtt_max_size = remoteconfig->rcvr_rtt_max_size;
+	} else {
+		memcpy(&currentconfig, remoteconfig, sizeof(currentconfig));
+	}
+	if (type == SalAudio) {
+		session = call->audiostream->ms.session;
+	} else {
+		session = call->videostream->ms.session;
+	}
+	rtp_session_configure_rtcp_xr(session, &currentconfig);
+	if (currentconfig.rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
 		rtp_session_set_rtcp_xr_rcvr_rtt_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_rcvr_rtt_interval_duration", 5000));
 	}
-	if (config->stat_summary_enabled == TRUE) {
+	if (currentconfig.stat_summary_enabled == TRUE) {
 		rtp_session_set_rtcp_xr_stat_summary_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_stat_summary_interval_duration", 5000));
 	}
-	if (config->voip_metrics_enabled == TRUE) {
+	if (currentconfig.voip_metrics_enabled == TRUE) {
 		rtp_session_set_rtcp_xr_voip_metrics_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_interval_duration", 5000));
 	}
 }
@@ -1825,7 +1855,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 					call->audiostream_encrypted=FALSE;
 				}
 			}else call->audiostream_encrypted=FALSE;
-			configure_rtp_session_for_rtcp_xr(lc, call->audiostream->ms.session, &stream->rtcp_xr);
+			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1947,7 +1977,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				}else{
 					call->videostream_encrypted=FALSE;
 				}
-				configure_rtp_session_for_rtcp_xr(lc, call->videostream->ms.session, &vstream->rtcp_xr);
+				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
 
 				call->log->video_enabled = TRUE;
 				video_stream_set_direction (call->videostream, dir);
