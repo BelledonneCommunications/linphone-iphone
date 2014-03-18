@@ -2525,7 +2525,7 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	if (lc->vtable.display_warning!=NULL)
 		lc->vtable.display_warning(lc,temp);
 	linphone_core_terminate_call(lc,call);
-	linphone_core_play_named_tone(lc,LinphoneToneCallFailed);
+	linphone_core_play_named_tone(lc,LinphoneToneCallLost);
 }
 
 static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){

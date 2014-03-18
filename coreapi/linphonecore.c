@@ -610,7 +610,7 @@ static void sound_config_read(LinphoneCore *lc)
 	/*just parse requested stream feature once at start to print out eventual errors*/
 	linphone_core_get_audio_features(lc);
 	
-	_linphone_core_set_call_error_tone(lc,LinphoneReasonBusy,LinphoneToneBusy,NULL);
+	_linphone_core_set_tone(lc,LinphoneReasonBusy,LinphoneToneBusy,NULL);
 }
 
 static void certificates_config_read(LinphoneCore *lc)
@@ -5441,41 +5441,46 @@ int linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 	if (linphone_core_tone_indications_enabled(lc)){
-		MSFilter *f=get_dtmf_gen(lc);
-		MSDtmfGenCustomTone def;
-		if (f==NULL){
-			ms_error("No dtmf generator at this time !");
-			return;
+		const char *audiofile=linphone_core_get_tone_file(lc,toneid);
+		if (!audiofile){
+			MSFilter *f=get_dtmf_gen(lc);
+			MSDtmfGenCustomTone def;
+			if (f==NULL){
+				ms_error("No dtmf generator at this time !");
+				return;
+			}
+			memset(&def,0,sizeof(def));
+			def.amplitude=1;
+			/*these are french tones, excepted the failed one, which is USA congestion tone (does not exist in France)*/
+			switch(toneid){
+				case LinphoneToneCallOnHold:
+				case LinphoneToneCallWaiting:
+					def.duration=300;
+					def.frequencies[0]=440;
+					def.interval=2000;
+				break;
+				case LinphoneToneBusy:
+					def.duration=500;
+					def.frequencies[0]=440;
+					def.interval=500;
+					def.repeat_count=3;
+				break;
+				case LinphoneToneCallLost:
+					def.duration=250;
+					def.frequencies[0]=480;
+					def.frequencies[0]=620;
+					def.interval=250;
+					def.repeat_count=3;
+					
+				break;
+				default:
+					ms_warning("Unhandled tone id.");
+			}
+			if (def.duration>0)
+				ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
+		}else{
+			linphone_core_play_local(lc,audiofile);
 		}
-		memset(&def,0,sizeof(def));
-		def.amplitude=1;
-		/*these are french tones, excepted the failed one, which is USA congestion tone (does not exist in France)*/
-		switch(toneid){
-			case LinphoneToneCallOnHold:
-			case LinphoneToneCallWaiting:
-				def.duration=300;
-				def.frequencies[0]=440;
-				def.interval=2000;
-			break;
-			case LinphoneToneBusy:
-				def.duration=500;
-				def.frequencies[0]=440;
-				def.interval=500;
-				def.repeat_count=3;
-			break;
-			case LinphoneToneCallFailed:
-				def.duration=250;
-				def.frequencies[0]=480;
-				def.frequencies[0]=620;
-				def.interval=250;
-				def.repeat_count=3;
-				
-			break;
-			default:
-				ms_warning("Unhandled tone id.");
-		}
-		if (def.duration>0)
-			ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 	}
 }
 

@@ -1339,7 +1339,16 @@ LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *l
 	return NULL;
 }
 
-void _linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
+const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id){
+	const MSList *elem;
+	for (elem=lc->tones;elem!=NULL;elem=elem->next){
+		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
+		if (tone->toneid==id && tone->reason==LinphoneReasonNone && tone->audiofile!=NULL) return tone->audiofile;
+	}
+	return NULL;
+}
+
+void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
 	LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
 	if (tone){
 		lc->tones=ms_list_remove(lc->tones,tone);
@@ -1350,12 +1359,24 @@ void _linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason,
 }
 
 /**
- * Assign an audio file to played locally upon call failure, for a given reason.
+ * Assign an audio file to be played locally upon call failure, for a given reason.
  * @param lc the core
  * @param reason the #LinphoneReason representing the failure error code.
  * @param audiofile a wav file to be played when such call failure happens.
  * @ingroup misc
 **/
 void linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, const char *audiofile){
-	_linphone_core_set_call_error_tone(lc,reason,LinphoneToneUndefined, audiofile);
+	_linphone_core_set_tone(lc,reason,LinphoneToneUndefined, audiofile);
 }
+
+/**
+ * Assign an audio file to be played as a specific tone id.
+ * This function typically allows to customize telephony tones per country.
+ * @param lc the core
+ * @param id the tone id
+ * @param audiofile a wav file to be played.
+**/
+void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id, const char *audiofile){
+	_linphone_core_set_tone(lc, LinphoneReasonNone, id, audiofile);
+}
+
