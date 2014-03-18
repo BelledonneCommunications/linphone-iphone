@@ -4600,10 +4600,10 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableSdp200Ack(J
 	linphone_core_enable_sdp_200_ack((LinphoneCore*)lc,enable);
 }
 
-JNIEXPORT jbool JNICALL Java_org_linphone_core_LinphoneCoreImpl_isSdp200AckEnabled(JNIEnv*  env
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_isSdp200AckEnabled(JNIEnv*  env
 																					,jobject  thiz
 																					,jlong lc) {
-	return (jbool)linphone_core_sdp_200_ack_enabled((const LinphoneCore*)lc);
+	return (jboolean)linphone_core_sdp_200_ack_enabled((const LinphoneCore*)lc);
 }
 
 

@@ -147,6 +147,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int migrateToMultiTransport(long nativePtr);
 	private native long createProxyConfig(long nativePtr);
 	private native void setCallErrorTone(long nativePtr, int reason, String path);
+	private native void enableSdp200Ack(long nativePtr,boolean enable);
+	private native boolean isSdp200AckEnabled(long nativePtr);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1150,4 +1152,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int getMtu() {
 		return getMtu(nativePtr);
 	}
+	@Override
+	public void enableSdp200Ack(boolean enable) {
+		enableSdp200Ack(nativePtr,enable);
+	}
+	@Override
+	public boolean isSdp200AckEnabled() {
+		return isSdp200AckEnabled(nativePtr);
+	}
+	
 }
