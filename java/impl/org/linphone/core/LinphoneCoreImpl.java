@@ -1160,5 +1160,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public boolean isSdp200AckEnabled() {
 		return isSdp200AckEnabled(nativePtr);
 	}
+	private native void setTone(long nativePtr, int id, String wavfile);
+	@Override
+	public void setTone(ToneID id, String wavfile) {
+		setTone(nativePtr, id.mValue, wavfile);
+	}
 	
 }

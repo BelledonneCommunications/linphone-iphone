@@ -1534,6 +1534,14 @@ public interface LinphoneCore {
 	public void setCallErrorTone(Reason reason, String path);
 	
 	/**
+	 * Assign an audio file to be played locally in replacement of common telephony tone.
+	 * This is typically used to internationalize tones.
+	 * @param id a tone id
+	 * @param wav a path to a 16 bit PCM linear wav file. 
+	 */
+	public void setTone(ToneID id, String wavfile);
+	
+	/**
 	 * Inform the core about the maximum transmission unit of the network.
 	 * This is used for fragmenting video RTP packets to a size compatible with the network.
 	 * @param mtu the MTU in bytes.
