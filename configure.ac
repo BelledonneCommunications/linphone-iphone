@@ -767,7 +767,7 @@ AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
 LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
-LINPHONE_LIBS="-L${libdir} -llinphone -llpc2xml -lxml2lpc"
+LINPHONE_LIBS="-L${libdir} -llinphone"
 
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
