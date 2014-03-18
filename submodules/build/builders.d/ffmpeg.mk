@@ -5,6 +5,7 @@ ffmpeg_configure_options=\
 	--disable-avfilter  --disable-network \
 	--disable-everything  --enable-decoder=mjpeg --enable-encoder=mjpeg --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
 	--enable-decoder=h264 --disable-avformat --enable-pic\
+	--enable-decoder=h263p --enable-encoder=h263p --enable-decoder=h263 --enable-encoder=h263 \
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
 	--enable-static --disable-shared --target-os=darwin \
