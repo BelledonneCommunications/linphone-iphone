@@ -4593,6 +4593,17 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_PayloadTypeImpl_getSendFmtp(JNI
 }
 
 
-  
-  
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableSdp200Ack(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jboolean enable) {
+	linphone_core_enable_sdp_200_ack((LinphoneCore*)lc,enable);
+}
+
+JNIEXPORT jbool JNICALL Java_org_linphone_core_LinphoneCoreImpl_isSdp200AckEnabled(JNIEnv*  env
+																					,jobject  thiz
+																					,jlong lc) {
+	return (jbool)linphone_core_sdp_200_ack_enabled((const LinphoneCore*)lc);
+}
+
 

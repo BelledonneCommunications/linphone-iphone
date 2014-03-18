@@ -6502,3 +6502,10 @@ void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path){
 		linphone_core_message_storage_init(lc);
 	}
 }
+void linphone_core_enable_sdp_200_ack(LinphoneCore *lc, bool_t enable) {
+	lp_config_set_int(lc->config,"sip","sdp_200_ack",lc->sip_conf.sdp_200_ack=enable);
+}
+bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
+	return lc->sip_conf.sdp_200_ack!=0;
+}
+

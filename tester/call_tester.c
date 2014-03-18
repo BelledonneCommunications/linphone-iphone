@@ -478,9 +478,11 @@ static void call_terminated_by_caller(void) {
 }
 
 static void call_with_no_sdp(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_no_sdp_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
+	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+
 	CU_ASSERT_TRUE(call(marie,pauline));
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
