@@ -79,6 +79,7 @@ struct SalOp{
 	belle_sip_listener_callbacks_t callbacks;
 	belle_sip_client_transaction_t *pending_auth_transaction;
 	belle_sip_server_transaction_t* pending_server_trans;
+	belle_sip_server_transaction_t* pending_update_server_trans;
 	belle_sip_client_transaction_t* pending_client_trans;
 	SalAuthInfo* auth_info;
 	belle_sip_dialog_t* dialog;

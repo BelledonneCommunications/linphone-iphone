@@ -116,7 +116,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 							video_stream_change_camera(call->videostream,lc->video_conf.device );
 #endif
 					}
-					/*FIXME ZRTP might be restarted in any cases ? */
+					/*FIXME ZRTP, might be restarted in any cases ? */
 					ms_message("No need to restart streams, SDP is unchanged.");
 					goto end;
 				}else {
@@ -407,7 +407,8 @@ static void call_accepted(SalOp *op){
 			linphone_call_fix_call_parameters(call);
 			if (!call->current_params.in_conference)
 				lc->current_call=call;
-			linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
+			if (call->prevstate != LinphoneCallIncomingEarlyMedia) /*don't change state in aswer to a SIP UPDATE in early media*/
+				linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
 	}else{
 		/*send a bye*/
@@ -473,7 +474,7 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
 }
 
-static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
+static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call,bool_t notify_application){
 	/*first check if media capabilities are compatible*/
 	SalMediaDescription* md;
 	linphone_call_make_local_media_description(lc,call);
@@ -484,16 +485,21 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 		return;
 	}
 
-	if(lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Call is updated by remote."));
-	call->defer_update=FALSE;
-	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
-	if (call->defer_update==FALSE){
-		linphone_core_accept_call_update(lc,call,NULL);
+	if (notify_application) {
+		if(lc->vtable.display_status)
+			lc->vtable.display_status(lc,_("Call is updated by remote."));
+		call->defer_update=FALSE;
+		linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+		if (call->defer_update==FALSE){
+			linphone_core_accept_call_update(lc,call,NULL);
+		}
+	} else { /*SIP UPDATE case*/
+		/*can be call from any state*/
+		_linphone_core_accept_call_update(lc,call,NULL);
 	}
 }
 
-/* this callback is called when an incoming re-INVITE modifies the session*/
+/* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
 static void call_updating(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
@@ -512,12 +518,16 @@ static void call_updating(SalOp *op){
 				call_resumed(lc,call);
 			}else call_paused_by_remote(lc,call);
 		break;
+		/*SIP UPDATE CASE*/
+		case LinphoneCallOutgoingEarlyMedia:
+			call_updated_by_remote(lc,call,FALSE);
+			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallConnected:
 			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
 				call_paused_by_remote(lc,call);
 			}else{
-				call_updated_by_remote(lc,call);
+				call_updated_by_remote(lc,call,TRUE);
 			}
 		break;
 		default:
