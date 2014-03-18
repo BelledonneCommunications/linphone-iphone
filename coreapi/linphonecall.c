@@ -2691,6 +2691,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
 				call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
 				evd->packet = NULL;
+				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LinphoneCallStatsReceivedRTCPUpdate;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
@@ -2700,6 +2701,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
 				call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
 				evd->packet = NULL;
+				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LinphoneCallStatsSentRTCPUpdate;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
@@ -2734,6 +2736,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
 				call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
 				evd->packet = NULL;
+				call->stats[LINPHONE_CALL_STATS_AUDIO].updated = LinphoneCallStatsReceivedRTCPUpdate;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
@@ -2743,6 +2746,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
 				call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
 				evd->packet = NULL;
+				call->stats[LINPHONE_CALL_STATS_AUDIO].updated = LinphoneCallStatsSentRTCPUpdate;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
