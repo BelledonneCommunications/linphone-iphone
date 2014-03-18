@@ -260,6 +260,7 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 
 static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
 	LinphoneCore *lc = call->core;
+	int i;
 
 	md->rtcp_xr.enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_enabled", 0);
 	if (md->rtcp_xr.enabled == TRUE) {
@@ -275,6 +276,9 @@ static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
 			md->rtcp_xr.stat_summary_flags = OrtpRtcpXrStatSummaryLoss | OrtpRtcpXrStatSummaryDup | OrtpRtcpXrStatSummaryJitt | OrtpRtcpXrStatSummaryTTL;
 		}
 		md->rtcp_xr.voip_metrics_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_enabled", 0);
+	}
+	for (i = 0; i < md->n_active_streams; i++) {
+		memcpy(&md->streams[i].rtcp_xr, &md->rtcp_xr, sizeof(md->streams[i].rtcp_xr));
 	}
 }
 
