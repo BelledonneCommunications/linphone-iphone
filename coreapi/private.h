@@ -599,7 +599,7 @@ LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *l
 void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason);
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile);
 const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id);
-
+int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore

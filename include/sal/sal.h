@@ -420,7 +420,7 @@ typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
-typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE is received*/
+typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE/UPDATE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
 typedef void (*SalOnCallReleased)(SalOp *salop);

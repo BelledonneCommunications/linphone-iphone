@@ -206,6 +206,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 			lc->current_call=NULL;
 		}
 		/*this will trigger a reINVITE that will later redraw the streams */
+		/*FIXME probably a bit too much to just redraw streams !*/
 		linphone_core_update_call(lc,call,params);
 		linphone_call_params_destroy(params);
 		add_local_endpoint(conf,lc);

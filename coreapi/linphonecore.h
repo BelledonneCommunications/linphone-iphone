@@ -2330,6 +2330,21 @@ LINPHONE_PUBLIC int linphone_core_migrate_to_multi_transport(LinphoneCore *lc);
 
 
 /**
+ * Control when media offer is sent in SIP INVITE.
+ * @param lc the linphone core
+ * @param enable true if INVITE has to be sent whitout SDP.
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_sdp_200_ack(LinphoneCore *lc, bool_t enable);
+/**
+ * Media offer control param for SIP INVITE.
+ * @return true if INVITE has to be sent whitout SDP.
+ * @ingroup network_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc);
+
+
+/**
  * Enum listing frequent telephony tones.
 **/
 enum _LinphoneToneID{

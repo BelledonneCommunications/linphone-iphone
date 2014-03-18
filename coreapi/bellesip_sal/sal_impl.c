@@ -246,7 +246,9 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 		return;
 	}else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
-		resp=belle_sip_response_create_from_request(req,501);
+		resp=belle_sip_response_create_from_request(req,405);
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp)
+									,BELLE_SIP_HEADER(belle_sip_header_allow_create("INVITE, CANCEL, ACK, BYE, SUBSCRIBE, NOTIFY, MESSAGE, OPTIONS, INFO")));
 		belle_sip_provider_send_response(sal->prov,resp);
 		return;
 	}

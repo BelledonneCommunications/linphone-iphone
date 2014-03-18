@@ -1545,4 +1545,16 @@ public interface LinphoneCore {
 	 * @return the MTU in bytes.
 	 */
 	public int getMtu();
+	/**
+	Control when media offer is sent in SIP INVITE.
+	 * @param enable true if INVITE has to be sent whitout SDP.
+	 * */
+	public void enableSdp200Ack(boolean enable);
+	/**
+	 * Media offer control param for SIP INVITE.
+	 * @return true if INVITE has to be sent whitout SDP.
+	 */
+	public boolean isSdp200AckEnabled();
+	
+	
 }

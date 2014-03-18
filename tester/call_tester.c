@@ -478,9 +478,11 @@ static void call_terminated_by_caller(void) {
 }
 
 static void call_with_no_sdp(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_no_sdp_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
+	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+
 	CU_ASSERT_TRUE(call(marie,pauline));
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
@@ -1133,6 +1135,92 @@ static void early_media_call_with_ringing(void){
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_with_update_base(bool_t media_change){
+	char hellopath[256];
+	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	MSList* lcs = NULL;
+	LinphoneCall *marie_call, *pauline_call;
+	LinphoneCallParams *pauline_params;
+
+	lcs = ms_list_append(lcs,marie->lc);
+	lcs = ms_list_append(lcs,pauline->lc);
+	if (media_change) {
+		disable_all_codecs_except_one(marie->lc,"pcmu");
+		disable_all_codecs_except_one(pauline->lc,"pcmu");
+
+	}
+	/*
+		Marie calls Pauline, and after the call has rung, transitions to an early_media session
+	*/
+
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (pauline->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(pauline->lc,hellopath);
+
+	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+	/* send a 183 to initiate the early media */
+	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
+	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	pauline_params = linphone_call_params_copy(linphone_call_get_current_params(pauline_call));
+
+	if (media_change) {
+		disable_all_codecs_except_one(marie->lc,"pcma");
+		disable_all_codecs_except_one(pauline->lc,"pcma");
+	}
+	#define UPDATED_SESSION_NAME "nouveau nom de session"
+
+	linphone_call_params_set_session_name(pauline_params,UPDATED_SESSION_NAME);
+	linphone_core_update_call(pauline->lc, pauline_call, pauline_params);
+
+	/*just to wait 2s*/
+	liblinphone_tester_check_rtcp(marie, pauline);
+	wait_for_list(lcs, &marie->stat.number_of_LinphoneCallUpdatedByRemote,100000,2000);
+
+	CU_ASSERT_STRING_EQUAL(	  linphone_call_params_get_session_name(linphone_call_get_remote_params(marie_call))
+							, UPDATED_SESSION_NAME);
+
+	linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected,1);
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallStreamsRunning,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallUpdating,1);
+
+	liblinphone_tester_check_rtcp(marie, pauline);
+
+	linphone_core_terminate_all_calls(pauline->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+
+
+	ms_list_free(lcs);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void early_media_call_with_session_update(void){
+	early_media_call_with_update_base(FALSE);
+}
+
+static void early_media_call_with_codec_update(void){
+	early_media_call_with_update_base(TRUE);
+}
 
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1612,6 +1700,8 @@ test_t call_tests[] = {
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
 	{ "Early-media call with ringing", early_media_call_with_ringing },
+	{ "Early-media call with updated media session", early_media_call_with_session_update},
+	{ "Early-media call with updated codec", early_media_call_with_codec_update},
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call without SDP", call_with_no_sdp},
 	{ "Call paused resumed", call_paused_resumed },

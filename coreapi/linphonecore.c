@@ -3231,23 +3231,25 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 		linphone_core_update_streams (lc,call,md);
 		linphone_call_fix_call_parameters(call);
 	}
-	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+
+	if (call->state != LinphoneCallOutgoingEarlyMedia) /*don't change the state in case of outgoing early (SIP UPDATE)*/
+		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	return 0;
 }
 
 /**
  * @ingroup call_control
  * Accept call modifications initiated by other end.
- * 
+ *
  * This call may be performed in response to a #LinphoneCallUpdatedByRemote state notification.
  * When such notification arrives, the application can decide to call linphone_core_defer_update_call() so that it can
  * have the time to prompt the user. linphone_call_get_remote_params() can be used to get information about the call parameters
  * requested by the other party, such as whether a video stream is requested.
- * 
+ *
  * When the user accepts or refuse the change, linphone_core_accept_call_update() can be done to answer to the other party.
  * If params is NULL, then the same call parameters established before the update request will continue to be used (no change).
  * If params is not NULL, then the update will be accepted according to the parameters passed.
- * Typical example is when a user accepts to start video, then params should indicate that video stream should be used 
+ * Typical example is when a user accepts to start video, then params should indicate that video stream should be used
  * (see linphone_call_params_enable_video()).
  * @param lc the linphone core object.
  * @param call the LinphoneCall object
@@ -3255,16 +3257,20 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
  * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	SalMediaDescription *remote_desc;
-	bool_t keep_sdp_version;
-#ifdef VIDEO_ENABLED
-	bool_t old_has_video = call->params.has_video;
-#endif
 	if (call->state!=LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
 		return -1;
 	}
+	return _linphone_core_accept_call_update(lc, call, params);
+}
+int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+	SalMediaDescription *remote_desc;
+	bool_t keep_sdp_version;
+#ifdef VIDEO_ENABLED
+	bool_t old_has_video = call->params.has_video;
+#endif
+
 	remote_desc = sal_call_get_remote_media_description(call->op);
 	keep_sdp_version = lp_config_get_int(lc->config, "sip", "keep_sdp_version", 0);
 	if (keep_sdp_version &&(remote_desc->session_id == call->remote_session_id) && (remote_desc->session_ver == call->remote_session_ver)) {
@@ -6501,3 +6507,10 @@ void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path){
 		linphone_core_message_storage_init(lc);
 	}
 }
+void linphone_core_enable_sdp_200_ack(LinphoneCore *lc, bool_t enable) {
+	lp_config_set_int(lc->config,"sip","sdp_200_ack",lc->sip_conf.sdp_200_ack=enable);
+}
+bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
+	return lc->sip_conf.sdp_200_ack!=0;
+}
+
