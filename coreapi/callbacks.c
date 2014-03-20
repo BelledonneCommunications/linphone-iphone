@@ -206,7 +206,8 @@ static void call_received(SalOp *h){
 	const char *from,*to;
 	char *alt_contact;
 	LinphoneAddress *from_addr, *to_addr;
-	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",TRUE);
+	/*this mode is deprcated because probably useless*/
+	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
 	
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {

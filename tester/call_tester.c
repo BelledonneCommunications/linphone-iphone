@@ -887,7 +887,99 @@ static void call_with_privacy(void) {
 }
 
 
+static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	stats initial_marie_stat;
+	stats initial_pauline_stat;
+	stats initial_laure_stat;
+	char hellopath[256];
+	MSList *iterator;
+	LinphoneCall* marie_call_pauline;
+	LinphoneCall* pauline_called_by_marie;
+	LinphoneCall* pauline_called_by_laure=NULL;
+	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
+	LinphoneCallParams *marie_params=linphone_core_create_default_call_parameters(marie->lc);
 
+	if (enable_caller_privacy)
+		linphone_call_params_set_privacy(marie_params,LinphonePrivacyId);
+
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+
+	CU_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
+	marie_call_pauline=linphone_core_get_current_call(marie->lc);
+	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
+
+	initial_marie_stat=marie->stat;
+	initial_pauline_stat=pauline->stat;
+	initial_laure_stat=laure->stat;
+
+
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (laure->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(laure->lc,hellopath);
+	if (enable_caller_privacy)
+			linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(laure->lc,pauline->identity,laure_params));
+
+	CU_ASSERT_TRUE(wait_for(laure->lc
+							,pauline->lc
+							,&pauline->stat.number_of_LinphoneCallIncomingReceived
+							,2));
+
+	CU_ASSERT_EQUAL(laure->stat.number_of_LinphoneCallOutgoingProgress,1);
+
+
+	CU_ASSERT_TRUE(wait_for(laure->lc
+							,pauline->lc
+							,&laure->stat.number_of_LinphoneCallOutgoingRinging
+							,1));
+
+	for (iterator=(MSList *)linphone_core_get_calls(pauline->lc);iterator!=NULL;iterator=iterator->next) {
+		LinphoneCall *call=(LinphoneCall *)iterator->data;
+		if (call != pauline_called_by_marie) {
+			/*fine, this is the call waiting*/
+			linphone_core_accept_call(pauline->lc,pauline_called_by_laure=call);
+		}
+	}
+
+	CU_ASSERT_TRUE(wait_for(laure->lc
+							,pauline->lc
+							,&laure->stat.number_of_LinphoneCallConnected
+							,1));
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc
+								,marie->lc
+								,&marie->stat.number_of_LinphoneCallPausedByRemote
+								,1));
+
+	if (pauline_called_by_laure && enable_caller_privacy )
+		CU_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(pauline_called_by_laure)),LinphonePrivacyId);
+
+	linphone_core_terminate_all_calls(pauline->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,2000));
+
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
+}
+static void call_waiting_indication(void) {
+	call_waiting_indication_with_param(FALSE);
+}
+
+static void call_waiting_indication_with_privacy(void) {
+	call_waiting_indication_with_param(TRUE);
+}
 
 static void simple_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1721,6 +1813,8 @@ test_t call_tests[] = {
 	{ "Call rejected because of wrong credential", call_rejected_because_wrong_credentials},
 	{ "Call rejected without 403 because of wrong credential", call_rejected_without_403_because_wrong_credentials},
 	{ "Call rejected without 403 because of wrong credential and no auth req cb", call_rejected_without_403_because_wrong_credentials_no_auth_req_cb},
+	{ "Call waiting indication", call_waiting_indication },
+	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Unattended call transfer", unattended_call_transfer },

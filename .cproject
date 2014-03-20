@@ -39,20 +39,6 @@
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="0.2079208171.2090246372" name="ringback.wav" rcbsApplicability="disable" resourcePath="tester/sounds/ringback.wav" toolsToInvoke=""/>
-					<folderInfo id="0.2079208171.1778481546" name="/" resourcePath="include">
-						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.1238844827" name="No ToolChain" superClass="org.eclipse.cdt.build.core.prefbase.toolchain" unusedChildren="">
-							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.58439860" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs.1252970003"/>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.899998629" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder.1371414073">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1829150855" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
-							</tool>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.252709365" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder.391709798">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.551083583" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
-							</tool>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.1236597953" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder.754828354">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.714781911" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
-							</tool>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="coreapi"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="gtk"/>

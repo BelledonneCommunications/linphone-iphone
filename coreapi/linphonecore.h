@@ -563,12 +563,6 @@ enum _LinphoneUpnpState{
 **/
 typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
-
-/**
- * Enum describing what has been updated in a LinphoneCallStats object.
-**/
-typedef enum _LinphoneCallStatsRTCPUpdate LinphoneCallStatsRTCPUpdate;
-
 /**
  * Enum describing what has been updated in a LinphoneCallStats object.
 **/
@@ -576,6 +570,12 @@ enum _LinphoneCallStatsRTCPUpdate {
 	LinphoneCallStatsReceivedRTCPUpdate, /**< received_rtcp field of LinphoneCallStats object has been updated */
 	LinphoneCallStatsSentRTCPUpdate /**< sent_rtcp field of LinphoneCallStats object has been updated */
 };
+
+/**
+ * Enum describing what has been updated in a LinphoneCallStats object.
+**/
+
+typedef enum _LinphoneCallStatsRTCPUpdate LinphoneCallStatsRTCPUpdate;
 
 /**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
