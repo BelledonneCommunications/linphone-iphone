@@ -891,12 +891,8 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
-	stats initial_marie_stat;
-	stats initial_pauline_stat;
-	stats initial_laure_stat;
 	char hellopath[256];
 	MSList *iterator;
-	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
 	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
@@ -910,12 +906,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	lcs=ms_list_append(lcs,laure->lc);
 
 	CU_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
-	marie_call_pauline=linphone_core_get_current_call(marie->lc);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
-
-	initial_marie_stat=marie->stat;
-	initial_pauline_stat=pauline->stat;
-	initial_laure_stat=laure->stat;
 
 
 	/*use playfile for callee to avoid locking on capture card*/

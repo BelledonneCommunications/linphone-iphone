@@ -1308,7 +1308,7 @@ int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 			newtp.udp_port=port;
 			newtp.tcp_port=port;
 			newtp.tls_port=LC_SIP_TRANSPORT_RANDOM;
-			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); //remove
+			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); /*remove*/
 			linphone_core_set_sip_transports(lc,&newtp);
 		}
 		lp_config_set_int(lc->config,"sip","multi_transport_migration_done",1);
