@@ -32,6 +32,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 @synthesize mainViewController;
 @synthesize currentView;
 @synthesize statusBarBG;
+@synthesize volumeView;
 
 
 #pragma mark - Lifecycle Functions
@@ -88,6 +89,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
         return;
     
     [super viewDidLoad];
+
+    // insert invisible volumeView to prevent iOS from displaying the volume notification all the time.
+    volumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(-100,-100,16,16)];
+    volumeView.showsRouteButton = false;
+    volumeView.userInteractionEnabled = false;
+    [self.view addSubview:volumeView];
 
     [self.view addSubview: mainViewController.view];
 }

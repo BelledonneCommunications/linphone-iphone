@@ -1407,6 +1407,7 @@
 		F093815A188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
 		F0A2759C18157A6000B6D61A /* linphone_icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7B17FC5160005A3330 /* linphone_icon_120.png */; };
 		F0A2759D18157A6100B6D61A /* linphone_icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7B17FC5160005A3330 /* linphone_icon_120.png */; };
+		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 /* End PBXBuildFile section */
 
@@ -2566,6 +2567,7 @@
 		F095485C1883F68800E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/WizardViewController~ipad.strings"; sourceTree = "<group>"; };
 		F095485D1883F6E700E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/WizardViews.strings; sourceTree = "<group>"; };
 		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/WizardViews.strings; sourceTree = "<group>"; };
+		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FD61C862169FC495001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/HistoryDetailsViewController.xib; sourceTree = "<group>"; };
 		FD61C88216A00E69001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UICallCell.xib; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2596,6 +2598,7 @@
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */,
 				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
@@ -3870,6 +3873,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
 				F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */,
 				F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
