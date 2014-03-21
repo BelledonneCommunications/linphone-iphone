@@ -177,6 +177,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
+@property (readonly) BOOL wasRemoteProvisioned;
 
 @end
 

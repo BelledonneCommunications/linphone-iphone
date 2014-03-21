@@ -237,13 +237,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)onGlobalStateChanged:(NSNotification*)notif {
-    LinphoneConfiguringState state = [[[notif userInfo] valueForKey:@"state"] integerValue];
-    LinphoneAppDelegate *appDelegate = (LinphoneAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if( state == LinphoneGlobalOn && !(appDelegate.started) ){
-        if( [[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] ){
+    LinphoneGlobalState state = [[[notif userInfo] valueForKey:@"state"] integerValue];
+    static BOOL already_shown = FALSE;
+    if( state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned ){
+        LinphoneProxyConfig* conf = NULL;
+        linphone_core_get_default_proxy([LinphoneManager getLc], &conf);
+        if( [[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL){
+            already_shown = TRUE;
             WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
             if(controller != nil) {
-                [controller handleRemoteProvisioning];
+                [controller fillDefaultValues];
             }
         }
     }

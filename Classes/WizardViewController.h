@@ -51,6 +51,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
 @property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
+@property (retain, nonatomic) IBOutlet UILabel  *remoteParamsLabel;
 
 
 @property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
@@ -58,7 +59,7 @@
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
 - (void)reset;
-- (void)handleRemoteProvisioning;
+- (void)fillDefaultValues;
 
 - (IBAction)onStartClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;

@@ -157,3 +157,18 @@
 
 /* Class = "IBUIImageView"; accessibilityLabel = "Icône de l'assistant de configuration de compte"; ObjectID = "128"; */
 "128.accessibilityLabel" = "Icône de l'assistant de configuration de compte";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.accessibilityLabel" = "Sign in SIP account";
+
+/* Class = "IBUIButton"; normalTitle = "Remote Provisioning"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.normalTitle" = "Configuration distante";
+
+/* Class = "IBUILabel"; text = "remote provisioning details"; ObjectID = "W9Y-Z9-Rmz"; */
+"W9Y-Z9-Rmz.text" = "remote provisioning details";
+
+/* Class = "IBUILabel"; text = "Ces paramètres proviennent d'un fichier de provision récupéré ici:\n%@"; ObjectID = "bBb-47-pCq"; */
+"bBb-47-pCq.text" = "Ces paramètres proviennent d'un fichier de provision.";
+
+/* Class = "IBUILabel"; text = "Invalid character:"; ObjectID = "uHm-NE-GLV"; */
+"uHm-NE-GLV.text" = "Invalid character:";

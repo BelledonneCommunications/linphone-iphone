@@ -56,6 +56,8 @@ typedef enum _ViewElement {
 @synthesize createAccountButton;
 @synthesize connectAccountButton;
 @synthesize externalAccountButton;
+@synthesize remoteProvisioningButton;
+@synthesize remoteParamsLabel;
 
 @synthesize choiceViewLogoImageView;
 
@@ -103,7 +105,8 @@ typedef enum _ViewElement {
     
     [viewTapGestureRecognizer release];
     
-    [_remoteProvisioningButton release];
+    [remoteProvisioningButton release];
+    [remoteParamsLabel release];
     [super dealloc];
 }
 
@@ -154,6 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [remoteParamsLabel setHidden:TRUE];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneRegistrationUpdate
                                                   object:nil];
@@ -200,9 +204,28 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)handleRemoteProvisioning {
+- (void)fillDefaultValues {
+
+    LinphoneCore* lc = [LinphoneManager getLc];
 
     [self resetTextFields];
+
+    LinphoneProxyConfig* current_conf = NULL;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &current_conf);
+    if( current_conf != NULL ){
+        const char* proxy_addr = linphone_proxy_config_get_identity(current_conf);
+        if( proxy_addr ){
+            LinphoneAddress *addr = linphone_address_new( proxy_addr );
+            if( addr ){
+                const LinphoneAuthInfo *auth = linphone_core_find_auth_info(lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
+                linphone_address_destroy(addr);
+                if( auth ){
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"A proxy config was set up with the remote provisioning, skip wizard"];
+                    [self onCancelClick:nil];
+                }
+            }
+        }
+    }
 
     LinphoneProxyConfig* default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
     const char* identity = linphone_proxy_config_get_identity(default_conf);
@@ -210,14 +233,22 @@ static UICompositeViewDescription *compositeDescription = nil;
         LinphoneAddress* default_addr = linphone_address_new(identity);
         if( default_addr ){
             const char* domain = linphone_address_get_domain(default_addr);
-
+            const char* username = linphone_address_get_username(default_addr);
             if( domain && strlen(domain) > 0){
-                UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain  view:externalAccountView];
+                UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain view:externalAccountView];
                 [domainfield setText:[NSString stringWithUTF8String:domain]];
+            }
+
+            if( username && strlen(username) > 0 && username[0] != '?' ){
+                UITextField* userField = [WizardViewController findTextField:ViewElement_Username view:externalAccountView];
+                [userField setText:[NSString stringWithUTF8String:username]];
             }
         }
     }
+
     [self changeView:externalAccountView back:FALSE animation:TRUE];
+
+    [remoteParamsLabel setHidden:FALSE];
 
     linphone_proxy_config_destroy(default_conf);
 
@@ -801,7 +832,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     switch (status) {
         case LinphoneConfiguringSuccessful:
-            [self handleRemoteProvisioning];
+            [self fillDefaultValues];
             break;
         case LinphoneConfiguringFailed:
         {
@@ -1019,6 +1050,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidUnload {
 [self setRemoteProvisioningButton:nil];
+    [self setRemoteParamsLabel:nil];
 [super viewDidUnload];
 }
 @end

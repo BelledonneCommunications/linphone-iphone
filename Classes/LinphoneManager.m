@@ -112,6 +112,7 @@ extern  void libmsbcg729_init();
 @synthesize bluetoothEnabled;
 @synthesize photoLibrary;
 @synthesize silentPushCompletion;
+@synthesize wasRemoteProvisioned;
 
 struct codec_name_pref_table{
     const char *name;
@@ -288,6 +289,8 @@ struct codec_name_pref_table codec_pref_table[]={
 	}
 
     [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:kLinphoneGlobalStateUpdate];
+    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:kLinphoneConfiguringStateUpdate];
+
 
     [photoLibrary release];
 	[pendindCallIdFromRemoteNotif release];
@@ -341,6 +344,31 @@ struct codec_name_pref_table codec_pref_table[]={
 
 + (BOOL)isLcReady {
     return theLinphoneCore != nil;
+}
+
+
+struct _entry_data {
+    const LpConfig* conf;
+    const char* section;
+};
+
+static void dump_entry(const char* entry, void*data) {
+    struct _entry_data *d = (struct _entry_data*)data;
+    const char* value = lp_config_get_string(d->conf, d->section, entry, "");
+    [LinphoneLogger log:LinphoneLoggerLog format:@"%s=%s", entry, value];
+}
+
+static void dump_section(const char* section, void* data){
+    [LinphoneLogger log:LinphoneLoggerLog format:@"[%s]", section ];
+    struct _entry_data d = {(const LpConfig*)data, section};
+    lp_config_for_each_entry((const LpConfig*)data, section, dump_entry, &d);
+}
+
++ (void)dumpLCConfig {
+    if(theLinphoneCore ){
+        LpConfig* conf = linphone_core_get_config(theLinphoneCore);
+        lp_config_for_each_section(conf, dump_section, conf);
+    }
 }
 
 
@@ -619,6 +647,16 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneConfiguringStateUpdate object:self userInfo:dict];
     });
 }
+
+
+-(void)configuringStateChangedNotificationHandler:(NSNotification*)notif {
+    if( (LinphoneConfiguringState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneConfiguringSuccessful){
+        wasRemoteProvisioned = TRUE;
+    } else {
+        wasRemoteProvisioned = FALSE;
+    }
+}
+
 
 #pragma mark - Registration State Functions
 
@@ -900,7 +938,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_iterate(theLinphoneCore);
 }
 
-
 - (void)audioSessionInterrupted:(NSNotification *)notification
 {
     int interruptionType = [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue];
@@ -985,18 +1022,18 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 
 - (void)startLibLinphone {
-    if (theLinphoneCore != nil) {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"linphonecore is already created"];
+
+    static BOOL libStarted = FALSE;
+    if ( libStarted ) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"Liblinphone is already initialized!"];
         return;
     }
 
-    NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
-	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
-	
+    libStarted = TRUE;
+
 	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
-	//log management	
-	
+
 	libmsilbc_init();
 #if defined (HAVE_SILK)
     libmssilk_init(); 
@@ -1011,42 +1048,20 @@ static LinphoneCoreVTable linphonec_vtable = {
 #if HAVE_G729
 	libmsbcg729_init(); // load g729 plugin
 #endif
-	/* Initialize linphone core*/
-    
+
 	/*to make sure we don't loose debug trace*/
 	if ([[NSUserDefaults standardUserDefaults]  boolForKey:@"debugenable_preference"]) {
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	}
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
 
-	theLinphoneCore = linphone_core_new (&linphonec_vtable
-										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										 ,self /* user_data */);
-
-    /* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
-       Wait for this to finish the code configuration */
-	
-	// start scheduler
-	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
-													 target:self 
-												   selector:@selector(iterate) 
-												   userInfo:nil 
-													repeats:YES];
+    // create linphone core
+    [self createLinphoneCore];
 
     //init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	BOOL bAudioInputAvailable= audioSession.inputAvailable;
 	NSError* err;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(audioSessionInterrupted:)
-                                                 name:AVAudioSessionInterruptionNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
-
-
 
 	if( ![audioSession setActive:NO error: &err] && err ){
         NSLog(@"audioSession setActive failed: %@", [err description]);
@@ -1067,6 +1082,42 @@ static LinphoneCoreVTable linphonec_vtable = {
 		[self resignActive];
 	}
 		
+}
+
+- (void)createLinphoneCore {
+
+    if (theLinphoneCore != nil) {
+        [LinphoneLogger logc:LinphoneLoggerLog format:"linphonecore is already created"];
+        return;
+    }
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
+
+    connectivity=none;
+
+    NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
+	theLinphoneCore = linphone_core_new (&linphonec_vtable
+										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
+										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
+										 ,self /* user_data */);
+
+    /* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
+    const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
+
+    /* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
+     Wait for this to finish the code configuration */
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configuringStateChangedNotificationHandler:) name:kLinphoneConfiguringStateUpdate object:nil];
+
+    // start scheduler
+	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
+													 target:self
+												   selector:@selector(iterate)
+												   userInfo:nil
+													repeats:YES];
 }
 
 - (void)destroyLibLinphone {
@@ -1095,35 +1146,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 - (void) resetLinphoneCore {
     [self destroyLibLinphone];
-    if (theLinphoneCore != nil) {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"linphonecore is already created"];
-        return;
-    }
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
+    [self createLinphoneCore];
 
-    NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
-	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
-	theLinphoneCore = linphone_core_new (&linphonec_vtable
-										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										 ,self /* user_data */);
-
-    /* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
-     Wait for this to finish the code configuration */
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
-    connectivity=none;
+    // reset network state to trigger a new network connectivity assessment
     linphone_core_set_network_reachable(theLinphoneCore, FALSE);
-	// start scheduler
-	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
-													 target:self
-												   selector:@selector(iterate)
-												   userInfo:nil
-													repeats:YES];
-
-
-
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
