@@ -25,37 +25,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msvolume.h"
 
 static GtkWidget *audio_assistant=NULL;
+static void prepare(GtkAssistant *w);
 
 GtkWidget *get_widget_from_assistant(const char *name){
 	return (GtkWidget *)g_object_get_data(G_OBJECT(audio_assistant),name);
 }
-void set_widget_to_assistant(const char *name,GtkWidget *w){
+
+static void set_widget_to_assistant(const char *name,GtkWidget *w){
 	g_object_set_data(G_OBJECT(audio_assistant),name,w);
 }
 
-void update_record_button(gboolean is_visible){
+static void update_record_button(gboolean is_visible){
 	GtkWidget *rec_button = get_widget_from_assistant("rec_button");
 	gtk_widget_set_sensitive(rec_button,is_visible);
 }
 
-void activate_record_button(gboolean is_active){
+#if 0
+static void activate_record_button(gboolean is_active){
 	GtkWidget *rec_button = get_widget_from_assistant("rec_button");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rec_button),is_active);
 }
+#endif
 
-void update_play_button(gboolean is_visible){
+static void update_play_button(gboolean is_visible){
 	GtkWidget *play_button = get_widget_from_assistant("play_button");
 	gtk_widget_set_sensitive(play_button,is_visible);
 }
 
-void activate_play_button(gboolean is_active){
+static void activate_play_button(gboolean is_active){
 	GtkWidget *play_button = get_widget_from_assistant("play_button");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(play_button),is_active);
 }
 
-
-
-gchar *get_record_file(){
+static gchar *get_record_file(){
 	char filename[256]={0};
 	char date[64]={0};
 	time_t curtime=time(NULL);
@@ -72,7 +74,7 @@ gchar *get_record_file(){
 	return g_build_path(G_DIR_SEPARATOR_S,g_get_tmp_dir(),filename,NULL);;
 }
 
-float audio_stream_get_record_volume(AudioStream *st){
+static float audio_stream_get_record_volume(AudioStream *st){
 	if (st && st->volsend){
 		float vol=0;
 		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
@@ -81,7 +83,7 @@ float audio_stream_get_record_volume(AudioStream *st){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
-float audio_stream_get_max_volume(AudioStream *st){
+static float audio_stream_get_max_volume(AudioStream *st){
 	if (st && st->volsend){
 		float vol=0;
 		ms_filter_call_method(st->volsend,MS_VOLUME_GET_MAX,&vol);
@@ -93,11 +95,11 @@ float audio_stream_get_max_volume(AudioStream *st){
 static gboolean update_audio_label(volume_ctx_t *ctx){
 	float volume_db=ctx->get_volume(ctx->data);
 	gchar *result;
-	if (volume_db < -30) result = "No Voice";
-	if (volume_db > -30 && volume_db < -15) result = "Low";
-	if (volume_db > -15 && volume_db < 0) result = "Good";
-	if (volume_db > 0) result = "Too loud";
-	//g_message("volume_db=%f, frac=%f",volume_db,frac);
+	if (volume_db < -20) result = _("No voice detected");
+	else if (volume_db <= -10) result = _("Too low");
+	else if (volume_db < -6) result = _("Good");
+	else result = _("Too loud");
+	g_message("volume_max_db=%f, text=%s",volume_db,result);
 	gtk_label_set_text(GTK_LABEL(ctx->widget),result);
 	return TRUE;
 }
@@ -128,26 +130,30 @@ void linphone_gtk_uninit_audio_label(GtkWidget *w){
 	}
 }
 
-void playback_device_changed(GtkWidget *w){
+static void playback_device_changed(GtkWidget *w){
 	gchar *sel=gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
 	linphone_core_set_playback_device(linphone_gtk_get_core(),sel);
 	g_free(sel);
 }
 
-void capture_device_changed(GtkWidget *capture_device){
+static void capture_device_changed(GtkWidget *capture_device){
 	gchar *sel;
 	GtkWidget *mic_audiolevel;
+	GtkWidget *label_audiolevel;
+	GtkWidget *assistant=gtk_widget_get_toplevel(capture_device);
 	AudioStream *audio_stream;
 
 	mic_audiolevel = get_widget_from_assistant("mic_audiolevel");
-	audio_stream = (AudioStream *) g_object_get_data(G_OBJECT(capture_device),"audio_stream");
+	label_audiolevel = get_widget_from_assistant("label_audiolevel");
+	audio_stream = (AudioStream *) g_object_get_data(G_OBJECT(assistant),"stream");
 	sel = gtk_combo_box_get_active_text(GTK_COMBO_BOX(capture_device));
 	linphone_core_set_capture_device(linphone_gtk_get_core(),sel);
 	linphone_gtk_uninit_audio_meter(mic_audiolevel);
+	linphone_gtk_uninit_audio_label(label_audiolevel);
 	audio_stream_stop(audio_stream);
-	linphone_gtk_init_audio_meter(mic_audiolevel,(get_volume_t)audio_stream_get_record_volume,audio_stream);
-	
 	g_free(sel);
+	/*now restart the audio stream*/
+	prepare(GTK_ASSISTANT(assistant));
 }
 
 static void dialog_click(GtkWidget *dialog, guint response_id, GtkWidget *page){
@@ -370,7 +376,7 @@ static GtkWidget *create_end_page(){
 	return vbox;
 }
 
-static void prepare(GtkAssistant *w, GtkWidget *p, void * data){
+static void prepare(GtkAssistant *w){
 	AudioStream *audio_stream = NULL;
 	LinphoneCore *lc=linphone_gtk_get_core();
 	int page = gtk_assistant_get_current_page(w);
@@ -380,14 +386,12 @@ static void prepare(GtkAssistant *w, GtkWidget *p, void * data){
 	//Speaker page
 	if(page == 1){
 		MSSndCardManager *manager = ms_snd_card_manager_get();
-		audio_stream = audio_stream_start_with_sndcards(&av_profile,9897,"127.0.0.1",9898,0,0,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE);
-		if(mic_audiolevel != NULL && audio_stream != NULL){
+		audio_stream = audio_stream_start_with_sndcards(&av_profile,9898,"127.0.0.1",19898,0,0,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE);
+		if (mic_audiolevel != NULL && audio_stream != NULL){
 			g_object_set_data(G_OBJECT(audio_assistant),"stream",audio_stream);
 			linphone_gtk_init_audio_meter(mic_audiolevel,(get_volume_t)audio_stream_get_record_volume,audio_stream);
 			linphone_gtk_init_audio_label(label_audiolevel,(get_volume_t)audio_stream_get_max_volume,audio_stream);
 		}
-
-
 	} else if(page == 2 || page == 0){
 		if(mic_audiolevel != NULL && label_audiolevel != NULL){
 			audio_stream = (AudioStream *)g_object_get_data(G_OBJECT(audio_assistant),"stream");
