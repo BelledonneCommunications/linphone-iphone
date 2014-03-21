@@ -21,13 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone_tunnel.h"
 #include "lpconfig.h"
 
-typedef enum {
-	CAP_IGNORE,
-	CAP_PLAYBACK,
-	CAP_CAPTURE
-}DeviceCap;
-
-static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
+void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
 	int i=0,active=-1;
 	GtkTreeModel *model;

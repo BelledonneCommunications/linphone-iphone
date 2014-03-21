@@ -86,8 +86,10 @@ static gboolean verbose=0;
 static gboolean quit_done=FALSE;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
+static int start_option = START_LINPHONE;
 static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
+static gboolean run_audio_assistant=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
@@ -152,6 +154,13 @@ static GOptionEntry linphone_options[]={
 		.arg = G_OPTION_ARG_FILENAME,
 		.arg_data = (gpointer) &custom_config_file,
 		.description = N_("Configuration file")
+	},
+	{
+		.long_name = "run-audio-assistant",
+		.short_name = '\0',
+		.arg = G_OPTION_ARG_NONE,
+		.arg_data = (gpointer) &run_audio_assistant,
+		.description = N_("Run the audio assistant")
 	},
 	{0}
 };
@@ -2136,6 +2145,11 @@ static void linphone_gtk_init_ui(void){
 	}
 #endif
 
+	if(run_audio_assistant){
+		linphone_gtk_show_audio_assistant();
+		start_option=START_AUDIO_ASSISTANT;
+		iconified = TRUE;
+	}
 #ifndef HAVE_GTK_OSX
 	linphone_gtk_init_status_icon();
 #endif
@@ -2167,7 +2181,6 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 
 	config_file=linphone_gtk_get_config_file(NULL);
-
 
 #ifdef WIN32
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
@@ -2226,6 +2239,9 @@ int main(int argc, char *argv[]){
 	}
 	config_file=linphone_gtk_get_config_file(custom_config_file);
 
+	if(run_audio_assistant) start_option=START_AUDIO_ASSISTANT;
+	if(addr_to_call != NULL) start_option=START_LINPHONE_WITH_CALL;
+
 	settings=gtk_settings_get_default();
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
@@ -2275,7 +2291,7 @@ int main(int argc, char *argv[]){
 #endif
 
 core_start:
-	if (linphone_gtk_init_instance(app_name, addr_to_call) == FALSE){
+	if (linphone_gtk_init_instance(app_name, start_option, addr_to_call) == FALSE){
 		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
 		g_warning("This instance is going to exit now.");
 		gdk_threads_leave();

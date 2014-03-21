@@ -567,13 +567,6 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 	return TRUE;
 }
 
-typedef struct _volume_ctx{
-	GtkWidget *widget;
-	get_volume_t get_volume;
-	void *data;
-	float last_value;
-}volume_ctx_t;
-
 #define UNSIGNIFICANT_VOLUME (-26)
 #define SMOOTH 0.15
 

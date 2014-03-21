@@ -81,7 +81,7 @@ static void linphone_account_informations_changed(GtkEntry *entry, GtkWidget *w)
 	GtkEntry* username = GTK_ENTRY(g_object_get_data(G_OBJECT(w),"username"));
 
 	gtk_assistant_set_page_complete(GTK_ASSISTANT(assistant),w,
-		gtk_entry_get_text_length(username) >= LOGIN_MIN_SIZE);
+		gtk_entry_get_text_length(username) > 0);
 }
 
 static GtkWidget *create_linphone_account_informations_page() {
@@ -453,6 +453,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 
 static gint destroy_assistant(GtkWidget* w){
 	gtk_widget_destroy(w);
+	the_assistant = NULL;
 	return FALSE;
 }
 
