@@ -2281,7 +2281,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
 				decline_reason=lc->current_call ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
-				call->reason=LinphoneReasonNotAnswered;
+				sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,408,"Not answered",NULL);
 				linphone_core_decline_call(lc,call,decline_reason);
 			}
 		}
@@ -3470,8 +3470,8 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 
 static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallIncomingReceived){
-		if (call->reason!=LinphoneReasonNotAnswered)
-			call->reason=LinphoneReasonDeclined;
+		if (call->non_op_error.reason!=SalReasonRequestTimeout)
+			call->non_op_error.reason=SalReasonDeclined;
 	}
 	/*stop ringing*/
 	linphone_core_stop_ringing(lc);
@@ -3490,7 +3490,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
 	if (call->state==LinphoneCallIncomingReceived){
 		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
-		call->reason=LinphoneReasonDeclined;
+		sal_error_info_set(&call->non_op_error,SalReasonRedirect,603,"Call redirected",NULL);
 		terminate_call(lc,call);
 	}else{
 		ms_error("Bad state for call redirection.");
@@ -6152,6 +6152,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Bad gateway";
 		case LinphoneReasonServerTimeout:
 			return "Server timeout";
+		case LinphoneReasonUnknown:
+			return "Unknown error";
 	}
 	return "unknown error";
 }

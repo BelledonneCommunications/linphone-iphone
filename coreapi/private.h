@@ -146,7 +146,7 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageState state;
 	bool_t is_read;
 	unsigned int storage_id;
-	LinphoneReason reason;
+	SalOp *op;
 };
 
 typedef struct StunCandidate{
@@ -159,6 +159,7 @@ struct _LinphoneCall
 {
 	int magic; /*used to distinguish from proxy config*/
 	struct _LinphoneCore *core;
+	SalErrorInfo non_op_error;
 	int af; /*the address family to prefer for RTP path, guessed from signaling path*/
 	LinphoneCallDir dir;
 	SalMediaDescription *biggestdesc; /*media description with all already proposed streams, used to remember the mapping of streams*/
@@ -174,7 +175,6 @@ struct _LinphoneCall
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
-	LinphoneReason reason;
 	LinphoneProxyConfig *dest_proxy;
 	int refcnt;
 	void * user_pointer;
@@ -204,7 +204,7 @@ struct _LinphoneCall
 	unsigned int remote_session_ver;
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
-	int localdesc_changed;
+	int localdesc_changed;/*not a boolean, contains a mask representing changes*/
 
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
@@ -373,7 +373,6 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
-void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 
 LinphoneCall * is_a_linphone_call(void *user_pointer);
@@ -413,7 +412,6 @@ struct _LinphoneProxyConfig
 	bool_t pad[3];
 	void* user_data;
 	time_t deletion_date;
-	LinphoneReason error;
 	LinphonePrivacyMask privacy;
 };
 
@@ -693,7 +691,6 @@ struct _LinphoneEvent{
 	SalCustomHeader *send_custom_headers;
 	LinphoneSubscriptionState subscription_state;
 	LinphonePublishState publish_state;
-	LinphoneReason reason;
 	void *userdata;
 	int refcnt;
 	char *name;
@@ -806,7 +803,6 @@ LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir,
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
-void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
@@ -847,6 +843,10 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 
+static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
+	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
+	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
+}
 
 /** Belle Sip-based objects need unique ids
   */

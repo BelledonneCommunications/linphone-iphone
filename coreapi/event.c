@@ -114,12 +114,12 @@ LinphonePublishState linphone_event_get_publish_state(const LinphoneEvent *lev){
 	return lev->publish_state;
 }
 
-void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason){
-	lev->reason=reason;
+const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev){
+	return linphone_error_info_from_sal_op(lev->op);
 }
 
 LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
-	return lev->reason;
+	return linphone_error_info_get_reason(linphone_event_get_error_info(lev));
 }
 
 LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){

@@ -208,6 +208,11 @@ LINPHONE_PUBLIC int linphone_event_update_publish(LinphoneEvent *lev, const Linp
 LINPHONE_PUBLIC LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev);
 
 /**
+ * Get full details about an error occured.
+**/
+const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev);
+
+/**
  * Get subscription state. If the event object was not created by a subscription mechanism, #LinphoneSubscriptionNone is returned.
 **/
 LINPHONE_PUBLIC LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEvent *lev);

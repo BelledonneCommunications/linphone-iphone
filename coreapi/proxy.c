@@ -1368,11 +1368,11 @@ LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyCon
  }
 
 LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
-	return cfg->error;
+	return linphone_error_info_get_reason(linphone_proxy_config_get_error_info(cfg));
 }
 
-void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason error) {
-	cfg->error = error;
+const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg){
+	return linphone_error_info_from_sal_op(cfg->op);
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {

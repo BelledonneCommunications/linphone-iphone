@@ -254,6 +254,7 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
+
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
 	Sal *root;
@@ -279,15 +280,8 @@ typedef struct SalOpBase{
 } SalOpBase;
 
 
-typedef enum SalError{
-	SalErrorNone,
-	SalErrorNoResponse,
-	SalErrorProtocol,
-	SalErrorFailure, /* see SalReason for more details */
-	SalErrorUnknown
-} SalError;
-
 typedef enum SalReason{
+	SalReasonNone, /*no error, please leave first so that it takes 0 value*/
 	SalReasonDeclined,
 	SalReasonBusy,
 	SalReasonRedirect,
@@ -308,10 +302,19 @@ typedef enum SalReason{
 	SalReasonAddressIncomplete,
 	SalReasonNotImplemented,
 	SalReasonBadGateway,
-	SalReasonServerTimeout
+	SalReasonServerTimeout,
+	SalReasonIOError
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);
+
+typedef struct SalErrorInfo{
+	SalReason reason;
+	char *status_string;
+	int protocol_code;
+	char *warnings;
+	char *full_string; /*concatenation of status_string + warnings*/
+}SalErrorInfo;
 
 typedef enum SalPresenceStatus{
 	SalPresenceOffline,
@@ -400,21 +403,21 @@ typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
 typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE/UPDATE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
-typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
+typedef void (*SalOnCallFailure)(SalOp *op);
 typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
 typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
 typedef void (*SalOnAuthFailure)(SalOp *op, SalAuthInfo* info);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
-typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
+typedef void (*SalOnRegisterFailure)(SalOp *op);
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
-typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus, SalReason);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
-typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason);
+typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop);
@@ -425,7 +428,7 @@ typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
 typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
-typedef void (*SalOnPublishResponse)(SalOp *salop, SalError error, SalReason reason);
+typedef void (*SalOnPublishResponse)(SalOp *salop);
 typedef void (*SalOnExpire)(SalOp *salop);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
 
@@ -576,6 +579,11 @@ void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled);
 bool_t sal_op_is_ipv6(SalOp *op);
 /*returns TRUE if there is no pending request that may block a future one */
 bool_t sal_op_is_idle(SalOp *op);
+
+const SalErrorInfo *sal_error_info_none(void);
+const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
+void sal_error_info_reset(SalErrorInfo *ei);
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

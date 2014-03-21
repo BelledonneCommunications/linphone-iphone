@@ -1139,6 +1139,8 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonServerTimeout;
 		case LinphoneReasonNotAnswered:
 			return SalReasonRequestTimeout;
+		case LinphoneReasonUnknown:
+			return SalReasonUnknown;
 	}
 	return SalReasonUnknown;
 }
@@ -1146,8 +1148,14 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 LinphoneReason linphone_reason_from_sal(SalReason r){
 	LinphoneReason ret=LinphoneReasonNone;
 	switch(r){
-		case SalReasonUnknown:
+		case SalReasonNone:
 			ret=LinphoneReasonNone;
+			break;
+		case SalReasonIOError:
+			ret=LinphoneReasonIOError;
+			break;
+		case SalReasonUnknown:
+			ret=LinphoneReasonUnknown;
 			break;
 		case SalReasonBusy:
 			ret=LinphoneReasonBusy;
@@ -1211,6 +1219,52 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		break;
 	}
 	return ret;
+}
+
+/**
+ * Get reason code from the error info.
+ * @param ei the error info.
+ * @return a #LinphoneReason
+ * @ingroup misc
+**/
+LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return linphone_reason_from_sal(sei->reason);
+}
+
+/**
+ * Get textual phrase from the error info.
+ * This is the text that is provided by the peer in the protocol (SIP).
+ * @param ei the error info.
+ * @return the error phrase
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->status_string;
+}
+
+/**
+ * Provides additional information regarding the failure.
+ * With SIP protocol, the "Reason" and "Warning" headers are returned.
+ * @param ei the error info.
+ * @return more details about the failure.
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->warnings;
+}
+
+/**
+ * Get the status code from the low level protocol (ex a SIP status code).
+ * @param ei the error info.
+ * @return the status code.
+ * @ingroup misc
+**/
+int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->protocol_code;
 }
 
 /**

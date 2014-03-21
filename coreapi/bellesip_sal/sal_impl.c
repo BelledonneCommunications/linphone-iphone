@@ -162,8 +162,8 @@ void sal_process_authentication(SalOp *op) {
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
 	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op = belle_sip_dialog_get_application_data(dialog);
-	if (op && op->callbacks.process_dialog_terminated) {
-		op->callbacks.process_dialog_terminated(op,event);
+	if (op && op->callbacks && op->callbacks->process_dialog_terminated) {
+		op->callbacks->process_dialog_terminated(op,event);
 	} else {
 		ms_error("sal process_dialog_terminated no op found for this dialog [%p], ignoring",dialog);
 	}
@@ -177,8 +177,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 		op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 		/*also reset auth count on IO error*/
 		op->auth_requests=0;
-		if (op->callbacks.process_io_error) {
-			op->callbacks.process_io_error(op,event);
+		if (op->callbacks && op->callbacks->process_io_error) {
+			op->callbacks->process_io_error(op,event);
 		}
 	} else {
 		/*ms_error("sal process_io_error not implemented yet for non transaction");*/
@@ -290,8 +290,8 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	sal_op_set_privacy_from_message(op,(belle_sip_message_t*)req);
 
 	sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
-	if (op->callbacks.process_request_event) {
-		op->callbacks.process_request_event(op,event);
+	if (op->callbacks && op->callbacks->process_request_event) {
+		op->callbacks->process_request_event(op,event);
 	} else {
 		ms_error("sal process_request_event not implemented yet");
 	}
@@ -329,7 +329,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		
-		if (op->callbacks.process_response_event) {
+		if (op->callbacks && op->callbacks->process_response_event) {
 			/*handle authorization*/
 			switch (response_code) {
 				case 200: 
@@ -365,7 +365,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 				/*not an auth request*/
 				op->auth_requests=0;
 			}
-			op->callbacks.process_response_event(op,event);
+			op->callbacks->process_response_event(op,event);
 		} else {
 			ms_error("Unhandled event response [%p]",event);
 		}
@@ -375,8 +375,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
-	if (op && op->callbacks.process_timeout) {
-		op->callbacks.process_timeout(op,event);
+	if (op && op->callbacks && op->callbacks->process_timeout) {
+		op->callbacks->process_timeout(op,event);
 	} else {
 		ms_error("Unhandled event timeout [%p]",event);
 	}
@@ -393,8 +393,8 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		 trans=BELLE_SIP_TRANSACTION(server_transaction);
 
 	op = (SalOp*)belle_sip_transaction_get_application_data(trans);
-	if (op && op->callbacks.process_transaction_terminated) {
-		op->callbacks.process_transaction_terminated(op,event);
+	if (op && op->callbacks && op->callbacks->process_transaction_terminated) {
+		op->callbacks->process_transaction_terminated(op,event);
 	} else {
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
@@ -443,6 +443,7 @@ Sal * sal_init(){
 	sal->refresher_retry_after=60000; /*default value in ms*/
 	return sal;
 }
+
 void sal_set_user_pointer(Sal *sal, void *user_data){
 	sal->up=user_data;
 }

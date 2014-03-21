@@ -62,6 +62,7 @@ void sal_op_release_impl(SalOp *op){
 	if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
 	if (op->pending_update_server_trans) belle_sip_object_unref(op->pending_update_server_trans);
 	if (op->event) belle_sip_object_unref(op->event);
+	sal_error_info_reset(&op->error_info);
 	__sal_op_free(op);
 	return ;
 }
@@ -334,6 +335,12 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 SalReason sal_reason_to_sip_code(SalReason r){
 	int ret=500;
 	switch(r){
+		case SalReasonNone:
+			ret=200;
+			break;
+		case SalReasonIOError:
+			ret=503;
+			break;
 		case SalReasonUnknown:
 			ret=400;
 			break;
@@ -401,110 +408,123 @@ SalReason sal_reason_to_sip_code(SalReason r){
 	return ret;
 }
 
-void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
-	*sal_err=SalErrorFailure;
+SalReason _sal_reason_from_sip_code(int code) {
+	if (code>=100 && code<300) return SalReasonNone;
+	
 	switch(code) {
+	case 0:
+		return SalReasonIOError;
 	case 301:
-		*sal_reason=SalReasonMovedPermanently;
-		break;
+		return SalReasonMovedPermanently;
 	case 302:
-		*sal_reason=SalReasonRedirect;
-		break;
+		return SalReasonRedirect;
 	case 401:
 	case 407:
-		*sal_reason=SalReasonUnauthorized;
-		break;
+		return SalReasonUnauthorized;
 	case 403:
-		*sal_reason=SalReasonForbidden;
-		break;
+		return SalReasonForbidden;
 	case 404:
-		*sal_reason=SalReasonNotFound;
-		break;
+		return SalReasonNotFound;
 	case 408:
-		*sal_reason=SalReasonRequestTimeout;
-		break;
+		return SalReasonRequestTimeout;
 	case 410:
-		*sal_reason=SalReasonGone;
-		break;
+		return SalReasonGone;
 	case 415:
-		*sal_reason=SalReasonUnsupportedContent;
-		break;
+		return SalReasonUnsupportedContent;
 	case 422:
 		ms_error ("422 not implemented yet");;
 		break;
 	case 480:
-		*sal_reason=SalReasonTemporarilyUnavailable;
-		break;
+		return SalReasonTemporarilyUnavailable;
 	case 481:
-		*sal_reason=SalReasonNoMatch;
-		break;
+		return SalReasonNoMatch;
 	case 484:
-		*sal_reason=SalReasonAddressIncomplete;
-		break;
+		return SalReasonAddressIncomplete;
 	case 486:
-		*sal_reason=SalReasonBusy;
-		break;
+		return SalReasonBusy;
 	case 487:
-		break;
+		return SalReasonNone;
 	case 488:
-		*sal_reason=SalReasonNotAcceptable;
-		break;
+		return SalReasonNotAcceptable;
 	case 491:
-		*sal_reason=SalReasonRequestPending;
-		break;
+		return SalReasonRequestPending;
 	case 501:
-		*sal_reason=SalReasonNotImplemented;
-		break;
+		return SalReasonNotImplemented;
 	case 502:
-		*sal_reason=SalReasonBadGateway;
-		break;
+		return SalReasonBadGateway;
 	case 504:
-		*sal_reason=SalReasonServerTimeout;
-		break;
+		return SalReasonServerTimeout;
 	case 600:
-		*sal_reason=SalReasonDoNotDisturb;
-		break;
+		return SalReasonDoNotDisturb;
 	case 603:
-		*sal_reason=SalReasonDeclined;
-		break;
+		return SalReasonDeclined;
 	case 503:
-		*sal_reason=SalReasonServiceUnavailable;
-		break;
+		return SalReasonServiceUnavailable;
 	default:
-		if (code>=300){
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonUnknown;
-		}else if (code>=100){
-			*sal_err=SalErrorNone;
-			*sal_reason=SalReasonUnknown;
-		}else if (code==0){
-			*sal_err=SalErrorNoResponse;
-		}
-		/* no break */
+		return SalReasonUnknown;
+	}
+	return SalReasonUnknown;
+}
+
+const SalErrorInfo *sal_error_info_none(void){
+	static SalErrorInfo none={
+		SalReasonNone,
+		"Ok",
+		200,
+		NULL,
+		NULL
+	};
+	return &none;
+}
+
+void sal_error_info_reset(SalErrorInfo *ei){
+	if (ei->status_string){
+		ms_free(ei->status_string);
+		ei->status_string=NULL;
+	}
+	if (ei->warnings){
+		ms_free(ei->warnings);
+		ei->warnings=NULL;
+	
+	}
+	if (ei->full_string){
+		ms_free(ei->full_string);
+		ei->full_string=NULL;
+	}
+	ei->protocol_code=0;
+	ei->reason=SalReasonNone;
+}
+
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning){
+	sal_error_info_reset(ei);
+	if (reason==SalReasonUnknown) ei->reason=_sal_reason_from_sip_code(code);
+	else ei->reason=reason;
+	ei->protocol_code=code;
+	ei->status_string=status_string ? ms_strdup(status_string) : NULL;
+	ei->warnings=warning ? ms_strdup(warning) : NULL;
+	if (ei->status_string){
+		if (ei->warnings)
+			ei->full_string=ms_strdup_printf("%s %s",ei->status_string,ei->warnings);
+		else ei->full_string=ms_strdup(ei->status_string);
 	}
 }
-/*return TRUE if error code*/
-bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
-	int code = belle_sip_response_get_status_code(response);
-	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
-	*sal_err=SalErrorUnknown;
-	*sal_reason = SalReasonUnknown;
 
-	if (reason_header){
-		snprintf(reason
-				,reason_size
-				,"%s %s"
-				,belle_sip_response_get_reason_phrase(response)
-				,belle_sip_header_get_unparsed_value(reason_header));
-	} else {
-		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
-	}
-	if (code>=400) {
-		sal_compute_sal_errors_from_code(code,sal_err,sal_reason);
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *response){
+	int code = belle_sip_response_get_status_code(response);
+	const char *reason_phrase=belle_sip_response_get_reason_phrase(response);
+	/*Remark: the reason header is to be used mainly in SIP requests, thus the use and prototype of this function should be changed.*/
+	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
+	belle_sip_header_t *warning=belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Warning");
+	SalErrorInfo *ei=&op->error_info;
+	const char *warnings;
+	
+	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
+	if (warnings==NULL) warnings=reason_header ? belle_sip_header_get_unparsed_value(reason_header) : NULL;
+	sal_error_info_set(ei,SalReasonUnknown,code,reason_phrase,warnings);
+}
+
+const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
+	return &op->error_info;
 }
 
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {

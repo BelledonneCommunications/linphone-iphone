@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #endif
 
-static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
+static void register_failure(SalOp *op);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
 	if (call->params.in_conference != call->current_params.in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
@@ -550,7 +550,7 @@ static void call_terminated(SalOp *op, const char *from){
 		break;
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			call->reason=LinphoneReasonNotAnswered;
+			sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,0,"Incoming call cancelled",NULL);
 		break;
 		default:
 		break;
@@ -593,14 +593,15 @@ static int resume_call_after_failed_transfer(LinphoneCall *call){
 	return BELLE_SIP_STOP;
 }
 
-static void call_failure(SalOp *op, SalError error, SalReason sr, const char *details, int code){
+static void call_failure(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	const SalErrorInfo *ei=sal_op_get_error_info(op);
 	char *msg486=_("User is busy.");
 	char *msg480=_("User is temporarily unavailable.");
 	/*char *retrymsg=_("%s. Retry after %i minute(s).");*/
 	char *msg600=_("User does not want to be disturbed.");
 	char *msg603=_("Call declined.");
-	const char *msg=details;
+	const char *msg=ei->full_string;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	LinphoneCall *referer=call->referer;
 
@@ -610,102 +611,95 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 	
 	if (lc->vtable.show) lc->vtable.show(lc);
-
-	if (error==SalErrorNoResponse){
-		msg=_("No response.");
-		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc,msg);
-	}else if (error==SalErrorProtocol){
-		msg=details ? details : _("Protocol error.");
-		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc, msg);
-	}else if (error==SalErrorFailure){
-		switch(sr){
-			case SalReasonDeclined:
-				msg=msg603;
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg603);
-			break;
-			case SalReasonBusy:
-				msg=msg486;
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg486);
-			break;
-			case SalReasonRedirect:
-			{
-				ms_error("case SalReasonRedirect");
+	switch(ei->reason){
+		case SalReasonNone:
+		break;
+		case SalReasonRequestTimeout:
+			msg=_("Request timeout.");
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg);
+		break;
+		case SalReasonDeclined:
+			msg=msg603;
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg603);
+		break;
+		case SalReasonBusy:
+			msg=msg486;
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg486);
+		break;
+		case SalReasonRedirect:
+		{
+			linphone_call_stop_media_streams(call);
+			if (	call->state==LinphoneCallOutgoingInit
+					|| call->state==LinphoneCallOutgoingProgress
+					|| call->state==LinphoneCallOutgoingRinging /*push case*/
+					|| call->state==LinphoneCallOutgoingEarlyMedia){
+				LinphoneAddress* redirection_to = (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
+				if( redirection_to ){
+					char* url = linphone_address_as_string(redirection_to);
+					ms_warning("Redirecting call [%p] to %s",call, url);
+					ms_free(url);
+					linphone_call_create_op(call);
+					linphone_core_start_invite(lc, call, redirection_to);
+					return;
+				}
+			}
+			msg=_("Redirected");
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg);
+		}
+		break;
+		case SalReasonTemporarilyUnavailable:
+			msg=msg480;
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg480);
+		break;
+		case SalReasonNotFound:
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg);
+		break;
+		case SalReasonDoNotDisturb:
+			msg=msg600;
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg600);
+		break;
+		case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
+		case SalReasonNotAcceptable:
+		//media_encryption_mandatory
+			if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
+				!linphone_core_is_media_encryption_mandatory(lc)) {
+				int i;
+				ms_message("Outgoing call [%p] failed with SRTP (SAVP) enabled",call);
 				linphone_call_stop_media_streams(call);
-				if (	call->state==LinphoneCallOutgoingInit
+				if (call->state==LinphoneCallOutgoingInit
 						|| call->state==LinphoneCallOutgoingProgress
 						|| call->state==LinphoneCallOutgoingRinging /*push case*/
 						|| call->state==LinphoneCallOutgoingEarlyMedia){
-					LinphoneAddress* redirection_to = (LinphoneAddress*)sal_op_get_remote_contact_address(call->op);
-					if( redirection_to ){
-						char* url = linphone_address_as_string(redirection_to);
-						ms_error("Redirecting call [%p] to %s",call, url);
-						ms_free(url);
-						linphone_call_create_op(call);
-						linphone_core_start_invite(lc, call, redirection_to);
-						return;
+					ms_message("Retrying call [%p] with AVP",call);
+					/* clear SRTP local params */
+					call->params.media_encryption = LinphoneMediaEncryptionNone;
+					for(i=0; i<call->localdesc->n_active_streams; i++) {
+						call->localdesc->streams[i].proto = SalProtoRtpAvp;
+						memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 					}
+					linphone_core_restart_invite(lc, call);
+					return;
 				}
-				msg=_("Redirected");
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg);
 			}
-			break;
-			case SalReasonTemporarilyUnavailable:
-				msg=msg480;
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg480);
-			break;
-			case SalReasonNotFound:
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg);
-			break;
-			case SalReasonDoNotDisturb:
-				msg=msg600;
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg600);
-			break;
-			case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
-			case SalReasonNotAcceptable:
-			//media_encryption_mandatory
-				if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
-					!linphone_core_is_media_encryption_mandatory(lc)) {
-					int i;
-					ms_message("Outgoing call [%p] failed with SRTP (SAVP) enabled",call);
-					linphone_call_stop_media_streams(call);
-					if (	call->state==LinphoneCallOutgoingInit
-							|| call->state==LinphoneCallOutgoingProgress
-							|| call->state==LinphoneCallOutgoingRinging /*push case*/
-							|| call->state==LinphoneCallOutgoingEarlyMedia){
-						ms_message("Retrying call [%p] with AVP",call);
-						/* clear SRTP local params */
-						call->params.media_encryption = LinphoneMediaEncryptionNone;
-						for(i=0; i<call->localdesc->n_active_streams; i++) {
-							call->localdesc->streams[i].proto = SalProtoRtpAvp;
-							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
-						}
-						linphone_core_restart_invite(lc, call);
-						return;
-					}
-
-				}
-				msg=_("Incompatible media parameters.");
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,msg);
-			break;
-			case SalReasonRequestPending:
-				/*restore previous state, the application will decide to resubmit the action if relevant*/
-				call->reason=linphone_reason_from_sal(sr);
-				linphone_call_set_state(call,call->prevstate,msg);
-				return;
-			break;
-			default:
-				if (lc->vtable.display_status)
-					lc->vtable.display_status(lc,_("Call failed."));
-		}
+			msg=_("Incompatible media parameters.");
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,msg);
+		break;
+		case SalReasonRequestPending:
+			/*restore previous state, the application will decide to resubmit the action if relevant*/
+			linphone_call_set_state(call,call->prevstate,msg);
+			return;
+		break;
+		default:
+			if (lc->vtable.display_status)
+				lc->vtable.display_status(lc,_("Call failed."));
 	}
 
 	/*some call error are not fatal*/
@@ -714,8 +708,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	case LinphoneCallPausing:
 	case LinphoneCallResuming:
 		ms_message("Call error on state [%s], restoring previous state",linphone_call_state_to_string(call->prevstate));
-		call->reason=linphone_reason_from_sal(sr);
-		linphone_call_set_state(call, call->prevstate,details);
+		linphone_call_set_state(call, call->prevstate,ei->full_string);
 		return;
 	default:
 		break; /*nothing to do*/
@@ -728,13 +721,14 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	linphone_call_delete_upnp_session(call);
 #endif //BUILD_UPNP
 	
-	call->reason=linphone_reason_from_sal(sr);
-	if (sr==SalReasonDeclined){
-		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
-	}else{
-		linphone_call_set_state(call,LinphoneCallError,details);
+	if (call->state!=LinphoneCallEnd && call->state!=LinphoneCallError){
+		if (ei->reason==SalReasonDeclined){
+			linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
+		}else{
+			linphone_call_set_state(call,LinphoneCallError,ei->full_string);
+		}
+		if (ei->reason!=SalReasonNone) linphone_core_play_call_error_tone(lc,linphone_reason_from_sal(ei->reason));
 	}
-	linphone_core_play_call_error_tone(lc,call->reason);
 	
 	if (referer){
 		/*notify referer of the failure*/
@@ -773,7 +767,6 @@ static void register_success(SalOp *op, bool_t registered){
 		ms_message("Registration success for removed proxy config, ignored");
 		return;
 	}
-	linphone_proxy_config_set_error(cfg,LinphoneReasonNone);
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
 	                                registered ? "Registration successful" : "Unregistration done");
 	if (lc->vtable.display_status){
@@ -785,9 +778,11 @@ static void register_success(SalOp *op, bool_t registered){
 	
 }
 
-static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details){
+static void register_failure(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
+	const SalErrorInfo *ei=sal_op_get_error_info(op);
+	const char *details=ei->full_string;
 
 	if (cfg==NULL){
 		ms_warning("Registration failed for unknown proxy config.");
@@ -801,15 +796,12 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		details=_("no response timeout");
 	
 	if (lc->vtable.display_status) {
-		char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op),details  );
+		char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op), details);
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);
 	}
 
-	linphone_proxy_config_set_error(cfg,linphone_reason_from_sal(reason));
-
-	if (error== SalErrorFailure
-			&& reason == SalReasonServiceUnavailable
+	if ((ei->reason == SalReasonServiceUnavailable || ei->reason == SalReasonIOError)
 			&& linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,_("Service unavailable, retrying"));
 	} else {
@@ -1031,22 +1023,15 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus sta
 	return LinphoneChatMessageStateIdle;
 }
 
-static int op_equals(LinphoneCall *a, SalOp *b) {
-	return a->op !=b; /*return 0 if equals*/
-}
-
-static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status, SalReason reason){
+static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
-	const MSList* calls;
 
 	if (chat_msg == NULL) {
 		// Do not handle delivery status for isComposing messages.
 		return;
 	}
-	calls = linphone_core_get_calls(chat_msg->chat_room->lc);
 
 	chat_msg->state=chatStatusSal2Linphone(status);
-	chat_msg->reason=linphone_reason_from_sal(reason);
 	linphone_chat_message_store_state(chat_msg);
 	if (chat_msg && chat_msg->cb) {
 		ms_message("Notifying text delivery with status %i",chat_msg->state);
@@ -1056,11 +1041,6 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status, SalRea
 	}
 	if (status != SalTextDeliveryInProgress) { /*don't release op if progress*/
 		linphone_chat_message_destroy(chat_msg);
-
-		if (!ms_list_find_custom((MSList*)calls, (MSCompareFunc) op_equals, op)) {
-			/*op was only create for messaging purpose, destroying*/
-			sal_op_release(op);
-		}
 	}
 }
 
@@ -1069,7 +1049,7 @@ static void info_received(SalOp *op, const SalBody *body){
 	linphone_core_notify_info_message(lc,op,body);
 }
 
-static void subscribe_response(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason){
+static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	
 	if (lev==NULL) return;
@@ -1079,7 +1059,6 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status, SalError er
 	}else if (status==SalSubscribePending){
 		linphone_event_set_state(lev,LinphoneSubscriptionPending);
 	}else{
-		linphone_event_set_reason(lev, linphone_reason_from_sal(reason));
 		linphone_event_set_state(lev,LinphoneSubscriptionError);
 	}
 }
@@ -1121,18 +1100,18 @@ static void subscribe_closed(SalOp *op){
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 }
 
-static void on_publish_response(SalOp* op, SalError err, SalReason reason){
+static void on_publish_response(SalOp* op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
+	const SalErrorInfo *ei=sal_op_get_error_info(op);
 	
 	if (lev==NULL) return;
-	if (err==SalErrorNone){
+	if (ei->reason==SalReasonNone){
 		if (!lev->terminating)
 			linphone_event_set_publish_state(lev,LinphonePublishOk);
 		else 
 			linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		
 	}else{
-		linphone_event_set_reason(lev,linphone_reason_from_sal(reason));
 		linphone_event_set_publish_state(lev,LinphonePublishError);
 	}
 }

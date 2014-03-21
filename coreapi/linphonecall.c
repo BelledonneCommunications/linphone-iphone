@@ -793,11 +793,11 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-			switch(call->reason){
-				case LinphoneReasonDeclined:
+			switch(call->non_op_error.reason){
+				case SalReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
 					break;
-				case LinphoneReasonNotAnswered:
+				case SalReasonRequestTimeout:
 					call->log->status=LinphoneCallMissed;
 				break;
 				default:
@@ -814,6 +814,11 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			lc->vtable.call_state_changed(lc,call,cstate,message);
 		if (cstate==LinphoneCallReleased){
 			if (call->op!=NULL) {
+				/*transfer the last error so that it can be obtained even in Released state*/
+				if (call->non_op_error.reason==SalReasonNone){
+					const SalErrorInfo *ei=sal_op_get_error_info(call->op);
+					sal_error_info_set(&call->non_op_error,ei->reason,ei->protocol_code,ei->status_string,ei->warnings);
+				}
 				/* so that we cannot have anymore upcalls for SAL
 				 concerning this call*/
 				sal_op_release(call->op);
@@ -877,6 +882,7 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	linphone_call_params_uninit(&obj->params);
 	linphone_call_params_uninit(&obj->current_params);
+	sal_error_info_reset(&obj->non_op_error);
 	ms_free(obj);
 }
 
@@ -998,7 +1004,16 @@ LinphoneCallState linphone_call_get_state(const LinphoneCall *call){
  * Returns the reason for a call termination (either error or normal termination)
 **/
 LinphoneReason linphone_call_get_reason(const LinphoneCall *call){
-	return call->reason;
+	return linphone_error_info_get_reason(linphone_call_get_error_info(call));
+}
+
+/**
+ * Returns full details about call errors or termination reasons.
+**/
+const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
+	if (call->non_op_error.reason!=SalReasonNone){
+		return (const LinphoneErrorInfo*)&call->non_op_error;
+	}else return linphone_error_info_from_sal_op(call->op);
 }
 
 /**

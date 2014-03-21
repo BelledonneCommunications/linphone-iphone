@@ -914,7 +914,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
 	linphone_core_set_play_file(laure->lc,hellopath);
 	if (enable_caller_privacy)
-			linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
+		linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(laure->lc,pauline->identity,laure_params));
 
@@ -1185,7 +1185,7 @@ static void early_media_call_with_ringing(void){
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
 
 
