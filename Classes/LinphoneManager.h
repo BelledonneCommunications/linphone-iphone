@@ -48,7 +48,6 @@ extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 extern NSString *const kLinphoneConfiguringStateUpdate;
-extern NSString *const kLinphoneGlobalStateUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -120,7 +119,6 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)getUserAgent;
 
 
-- (void)resetLinphoneCore;
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
 - (BOOL)resignActive;

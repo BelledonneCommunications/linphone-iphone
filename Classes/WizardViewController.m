@@ -27,15 +27,14 @@
 #import <XMLRPCRequest.h>
 
 typedef enum _ViewElement {
-    ViewElement_Username            = 100,
-    ViewElement_Password            = 101,
-    ViewElement_Password2           = 102,
-    ViewElement_Email               = 103,
-    ViewElement_Domain              = 104,
-    ViewElement_RemoteProvDetails   = 105,
-    ViewElement_Label               = 200,
-    ViewElement_Error               = 201,
-    ViewElement_Username_Error      = 404
+    ViewElement_Username = 100,
+    ViewElement_Password = 101,
+    ViewElement_Password2 = 102,
+    ViewElement_Email = 103,
+    ViewElement_Domain = 104,
+    ViewElement_Label = 200,
+    ViewElement_Error = 201,
+    ViewElement_Username_Error = 404
 } ViewElement;
 
 @implementation WizardViewController
@@ -103,7 +102,6 @@ typedef enum _ViewElement {
     
     [viewTapGestureRecognizer release];
     
-    [_remoteProvisioningButton release];
     [super dealloc];
 }
 
@@ -137,11 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(registrationUpdateEvent:)
                                                  name:kLinphoneRegistrationUpdate
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(configuringUpdate:)
-                                                 name:kLinphoneConfiguringStateUpdate
-                                               object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -155,19 +149,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneRegistrationUpdate
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneConfiguringStateUpdate
-                                                  object:nil];
-
+                                                 name:kLinphoneRegistrationUpdate
+                                               object:nil];
+    
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
 }
 
 - (void)viewDidLoad {
@@ -200,38 +191,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)handleRemoteProvisioning {
-
-    [self resetTextFields];
-
-    LinphoneProxyConfig* default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
-    const char* identity = linphone_proxy_config_get_identity(default_conf);
-    if( identity ){
-        LinphoneAddress* default_addr = linphone_address_new(identity);
-        if( default_addr ){
-            const char* domain = linphone_address_get_domain(default_addr);
-
-            if( domain && strlen(domain) > 0){
-                UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain  view:externalAccountView];
-                [domainfield setText:[NSString stringWithUTF8String:domain]];
-            }
-        }
-    }
-    [self changeView:externalAccountView back:FALSE animation:TRUE];
-
-    linphone_proxy_config_destroy(default_conf);
-
-}
-
-- (void)resetTextFields {
-    [WizardViewController cleanTextField:welcomeView];
-    [WizardViewController cleanTextField:choiceView];
-    [WizardViewController cleanTextField:createAccountView];
-    [WizardViewController cleanTextField:connectAccountView];
-    [WizardViewController cleanTextField:externalAccountView];
-    [WizardViewController cleanTextField:validateAccountView];
-}
-
 - (void)reset {
     [self clearProxyConfig];
     [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
@@ -251,7 +210,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
     linphone_core_set_stun_server(lc, NULL);
     linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
-    [self resetTextFields];
+    [WizardViewController cleanTextField:welcomeView];
+    [WizardViewController cleanTextField:choiceView];
+    [WizardViewController cleanTextField:createAccountView];
+    [WizardViewController cleanTextField:connectAccountView];
+    [WizardViewController cleanTextField:externalAccountView];
+    [WizardViewController cleanTextField:validateAccountView];
     if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
         [self changeView:choiceView back:FALSE animation:FALSE];
     } else {
@@ -322,7 +286,6 @@ static UICompositeViewDescription *compositeDescription = nil;
         // [ Create Btn   ]
         // [ Connect Btn  ]
         // [ External Btn ]
-        // [ Remote Prov  ]
 
         BOOL show_logo   =  [[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"];
         BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account"];
@@ -474,9 +437,9 @@ static UICompositeViewDescription *compositeDescription = nil;
         [self setDefaultSettings:proxyCfg];
     }
     linphone_proxy_config_enable_register(proxyCfg, true);
-	linphone_core_add_auth_info([LinphoneManager getLc], info);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
+	linphone_core_add_auth_info([LinphoneManager getLc], info);
 }
 
 - (NSString*)identityFromUsername:(NSString*)username {
@@ -651,23 +614,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self checkAccountValidation:identity];
 }
 
-- (IBAction)onRemoteProvisioningClick:(id)sender {
-    UIAlertView* remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
-                                                          message:@""
-                                                         delegate:self
-                                                cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
-                                                otherButtonTitles:NSLocalizedString(@"Fetch", @""), nil];
-    remoteInput.alertViewStyle = UIAlertViewStylePlainTextInput;
-
-    UITextField* prov_url = [remoteInput textFieldAtIndex:0];
-    prov_url.keyboardType = UIKeyboardTypeURL;
-    prov_url.text = [[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
-    prov_url.placeholder  = @"URL";
-
-    [remoteInput show];
-    [remoteInput release];
-}
-
 - (IBAction)onSignInExternalClick:(id)sender {
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
@@ -771,55 +717,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onViewTap:(id)sender {
     [LinphoneUtils findAndResignFirstResponder:currentView];
-}
-
-#pragma mark - UIAlertViewDelegate
-
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 1) { /* fetch */
-        NSString* url = [alertView textFieldAtIndex:0].text;
-        if( [url length] > 0 ){
-            // missing prefix will result in http:// being used
-            if( [url rangeOfString:@"://"].location == NSNotFound )
-                url = [NSString stringWithFormat:@"http://%@", url];
-
-            [LinphoneLogger log:LinphoneLoggerLog format:@"Should use remote provisioning URL %@", url];
-            linphone_core_set_provisioning_uri([LinphoneManager getLc], [url UTF8String]);
-
-            [waitView setHidden:false];
-            [[LinphoneManager instance] resetLinphoneCore];
-        }
-    } else {
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Canceled remote provisioning"];
-    }
-}
-
-- (void)configuringUpdate:(NSNotification *)notif {
-    LinphoneConfiguringState status = (LinphoneConfiguringState)[[notif.userInfo valueForKey:@"state"] integerValue];
-
-    [waitView setHidden:true];
-
-    switch (status) {
-        case LinphoneConfiguringSuccessful:
-            [self handleRemoteProvisioning];
-            break;
-        case LinphoneConfiguringFailed:
-        {
-            NSString* error_message = [notif.userInfo valueForKey:@"message"];
-            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
-                                                            message:error_message
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                  otherButtonTitles: nil];
-            [alert show];
-            [alert release];
-            break;
-        }
-
-        case LinphoneConfiguringSkipped:
-        default:
-            break;
-    }
 }
 
 
@@ -1017,8 +914,4 @@ static UICompositeViewDescription *compositeDescription = nil;
     return YES;
 }
 
-- (void)viewDidUnload {
-[self setRemoteProvisioningButton:nil];
-[super viewDidUnload];
-}
 @end

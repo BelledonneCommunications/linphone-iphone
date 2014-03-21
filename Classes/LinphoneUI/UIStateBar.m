@@ -86,10 +86,7 @@ NSTimer *callSecurityTimer;
                                                  name:kLinphoneRegistrationUpdate
                                                object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(globalStateUpdate:)
-                                                 name:kLinphoneConfiguringStateUpdate
-                                               object:nil];
+    
     [callQualityImage setHidden: true];
     [callSecurityImage setHidden: true];
     
@@ -107,9 +104,7 @@ NSTimer *callSecurityTimer;
     [[NSNotificationCenter defaultCenter] removeObserver:self  
                                                     name:kLinphoneRegistrationUpdate
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneConfiguringStateUpdate
-                                                  object:nil];
+    
     if(callQualityTimer != nil) {
         [callQualityTimer invalidate];
         callQualityTimer = nil;
@@ -129,23 +124,15 @@ NSTimer *callSecurityTimer;
     [self proxyConfigUpdate:config];
 }
 
-- (void) globalStateUpdate:(NSNotification*) notif {
-    [self registrationUpdate:notif];
-}
-
 
 #pragma mark - 
 
 - (void)proxyConfigUpdate: (LinphoneProxyConfig*) config {
-    LinphoneRegistrationState state = LinphoneRegistrationNone;
+    LinphoneRegistrationState state;
     NSString* message = nil;
     UIImage* image = nil;
-    LinphoneCore* lc = [LinphoneManager getLc];
-    LinphoneGlobalState gstate = linphone_core_get_global_state(lc);
 
-    if( gstate == LinphoneGlobalConfiguring ){
-        message = NSLocalizedString(@"Fetching remote configuration", nil);
-    } else if (config == NULL) {
+    if (config == NULL) {
         state = LinphoneRegistrationNone;
         if(![LinphoneManager isLcReady] || linphone_core_is_network_reachable([LinphoneManager getLc]))
             message = NSLocalizedString(@"No SIP account configured", nil);

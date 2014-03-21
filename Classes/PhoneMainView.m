@@ -112,11 +112,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                              selector:@selector(textReceived:) 
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onGlobalStateChanged:)
-                                                 name:kLinphoneGlobalStateUpdate
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
+    [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
@@ -139,13 +135,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:kLinphoneRegistrationUpdate
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneConfiguringStateUpdate
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
@@ -234,19 +227,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		[error show];
 		[error release];
 	}
-}
-
-- (void)onGlobalStateChanged:(NSNotification*)notif {
-    LinphoneConfiguringState state = [[[notif userInfo] valueForKey:@"state"] integerValue];
-    LinphoneAppDelegate *appDelegate = (LinphoneAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if( state == LinphoneGlobalOn && !(appDelegate.started) ){
-        if( [[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] ){
-            WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
-            if(controller != nil) {
-                [controller handleRemoteProvisioning];
-            }
-        }
-    }
 }
 
 - (void)callUpdate:(NSNotification*)notif {
@@ -341,11 +321,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
-- (void)startUp {
-
-    if( linphone_core_get_global_state([LinphoneManager getLc]) != LinphoneGlobalOn ){
-        [self changeCurrentView: [DialerViewController compositeViewDescription]];
-    } else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
+- (void)startUp {   
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
         // Change to fist login view
         [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
     } else {

@@ -21,13 +21,7 @@
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
 
-@interface WizardViewController : TPMultiLayoutViewController
-<UITextFieldDelegate,
-    UICompositeViewDelegate,
-    XMLRPCConnectionDelegate,
-    UIGestureRecognizerDelegate,
-    UIAlertViewDelegate>
-{
+@interface WizardViewController : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate, UIGestureRecognizerDelegate> {
     @private
     UITextField *activeTextField;
     UIView *currentView;
@@ -50,15 +44,12 @@
 @property (nonatomic, retain) IBOutlet UIButton *createAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
-@property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
-
 
 @property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
 
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
 - (void)reset;
-- (void)handleRemoteProvisioning;
 
 - (IBAction)onStartClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
@@ -68,7 +59,6 @@
 - (IBAction)onConnectAccountClick:(id)sender;
 - (IBAction)onExternalAccountClick:(id)sender;
 - (IBAction)onCheckValidationClick:(id)sender;
-- (IBAction)onRemoteProvisioningClick:(id)sender;
 
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;

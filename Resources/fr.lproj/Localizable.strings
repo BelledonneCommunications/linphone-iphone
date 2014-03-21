@@ -302,4 +302,3 @@
 "Enter an address" = "Entrez une addresse SIP ou un numéro de téléphone...";
 "%@ is composing..." = "%@ rédige un message...";
 "Resend" = "Renvoyer";
-"Fetching remote configuration" = "Récupération de la conf. distante";
