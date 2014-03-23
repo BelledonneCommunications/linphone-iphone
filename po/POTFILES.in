@@ -13,6 +13,7 @@ gtk/setupwizard.c
 gtk/incall_view.c
 gtk/loginframe.c
 gtk/config-fetching.c
+gtk/audio_assistant.c
 [type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/about.ui
 [type: gettext/glade]gtk/contact.ui
