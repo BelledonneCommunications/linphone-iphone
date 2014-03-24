@@ -226,4 +226,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphoneCall getTransferTargetCall() {
 		return (LinphoneCall)getTransferTargetCall(nativePtr);
 	}
+	@Override
+	public Reason getReason() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+	}
 }

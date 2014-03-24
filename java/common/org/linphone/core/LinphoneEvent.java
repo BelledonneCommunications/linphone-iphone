@@ -59,6 +59,12 @@ public interface LinphoneEvent {
 	Reason getReason();
 	
 	/**
+	 * In case of error notified, returns the full error details.
+	 * @return an ErrorInfo.
+	 */
+	ErrorInfo getErrorInfo();
+	
+	/**
 	 * Assign an application context to the LinphoneEvent, for later use.
 	 * @param obj
 	 */

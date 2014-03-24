@@ -211,4 +211,10 @@ public interface LinphoneProxyConfig {
 	 * @return reason code.
 	 */
 	public Reason getError();
+	
+	/**
+	 * Get full error information about last error occured on the proxy config.
+	 * @return an ErrorInfo.
+	 */
+	public ErrorInfo getErrorInfo();
 }

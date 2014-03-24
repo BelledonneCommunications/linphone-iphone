@@ -84,6 +84,10 @@ public class Reason {
 	 * Server timeout
 	 */
 	static public Reason ServerTimeout = new Reason(19,"ServerTimeout");
+	/**
+	 * Unknown
+	 */
+	static public Reason Unknown = new Reason(20,"Unknown");
 	
 	protected final int mValue;
 	private final String mStringValue;

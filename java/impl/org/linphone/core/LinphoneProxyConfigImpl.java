@@ -207,4 +207,9 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public String getContactUriParameters() {
 		return getContactUriParameters(nativePtr);
 	}
+	private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+	}
 }

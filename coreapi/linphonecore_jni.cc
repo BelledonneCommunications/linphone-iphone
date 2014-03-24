@@ -1622,6 +1622,10 @@ extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getError(JNIEnv* 
 	return linphone_proxy_config_get_error((LinphoneProxyConfig *) ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_getErrorInfo(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return (jlong)linphone_proxy_config_get_error_info((LinphoneProxyConfig *) ptr);
+}
+
 //Auth Info
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env
@@ -2074,6 +2078,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteAddress(	JNIEn
 	return (jlong)linphone_call_get_remote_address((LinphoneCall*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getErrorInfo(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)linphone_call_get_error_info((LinphoneCall*)ptr);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getReason(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jint)linphone_call_get_reason((LinphoneCall*)ptr);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getRemoteUserAgent(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneCall *call = (LinphoneCall *)ptr;
 	const char *value=linphone_call_get_remote_user_agent(call);
@@ -2398,6 +2414,12 @@ extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getReason(JNIEnv*
 																		,jobject  thiz
 																		,jlong ptr) {
 	return linphone_chat_message_get_reason((LinphoneChatMessage*)ptr);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getErrorInfo(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong)linphone_chat_message_get_error_info((LinphoneChatMessage*)ptr);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getCustomHeader(JNIEnv*  env
@@ -3684,6 +3706,11 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_getReason(JNIEnv
 	return linphone_event_get_reason(ev);
 }
 
+JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneEventImpl_getErrorInfo(JNIEnv *env, jobject jobj, jlong evptr){
+	LinphoneEvent *ev=(LinphoneEvent*)evptr;
+	return (jlong)linphone_event_get_error_info(ev);
+}
+
 /*
  * Class:     org_linphone_core_LinphoneEventImpl
  * Method:    getSubscriptionDir
@@ -4616,4 +4643,49 @@ JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_isSdp200AckEn
 	return (jboolean)linphone_core_sdp_200_ack_enabled((const LinphoneCore*)lc);
 }
 
+/* Header for class org_linphone_core_ErrorInfoImpl */
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getReason
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_ErrorInfoImpl_getReason(JNIEnv *env, jobject jobj, jlong ei){
+	return linphone_error_info_get_reason((const LinphoneErrorInfo*)ei);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getProtocolCode
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_ErrorInfoImpl_getProtocolCode(JNIEnv *env, jobject jobj, jlong ei){
+	return linphone_error_info_get_protocol_code((const LinphoneErrorInfo*)ei);
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getPhrase
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getPhrase(JNIEnv *env, jobject jobj, jlong ei){
+	const char *tmp=linphone_error_info_get_phrase((const LinphoneErrorInfo*)ei);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_ErrorInfoImpl
+ * Method:    getDetails
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getDetails(JNIEnv *env, jobject jobj, jlong ei){
+	const char *tmp=linphone_error_info_get_details((const LinphoneErrorInfo*)ei);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
+}
+
+#ifdef __cplusplus
+}
+#endif
 
