@@ -356,6 +356,22 @@ static void authenticated_register_with_wrong_credentials_with_params(const char
 	/*wait for retry*/
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_auth_info_requested,4));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
+	
+	/*check the detailed error info */
+	if (!user_agent || strcmp(user_agent,"tester-no-403")!=0){
+		LinphoneProxyConfig *cfg=NULL;
+		linphone_core_get_default_proxy(mgr->lc,&cfg);
+		CU_ASSERT_PTR_NOT_NULL(cfg);
+		if (cfg){
+			const LinphoneErrorInfo *ei=linphone_proxy_config_get_error_info(cfg);
+			const char *phrase=linphone_error_info_get_phrase(ei);
+			CU_ASSERT_PTR_NOT_NULL(phrase);
+			if (phrase) CU_ASSERT_TRUE(strcmp(phrase,"Forbidden")==0);
+			CU_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),403);
+			CU_ASSERT_PTR_NULL(linphone_error_info_get_details(ei));
+		}
+		
+	}
 	linphone_core_manager_destroy(mgr);
 }
 static void authenticated_register_with_wrong_credentials() {

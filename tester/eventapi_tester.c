@@ -111,6 +111,8 @@ static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content={0};
+	LinphoneEvent *lev;
+	const LinphoneErrorInfo *ei;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
@@ -122,13 +124,21 @@ static void subscribe_test_declined(void) {
 	
 	pauline->decline_subscribe=TRUE;
 	
-	linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	linphone_event_ref(lev);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionError,1,21000));/*yes flexisip may wait 20 secs in case of forking*/
+	ei=linphone_event_get_error_info(lev);
+	CU_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		CU_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),603);
+		CU_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
+	}
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
 	
+	linphone_event_unref(lev);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
