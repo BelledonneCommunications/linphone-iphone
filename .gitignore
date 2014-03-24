@@ -41,6 +41,7 @@ Specfile
 .anjuta_sym_db.db
 gtk-glade/version_date.h
 share/linphone.desktop
+share/audio-assistant.desktop
 Debug/
 build/macos/Info-linphone.plist
 coreapi/help/Doxyfile

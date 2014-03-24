@@ -407,10 +407,14 @@ static void prepare(GtkAssistant *w){
 
 void linphone_gtk_close_audio_assistant(GtkWidget *w){
 	gchar *path = g_object_get_data(G_OBJECT(audio_assistant),"path");
-	g_unlink(path);
+	if(path != NULL){
+		g_unlink(path);
+	}
 	gtk_widget_destroy(w);
+	if(linphone_gtk_get_audio_assistant_option()){
+		gtk_main_quit();
+	}
 	audio_assistant = NULL;
-	linphone_gtk_show_main_window();
 }
 
 void linphone_gtk_audio_assistant_apply(GtkWidget *w){

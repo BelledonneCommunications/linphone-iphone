@@ -900,6 +900,7 @@ AC_CONFIG_FILES([
 	share/xml/Makefile
 	share/linphone.pc
 	share/linphone.desktop
+	share/audio-assistant.desktop
 	scripts/Makefile
 	tools/Makefile
 	linphone.spec

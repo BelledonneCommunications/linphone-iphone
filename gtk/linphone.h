@@ -189,6 +189,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 void linphone_gtk_schedule_restart(void);
 
 void linphone_gtk_show_audio_assistant(void);
+gboolean linphone_gtk_get_audio_assistant_option(void);
 
 void linphone_gtk_set_configuration_uri(void);
 GtkWidget * linphone_gtk_show_config_fetching(void);

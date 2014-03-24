@@ -271,6 +271,10 @@ void linphone_gtk_schedule_restart(void){
 	restart=TRUE;
 }
 
+gboolean linphone_gtk_get_audio_assistant_option(void){
+	return run_audio_assistant;
+}
+
 static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
