@@ -1564,5 +1564,25 @@ public interface LinphoneCore {
 	 */
 	public boolean isSdp200AckEnabled();
 	
+	/**
+	 * Inconditionnaly disable incoming chat messages.
+	 * @param lc the core
+	 * @param deny_reason the deny reason (using ReasonNone has no effect).
+	**/
+	public void disableChat(Reason denycode);
+	
+	/**
+	 * Enable reception of incoming chat messages.
+	 * By default it is enabled but it can be disabled with linphone_core_disable_chat().
+	 * @param lc the core
+	**/
+	public void enableChat();
+	
+
+	/**
+	 * Returns whether chat is enabled.
+	 * @return true if chat is enabled, false otherwise.
+	**/
+	public boolean chatEnabled();
 	
 }

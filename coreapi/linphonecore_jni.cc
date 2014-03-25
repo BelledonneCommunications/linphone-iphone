@@ -1455,6 +1455,34 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createProxyConfig(JNIEn
 	return (jlong) proxy;
 }
 
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    disableChat
+ * Signature: (JI)V
+ */
+extern "C" JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_disableChat(JNIEnv *env, jobject jobj, jlong ptr, jint reason){
+	linphone_core_disable_chat((LinphoneCore*)ptr,(LinphoneReason)reason);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    enableChat
+ * Signature: (J)V
+ */
+extern "C" JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableChat(JNIEnv *env, jobject jobj, jlong ptr){
+	linphone_core_enable_chat((LinphoneCore*)ptr);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    chatEnabled
+ * Signature: (J)Z
+ */
+extern "C" JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_chatEnabled(JNIEnv *env, jobject jobj, jlong ptr){
+	return (jboolean) linphone_core_chat_enabled((LinphoneCore*)ptr);
+}
+
+
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
