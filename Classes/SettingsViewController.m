@@ -667,7 +667,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
     
-    if(lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"sip","sip_random_port",0)==1) {
+    if(lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","random_port_preference",0)==1) {
         [hiddenKeys addObject:@"port_preference"];
     }
 

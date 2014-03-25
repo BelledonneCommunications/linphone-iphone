@@ -67,7 +67,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		[self initPhoneMainView];
 	}
     return self;
-}	
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -533,7 +533,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
     return view;
 }
-         
+
 - (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
     if([viewStack count] > 1) {
