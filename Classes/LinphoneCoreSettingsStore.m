@@ -88,30 +88,40 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
             [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
 			[self setString: linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
-			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
-				|| port>0){
+			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0 || port>0){
 				char tmp[256]={0};
 				if (port>0) {
 					snprintf(tmp,sizeof(tmp)-1,"%s:%i",linphone_address_get_domain(proxy_addr),port);
 				}else snprintf(tmp,sizeof(tmp)-1,"%s",linphone_address_get_domain(proxy_addr));
-				[self setString: tmp forKey:@"proxy_preference"];
+				[self setString:tmp forKey:@"proxy_preference"];
 			}
+
+            const char* tname = "udp";
+            switch (linphone_address_get_transport(proxy_addr)) {
+                case LinphoneTransportTcp: tname = "tcp"; break;
+                case LinphoneTransportTls: tname = "tls"; break;
+                default:                                  break;
+            }
+            [self setString:tname forKey:@"transport_preference"];
+
 			linphone_address_destroy(addr);
 			linphone_address_destroy(proxy_addr);
-			
+
 			[self setBool: (linphone_proxy_config_get_route(cfg)!=NULL) forKey:@"outbound_proxy_preference"];
 			[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
 			
 		}
 	} else {
 		[self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires", 600) forKey:@"expire_preference"];
-        [self setObject:@"" forKey:@"username_preference"];
-        [self setObject:@"" forKey:@"domain_preference"];
-        [self setObject:@"" forKey:@"proxy_preference"];
-        [self setObject:@"" forKey:@"password_preference"];
-        [self setBool:FALSE forKey:@"outbound_proxy_preference"];
+        [self setObject:@""   forKey:@"username_preference"];
+        [self setObject:@""   forKey:@"domain_preference"];
+        [self setObject:@""   forKey:@"proxy_preference"];
+        [self setObject:@""   forKey:@"password_preference"];
+        [self setBool:FALSE   forKey:@"outbound_proxy_preference"];
+        [self setString:"udp" forKey:@"transport_preference"];
+
 	}
-    
+
     [self setBool:lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "pushnotification_preference", 0) forKey:@"pushnotification_preference"];
     {
         LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
@@ -140,38 +150,24 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         }
     }
     {
-        [self setInteger: linphone_core_get_upload_bandwidth(lc) forKey:@"upload_bandwidth_preference"];
+        [self setInteger: linphone_core_get_upload_bandwidth(lc)   forKey:@"upload_bandwidth_preference"];
         [self setInteger: linphone_core_get_download_bandwidth(lc) forKey:@"download_bandwidth_preference"];
     }
     {
         [self setFloat:linphone_core_get_playback_gain_db(lc) forKey:@"playback_gain_preference"];
-        [self setFloat:linphone_core_get_mic_gain_db(lc) forKey:@"microphone_gain_preference"];
+        [self setFloat:linphone_core_get_mic_gain_db(lc)      forKey:@"microphone_gain_preference"];
     }
 	{
-		LCSipTransports tp;
-		const char *tname = "udp";
-        int port = 5060;
-		linphone_core_get_sip_transports(lc, &tp);
-		if (tp.udp_port>0) {
-            tname = "udp";
-            port = tp.udp_port;
-        } else if (tp.tcp_port>0) {
-            tname = "tcp";
-            port = tp.tcp_port;
-        } else if (tp.tls_port>0) {
-            tname = "tls";
-            port = tp.tls_port;
-        }
-		[self setString:tname forKey:@"transport_preference"];
+        int port = lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "port_preference", 5060);
         [self setInteger:port forKey:@"port_preference"];
-        
-        [self setInteger:lp_config_get_int(linphone_core_get_config(lc),"sip","sip_random_port", 1) forKey:@"random_port_preference"];
+        [self setInteger:lp_config_get_int(linphone_core_get_config(lc),LINPHONERC_APPLICATION_KEY,"random_port_preference", 1) forKey:@"random_port_preference"];
 	}
 	{
 		LinphoneAuthInfo *ai;
 		const MSList *elem=linphone_core_get_auth_info_list(lc);
 		if (elem && (ai=(LinphoneAuthInfo*)elem->data)){
 			[self setString: linphone_auth_info_get_passwd(ai) forKey:@"password_preference"];
+			[self setString: linphone_auth_info_get_ha1(ai)    forKey:@"ha1_preference"]; // hidden but useful if provisioned
 		}
 	}
 	{
@@ -201,14 +197,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		const char *val;
 		switch(menc){
-			case LinphoneMediaEncryptionSRTP:
-				val="SRTP";
-				break;
-			case LinphoneMediaEncryptionZRTP:
-				val="ZRTP";
-				break;
-			default:
-				val="None";
+			case LinphoneMediaEncryptionSRTP: val="SRTP"; break;
+			case LinphoneMediaEncryptionZRTP: val="ZRTP"; break;
+			default:                          val="None"; break;
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
@@ -291,6 +282,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 - (void)synchronizeAccount {
 	LinphoneCore *lc = [LinphoneManager getLc];
+    LpConfig*   conf = linphone_core_get_config(lc);
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	LinphoneProxyConfig* proxyCfg = NULL;
 	/* unregister before modifying any settings */
@@ -312,43 +304,22 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         }
     }
     
-	NSString* transport = [self stringForKey:@"transport_preference"];
 	int port_preference = [self integerForKey:@"port_preference"];
     
     BOOL random_port_preference = [self boolForKey:@"random_port_preference"];
-    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_random_port", random_port_preference);
-	lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tcp_random_port", random_port_preference);
-    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tls_random_port", random_port_preference);
     if(random_port_preference) {
-        port_preference = (0xDFFF&random())+1024;
-        [self setInteger:port_preference forKey:@"port_preference"]; // Update back preference
+        port_preference = -1;
     }
-    
-	LCSipTransports transportValue={0};
-	if (transport!=nil) {
-		if (linphone_core_get_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];	
-		}
-		// Only one port can be set at one time, the others's value is 0
-		if ([transport isEqualToString:@"tcp"]) {
-			transportValue.tcp_port=port_preference;
-			transportValue.udp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"udp"]){
-			transportValue.udp_port=port_preference;
-			transportValue.tcp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"tls"]){
-			transportValue.tls_port=port_preference;
-			transportValue.tcp_port=0;
-            transportValue.udp_port=0;
-		} else {
-			[LinphoneLogger logc:LinphoneLoggerError format:"unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-		}
-		if (linphone_core_set_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
-		}
-	}
+
+	LCSipTransports transportValue={ port_preference, port_preference, -1, -1 };
+
+    // will also update the sip_*_port section of the config
+    if (linphone_core_set_sip_transports(lc, &transportValue)) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+    }
+
+    port_preference = linphone_core_get_sip_port(lc);
+    [self setInteger:port_preference forKey:@"port_preference"]; // Update back preference
 
     BOOL enable_ipv6 = [self boolForKey:@"use_ipv6"];
     lp_config_set_int(linphone_core_get_config(lc), "sip", "use_ipv6", enable_ipv6);
@@ -357,20 +328,21 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         linphone_core_enable_ipv6(lc, enable_ipv6);
     }
 
-
 	//configure sip account
 	
 	//mandatory parameters
-	NSString* username = [self stringForKey:@"username_preference"];
-	NSString* domain = [self stringForKey:@"domain_preference"];
+	NSString*        username = [self stringForKey:@"username_preference"];
+	NSString*          domain = [self stringForKey:@"domain_preference"];
+    NSString*       transport = [self stringForKey:@"transport_preference"];
+    NSString*      accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString* accountPassword = [self stringForKey:@"password_preference"];
-	bool isOutboundProxy= [self boolForKey:@"outbound_proxy_preference"];
-	
-	
+	bool      isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
+
 	//clear auth info list
 	linphone_core_clear_all_auth_info(lc);
     //clear existing proxy config
     linphone_core_clear_proxy_config(lc);
+
 	if (username && [username length] >0 && domain && [domain length]>0) {
 		NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
@@ -379,10 +351,19 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
 		}
 		
-		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
-		
-        
+		char* proxy = ms_strdup([proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        LinphoneAddress* proxy_addr = linphone_address_new(proxy);
+
+        if( proxy_addr ){
+            LinphoneTransportType type = LinphoneTransportUdp;
+            if      ( [transport isEqualToString:@"tcp"] ) type = LinphoneTransportTcp;
+            else if ( [transport isEqualToString:@"tls"] ) type = LinphoneTransportTls;
+
+            linphone_address_set_transport(proxy_addr, type);
+            ms_free(proxy);
+            proxy = linphone_address_as_string_uri_only(proxy_addr);
+        }
+
 		//possible valid config detected
 		proxyCfg = linphone_core_create_proxy_config(lc);
 		char normalizedUserName[256];
@@ -392,6 +373,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_address_set_domain(linphoneAddress, [domain cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		const char*      ha1 = [accountHa1 cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg, identity);
@@ -402,13 +384,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
 		if (from != 0){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,linphone_proxy_config_get_domain(proxyCfg));
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,ha1,NULL,linphone_proxy_config_get_domain(proxyCfg));
 			linphone_core_add_auth_info(lc,info);
             linphone_address_destroy(from);
 		}
-		
-
-		
 
 		int expire = [self integerForKey:@"expire_preference"];
 		linphone_proxy_config_expires(proxyCfg,expire);
@@ -445,6 +424,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_set_default_proxy(lc,proxyCfg);
 		
 		linphone_address_destroy(linphoneAddress);
+        ms_free(proxy);
 	}
     [[[LinphoneManager instance] fastAddressBook] reload];
 }
@@ -496,7 +476,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	BOOL account_changed;
 	
 	account_changed=[self valueChangedForKey:@"username_preference"] 
-				|| [self valueChangedForKey:@"password_preference"] 
+			 	|| [self valueChangedForKey:@"password_preference"]
 				|| [self valueChangedForKey:@"domain_preference"] 
                 || [self valueChangedForKey:@"expire_preference"] 
 				|| [self valueChangedForKey:@"proxy_preference"]

@@ -196,11 +196,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
     
     LinphoneCore *lc = [LinphoneManager getLc];
-    LCSipTransports transportValue={0};
-    transportValue.udp_port=5060;
-    transportValue.tls_port=0;
-    transportValue.tcp_port=0;
-    
+    LCSipTransports transportValue={5060,5060,-1,-1};
+
     if (linphone_core_set_sip_transports(lc, &transportValue)) {
         [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
     }
@@ -310,7 +307,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             placement_done = YES;
         }
         if (!show_extern && !show_logo) {
-            // no option to create or specify a custom account: go to
+            // no option to create or specify a custom account: go to connect view directly
             view = connectAccountView;
         }
     }
@@ -349,42 +346,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setDefaultSettings:(LinphoneProxyConfig*)proxyCfg {
-    BOOL pushnotification = [[LinphoneManager instance] lpConfigBoolForKey:@"push_notification" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetBool:pushnotification forKey:@"pushnotification_preference"];
-    if(pushnotification) {
-        [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
-    }
-    int expires = [[LinphoneManager instance] lpConfigIntForKey:@"expires" forSection:@"wizard"];
-    linphone_proxy_config_expires(proxyCfg, expires);
-    
-    NSString* transport = [[LinphoneManager instance] lpConfigStringForKey:@"transport" forSection:@"wizard"];
+    LinphoneManager* lm = [LinphoneManager instance];
     LinphoneCore *lc = [LinphoneManager getLc];
-    LCSipTransports transportValue={0};
-	if (transport!=nil) {
-		if (linphone_core_get_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
-		}
-		// Only one port can be set at one time, the others's value is 0
-		if ([transport isEqualToString:@"tcp"]) {
-			transportValue.tcp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.udp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"udp"]){
-			transportValue.udp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.tcp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"tls"]){
-			transportValue.tls_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.tcp_port=0;
-            transportValue.udp_port=0;
-		} else {
-			[LinphoneLogger logc:LinphoneLoggerError format:"unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-		}
-		if (linphone_core_set_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
-		}
-	}
-    
+
+    BOOL pushnotification = [lm lpConfigBoolForKey:@"push_notification" forSection:@"wizard"];
+    [lm lpConfigSetBool:pushnotification forKey:@"pushnotification_preference"];
+    if(pushnotification) {
+        [lm addPushTokenToProxyConfig:proxyCfg];
+    }
+
+    int expires = [lm lpConfigIntForKey:@"expires" forSection:@"wizard"];
+    linphone_proxy_config_expires(proxyCfg, expires);
+    NSString* section = [NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY];
+    int port = [lm lpConfigBoolForKey:@"random_port_preference" forSection:section] ? -1 : [lm lpConfigIntForKey:@"port_preference" forSection:section];
+    LCSipTransports transportValue={port,port,-1,-1};
+
+    if (linphone_core_set_sip_transports(lc, &transportValue)) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+    }
+
     NSString* sharing_server = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server" forSection:@"wizard"];
     [[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
     
@@ -521,6 +501,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+- (void)loadWizardConfig:(NSString*)rcFilename {
+    NSString* fullPath = [LinphoneManager bundleFile:rcFilename];
+    LpConfig* current_conf = linphone_core_get_config([LinphoneManager getLc]);
+    if( lp_config_read_file(current_conf, [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]) != 0 ){
+        [LinphoneLogger log:LinphoneLoggerError format:@"Couldn't push wizard file %@ to the Linphone config"];
+    }
+}
 
 #pragma mark - UITextFieldDelegate Functions
 
@@ -562,7 +549,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     return YES;
 }
-
 - (void)hideError:(NSTimer*)timer {
     UILabel* error_label =[WizardViewController findLabel:ViewElement_Username_Error view:contentView];
     if( error_label ) {
@@ -596,15 +582,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
+    [self loadWizardConfig:@"wizard_linphone_create.rc"];
     [self changeView:createAccountView back:FALSE animation:TRUE];
 
 }
 
 - (IBAction)onConnectAccountClick:(id)sender {
+    [self loadWizardConfig:@"wizard_linphone_existing.rc"];
     [self changeView:connectAccountView back:FALSE animation:TRUE];
 }
 
 - (IBAction)onExternalAccountClick:(id)sender {
+    [self loadWizardConfig:@"wizard_external_sip.rc"];
     [self changeView:externalAccountView back:FALSE animation:TRUE];
 }
 
@@ -875,7 +864,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
 }
-
 
 #pragma mark - TPMultiLayoutViewController Functions
 
