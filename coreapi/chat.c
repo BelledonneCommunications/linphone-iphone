@@ -38,6 +38,31 @@
  */
 
 /**
+ * Inconditionnaly disable incoming chat messages.
+ * @param lc the core
+ * @param deny_reason the deny reason (#LinphoneReasonNone has no effect).
+**/
+void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason){
+	lc->chat_deny_code=deny_reason;
+}
+
+/**
+ * Enable reception of incoming chat messages.
+ * By default it is enabled but it can be disabled with linphone_core_disable_chat().
+ * @param lc the core
+**/
+void linphone_core_enable_chat(LinphoneCore *lc){
+	lc->chat_deny_code=LinphoneReasonNone;
+}
+
+/**
+ * Returns whether chat is enabled.
+**/
+bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
+	return lc->chat_deny_code!=LinphoneReasonNone;
+}
+
+/**
  * Returns an array of chat rooms
  * @param lc #LinphoneCore object
  * @return An array of #LinpĥoneChatRoom

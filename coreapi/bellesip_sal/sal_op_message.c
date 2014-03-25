@@ -92,6 +92,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 						|| (external_body=is_external_body(content_type)))) {
 		SalMessage salmsg;
 		char message_id[256]={0};
+	
+		if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
+		op->pending_server_trans=server_transaction;
+		belle_sip_object_ref(op->pending_server_trans);
+	
 		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
 				,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
 		from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
@@ -120,6 +125,8 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		saliscomposing.from=from;
 		saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 		op->base.root->callbacks.is_composing_received(op,&saliscomposing);
+		resp = belle_sip_response_create_from_request(req,200);
+		belle_sip_server_transaction_send_response(server_transaction,resp);
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
 	} else {
@@ -130,14 +137,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 		return;
 	}
-	resp = belle_sip_response_create_from_request(req,200);
-	belle_sip_server_transaction_send_response(server_transaction,resp);
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	sal_process_incoming_message(op,event);
-	sal_op_release(op);
 }
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
@@ -169,6 +173,17 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),msg,content_length);
 	return sal_op_send_request(op,req);
 
+}
+
+int sal_message_reply(SalOp *op, SalReason reason){
+	if (op->pending_server_trans){
+		int code=sal_reason_to_sip_code(reason);
+		belle_sip_response_t *resp = belle_sip_response_create_from_request(
+			belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_server_trans),code);
+		belle_sip_server_transaction_send_response(op->pending_server_trans,resp);
+		return 0;
+	}else ms_error("sal_message_reply(): no server transaction");
+	return -1;
 }
 
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {

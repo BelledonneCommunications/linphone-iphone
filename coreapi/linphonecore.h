@@ -1038,6 +1038,9 @@ LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, cons
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason);
+LINPHONE_PUBLIC void linphone_core_enable_chat(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_chat_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);

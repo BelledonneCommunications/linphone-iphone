@@ -681,6 +681,7 @@ struct _LinphoneCore
 #endif //BUILD_UPNP
 	belle_http_provider_t *http_provider;
 	MSList *tones;
+	LinphoneReason chat_deny_code;
 };
 
 

@@ -878,9 +878,12 @@ static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 
 static void text_received(SalOp *op, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	if (is_duplicate_msg(lc,msg->message_id)==FALSE){
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	if (lc->chat_deny_code==LinphoneReasonNone && is_duplicate_msg(lc,msg->message_id)==FALSE){
 		linphone_core_message_received(lc,op,msg);
 	}
+	sal_message_reply(op,lc->chat_deny_code);
+	if (!call) sal_op_release(op);
 }
 
 static void is_composing_received(SalOp *op, const SalIsComposing *is_composing) {
