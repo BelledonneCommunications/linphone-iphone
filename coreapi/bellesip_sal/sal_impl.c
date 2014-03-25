@@ -537,10 +537,18 @@ int sal_transport_available(Sal *sal, SalTransport t){
 
 int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	int result;
-	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack
-																			,sal_address_get_domain(addr)
-																			,sal_address_get_port(addr)
-																			,sal_transport_to_string(sal_address_get_transport(addr)));
+	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack,
+									sal_address_get_domain(addr),
+									sal_address_get_port(addr),
+									sal_transport_to_string(sal_address_get_transport(addr)));
+	if (sal_address_get_port(addr)==-1 && lp==NULL){
+		int random_port=(0xDFFF&random())+1024;
+		ms_warning("This version of belle-sip doesn't support random port, choosing one here.");
+		lp = belle_sip_stack_create_listening_point(ctx->stack,
+						sal_address_get_domain(addr),
+						random_port,
+						sal_transport_to_string(sal_address_get_transport(addr)));
+	}
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);

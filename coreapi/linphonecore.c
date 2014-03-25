@@ -1918,25 +1918,23 @@ static int apply_transports(LinphoneCore *lc){
 		anyaddr="0.0.0.0";
 
 	sal_unlisten_ports(sal);
-	if (tr->udp_port>0){
+	if (tr->udp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"udp",tr->udp_port);
 			return -1;
 		}
 	}
-	if (tr->tcp_port>0){
+	if (tr->tcp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
 			transport_error(lc,"tcp",tr->tcp_port);
 		}
 	}
-	if (tr->tls_port>0){
+	if (tr->tls_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
 			transport_error(lc,"tls",tr->tls_port);
 		}
 	}
-
 	apply_user_agent(lc);
-
 	return 0;
 }
 
@@ -1957,31 +1955,20 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
 **/
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
 	LCSipTransports tr=*tr_config;
-	int random_port=(0xDFFF&random())+1024;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
 		/*legacy random mode*/
 		if (tr.udp_port>0){
-			tr.udp_port=random_port;
-			tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tcp_port>0){
-			tr.tcp_port=random_port;
-			tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tls_port>0){
-			tr.tls_port=random_port;
-			tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-		} else {
-			tr.udp_port=random_port;
+			tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 		}
-	}
-	if (tr.udp_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.udp_port=random_port;
-	}
-	if (tr.tcp_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.tcp_port=random_port;
-	}
-	if (tr.tls_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.tls_port=random_port+1;
+		if (tr.tcp_port>0){
+			tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
+		}
+		if (tr.tls_port>0){
+			tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
+		}else {
+			tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
+		}
 	}
 
 	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
