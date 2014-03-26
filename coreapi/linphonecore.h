@@ -1722,6 +1722,8 @@ LINPHONE_PUBLIC	int linphone_core_set_sip_transports(LinphoneCore *lc, const LCS
 
 LINPHONE_PUBLIC	int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
 
+LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr);
+
 LINPHONE_PUBLIC	bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp);
 /**
  *

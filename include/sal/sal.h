@@ -501,6 +501,7 @@ void sal_signing_key_delete(SalSigningKey *key);
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
+int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);

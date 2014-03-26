@@ -1521,7 +1521,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		lc->sip_conf.loopback_only=TRUE;
 	}else lc->sip_conf.loopback_only=FALSE;
 	linphone_address_set_domain(url,tmp);
-	linphone_address_set_port(url,linphone_core_get_sip_port (lc));
+	linphone_address_set_port(url,linphone_core_get_sip_port(lc));
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
 	linphone_address_destroy(url);
@@ -1833,8 +1833,9 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
-	LCSipTransports *tr=&lc->sip_conf.transports;
-	return tr->udp_port>0 ? tr->udp_port : (tr->tcp_port > 0 ? tr->tcp_port : tr->tls_port);
+	LCSipTransports tr;
+	linphone_core_get_sip_transports_used(lc,&tr);
+	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
 }
 
 #if !USE_BELLE_SIP
@@ -1949,7 +1950,7 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
  * Sets the ports to be used for each of transport (UDP or TCP)
  *
  * A zero value port for a given transport means the transport
- * is not used.
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
  *
  * @ingroup network_parameters
 **/
@@ -1990,9 +1991,9 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 }
 
 /**
- * Retrieves the ports used for each transport (udp, tcp).
+ * Retrieves the port configuration used for each transport (udp, tcp, tls).
  * A zero value port for a given transport means the transport
- * is not used.
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
@@ -2000,6 +2001,18 @@ int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
 	return 0;
 }
 
+/**
+ * Retrieves the real port number assigned for each sip transport (udp, tcp, tls).
+ * A zero value means that the transport is not activated.
+ * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
+ * @ingroup network_parameters
+ * @param tr a LCSipTransports structure.
+**/
+void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr){
+	tr->udp_port=sal_get_listening_port(lc->sal,SalTransportUDP);
+	tr->tcp_port=sal_get_listening_port(lc->sal,SalTransportTCP);
+	tr->tls_port=sal_get_listening_port(lc->sal,SalTransportTLS);
+}
 /**
  * Sets the UDP port to be used by SIP.
  *
@@ -2770,7 +2783,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
-	linphone_core_get_default_proxy(lc,&proxy);
 
 	real_url=linphone_address_as_string(addr);
 	proxy=linphone_core_lookup_known_proxy(lc,addr);

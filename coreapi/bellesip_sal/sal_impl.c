@@ -569,22 +569,34 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	sal_address_destroy(sal_addr);
 	return result;
 }
+
 static void remove_listening_point(belle_sip_listening_point_t* lp,belle_sip_provider_t* prov) {
 	belle_sip_provider_remove_listening_point(prov,lp);
 }
+
+int sal_get_listening_port(Sal *ctx, SalTransport tr){
+	const char *tpn=sal_transport_to_string(tr);
+	belle_sip_listening_point_t *lp=belle_sip_provider_get_listening_point(ctx->prov, tpn);
+	if (lp){
+		return belle_sip_listening_point_get_port(lp);
+	}
+	return 0;
+}
+
 int sal_unlisten_ports(Sal *ctx){
 	const belle_sip_list_t * lps = belle_sip_provider_get_listening_points(ctx->prov);
 	belle_sip_list_t * tmp_list = belle_sip_list_copy(lps);
 	belle_sip_list_for_each2 (tmp_list,(void (*)(void*,void*))remove_listening_point,ctx->prov);
 	belle_sip_list_free(tmp_list);
-
 	ms_message("sal_unlisten_ports done");
 	return 0;
 }
+
 ortp_socket_t sal_get_socket(Sal *ctx){
 	ms_warning("sal_get_socket is deprecated");
 	return -1;
 }
+
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	belle_sip_header_user_agent_set_products(ctx->user_agent,NULL);
 	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);
