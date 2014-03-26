@@ -680,6 +680,7 @@ struct _LinphoneCore
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
 	belle_http_provider_t *http_provider;
+	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
 };

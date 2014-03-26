@@ -615,11 +615,13 @@ static void sound_config_read(LinphoneCore *lc)
 
 static void certificates_config_read(LinphoneCore *lc)
 {
+	const char *rootca;
 #ifdef __linux
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+	rootca=lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs");
 #else
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
+	rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
 #endif
+	linphone_core_set_root_ca(lc,rootca);
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE)); 
 }
@@ -1369,6 +1371,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
         lc->network_last_status = FALSE;
 	
 	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
+	lc->http_verify_policy = belle_tls_verify_policy_new();
+	belle_http_provider_set_tls_verify_policy(lc->http_provider,lc->http_verify_policy);
 	
 	certificates_config_read(lc);
 	
@@ -4347,6 +4351,10 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
 **/
 void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
 	sal_set_root_ca(lc->sal, path);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_root_ca(lc->http_verify_policy,path);
+	}
+	lp_config_set_string(lc->config,"sip","root_ca",path);
 }
 
 /**
@@ -4357,7 +4365,7 @@ void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
  * @ingroup initializing
 **/
 const char *linphone_core_get_root_ca(LinphoneCore *lc){
-	return sal_get_root_ca(lc->sal);
+	return lp_config_get_string(lc->config,"sip","root_ca",NULL);
 }
 
 /**
@@ -4367,6 +4375,10 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_certificates(lc->sal,yesno);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_exceptions(lc->http_verify_policy, yesno ? 0 : BELLE_TLS_VERIFY_ANY_REASON);
+	}
+	lp_config_set_int(lc->config,"sip","verify_server_certs",yesno);
 }
 
 /**
@@ -4375,6 +4387,10 @@ void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 **/
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_cn(lc->sal,yesno);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_exceptions(lc->http_verify_policy, yesno ? 0 : BELLE_TLS_VERIFY_CN_MISMATCH);
+	}
+	lp_config_set_int(lc->config,"sip","verify_server_cn",yesno);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
@@ -5613,6 +5629,11 @@ void net_config_uninit(LinphoneCore *lc)
 
 	if (lc->http_provider) {
 		belle_sip_object_unref(lc->http_provider);
+		lc->http_provider=NULL;
+	}
+	if (lc->http_verify_policy){
+		belle_sip_object_unref(lc->http_verify_policy);
+		lc->http_verify_policy=NULL;
 	}
 	if (config->stun_server!=NULL){
 		ms_free(config->stun_server);

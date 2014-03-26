@@ -552,7 +552,7 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
-		set_tls_properties(ctx);
+		if (sal_address_get_transport(addr)==SalTransportTLS) set_tls_properties(ctx);
 	} else {
 		return -1;
 	}
