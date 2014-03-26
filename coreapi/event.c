@@ -107,6 +107,9 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		if (lc->vtable.publish_state_changed){
 			lc->vtable.publish_state_changed(lev->lc,lev,state);
 		}
+		if (state==LinphonePublishCleared){
+			linphone_event_unref(lev);
+		}
 	}
 }
 
@@ -291,7 +294,8 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
-		}
+		}else sal_op_stop_refreshing(lev->op);
+		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
 	}
 	
