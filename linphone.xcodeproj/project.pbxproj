@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		15017E701773578400784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
 		15017E71177357C500784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
-		154227D117BA81CE005E686A /* libzrtpcppcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 154227D017BA81CE005E686A /* libzrtpcppcore.a */; };
 		1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
 		1599105416F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
 		1599105516F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */; };
@@ -1377,9 +1377,6 @@
 		F03A9B8D18C0DABE00C4D7FE /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
 		F03A9B8E18C0DABE00C4D7FE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		F03A9B8F18C0DABE00C4D7FE /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
-		F03A9B9118C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9018C0DACC00C4D7FE /* libzrtpcppcore.a */; };
-		F03A9B9218C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9018C0DACC00C4D7FE /* libzrtpcppcore.a */; };
-		F03A9B9318C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9018C0DACC00C4D7FE /* libzrtpcppcore.a */; };
 		F03A9B9918C0DB8800C4D7FE /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; };
 		F03A9B9A18C0DB8800C4D7FE /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; };
 		F03A9B9B18C0DBAF00C4D7FE /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
@@ -1489,8 +1486,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
 		15017E6F1773578400784ACB /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
-		154227D017BA81CE005E686A /* libzrtpcppcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcppcore.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcppcore.a"; sourceTree = "<group>"; };
 		1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default_landscape.png; path = Resources/route_bluetooth_off_default_landscape.png; sourceTree = "<group>"; };
 		1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_disabled_landscape.png; path = Resources/route_bluetooth_off_disabled_landscape.png; sourceTree = "<group>"; };
 		1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_over_landscape.png; path = Resources/route_bluetooth_off_over_landscape.png; sourceTree = "<group>"; };
@@ -2486,7 +2483,6 @@
 		F03A9B6E18C0D1A500C4D7FE /* upnp_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = upnp_tester.c; path = submodules/linphone/tester/upnp_tester.c; sourceTree = SOURCE_ROOT; };
 		F03A9B7A18C0D5A000C4D7FE /* sal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sal.h; path = submodules/linphone/include/sal/sal.h; sourceTree = SOURCE_ROOT; };
 		F03A9B7E18C0D9C900C4D7FE /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
-		F03A9B9018C0DACC00C4D7FE /* libzrtpcppcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcppcore.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcppcore.a"; sourceTree = "<group>"; };
 		F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		F03A9C6318C0E2ED00C4D7FE /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = submodules/linphone/tester/certificates; sourceTree = SOURCE_ROOT; };
@@ -2593,12 +2589,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				154227D117BA81CE005E686A /* libzrtpcppcore.a in Frameworks */,
 				15017E701773578400784ACB /* libxml2.a in Frameworks */,
 				22AF73C21754C0D100BE8398 /* libopus.a in Frameworks */,
 				57B0E360173C010400A476B8 /* libpolarssl.a in Frameworks */,
 				223CA7E616D9255800EF1BEC /* libantlr3c.a in Frameworks */,
 				223CA7E716D9255800EF1BEC /* libbellesip.a in Frameworks */,
+				045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */,
 				D30562151671DC4900C97967 /* libNinePatch.a in Frameworks */,
 				D30562161671DC4900C97967 /* libXMLRPC.a in Frameworks */,
 				22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */,
@@ -2635,7 +2631,6 @@
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				226183B0147259670037138E /* libmssilk.a in Frameworks */,
 				22AA8AFE13D7125600B30535 /* libmsx264.a in Frameworks */,
-				F03A9B9118C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */,
 				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
 				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
 				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
@@ -2667,7 +2662,6 @@
 				22D8F171147548E2008C97DB /* AddressBookUI.framework in Frameworks */,
 				22D8F176147548E2008C97DB /* CFNetwork.framework in Frameworks */,
 				22D8F169147548E2008C97DB /* AudioToolbox.framework in Frameworks */,
-				F03A9B9218C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */,
 				22D8F168147548E2008C97DB /* CoreAudio.framework in Frameworks */,
 				22D8F167147548E2008C97DB /* CoreGraphics.framework in Frameworks */,
 				22D8F15E147548E2008C97DB /* CoreMedia.framework in Frameworks */,
@@ -2733,7 +2727,6 @@
 				F03A9B8D18C0DABE00C4D7FE /* libspeexdsp.a in Frameworks */,
 				F03A9B8E18C0DABE00C4D7FE /* libsrtp.a in Frameworks */,
 				F03A9B8F18C0DABE00C4D7FE /* libvpx.a in Frameworks */,
-				F03A9B9318C0DACC00C4D7FE /* libzrtpcppcore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3307,7 +3300,6 @@
 			isa = PBXGroup;
 			children = (
 				F04892FE180C3296002FED35 /* ImageOptim.sh */,
-				154227D017BA81CE005E686A /* libzrtpcppcore.a */,
 				15017E6F1773578400784ACB /* libxml2.a */,
 				57B0E35F173C010400A476B8 /* libpolarssl.a */,
 				223CA7E416D9255800EF1BEC /* libantlr3c.a */,
@@ -3336,7 +3328,7 @@
 				226183AB1472527D0037138E /* libsrtp.a */,
 				22276E8213C73D3100210156 /* libswscale.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
-				F03A9B9018C0DACC00C4D7FE /* libzrtpcppcore.a */,
+				045B5CB218D72E9A0088350C /* libbzrtp.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
@@ -5988,7 +5980,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -6048,8 +6040,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\\\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\\\"",
+					"/Users/johan/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -6057,7 +6050,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = DistributionAdhoc;
 		};
@@ -6262,8 +6255,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\\\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\\\"",
+					"/Users/johan/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -6271,7 +6265,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -6330,8 +6324,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
-					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\\\"",
+					"\\\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\\\"",
+					"/Users/johan/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -6339,7 +6334,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Distribution;
 		};
