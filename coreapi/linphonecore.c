@@ -1971,8 +1971,6 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 		}
 		if (tr.tls_port>0){
 			tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
-		}else {
-			tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 		}
 	}
 
