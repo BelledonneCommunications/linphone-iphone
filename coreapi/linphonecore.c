@@ -5627,14 +5627,6 @@ void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
 
-	if (lc->http_provider) {
-		belle_sip_object_unref(lc->http_provider);
-		lc->http_provider=NULL;
-	}
-	if (lc->http_verify_policy){
-		belle_sip_object_unref(lc->http_verify_policy);
-		lc->http_verify_policy=NULL;
-	}
 	if (config->stun_server!=NULL){
 		ms_free(config->stun_server);
 	}
@@ -5709,6 +5701,14 @@ void sip_config_uninit(LinphoneCore *lc)
 	
 	sal_reset_transports(lc->sal);
 	sal_unlisten_ports(lc->sal); /*to make sure no new messages are received*/
+	if (lc->http_provider) {
+		belle_sip_object_unref(lc->http_provider);
+		lc->http_provider=NULL;
+	}
+	if (lc->http_verify_policy){
+		belle_sip_object_unref(lc->http_verify_policy);
+		lc->http_verify_policy=NULL;
+	}
 	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
