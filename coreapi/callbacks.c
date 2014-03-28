@@ -882,7 +882,7 @@ static void text_received(SalOp *op, const SalMessage *msg){
 	if (lc->chat_deny_code==LinphoneReasonNone && is_duplicate_msg(lc,msg->message_id)==FALSE){
 		linphone_core_message_received(lc,op,msg);
 	}
-	sal_message_reply(op,lc->chat_deny_code);
+	sal_message_reply(op,linphone_reason_to_sal(lc->chat_deny_code));
 	if (!call) sal_op_release(op);
 }
 

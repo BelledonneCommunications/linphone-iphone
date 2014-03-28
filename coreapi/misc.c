@@ -1100,9 +1100,9 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 SalReason linphone_reason_to_sal(LinphoneReason reason){
 	switch(reason){
 		case LinphoneReasonNone:
-			return SalReasonUnknown;
+			return SalReasonNone;
 		case LinphoneReasonNoResponse:
-			return SalReasonUnknown;
+			return SalReasonRequestTimeout;
 		case LinphoneReasonForbidden:
 			return SalReasonForbidden;
 		case LinphoneReasonDeclined:
