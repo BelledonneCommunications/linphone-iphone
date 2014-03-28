@@ -577,19 +577,10 @@ enum _LinphoneUpnpState{
 **/
 typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
-/**
- * Enum describing what has been updated in a LinphoneCallStats object.
-**/
-enum _LinphoneCallStatsRTCPUpdate {
-	LinphoneCallStatsReceivedRTCPUpdate, /**< received_rtcp field of LinphoneCallStats object has been updated */
-	LinphoneCallStatsSentRTCPUpdate /**< sent_rtcp field of LinphoneCallStats object has been updated */
-};
 
-/**
- * Enum describing what has been updated in a LinphoneCallStats object.
-**/
+#define LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE (1 << 0) /**< received_rtcp field of LinphoneCallStats object has been updated */
+#define LINPHONE_CALL_STATS_SENT_RTCP_UPDATE (1 << 1) /**< sent_rtcp field of LinphoneCallStats object has been updated */
 
-typedef enum _LinphoneCallStatsRTCPUpdate LinphoneCallStatsRTCPUpdate;
 
 /**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
@@ -621,7 +612,7 @@ struct _LinphoneCallStats {
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float local_late_rate; /**<percentage of packet received too late over last second*/
 	float local_loss_rate; /**<percentage of lost packet over last second*/
-	LinphoneCallStatsRTCPUpdate updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp) */
+	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
 };
 
 /**
