@@ -24,6 +24,10 @@ all_p=armv6-darwin-gcc    #neon Cortex-A8
 all_p+=armv7-darwin-gcc    #neon Cortex-A8
 all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
+ifeq ($(force_non_binary_libvpx),1)
+take_binary=
+endif
+
 
 
 $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
@@ -42,6 +46,9 @@ build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) \
 	&& host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make && make install
+ifeq ($(force_non_binary_libvpx),1)
+	@echo "\033[01;32m DON'T get BINARY version of libvpx for $(take_binary), because 'force_non_binary_libvpx' is 1 \033[0m"
+endif
 ifneq (,$(take_binary))
 # we have to take binary version of libvpx for ARM because Clang introduces bugs in optimized assembly
 	@echo "\033[01;32m Getting BINARY version of libvpx for $(take_binary) \033[0m"
