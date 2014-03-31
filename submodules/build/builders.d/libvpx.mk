@@ -18,6 +18,7 @@ else ifneq (,$(findstring armv7,$(host)))
 	take_binary = armv7
 else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
+	take_binary = i386
 endif
 
 all_p=armv6-darwin-gcc    #neon Cortex-A8
