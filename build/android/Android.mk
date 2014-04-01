@@ -201,7 +201,7 @@ LOCAL_CFLAGS += $(LIBLINPHONE_EXTENDED_CFLAGS)
 
 ifeq ($(BUILD_GPLV3_ZRTP),1)
 	LOCAL_SHARED_LIBRARIES += libssl-linphone libcrypto-linphone
-	LOCAL_SHARED_LIBRARIES += libzrtpcpp
+	LOCAL_SHARED_LIBRARIES += libbzrtp
 endif
 
 ifeq ($(BUILD_SRTP),1)
