@@ -307,6 +307,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	int port_preference = [self integerForKey:@"port_preference"];
     
     BOOL random_port_preference = [self boolForKey:@"random_port_preference"];
+    lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "random_port_preference", random_port_preference);
     if(random_port_preference) {
         port_preference = -1;
     }
