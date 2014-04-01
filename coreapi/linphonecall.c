@@ -82,6 +82,14 @@ const char* linphone_call_get_authentication_token(LinphoneCall *call){
 	return call->auth_token;
 }
 
+/**
+ * Returns whether ZRTP authentication token is verified.
+ * If not, it must be verified by users as described in ZRTP procedure.
+ * Once done, the application must inform of the results with linphone_call_set_authentication_token_verified().
+ * @param call the LinphoneCall
+ * @return TRUE if authentication token is verifed, false otherwise.
+ * @ingroup call_control
+**/
 bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call){
 	return call->auth_token_verified;
 }
@@ -172,6 +180,13 @@ static void linphone_call_audiostream_auth_token_ready(void *data, const char* a
 	ms_message("Authentication token is %s (%s)", auth_token, verified?"verified":"unverified");
 }
 
+/**
+ * Set the result of ZRTP short code verification by user.
+ * If remote party also does the same, it will update the ZRTP cache so that user's verification will not be required for the two users.
+ * @param call the LinphoneCall
+ * @param verified whether the ZRTP SAS is verified.
+ * @ingroup call_control
+**/
 void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified){
 	if (call->audiostream==NULL){
 		ms_error("linphone_call_set_authentication_token_verified(): No audio stream");
