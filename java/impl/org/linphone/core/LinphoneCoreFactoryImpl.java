@@ -57,10 +57,6 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			loadOptionalLibrary("avcodec-linphone-arm");
 		}
 
-		// Secure RTP and key negotiation
-		loadOptionalLibrary("srtp-" + eabi);
-		loadOptionalLibrary("zrtpcpp-" + eabi); // GPLv3+
-
 		//Main library
 		System.loadLibrary("linphone-" + eabi);
 
