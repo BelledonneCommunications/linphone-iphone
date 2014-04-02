@@ -51,11 +51,11 @@ BUILDING THE SDK
 
 xcode prior to 4.5:
 	$ make -f Makefile.xcode4.4
+
  * ZRTP support
 
- You can enable ZRTP support in GPL mode only, by adding "enable_zrtp=yes" to the make command, for example:
- 	$ make all enable_gpl_third_parties=yes enable_zrtp=yes
-	
+ You can disable adding "enable_zrtp=no" to the make command, for example:
+ 	$ make all enable_zrtp=no
 
 The resulting sdk is in liblinphone-sdk/ directory.
 
@@ -74,13 +74,6 @@ After the SDK is built, just open the linphone xcode project with Xcode, and pre
 The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and  X264 codecs.
 Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_X264 positioned in xcode project.
 Before embeding these 4 codecs in the final application, make sure to have the right to do so.
-
-TRANSLATE THE APPLICATION
-*************************
-
-You have to download the application Localization Suite(http://www.loc-suite.org/)
-Each modification in a xib has to be scanned and synchronized
-
 
 LIMITATIONS, KNOWN BUGS
 ***********************
