@@ -346,6 +346,7 @@ struct codec_name_pref_table codec_pref_table[]={
     return theLinphoneCore != nil;
 }
 
+#pragma mark Debug functions
 
 struct _entry_data {
     const LpConfig* conf;

@@ -88,7 +88,7 @@ NSTimer *callSecurityTimer;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(globalStateUpdate:)
-                                                 name:kLinphoneConfiguringStateUpdate
+                                                 name:kLinphoneGlobalStateUpdate
                                                object:nil];
     [callQualityImage setHidden: true];
     [callSecurityImage setHidden: true];
@@ -108,7 +108,7 @@ NSTimer *callSecurityTimer;
                                                     name:kLinphoneRegistrationUpdate
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneConfiguringStateUpdate
+                                                    name:kLinphoneGlobalStateUpdate
                                                   object:nil];
     if(callQualityTimer != nil) {
         [callQualityTimer invalidate];

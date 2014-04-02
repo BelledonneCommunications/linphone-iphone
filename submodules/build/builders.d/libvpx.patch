@@ -1,34 +1,17 @@
-diff --git a/build/make/configure.sh b/build/make/configure.sh
-index c99a01c..7fdf10d 100755
---- a/build/make/configure.sh
-+++ b/build/make/configure.sh
-@@ -889,13 +889,13 @@ process_common_toolchain() {
-                 SDK_PATH=${sdk_path}
-             fi
-             TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
--            CXX=${TOOLCHAIN_PATH}/g++
--            CC=${TOOLCHAIN_PATH}/gcc
--            AR=${TOOLCHAIN_PATH}/ar
--            LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
--            AS=${TOOLCHAIN_PATH}/as
--            STRIP=${TOOLCHAIN_PATH}/strip
--            NM=${TOOLCHAIN_PATH}/nm
-+            CXX=`xcrun --find clang++`
-+            CC=`xcrun --find clang`
-+            AR=`xcrun --find ar`
-+            LD=`xcrun --find clang`
-+            AS=`xcrun --find as`
-+            STRIP=`xcrun --find strip`
-+            NM=`xcrun --find nm`
-             AS_SFX=.s
+diff --git a/vp8/decoder/decodframe.c b/vp8/decoder/decodframe.c
+index 16da78a..fd9ca61 100644
+--- a/vp8/decoder/decodframe.c
++++ b/vp8/decoder/decodframe.c
+@@ -248,7 +248,11 @@ static void decode_macroblock(VP8D_COMP *pbi, MACROBLOCKD *xd,
  
-             # ASFLAGS is written here instead of using check_add_asflags
-@@ -904,7 +904,7 @@ process_common_toolchain() {
-             ASFLAGS="-version -arch ${tgt_isa} -g"
- 
-             add_cflags -arch ${tgt_isa}
--            add_ldflags -arch_only ${tgt_isa}
-+            add_ldflags -arch ${tgt_isa}
- 
-             if [ -z "${alt_libc}" ]; then
-                 alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.1.sdk
+                     vp8_short_inv_walsh4x4(&b->dqcoeff[0],
+                         xd->qcoeff);
+-                    vpx_memset(b->qcoeff, 0, 16 * sizeof(b->qcoeff[0]));
++                    // TODO(johannkoenig): figure out why bzero below
++                    // works great on iOS Release but memset or
++                    // vpx_memset create terrible corruption on decode
++                    // (https://code.google.com/p/webm/issues/detail?id=603).
++                    bzero(b->qcoeff, 16 * sizeof(b->qcoeff[0]));
+                 }
+                 else
+                 {
