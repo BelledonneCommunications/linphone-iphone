@@ -3038,7 +3038,6 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 
 		// if parameters are passed, update the media description
 		if ( params ) {
-			md = sal_call_get_remote_media_description ( call->op );
 			_linphone_call_params_copy ( &call->params,params );
 			linphone_call_make_local_media_description ( lc,call );
 			sal_call_set_local_media_description ( call->op,call->localdesc );
