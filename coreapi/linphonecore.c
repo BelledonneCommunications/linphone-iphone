@@ -536,8 +536,25 @@ static void sound_config_read(LinphoneCore *lc)
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
 	if (devid){
-		MSSndCard *card=ms_alsa_card_new_custom(devid,devid);
-		ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+		MSSndCard* card;
+		const char* delim=",";
+		size_t l=strlen(devid);
+		char* d=malloc(l+1);
+		char* i;
+		memcpy(d,devid,l+1);
+		for (l=0,i=strpbrk(d+l,delim);i;i=strpbrk(d+l,delim)){
+			char s=*i;
+			*i='\0';
+			card=ms_alsa_card_new_custom(d+l,d+l);
+			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+			*i=s;
+			l=i-d+1;
+		}
+		if(d[l]!='\0') {
+			card=ms_alsa_card_new_custom(d+l,d+l);
+			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+		}
+		free(d);
 	}
 	tmp=lp_config_get_int(lc->config,"sound","alsa_forced_rate",-1);
 	if (tmp>0) ms_alsa_card_set_forced_sample_rate(tmp);
