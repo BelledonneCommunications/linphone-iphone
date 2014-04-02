@@ -42,6 +42,7 @@
 @property (nonatomic, retain) IBOutlet UIView *connectAccountView;
 @property (nonatomic, retain) IBOutlet UIView *externalAccountView;
 @property (nonatomic, retain) IBOutlet UIView *validateAccountView;
+@property (retain, nonatomic) IBOutlet UIView *provisionedAccountView;
 
 @property (nonatomic, retain) IBOutlet UIView *waitView;
 
@@ -51,8 +52,10 @@
 @property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
 @property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
-@property (retain, nonatomic) IBOutlet UILabel  *remoteParamsLabel;
 
+@property (retain, nonatomic) IBOutlet UITextField *provisionedUsername;
+@property (retain, nonatomic) IBOutlet UITextField *provisionedPassword;
+@property (retain, nonatomic) IBOutlet UITextField *provisionedDomain;
 
 @property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
 
@@ -74,5 +77,6 @@
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;
 - (IBAction)onRegisterClick:(id)sender;
+- (IBAction)onProvisionedLoginClick:(id)sender;
 
 @end

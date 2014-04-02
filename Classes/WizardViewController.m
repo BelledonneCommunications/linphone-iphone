@@ -32,7 +32,6 @@ typedef enum _ViewElement {
     ViewElement_Password2           = 102,
     ViewElement_Email               = 103,
     ViewElement_Domain              = 104,
-    ViewElement_RemoteProvDetails   = 105,
     ViewElement_Label               = 200,
     ViewElement_Error               = 201,
     ViewElement_Username_Error      = 404
@@ -48,7 +47,7 @@ typedef enum _ViewElement {
 @synthesize connectAccountView;
 @synthesize externalAccountView;
 @synthesize validateAccountView;
-
+@synthesize provisionedAccountView;
 @synthesize waitView;
 
 @synthesize backButton;
@@ -57,7 +56,8 @@ typedef enum _ViewElement {
 @synthesize connectAccountButton;
 @synthesize externalAccountButton;
 @synthesize remoteProvisioningButton;
-@synthesize remoteParamsLabel;
+
+@synthesize provisionedDomain, provisionedPassword, provisionedUsername;
 
 @synthesize choiceViewLogoImageView;
 
@@ -106,7 +106,10 @@ typedef enum _ViewElement {
     [viewTapGestureRecognizer release];
     
     [remoteProvisioningButton release];
-    [remoteParamsLabel release];
+    [provisionedAccountView release];
+    [provisionedUsername release];
+    [provisionedPassword release];
+    [provisionedDomain release];
     [super dealloc];
 }
 
@@ -157,7 +160,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [remoteParamsLabel setHidden:TRUE];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneRegistrationUpdate
                                                   object:nil];
@@ -188,6 +190,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils adjustFontSize:connectAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:externalAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:validateAccountView mult:2.22f];
+        [LinphoneUtils adjustFontSize:provisionedAccountView mult:2.22f];
     }
 }
 
@@ -207,7 +210,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)fillDefaultValues {
 
     LinphoneCore* lc = [LinphoneManager getLc];
-
     [self resetTextFields];
 
     LinphoneProxyConfig* current_conf = NULL;
@@ -235,20 +237,18 @@ static UICompositeViewDescription *compositeDescription = nil;
             const char* domain = linphone_address_get_domain(default_addr);
             const char* username = linphone_address_get_username(default_addr);
             if( domain && strlen(domain) > 0){
-                UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain view:externalAccountView];
-                [domainfield setText:[NSString stringWithUTF8String:domain]];
+                //UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain view:externalAccountView];
+                [provisionedDomain setText:[NSString stringWithUTF8String:domain]];
             }
 
             if( username && strlen(username) > 0 && username[0] != '?' ){
-                UITextField* userField = [WizardViewController findTextField:ViewElement_Username view:externalAccountView];
-                [userField setText:[NSString stringWithUTF8String:username]];
+                //UITextField* userField = [WizardViewController findTextField:ViewElement_Username view:externalAccountView];
+                [provisionedUsername setText:[NSString stringWithUTF8String:username]];
             }
         }
     }
 
-    [self changeView:externalAccountView back:FALSE animation:TRUE];
-
-    [remoteParamsLabel setHidden:FALSE];
+    [self changeView:provisionedAccountView back:FALSE animation:TRUE];
 
     linphone_proxy_config_destroy(default_conf);
 
@@ -261,6 +261,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [WizardViewController cleanTextField:connectAccountView];
     [WizardViewController cleanTextField:externalAccountView];
     [WizardViewController cleanTextField:validateAccountView];
+    [WizardViewController cleanTextField:provisionedAccountView];
 }
 
 - (void)reset {
@@ -481,9 +482,38 @@ static UICompositeViewDescription *compositeDescription = nil;
     int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
     if (defaultExpire >= 0)
         linphone_proxy_config_expires(proxyCfg, defaultExpire);
-    if([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0) {
+    if(([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0)
+       && ! [LinphoneManager instance].wasRemoteProvisioned ) {
         [self setDefaultSettings:proxyCfg];
     }
+    linphone_proxy_config_enable_register(proxyCfg, true);
+	linphone_core_add_auth_info([LinphoneManager getLc], info);
+    linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
+	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
+}
+
+- (void)addProvisionedProxy:(NSString*)username withPassword:(NSString*)password withDomain:(NSString*)domain {
+    [self clearProxyConfig];
+
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+
+    const char *addr= linphone_proxy_config_get_domain(proxyCfg);
+    char normalizedUsername[256];
+    LinphoneAddress* linphoneAddress = linphone_address_new(addr);
+
+    linphone_proxy_config_normalize_number(proxyCfg,
+                                           [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                           normalizedUsername,
+                                           sizeof(normalizedUsername));
+
+    linphone_address_set_username(linphoneAddress, normalizedUsername);
+    linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
+
+    const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
+	linphone_proxy_config_set_identity(proxyCfg, identity);
+
+    LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL, [domain UTF8String]);
+
     linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info([LinphoneManager getLc], info);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
@@ -786,6 +816,30 @@ static UICompositeViewDescription *compositeDescription = nil;
         [username_tf setText:username];
         NSString *identity = [self identityFromUsername:username];
         [self checkUserExist:identity];
+    }
+}
+
+- (IBAction)onProvisionedLoginClick:(id)sender {
+    NSString *username = provisionedUsername.text;
+    NSString *password = provisionedPassword.text;
+
+    NSMutableString *errors = [NSMutableString string];
+    if ([username length] == 0) {
+
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+    }
+
+    if([errors length]) {
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                  otherButtonTitles:nil,nil];
+        [errorView show];
+        [errorView release];
+    } else {
+        [self.waitView setHidden:false];
+        [self addProvisionedProxy:username withPassword:password withDomain:provisionedDomain.text];
     }
 }
 
