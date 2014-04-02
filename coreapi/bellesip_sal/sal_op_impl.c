@@ -90,18 +90,23 @@ SalAuthInfo * sal_op_get_auth_requested(SalOp *op){
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	belle_sip_header_contact_t* contact_header;
 	belle_sip_uri_t* contact_uri;
+	
 	if (sal_op_get_contact_address(op)) {
 		contact_header = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	} else {
 		contact_header= belle_sip_header_contact_new();
 	}
+	
 	if (!(contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header)))) {
 		/*no uri, just creating a new one*/
 		contact_uri=belle_sip_uri_new();
 		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
 	}
+	
 	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
-
+	if (op->privacy!=SalPrivacyNone){
+		belle_sip_uri_set_user(contact_uri,NULL);
+	}
 	belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
 	if (op->base.root->uuid){
 		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
@@ -299,7 +304,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
-		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
+		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL,NULL);
 	}
 	result = belle_sip_client_transaction_send_request_to(client_transaction,next_hop_uri/*might be null*/);
 	

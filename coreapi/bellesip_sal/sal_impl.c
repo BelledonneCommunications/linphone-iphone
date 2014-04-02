@@ -115,7 +115,13 @@ void sal_process_authentication(SalOp *op) {
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)op->pending_auth_transaction);
+	belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(initial_request,belle_sip_header_from_t);
+	belle_sip_uri_t *from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)from);
 	
+	if (strcasecmp(belle_sip_uri_get_host(from_uri),"anonymous.invalid")==0){
+		/*prefer using the from from the SalOp*/
+		from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)sal_op_get_from_address(op));
+	}
 
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
 		new_request = belle_sip_dialog_create_request_from(op->dialog,initial_request);
@@ -132,7 +138,7 @@ void sal_process_authentication(SalOp *op) {
 		return;
 	}
 	
-	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,&auth_list)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,new_request);
 		} else {
