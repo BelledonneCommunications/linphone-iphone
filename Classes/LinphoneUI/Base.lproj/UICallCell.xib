@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallCell">
@@ -35,6 +35,10 @@
                 <outlet property="videoDownloadBandwidthLabel" destination="109" id="125"/>
                 <outlet property="videoIceConnectivityHeaderLabel" destination="111" id="126"/>
                 <outlet property="videoIceConnectivityLabel" destination="112" id="127"/>
+                <outlet property="videoRecvSizeHeaderLabel" destination="nNJ-4U-pl2" id="r20-yj-TG9"/>
+                <outlet property="videoRecvSizeLabel" destination="RxS-YG-dqM" id="fPi-Uk-MHy"/>
+                <outlet property="videoSentSizeHeaderLabel" destination="6PM-O1-cYd" id="G8P-SK-lgu"/>
+                <outlet property="videoSentSizeLabel" destination="CCZ-g0-5g1" id="kgM-NY-RUy"/>
                 <outlet property="videoStatsView" destination="99" id="128"/>
                 <outlet property="videoUploadBandwidthHeaderLabel" destination="107" id="129"/>
                 <outlet property="videoUploadBandwidthLabel" destination="108" id="130"/>
@@ -214,7 +218,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" id="104" userLabel="videoCodecView">
-                                    <rect key="frame" x="10" y="50" width="300" height="21"/>
+                                    <rect key="frame" x="78" y="23" width="232" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Codec:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="105" userLabel="videoCodecHeaderLabel">
@@ -227,7 +231,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="SILK" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="106" userLabel="videoCodecLabel">
-                                            <rect key="frame" x="68" y="0.0" width="232" height="21"/>
+                                            <rect key="frame" x="68" y="0.0" width="164" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Video codec">
                                                 <accessibilityTraits key="traits" none="YES"/>
@@ -239,7 +243,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <view contentMode="scaleToFill" id="103" userLabel="videoUploadBandwidthView">
-                                    <rect key="frame" x="10" y="80" width="300" height="21"/>
+                                    <rect key="frame" x="10" y="113" width="300" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Upload bandwidth:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="107" userLabel="videoUploadBandwidthHeaderLabel">
@@ -263,8 +267,58 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
+                                <view contentMode="scaleToFill" id="j5j-bZ-C2L" userLabel="videoSentSizeView">
+                                    <rect key="frame" x="10" y="50" width="300" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size sent:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="6PM-O1-cYd" userLabel="videoSentSizeHeaderLabel">
+                                            <rect key="frame" x="0.0" y="0.0" width="160" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration">
+                                                <bool key="isElement" value="NO"/>
+                                            </accessibility>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="CCZ-g0-5g1" userLabel="videoSentSizeLabel">
+                                            <rect key="frame" x="168" y="0.0" width="132" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Video upload bandwidth">
+                                                <accessibilityTraits key="traits" none="YES"/>
+                                            </accessibility>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <view contentMode="scaleToFill" id="6oX-23-Ivn" userLabel="videoRecvSizeView">
+                                    <rect key="frame" x="10" y="79" width="300" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size received:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="nNJ-4U-pl2" userLabel="videoRecvSizeHeaderLabel">
+                                            <rect key="frame" x="0.0" y="0.0" width="160" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration">
+                                                <bool key="isElement" value="NO"/>
+                                            </accessibility>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="RxS-YG-dqM" userLabel="videoRecvSizeLabel">
+                                            <rect key="frame" x="168" y="0.0" width="132" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Video upload bandwidth">
+                                                <accessibilityTraits key="traits" none="YES"/>
+                                            </accessibility>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
                                 <view contentMode="scaleToFill" id="102" userLabel="audioDownloadBandwidthView">
-                                    <rect key="frame" x="10" y="110" width="300" height="21"/>
+                                    <rect key="frame" x="10" y="143" width="300" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Download bandwidth:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="110" userLabel="videoDownloadBandwidthHeaderLabel">
@@ -277,7 +331,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="10.0 KB/s" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="109" userLabel="videoDownloadBandwidthLabel">
-                                            <rect key="frame" x="190" y="0.0" width="110.00000000000001" height="21"/>
+                                            <rect key="frame" x="190" y="0.0" width="109.99999999999999" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Audio download bandwidth">
                                                 <accessibilityTraits key="traits" none="YES"/>
@@ -289,7 +343,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <view contentMode="scaleToFill" id="100" userLabel="audioIceConnectivityView">
-                                    <rect key="frame" x="10" y="140" width="300" height="21"/>
+                                    <rect key="frame" x="10" y="173" width="300" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="ICE connectivity:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="111" userLabel="videoIceConnectivityHeaderLabel">
