@@ -134,7 +134,7 @@ veryclean: veryclean-linphone veryclean-msbcg729
 
 # list of the submodules to build
 MS_MODULES      := msilbc libilbc msamr mssilk msx264 msisac
-SUBMODULES_LIST := polarssl libantlr cunit belle-sip srtp zrtpcpp speex libgsm libvpx libxml2 ffmpeg opus
+SUBMODULES_LIST := polarssl libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
 
 .NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
