@@ -13,7 +13,17 @@ dial_escape_plus=0
 service_url=
 
 [app]
-push_notification_preference=0
+pushnotification_preference=0
 sharing_server_preference=
-ice_preference=
-stun_preference=
+ice_preference=1
+stun_preference=stun.linphone.org
+random_port_preference=1
+
+[net]
+firewall_policy=none
+stun_server=
+
+[sip]
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1

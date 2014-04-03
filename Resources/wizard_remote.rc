@@ -13,7 +13,7 @@ dial_escape_plus=0
 service_url=
 
 [app]
-push_notification_preference=0
+pushnotification_preference=0
 sharing_server_preference=
 ice_preference=
 stun_preference=

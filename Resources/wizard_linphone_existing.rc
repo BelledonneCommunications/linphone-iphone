@@ -10,10 +10,20 @@ publish=0
 dial_escape_plus=0
 
 [wizard]
-service_url=https://www.linphone.org/wizard.php
+service_url=
 
 [app]
-push_notification_preference=1
+pushnotification_preference=1
 sharing_server_preference=https://www.linphone.org:444/upload.php
 ice_preference=1
 stun_preference=stun.linphone.org
+random_port_preference=1
+
+[net]
+firewall_policy=ice
+stun_server=stun.linphone.org
+
+[sip]
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1

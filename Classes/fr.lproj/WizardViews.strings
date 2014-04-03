@@ -114,7 +114,7 @@
 "104.placeholder" = "Nom d'utilisateur";
 
 /* Class = "IBUILabel"; text = "Votre compte est crée. Vérifier vos emails pour valider votre compte."; ObjectID = "105"; */
-"105.text" = "Votre compte est crée. Vérifier vos emails pour valider votre compte.";
+"105.text" = "Votre compte est créé. Vérifiez vos emails pour valider votre compte.";
 
 /* Class = "IBUITextField"; placeholder = "Mot de passe"; ObjectID = "106"; */
 "106.placeholder" = "Mot de passe";

@@ -416,80 +416,52 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)setDefaultSettings:(LinphoneProxyConfig*)proxyCfg {
     LinphoneManager* lm = [LinphoneManager instance];
-    LinphoneCore *lc = [LinphoneManager getLc];
 
-    BOOL pushnotification = [lm lpConfigBoolForKey:@"push_notification" forSection:@"wizard"];
-    [lm lpConfigSetBool:pushnotification forKey:@"pushnotification_preference"];
+    BOOL pushnotification = [lm lpConfigBoolForKey:@"pushnotification_preference"];
     if(pushnotification) {
         [lm addPushTokenToProxyConfig:proxyCfg];
     }
-
-    int expires = [lm lpConfigIntForKey:@"expires" forSection:@"wizard"];
-    linphone_proxy_config_expires(proxyCfg, expires);
-    NSString* section = [NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY];
-    int port = [lm lpConfigBoolForKey:@"random_port_preference" forSection:section] ? -1 : [lm lpConfigIntForKey:@"port_preference" forSection:section];
-    LCSipTransports transportValue={port,port,-1,-1};
-
-    if (linphone_core_set_sip_transports(lc, &transportValue)) {
-        [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
-    }
-
-    NSString* sharing_server = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
-    
-    BOOL ice = [[LinphoneManager instance] lpConfigBoolForKey:@"ice" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetBool:ice forKey:@"ice_preference"];
-    
-    NSString* stun = [[LinphoneManager instance] lpConfigStringForKey:@"stun" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetString:stun forKey:@"stun_preference"];
-    
-    if ([stun length] > 0){
-        linphone_core_set_stun_server(lc, [stun UTF8String]);
-        if(ice) {
-            linphone_core_set_firewall_policy(lc, LinphonePolicyUseIce);
-        } else {
-            linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
-        }
-    } else {
-        linphone_core_set_stun_server(lc, NULL);
-        linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
-    }
 }
 
-- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {
-    [self clearProxyConfig];
-    if(server == nil) {
-        server = domain;
-    }
-	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {
+    LinphoneCore* lc = [LinphoneManager getLc];
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config(lc);
+
     char normalizedUserName[256];
-    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
     linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+
+    const char* identity = linphone_proxy_config_get_identity(proxyCfg);
+    if( !identity || !*identity ) identity = "sip:user@example.com";
+
+    LinphoneAddress* linphoneAddress = linphone_address_new(identity);
     linphone_address_set_username(linphoneAddress, normalizedUserName);
-    linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
-    const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
-	linphone_proxy_config_set_identity(proxyCfg, identity);
-	linphone_proxy_config_set_server_addr(proxyCfg, [server UTF8String]);
+
+    if( domain && [domain length] != 0) {
+        // when the domain is specified (for external login), take it as the server address
+        linphone_proxy_config_set_server_addr(proxyCfg, [domain UTF8String]);
+        linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
+    }
+
+    identity = linphone_address_as_string_uri_only(linphoneAddress);
+
+    linphone_proxy_config_set_identity(proxyCfg, identity);
+
+
+
     LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String]
 													, NULL, [password UTF8String]
 													, NULL
 													, NULL
 													,linphone_proxy_config_get_domain(proxyCfg));
-	
-	if([server compare:domain options:NSCaseInsensitiveSearch] != NSOrderedSame) {
-        linphone_proxy_config_set_route(proxyCfg, [server UTF8String]);
-    }
-    int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
-    if (defaultExpire >= 0)
-        linphone_proxy_config_expires(proxyCfg, defaultExpire);
-    if(([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0)
-       && ! [LinphoneManager instance].wasRemoteProvisioned ) {
-        [self setDefaultSettings:proxyCfg];
-    }
+
+    [self setDefaultSettings:proxyCfg];
+
+    [self clearProxyConfig];
+
     linphone_proxy_config_enable_register(proxyCfg, true);
-	linphone_core_add_auth_info([LinphoneManager getLc], info);
-    linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
-	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
+	linphone_core_add_auth_info(lc, info);
+    linphone_core_add_proxy_config(lc, proxyCfg);
+	linphone_core_set_default_proxy(lc, proxyCfg);
 }
 
 - (void)addProvisionedProxy:(NSString*)username withPassword:(NSString*)password withDomain:(NSString*)domain {
@@ -744,7 +716,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView release];
     } else {
         [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password domain:domain server:nil];
+        [self addProxyConfig:username password:password domain:domain];
     }
 }
 
@@ -768,9 +740,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView release];
     } else {
         [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password
-                      domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-                      server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+        // domain and server will be configured from the default proxy values
+        [self addProxyConfig:username password:password domain:nil];
     }
 }
 
@@ -1013,9 +984,7 @@ static UICompositeViewDescription *compositeDescription = nil;
              if([response object] == [NSNumber numberWithInt:1]) {
                  NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                  NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
-                [self addProxyConfig:username password:password
-                              domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-                              server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+                [self addProxyConfig:username password:password domain:nil];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
                                                                      message:NSLocalizedString(@"Your account is not validate yet.", nil)
