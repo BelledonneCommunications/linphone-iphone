@@ -33,6 +33,7 @@
 
 #include "linphone/linphonecore_utils.h"
 #include "lpconfig.h"
+#include "mediastreamer2/mscommon.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
@@ -69,6 +70,9 @@ extern void libmsamr_init();
 
 #ifdef HAVE_X264
 extern void libmsx264_init();
+#endif
+#ifdef HAVE_OPENH264
+extern void libmsopenh264_init();
 #endif
 #define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
 #define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
@@ -1035,6 +1039,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
 
+	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
+
 	libmsilbc_init();
 #if defined (HAVE_SILK)
     libmssilk_init(); 
@@ -1044,6 +1050,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 #endif	
 #ifdef HAVE_X264
 	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+#endif
+#ifdef HAVE_OPENH264
+	libmsopenh264_init(); //load openh264 plugin if present from the liblinphone sdk
 #endif
 
 #if HAVE_G729
@@ -1132,6 +1141,7 @@ static LinphoneCoreVTable linphonec_vtable = {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
+		ms_exit(); // Uninitialize mediastreamer2
         
         // Post event
         NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];

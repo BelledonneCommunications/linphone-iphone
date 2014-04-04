@@ -10,6 +10,8 @@
 		045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		15017E701773578400784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
 		15017E71177357C500784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
+		1560821D18EEF23F00765332 /* libwels.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821C18EEF23F00765332 /* libwels.a */; };
+		1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; };
 		1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
 		1599105416F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
 		1599105516F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */; };
@@ -1488,6 +1490,8 @@
 /* Begin PBXFileReference section */
 		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
 		15017E6F1773578400784ACB /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
+		1560821C18EEF23F00765332 /* libwels.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwels.a; path = "liblinphone-sdk/apple-darwin/lib/libwels.a"; sourceTree = "<group>"; };
+		1560821E18EEF26100765332 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
 		1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default_landscape.png; path = Resources/route_bluetooth_off_default_landscape.png; sourceTree = "<group>"; };
 		1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_disabled_landscape.png; path = Resources/route_bluetooth_off_disabled_landscape.png; sourceTree = "<group>"; };
 		1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_over_landscape.png; path = Resources/route_bluetooth_off_over_landscape.png; sourceTree = "<group>"; };
@@ -2589,6 +2593,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
+				1560821D18EEF23F00765332 /* libwels.a in Frameworks */,
 				15017E701773578400784ACB /* libxml2.a in Frameworks */,
 				22AF73C21754C0D100BE8398 /* libopus.a in Frameworks */,
 				57B0E360173C010400A476B8 /* libpolarssl.a in Frameworks */,
@@ -3403,6 +3409,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1560821E18EEF26100765332 /* libmsopenh264.a */,
+				1560821C18EEF23F00765332 /* libwels.a */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
 				F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */,
 				F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */,
@@ -6448,7 +6456,7 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_X264,
+					HAVE_OPENH264,
 					HAVE_SILK,
 					HAVE_SSL,
 					DEBUG,
@@ -6518,7 +6526,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					IN_LINPHONE,
 					VIDEO_ENABLED,
-					HAVE_X264,
+					HAVE_OPENH264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
