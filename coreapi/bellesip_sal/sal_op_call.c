@@ -168,7 +168,12 @@ static void cancelling_invite(SalOp* op ){
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
-
+static int vfu_retry (void *user_data, unsigned int events) {
+	SalOp *op=(SalOp *)user_data;
+	sal_call_send_vfu_request(op);
+	sal_op_unref(op);
+	return BELLE_SIP_STOP;
+}
 static void call_process_response(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
@@ -177,6 +182,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	belle_sip_request_t* req;
 	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
 	int code = belle_sip_response_get_status_code(response);
+	belle_sip_header_content_type_t *header_content_type=NULL;
 
 
 	if (!client_transaction) {
@@ -247,7 +253,16 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						op->state=SalOpStateActive;
 					}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
 						call_set_error(op,response);
-					} else {
+					} else if (code == 491
+							&& strcmp("INFO",belle_sip_request_get_method(req)) == 0
+							&& (header_content_type = belle_sip_message_get_header_by_type(req,belle_sip_header_content_type_t))
+							&& strcmp("application",belle_sip_header_content_type_get_type(header_content_type))==0
+							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
+						unsigned int retry_in =1000*((float)rand()/RAND_MAX);
+						belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
+						ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
+						belle_sip_object_unref(s);
+					}else {
 							/*ignoring*/
 					}
 				break;
