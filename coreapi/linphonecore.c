@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include "quality_reporting.h"
 
 #include <math.h>
 #include <ortp/telephonyevents.h>
@@ -3468,6 +3469,8 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 	/*stop ringing*/
 	linphone_core_stop_ringing(lc);
+
+	linphone_quality_reporting_submit(call);
 
 	linphone_call_stop_media_streams(call);
 

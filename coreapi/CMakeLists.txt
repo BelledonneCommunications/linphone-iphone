@@ -74,6 +74,7 @@ set(SOURCE_FILES
 	offeranswer.c
 	presence.c
 	proxy.c
+	quality_reporting.c
 	remote_provisioning.c
 	sal.c
 	siplogin.c

@@ -782,6 +782,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			 Indeed it does not change the state of the call (still paused or running)*/
 			call->state=cstate;
 		}
+		
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
 			switch(call->non_op_error.reason){
 				case SalReasonDeclined:
