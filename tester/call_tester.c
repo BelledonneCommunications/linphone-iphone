@@ -519,7 +519,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	return success;
 }
 
-static void call_with_ice(void) {
+static void _call_with_ice(bool_t random_ports) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
@@ -527,6 +527,13 @@ static void call_with_ice(void) {
 	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
 	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	
+	if (random_ports){
+		linphone_core_set_audio_port(marie->lc,-1);
+		linphone_core_set_video_port(marie->lc,-1);
+		linphone_core_set_audio_port(pauline->lc,-1);
+		linphone_core_set_video_port(pauline->lc,-1);
+	}
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
@@ -536,8 +543,6 @@ static void call_with_ice(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
 	liblinphone_tester_check_rtcp(marie,pauline);
-
-
 	/*then close the call*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -545,6 +550,14 @@ static void call_with_ice(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_ice(void){
+	_call_with_ice(FALSE);
+}
+
+static void call_with_ice_random_ports(void){
+	_call_with_ice(TRUE);
 }
 
 static void call_with_custom_headers(void) {
@@ -718,6 +731,7 @@ static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee)
 		return wait_for(caller->lc,callee->lc,&callee->stat.number_of_IframeDecoded,initial_callee_stat.number_of_IframeDecoded+1);
 	} else return 0;
 }
+
 static void call_with_video_added(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -733,7 +747,26 @@ static void call_with_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_video_added_random_ports(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	
+	linphone_core_set_audio_port(marie->lc,-1);
+	linphone_core_set_video_port(marie->lc,-1);
+	linphone_core_set_audio_port(pauline->lc,-1);
+	linphone_core_set_video_port(pauline->lc,-1);
+	
+	CU_ASSERT_TRUE(call(pauline,marie));
 
+	CU_ASSERT_TRUE(add_video(pauline,marie));
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 static void call_with_declined_video(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -808,19 +841,26 @@ static void video_call(void) {
 }
 #endif /*VIDEO_ENABLED*/
 
-static void call_with_media_relay(void) {
+static void _call_with_media_relay(bool_t random_ports) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	
+	if (random_ports){
+		linphone_core_set_audio_port(marie->lc,-1);
+		linphone_core_set_video_port(marie->lc,-1);
+		linphone_core_set_audio_port(pauline->lc,-1);
+		linphone_core_set_video_port(pauline->lc,-1);
+	}
+	
 	CU_ASSERT_TRUE(call(pauline,marie));
 	liblinphone_tester_check_rtcp(pauline,marie);
-
+	
 #ifdef VIDEO_ENABLED
 	CU_ASSERT_TRUE(add_video(pauline,marie));
 	liblinphone_tester_check_rtcp(pauline,marie);
 #endif
-
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -828,7 +868,14 @@ static void call_with_media_relay(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
 
+static void call_with_media_relay(void) {
+	_call_with_media_relay(FALSE);
+}
+
+static void call_with_media_relay_random_ports(void) {
+	_call_with_media_relay(TRUE);
 }
 
 static void call_with_privacy(void) {
@@ -1839,6 +1886,7 @@ test_t call_tests[] = {
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
 	{ "Call with media relay", call_with_media_relay},
+	{ "Call with media relay (random ports)", call_with_media_relay_random_ports},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
 	{ "Early-media call with ringing", early_media_call_with_ringing },
@@ -1855,6 +1903,7 @@ test_t call_tests[] = {
 	{ "Simple video call",video_call},
 	{ "SRTP ice video call", srtp_video_ice_call },
 	{ "Call with video added", call_with_video_added },
+	{ "Call with video added (random ports)", call_with_video_added_random_ports },
 	{ "Call with video declined",call_with_declined_video},
 #else
 	{ "SRTP ice call", srtp_ice_call },
@@ -1872,6 +1921,7 @@ test_t call_tests[] = {
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
+	{ "Call with ICE (random ports)", call_with_ice_random_ports },
 	{ "Call with custom headers",call_with_custom_headers},
 	{ "Call established with rejected INFO",call_established_with_rejected_info},
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},

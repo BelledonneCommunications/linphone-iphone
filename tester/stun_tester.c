@@ -73,8 +73,8 @@ static void linphone_stun_test_grab_ip()
 	int tmp=0;
 
 	memset(&dummy_call, 0, sizeof(LinphoneCall));
-	dummy_call.audio_port = 7078;
-	dummy_call.audio_port = 9078;
+	dummy_call.media_ports[0].rtp_port = 7078;
+	dummy_call.media_ports[1].rtp_port = 9078;
 
 	linphone_core_set_stun_server(lc_stun->lc, stun_address);
 	CU_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));

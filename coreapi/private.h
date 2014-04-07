@@ -155,6 +155,11 @@ typedef struct StunCandidate{
 }StunCandidate;
 
 
+typedef struct _PortConfig{
+	int rtp_port;
+	int rtcp_port;
+}PortConfig;
+
 struct _LinphoneCall
 {
 	int magic; /*used to distinguish from proxy config*/
@@ -178,8 +183,8 @@ struct _LinphoneCall
 	LinphoneProxyConfig *dest_proxy;
 	int refcnt;
 	void * user_pointer;
-	int audio_port;
-	int video_port;
+	PortConfig media_ports[2];
+	MSMediaStreamSessions sessions[2]; /*the rtp, srtp, zrtp contexts for each stream*/
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;

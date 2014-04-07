@@ -1755,6 +1755,8 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_
 
 /**
  * Sets the UDP port used for audio streaming.
+ * A value if -1 will request the system to allocate the local port randomly.
+ * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters
 **/
@@ -1775,6 +1777,8 @@ void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_
 
 /**
  * Sets the UDP port used for video streaming.
+ * A value if -1 will request the system to allocate the local port randomly.
+ * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters
 **/
@@ -2604,6 +2608,10 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_create_op(call);
+	linphone_call_stop_media_streams(call);
+	ms_media_stream_sessions_uninit(&call->sessions[0]);
+	ms_media_stream_sessions_uninit(&call->sessions[1]);
+	linphone_call_init_media_streams(call);
 	return linphone_core_start_invite(lc,call, NULL);
 }
 
@@ -2615,7 +2623,6 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	linphone_call_set_contact_op(call);
 
 	linphone_core_stop_dtmf_stream(lc);
-	linphone_call_init_media_streams(call);
 	linphone_call_make_local_media_description(lc,call);
 
 	if (lc->ringstream==NULL) {
@@ -2826,9 +2833,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
+	linphone_call_init_media_streams(call);
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
-		linphone_call_init_media_streams(call);
 		linphone_call_start_media_streams_for_ice_gathering(call);
 		call->log->start_date_time=time(NULL);
 		if (linphone_core_gather_ice_candidates(lc,call)<0) {
@@ -2841,7 +2848,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
-		linphone_call_init_media_streams(call);
 		call->log->start_date_time=time(NULL);
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
@@ -3280,6 +3286,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	return _linphone_core_accept_call_update(lc, call, params);
 }
+
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *remote_desc;
 	bool_t keep_sdp_version;
@@ -3310,13 +3317,13 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		call->params.has_video = FALSE;
 	}
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
+	linphone_call_init_media_streams(call); /*so that video stream is initialized if necessary*/
 	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
 #ifdef VIDEO_ENABLED
-		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
+		if ((call->ice_session != NULL) && !ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
-				linphone_call_init_video_stream(call);
 				video_stream_prepare_video(call->videostream);
 				if (linphone_core_gather_ice_candidates(lc,call)<0) {
 					/* Ice candidates gathering failed, proceed with the call anyway. */
@@ -3332,7 +3339,6 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
 #ifdef VIDEO_ENABLED
 		if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
-			linphone_call_init_video_stream(call);
 			video_stream_prepare_video(call->videostream);
 			if (linphone_core_update_upnp(lc, call)<0) {
 				/* uPnP update failed, proceed with the call anyway. */
@@ -3435,9 +3441,6 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		sal_op_set_sent_custom_header(call->op,params->custom_headers);
 	}
 	
-	if (call->audiostream==NULL)
-		linphone_call_init_media_streams(call);
-	
 	/*give a chance a set card prefered sampling frequency*/
 	if (call->localdesc->streams[0].max_rate>0) {
 		ms_message ("configuring prefered card sampling rate to [%i]",call->localdesc->streams[0].max_rate);
@@ -3447,7 +3450,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.capt_sndcard, call->localdesc->streams[0].max_rate);
 	}
 	
-	if (!was_ringing && call->audiostream->ms.ticker==NULL){
+	if (!was_ringing && call->audiostream->ms.state==MSStreamInitialized){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
@@ -5366,7 +5369,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 	if (file!=NULL) {
 		lc->play_file=ms_strdup(file);
-		if (call && call->audiostream && call->audiostream->ms.ticker)
+		if (call && call->audiostream && call->audiostream->ms.state==MSStreamStarted)
 			audio_stream_play(call->audiostream,file);
 	}
 }
