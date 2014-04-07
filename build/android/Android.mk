@@ -87,6 +87,9 @@ LOCAL_CFLAGS += -DVIDEO_ENABLED
 ifeq ($(BUILD_X264),1)
 LOCAL_CFLAGS += -DHAVE_X264
 endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_CFLAGS += -DHAVE_OPENH264
+endif
 endif
 
 ifeq ($(BUILD_CONTACT_HEADER),1)
@@ -174,6 +177,11 @@ ifeq ($(BUILD_X264),1)
 LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
 	libx264
+endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_STATIC_LIBRARIES += \
+	libmsopenh264 \
+	libwels
 endif
 endif
 

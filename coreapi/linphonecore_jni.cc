@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern "C" {
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/mscommon.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -38,6 +39,9 @@ extern "C" {
 extern "C" void libmsilbc_init();
 #ifdef HAVE_X264
 extern "C" void libmsx264_init();
+#endif
+#ifdef HAVE_OPENH264
+extern "C" void libmsopenh264_init();
 #endif
 #ifdef HAVE_AMR
 extern "C" void libmsamr_init();
@@ -742,11 +746,16 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
 	LinphoneCoreData* ldata = new LinphoneCoreData(env,thiz,jlistener,juserdata);
 
+	ms_init(); // Initialize mediastreamer2 before loading the plugins
+
 #ifdef HAVE_ILBC
 	libmsilbc_init(); // requires an fpu
 #endif
 #ifdef HAVE_X264
 	libmsx264_init();
+#endif
+#ifdef HAVE_OPENH264
+	libmsopenh264_init();
 #endif
 #ifdef HAVE_AMR
 	libmsamr_init();
@@ -776,6 +785,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
 		,jlong lc) {
 	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
 	linphone_core_destroy((LinphoneCore*)lc);
+	ms_exit();
 	delete lcData;
 }
 
