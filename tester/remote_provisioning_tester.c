@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
@@ -29,9 +29,9 @@ void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState st
 	if (status == LinphoneConfiguringSkipped) {
 		counters->number_of_LinphoneConfiguringSkipped++;
 	} else if (status == LinphoneConfiguringFailed) {
-	  	counters->number_of_LinphoneConfiguringFailed++;
+		counters->number_of_LinphoneConfiguringFailed++;
 	} else if (status == LinphoneConfiguringSuccessful) {
-	  	counters->number_of_LinphoneConfiguringSuccessful++;
+		counters->number_of_LinphoneConfiguringSuccessful++;
 	}
 }
 
@@ -89,6 +89,18 @@ static void remote_provisioning_default_values(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void remote_provisioning_file(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
+	const LpConfig* conf;
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+
+	conf = linphone_core_get_config( marie->lc );
+	CU_ASSERT_EQUAL( lp_config_get_int(conf,"misc","tester_file_ok", 0), 1 );
+
+	linphone_core_manager_destroy(marie);
+}
+
+
 test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning skipped", remote_provisioning_skipped },
 	{ "Remote provisioning successful behind http", remote_provisioning_http },
@@ -96,7 +108,8 @@ test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning 404 not found", remote_provisioning_not_found },
 	{ "Remote provisioning invalid", remote_provisioning_invalid },
 	{ "Remote provisioning transient successful", remote_provisioning_transient },
-	{ "Remote provisioning default values", remote_provisioning_default_values }
+	{ "Remote provisioning default values", remote_provisioning_default_values },
+	{ "Remote provisioning from file", remote_provisioning_file }
 };
 
 test_suite_t remote_provisioning_test_suite = {
