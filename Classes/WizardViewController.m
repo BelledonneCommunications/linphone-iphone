@@ -572,11 +572,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)loadWizardConfig:(NSString*)rcFilename {
-    NSString* fullPath = [LinphoneManager bundleFile:rcFilename];
-    LpConfig* current_conf = linphone_core_get_config([LinphoneManager getLc]);
-    if( lp_config_read_file(current_conf, [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]) != 0 ){
-        [LinphoneLogger log:LinphoneLoggerError format:@"Couldn't push wizard file %@ to the Linphone config"];
-    }
+    NSString* fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
+    linphone_core_set_provisioning_uri([LinphoneManager getLc], [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    [[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
+    [[LinphoneManager instance] resetLinphoneCore];
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -652,19 +651,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
+    nextView = createAccountView;
     [self loadWizardConfig:@"wizard_linphone_create.rc"];
-    [self changeView:createAccountView back:FALSE animation:TRUE];
-
 }
 
 - (IBAction)onConnectAccountClick:(id)sender {
+    nextView = connectAccountView;
     [self loadWizardConfig:@"wizard_linphone_existing.rc"];
-    [self changeView:connectAccountView back:FALSE animation:TRUE];
 }
 
 - (IBAction)onExternalAccountClick:(id)sender {
+    nextView = externalAccountView;
     [self loadWizardConfig:@"wizard_external_sip.rc"];
-    [self changeView:externalAccountView back:FALSE animation:TRUE];
 }
 
 - (IBAction)onCheckValidationClick:(id)sender {
@@ -846,7 +844,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     switch (status) {
         case LinphoneConfiguringSuccessful:
+            if( nextView == nil ){
             [self fillDefaultValues];
+            } else {
+                [self changeView:nextView back:false animation:TRUE];
+                nextView = nil;
+            }
             break;
         case LinphoneConfiguringFailed:
         {

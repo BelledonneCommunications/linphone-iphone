@@ -31,6 +31,7 @@
     @private
     UITextField *activeTextField;
     UIView *currentView;
+    UIView *nextView;
     NSMutableArray *historyViews;
 }
 
