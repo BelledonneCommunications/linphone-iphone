@@ -1585,4 +1585,9 @@ public interface LinphoneCore {
 	**/
 	public boolean chatEnabled();
 	
+	/**
+	 * Whenever the liblinphone is playing a ring to advertise an incoming call or ringback of an outgoing call, this function stops the ringing. 
+	 * Typical use is to stop ringing when the user requests to ignore the call.
+	**/
+	public void stopRinging();
 }

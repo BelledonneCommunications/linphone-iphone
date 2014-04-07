@@ -149,6 +149,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setCallErrorTone(long nativePtr, int reason, String path);
 	private native void enableSdp200Ack(long nativePtr,boolean enable);
 	private native boolean isSdp200AckEnabled(long nativePtr);
+	private native void stopRinging(long nativePtr);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -1179,6 +1180,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized boolean chatEnabled() {
 		return chatEnabled(nativePtr);
+	}
+	
+	@Override
+	public void stopRinging() {
+		stopRinging(nativePtr);
 	}
 	
 }

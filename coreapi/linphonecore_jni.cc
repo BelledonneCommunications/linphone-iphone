@@ -798,6 +798,10 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_sendInfoMessage(J
 	return linphone_call_send_info_message((LinphoneCall*)callptr,(LinphoneInfoMessage*)infoptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_stopRinging(JNIEnv* env, jobject  thiz, jlong lc) {
+    linphone_core_stop_ringing((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setChatDatabasePath(JNIEnv* env, jobject  thiz, jlong lc, jstring jpath) {
     const char* path = env->GetStringUTFChars(jpath, NULL);
     linphone_core_set_chat_database_path((LinphoneCore*)lc, path);
