@@ -49,5 +49,5 @@ clean-openh264:
 veryclean-openh264:
 	cd $(BUILDER_SRC_DIR)/$(openh264_dir)/ \
 	&& git clean -f && git reset --hard \
-	rm -rf $(BUILDER_BUILD_DIR)/$(openh264_dir)
+	&& rm -rf $(BUILDER_BUILD_DIR)/$(openh264_dir)
 
