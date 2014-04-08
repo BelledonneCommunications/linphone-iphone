@@ -130,8 +130,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
 	} else {
-		ms_error("Unsupported MESSAGE with content type [%s/%s]",belle_sip_header_content_type_get_type(content_type)
-				,belle_sip_header_content_type_get_subtype(content_type));
+		ms_error("Unsupported MESSAGE (content-type not recognized)");
 		resp = belle_sip_response_create_from_request(req,415);
 		add_message_accept((belle_sip_message_t*)resp);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
