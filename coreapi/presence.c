@@ -170,7 +170,7 @@ static time_t parse_timestamp(const char *timestamp) {
 	return seconds - timezone;
 }
 
-static char * timestamp_to_string(time_t timestamp) {
+char * linphone_timestamp_to_rfc3339_string(time_t timestamp) {
 	char timestamp_str[22];
 	struct tm *ret;
 #ifndef WIN32
@@ -1604,7 +1604,7 @@ static void write_xml_presence_note_obj(LinphonePresenceNote *note, struct _pres
 
 static int write_xml_presence_timestamp(xmlTextWriterPtr writer, time_t timestamp) {
 	int err;
-	char *timestamp_str = timestamp_to_string(timestamp);
+	char *timestamp_str = linphone_timestamp_to_rfc3339_string(timestamp);
 	err = xmlTextWriterWriteElement(writer, (const xmlChar *)"timestamp", (const xmlChar *)timestamp_str);
 	if (timestamp_str) ms_free(timestamp_str);
 	return err;

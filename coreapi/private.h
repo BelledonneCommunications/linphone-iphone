@@ -854,10 +854,17 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 
+/*****************************************************************************
+ * OTHER UTILITY FUNCTIONS                                                     *
+ ****************************************************************************/
+char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
+
+
 static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
 	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
+
 
 /** Belle Sip-based objects need unique ids
   */
