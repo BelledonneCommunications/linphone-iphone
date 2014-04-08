@@ -12,7 +12,7 @@ Make sure that /opt/local/bin (macport tools) arrives first in your PATH env var
 
 Once xcode and macports are installed, open a terminal and install the required build-time tools with:
 
-	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen ImageMagick optipng antlr3
+	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm nasm grep doxygen ImageMagick optipng antlr3
 
 
 Install gas-preprosessor.pl version above Jully 2013  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
