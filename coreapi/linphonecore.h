@@ -159,6 +159,7 @@ typedef struct _LinphoneCall LinphoneCall;
  * Enum describing various failure reasons or contextual information for some events.
  * @see linphone_call_get_reason()
  * @see linphone_proxy_config_get_error()
+ * @see linphone_error_info_get_reason()
  * @ingroup misc
 **/
 enum _LinphoneReason{
@@ -181,7 +182,8 @@ enum _LinphoneReason{
 	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
 	LinphoneReasonNotImplemented, /**<Not implemented*/
 	LinphoneReasonBadGateway, /**<Bad gateway*/
-	LinphoneReasonServerTimeout /**<Server timeout*/
+	LinphoneReasonServerTimeout, /**<Server timeout*/
+	LinphoneReasonUnknown /**Unknown reason*/
 };
 
 #define LinphoneReasonBadCredentials LinphoneReasonForbidden
@@ -201,6 +203,18 @@ typedef enum _LinphoneReason LinphoneReason;
 **/
 const char *linphone_reason_to_string(LinphoneReason err);
 
+/**
+ * Object representing full details about a signaling error or status.
+ * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
+ * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
+ * @ingroup misc
+**/
+typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
+
+LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei);
+LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
 
 /* linphone dictionary */
 LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new();
@@ -564,6 +578,10 @@ enum _LinphoneUpnpState{
 typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
 
+#define LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE (1 << 0) /**< received_rtcp field of LinphoneCallStats object has been updated */
+#define LINPHONE_CALL_STATS_SENT_RTCP_UPDATE (1 << 1) /**< sent_rtcp field of LinphoneCallStats object has been updated */
+
+
 /**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
@@ -594,6 +612,7 @@ struct _LinphoneCallStats {
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float local_late_rate; /**<percentage of packet received too late over last second*/
 	float local_loss_rate; /**<percentage of lost packet over last second*/
+	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
 };
 
 /**
@@ -662,6 +681,7 @@ LINPHONE_PUBLIC void linphone_call_enable_camera(LinphoneCall *lc, bool_t enable
 LINPHONE_PUBLIC bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
 LINPHONE_PUBLIC LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call);
@@ -837,6 +857,13 @@ LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const Linphon
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
+/**
+ * Get detailed information why registration failed when the proxy config state is LinphoneRegistrationFailed.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @returns The details why registration failed for this proxy config.
+**/
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg);
+
 /*
  * return the transport from either : service route, route, or addr
  * @returns cfg object
@@ -1002,6 +1029,9 @@ LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, cons
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason);
+LINPHONE_PUBLIC void linphone_core_enable_chat(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_chat_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);
@@ -1057,6 +1087,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_read(LinphoneChatMessage* messag
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message);
 LINPHONE_PUBLIC LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg);
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg);
 /**
  * @}
  */
@@ -1681,6 +1712,8 @@ LINPHONE_PUBLIC	int linphone_core_get_sip_port(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
 
 LINPHONE_PUBLIC	int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
+
+LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr);
 
 LINPHONE_PUBLIC	bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp);
 /**

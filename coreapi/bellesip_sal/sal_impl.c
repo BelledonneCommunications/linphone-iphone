@@ -115,7 +115,13 @@ void sal_process_authentication(SalOp *op) {
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)op->pending_auth_transaction);
+	belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(initial_request,belle_sip_header_from_t);
+	belle_sip_uri_t *from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)from);
 	
+	if (strcasecmp(belle_sip_uri_get_host(from_uri),"anonymous.invalid")==0){
+		/*prefer using the from from the SalOp*/
+		from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)sal_op_get_from_address(op));
+	}
 
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
 		new_request = belle_sip_dialog_create_request_from(op->dialog,initial_request);
@@ -132,7 +138,7 @@ void sal_process_authentication(SalOp *op) {
 		return;
 	}
 	
-	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,&auth_list)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,new_request);
 		} else {
@@ -162,8 +168,8 @@ void sal_process_authentication(SalOp *op) {
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
 	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op = belle_sip_dialog_get_application_data(dialog);
-	if (op && op->callbacks.process_dialog_terminated) {
-		op->callbacks.process_dialog_terminated(op,event);
+	if (op && op->callbacks && op->callbacks->process_dialog_terminated) {
+		op->callbacks->process_dialog_terminated(op,event);
 	} else {
 		ms_error("sal process_dialog_terminated no op found for this dialog [%p], ignoring",dialog);
 	}
@@ -177,8 +183,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 		op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 		/*also reset auth count on IO error*/
 		op->auth_requests=0;
-		if (op->callbacks.process_io_error) {
-			op->callbacks.process_io_error(op,event);
+		if (op->callbacks && op->callbacks->process_io_error) {
+			op->callbacks->process_io_error(op,event);
 		}
 	} else {
 		/*ms_error("sal process_io_error not implemented yet for non transaction");*/
@@ -290,8 +296,8 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	sal_op_set_privacy_from_message(op,(belle_sip_message_t*)req);
 
 	sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
-	if (op->callbacks.process_request_event) {
-		op->callbacks.process_request_event(op,event);
+	if (op->callbacks && op->callbacks->process_request_event) {
+		op->callbacks->process_request_event(op,event);
 	} else {
 		ms_error("sal process_request_event not implemented yet");
 	}
@@ -329,7 +335,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		
-		if (op->callbacks.process_response_event) {
+		if (op->callbacks && op->callbacks->process_response_event) {
 			/*handle authorization*/
 			switch (response_code) {
 				case 200: 
@@ -365,7 +371,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 				/*not an auth request*/
 				op->auth_requests=0;
 			}
-			op->callbacks.process_response_event(op,event);
+			op->callbacks->process_response_event(op,event);
 		} else {
 			ms_error("Unhandled event response [%p]",event);
 		}
@@ -375,8 +381,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
-	if (op && op->callbacks.process_timeout) {
-		op->callbacks.process_timeout(op,event);
+	if (op && op->callbacks && op->callbacks->process_timeout) {
+		op->callbacks->process_timeout(op,event);
 	} else {
 		ms_error("Unhandled event timeout [%p]",event);
 	}
@@ -393,8 +399,8 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		 trans=BELLE_SIP_TRANSACTION(server_transaction);
 
 	op = (SalOp*)belle_sip_transaction_get_application_data(trans);
-	if (op && op->callbacks.process_transaction_terminated) {
-		op->callbacks.process_transaction_terminated(op,event);
+	if (op && op->callbacks && op->callbacks->process_transaction_terminated) {
+		op->callbacks->process_transaction_terminated(op,event);
 	} else {
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
@@ -443,6 +449,7 @@ Sal * sal_init(){
 	sal->refresher_retry_after=60000; /*default value in ms*/
 	return sal;
 }
+
 void sal_set_user_pointer(Sal *sal, void *user_data){
 	sal->up=user_data;
 }
@@ -536,14 +543,22 @@ int sal_transport_available(Sal *sal, SalTransport t){
 
 int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	int result;
-	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack
-																			,sal_address_get_domain(addr)
-																			,sal_address_get_port(addr)
-																			,sal_transport_to_string(sal_address_get_transport(addr)));
+	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack,
+									sal_address_get_domain(addr),
+									sal_address_get_port(addr),
+									sal_transport_to_string(sal_address_get_transport(addr)));
+	if (sal_address_get_port(addr)==-1 && lp==NULL){
+		int random_port=(0xDFFF&random())+1024;
+		ms_warning("This version of belle-sip doesn't support random port, choosing one here.");
+		lp = belle_sip_stack_create_listening_point(ctx->stack,
+						sal_address_get_domain(addr),
+						random_port,
+						sal_transport_to_string(sal_address_get_transport(addr)));
+	}
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
-		set_tls_properties(ctx);
+		if (sal_address_get_transport(addr)==SalTransportTLS) set_tls_properties(ctx);
 	} else {
 		return -1;
 	}
@@ -560,22 +575,34 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	sal_address_destroy(sal_addr);
 	return result;
 }
+
 static void remove_listening_point(belle_sip_listening_point_t* lp,belle_sip_provider_t* prov) {
 	belle_sip_provider_remove_listening_point(prov,lp);
 }
+
+int sal_get_listening_port(Sal *ctx, SalTransport tr){
+	const char *tpn=sal_transport_to_string(tr);
+	belle_sip_listening_point_t *lp=belle_sip_provider_get_listening_point(ctx->prov, tpn);
+	if (lp){
+		return belle_sip_listening_point_get_port(lp);
+	}
+	return 0;
+}
+
 int sal_unlisten_ports(Sal *ctx){
 	const belle_sip_list_t * lps = belle_sip_provider_get_listening_points(ctx->prov);
 	belle_sip_list_t * tmp_list = belle_sip_list_copy(lps);
 	belle_sip_list_for_each2 (tmp_list,(void (*)(void*,void*))remove_listening_point,ctx->prov);
 	belle_sip_list_free(tmp_list);
-
 	ms_message("sal_unlisten_ports done");
 	return 0;
 }
+
 ortp_socket_t sal_get_socket(Sal *ctx){
 	ms_warning("sal_get_socket is deprecated");
 	return -1;
 }
+
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	belle_sip_header_user_agent_set_products(ctx->user_agent,NULL);
 	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);

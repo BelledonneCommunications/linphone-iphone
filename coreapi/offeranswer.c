@@ -273,16 +273,17 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 					const SalMediaDescription *remote_answer,
 					SalMediaDescription *result){
 	int i,j;
-
 	const SalStreamDescription *ls,*rs;
+
 	for(i=0,j=0;i<local_offer->n_total_streams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
 		if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
+			memcpy(&result->streams[i].rtcp_xr, &ls->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
 			if ((ls->rtcp_xr.enabled == TRUE) && (rs->rtcp_xr.enabled == FALSE)) {
-				memset(&result->streams[j].rtcp_xr, 0, sizeof(result->streams[j].rtcp_xr));
+				result->streams[i].rtcp_xr.enabled = FALSE;
 			}
 			++j;
 		}
@@ -292,8 +293,9 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	result->n_total_streams=local_offer->n_total_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
+	memcpy(&result->rtcp_xr, &local_offer->rtcp_xr, sizeof(result->rtcp_xr));
 	if ((local_offer->rtcp_xr.enabled == TRUE) && (remote_answer->rtcp_xr.enabled == FALSE)) {
-		memset(&result->rtcp_xr, 0, sizeof(result->rtcp_xr));
+		result->rtcp_xr.enabled = FALSE;
 	}
 
 	return 0;
@@ -352,10 +354,11 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			// Handle media RTCP XR attribute
 			memset(&result->streams[i].rtcp_xr, 0, sizeof(result->streams[i].rtcp_xr));
 			if (rs->rtcp_xr.enabled == TRUE) {
-				if (ls->rtcp_xr.enabled == TRUE) {
-					memcpy(&result->streams[i].rtcp_xr, &ls->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
-				} else if (local_capabilities->rtcp_xr.enabled == TRUE) {
-					memcpy(&result->streams[i].rtcp_xr, &local_capabilities->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
+				const OrtpRtcpXrConfiguration *rtcp_xr_conf = NULL;
+				if (ls->rtcp_xr.enabled == TRUE) rtcp_xr_conf = &ls->rtcp_xr;
+				else if (local_capabilities->rtcp_xr.enabled == TRUE) rtcp_xr_conf = &local_capabilities->rtcp_xr;
+				if ((rtcp_xr_conf != NULL) && (ls->dir == SalStreamSendRecv)) {
+					memcpy(&result->streams[i].rtcp_xr, rtcp_xr_conf, sizeof(result->streams[i].rtcp_xr));
 				} else {
 					result->streams[i].rtcp_xr.enabled = TRUE;
 				}
@@ -385,11 +388,13 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
 	result->ice_completed = local_capabilities->ice_completed;
+	
+	strcpy(result->name,local_capabilities->name);
 
 	// Handle session RTCP XR attribute
 	memset(&result->rtcp_xr, 0, sizeof(result->rtcp_xr));
 	if (remote_offer->rtcp_xr.enabled == TRUE) {
-		if (local_capabilities->rtcp_xr.enabled == TRUE) {
+		if ((local_capabilities->rtcp_xr.enabled == TRUE) && (local_capabilities->dir == SalStreamSendRecv)) {
 			memcpy(&result->rtcp_xr, &local_capabilities->rtcp_xr, sizeof(result->rtcp_xr));
 		} else {
 			result->rtcp_xr.enabled = TRUE;

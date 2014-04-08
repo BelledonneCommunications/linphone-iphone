@@ -375,6 +375,10 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
 	}
+	if (call->media_ports[0].rtp_port==-1){
+		ms_warning("Stun-only support not available for system random port");
+		return -1;
+	}
 	if (server!=NULL){
 		const struct addrinfo *ai=linphone_core_get_stun_server_addrinfo(lc);
 		ortp_socket_t sock1=-1, sock2=-1;
@@ -394,10 +398,10 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(call->audio_port);
+		sock1=create_socket(call->media_ports[0].rtp_port);
 		if (sock1==-1) return -1;
 		if (video_enabled){
-			sock2=create_socket(call->video_port);
+			sock2=create_socket(call->media_ports[1].rtp_port);
 			if (sock2==-1) return -1;
 		}
 		got_audio=FALSE;
@@ -581,14 +585,14 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtp_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	}
-	if (call->params.has_video && (video_check_list != NULL)
+	if (linphone_core_video_enabled(lc) && (video_check_list != NULL)
 		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtp_port, 1, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 	}
 
@@ -883,7 +887,12 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 		}
 		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
-			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
+			IceCheckList *removed=ice_session_check_list(call->ice_session, i - 1);
+			ice_session_remove_check_list(call->ice_session, removed);
+			if (call->audiostream && call->audiostream->ms.ice_check_list==removed)
+				call->audiostream->ms.ice_check_list=NULL;
+			if (call->videostream && call->videostream->ms.ice_check_list==removed)
+				call->videostream->ms.ice_check_list=NULL;
 		}
 		ice_session_check_mismatch(call->ice_session);
 	} else {
@@ -1100,9 +1109,9 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 SalReason linphone_reason_to_sal(LinphoneReason reason){
 	switch(reason){
 		case LinphoneReasonNone:
-			return SalReasonUnknown;
+			return SalReasonNone;
 		case LinphoneReasonNoResponse:
-			return SalReasonUnknown;
+			return SalReasonRequestTimeout;
 		case LinphoneReasonForbidden:
 			return SalReasonForbidden;
 		case LinphoneReasonDeclined:
@@ -1139,6 +1148,8 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonServerTimeout;
 		case LinphoneReasonNotAnswered:
 			return SalReasonRequestTimeout;
+		case LinphoneReasonUnknown:
+			return SalReasonUnknown;
 	}
 	return SalReasonUnknown;
 }
@@ -1146,8 +1157,14 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 LinphoneReason linphone_reason_from_sal(SalReason r){
 	LinphoneReason ret=LinphoneReasonNone;
 	switch(r){
-		case SalReasonUnknown:
+		case SalReasonNone:
 			ret=LinphoneReasonNone;
+			break;
+		case SalReasonIOError:
+			ret=LinphoneReasonIOError;
+			break;
+		case SalReasonUnknown:
+			ret=LinphoneReasonUnknown;
 			break;
 		case SalReasonBusy:
 			ret=LinphoneReasonBusy;
@@ -1211,6 +1228,52 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		break;
 	}
 	return ret;
+}
+
+/**
+ * Get reason code from the error info.
+ * @param ei the error info.
+ * @return a #LinphoneReason
+ * @ingroup misc
+**/
+LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return linphone_reason_from_sal(sei->reason);
+}
+
+/**
+ * Get textual phrase from the error info.
+ * This is the text that is provided by the peer in the protocol (SIP).
+ * @param ei the error info.
+ * @return the error phrase
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->status_string;
+}
+
+/**
+ * Provides additional information regarding the failure.
+ * With SIP protocol, the "Reason" and "Warning" headers are returned.
+ * @param ei the error info.
+ * @return more details about the failure.
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->warnings;
+}
+
+/**
+ * Get the status code from the low level protocol (ex a SIP status code).
+ * @param ei the error info.
+ * @return the status code.
+ * @ingroup misc
+**/
+int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->protocol_code;
 }
 
 /**
@@ -1308,7 +1371,7 @@ int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
 			newtp.udp_port=port;
 			newtp.tcp_port=port;
 			newtp.tls_port=LC_SIP_TRANSPORT_RANDOM;
-			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); //remove
+			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); /*remove*/
 			linphone_core_set_sip_transports(lc,&newtp);
 		}
 		lp_config_set_int(lc->config,"sip","multi_transport_migration_done",1);

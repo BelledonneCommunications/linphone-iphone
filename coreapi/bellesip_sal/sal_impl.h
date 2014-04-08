@@ -76,7 +76,8 @@ const char* sal_op_type_to_string(SalOpType type);
 
 struct SalOp{
 	SalOpBase base;
-	belle_sip_listener_callbacks_t callbacks;
+	const belle_sip_listener_callbacks_t *callbacks;
+	SalErrorInfo error_info;
 	belle_sip_client_transaction_t *pending_auth_transaction;
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_server_transaction_t* pending_update_server_trans;
@@ -132,8 +133,10 @@ bool_t sal_op_is_secure(const SalOp* op);
 void sal_process_authentication(SalOp *op);
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op) ;
 
-bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size);
-void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) ;
+bool_t _sal_compute_sal_errors(belle_sip_response_t* response, SalReason* sal_reason, char* reason, size_t reason_size);
+SalReason _sal_reason_from_sip_code(int code);
+
+void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *response);
 /*presence*/
 void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/

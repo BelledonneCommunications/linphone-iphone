@@ -14,7 +14,8 @@ UI_FILES=	about.ui \
 		call_statistics.ui \
 		ldap.ui \
 		config-uri.ui \
-		provisioning-fetch.ui
+		provisioning-fetch.ui \
+		audio_assistant.ui
 
 PIXMAPS=	\
 		stock_people.png 
@@ -52,6 +53,7 @@ linphone_SOURCES=	\
 			singleinstance.c \
 			conference.c \
 			config-fetching.c \
+			audio_assistant.c \
 			linphone.h 
 if BUILD_WIZARD
 linphone_SOURCES+=	\

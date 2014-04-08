@@ -87,6 +87,9 @@ LOCAL_CFLAGS += -DVIDEO_ENABLED
 ifeq ($(BUILD_X264),1)
 LOCAL_CFLAGS += -DHAVE_X264
 endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_CFLAGS += -DHAVE_OPENH264
+endif
 endif
 
 ifeq ($(BUILD_CONTACT_HEADER),1)
@@ -175,6 +178,11 @@ LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
 	libx264
 endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_STATIC_LIBRARIES += \
+	libmsopenh264 \
+	libwels
+endif
 endif
 
 ifeq ($(BUILD_UPNP),1)
@@ -199,13 +207,12 @@ LOCAL_SRC_FILES  += $(LIBLINPHONE_EXTENDED_SRC_FILES)
 LOCAL_CFLAGS += $(LIBLINPHONE_EXTENDED_CFLAGS)
 
 
-ifeq ($(BUILD_GPLV3_ZRTP),1)
-	LOCAL_SHARED_LIBRARIES += libssl-linphone libcrypto-linphone
-	LOCAL_SHARED_LIBRARIES += libbzrtp
+ifeq ($(BUILD_ZRTP),1)
+	LOCAL_STATIC_LIBRARIES += libbzrtp
 endif
 
 ifeq ($(BUILD_SRTP),1)
-	LOCAL_SHARED_LIBRARIES += libsrtp
+	LOCAL_STATIC_LIBRARIES += libsrtp
 endif
 
 ifeq ($(BUILD_SQLITE),1)

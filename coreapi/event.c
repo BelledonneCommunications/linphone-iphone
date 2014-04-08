@@ -107,6 +107,9 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		if (lc->vtable.publish_state_changed){
 			lc->vtable.publish_state_changed(lev->lc,lev,state);
 		}
+		if (state==LinphonePublishCleared){
+			linphone_event_unref(lev);
+		}
 	}
 }
 
@@ -114,12 +117,12 @@ LinphonePublishState linphone_event_get_publish_state(const LinphoneEvent *lev){
 	return lev->publish_state;
 }
 
-void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason){
-	lev->reason=reason;
+const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev){
+	return linphone_error_info_from_sal_op(lev->op);
 }
 
 LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
-	return lev->reason;
+	return linphone_error_info_get_reason(linphone_event_get_error_info(lev));
 }
 
 LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
@@ -291,7 +294,8 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
-		}
+		}else sal_op_stop_refreshing(lev->op);
+		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
 	}
 	

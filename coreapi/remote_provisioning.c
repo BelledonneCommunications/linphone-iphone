@@ -52,11 +52,32 @@ static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml
 	}
 }
 
+static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
+	int status = -1;
+	FILE* f = fopen(file_path, "r");
+
+	if( f ){
+		fseek(f, 0, SEEK_END);
+		long fsize = ftell(f);
+		fseek(f, 0, SEEK_SET);
+
+		char* provisioning = ms_malloc(fsize + 1);
+		fread(provisioning, fsize, 1, f);
+		fclose(f);
+		linphone_remote_provisioning_apply(lc, provisioning);
+		status = 0;
+	} else {
+		ms_error("Couldn't open file %s for provisioning", file_path);
+	}
+
+	return status;
+}
+
 static void belle_request_process_response_event(void *ctx, const belle_http_response_event_t *event) {
 	LinphoneCore *lc = (LinphoneCore *)ctx;
 	belle_sip_message_t *body = BELLE_SIP_MESSAGE(event->response);
 	const char *message = belle_sip_message_get_body(body);
-	
+
 	if (belle_http_response_get_status_code(event->response) == 200) {
 		linphone_remote_provisioning_apply(lc, message);
 	} else {
@@ -80,23 +101,31 @@ static void belle_request_process_auth_requested(void *ctx, belle_sip_auth_event
 }
 
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri) {
-	belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
-	belle_http_request_listener_callbacks_t belle_request_listener = {
-		belle_request_process_response_event,
-		belle_request_process_io_error,
-		belle_request_process_timeout,
-		belle_request_process_auth_requested
-	};
-	belle_http_request_listener_t *listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
-	belle_http_request_t *request;
-	
-	if (uri==NULL) {
-		belle_sip_error("Invalid provisioning URI [%s]",remote_provisioning_uri);
-		return -1;
+	const char* file_path = strstr(remote_provisioning_uri, "file://");
+
+	if( file_path == remote_provisioning_uri ){
+		// We allow for 'local remote-provisioning' in case the file is to be opened from the hard drive
+		file_path += strlen("file://");
+		return linphone_remote_provisioning_load_file(lc, file_path);
+	} else {
+		belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
+		belle_http_request_listener_callbacks_t belle_request_listener = {
+			belle_request_process_response_event,
+			belle_request_process_io_error,
+			belle_request_process_timeout,
+			belle_request_process_auth_requested
+		};
+		belle_http_request_listener_t *listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+		belle_http_request_t *request;
+
+		if (uri==NULL) {
+			belle_sip_error("Invalid provisioning URI [%s]",remote_provisioning_uri);
+			return -1;
+		}
+		request=belle_http_request_create("GET",uri, NULL);
+		belle_http_provider_send_request(lc->http_provider, request, listener);
+		return 0;
 	}
-	request=belle_http_request_create("GET",uri, NULL);
-	belle_http_provider_send_request(lc->http_provider, request, listener);
-	return 0;
 }
 
 void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *uri) {

@@ -38,6 +38,31 @@
  */
 
 /**
+ * Inconditionnaly disable incoming chat messages.
+ * @param lc the core
+ * @param deny_reason the deny reason (#LinphoneReasonNone has no effect).
+**/
+void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason){
+	lc->chat_deny_code=deny_reason;
+}
+
+/**
+ * Enable reception of incoming chat messages.
+ * By default it is enabled but it can be disabled with linphone_core_disable_chat().
+ * @param lc the core
+**/
+void linphone_core_enable_chat(LinphoneCore *lc){
+	lc->chat_deny_code=LinphoneReasonNone;
+}
+
+/**
+ * Returns whether chat is enabled.
+**/
+bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
+	return lc->chat_deny_code!=LinphoneReasonNone;
+}
+
+/**
  * Returns an array of chat rooms
  * @param lc #LinphoneCore object
  * @return An array of #LinpĥoneChatRoom
@@ -160,7 +185,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 			identity=linphone_proxy_config_get_identity(proxy);
 		}else identity=linphone_core_get_primary_contact(cr->lc);
 		/*sending out of calls*/
-		op = sal_op_new(cr->lc->sal);
+		msg->op = op = sal_op_new(cr->lc->sal);
 		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,lp_config_get_int(cr->lc->config,"sip","chat_msg_with_contact",0));
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
@@ -779,6 +804,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
  * Destroys a LinphoneChatMessage.
 **/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
+	if (msg->op) sal_op_release(msg->op);
 	if (msg->message) ms_free(msg->message);
 	if (msg->external_body_url) ms_free(msg->external_body_url);
 	if (msg->from) linphone_address_destroy(msg->from);
@@ -787,9 +813,17 @@ void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	ms_free(msg);
 }
 
+/**
+ * Get full details about delivery error of a chat message.
+ * @param msg a LinphoneChatMessage
+ * @return a LinphoneErrorInfo describing the details.
+**/
+const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg){
+	return linphone_error_info_from_sal_op(msg->op);
+}
 
 LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
-	return msg->reason;
+	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
 }
 
 /**

@@ -38,19 +38,8 @@ static void call_set_released_and_unref(SalOp* op) {
 
 
 static void call_set_error(SalOp* op,belle_sip_response_t* response){
-	SalError error=SalErrorUnknown;
-	SalReason sr=SalReasonUnknown;
-	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
-	char* reason=(char*)belle_sip_response_get_reason_phrase(response);
-	int code = belle_sip_response_get_status_code(response);
-	if (reason_header){
-		reason = ms_strdup_printf("%s %s",reason,belle_sip_header_get_unparsed_value(reason_header));
-	}
-	sal_compute_sal_errors_from_code(code,&error,&sr);
-	op->base.root->callbacks.call_failure(op,error,sr,reason,code);
-	if (reason_header != NULL){
-		ms_free(reason);
-	}
+	sal_op_set_error_info_from_response(op,response);
+	op->base.root->callbacks.call_failure(op);
 }
 
 static void sdp_process(SalOp *h){
@@ -127,7 +116,8 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 	
 	if (!op->dialog)  {
 		/*call terminated very early*/
-		op->base.root->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,"Service Unavailable",503);
+		sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO error",NULL);
+		op->base.root->callbacks.call_failure(op);
 		call_set_released(op);
 	} else {
 		/*dialog will terminated shortly, nothing to do*/
@@ -178,7 +168,12 @@ static void cancelling_invite(SalOp* op ){
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
-
+static int vfu_retry (void *user_data, unsigned int events) {
+	SalOp *op=(SalOp *)user_data;
+	sal_call_send_vfu_request(op);
+	sal_op_unref(op);
+	return BELLE_SIP_STOP;
+}
 static void call_process_response(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
@@ -187,6 +182,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	belle_sip_request_t* req;
 	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
 	int code = belle_sip_response_get_status_code(response);
+	belle_sip_header_content_type_t *header_content_type=NULL;
 
 
 	if (!client_transaction) {
@@ -257,7 +253,16 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						op->state=SalOpStateActive;
 					}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
 						call_set_error(op,response);
-					} else {
+					} else if (code == 491
+							&& strcmp("INFO",belle_sip_request_get_method(req)) == 0
+							&& (header_content_type = belle_sip_message_get_header_by_type(req,belle_sip_header_content_type_t))
+							&& strcmp("application",belle_sip_header_content_type_get_type(header_content_type))==0
+							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
+						unsigned int retry_in =1000*((float)rand()/RAND_MAX);
+						belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
+						ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
+						belle_sip_object_unref(s);
+					}else {
 							/*ignoring*/
 					}
 				break;
@@ -290,7 +295,8 @@ static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t
 	
 	if (!op->dialog)  {
 		/*call terminated very early*/
-		op->base.root->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,"Request Timeout",408);
+		sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
+		op->base.root->callbacks.call_failure(op);
 		call_set_released(op);
 	} else {
 		/*dialog will terminated shortly, nothing to do*/
@@ -631,13 +637,18 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	return sal_op_send_request(op,invite);
 }
 
+static belle_sip_listener_callbacks_t call_op_callbacks={0};
+
 void sal_op_call_fill_cbs(SalOp*op) {
-	op->callbacks.process_io_error=call_process_io_error;
-	op->callbacks.process_response_event=call_process_response;
-	op->callbacks.process_timeout=call_process_timeout;
-	op->callbacks.process_transaction_terminated=call_process_transaction_terminated;
-	op->callbacks.process_request_event=process_request_event;
-	op->callbacks.process_dialog_terminated=process_dialog_terminated;
+	if (call_op_callbacks.process_response_event==NULL){
+		call_op_callbacks.process_io_error=call_process_io_error;
+		call_op_callbacks.process_response_event=call_process_response;
+		call_op_callbacks.process_timeout=call_process_timeout;
+		call_op_callbacks.process_transaction_terminated=call_process_transaction_terminated;
+		call_op_callbacks.process_request_event=process_request_event;
+		call_op_callbacks.process_dialog_terminated=process_dialog_terminated;
+	}
+	op->callbacks=&call_op_callbacks;
 	op->type=SalOpCall;
 }
 

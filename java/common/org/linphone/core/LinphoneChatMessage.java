@@ -142,8 +142,14 @@ public interface LinphoneChatMessage {
 	 */
 	int getStorageId();
 
-	 /**
-         * @return the reason if response received
-         */
-        Reason getReason();
+	/**
+     * @return the reason if response received
+     */
+	Reason getReason();
+	
+	/**
+	 * Returns full error in case of failure when sending message.
+	 * @return an ErrorInfo.
+	 */
+	ErrorInfo getErrorInfo();
 }

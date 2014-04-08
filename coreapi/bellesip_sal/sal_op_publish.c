@@ -35,24 +35,26 @@ static void publish_refresher_listener (belle_sip_refresher_t* refresher
 	}else if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}else if (status_code>=200){
-		SalError err;
-		SalReason reason;
-		sal_compute_sal_errors_from_code(status_code,&err,&reason);
-		op->base.root->callbacks.on_publish_response(op,err,reason);
+		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
+		op->base.root->callbacks.on_publish_response(op);
 	}
 }
 
 static void publish_response_event(void *userctx, const belle_sip_response_event_t *event){
 	SalOp *op=(SalOp*)userctx;
-	int code=belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
-	SalError err;
-	SalReason reason;
-	sal_compute_sal_errors_from_code(code,&err,&reason);
-	op->base.root->callbacks.on_publish_response(op,err,reason);
+	sal_op_set_error_info_from_response(op,belle_sip_response_event_get_response(event));
+	if (op->error_info.protocol_code>=200){
+		op->base.root->callbacks.on_publish_response(op);
+	}
 }
 
-void sal_op_publish_fill_cbs(SalOp*op) {
-	op->callbacks.process_response_event=publish_response_event;
+static belle_sip_listener_callbacks_t op_publish_callbacks={0};
+
+void sal_op_publish_fill_cbs(SalOp *op) {
+	if (op_publish_callbacks.process_response_event==NULL){
+		op_publish_callbacks.process_response_event=publish_response_event;
+	}
+	op->callbacks=&op_publish_callbacks;
 	op->type=SalOpPublish;
 }
 

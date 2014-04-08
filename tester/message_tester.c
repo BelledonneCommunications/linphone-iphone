@@ -263,6 +263,25 @@ static void text_message_with_send_error(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void text_message_denied(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	char* to = linphone_address_as_string(pauline->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
+	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+
+	/*pauline doesn't want to be disturbed*/
+	linphone_core_disable_chat(pauline->lc,LinphoneReasonDoNotDisturb);
+	
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static const char *info_content="<somexml>blabla</somexml>";
 
 void info_message_received(LinphoneCore *lc, LinphoneCall* call, const LinphoneInfoMessage *msg){
@@ -360,6 +379,7 @@ test_t message_tests[] = {
 	{ "Text message with ack", text_message_with_ack },
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body },
+	{ "Text message denied", text_message_denied },
 	{ "Info message", info_message },
 	{ "Info message with body", info_message_with_body },
 	{ "IsComposing notification", is_composing_notification }

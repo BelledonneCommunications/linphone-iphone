@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void process_error( SalOp* op) {
 	if (op->dir == SalOpDirOutgoing) {
-		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed, SalReasonUnknown);
+		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed);
 	} else {
 		ms_warning("unexpected io error for incoming message on op [%p]",op);
 	}
@@ -30,33 +30,20 @@ static void process_error( SalOp* op) {
 
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	SalOp* op = (SalOp*)user_ctx;
-//	belle_sip_object_t* source = belle_sip_io_error_event_get_source(event);
-//	if (BELLE_SIP_IS_INSTANCE_OF(source,belle_sip_transaction_t)) {
-//		/*reset op to make sure transaction terminated does not need op*/
-//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(source),NULL);
-//	}
+	sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO Error",NULL);
 	process_error(op);
 }
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	SalOp* op=(SalOp*)user_ctx;
-//	belle_sip_client_transaction_t *client_transaction=belle_sip_timeout_event_get_client_transaction(event);
-//	belle_sip_server_transaction_t *server_transaction=belle_sip_timeout_event_get_server_transaction(event);
-//	/*reset op to make sure transaction terminated does not need op*/
-//	if (client_transaction) {
-//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);
-//	} else {
-//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),NULL);
-//	}
+	sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
 	process_error(op);
 
 }
 static void process_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
-	/*belle_sip_client_transaction_t *client_transaction=belle_sip_response_event_get_client_transaction(event);*/
 	int code = belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
 	SalTextDeliveryStatus status;
-	SalReason reason=SalReasonUnknown;
-	SalError err=SalErrorNone;
+	sal_op_set_error_info_from_response(op,belle_sip_response_event_get_response(event));
 	
 	if (code>=100 && code <200)
 		status=SalTextDeliveryInProgress;
@@ -64,13 +51,10 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 		status=SalTextDeliveryDone;
 	else
 		status=SalTextDeliveryFailed;
-	if (status != SalTextDeliveryInProgress) {
-		/*reset op to make sure transaction terminated does not need op
-		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*/
-	}
-	sal_compute_sal_errors_from_code(code,&err,&reason);
-	op->base.root->callbacks.text_delivery_update(op,status, reason);
+	
+	op->base.root->callbacks.text_delivery_update(op,status);
 }
+
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 	return strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("plain",belle_sip_header_content_type_get_subtype(content_type))==0;
@@ -108,6 +92,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 						|| (external_body=is_external_body(content_type)))) {
 		SalMessage salmsg;
 		char message_id[256]={0};
+	
+		if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
+		op->pending_server_trans=server_transaction;
+		belle_sip_object_ref(op->pending_server_trans);
+	
 		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
 				,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
 		from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
@@ -136,6 +125,8 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		saliscomposing.from=from;
 		saliscomposing.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 		op->base.root->callbacks.is_composing_received(op,&saliscomposing);
+		resp = belle_sip_response_create_from_request(req,200);
+		belle_sip_server_transaction_send_response(server_transaction,resp);
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
 	} else {
@@ -146,14 +137,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 		return;
 	}
-	resp = belle_sip_response_create_from_request(req,200);
-	belle_sip_server_transaction_send_response(server_transaction,resp);
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	sal_process_incoming_message(op,event);
-	sal_op_release(op);
 }
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
@@ -187,14 +175,30 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 
 }
 
+int sal_message_reply(SalOp *op, SalReason reason){
+	if (op->pending_server_trans){
+		int code=sal_reason_to_sip_code(reason);
+		belle_sip_response_t *resp = belle_sip_response_create_from_request(
+			belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_server_trans),code);
+		belle_sip_server_transaction_send_response(op->pending_server_trans,resp);
+		return 0;
+	}else ms_error("sal_message_reply(): no server transaction");
+	return -1;
+}
+
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
 	return sal_message_send(op,from,to,"text/plain",msg);
 }
 
+static belle_sip_listener_callbacks_t op_message_callbacks={0};
+
 void sal_op_message_fill_cbs(SalOp*op) {
-	op->callbacks.process_io_error=process_io_error;
-	op->callbacks.process_response_event=process_response_event;
-	op->callbacks.process_timeout=process_timeout;
-	op->callbacks.process_request_event=process_request_event;
+	if (op_message_callbacks.process_io_error==NULL){
+		op_message_callbacks.process_io_error=process_io_error;
+		op_message_callbacks.process_response_event=process_response_event;
+		op_message_callbacks.process_timeout=process_timeout;
+		op_message_callbacks.process_request_event=process_request_event;
+	}
+	op->callbacks=&op_message_callbacks;
 	op->type=SalOpMessage;
 }

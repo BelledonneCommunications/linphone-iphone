@@ -567,19 +567,12 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 	return TRUE;
 }
 
-typedef struct _volume_ctx{
-	GtkWidget *widget;
-	get_volume_t get_volume;
-	void *data;
-	float last_value;
-}volume_ctx_t;
-
-#define UNSIGNIFICANT_VOLUME (-26)
+#define UNSIGNIFICANT_VOLUME (-23)
 #define SMOOTH 0.15
 
 static gboolean update_audio_meter(volume_ctx_t *ctx){
 	float volume_db=ctx->get_volume(ctx->data);
-	float frac=(volume_db-UNSIGNIFICANT_VOLUME)/(float)(-UNSIGNIFICANT_VOLUME+3.0);
+	float frac=(volume_db-UNSIGNIFICANT_VOLUME)/(float)(-UNSIGNIFICANT_VOLUME-3.0);
 	if (frac<0) frac=0;
 	if (frac>1.0) frac=1.0;
 	if (frac<ctx->last_value){

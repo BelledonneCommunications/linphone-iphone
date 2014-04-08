@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "mediastreamer2/mscommon.h"
+#include "ortp/rtpsession.h"
 #include "ortp/ortp_srtp.h"
 #include "belle-sip/belle-sip.h"
 
@@ -135,20 +136,6 @@ typedef enum{
 }SalStreamDir;
 const char* sal_stream_dir_to_string(SalStreamDir type);
 
-typedef enum {
-	SalRtcpXrRcvrRttNone,
-	SalRtcpXrRcvrRttAll,
-	SalRtcpXrRcvrRttSender
-} SalRtcpXrRcvrRttMode;
-
-typedef enum {
-	SalRtcpXrStatSummaryLoss = (1 << 0),
-	SalRtcpXrStatSummaryDup = (1 << 1),
-	SalRtcpXrStatSummaryJitt = (1 << 2),
-	SalRtcpXrStatSummaryTTL = (1 << 3),
-	SalRtcpXrStatSummaryHL = (1 << 4)
-} SalRtcpXrStatSummaryFlag;
-
 
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
@@ -190,15 +177,6 @@ typedef struct SalSrtpCryptoAlgo {
 
 #define SAL_CRYPTO_ALGO_MAX 4
 
-typedef struct SalRtcpXrDescription {
-	bool_t enabled;
-	bool_t stat_summary_enabled;
-	bool_t voip_metrics_enabled;
-	SalRtcpXrRcvrRttMode rcvr_rtt_mode;
-	int rcvr_rtt_max_size;
-	SalRtcpXrStatSummaryFlag stat_summary_flags;
-} SalRtcpXrDescription;
-
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
 	SalMediaProto proto;
@@ -216,7 +194,7 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
-	SalRtcpXrDescription rtcp_xr;
+	OrtpRtcpXrConfiguration rtcp_xr;
 	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
 	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
@@ -243,7 +221,7 @@ typedef struct SalMediaDescription{
 	unsigned int session_id;
 	SalStreamDir dir;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
-	SalRtcpXrDescription rtcp_xr;
+	OrtpRtcpXrConfiguration rtcp_xr;
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_lite;
@@ -276,6 +254,7 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
+
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
 	Sal *root;
@@ -301,15 +280,8 @@ typedef struct SalOpBase{
 } SalOpBase;
 
 
-typedef enum SalError{
-	SalErrorNone,
-	SalErrorNoResponse,
-	SalErrorProtocol,
-	SalErrorFailure, /* see SalReason for more details */
-	SalErrorUnknown
-} SalError;
-
 typedef enum SalReason{
+	SalReasonNone, /*no error, please leave first so that it takes 0 value*/
 	SalReasonDeclined,
 	SalReasonBusy,
 	SalReasonRedirect,
@@ -330,10 +302,19 @@ typedef enum SalReason{
 	SalReasonAddressIncomplete,
 	SalReasonNotImplemented,
 	SalReasonBadGateway,
-	SalReasonServerTimeout
+	SalReasonServerTimeout,
+	SalReasonIOError
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);
+
+typedef struct SalErrorInfo{
+	SalReason reason;
+	char *status_string;
+	int protocol_code;
+	char *warnings;
+	char *full_string; /*concatenation of status_string + warnings*/
+}SalErrorInfo;
 
 typedef enum SalPresenceStatus{
 	SalPresenceOffline,
@@ -422,21 +403,21 @@ typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
 typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE/UPDATE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
-typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
+typedef void (*SalOnCallFailure)(SalOp *op);
 typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
 typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
 typedef void (*SalOnAuthFailure)(SalOp *op, SalAuthInfo* info);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
-typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
+typedef void (*SalOnRegisterFailure)(SalOp *op);
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
-typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus, SalReason);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
-typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason);
+typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop);
@@ -447,7 +428,7 @@ typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
 typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
-typedef void (*SalOnPublishResponse)(SalOp *salop, SalError error, SalReason reason);
+typedef void (*SalOnPublishResponse)(SalOp *salop);
 typedef void (*SalOnExpire)(SalOp *salop);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
 
@@ -520,6 +501,7 @@ void sal_signing_key_delete(SalSigningKey *key);
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
+int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);
@@ -599,6 +581,11 @@ bool_t sal_op_is_ipv6(SalOp *op);
 /*returns TRUE if there is no pending request that may block a future one */
 bool_t sal_op_is_idle(SalOp *op);
 
+const SalErrorInfo *sal_error_info_none(void);
+const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
+void sal_error_info_reset(SalErrorInfo *ei);
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning);
+
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
@@ -632,6 +619,7 @@ int sal_unregister(SalOp *h);
 /*Messaging */
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
+int sal_message_reply(SalOp *op, SalReason reason);
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expires);

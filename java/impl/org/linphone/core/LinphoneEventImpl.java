@@ -118,5 +118,10 @@ public class LinphoneEventImpl implements LinphoneEvent {
 		else
 			sendPublish(mNativePtr, null, null, null, null);
 	}
+	private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(mNativePtr));
+	}
 
 }

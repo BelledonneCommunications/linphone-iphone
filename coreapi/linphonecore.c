@@ -536,8 +536,25 @@ static void sound_config_read(LinphoneCore *lc)
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
 	if (devid){
-		MSSndCard *card=ms_alsa_card_new_custom(devid,devid);
-		ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+		MSSndCard* card;
+		const char* delim=",";
+		size_t l=strlen(devid);
+		char* d=malloc(l+1);
+		char* i;
+		memcpy(d,devid,l+1);
+		for (l=0,i=strpbrk(d+l,delim);i;i=strpbrk(d+l,delim)){
+			char s=*i;
+			*i='\0';
+			card=ms_alsa_card_new_custom(d+l,d+l);
+			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+			*i=s;
+			l=i-d+1;
+		}
+		if(d[l]!='\0') {
+			card=ms_alsa_card_new_custom(d+l,d+l);
+			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+		}
+		free(d);
 	}
 	tmp=lp_config_get_int(lc->config,"sound","alsa_forced_rate",-1);
 	if (tmp>0) ms_alsa_card_set_forced_sample_rate(tmp);
@@ -615,11 +632,13 @@ static void sound_config_read(LinphoneCore *lc)
 
 static void certificates_config_read(LinphoneCore *lc)
 {
+	const char *rootca;
 #ifdef __linux
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
+	rootca=lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs");
 #else
-	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
+	rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
 #endif
+	linphone_core_set_root_ca(lc,rootca);
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE)); 
 }
@@ -1350,7 +1369,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
-	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; usedtx=1");
+	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; usedtx=0; cbr=1");
 	linphone_core_assign_payload_type(lc,&payload_type_isac,-1,NULL);
 	linphone_core_handle_static_payloads(lc);
 	
@@ -1369,6 +1388,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
         lc->network_last_status = FALSE;
 	
 	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
+	lc->http_verify_policy = belle_tls_verify_policy_new();
+	belle_http_provider_set_tls_verify_policy(lc->http_provider,lc->http_verify_policy);
 	
 	certificates_config_read(lc);
 	
@@ -1521,7 +1542,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		lc->sip_conf.loopback_only=TRUE;
 	}else lc->sip_conf.loopback_only=FALSE;
 	linphone_address_set_domain(url,tmp);
-	linphone_address_set_port(url,linphone_core_get_sip_port (lc));
+	linphone_address_set_port(url,linphone_core_get_sip_port(lc));
 	guessed=linphone_address_as_string(url);
 	lc->sip_conf.guessed_contact=guessed;
 	linphone_address_destroy(url);
@@ -1734,6 +1755,8 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_
 
 /**
  * Sets the UDP port used for audio streaming.
+ * A value if -1 will request the system to allocate the local port randomly.
+ * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters
 **/
@@ -1754,6 +1777,8 @@ void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_
 
 /**
  * Sets the UDP port used for video streaming.
+ * A value if -1 will request the system to allocate the local port randomly.
+ * This is recommended in order to avoid firewall warnings.
  *
  * @ingroup network_parameters
 **/
@@ -1833,8 +1858,9 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc)
 {
-	LCSipTransports *tr=&lc->sip_conf.transports;
-	return tr->udp_port>0 ? tr->udp_port : (tr->tcp_port > 0 ? tr->tcp_port : tr->tls_port);
+	LCSipTransports tr;
+	linphone_core_get_sip_transports_used(lc,&tr);
+	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
 }
 
 #if !USE_BELLE_SIP
@@ -1918,25 +1944,23 @@ static int apply_transports(LinphoneCore *lc){
 		anyaddr="0.0.0.0";
 
 	sal_unlisten_ports(sal);
-	if (tr->udp_port>0){
+	if (tr->udp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"udp",tr->udp_port);
 			return -1;
 		}
 	}
-	if (tr->tcp_port>0){
+	if (tr->tcp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
 			transport_error(lc,"tcp",tr->tcp_port);
 		}
 	}
-	if (tr->tls_port>0){
+	if (tr->tls_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
 			transport_error(lc,"tls",tr->tls_port);
 		}
 	}
-
 	apply_user_agent(lc);
-
 	return 0;
 }
 
@@ -1951,37 +1975,24 @@ bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTra
  * Sets the ports to be used for each of transport (UDP or TCP)
  *
  * A zero value port for a given transport means the transport
- * is not used.
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
  *
  * @ingroup network_parameters
 **/
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
 	LCSipTransports tr=*tr_config;
-	int random_port=(0xDFFF&random())+1024;
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
 		/*legacy random mode*/
 		if (tr.udp_port>0){
-			tr.udp_port=random_port;
-			tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tcp_port>0){
-			tr.tcp_port=random_port;
-			tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tls_port>0){
-			tr.tls_port=random_port;
-			tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-		} else {
-			tr.udp_port=random_port;
+			tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 		}
-	}
-	if (tr.udp_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.udp_port=random_port;
-	}
-	if (tr.tcp_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.tcp_port=random_port;
-	}
-	if (tr.tls_port == LC_SIP_TRANSPORT_RANDOM) {
-		tr.tls_port=random_port+1;
+		if (tr.tcp_port>0){
+			tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
+		}
+		if (tr.tls_port>0){
+			tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
+		}
 	}
 
 	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
@@ -2003,9 +2014,9 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 }
 
 /**
- * Retrieves the ports used for each transport (udp, tcp).
+ * Retrieves the port configuration used for each transport (udp, tcp, tls).
  * A zero value port for a given transport means the transport
- * is not used.
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
@@ -2013,6 +2024,18 @@ int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
 	return 0;
 }
 
+/**
+ * Retrieves the real port number assigned for each sip transport (udp, tcp, tls).
+ * A zero value means that the transport is not activated.
+ * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
+ * @ingroup network_parameters
+ * @param tr a LCSipTransports structure.
+**/
+void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr){
+	tr->udp_port=sal_get_listening_port(lc->sal,SalTransportUDP);
+	tr->tcp_port=sal_get_listening_port(lc->sal,SalTransportTCP);
+	tr->tls_port=sal_get_listening_port(lc->sal,SalTransportTLS);
+}
 /**
  * Sets the UDP port to be used by SIP.
  *
@@ -2281,7 +2304,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
 				decline_reason=lc->current_call ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
-				call->reason=LinphoneReasonNotAnswered;
+				sal_error_info_set(&call->non_op_error,SalReasonRequestTimeout,408,"Not answered",NULL);
 				linphone_core_decline_call(lc,call,decline_reason);
 			}
 		}
@@ -2526,7 +2549,6 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		const char *domain=linphone_proxy_config_get_domain(cfg);
-/*		ms_warning("Checking %s / %s %s", domain, linphone_address_get_domain(uri), linphone_proxy_config_get_route(cfg)); */
 		if (domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
 			if (linphone_proxy_config_register_enabled(cfg)) {
 				found_cfg=cfg;
@@ -2540,7 +2562,7 @@ end:
 	if (!found_cfg && found_noreg_cfg) found_cfg = found_noreg_cfg;
 	if (found_cfg && found_cfg!=default_cfg){
 		ms_debug("Overriding default proxy setting for this call/message/subscribe operation.");
-	}
+	}else if (!found_cfg) found_cfg=default_cfg; /*when no matching proxy config is found, use the default proxy config*/
 	return found_cfg;
 }
 
@@ -2586,6 +2608,10 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_create_op(call);
+	linphone_call_stop_media_streams(call);
+	ms_media_stream_sessions_uninit(&call->sessions[0]);
+	ms_media_stream_sessions_uninit(&call->sessions[1]);
+	linphone_call_init_media_streams(call);
 	return linphone_core_start_invite(lc,call, NULL);
 }
 
@@ -2597,7 +2623,6 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	linphone_call_set_contact_op(call);
 
 	linphone_core_stop_dtmf_stream(lc);
-	linphone_call_init_media_streams(call);
 	linphone_call_make_local_media_description(lc,call);
 
 	if (lc->ringstream==NULL) {
@@ -2784,7 +2809,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
-	linphone_core_get_default_proxy(lc,&proxy);
 
 	real_url=linphone_address_as_string(addr);
 	proxy=linphone_core_lookup_known_proxy(lc,addr);
@@ -2809,9 +2833,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
+	linphone_call_init_media_streams(call);
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
-		linphone_call_init_media_streams(call);
 		linphone_call_start_media_streams_for_ice_gathering(call);
 		call->log->start_date_time=time(NULL);
 		if (linphone_core_gather_ice_candidates(lc,call)<0) {
@@ -2824,7 +2848,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
-		linphone_call_init_media_streams(call);
 		call->log->start_date_time=time(NULL);
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
@@ -3038,7 +3061,6 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 
 		// if parameters are passed, update the media description
 		if ( params ) {
-			md = sal_call_get_remote_media_description ( call->op );
 			_linphone_call_params_copy ( &call->params,params );
 			linphone_call_make_local_media_description ( lc,call );
 			sal_call_set_local_media_description ( call->op,call->localdesc );
@@ -3264,6 +3286,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	return _linphone_core_accept_call_update(lc, call, params);
 }
+
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *remote_desc;
 	bool_t keep_sdp_version;
@@ -3294,13 +3317,13 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		call->params.has_video = FALSE;
 	}
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
+	linphone_call_init_media_streams(call); /*so that video stream is initialized if necessary*/
 	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
 #ifdef VIDEO_ENABLED
-		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
+		if ((call->ice_session != NULL) && !ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
-				linphone_call_init_video_stream(call);
 				video_stream_prepare_video(call->videostream);
 				if (linphone_core_gather_ice_candidates(lc,call)<0) {
 					/* Ice candidates gathering failed, proceed with the call anyway. */
@@ -3316,7 +3339,6 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
 #ifdef VIDEO_ENABLED
 		if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
-			linphone_call_init_video_stream(call);
 			video_stream_prepare_video(call->videostream);
 			if (linphone_core_update_upnp(lc, call)<0) {
 				/* uPnP update failed, proceed with the call anyway. */
@@ -3419,9 +3441,6 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		sal_op_set_sent_custom_header(call->op,params->custom_headers);
 	}
 	
-	if (call->audiostream==NULL)
-		linphone_call_init_media_streams(call);
-	
 	/*give a chance a set card prefered sampling frequency*/
 	if (call->localdesc->streams[0].max_rate>0) {
 		ms_message ("configuring prefered card sampling rate to [%i]",call->localdesc->streams[0].max_rate);
@@ -3431,7 +3450,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.capt_sndcard, call->localdesc->streams[0].max_rate);
 	}
 	
-	if (!was_ringing && call->audiostream->ms.ticker==NULL){
+	if (!was_ringing && call->audiostream->ms.state==MSStreamInitialized){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
@@ -3471,8 +3490,8 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 
 static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallIncomingReceived){
-		if (call->reason!=LinphoneReasonNotAnswered)
-			call->reason=LinphoneReasonDeclined;
+		if (call->non_op_error.reason!=SalReasonRequestTimeout)
+			call->non_op_error.reason=SalReasonDeclined;
 	}
 	/*stop ringing*/
 	linphone_core_stop_ringing(lc);
@@ -3491,7 +3510,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
 	if (call->state==LinphoneCallIncomingReceived){
 		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
-		call->reason=LinphoneReasonDeclined;
+		sal_error_info_set(&call->non_op_error,SalReasonRedirect,603,"Call redirected",NULL);
 		terminate_call(lc,call);
 	}else{
 		ms_error("Bad state for call redirection.");
@@ -4349,6 +4368,10 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
 **/
 void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
 	sal_set_root_ca(lc->sal, path);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_root_ca(lc->http_verify_policy,path);
+	}
+	lp_config_set_string(lc->config,"sip","root_ca",path);
 }
 
 /**
@@ -4359,7 +4382,7 @@ void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
  * @ingroup initializing
 **/
 const char *linphone_core_get_root_ca(LinphoneCore *lc){
-	return sal_get_root_ca(lc->sal);
+	return lp_config_get_string(lc->config,"sip","root_ca",NULL);
 }
 
 /**
@@ -4369,6 +4392,10 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_certificates(lc->sal,yesno);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_exceptions(lc->http_verify_policy, yesno ? 0 : BELLE_TLS_VERIFY_ANY_REASON);
+	}
+	lp_config_set_int(lc->config,"sip","verify_server_certs",yesno);
 }
 
 /**
@@ -4377,6 +4404,10 @@ void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 **/
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_cn(lc->sal,yesno);
+	if (lc->http_verify_policy){
+		belle_tls_verify_policy_set_exceptions(lc->http_verify_policy, yesno ? 0 : BELLE_TLS_VERIFY_CN_MISMATCH);
+	}
+	lp_config_set_int(lc->config,"sip","verify_server_cn",yesno);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
@@ -5338,7 +5369,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 	if (file!=NULL) {
 		lc->play_file=ms_strdup(file);
-		if (call && call->audiostream && call->audiostream->ms.ticker)
+		if (call && call->audiostream && call->audiostream->ms.state==MSStreamStarted)
 			audio_stream_play(call->audiostream,file);
 	}
 }
@@ -5613,9 +5644,6 @@ void net_config_uninit(LinphoneCore *lc)
 {
 	net_config_t *config=&lc->net_conf;
 
-	if (lc->http_provider) {
-		belle_sip_object_unref(lc->http_provider);
-	}
 	if (config->stun_server!=NULL){
 		ms_free(config->stun_server);
 	}
@@ -5690,6 +5718,14 @@ void sip_config_uninit(LinphoneCore *lc)
 	
 	sal_reset_transports(lc->sal);
 	sal_unlisten_ports(lc->sal); /*to make sure no new messages are received*/
+	if (lc->http_provider) {
+		belle_sip_object_unref(lc->http_provider);
+		lc->http_provider=NULL;
+	}
+	if (lc->http_verify_policy){
+		belle_sip_object_unref(lc->http_verify_policy);
+		lc->http_verify_policy=NULL;
+	}
 	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
@@ -6153,6 +6189,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Bad gateway";
 		case LinphoneReasonServerTimeout:
 			return "Server timeout";
+		case LinphoneReasonUnknown:
+			return "Unknown error";
 	}
 	return "unknown error";
 }

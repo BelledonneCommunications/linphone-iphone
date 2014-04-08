@@ -68,26 +68,26 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
-static belle_sdp_attribute_t * create_rtcp_xr_attribute(const SalRtcpXrDescription *desc) {
+static belle_sdp_attribute_t * create_rtcp_xr_attribute(const OrtpRtcpXrConfiguration *config) {
 	belle_sdp_rtcp_xr_attribute_t *attribute = belle_sdp_rtcp_xr_attribute_new();
-	if (desc->rcvr_rtt_mode != SalRtcpXrRcvrRttNone) {
-		if (desc->rcvr_rtt_mode == SalRtcpXrRcvrRttAll) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "all");
-		else if (desc->rcvr_rtt_mode == SalRtcpXrRcvrRttSender) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "sender");
-		belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_max_size(attribute, desc->rcvr_rtt_max_size);
+	if (config->rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
+		if (config->rcvr_rtt_mode == OrtpRtcpXrRcvrRttAll) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "all");
+		else if (config->rcvr_rtt_mode == OrtpRtcpXrRcvrRttSender) belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_mode(attribute, "sender");
+		belle_sdp_rtcp_xr_attribute_set_rcvr_rtt_max_size(attribute, config->rcvr_rtt_max_size);
 	}
-	belle_sdp_rtcp_xr_attribute_set_stat_summary(attribute, (desc->stat_summary_enabled == TRUE));
-	if (desc->stat_summary_enabled == TRUE) {
-		if (desc->stat_summary_flags & SalRtcpXrStatSummaryLoss) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "loss");
-		if (desc->stat_summary_flags & SalRtcpXrStatSummaryDup) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "dup");
-		if (desc->stat_summary_flags & SalRtcpXrStatSummaryJitt) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "jitt");
-		if (desc->stat_summary_flags & SalRtcpXrStatSummaryTTL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "TTL");
-		if (desc->stat_summary_flags & SalRtcpXrStatSummaryHL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "HL");
+	belle_sdp_rtcp_xr_attribute_set_stat_summary(attribute, (config->stat_summary_enabled == TRUE));
+	if (config->stat_summary_enabled == TRUE) {
+		if (config->stat_summary_flags & OrtpRtcpXrStatSummaryLoss) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "loss");
+		if (config->stat_summary_flags & OrtpRtcpXrStatSummaryDup) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "dup");
+		if (config->stat_summary_flags & OrtpRtcpXrStatSummaryJitt) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "jitt");
+		if (config->stat_summary_flags & OrtpRtcpXrStatSummaryTTL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "TTL");
+		if (config->stat_summary_flags & OrtpRtcpXrStatSummaryHL) belle_sdp_rtcp_xr_attribute_add_stat_summary_flag(attribute, "HL");
 	}
-	belle_sdp_rtcp_xr_attribute_set_voip_metrics(attribute, (desc->voip_metrics_enabled == TRUE));
+	belle_sdp_rtcp_xr_attribute_set_voip_metrics(attribute, (config->voip_metrics_enabled == TRUE));
 	return BELLE_SDP_ATTRIBUTE(attribute);
 }
 
-static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMediaDescription *md, const SalStreamDescription *stream ) {
+static void stream_description_to_sdp ( belle_sdp_session_description_t *session_desc, const SalMediaDescription *md, const SalStreamDescription *stream ) {
 	belle_sdp_mime_parameter_t* mime_param;
 	belle_sdp_media_description_t* media_desc;
 	int j;
@@ -215,10 +215,27 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMedia
 	}
 
 	if (stream->rtcp_xr.enabled == TRUE) {
-		belle_sdp_media_description_add_attribute(media_desc, create_rtcp_xr_attribute(&stream->rtcp_xr));
+		char sastr[1024] = {0};
+		char mastr[1024] = {0};
+		size_t saoff = 0;
+		size_t maoff = 0;
+		const belle_sdp_attribute_t *session_attribute = belle_sdp_session_description_get_attribute(session_desc, "rtcp-xr");
+		belle_sdp_attribute_t *media_attribute;
+		if (session_attribute != NULL) {
+			belle_sip_object_marshal((belle_sip_object_t*)session_attribute, sastr, sizeof(sastr), &saoff);
+		}
+		media_attribute = create_rtcp_xr_attribute(&stream->rtcp_xr);
+		if (media_attribute != NULL) {
+			belle_sip_object_marshal((belle_sip_object_t*)media_attribute, mastr, sizeof(mastr), &maoff);
+		}
+		if (strcmp(sastr, mastr) != 0) {
+			belle_sdp_media_description_add_attribute(media_desc, media_attribute);
+		} else {
+			belle_sip_object_unref((belle_sip_object_t*)media_attribute);
+		}
 	}
 
-	return media_desc;
+	belle_sdp_session_description_add_media_description(session_desc, media_desc);
 }
 
 belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescription *desc ) {
@@ -272,7 +289,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 	}
 
 	for ( i=0; i<desc->n_total_streams; i++ ) {
-		belle_sdp_session_description_add_media_description ( session_desc,stream_description_to_sdp(desc,&desc->streams[i]));
+		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;
 }
@@ -304,8 +321,7 @@ static void sdp_parse_payload_types(belle_sdp_media_description_t *media_desc, S
 
 static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
-	const belle_sdp_attribute_t *attribute;
-	const belle_sdp_raw_attribute_t *raw_attribute;
+	belle_sdp_attribute_t *attribute;
 	char tmp[256], tmp2[256];
 	int valid_count = 0;
 	int nb;
@@ -315,10 +331,9 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 						; valid_count < SAL_CRYPTO_ALGO_MAX && attribute_it!=NULL;
 			attribute_it=attribute_it->next ) {
 		attribute=BELLE_SDP_ATTRIBUTE ( attribute_it->data );
-		raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
 
-		if ( keywordcmp ( "crypto",belle_sdp_attribute_get_name ( attribute ) ) ==0 && belle_sdp_raw_attribute_get_value ( raw_attribute ) !=NULL ) {
-			nb = sscanf ( belle_sdp_raw_attribute_get_value ( raw_attribute ), "%d %256s inline:%256s",
+		if ( keywordcmp ( "crypto",belle_sdp_attribute_get_name ( attribute ) ) ==0 && belle_sdp_attribute_get_value ( attribute ) !=NULL ) {
+			nb = sscanf ( belle_sdp_attribute_get_value ( attribute ), "%d %256s inline:%256s",
 							&stream->crypto[valid_count].tag,
 							tmp,
 							tmp2 );
@@ -345,7 +360,7 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 					valid_count++;
 				}
 			} else {
-				ms_warning ( "sdp has a strange a= line (%s) nb=%i",belle_sdp_raw_attribute_get_value ( raw_attribute ),nb );
+				ms_warning ( "sdp has a strange a= line (%s) nb=%i",belle_sdp_attribute_get_value ( attribute ),nb );
 			}
 		}
 	}
@@ -354,17 +369,15 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 
 static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
-	const belle_sdp_attribute_t *attribute;
-	const belle_sdp_raw_attribute_t *raw_attribute;
+	belle_sdp_attribute_t *attribute;
 	const char *att_name;
 	const char *value;
 	int nb_ice_candidates = 0;
 
 	for (attribute_it = belle_sdp_media_description_get_attributes(media_desc); attribute_it != NULL; attribute_it=attribute_it->next) {
 		attribute=BELLE_SDP_ATTRIBUTE(attribute_it->data);
-		raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
 		att_name = belle_sdp_attribute_get_name(attribute);
-		value = belle_sdp_raw_attribute_get_value(raw_attribute);
+		value = belle_sdp_attribute_get_value(attribute);
 
 		if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
 			SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
@@ -400,63 +413,63 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 	}
 }
 
-static void sal_init_rtcp_xr_description(SalRtcpXrDescription *desc) {
-	desc->enabled = FALSE;
-	desc->rcvr_rtt_mode = SalRtcpXrRcvrRttNone;
-	desc->rcvr_rtt_max_size = -1;
-	desc->stat_summary_flags = 0;
-	desc->voip_metrics_enabled = FALSE;
+static void sal_init_rtcp_xr_description(OrtpRtcpXrConfiguration *config) {
+	config->enabled = FALSE;
+	config->rcvr_rtt_mode = OrtpRtcpXrRcvrRttNone;
+	config->rcvr_rtt_max_size = -1;
+	config->stat_summary_flags = 0;
+	config->voip_metrics_enabled = FALSE;
 }
 
-static void sdp_parse_rtcp_xr_parameters(const belle_sdp_attribute_t *attribute, SalRtcpXrDescription *desc) {
-	sal_init_rtcp_xr_description(desc);
-
+static void sdp_parse_rtcp_xr_parameters(const belle_sdp_attribute_t *attribute, OrtpRtcpXrConfiguration *config) {
 	if (attribute != NULL) {
-		const belle_sdp_rtcp_xr_attribute_t *xr_attr = BELLE_SDP_RTCP_XR_ATTRIBUTE(attribute);
-		const char *rcvr_rtt_mode = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_mode(xr_attr);
+		const belle_sdp_rtcp_xr_attribute_t *xr_attr;
+		const char *rcvr_rtt_mode;
+		sal_init_rtcp_xr_description(config);
+		xr_attr = BELLE_SDP_RTCP_XR_ATTRIBUTE(attribute);
+		rcvr_rtt_mode = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_mode(xr_attr);
 		if (rcvr_rtt_mode != NULL) {
 			if (strcasecmp(rcvr_rtt_mode, "all") == 0) {
-				desc->rcvr_rtt_mode = SalRtcpXrRcvrRttAll;
+				config->rcvr_rtt_mode = OrtpRtcpXrRcvrRttAll;
 			} else if (strcasecmp(rcvr_rtt_mode, "sender") == 0) {
-				desc->rcvr_rtt_mode = SalRtcpXrRcvrRttSender;
+				config->rcvr_rtt_mode = OrtpRtcpXrRcvrRttSender;
 			}
-			desc->rcvr_rtt_max_size = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_max_size(xr_attr);
+			config->rcvr_rtt_max_size = belle_sdp_rtcp_xr_attribute_get_rcvr_rtt_max_size(xr_attr);
 		}
-		desc->stat_summary_enabled = (belle_sdp_rtcp_xr_attribute_has_stat_summary(xr_attr) != 0);
-		if (desc->stat_summary_enabled) {
+		config->stat_summary_enabled = (belle_sdp_rtcp_xr_attribute_has_stat_summary(xr_attr) != 0);
+		if (config->stat_summary_enabled) {
 			belle_sip_list_t *stat_summary_flag_it;
 			for (stat_summary_flag_it = belle_sdp_rtcp_xr_attribute_get_stat_summary_flags(xr_attr); stat_summary_flag_it != NULL; stat_summary_flag_it = stat_summary_flag_it->next ) {
 				const char *flag = (const char *)stat_summary_flag_it->data;
 				if (flag != NULL) {
-					if (strcasecmp(flag, "loss") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryLoss;
-					else if (strcasecmp(flag, "dup") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryDup;
-					else if (strcasecmp(flag, "jitt") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryJitt;
-					else if (strcasecmp(flag, "TTL") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryTTL;
-					else if (strcasecmp(flag, "HL") == 0) desc->stat_summary_flags |= SalRtcpXrStatSummaryHL;
+					if (strcasecmp(flag, "loss") == 0) config->stat_summary_flags |= OrtpRtcpXrStatSummaryLoss;
+					else if (strcasecmp(flag, "dup") == 0) config->stat_summary_flags |= OrtpRtcpXrStatSummaryDup;
+					else if (strcasecmp(flag, "jitt") == 0) config->stat_summary_flags |= OrtpRtcpXrStatSummaryJitt;
+					else if (strcasecmp(flag, "TTL") == 0) config->stat_summary_flags |= OrtpRtcpXrStatSummaryTTL;
+					else if (strcasecmp(flag, "HL") == 0) config->stat_summary_flags |= OrtpRtcpXrStatSummaryHL;
 				}
 			}
 		}
-		desc->voip_metrics_enabled = (belle_sdp_rtcp_xr_attribute_has_voip_metrics(xr_attr) != 0);
-		desc->enabled = TRUE;
+		config->voip_metrics_enabled = (belle_sdp_rtcp_xr_attribute_has_voip_metrics(xr_attr) != 0);
+		config->enabled = TRUE;
 	}
 }
 
-static void sdp_parse_session_rtcp_xr_parameters(belle_sdp_session_description_t *session_desc, SalRtcpXrDescription *desc) {
+static void sdp_parse_session_rtcp_xr_parameters(belle_sdp_session_description_t *session_desc, OrtpRtcpXrConfiguration *config) {
 	const belle_sdp_attribute_t *attribute = belle_sdp_session_description_get_attribute(session_desc, "rtcp-xr");
-	sdp_parse_rtcp_xr_parameters(attribute, desc);
+	sdp_parse_rtcp_xr_parameters(attribute, config);
 }
 
-static void sdp_parse_media_rtcp_xr_parameters(belle_sdp_media_description_t *media_desc, SalRtcpXrDescription *desc) {
+static void sdp_parse_media_rtcp_xr_parameters(belle_sdp_media_description_t *media_desc, OrtpRtcpXrConfiguration *config) {
 	const belle_sdp_attribute_t *attribute = belle_sdp_media_description_get_attribute(media_desc, "rtcp-xr");
-	sdp_parse_rtcp_xr_parameters(attribute, desc);
+	sdp_parse_rtcp_xr_parameters(attribute, config);
 }
 
 static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md, belle_sdp_media_description_t *media_desc) {
 	SalStreamDescription *stream;
 	belle_sdp_connection_t* cnx;
 	belle_sdp_media_t* media;
-	const belle_sdp_attribute_t* attribute;
-	const belle_sdp_raw_attribute_t* raw_attribute;
+	belle_sdp_attribute_t* attribute;
 	const char* value;
 	const char *mtype,*proto;
 
@@ -518,8 +531,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	stream->rtcp_port = stream->rtp_port + 1;
 	snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), "%s", stream->rtp_addr);
 	attribute=belle_sdp_media_description_get_attribute(media_desc,"rtcp");
-	raw_attribute=BELLE_SDP_RAW_ATTRIBUTE(attribute);
-	if (attribute && (value=belle_sdp_raw_attribute_get_value(raw_attribute))!=NULL){
+	if (attribute && (value=belle_sdp_attribute_get_value(attribute))!=NULL){
 		char tmp[256];
 		int nb = sscanf(value, "%d IN IP4 %s", &stream->rtcp_port, tmp);
 		if (nb == 1) {
@@ -540,6 +552,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	sdp_parse_media_ice_parameters(media_desc, stream);
 
 	/* Get RTCP-XR attributes if any */
+	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined
 	sdp_parse_media_rtcp_xr_parameters(media_desc, &stream->rtcp_xr);
 
 	md->n_total_streams++;

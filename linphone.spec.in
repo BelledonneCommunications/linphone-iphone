@@ -85,6 +85,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.so.*
 %{_mandir}/*
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/audio-assistant.desktop
 %{_datadir}/pixmaps/linphone
 %{_datadir}/linphone
 %{_datadir}/pixmaps/linphone.png

@@ -21,13 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone_tunnel.h"
 #include "lpconfig.h"
 
-typedef enum {
-	CAP_IGNORE,
-	CAP_PLAYBACK,
-	CAP_CAPTURE
-}DeviceCap;
-
-static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
+void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
 	int i=0,active=-1;
 	GtkTreeModel *model;
@@ -1286,6 +1280,7 @@ void linphone_gtk_fill_webcams(GtkWidget *pb){
 }
 
 void linphone_gtk_fill_video_renderers(GtkWidget *pb){
+#ifdef VIDEO_ENABLED /* video_stream_get_default_video_renderer requires video enabled */
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *combo=linphone_gtk_get_widget(pb,"renderers");
 	MSList *l=ms_filter_lookup_by_interface(MSFilterVideoDisplayInterface);
@@ -1296,7 +1291,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	GtkListStore *store;
 	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
 	GtkTreeModel *model=GTK_TREE_MODEL(store=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING));
-	
+
 	if (current_renderer==NULL) current_renderer=video_stream_get_default_video_renderer();
 	
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
@@ -1314,6 +1309,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	}
 	ms_list_free(l);
 	if (active!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
+#endif
 }
 
 typedef struct {

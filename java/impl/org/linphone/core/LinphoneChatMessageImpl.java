@@ -100,4 +100,9 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
         public Reason getReason() {
             return Reason.fromInt(getReason(nativePtr));
         }
+        private native long getErrorInfo(long nativePtr);
+		@Override
+		public ErrorInfo getErrorInfo() {
+			return new ErrorInfoImpl(getErrorInfo(nativePtr));
+		}
 }
