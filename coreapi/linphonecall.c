@@ -1873,11 +1873,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
 				if (crypto_idx >= 0) {
-					audio_stream_enable_srtp(
-								call->audiostream,
-								stream->crypto[0].algo,
-								local_st_desc->crypto[crypto_idx].master_key,
-								stream->crypto[0].master_key);
+					media_stream_set_srtp_recv_key(&call->audiostream->ms,stream->crypto[0].algo,stream->crypto[0].master_key);
+					media_stream_set_srtp_send_key(&call->audiostream->ms,stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 					call->audiostream_encrypted=TRUE;
 				} else {
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
@@ -1996,13 +1993,13 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			}
 			if (!is_inactive){
 				if (vstream->proto == SalProtoRtpSavp) {
-					video_stream_enable_strp(
-						call->videostream,
-						vstream->crypto[0].algo,
-						local_st_desc->crypto[0].master_key,
-						vstream->crypto[0].master_key
-					);
-					call->videostream_encrypted=TRUE;
+					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
+
+					if (crypto_idx >= 0) {
+						media_stream_set_srtp_recv_key(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key);
+						media_stream_set_srtp_send_key(&call->videostream->ms,vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+						call->videostream_encrypted=TRUE;
+					}else call->videostream_encrypted=FALSE;
 				}else{
 					call->videostream_encrypted=FALSE;
 				}
@@ -2103,42 +2100,43 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
 #endif
 }
 
+static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDescription *local_st_desc, SalStreamDescription *old_stream, SalStreamDescription *new_stream, MediaStream *ms){
+	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
+	if (crypto_idx >= 0) {
+		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED)
+			media_stream_set_srtp_send_key(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
+			media_stream_set_srtp_recv_key(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
+		}
+		return TRUE;
+	} else {
+		ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
+	}
+	return FALSE;
+}
+
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
 	SalStreamDescription *old_stream;
 	SalStreamDescription *new_stream;
-
+	const SalStreamDescription *local_st_desc;
+	
+	local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalAudio);
 	old_stream = sal_media_description_find_stream(old_md, SalProtoRtpSavp, SalAudio);
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalAudio);
-	if (old_stream && new_stream) {
-		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalAudio);
-		if (local_st_desc) {
-			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
-			if (crypto_idx >= 0) {
-				audio_stream_enable_srtp(call->audiostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
-				call->audiostream_encrypted = TRUE;
-			} else {
-				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
-				call->audiostream_encrypted = FALSE;
-			}
-		}
-	}
+	if (call->audiostream && local_st_desc && old_stream && new_stream &&
+		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->audiostream->ms)){
+		call->audiostream_encrypted = TRUE;
+	}else call->audiostream_encrypted = FALSE;
 
 #ifdef VIDEO_ENABLED
+	local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalVideo);
 	old_stream = sal_media_description_find_stream(old_md, SalProtoRtpSavp, SalVideo);
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalVideo);
-	if (old_stream && new_stream) {
-		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalVideo);
-		if (local_st_desc) {
-			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
-			if (crypto_idx >= 0) {
-				video_stream_enable_strp(call->videostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
-				call->videostream_encrypted = TRUE;
-			} else {
-				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
-				call->videostream_encrypted = FALSE;
-			}
-		}
+	if (call->videostream && local_st_desc && old_stream && new_stream &&
+		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->videostream->ms)){
+		call->videostream_encrypted = TRUE;
 	}
+	call->videostream_encrypted = FALSE;
 #endif
 }
 

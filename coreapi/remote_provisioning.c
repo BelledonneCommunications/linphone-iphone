@@ -62,10 +62,15 @@ static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char*
 		fseek(f, 0, SEEK_SET);
 
 		char* provisioning = ms_malloc(fsize + 1);
-		fread(provisioning, fsize, 1, f);
+		if (fread(provisioning, fsize, 1, f)==0){
+			ms_error("Could not read xml provisioning file from %s",file_path);
+			status=-1;
+		}else{
+			linphone_remote_provisioning_apply(lc, provisioning);
+			status = 0;
+		}
+		ms_free(provisioning);
 		fclose(f);
-		linphone_remote_provisioning_apply(lc, provisioning);
-		status = 0;
 	} else {
 		ms_error("Couldn't open file %s for provisioning", file_path);
 	}

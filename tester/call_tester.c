@@ -1155,6 +1155,7 @@ static void encrypted_call(LinphoneMediaEncryption mode) {
 			CU_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
 							,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
 		}
+		liblinphone_tester_check_rtcp(pauline,marie);
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(marie->lc);
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -1165,13 +1166,14 @@ static void encrypted_call(LinphoneMediaEncryption mode) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void srtp_call(LinphoneMediaEncryptionSRTP) {
+
+static void srtp_call() {
 	encrypted_call(LinphoneMediaEncryptionSRTP);
 }
 
 /*
- * futur work
-static void zrtp_call(LinphoneMediaEncryptionSRTP) {
+ * future work
+static void zrtp_call() {
 	encrypted_call(LinphoneMediaEncryptionZRTP);
 }*/
 

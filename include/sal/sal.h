@@ -166,12 +166,12 @@ typedef struct SalIceRemoteCandidate {
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
-#define SAL_SRTP_KEY_SIZE 41
+/*sufficient for 256bit keys encoded in base 64*/
+#define SAL_SRTP_KEY_SIZE 64
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
 	enum ortp_srtp_crypto_suite_t algo;
-	/* 41= 40 max(key_length for all algo) + '\0' */
 	char master_key[SAL_SRTP_KEY_SIZE];
 } SalSrtpCryptoAlgo;
 
