@@ -2262,7 +2262,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
 	    && (curtime-lc->dmfs_playing_start_time)>5){
-		linphone_core_stop_dtmf_stream(lc);
+		MSPlayerState state;
+		bool_t stop=TRUE;
+		if (lc->ringstream->source && ms_filter_call_method(lc->ringstream->source,MS_PLAYER_GET_STATE,&state)==0){
+			if (state==MSPlayerPlaying) stop=FALSE;
+		}
+		if (stop) {
+			ms_message("Releasing inactive tone player.");
+			linphone_core_stop_dtmf_stream(lc);
+		}
 	}
 
 	sal_iterate(lc->sal);
@@ -4412,7 +4420,9 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
 	LinphoneCore *lc=(LinphoneCore*)ud;
-	lc->preview_finished=1;
+	if (event==MS_PLAYER_EOF){
+		lc->preview_finished=1;
+	}
 }
 
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata)
