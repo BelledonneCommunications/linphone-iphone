@@ -83,58 +83,85 @@ struct _reporting_addr_st {
 
 struct _reporting_content_metrics_st {
 	// timestamps - mandatory
-	time_t ts_start;
-	time_t ts_stop;
+	struct {
+		time_t start;
+		time_t stop;
+	} timestamps;
 
 	// session description - optional
-	int sd_pt;
-	char * sd_pd;
-	int sd_sr;
-	int sd_fd;
-	int sd_fo;
-	int sd_fpp;
-	int sd_pps;
-	char * sd_fmtp;
-	int sd_plc;
-	char * sd_ssup;
+	struct {
+		int payload_type;
+		char * payload_desc; //mime type
+		int sample_rate; //clock rate
+		int frame_duration; //(no) ptime? à vérifier - audio only
+		int frame_ocets; //no
+		int frames_per_sec; //no
+		int packets_per_sec; //no
+		char * fmtp; //pt.recv_fmtp
+		int packet_loss_concealment; //voip metrics - audio only
+		char * silence_suppression_state; //no
+	} session_description;
 
 	// jitter buffet - optional
-	int jb_jba;
-	int jb_jbr;
-	int jb_jbn;
-	int jb_jbm;
-	int jb_jbx;
+	struct {
+		int adaptive; // constant
+		int rate; // constant
+		int nominal; // no may vary during the call <- average? worst score? 
+		int max; // no may vary during the call <- average?
+		int abs_max; // constant
+	} jitter_buffer;
 
 	// packet loss - optional
-	float pl_nlr;
-	float pl_jdr;
+	struct {
+		float network_packet_loss_rate; // voip metrics (loss rate) + conversion
+		float jitter_buffer_discard_rate; //idem
+	} packet_loss;
 
-	// burst gap loss - optional
-	int bgl_bld;
-	int bgl_bd;
-	float bgl_gld;
-	int bgl_gd;
-	int bgl_gmin;
+	// burst gap loss - optional 
+	// (no) currently not implemented
+	struct {
+		int burst_loss_density; 
+		int burst_duration;
+		float gap_loss_density;
+		int gap_Duration;
+		int min_gap_threshold;
+	} burst_gap_loss;
 
 	// delay - optional
-	int d_rtd;
-	int d_esd;
-	int d_sowd;
-	int d_iaj;
-	int d_maj;
+	struct {
+		int round_trip_delay; // no - vary
+		int end_system_delay; // no - not implemented yet
+		int one_way_delay; // no
+		int symm_one_way_delay; // no - vary (depends on round_trip_delay) + not implemented (depends on end_system_delay)
+		int interarrival_jitter; // no - not implemented yet
+		int mean_abs_jitter; // (no)? - to check
+	} delay;
 
 	// signal - optional
-	int s_sl;
-	int s_nl;
-	int s_rerl;
+	struct {
+		int level; // no - vary 
+		int noise_level; // no - vary
+		int residual_echo_return_loss; // no
+	} signal;
 
 	// quality estimates - optional
-	int qe_rlq;
-	int qe_rcq;
-	int qe_extri;
-	float qe_moslq;
-	float qe_moscq;
-	char * qe_qoeestalg;
+	struct {
+		int rlq; // linked to moslq
+		int rcq; //voip metrics R factor - no - vary or avg
+		float moslq; // no - vary or avg - voip metrics
+		float moscq; // no - vary or avg - voip metrics
+		
+
+		int extri; // no
+		int extro; // no 
+		char * rlqestalg; // no to all alg
+		char * rcqestalg;
+		char * moslqestalg;
+		char * moscqestalg;
+		char * extriestalg;
+		char * extroutestalg;
+		char * qoestalg;
+	} quality_estimates;
 };
 
 struct _reporting_session_report_st {
@@ -161,8 +188,19 @@ struct _reporting_session_report_st {
 struct _reporting_session_report_st get_stats(LinphoneCall * call) {
 	struct _reporting_session_report_st stats = {{0}};
 	stats.info.local_addr.ssrc = rtp_session_get_send_ssrc(call->audiostream->ms.session);
+	stats.info.local_addr.port = rtp_session_get_local_port(call->audiostream->ms.session);
 	stats.info.remote_addr.ssrc = rtp_session_get_recv_ssrc(call->audiostream->ms.session);
+	// remote address rem_addr
 	stats.info.call_id = call->log->call_id;
+	// pour l'ip: itérer sur les streams pour trouver le bon type
+	// call->resultdesc->streams[0].type
+	// call->resultdesc->streams[0].rtp_addr
+
+	// const rtp_stats_t * rtp_stats = rtp_session_get_stats(call->audiostream->ms.session);
+	// rtp_stats->
+
+	stats.local_metrics.session_description.payload_type = call->params.audio_codec->type;
+
 	if (call->dir == LinphoneCallIncoming) {
 		stats.info.remote_id = linphone_address_as_string(call->log->from);
 		stats.info.local_id = linphone_address_as_string(call->log->to);
@@ -172,8 +210,8 @@ struct _reporting_session_report_st get_stats(LinphoneCall * call) {
 		stats.info.local_id = linphone_address_as_string(call->log->from);
 		stats.info.orig_id = stats.info.local_id;
 	}
-	stats.local_metrics.ts_start = call->log->start_date_time;
-	stats.local_metrics.ts_stop = call->log->start_date_time + linphone_call_get_duration(call);
+	stats.local_metrics.timestamps.start = call->log->start_date_time;
+	stats.local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
 
 	return stats;
 }
@@ -181,22 +219,35 @@ struct _reporting_session_report_st get_stats(LinphoneCall * call) {
 
 static void add_metrics(char ** buffer, size_t * size, size_t * offset, struct _reporting_content_metrics_st rm) { 
 	append_to_buffer(buffer, size, offset, "Timestamps:START=%s STOP=%s\r\n", 
-		linphone_timestamp_to_rfc3339_string(rm.ts_start),
-		linphone_timestamp_to_rfc3339_string(rm.ts_stop));
+		linphone_timestamp_to_rfc3339_string(rm.timestamps.start),
+		linphone_timestamp_to_rfc3339_string(rm.timestamps.stop));
 	append_to_buffer(buffer, size, offset, "SessionDesc:PT=%d PD=%s SR=%d FD=%d FO=%d FPP=%d PPS=%d FMTP=%s PLC=%d SSUP=%s\r\n", 
-		rm.sd_pt, rm.sd_pd, rm.sd_sr, rm.sd_fd, rm.sd_fo, rm.sd_fpp, rm.sd_pps, rm.sd_fmtp, rm.sd_plc, rm.sd_ssup);
+		rm.session_description.payload_type, rm.session_description.payload_desc, rm.session_description.sample_rate, 
+		rm.session_description.frame_duration, rm.session_description.frame_ocets, rm.session_description.frames_per_sec, 
+		rm.session_description.packets_per_sec, rm.session_description.fmtp, rm.session_description.packet_loss_concealment, 
+		rm.session_description.silence_suppression_state);
 	append_to_buffer(buffer, size, offset, "JitterBuffer:JBA=%d JBR=%d JBN=%d JBM=%d JBX=%d\r\n", 
-		rm.jb_jba, rm.jb_jbr, rm.jb_jbn, rm.jb_jbm, rm.jb_jbx);
+		rm.jitter_buffer.adaptive, rm.jitter_buffer.rate, rm.jitter_buffer.nominal, rm.jitter_buffer.max, rm.jitter_buffer.abs_max);
 	append_to_buffer(buffer, size, offset, "PacketLoss:NLR=%s JDR=%s\r\n", 
-		float_to_one_decimal_string(rm.pl_nlr), float_to_one_decimal_string(rm.pl_jdr));
+		float_to_one_decimal_string(rm.packet_loss.network_packet_loss_rate), 
+		float_to_one_decimal_string(rm.packet_loss.jitter_buffer_discard_rate));
 	append_to_buffer(buffer, size, offset, "BurstGapLoss:BLD=%d BD=%d GLD=%s GD=%d GMIN=%d\r\n", 
-		rm.bgl_bld, rm.bgl_bd, float_to_one_decimal_string(rm.bgl_gld), rm.bgl_gd, rm.bgl_gmin);
-	append_to_buffer(buffer, size, offset, "Delay:RTD=%d ESD=%d SOWD=%d IAJ=%d MAJ=%d\r\n", 
-		rm.d_rtd, rm.d_esd, rm.d_sowd, rm.d_iaj, rm.d_maj);
+		rm.burst_gap_loss.burst_loss_density, rm.burst_gap_loss.burst_duration, 
+		float_to_one_decimal_string(rm.burst_gap_loss.gap_loss_density), rm.burst_gap_loss.gap_Duration, 
+		rm.burst_gap_loss.min_gap_threshold);
+	append_to_buffer(buffer, size, offset, "Delay:RTD=%d ESD=%d OWD=%d SOWD=%d IAJ=%d MAJ=%d\r\n", 
+		rm.delay.round_trip_delay, rm.delay.end_system_delay, rm.delay.one_way_delay, rm.delay.symm_one_way_delay, 
+		rm.delay.interarrival_jitter, rm.delay.mean_abs_jitter);
 	append_to_buffer(buffer, size, offset, "Signal:SL=%d NL=%d RERL=%d\r\n", 
-		rm.s_sl, rm.s_nl, rm.s_rerl);
-	append_to_buffer(buffer, size, offset, "QualityEst:RLQ=%d RCQ=%d EXTRI=%d MOSLQ=%s MOSCQ=%s QoEEstAlg=%s\r\n", 
-		rm.qe_rlq, rm.qe_rcq, rm.qe_extri, float_to_one_decimal_string(rm.qe_moslq), float_to_one_decimal_string(rm.qe_moscq), rm.qe_qoeestalg);
+		rm.signal.level, rm.signal.noise_level, rm.signal.residual_echo_return_loss);
+	append_to_buffer(buffer, size, offset, "QualityEst:RLQ=%d RLQEstAlg=%s RCQ=%d RCQEstAlgo=%s EXTRI=%d ExtRIEstAlg=%s EXTRO=%d ExtROEstAlg=%s MOSLQ=%s MOSLQEstAlgo=%s MOSCQ=%s MOSCQEstAlgo=%s QoEEstAlg=%s\r\n", 
+		rm.quality_estimates.rlq, rm.quality_estimates.rlqestalg, 
+		rm.quality_estimates.rcq, rm.quality_estimates.rcqestalg, 
+		rm.quality_estimates.extri, rm.quality_estimates.extriestalg, 
+		rm.quality_estimates.extro, rm.quality_estimates.extroutestalg,
+		float_to_one_decimal_string(rm.quality_estimates.moslq), rm.quality_estimates.moslqestalg,
+		float_to_one_decimal_string(rm.quality_estimates.moscq), rm.quality_estimates.moscqestalg,
+		rm.quality_estimates.qoestalg);
 }
 
 void linphone_quality_reporting_submit(LinphoneCall* call) {
@@ -226,8 +277,8 @@ void linphone_quality_reporting_submit(LinphoneCall* call) {
 	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", stats.info.remote_id);
 	append_to_buffer(&buffer, &size, &offset, "OrigID: %s\r\n", stats.info.orig_id);
 
-	append_to_buffer(&buffer, &size, &offset, "LocalGroup: %s\r\n", stats.info.local_group);
-	append_to_buffer(&buffer, &size, &offset, "RemoteGroup: %s\r\n", stats.info.remote_group);
+	append_to_buffer(&buffer, &size, &offset, "LocalGroup: %s\r\n", stats.info.local_group); //linphone-CALLID
+	append_to_buffer(&buffer, &size, &offset, "RemoteGroup: %s\r\n", stats.info.remote_group); //idem
 	append_to_buffer(&buffer, &size, &offset, "LocalAddr: IP=%s PORT=%d SSRC=%d\r\n", stats.info.local_addr.ip, stats.info.local_addr.port, stats.info.local_addr.ssrc);
 	append_to_buffer(&buffer, &size, &offset, "LocalMAC: %s\r\n", stats.info.local_mac_addr);
 	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%d\r\n", stats.info.remote_addr.ip, stats.info.remote_addr.port, stats.info.remote_addr.ssrc);
