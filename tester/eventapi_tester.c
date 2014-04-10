@@ -97,7 +97,11 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 	stats* counters = get_stats(lc);
 	switch(state){
 		case LinphonePublishProgress: counters->number_of_LinphonePublishProgress++; break;
-		case LinphonePublishOk: counters->number_of_LinphonePublishOk++; break;
+		case LinphonePublishOk: 
+			/*make sure custom header access API is working*/
+			CU_ASSERT_PTR_NOT_NULL(linphone_event_get_custom_header(ev,"From"));
+			counters->number_of_LinphonePublishOk++; 
+			break;
 		case LinphonePublishError: counters->number_of_LinphonePublishError++; break;
 		case LinphonePublishExpiring: counters->number_of_LinphonePublishExpiring++; break;
 		case LinphonePublishCleared: counters->number_of_LinphonePublishCleared++;break;
@@ -300,24 +304,26 @@ static void publish_test_with_args(bool_t refresh){
 	
 	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
 
-	lev=linphone_core_publish(marie->lc,pauline->identity,"dodo",5,&content);
+	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",5);
+	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
+	linphone_event_send_publish(lev,&content);
 	linphone_event_ref(lev);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
 	
 	if (!refresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishExpiring,1,5000));
 		linphone_event_update_publish(lev,&content);
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
-		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
 	}else{
 		
 	}
 
 	linphone_event_terminate(lev);
 	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,3000));
 	
 	linphone_event_unref(lev);
 	
