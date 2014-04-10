@@ -2069,7 +2069,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 
 		params.zid_file=lc->zrtp_secrets_cache;
-		params.uri= "SetThePeerSipUriHere@nullTerminated.String"; /* TODO: set the sip URI there, MUST be a null terminated string */
+
+		params.uri= linphone_address_as_string_uri_only(call->log->to);
 		audio_stream_enable_zrtp(call->audiostream,&params);
 	}else{
 		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?

@@ -22,6 +22,7 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+#include "lime.h"
 
 static char* message_external_body_url;
 
@@ -370,6 +371,168 @@ static void is_composing_notification(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+void printHex(char *title, uint8_t *data, uint32_t length) {
+	printf ("%s : ", title);
+	int i;
+	for (i=0; i<length; i++) {
+		printf ("0x%02x, ", data[i]);
+	}
+	printf ("\n");
+}
+
+static void lime(void) {
+	int retval;
+	/* Load Alice cache file */
+	FILE *CACHE = fopen("ZIDCacheAlice.xml", "r+");
+	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
+  	int size = ftell(CACHE);     /* Get file length */
+  	rewind(CACHE);               /* Back to start of file */
+	uint8_t *cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
+	fread(cacheBufferString, 1, size, CACHE);
+	*(cacheBufferString+size) = '\0';
+	fclose(CACHE);
+	/* parse it to an xmlDoc */
+	xmlDocPtr cacheBufferAlice = xmlParseDoc(cacheBufferString);
+	free(cacheBufferString);
+	
+	/* Load Bob cache file */
+	CACHE = fopen("ZIDCacheBob.xml", "r+");
+	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
+  	size = ftell(CACHE);     /* Get file length */
+  	rewind(CACHE);               /* Back to start of file */
+	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
+	fread(cacheBufferString, 1, size, CACHE);
+	*(cacheBufferString+size) = '\0';
+	fclose(CACHE);
+	/* parse it to an xmlDoc */
+	xmlDocPtr cacheBufferBob = xmlParseDoc(cacheBufferString);
+	free(cacheBufferString);
+
+
+
+	/* encrypt a message */
+	uint8_t *multipartMessage = NULL;
+	retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)"Bonjour les petits lapins,ca va? éh oui oui", (uint8_t *)"pipo1@pipo.com", &multipartMessage);
+
+	printf("create message return %d\n", retval);
+	if (retval == 0) {
+		printf("message is %s\n", multipartMessage);
+	}
+
+	/* decrypt the multipart message */
+	uint8_t *decryptedMessage = NULL;
+	retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
+
+	printf("decrypt message return %d\n", retval);
+	if (retval == 0) {
+		printf("message is %s##END\n", decryptedMessage);
+	}
+	free(multipartMessage);
+	free(decryptedMessage);
+
+	/* update ZID files */
+	/* dump the xml document into a string */
+	xmlChar *xmlStringOutput;
+	int xmlStringLength;
+	xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+	/* write it to the file */
+	CACHE = fopen("ZIDCacheAlice.xml", "w+");
+	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+	xmlFree(xmlStringOutput);
+	fclose(CACHE);
+
+	xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+	/* write it to the file */
+	CACHE = fopen("ZIDCacheBob.xml", "w+");
+	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+	xmlFree(xmlStringOutput);
+	fclose(CACHE);
+
+
+	xmlFreeDoc(cacheBufferAlice);
+	xmlFreeDoc(cacheBufferBob);
+
+	/* Load cache file */
+	CACHE = fopen("ZIDCache.xml", "r+");
+	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
+  	size = ftell(CACHE);     /* Get file length */
+  	rewind(CACHE);               /* Back to start of file */
+	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
+	fread(cacheBufferString, 1, size, CACHE);
+	*(cacheBufferString+size) = '\0';
+	fclose(CACHE);
+	/* parse it to an xmlDoc */
+	xmlDocPtr cacheBuffer = xmlParseDoc(cacheBufferString);
+	free(cacheBufferString);
+
+	/* get data from cache : sender */
+	limeURIKeys_t associatedKeys;
+	associatedKeys.peerURI = (uint8_t *)malloc(15);
+	memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
+	associatedKeys.associatedZIDNumber  = 0;
+	retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
+	printf("getCachedKeys returns %d, number of key found %d\n", retval, associatedKeys.associatedZIDNumber);
+
+	int i;
+	for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
+		printHex("ZID", associatedKeys.peerKeys[i]->peerZID, 12);
+		printHex("key", associatedKeys.peerKeys[i]->key, 32);
+		printHex("sessionID", associatedKeys.peerKeys[i]->sessionId, 32);
+		printf("session index %d\n", associatedKeys.peerKeys[i]->sessionIndex);
+	}
+
+	/* get data from cache : receiver */
+	limeKey_t associatedKey;
+	uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
+	memcpy(associatedKey.peerZID, targetZID, 12);
+	retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
+	printf("getCachedKey by ZID return %d\n", retval);
+
+	printHex("Key", associatedKey.key, 32);
+	printHex("sessionID", associatedKey.sessionId, 32);
+	printf("session index %d\n", associatedKey.sessionIndex);
+
+	/* encrypt/decrypt a message */
+	uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
+	uint8_t encryptedMessage[48];
+	uint8_t plainMessage[48];
+	lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)"bla Bla bla b! Pipo", 20, senderZID, encryptedMessage);
+	printHex("Ciphered", encryptedMessage, 32);
+	/* invert sender and receiverZID to decrypt/authenticate */
+	uint8_t receiverZID[12];
+	memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
+	memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
+	retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, 36, receiverZID, plainMessage);
+	printf("Decrypt and auth returned %d\nPlain: %s\n", retval, plainMessage);
+
+	/* update receiver data */
+	associatedKey.sessionIndex++;
+	associatedKey.key[0]++;
+	associatedKey.sessionId[0]++;
+	retval = lime_setCachedKey(cacheBuffer, &associatedKey, LIME_RECEIVER);
+	printf("setCachedKey return %d\n", retval);
+
+	/* update sender data */
+	associatedKeys.peerKeys[0]->sessionIndex++;
+	associatedKeys.peerKeys[0]->key[0]++;
+	associatedKeys.peerKeys[0]->sessionId[0]++;
+	retval = lime_setCachedKey(cacheBuffer, associatedKeys.peerKeys[0], LIME_SENDER);
+	printf("setCachedKey return %d\n", retval);
+
+	/* free memory */
+	lime_freeKeys(associatedKeys);
+
+	/* write the file */
+	/* dump the xml document into a string */
+	xmlDocDumpFormatMemoryEnc(cacheBuffer, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+	/* write it to the file */
+	CACHE = fopen("ZIDCache.xml", "w+");
+	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
+	xmlFree(xmlStringOutput);
+	fclose(CACHE);
+	xmlFreeDoc(cacheBuffer);
+}
+
 test_t message_tests[] = {
 	{ "Text message", text_message },
 	{ "Text message within call's dialog", text_message_within_dialog},
@@ -382,7 +545,8 @@ test_t message_tests[] = {
 	{ "Text message denied", text_message_denied },
 	{ "Info message", info_message },
 	{ "Info message with body", info_message_with_body },
-	{ "IsComposing notification", is_composing_notification }
+	{ "IsComposing notification", is_composing_notification },
+	{ "Lime", lime }
 };
 
 test_suite_t message_test_suite = {
