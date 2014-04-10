@@ -27,6 +27,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
+/***************************************************************************
+ *  				TODO / REMINDER LIST
+ ****************************************************************************/
+	// example at http://tools.ietf.org/html/rfc6035#section-4.7.3
+	// only if this is a linphone account
+	// only if call succeeded
+	// executed AFTER BYE's "OK" response has been received
+	// to: collector@sip.linphone.com or not
+	// expires value?
+	// one send by stream (different ssrc)
+	// ex RERL 404 code différent potentiellement avec info manquante
+	// 3611 pour savoir les valeurs pour les champs non disponibles
+	// video : que se passe t-il si on arrete / resume la vidéo
+ 	// memory leaks
+
 #define PRINT2(x, f) printf(#x ": " #f "\n", x)
 #define PRINT(x) PRINT2(x, "%s")
 
@@ -45,14 +60,14 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	belle_sip_error_code ret;
 	size_t prevoffset = *offset;
 
-#ifndef WIN32
+	#ifndef WIN32
         va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
         va_copy(cap,args);
 		ret = belle_sip_snprintf_valist(*buff, *buff_size, offset, fmt, cap);
         va_end(cap);
-#else
+	#else
 		ret = belle_sip_snprintf_valist(*buff, *buff_size, offset, fmt, args);
-#endif
+	#endif
 
 	// if we are out of memory, we add some size to buffer
 	if (ret == BELLE_SIP_BUFFER_OVERFLOW) {
@@ -62,7 +77,7 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 
 		*offset = prevoffset;
 		// recall myself since we did not write all things into the buffer but
-		// only part of it
+		// only a part of it
 		append_to_buffer_valist(buff, buff_size, offset, fmt, args);
 	}
 }
@@ -91,15 +106,15 @@ struct _reporting_content_metrics_st {
 	// session description - optional
 	struct {
 		int payload_type;
-		char * payload_desc; //mime type
-		int sample_rate; //clock rate
-		int frame_duration; //(no) ptime? à vérifier - audio only
-		int frame_ocets; //no
-		int frames_per_sec; //no
-		int packets_per_sec; //no
-		char * fmtp; //pt.recv_fmtp
-		int packet_loss_concealment; //voip metrics - audio only
-		char * silence_suppression_state; //no
+		char * payload_desc; // mime type
+		int sample_rate; // clock rate
+		int frame_duration; // to check (ptime?) - audio only
+		int frame_ocets; // no
+		int frames_per_sec; // no
+		int packets_per_sec; // no
+		char * fmtp; // pt.recv_fmtp
+		int packet_loss_concealment; // in voip metrics - audio only
+		char * silence_suppression_state; // no
 	} session_description;
 
 	// jitter buffet - optional
@@ -146,10 +161,10 @@ struct _reporting_content_metrics_st {
 
 	// quality estimates - optional
 	struct {
-		int rlq; // linked to moslq
-		int rcq; //voip metrics R factor - no - vary or avg
-		float moslq; // no - vary or avg - voip metrics
-		float moscq; // no - vary or avg - voip metrics
+		int rlq; // linked to moslq - in [0..120]
+		int rcq; //voip metrics R factor - no - vary or avg  in [0..120]
+		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
+		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 		
 
 		int extri; // no
@@ -197,9 +212,35 @@ struct _reporting_session_report_st get_stats(LinphoneCall * call) {
 	// call->resultdesc->streams[0].rtp_addr
 
 	// const rtp_stats_t * rtp_stats = rtp_session_get_stats(call->audiostream->ms.session);
-	// rtp_stats->
+	const MSQualityIndicator * qi = media_stream_get_quality_indicator(&call->audiostream->ms);
 
 	stats.local_metrics.session_description.payload_type = call->params.audio_codec->type;
+	stats.local_metrics.session_description.payload_desc = ms_strdup(call->params.audio_codec->mime_type);
+	stats.local_metrics.session_description.sample_rate = call->params.audio_codec->clock_rate;
+	stats.local_metrics.session_description.fmtp = ms_strdup(call->params.audio_codec->recv_fmtp);
+	//stats.local_metrics.session_description.packet_loss_concealment = ms_quality_indicator_get_local_late_rate(qi);
+
+	stats.local_metrics.packet_loss.jitter_buffer_discard_rate = ms_quality_indicator_get_local_loss_rate(qi);
+
+	stats.local_metrics.quality_estimates.rlq = ms_quality_indicator_get_lq_rating(qi);
+	if (10 <= stats.local_metrics.quality_estimates.rlq 
+		&& stats.local_metrics.quality_estimates.rlq <= 50) {
+		stats.local_metrics.quality_estimates.moslq = stats.local_metrics.quality_estimates.rlq / 10.f;
+	} else {
+		stats.local_metrics.quality_estimates.moslq = -1;
+	}
+	stats.local_metrics.quality_estimates.rcq = ms_quality_indicator_get_rating(qi);
+	if (10 <= stats.local_metrics.quality_estimates.rcq 
+		&& stats.local_metrics.quality_estimates.rcq <= 50) {
+		stats.local_metrics.quality_estimates.moscq = stats.local_metrics.quality_estimates.rcq / 10.f;
+	} else {
+		stats.local_metrics.quality_estimates.moscq = -1;
+	}
+
+	// NOT FOUND
+		// int packet_loss_concealment; // in voip metrics - audio only
+		// jitter buffer
+		// jitter_buffer_discard_rate
 
 	if (call->dir == LinphoneCallIncoming) {
 		stats.info.remote_id = linphone_address_as_string(call->log->from);
@@ -216,11 +257,17 @@ struct _reporting_session_report_st get_stats(LinphoneCall * call) {
 	return stats;
 }
 
+static void add_metrics(char ** buffer, size_t * size, size_t * offset, struct _reporting_content_metrics_st rm) {
+	char * timpstamps_start_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.start);
+	char * timpstamps_stop_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.stop);
+	char * network_packet_loss_rate_str = float_to_one_decimal_string(rm.packet_loss.network_packet_loss_rate);
+	char * jitter_buffer_discard_rate_str = float_to_one_decimal_string(rm.packet_loss.jitter_buffer_discard_rate);
+	char * gap_loss_density_str = float_to_one_decimal_string(rm.burst_gap_loss.gap_loss_density);
+	char * moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq);
+	char * moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq);
 
-static void add_metrics(char ** buffer, size_t * size, size_t * offset, struct _reporting_content_metrics_st rm) { 
 	append_to_buffer(buffer, size, offset, "Timestamps:START=%s STOP=%s\r\n", 
-		linphone_timestamp_to_rfc3339_string(rm.timestamps.start),
-		linphone_timestamp_to_rfc3339_string(rm.timestamps.stop));
+		timpstamps_start_str, timpstamps_stop_str);
 	append_to_buffer(buffer, size, offset, "SessionDesc:PT=%d PD=%s SR=%d FD=%d FO=%d FPP=%d PPS=%d FMTP=%s PLC=%d SSUP=%s\r\n", 
 		rm.session_description.payload_type, rm.session_description.payload_desc, rm.session_description.sample_rate, 
 		rm.session_description.frame_duration, rm.session_description.frame_ocets, rm.session_description.frames_per_sec, 
@@ -229,11 +276,11 @@ static void add_metrics(char ** buffer, size_t * size, size_t * offset, struct _
 	append_to_buffer(buffer, size, offset, "JitterBuffer:JBA=%d JBR=%d JBN=%d JBM=%d JBX=%d\r\n", 
 		rm.jitter_buffer.adaptive, rm.jitter_buffer.rate, rm.jitter_buffer.nominal, rm.jitter_buffer.max, rm.jitter_buffer.abs_max);
 	append_to_buffer(buffer, size, offset, "PacketLoss:NLR=%s JDR=%s\r\n", 
-		float_to_one_decimal_string(rm.packet_loss.network_packet_loss_rate), 
-		float_to_one_decimal_string(rm.packet_loss.jitter_buffer_discard_rate));
+		network_packet_loss_rate_str, 
+		jitter_buffer_discard_rate_str);
 	append_to_buffer(buffer, size, offset, "BurstGapLoss:BLD=%d BD=%d GLD=%s GD=%d GMIN=%d\r\n", 
 		rm.burst_gap_loss.burst_loss_density, rm.burst_gap_loss.burst_duration, 
-		float_to_one_decimal_string(rm.burst_gap_loss.gap_loss_density), rm.burst_gap_loss.gap_Duration, 
+		gap_loss_density_str, rm.burst_gap_loss.gap_Duration, 
 		rm.burst_gap_loss.min_gap_threshold);
 	append_to_buffer(buffer, size, offset, "Delay:RTD=%d ESD=%d OWD=%d SOWD=%d IAJ=%d MAJ=%d\r\n", 
 		rm.delay.round_trip_delay, rm.delay.end_system_delay, rm.delay.one_way_delay, rm.delay.symm_one_way_delay, 
@@ -245,29 +292,28 @@ static void add_metrics(char ** buffer, size_t * size, size_t * offset, struct _
 		rm.quality_estimates.rcq, rm.quality_estimates.rcqestalg, 
 		rm.quality_estimates.extri, rm.quality_estimates.extriestalg, 
 		rm.quality_estimates.extro, rm.quality_estimates.extroutestalg,
-		float_to_one_decimal_string(rm.quality_estimates.moslq), rm.quality_estimates.moslqestalg,
-		float_to_one_decimal_string(rm.quality_estimates.moscq), rm.quality_estimates.moscqestalg,
+		moslq_str, rm.quality_estimates.moslqestalg,
+		moscq_str, rm.quality_estimates.moscqestalg,
 		rm.quality_estimates.qoestalg);
+
+	free(timpstamps_start_str);
+	free(timpstamps_stop_str);
+	free(network_packet_loss_rate_str);
+	free(jitter_buffer_discard_rate_str);
+	free(gap_loss_density_str);
+	free(moslq_str);
+	free(moscq_str);
 }
 
 void linphone_quality_reporting_submit(LinphoneCall* call) {
-	// example at http://tools.ietf.org/html/rfc6035#section-4.7.3
-	// only if this is a linphone account
-	// only if call succeeded
-	// to: collector@sip.linphone.com
-	// executed AFTER BYE's "OK" response has been received
-	// expires value?
-	// one send by stream (different ssrc)
-	// memory leaks strings - append_to_buffer
-	// ex RERL 404 code différent potentiellement avec info manquante
-	// 3611 pour savoir les valeurs pour les champs non disponibles
 	LinphoneContent content = {0};
  	LinphoneAddress *addr;
 	int expires = 3600;
 	struct _reporting_session_report_st stats = get_stats(call);
 	size_t offset = 0;
 	size_t size = 2048;
-	char * buffer = (char *) malloc(sizeof(char) * size);
+	char * buffer = (char *) ms_malloc(size);
+
 	content.type = ms_strdup("application");
 	content.subtype = ms_strdup("vq-rtcpxr");
 
