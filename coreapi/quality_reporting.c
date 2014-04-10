@@ -30,18 +30,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ****************************************************************************/
-	// example at http://tools.ietf.org/html/rfc6035#section-4.7.3
-	// only if this is a linphone account
-	// only if call succeeded
-	// executed AFTER BYE's "OK" response has been received
-	// to: collector@sip.linphone.com or not
-	// expires value?
-	// one send by stream (different ssrc)
-	// ex RERL 404 code différent potentiellement avec info manquante
-	// 3611 pour savoir les valeurs pour les champs non disponibles
-	// video : que se passe t-il si on arrete / resume la vidéo
+ 	// place pour appeler la fonction submit
+		// only if call succeeded
+		// executed AFTER BYE's "OK" response has been received
+ 		// si c l'autre qui raccroche on envoi pas les données là
  	// memory leaks + char* strdup
- 	// bouger l'appel de fonction au bon endroit (si c l'autre qui raccroche on envoi pas les données là)
+ 	// si aucune data d'une catégorie est renseigné, ne pas mettre la section dans le paquet
+ 	// stats
+		// valeur pour "expires" ?
+			// packet_loss_concealment
+			// jitter buffer rate / adaptive
+			// jitter_buffer_discard_rate;
+			// network_packet_loss_rate
+		// vérifier les valeurs par défaut etc.
+ 		// ip local potientellement vide
+ 		// remote : ip, port, timestamps, session desc
+ 		// dialog id ?
+ 	// à voir :
+		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
+ 		// valeurs instanannées : moyenne ? valeur extreme ?
+ 		// à qui / comment on envoit ? (collector@sip.linphone.com ?)
+		// only if this is a linphone account?
 
 #define PRINT2(x, f) printf(#x ": " #f "\n", x)
 #define PRINT(x) PRINT2(x, "%s")
@@ -139,9 +148,7 @@ static reporting_session_report_t * update_report(LinphoneCall * call, int stats
 	} else {
 		// ...
 	}
-	
-	//report->local_metrics.session_description.packet_loss_concealment = ms_quality_indicator_get_local_late_rate(qi);
-	report->local_metrics.packet_loss.jitter_buffer_discard_rate = ms_quality_indicator_get_local_loss_rate(qi);
+
 	report->local_metrics.quality_estimates.rlq = ms_quality_indicator_get_lq_rating(qi);
 	if (10 <= report->local_metrics.quality_estimates.rlq 
 		&& report->local_metrics.quality_estimates.rlq <= 50) {
@@ -169,6 +176,23 @@ static reporting_session_report_t * update_report(LinphoneCall * call, int stats
 	report->local_metrics.timestamps.start = call->log->start_date_time;
 	report->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
 
+
+
+	report->remote_metrics.quality_estimates.rlq = ms_quality_indicator_get_lq_rating(qi);
+	if (10 <= report->remote_metrics.quality_estimates.rlq 
+		&& report->remote_metrics.quality_estimates.rlq <= 50) {
+		report->remote_metrics.quality_estimates.moslq = report->remote_metrics.quality_estimates.rlq / 10.f;
+	} else {
+		report->remote_metrics.quality_estimates.moslq = -1;
+	}
+	report->remote_metrics.quality_estimates.rcq = ms_quality_indicator_get_rating(qi);
+	if (10 <= report->remote_metrics.quality_estimates.rcq 
+		&& report->remote_metrics.quality_estimates.rcq <= 50) {
+		report->remote_metrics.quality_estimates.moscq = report->remote_metrics.quality_estimates.rcq / 10.f;
+	} else {
+		report->remote_metrics.quality_estimates.moscq = -1;
+	}
+
 	return report;
 }
 
@@ -179,7 +203,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	char * timpstamps_stop_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.stop);
 	char * network_packet_loss_rate_str = float_to_one_decimal_string(rm.packet_loss.network_packet_loss_rate);
 	char * jitter_buffer_discard_rate_str = float_to_one_decimal_string(rm.packet_loss.jitter_buffer_discard_rate);
-	char * gap_loss_density_str = float_to_one_decimal_string(rm.burst_gap_loss.gap_loss_density);
+	// char * gap_loss_density_str = float_to_one_decimal_string(rm.burst_gap_loss.gap_loss_density);
 	char * moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq);
 	char * moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq);
 
@@ -209,12 +233,12 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 		APPEND_STR_TO_BUFFER(buffer, size, offset, " NLR=%s", network_packet_loss_rate_str);
 		APPEND_STR_TO_BUFFER(buffer, size, offset, " JDR=%s", jitter_buffer_discard_rate_str);
 
-	append_to_buffer(buffer, size, offset, "\r\nBurstGapLoss:");
-		append_to_buffer(buffer, size, offset, " BLD=%d", rm.burst_gap_loss.burst_loss_density);
-		append_to_buffer(buffer, size, offset, " BD=%d", rm.burst_gap_loss.burst_duration);
-		APPEND_STR_TO_BUFFER(buffer, size, offset, " GLD=%s", gap_loss_density_str);
-		append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_Duration);
-		append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold); 
+	// append_to_buffer(buffer, size, offset, "\r\nBurstGapLoss:");
+	// 	append_to_buffer(buffer, size, offset, " BLD=%d", rm.burst_gap_loss.burst_loss_density);
+	// 	append_to_buffer(buffer, size, offset, " BD=%d", rm.burst_gap_loss.burst_duration);
+	// 	APPEND_STR_TO_BUFFER(buffer, size, offset, " GLD=%s", gap_loss_density_str);
+	// 	append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_Duration);
+	// 	append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold); 
 
 	append_to_buffer(buffer, size, offset, "\r\nDelay:");
 		append_to_buffer(buffer, size, offset, " RTD=%d", rm.delay.round_trip_delay);
@@ -249,7 +273,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	free(timpstamps_stop_str);
 	free(network_packet_loss_rate_str);
 	free(jitter_buffer_discard_rate_str);
-	free(gap_loss_density_str);
+	// free(gap_loss_density_str);
 	free(moslq_str);
 	free(moscq_str);
 }
@@ -280,21 +304,19 @@ void linphone_reporting_publish(LinphoneCall* call, int stats_type) {
 	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", report->info.remote_id);
 	append_to_buffer(&buffer, &size, &offset, "OrigID: %s\r\n", report->info.orig_id);
 
-	if (report->info.local_group != NULL) append_to_buffer(&buffer, &size, &offset, "LocalGroup: %s\r\n", report->info.local_group);
-	if (report->info.remote_group != NULL) append_to_buffer(&buffer, &size, &offset, "RemoteGroup: %s\r\n", report->info.remote_group);
+	APPEND_STR_TO_BUFFER(&buffer, &size, &offset, "LocalGroup: %s\r\n", report->info.local_group);
+	APPEND_STR_TO_BUFFER(&buffer, &size, &offset, "RemoteGroup: %s\r\n", report->info.remote_group);
 	append_to_buffer(&buffer, &size, &offset, "LocalAddr: IP=%s PORT=%d SSRC=%d\r\n", report->info.local_addr.ip, report->info.local_addr.port, report->info.local_addr.ssrc);
-	if (report->info.local_mac_addr != NULL) append_to_buffer(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_mac_addr);
+	APPEND_STR_TO_BUFFER(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_mac_addr);
 	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%d\r\n", report->info.remote_addr.ip, report->info.remote_addr.port, report->info.remote_addr.ssrc);
-	if (report->info.remote_mac_addr != NULL) append_to_buffer(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_mac_addr);
+	APPEND_STR_TO_BUFFER(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_mac_addr);
 	
 	append_to_buffer(&buffer, &size, &offset, "LocalMetrics:\r\n");
 	append_metrics_to_buffer(&buffer, &size, &offset, report->local_metrics);
 		
 	append_to_buffer(&buffer, &size, &offset, "RemoteMetrics:\r\n");
 	append_metrics_to_buffer(&buffer, &size, &offset, report->remote_metrics);
-	if (report->dialog_id != NULL) {
-		append_to_buffer(&buffer, &size, &offset, "DialogID: %s\r\n", report->dialog_id);
-	}
+	APPEND_STR_TO_BUFFER(&buffer, &size, &offset, "DialogID: %s\r\n", report->dialog_id);
 
 	content.data = buffer;
 
@@ -340,7 +362,7 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
                 // rtcp_XR_stat_summary_get_lost_packets(block);
                 // rtcp_XR_stat_summary_get_dup_packets(block);
                 // rtcp_XR_stat_summary_get_min_jitter(block);
-                metrics->jitter_buffer.max = rtcp_XR_stat_summary_get_max_jitter(block);
+                // rtcp_XR_stat_summary_get_max_jitter(block);
                 // rtcp_XR_stat_summary_get_mean_jitter(block);
                 // rtcp_XR_stat_summary_get_dev_jitter(block);
                 // rtcp_XR_stat_summary_get_min_ttl_or_hl(block);
@@ -349,7 +371,7 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
                 // rtcp_XR_stat_summary_get_dev_ttl_or_hl(block);
                 break;
             case RTCP_XR_VOIP_METRICS:
-                addr->ssrc = rtcp_XR_voip_metrics_get_ssrc(block);
+                // rtcp_XR_voip_metrics_get_ssrc(block);
                 // rtcp_XR_voip_metrics_get_loss_rate(block);
                 // rtcp_XR_voip_metrics_get_discard_rate(block);
                 // rtcp_XR_voip_metrics_get_burst_density(block);

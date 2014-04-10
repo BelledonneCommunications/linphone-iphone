@@ -70,13 +70,13 @@ typedef struct reporting_content_metrics {
 
 	// burst gap loss - optional 
 	// (no) currently not implemented
-	struct {
-		int burst_loss_density; 
-		int burst_duration;
-		float gap_loss_density;
-		int gap_Duration;
-		int min_gap_threshold;
-	} burst_gap_loss;
+	// struct {
+	// 	int burst_loss_density; 
+	// 	int burst_duration;
+	// 	float gap_loss_density;
+	// 	int gap_Duration;
+	// 	int min_gap_threshold;
+	// } burst_gap_loss;
 
 	// delay - optional
 	struct {

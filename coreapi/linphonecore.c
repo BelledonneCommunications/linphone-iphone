@@ -3471,6 +3471,9 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_stop_ringing(lc);
 
 	linphone_reporting_publish(call, LINPHONE_CALL_STATS_AUDIO);
+	if (call->videostream!=NULL){
+		linphone_reporting_publish(call, LINPHONE_CALL_STATS_VIDEO);
+	}
 
 	linphone_call_stop_media_streams(call);
 
