@@ -25,6 +25,118 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+typedef struct reporting_addr {
+	char * ip;
+	int port;
+	uint32_t ssrc;
+} reporting_addr_t;
+
+typedef struct reporting_content_metrics {
+	// timestamps - mandatory
+	struct {
+		time_t start;
+		time_t stop;
+	} timestamps;
+
+	// session description - optional
+	struct {
+		int payload_type;
+		char * payload_desc; // mime type
+		int sample_rate; // clock rate
+		int frame_duration; // to check (ptime?) - audio only
+		int frame_ocets; // no
+		int frames_per_sec; // no
+		int packets_per_sec; // no
+		char * fmtp; // pt.recv_fmtp
+		int packet_loss_concealment; // in voip metrics - audio only
+		char * silence_suppression_state; // no
+	} session_description;
+
+	// jitter buffet - optional
+	struct {
+		int adaptive; // constant
+		int rate; // constant
+		int nominal; // no may vary during the call <- average? worst score? 
+		int max; // no may vary during the call <- average?
+		int abs_max; // constant
+	} jitter_buffer;
+
+	// packet loss - optional
+	struct {
+		float network_packet_loss_rate; // voip metrics (loss rate) + conversion
+		float jitter_buffer_discard_rate; //idem
+	} packet_loss;
+
+	// burst gap loss - optional 
+	// (no) currently not implemented
+	struct {
+		int burst_loss_density; 
+		int burst_duration;
+		float gap_loss_density;
+		int gap_Duration;
+		int min_gap_threshold;
+	} burst_gap_loss;
+
+	// delay - optional
+	struct {
+		int round_trip_delay; // no - vary
+		int end_system_delay; // no - not implemented yet
+		int one_way_delay; // no
+		int symm_one_way_delay; // no - vary (depends on round_trip_delay) + not implemented (depends on end_system_delay)
+		int interarrival_jitter; // no - not implemented yet
+		int mean_abs_jitter; // (no)? - to check
+	} delay;
+
+	// signal - optional
+	struct {
+		int level; // no - vary 
+		int noise_level; // no - vary
+		int residual_echo_return_loss; // no
+	} signal;
+
+	// quality estimates - optional
+	struct {
+		int rlq; // linked to moslq - in [0..120]
+		int rcq; //voip metrics R factor - no - vary or avg  in [0..120]
+		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
+		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
+		
+
+		int extri; // no
+		int extro; // no 
+		char * rlqestalg; // no to all alg
+		char * rcqestalg;
+		char * moslqestalg;
+		char * moscqestalg;
+		char * extriestalg;
+		char * extroutestalg;
+		char * qoestalg;
+	} quality_estimates;
+} reporting_content_metrics_t;
+ 
+typedef struct reporting_session_report {
+	struct {
+		char * call_id;
+		char * local_id;
+		char * remote_id;
+		char * orig_id;
+		reporting_addr_t local_addr;
+		reporting_addr_t remote_addr;
+		char * local_group;
+		char * remote_group;
+
+		char * local_mac_addr; // optional
+		char * remote_mac_addr; // optional
+	} info;
+
+	reporting_content_metrics_t local_metrics;
+	reporting_content_metrics_t remote_metrics; // optional
+
+	char * dialog_id; // optional
+} reporting_session_report_t;
+
+
 void linphone_quality_reporting_submit(LinphoneCall* call);
 
 #ifdef __cplusplus

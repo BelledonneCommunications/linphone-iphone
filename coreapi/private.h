@@ -34,6 +34,7 @@ extern "C" {
 #include "linphonecore_utils.h"
 #include "sal/sal.h"
 #include "sipsetup.h"
+#include "quality_reporting.h"
 
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
@@ -191,6 +192,10 @@ struct _LinphoneCall
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
+
+	reporting_session_report_t *audio_reporting;
+	reporting_session_report_t *video_reporting;
+
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams params;

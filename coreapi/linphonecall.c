@@ -1849,6 +1849,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 		playfile=lc->play_file;
 		recfile=lc->rec_file;
 		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
+		call->audio_reporting=ms_new0(reporting_session_report_t,1);
 
 		if (used_pt!=-1){
 			call->current_params.audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
@@ -1978,6 +1979,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,vstream->proto,SalVideo);
 		
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
+		call->video_reporting=ms_new0(reporting_session_report_t,1);
+
 		if (used_pt!=-1){
 			VideoStreamDir dir=VideoStreamSendRecv;
 			MSWebCam *cam=lc->video_conf.device;
