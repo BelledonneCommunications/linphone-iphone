@@ -31,10 +31,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *  				TODO / REMINDER LIST
  ****************************************************************************/
  	// place pour appeler la fonction submit
-		// only if call succeeded
-		// executed AFTER BYE's "OK" response has been received
- 		// si c l'autre qui raccroche on envoi pas les données là
+		// only if call succeeded and ran
+		// TO_CHECK: executed AFTER BYE's "OK" response has been received
+
  	// memory leaks + char* strdup
+ 	// si l'autre en face a pas activé le partage de rtcp xr, on a pas de paquets du tout ? faut rien faire dans ce cas ?
  	// si aucune data d'une catégorie est renseigné, ne pas mettre la section dans le paquet
  	// stats
 		// valeur pour "expires" ?
@@ -99,7 +100,8 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 	va_end(args);
 }
 
-static reporting_session_report_t * update_report(LinphoneCall * call, int stats_type) {
+reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int stats_type) {
+	printf("linphone_reporting_call_stats_updated\n");
 	int count;
 	reporting_session_report_t * report = call->reports[stats_type];
 	MediaStream stream;
@@ -237,7 +239,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	// 	append_to_buffer(buffer, size, offset, " BLD=%d", rm.burst_gap_loss.burst_loss_density);
 	// 	append_to_buffer(buffer, size, offset, " BD=%d", rm.burst_gap_loss.burst_duration);
 	// 	APPEND_STR_TO_BUFFER(buffer, size, offset, " GLD=%s", gap_loss_density_str);
-	// 	append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_Duration);
+	// 	append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_duration);
 	// 	append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold); 
 
 	append_to_buffer(buffer, size, offset, "\r\nDelay:");
@@ -278,20 +280,13 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	free(moscq_str);
 }
 
-void linphone_reporting_publish(LinphoneCall* call, int stats_type) {
+static void reporting_publish(LinphoneCall* call, reporting_session_report_t * report) {
 	LinphoneContent content = {0};
  	LinphoneAddress *addr;
 	int expires = 3600;
-	reporting_session_report_t *report = update_report(call, stats_type);
 	size_t offset = 0;
 	size_t size = 2048;
 	char * buffer;
-
-	// Somehow the reporting was not created, hence no need to go further
-	if (report == NULL) {
-		PRINT("STATS ARE NULL!");
-		return;
-	}
 
 	buffer = (char *) ms_malloc(size);
 
@@ -329,7 +324,6 @@ void linphone_reporting_publish(LinphoneCall* call, int stats_type) {
 	linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content);
 	linphone_address_destroy(addr);
 }
-
 
 void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->reports[stats_type];
@@ -396,4 +390,15 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
                 break;
         }
     }
+}
+
+void linphone_reporting_publish(LinphoneCall* call) {
+	printf("linphone_reporting_publish\n");
+	if (call->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
+		reporting_publish(call, call->reports[LINPHONE_CALL_STATS_AUDIO]);
+	}
+
+	if (call->reports[LINPHONE_CALL_STATS_VIDEO] != NULL) {
+		reporting_publish(call, call->reports[LINPHONE_CALL_STATS_VIDEO]);
+	}
 }

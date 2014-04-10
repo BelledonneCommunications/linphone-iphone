@@ -74,7 +74,7 @@ typedef struct reporting_content_metrics {
 	// 	int burst_loss_density; 
 	// 	int burst_duration;
 	// 	float gap_loss_density;
-	// 	int gap_Duration;
+	// 	int gap_duration;
 	// 	int min_gap_threshold;
 	// } burst_gap_loss;
 
@@ -136,8 +136,8 @@ typedef struct reporting_session_report {
 	char * dialog_id; // optional
 } reporting_session_report_t;
 
-
-void linphone_reporting_publish(LinphoneCall* call, int stats_type);
+reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int stats_type);
+void linphone_reporting_publish(LinphoneCall* call);
 void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
 #ifdef __cplusplus
 }

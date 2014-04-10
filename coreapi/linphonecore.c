@@ -3470,9 +3470,9 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	/*stop ringing*/
 	linphone_core_stop_ringing(lc);
 
-	linphone_reporting_publish(call, LINPHONE_CALL_STATS_AUDIO);
+	linphone_reporting_update(call, LINPHONE_CALL_STATS_AUDIO);
 	if (call->videostream!=NULL){
-		linphone_reporting_publish(call, LINPHONE_CALL_STATS_VIDEO);
+		linphone_reporting_update(call, LINPHONE_CALL_STATS_VIDEO);
 	}
 
 	linphone_call_stop_media_streams(call);

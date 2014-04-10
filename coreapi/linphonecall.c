@@ -804,6 +804,8 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
 		if (cstate==LinphoneCallReleased){
+			linphone_reporting_publish(call);
+
 			if (call->op!=NULL) {
 				/*transfer the last error so that it can be obtained even in Released state*/
 				if (call->non_op_error.reason==SalReasonNone){
