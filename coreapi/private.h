@@ -193,8 +193,7 @@ struct _LinphoneCall
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 
-	reporting_session_report_t *audio_reporting;
-	reporting_session_report_t *video_reporting;
+	reporting_session_report_t * reports[2];
 
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;

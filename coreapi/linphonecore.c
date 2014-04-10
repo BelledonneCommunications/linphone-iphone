@@ -3470,7 +3470,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	/*stop ringing*/
 	linphone_core_stop_ringing(lc);
 
-	linphone_quality_reporting_submit(call);
+	linphone_reporting_publish(call, LINPHONE_CALL_STATS_AUDIO);
 
 	linphone_call_stop_media_streams(call);
 

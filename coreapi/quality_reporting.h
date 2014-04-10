@@ -45,12 +45,12 @@ typedef struct reporting_content_metrics {
 		char * payload_desc; // mime type
 		int sample_rate; // clock rate
 		int frame_duration; // to check (ptime?) - audio only
-		int frame_ocets; // no
-		int frames_per_sec; // no
-		int packets_per_sec; // no
-		char * fmtp; // pt.recv_fmtp
+		// int frame_ocets;
+		// int frames_per_sec;
+		// int packets_per_sec;
+		char * fmtp;
 		int packet_loss_concealment; // in voip metrics - audio only
-		char * silence_suppression_state; // no
+		// char * silence_suppression_state;
 	} session_description;
 
 	// jitter buffet - optional
@@ -82,17 +82,17 @@ typedef struct reporting_content_metrics {
 	struct {
 		int round_trip_delay; // no - vary
 		int end_system_delay; // no - not implemented yet
-		int one_way_delay; // no
+		// int one_way_delay;
 		int symm_one_way_delay; // no - vary (depends on round_trip_delay) + not implemented (depends on end_system_delay)
 		int interarrival_jitter; // no - not implemented yet
-		int mean_abs_jitter; // (no)? - to check
+		int mean_abs_jitter; // to check
 	} delay;
 
 	// signal - optional
 	struct {
 		int level; // no - vary 
 		int noise_level; // no - vary
-		int residual_echo_return_loss; // no
+		// int residual_echo_return_loss;
 	} signal;
 
 	// quality estimates - optional
@@ -103,15 +103,15 @@ typedef struct reporting_content_metrics {
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 		
 
-		int extri; // no
-		int extro; // no 
-		char * rlqestalg; // no to all alg
-		char * rcqestalg;
-		char * moslqestalg;
-		char * moscqestalg;
-		char * extriestalg;
-		char * extroutestalg;
-		char * qoestalg;
+		// int extri;
+		// int extro;
+		// char * rlqestalg;
+		// char * rcqestalg;
+		// char * moslqestalg;
+		// char * moscqestalg;
+		// char * extriestalg;
+		// char * extroutestalg;
+		// char * qoestalg;
 	} quality_estimates;
 } reporting_content_metrics_t;
  
@@ -137,8 +137,8 @@ typedef struct reporting_session_report {
 } reporting_session_report_t;
 
 
-void linphone_quality_reporting_submit(LinphoneCall* call);
-
+void linphone_reporting_publish(LinphoneCall* call, int stats_type);
+void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
 #ifdef __cplusplus
 }
 #endif

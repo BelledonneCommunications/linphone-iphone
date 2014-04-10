@@ -40,7 +40,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	// ex RERL 404 code différent potentiellement avec info manquante
 	// 3611 pour savoir les valeurs pour les champs non disponibles
 	// video : que se passe t-il si on arrete / resume la vidéo
- 	// memory leaks
+ 	// memory leaks + char* strdup
+ 	// bouger l'appel de fonction au bon endroit (si c l'autre qui raccroche on envoi pas les données là)
 
 #define PRINT2(x, f) printf(#x ": " #f "\n", x)
 #define PRINT(x) PRINT2(x, "%s")
@@ -89,78 +90,89 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 	va_end(args);
 }
 
-reporting_session_report_t * update_stats(LinphoneCall * call) {
+static reporting_session_report_t * update_report(LinphoneCall * call, int stats_type) {
 	int count;
-	reporting_session_report_t * stats = call->audio_reporting;
-	const MSQualityIndicator * qi = media_stream_get_quality_indicator(&call->audiostream->ms);
+	reporting_session_report_t * report = call->reports[stats_type];
+	MediaStream stream;
+	const MSQualityIndicator * qi = NULL;
 	const PayloadType * payload;
+	RtpSession * session = NULL;
 
-	if (stats == NULL) {
+
+	if (report == NULL) {
 		ms_warning("No reporting created for this stream");
 		return NULL;
 	}
 
-	stats->info.local_addr.ssrc = rtp_session_get_send_ssrc(call->audiostream->ms.session);
-	stats->info.local_addr.port = rtp_session_get_local_port(call->audiostream->ms.session);
-	stats->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(call->audiostream->ms.session);
-	// memcpy(stats->info.remote_addr.ip, &call->audiostream->ms.session->rtp.rem_addr, call->audiostream->ms.session->rtp.rem_addrlen);
-	stats->info.call_id = call->log->call_id;
+	if (stats_type == LINPHONE_CALL_STATS_AUDIO) {
+		stream = call->audiostream->ms;
+		payload = call->current_params.audio_codec;
+	} else {
+		stream = call->videostream->ms;
+		payload = call->current_params.video_codec;
+	}
+	session = stream.sessions.rtp_session;
+	qi = media_stream_get_quality_indicator(&stream);
+
+	report->info.local_addr.ssrc = rtp_session_get_send_ssrc(session);
+	report->info.local_addr.port = rtp_session_get_local_port(session);
+	report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
+	// memcpy(report->info.remote_addr.ip, &session->rtp.rem_addr, session->rtp.rem_addrlen);
+	report->info.call_id = call->log->call_id;
+	report->info.local_group = ms_strdup_printf(_("linphone-%s"), report->info.call_id);
+	report->info.remote_group = ms_strdup(report->info.local_group);
 	for (count = 0; count < call->resultdesc->n_total_streams; ++count) {
-		if (call->resultdesc->streams[count].type == SalAudio) {
-			stats->info.local_addr.ip = call->resultdesc->streams[count].rtp_addr;
+		if (call->resultdesc->streams[count].type == stats_type) {
+			report->info.local_addr.ip = ms_strdup(call->resultdesc->streams[count].rtp_addr);
 			break;
 		}
 	}
 	if (count == call->resultdesc->n_total_streams) {
-		ms_warning("Could not find the associated stream of type %d", SalAudio);
+		ms_warning("Could not find the associated stream of type %d", stats_type);
 	}
 	
-	payload = call->params.audio_codec;
 	if (payload != NULL) {
-		stats->local_metrics.session_description.payload_type = payload->type;
-		stats->local_metrics.session_description.payload_desc = ms_strdup(payload->mime_type);
-		stats->local_metrics.session_description.sample_rate = payload->clock_rate;
-		stats->local_metrics.session_description.fmtp = ms_strdup(payload->recv_fmtp);
+		report->local_metrics.session_description.payload_type = payload->type;
+		report->local_metrics.session_description.payload_desc = ms_strdup(payload->mime_type);
+		report->local_metrics.session_description.sample_rate = payload->clock_rate;
+		report->local_metrics.session_description.fmtp = ms_strdup(payload->recv_fmtp);
 	} else {
 		// ...
 	}
 	
-	//stats->local_metrics.session_description.packet_loss_concealment = ms_quality_indicator_get_local_late_rate(qi);
-	stats->local_metrics.packet_loss.jitter_buffer_discard_rate = ms_quality_indicator_get_local_loss_rate(qi);
-	stats->local_metrics.quality_estimates.rlq = ms_quality_indicator_get_lq_rating(qi);
-	if (10 <= stats->local_metrics.quality_estimates.rlq 
-		&& stats->local_metrics.quality_estimates.rlq <= 50) {
-		stats->local_metrics.quality_estimates.moslq = stats->local_metrics.quality_estimates.rlq / 10.f;
+	//report->local_metrics.session_description.packet_loss_concealment = ms_quality_indicator_get_local_late_rate(qi);
+	report->local_metrics.packet_loss.jitter_buffer_discard_rate = ms_quality_indicator_get_local_loss_rate(qi);
+	report->local_metrics.quality_estimates.rlq = ms_quality_indicator_get_lq_rating(qi);
+	if (10 <= report->local_metrics.quality_estimates.rlq 
+		&& report->local_metrics.quality_estimates.rlq <= 50) {
+		report->local_metrics.quality_estimates.moslq = report->local_metrics.quality_estimates.rlq / 10.f;
 	} else {
-		stats->local_metrics.quality_estimates.moslq = -1;
+		report->local_metrics.quality_estimates.moslq = -1;
 	}
-	stats->local_metrics.quality_estimates.rcq = ms_quality_indicator_get_rating(qi);
-	if (10 <= stats->local_metrics.quality_estimates.rcq 
-		&& stats->local_metrics.quality_estimates.rcq <= 50) {
-		stats->local_metrics.quality_estimates.moscq = stats->local_metrics.quality_estimates.rcq / 10.f;
+	report->local_metrics.quality_estimates.rcq = ms_quality_indicator_get_rating(qi);
+	if (10 <= report->local_metrics.quality_estimates.rcq 
+		&& report->local_metrics.quality_estimates.rcq <= 50) {
+		report->local_metrics.quality_estimates.moscq = report->local_metrics.quality_estimates.rcq / 10.f;
 	} else {
-		stats->local_metrics.quality_estimates.moscq = -1;
+		report->local_metrics.quality_estimates.moscq = -1;
 	}
-
-	// NOT FOUND
-		// int packet_loss_concealment; // in voip metrics - audio only
-		// jitter buffer
-		// jitter_buffer_discard_rate
 
 	if (call->dir == LinphoneCallIncoming) {
-		stats->info.remote_id = linphone_address_as_string(call->log->from);
-		stats->info.local_id = linphone_address_as_string(call->log->to);
-		stats->info.orig_id = stats->info.remote_id;
+		report->info.remote_id = linphone_address_as_string(call->log->from);
+		report->info.local_id = linphone_address_as_string(call->log->to);
+		report->info.orig_id = report->info.remote_id;
 	} else {
-		stats->info.remote_id = linphone_address_as_string(call->log->to);
-		stats->info.local_id = linphone_address_as_string(call->log->from);
-		stats->info.orig_id = stats->info.local_id;
+		report->info.remote_id = linphone_address_as_string(call->log->to);
+		report->info.local_id = linphone_address_as_string(call->log->from);
+		report->info.orig_id = report->info.local_id;
 	}
-	stats->local_metrics.timestamps.start = call->log->start_date_time;
-	stats->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
+	report->local_metrics.timestamps.start = call->log->start_date_time;
+	report->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
 
-	return stats;
+	return report;
 }
+
+#define APPEND_STR_TO_BUFFER(buffer, size, offset, fmt, arg) if (arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg);
 
 static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, reporting_content_metrics_t rm) {
 	char * timpstamps_start_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.start);
@@ -171,35 +183,67 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	char * moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq);
 	char * moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq);
 
-	append_to_buffer(buffer, size, offset, "Timestamps:START=%s STOP=%s\r\n", 
+	append_to_buffer(buffer, size, offset, "Timestamps:START=%s STOP=%s", 
 		timpstamps_start_str, timpstamps_stop_str);
-	append_to_buffer(buffer, size, offset, "SessionDesc:PT=%d PD=%s SR=%d FD=%d FO=%d FPP=%d PPS=%d FMTP=%s PLC=%d SSUP=%s\r\n", 
-		rm.session_description.payload_type, rm.session_description.payload_desc, rm.session_description.sample_rate, 
-		rm.session_description.frame_duration, rm.session_description.frame_ocets, rm.session_description.frames_per_sec, 
-		rm.session_description.packets_per_sec, rm.session_description.fmtp, rm.session_description.packet_loss_concealment, 
-		rm.session_description.silence_suppression_state);
-	append_to_buffer(buffer, size, offset, "JitterBuffer:JBA=%d JBR=%d JBN=%d JBM=%d JBX=%d\r\n", 
-		rm.jitter_buffer.adaptive, rm.jitter_buffer.rate, rm.jitter_buffer.nominal, rm.jitter_buffer.max, rm.jitter_buffer.abs_max);
-	append_to_buffer(buffer, size, offset, "PacketLoss:NLR=%s JDR=%s\r\n", 
-		network_packet_loss_rate_str, 
-		jitter_buffer_discard_rate_str);
-	append_to_buffer(buffer, size, offset, "BurstGapLoss:BLD=%d BD=%d GLD=%s GD=%d GMIN=%d\r\n", 
-		rm.burst_gap_loss.burst_loss_density, rm.burst_gap_loss.burst_duration, 
-		gap_loss_density_str, rm.burst_gap_loss.gap_Duration, 
-		rm.burst_gap_loss.min_gap_threshold);
-	append_to_buffer(buffer, size, offset, "Delay:RTD=%d ESD=%d OWD=%d SOWD=%d IAJ=%d MAJ=%d\r\n", 
-		rm.delay.round_trip_delay, rm.delay.end_system_delay, rm.delay.one_way_delay, rm.delay.symm_one_way_delay, 
-		rm.delay.interarrival_jitter, rm.delay.mean_abs_jitter);
-	append_to_buffer(buffer, size, offset, "Signal:SL=%d NL=%d RERL=%d\r\n", 
-		rm.signal.level, rm.signal.noise_level, rm.signal.residual_echo_return_loss);
-	append_to_buffer(buffer, size, offset, "QualityEst:RLQ=%d RLQEstAlg=%s RCQ=%d RCQEstAlgo=%s EXTRI=%d ExtRIEstAlg=%s EXTRO=%d ExtROEstAlg=%s MOSLQ=%s MOSLQEstAlgo=%s MOSCQ=%s MOSCQEstAlgo=%s QoEEstAlg=%s\r\n", 
-		rm.quality_estimates.rlq, rm.quality_estimates.rlqestalg, 
-		rm.quality_estimates.rcq, rm.quality_estimates.rcqestalg, 
-		rm.quality_estimates.extri, rm.quality_estimates.extriestalg, 
-		rm.quality_estimates.extro, rm.quality_estimates.extroutestalg,
-		moslq_str, rm.quality_estimates.moslqestalg,
-		moscq_str, rm.quality_estimates.moscqestalg,
-		rm.quality_estimates.qoestalg);
+
+	append_to_buffer(buffer, size, offset, "\r\nSessionDesc:");
+		append_to_buffer(buffer, size, offset, " PT=%d", rm.session_description.payload_type);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " PD=%s", rm.session_description.payload_desc);
+		append_to_buffer(buffer, size, offset, " SR=%d", rm.session_description.sample_rate);
+		append_to_buffer(buffer, size, offset, " FD=%d", rm.session_description.frame_duration);
+		// append_to_buffer(buffer, size, offset, " FO=%d", rm.session_description.frame_ocets);
+		// append_to_buffer(buffer, size, offset, " FPP=%d", rm.session_description.frames_per_sec);
+		// append_to_buffer(buffer, size, offset, " PPS=%d", rm.session_description.packets_per_sec);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " FMTP=\"%s\"", rm.session_description.fmtp);
+		append_to_buffer(buffer, size, offset, " PLC=%d", rm.session_description.packet_loss_concealment);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " SSUP=%s", rm.session_description.silence_suppression_state);
+
+	append_to_buffer(buffer, size, offset, "\r\nJitterBuffer:");
+		append_to_buffer(buffer, size, offset, " JBA=%d", rm.jitter_buffer.adaptive);
+		append_to_buffer(buffer, size, offset, " JBR=%d", rm.jitter_buffer.rate);
+		append_to_buffer(buffer, size, offset, " JBN=%d", rm.jitter_buffer.nominal);
+		append_to_buffer(buffer, size, offset, " JBM=%d", rm.jitter_buffer.max);
+		append_to_buffer(buffer, size, offset, " JBX=%d",  rm.jitter_buffer.abs_max); 
+
+	append_to_buffer(buffer, size, offset, "\r\nPacketLoss:");
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " NLR=%s", network_packet_loss_rate_str);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " JDR=%s", jitter_buffer_discard_rate_str);
+
+	append_to_buffer(buffer, size, offset, "\r\nBurstGapLoss:");
+		append_to_buffer(buffer, size, offset, " BLD=%d", rm.burst_gap_loss.burst_loss_density);
+		append_to_buffer(buffer, size, offset, " BD=%d", rm.burst_gap_loss.burst_duration);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " GLD=%s", gap_loss_density_str);
+		append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_Duration);
+		append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold); 
+
+	append_to_buffer(buffer, size, offset, "\r\nDelay:");
+		append_to_buffer(buffer, size, offset, " RTD=%d", rm.delay.round_trip_delay);
+		append_to_buffer(buffer, size, offset, " ESD=%d", rm.delay.end_system_delay);
+		// append_to_buffer(buffer, size, offset, " OWD=%d", rm.delay.one_way_delay);
+		append_to_buffer(buffer, size, offset, " SOWD=%d", rm.delay.symm_one_way_delay);
+		append_to_buffer(buffer, size, offset, " IAJ=%d", rm.delay.interarrival_jitter);
+		append_to_buffer(buffer, size, offset, " MAJ=%d", rm.delay.mean_abs_jitter);
+
+	append_to_buffer(buffer, size, offset, "\r\nSignal:");
+		append_to_buffer(buffer, size, offset, " SL=%d", rm.signal.level);
+		append_to_buffer(buffer, size, offset, " NL=%d", rm.signal.noise_level);
+		// append_to_buffer(buffer, size, offset, " RERL=%d", rm.signal.residual_echo_return_loss);
+
+	append_to_buffer(buffer, size, offset, "\r\nQualityEst:");
+		append_to_buffer(buffer, size, offset, " RLQ=%d", rm.quality_estimates.rlq);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " RLQEstAlg=%s", rm.quality_estimates.rlqestalg);
+		append_to_buffer(buffer, size, offset, " RCQ=%d", rm.quality_estimates.rcq);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " RCQEstAlgo=%s", rm.quality_estimates.rcqestalg);
+		// append_to_buffer(buffer, size, offset, " EXTRI=%d", rm.quality_estimates.extri);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " ExtRIEstAlg=%s", rm.quality_estimates.extriestalg);
+		// append_to_buffer(buffer, size, offset, " EXTRO=%d", rm.quality_estimates.extro);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " ExtROEstAlg=%s", rm.quality_estimates.extroutestalg);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " MOSLQ=%s", moslq_str);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " MOSLQEstAlgo=%s", rm.quality_estimates.moslqestalg);
+		APPEND_STR_TO_BUFFER(buffer, size, offset, " MOSCQ=%s", moscq_str);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " MOSCQEstAlgo=%s", rm.quality_estimates.moscqestalg);
+		// APPEND_STR_TO_BUFFER(buffer, size, offset, " QoEEstAlg=%s", rm.quality_estimates.qoestalg);
+	append_to_buffer(buffer, size, offset, "\r\n");
 
 	free(timpstamps_start_str);
 	free(timpstamps_stop_str);
@@ -210,17 +254,17 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	free(moscq_str);
 }
 
-void linphone_quality_reporting_submit(LinphoneCall* call) {
+void linphone_reporting_publish(LinphoneCall* call, int stats_type) {
 	LinphoneContent content = {0};
  	LinphoneAddress *addr;
 	int expires = 3600;
-	reporting_session_report_t *stats = update_stats(call);
+	reporting_session_report_t *report = update_report(call, stats_type);
 	size_t offset = 0;
 	size_t size = 2048;
 	char * buffer;
 
 	// Somehow the reporting was not created, hence no need to go further
-	if (stats == NULL) {
+	if (report == NULL) {
 		PRINT("STATS ARE NULL!");
 		return;
 	}
@@ -231,25 +275,25 @@ void linphone_quality_reporting_submit(LinphoneCall* call) {
 	content.subtype = ms_strdup("vq-rtcpxr");
 
 	append_to_buffer(&buffer, &size, &offset, "VQSessionReport: CallTerm\r\n");
-	append_to_buffer(&buffer, &size, &offset, "CallID: %s\r\n", stats->info.call_id);
-	append_to_buffer(&buffer, &size, &offset, "LocalID: %s\r\n", stats->info.local_id);
-	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", stats->info.remote_id);
-	append_to_buffer(&buffer, &size, &offset, "OrigID: %s\r\n", stats->info.orig_id);
+	append_to_buffer(&buffer, &size, &offset, "CallID: %s\r\n", report->info.call_id);
+	append_to_buffer(&buffer, &size, &offset, "LocalID: %s\r\n", report->info.local_id);
+	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", report->info.remote_id);
+	append_to_buffer(&buffer, &size, &offset, "OrigID: %s\r\n", report->info.orig_id);
 
-	append_to_buffer(&buffer, &size, &offset, "LocalGroup: %s\r\n", stats->info.local_group); //linphone-CALLID
-	append_to_buffer(&buffer, &size, &offset, "RemoteGroup: %s\r\n", stats->info.remote_group); //idem
-	append_to_buffer(&buffer, &size, &offset, "LocalAddr: IP=%s PORT=%d SSRC=%d\r\n", stats->info.local_addr.ip, stats->info.local_addr.port, stats->info.local_addr.ssrc);
-	append_to_buffer(&buffer, &size, &offset, "LocalMAC: %s\r\n", stats->info.local_mac_addr);
-	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%d\r\n", stats->info.remote_addr.ip, stats->info.remote_addr.port, stats->info.remote_addr.ssrc);
-	append_to_buffer(&buffer, &size, &offset, "RemoteMAC: %s\r\n", stats->info.remote_mac_addr);
+	if (report->info.local_group != NULL) append_to_buffer(&buffer, &size, &offset, "LocalGroup: %s\r\n", report->info.local_group);
+	if (report->info.remote_group != NULL) append_to_buffer(&buffer, &size, &offset, "RemoteGroup: %s\r\n", report->info.remote_group);
+	append_to_buffer(&buffer, &size, &offset, "LocalAddr: IP=%s PORT=%d SSRC=%d\r\n", report->info.local_addr.ip, report->info.local_addr.port, report->info.local_addr.ssrc);
+	if (report->info.local_mac_addr != NULL) append_to_buffer(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_mac_addr);
+	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%d\r\n", report->info.remote_addr.ip, report->info.remote_addr.port, report->info.remote_addr.ssrc);
+	if (report->info.remote_mac_addr != NULL) append_to_buffer(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_mac_addr);
 	
 	append_to_buffer(&buffer, &size, &offset, "LocalMetrics:\r\n");
-	append_metrics_to_buffer(&buffer, &size, &offset, stats->local_metrics);
+	append_metrics_to_buffer(&buffer, &size, &offset, report->local_metrics);
 		
 	append_to_buffer(&buffer, &size, &offset, "RemoteMetrics:\r\n");
-	append_metrics_to_buffer(&buffer, &size, &offset, stats->remote_metrics);
-	if (stats->dialog_id != NULL) {
-		append_to_buffer(&buffer, &size, &offset, "DialogID: %s\r\n", stats->dialog_id);
+	append_metrics_to_buffer(&buffer, &size, &offset, report->remote_metrics);
+	if (report->dialog_id != NULL) {
+		append_to_buffer(&buffer, &size, &offset, "DialogID: %s\r\n", report->dialog_id);
 	}
 
 	content.data = buffer;
@@ -264,3 +308,70 @@ void linphone_quality_reporting_submit(LinphoneCall* call) {
 	linphone_address_destroy(addr);
 }
 
+
+void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
+	reporting_session_report_t * report = call->reports[stats_type];
+	reporting_content_metrics_t * metrics = NULL;
+	reporting_addr_t * addr = NULL;
+
+	LinphoneCallStats stats = call->stats[stats_type];
+    mblk_t *block = NULL;
+
+    if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
+		metrics = &report->remote_metrics;
+		addr = &report->info.remote_addr;
+        if (rtcp_is_XR(stats.received_rtcp) == TRUE) {
+            block = stats.received_rtcp;
+        }
+    } else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
+		metrics = &report->local_metrics;
+		addr = &report->info.local_addr;
+        if (rtcp_is_XR(stats.sent_rtcp) == TRUE) {
+            block = stats.sent_rtcp;
+        }
+    }
+    if (block != NULL) {
+        switch (rtcp_XR_get_block_type(block)) {
+            case RTCP_XR_STAT_SUMMARY:
+                // rtcp_XR_stat_summary_get_flags(block);
+                // rtcp_XR_stat_summary_get_ssrc(block);
+                // rtcp_XR_stat_summary_get_begin_seq(block);
+                // rtcp_XR_stat_summary_get_end_seq(block);
+                // rtcp_XR_stat_summary_get_lost_packets(block);
+                // rtcp_XR_stat_summary_get_dup_packets(block);
+                // rtcp_XR_stat_summary_get_min_jitter(block);
+                metrics->jitter_buffer.max = rtcp_XR_stat_summary_get_max_jitter(block);
+                // rtcp_XR_stat_summary_get_mean_jitter(block);
+                // rtcp_XR_stat_summary_get_dev_jitter(block);
+                // rtcp_XR_stat_summary_get_min_ttl_or_hl(block);
+                // rtcp_XR_stat_summary_get_max_ttl_or_hl(block);
+                // rtcp_XR_stat_summary_get_mean_ttl_or_hl(block);
+                // rtcp_XR_stat_summary_get_dev_ttl_or_hl(block);
+                break;
+            case RTCP_XR_VOIP_METRICS:
+                addr->ssrc = rtcp_XR_voip_metrics_get_ssrc(block);
+                // rtcp_XR_voip_metrics_get_loss_rate(block);
+                // rtcp_XR_voip_metrics_get_discard_rate(block);
+                // rtcp_XR_voip_metrics_get_burst_density(block);
+                // rtcp_XR_voip_metrics_get_gap_density(block);
+                // rtcp_XR_voip_metrics_get_burst_duration(block);
+                // rtcp_XR_voip_metrics_get_gap_duration(block);
+                // rtcp_XR_voip_metrics_get_round_trip_delay(block);
+                // rtcp_XR_voip_metrics_get_end_system_delay(block);
+                // rtcp_XR_voip_metrics_get_signal_level(block);
+                // rtcp_XR_voip_metrics_get_noise_level(block);
+                // rtcp_XR_voip_metrics_get_rerl(block);
+                // rtcp_XR_voip_metrics_get_gmin(block);
+                metrics->quality_estimates.rlq = rtcp_XR_voip_metrics_get_r_factor(block);
+                metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block);
+                metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block);
+                // rtcp_XR_voip_metrics_get_rx_config(block);
+                metrics->jitter_buffer.nominal = rtcp_XR_voip_metrics_get_jb_nominal(block);
+                metrics->jitter_buffer.max = rtcp_XR_voip_metrics_get_jb_maximum(block);
+                metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);
+                break;
+            default:
+                break;
+        }
+    }
+}
