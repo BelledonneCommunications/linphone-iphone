@@ -1067,6 +1067,8 @@ LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *ms
 LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 LINPHONE_PUBLIC	LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg);
+LINPHONE_PUBLIC void linphone_chat_message_unref(LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 LINPHONE_PUBLIC void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
