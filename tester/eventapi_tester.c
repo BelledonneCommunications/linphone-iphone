@@ -288,7 +288,7 @@ static void subscribe_test_manually_refreshed(void){
 	subscribe_test_with_args(TRUE,ManualRefresh);
 }
 
-static void publish_test_with_args(bool_t refresh){
+static void publish_test_with_args(bool_t refresh, int expires){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content={0};
@@ -304,7 +304,7 @@ static void publish_test_with_args(bool_t refresh){
 	
 	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
 
-	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",5);
+	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
 	linphone_event_send_publish(lev,&content);
 	linphone_event_ref(lev);
@@ -332,11 +332,15 @@ static void publish_test_with_args(bool_t refresh){
 }
 
 static void publish_test(){
-	publish_test_with_args(TRUE);
+	publish_test_with_args(TRUE,5);
 }
 
 static void publish_no_auto_test(){
-	publish_test_with_args(FALSE);
+	publish_test_with_args(FALSE,5);
+}
+
+static void publish_without_expires(){
+	publish_test_with_args(TRUE,-1);
 }
 
 test_t event_tests[] = {
@@ -347,6 +351,7 @@ test_t event_tests[] = {
 	{ "Subscribe manually refreshed", subscribe_test_manually_refreshed },
 	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
 	{ "Publish", publish_test },
+	{ "Publish without expires", publish_without_expires },
 	{ "Publish without automatic refresh",publish_no_auto_test }
 };
 

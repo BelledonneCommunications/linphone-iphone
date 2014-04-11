@@ -52,7 +52,7 @@ typedef enum _LinphoneSubscriptionDir LinphoneSubscriptionDir;
 **/
 enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionNone, /**< Initial state, should not be used.**/
-	LinphoneSubscriptionOutgoingInit, /**<An outgoing subcription was created*/
+	LinphoneSubscriptionOutgoingProgress, /**<An outgoing subcription was sent*/
 	LinphoneSubscriptionIncomingReceived, /**<An incoming subcription is received*/
 	LinphoneSubscriptionPending, /**<Subscription is pending, waiting for user approval*/
 	LinphoneSubscriptionActive, /**<Subscription is accepted.*/
@@ -63,6 +63,7 @@ enum _LinphoneSubscriptionState{
 /*typo compatibility*/
 #define LinphoneSubscriptionOutoingInit LinphoneSubscriptionOutgoingInit
 
+#define LinphoneSubscriptionOutgoingInit LinphoneSubscriptionOutgoingProgress
 /**
  * Typedef for subscription state enum.
 **/
@@ -169,7 +170,7 @@ LINPHONE_PUBLIC int linphone_event_notify(LinphoneEvent *lev, const LinphoneCont
  * @param lc the #LinphoneCore
  * @param resource the resource uri for the event
  * @param event the event name
- * @param expires the lifetime of the publication
+ * @param expires the lifetime of event being published, -1 if no associated duration, in which case it will not be refreshed.
  * @param body the actual published data
  * @return the LinphoneEvent holding the context of the publish.
 **/
@@ -182,7 +183,7 @@ LINPHONE_PUBLIC LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const Lin
  * @param lc the #LinphoneCore
  * @param resource the resource uri for the event
  * @param event the event name
- * @param expires the lifetime of the publication
+ * @param expires the lifetime of event being published, -1 if no associated duration, in which case it will not be refreshed.
  * @return the LinphoneEvent holding the context of the publish.
 **/
 LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires);

@@ -295,7 +295,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	}
 	
 	if (lev->publish_state!=LinphonePublishNone){
-		if (lev->publish_state==LinphonePublishOk){
+		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
 		}else sal_op_stop_refreshing(lev->op);
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);

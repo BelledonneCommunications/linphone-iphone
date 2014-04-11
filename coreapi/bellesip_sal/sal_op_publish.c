@@ -106,7 +106,9 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event",eventname));
 		sal_op_add_body(op,BELLE_SIP_MESSAGE(req),body);
-		return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
+		if (expires!=-1)
+			return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
+		else return sal_op_send_request(op,req);
 	} else {
 		/*update status*/
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
