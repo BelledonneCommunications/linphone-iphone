@@ -27,6 +27,7 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 	protected final long nativePtr;
+	protected LinphoneCoreImpl mCore;
 	
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
@@ -41,9 +42,10 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		enableRegister(enableRegister);
 		ownPtr=true;
 	}
-	protected LinphoneProxyConfigImpl(long aNativePtr)  {
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core, long aNativePtr)  {
 		nativePtr = aNativePtr;
 		ownPtr=false;
+		mCore=core;
 	}
 	protected void finalize() throws Throwable {
 		//Log.e(LinphoneService.TAG,"fixme, should release underlying proxy config");
@@ -90,11 +92,17 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	}
 
 	public void done() {
-		done(nativePtr);
+		Object mutex=mCore!=null ? mCore : this;
+		synchronized(mutex){
+			done(nativePtr);
+		}
 	}
 
 	public LinphoneProxyConfig edit() {
-		edit(nativePtr);
+		Object mutex=mCore!=null ? mCore : this;
+		synchronized(mutex){
+			edit(nativePtr);
+		}
 		return this;
 	}
 
