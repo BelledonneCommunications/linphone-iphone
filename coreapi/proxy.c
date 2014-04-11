@@ -270,6 +270,9 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 		if (obj->state == LinphoneRegistrationOk
 				|| obj->state == LinphoneRegistrationProgress) {
 			sal_unregister(obj->op);
+		} else {
+			/*stop refresher*/
+			if (obj->op) sal_op_stop_refreshing(obj->op);
 		}
 	}
 }
@@ -351,6 +354,9 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
 		}
 		ms_free(proxy_string);
+	} else {
+		/*stop refresher, just in case*/
+		if (obj->op) sal_op_stop_refreshing(obj->op);
 	}
 }
 
