@@ -56,7 +56,7 @@ typedef struct reporting_content_metrics {
 	// jitter buffet - optional
 	struct {
 		int adaptive; // constant
-		int rate; // constant
+		// int rate; // constant
 		int nominal; // no may vary during the call <- average? worst score? 
 		int max; // no may vary during the call <- average?
 		int abs_max; // constant
@@ -137,6 +137,7 @@ typedef struct reporting_session_report {
 } reporting_session_report_t;
 
 reporting_session_report_t * linphone_reporting_new();
+void linphone_reporting_destroy(reporting_session_report_t * report);
 reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int stats_type);
 void linphone_reporting_publish(LinphoneCall* call);
 void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
