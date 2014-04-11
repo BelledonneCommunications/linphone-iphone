@@ -116,6 +116,8 @@ struct _LinphoneCallLog{
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
+
+	reporting_session_report_t * reports[2];
 	bool_t video_enabled;
 };
 
@@ -192,8 +194,6 @@ struct _LinphoneCall
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
-
-	reporting_session_report_t * reports[2];
 
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;

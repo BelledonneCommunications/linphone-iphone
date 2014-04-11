@@ -483,6 +483,9 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->owns_call_log=TRUE;
 	call->camera_enabled=TRUE;
 
+	call->log->reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
+	call->log->reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
+
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,0,min_port,max_port);
 	
@@ -1851,7 +1854,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 		playfile=lc->play_file;
 		recfile=lc->rec_file;
 		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-		call->reports[LINPHONE_CALL_STATS_AUDIO]=ms_new0(reporting_session_report_t,1);
 
 		if (used_pt!=-1){
 			call->current_params.audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
@@ -1981,7 +1983,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,vstream->proto,SalVideo);
 		
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
-		call->reports[LINPHONE_CALL_STATS_VIDEO]=ms_new0(reporting_session_report_t,1);
 
 		if (used_pt!=-1){
 			VideoStreamDir dir=VideoStreamSendRecv;
@@ -2206,6 +2207,7 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
 
 void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
+		linphone_reporting_update(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[0]);
 		rtp_session_unregister_event_queue(call->audiostream->ms.sessions.rtp_session,call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
@@ -2234,6 +2236,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 void linphone_call_stop_video_stream(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
+		linphone_reporting_update(call, LINPHONE_CALL_STATS_VIDEO);
 		media_stream_reclaim_sessions(&call->videostream->ms,&call->sessions[1]);
 		rtp_session_unregister_event_queue(call->videostream->ms.sessions.rtp_session,call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);

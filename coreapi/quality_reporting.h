@@ -136,6 +136,7 @@ typedef struct reporting_session_report {
 	char * dialog_id; // optional
 } reporting_session_report_t;
 
+reporting_session_report_t * linphone_reporting_new();
 reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int stats_type);
 void linphone_reporting_publish(LinphoneCall* call);
 void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
