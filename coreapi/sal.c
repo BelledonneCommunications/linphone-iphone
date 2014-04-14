@@ -373,8 +373,12 @@ const char* sal_op_get_call_id(const SalOp *op) {
 	return  ((SalOpBase*)op)->call_id;
 }
 char* sal_op_get_dialog_id(const SalOp *op) {
-	return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id, 
-		belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
+	if (op->dialog != NULL) {
+		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id, 
+			belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
+	}
+	return NULL;
+
 }
 void __sal_op_init(SalOp *b, Sal *sal){
 	memset(b,0,sizeof(SalOpBase));

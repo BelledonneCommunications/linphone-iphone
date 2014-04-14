@@ -33,23 +33,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ****************************************************************************/
- 	// place pour appeler la fonction submit
-		// only if call succeeded and ran
-		// TO_CHECK: executed AFTER BYE's "OK" response has been received
+	// only if call succeeded and ran (busy should NOT call this)
+	// TO_CHECK: executed AFTER BYE's "OK" response has been received
 
  	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 
-	// remote: session desc pourquoi c'est null
-	// Jehan: dialog id ? --> local / remote tag pas accessible
- 
+	// remote: session desc null parce que linphone_call_get_remote_params le remplit pas
+
  	// à voir :
 	 	// Simon: ip remote vide
+ 		// ip local potientellement vide
 		// valeur pour "expires" ?
+ 	// à voir ++ :
 		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
  		// valeurs instanannées : moyenne ? valeur extreme ?
  		// à qui / comment on envoit ? (collector@sip.linphone.com ?)
 		// only if this is a linphone account?
- 		// ip local potientellement vide
  		// rlq: il faut un algo
 
 // since printf family functions are LOCALE dependent, float separator may differ
@@ -244,7 +243,7 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 	int count;
 	reporting_session_report_t * report = call->log->reports[stats_type];
 	MediaStream stream;
-	const MSQualityIndicator * qi = NULL;
+	// const MSQualityIndicator * qi = NULL;
 	const PayloadType * local_payload;
 	const PayloadType * remote_payload;
 	RtpSession * session = NULL;
@@ -258,18 +257,17 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 
 	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = call->audiostream->ms;
-		local_payload = call->current_params.audio_codec;
-		remote_payload = linphone_call_get_remote_params(call)->audio_codec;
+		local_payload = linphone_call_params_get_used_audio_codec(&call->current_params);
+		remote_payload = linphone_call_params_get_used_audio_codec(linphone_call_get_remote_params(call));
 	} else if (stats_type == LINPHONE_CALL_STATS_VIDEO && call->videostream != NULL) {
 		stream = call->videostream->ms;
-		local_payload = call->current_params.video_codec;
-		remote_payload = linphone_call_get_remote_params(call)->video_codec;
+		local_payload = linphone_call_params_get_used_video_codec(&call->current_params);
+		remote_payload = linphone_call_params_get_used_video_codec(linphone_call_get_remote_params(call));
 	} else {
 		return NULL;
 	}
 
 	session = stream.sessions.rtp_session;
-	qi = media_stream_get_quality_indicator(&stream);
 
 	report->info.local_addr.ssrc = rtp_session_get_send_ssrc(session);
 	report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
@@ -325,6 +323,7 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 		report->info.local_id = linphone_address_as_string(call->log->from);
 		report->info.orig_id = ms_strdup(report->info.local_id);
 	}
+
 	report->dialog_id = sal_op_get_dialog_id(call->op);
 
 	report->local_metrics.timestamps.start = call->log->start_date_time;
@@ -336,11 +335,11 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 
 
 
+	// qi = media_stream_get_quality_indicator(&stream);
 	// report->local_metrics.quality_estimates.rlq = 
-	report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(qi);
-
+	// report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(qi);
 	// report->local_metrics.quality_estimates.rcq = ;//
-	report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(qi);
+	// report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(qi);
 
 	return report;
 }
@@ -390,6 +389,7 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 
 void linphone_reporting_publish(LinphoneCall* call) {
 	printf("linphone_reporting_publish\n");
+
 	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
 		reporting_publish(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO]);
 	}
