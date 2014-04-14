@@ -2222,6 +2222,11 @@ void linphone_call_stop_video_stream(LinphoneCall *call) {
 #endif
 }
 
+static void unset_rtp_profile(LinphoneCall *call, int i){
+	if (call->sessions[i].rtp_session)
+		rtp_session_set_profile(call->sessions[i].rtp_session,&av_profile);
+}
+
 void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audiostream || call->videostream) {
 		linphone_call_stop_audio_stream(call);
@@ -2235,10 +2240,12 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audio_profile){
 		rtp_profile_destroy(call->audio_profile);
 		call->audio_profile=NULL;
+		unset_rtp_profile(call,0);
 	}
 	if (call->video_profile){
 		rtp_profile_destroy(call->video_profile);
 		call->video_profile=NULL;
+		unset_rtp_profile(call,1);
 	}
 }
 
