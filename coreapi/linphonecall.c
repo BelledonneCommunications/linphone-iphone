@@ -773,7 +773,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				return;
 			}
 		}
-
 		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
 							   linphone_call_state_to_string(cstate));
 
@@ -801,10 +800,16 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->media_start_time=time(NULL);
 		}
 
+		if (cstate == LinphoneCallStreamsRunning) {
+			linphone_reporting_update_ip(call);
+		}
+
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
 		if (cstate==LinphoneCallReleased){
-			linphone_reporting_publish(call);
+
+			if (call->log->status == LinphoneCallSuccess)
+				linphone_reporting_publish(call);
 
 			if (call->op!=NULL) {
 				/*transfer the last error so that it can be obtained even in Released state*/
@@ -2754,7 +2759,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				evd->packet = NULL;
 				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
-				linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
+				if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
+					linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
@@ -2765,7 +2771,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				evd->packet = NULL;
 				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LINPHONE_CALL_STATS_SENT_RTCP_UPDATE;
 				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
-				linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
+				if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
+					linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
