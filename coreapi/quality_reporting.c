@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 
- 	// cgdb: pourquoi pas de breakpoint dans mon fichier?
 	// remote: session desc pourquoi c'est null
 	// Jehan: dialog id ? --> local / remote tag pas accessible
  
@@ -252,23 +251,23 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 	SalMediaDescription * remote_smd = NULL;
 	SalStreamType sal_stream_type = (stats_type == LINPHONE_CALL_STATS_AUDIO) ? SalAudio : SalVideo;
 
-	// const char* from_tag;
-	// const char* to_tag;
-
 	if (report == NULL) {
 		ms_warning("No reporting created for this stream");
 		return NULL;
 	}
 
-	if (stats_type == LINPHONE_CALL_STATS_AUDIO) {
+	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = call->audiostream->ms;
 		local_payload = call->current_params.audio_codec;
 		remote_payload = linphone_call_get_remote_params(call)->audio_codec;
-	} else {
+	} else if (stats_type == LINPHONE_CALL_STATS_VIDEO && call->videostream != NULL) {
 		stream = call->videostream->ms;
 		local_payload = call->current_params.video_codec;
 		remote_payload = linphone_call_get_remote_params(call)->video_codec;
+	} else {
+		return NULL;
 	}
+
 	session = stream.sessions.rtp_session;
 	qi = media_stream_get_quality_indicator(&stream);
 
@@ -285,7 +284,7 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 			break;
 		}
 	}
-	if (count == call->resultdesc->n_total_streams) {
+	if (count == call->localdesc->n_total_streams) {
 		ms_warning("Could not find the associated stream of type %d for local desc", sal_stream_type);
 	}
 
@@ -321,16 +320,12 @@ reporting_session_report_t * linphone_reporting_update(LinphoneCall * call, int 
 		report->info.remote_id = linphone_address_as_string(call->log->from);
 		report->info.local_id = linphone_address_as_string(call->log->to);
 		report->info.orig_id = ms_strdup(report->info.remote_id);
-		// from_tag=belle_sip_dialog_get_local_tag(call->op->dialog);
-		// to_tag=belle_sip_dialog_get_remote_tag(call->op->dialog);
 	} else {
 		report->info.remote_id = linphone_address_as_string(call->log->to);
 		report->info.local_id = linphone_address_as_string(call->log->from);
 		report->info.orig_id = ms_strdup(report->info.local_id);
-		// to_tag=belle_sip_dialog_get_local_tag(call->op->dialog);
-		// from_tag=belle_sip_dialog_get_remote_tag(call->op->dialog);
 	}
-	report->dialog_id = ms_strdup_printf("%s;to-tag=%s;from-tag=%s", report->info.call_id, "", ""); 
+	report->dialog_id = sal_op_get_dialog_id(call->op);
 
 	report->local_metrics.timestamps.start = call->log->start_date_time;
 	report->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);

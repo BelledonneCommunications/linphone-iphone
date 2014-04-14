@@ -572,6 +572,7 @@ const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 const char* sal_op_get_call_id(const SalOp *op);
+char* sal_op_get_dialog_id(const SalOp *op);
 
 const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
