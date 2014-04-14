@@ -606,6 +606,10 @@
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
+
+        // for some views, we need the content to overlap, in which case
+        // we insert in the tab XIB a mask with tag -1 and with y = the amount of
+        // points that the content should overlap.
         for (UIView *view in self.tabBarViewController.view.subviews) {
             if(view.tag == -1) {
                 contentFrame.size.height += view.frame.origin.y;

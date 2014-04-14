@@ -60,3 +60,6 @@
 
 /* Download bandwidth */
 "Download bandwidth" = "Download bandwidth";
+
+/* IPv6 */
+"Use IPv6" = "Use IPv6";

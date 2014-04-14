@@ -35,6 +35,7 @@ enum TableSection {
 #pragma mark - Lifecycle Functions
 
 - (void)initInCallTableViewController {
+    minimized = false;
 }
 
 - (id)init{
@@ -147,7 +148,7 @@ enum TableSection {
         if(appData != NULL) {
             data = [appData->userInfos objectForKey:kLinphoneInCallCellData];
             if(data == nil) {
-                data = [[[UICallCellData alloc] init:call] autorelease];
+                data = [[[UICallCellData alloc] init:call minimized:minimized] autorelease];
                 [appData->userInfos setObject:data forKey:kLinphoneInCallCellData];
             }
         }
@@ -179,11 +180,14 @@ enum TableSection {
 }
 
 - (void)minimizeAll {
+
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+    minimized = true;
     while(list != NULL) {
         UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
         if(data) {
             data->minimize = true;
+        } else {
         }
         list = list->next;
     }
@@ -192,6 +196,7 @@ enum TableSection {
 
 - (void)maximizeAll {
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+    minimized = false;
     while(list != NULL) {
         UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
         if(data) {

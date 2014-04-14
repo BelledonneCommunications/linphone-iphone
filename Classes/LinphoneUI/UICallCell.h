@@ -37,7 +37,7 @@ typedef enum _UICallCellOtherView {
     LinphoneCall *call;
 }   
 
-- (id)init:(LinphoneCall*) call;
+- (id)init:(LinphoneCall*) call minimized:(BOOL)minimized;
 
 @property (nonatomic, retain) UIImage *image;
 @property (nonatomic, retain) NSString *address;
@@ -77,6 +77,12 @@ typedef enum _UICallCellOtherView {
 
 @property (nonatomic, retain) IBOutlet UILabel* videoCodecLabel;
 @property (nonatomic, retain) IBOutlet UILabel* videoCodecHeaderLabel;
+
+@property (retain, nonatomic) IBOutlet UILabel *videoSentSizeHeaderLabel;
+@property (retain, nonatomic) IBOutlet UILabel *videoSentSizeLabel;
+@property (retain, nonatomic) IBOutlet UILabel *videoRecvSizeHeaderLabel;
+@property (retain, nonatomic) IBOutlet UILabel *videoRecvSizeLabel;
+
 @property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthLabel;
 @property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthHeaderLabel;
 @property (nonatomic, retain) IBOutlet UILabel* videoDownloadBandwidthLabel;

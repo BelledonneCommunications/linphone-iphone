@@ -1,0 +1,24 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Afficher tout les contacts"; ObjectID = "4"; */
+"4.accessibilityLabel" = "Afficher tout les contacts";
+
+/* Class = "IBUIButton"; normalTitle = "Tous"; ObjectID = "4"; */
+"4.normalTitle" = "Tous";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Afficher les contacts Linphone"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Afficher les contacts Linphone";
+
+/* Class = "IBUIButton"; normalTitle = "Linphone"; ObjectID = "5"; */
+"5.normalTitle" = "Linphone";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Ajouter un contact"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Ajouter un contact";
+
+/* Class = "IBUIButton"; normalTitle = "Ajouter un contact"; ObjectID = "6"; */
+"6.normalTitle" = "Ajouter un contact";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Retour"; ObjectID = "87"; */
+"87.accessibilityLabel" = "Retour";
+
+/* Class = "IBUIButton"; normalTitle = "Retour"; ObjectID = "87"; */
+"87.normalTitle" = "Retour";

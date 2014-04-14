@@ -35,6 +35,7 @@
     ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
     BOOL scrollOnGrowingEnabled;
+    BOOL composingVisible;
 }
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
@@ -49,6 +50,8 @@
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *transferBackgroundImage;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+@property (retain, nonatomic) IBOutlet UILabel *composeLabel;
+@property (retain, nonatomic) IBOutlet UIView *composeIndicatorView;
 
 @property (nonatomic, copy) NSString *remoteAddress;
 @property (nonatomic, retain) IBOutlet UIButton* pictureButton;

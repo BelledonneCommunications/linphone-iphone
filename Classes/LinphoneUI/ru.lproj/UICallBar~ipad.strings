@@ -1,0 +1,144 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Клавиатура"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Клавиатура";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Повесить трубку"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Повесить трубку";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Начать конференцию"; ObjectID = "12"; */
+"12.accessibilityLabel" = "Начать конференцию";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Пауза"; ObjectID = "13"; */
+"13.accessibilityLabel" = "Пауза";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Настройки"; ObjectID = "14"; */
+"14.accessibilityLabel" = "Настройки";
+
+/* Class = "IBUIButton"; normalTitle = "Настройки"; ObjectID = "14"; */
+"14.normalTitle" = "Настройки";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Динамик"; ObjectID = "15"; */
+"15.accessibilityLabel" = "Динамик";
+
+/* Class = "IBUIButton"; disabledTitle = "Haut parleur"; ObjectID = "15"; */
+"15.disabledTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; normalTitle = "Динамик"; ObjectID = "15"; */
+"15.normalTitle" = "Динамик";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Микрофон"; ObjectID = "16"; */
+"16.accessibilityLabel" = "Микрофон";
+
+/* Class = "IBUIButton"; normalTitle = "Микрофон"; ObjectID = "16"; */
+"16.normalTitle" = "Микрофон";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Видео"; ObjectID = "17"; */
+"17.accessibilityLabel" = "Видео";
+
+/* Class = "IBUIButton"; normalTitle = "Видео"; ObjectID = "17"; */
+"17.normalTitle" = "Видео";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "19"; */
+"19.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "20"; */
+"20.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "21"; */
+"21.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "22"; */
+"22.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "23"; */
+"23.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "24"; */
+"24.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "25"; */
+"25.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "26"; */
+"26.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "27"; */
+"27.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Звёздочка"; ObjectID = "28"; */
+"28.accessibilityLabel" = "Звёздочка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "29"; */
+"29.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Решётка"; ObjectID = "30"; */
+"30.accessibilityLabel" = "Решётка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить звонок"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Добавить звонок";
+
+/* Class = "IBUIButton"; normalTitle = "Добавить"; ObjectID = "31"; */
+"31.normalTitle" = "Добавить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Перевести звонок"; ObjectID = "32"; */
+"32.accessibilityLabel" = "Перевести звонок";
+
+/* Class = "IBUIButton"; normalTitle = "Перевести"; ObjectID = "32"; */
+"32.normalTitle" = "Перевести";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Клавиатура"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Клавиатура";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Настройки"; ObjectID = "39"; */
+"39.accessibilityLabel" = "Настройки";
+
+/* Class = "IBUIButton"; normalTitle = "Настройки"; ObjectID = "39"; */
+"39.normalTitle" = "Настройки";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Видео"; ObjectID = "40"; */
+"40.accessibilityLabel" = "Видео";
+
+/* Class = "IBUIButton"; normalTitle = "Видео"; ObjectID = "40"; */
+"40.normalTitle" = "Видео";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Микрофон"; ObjectID = "41"; */
+"41.accessibilityLabel" = "Микрофон";
+
+/* Class = "IBUIButton"; normalTitle = "Микрофон"; ObjectID = "41"; */
+"41.normalTitle" = "Микрофон";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Динамик"; ObjectID = "42"; */
+"42.accessibilityLabel" = "Динамик";
+
+/* Class = "IBUIButton"; disabledTitle = "Haut parleur"; ObjectID = "42"; */
+"42.disabledTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; normalTitle = "Динамик"; ObjectID = "42"; */
+"42.normalTitle" = "Динамик";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Пауза"; ObjectID = "43"; */
+"43.accessibilityLabel" = "Пауза";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Начать конференцию"; ObjectID = "44"; */
+"44.accessibilityLabel" = "Начать конференцию";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Повесить трубку"; ObjectID = "45"; */
+"45.accessibilityLabel" = "Повесить трубку";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Решётка"; ObjectID = "47"; */
+"47.accessibilityLabel" = "Решётка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Звёздочка"; ObjectID = "49"; */
+"49.accessibilityLabel" = "Звёздочка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить звонок"; ObjectID = "60"; */
+"60.accessibilityLabel" = "Добавить звонок";
+
+/* Class = "IBUIButton"; normalTitle = "Добавить"; ObjectID = "60"; */
+"60.normalTitle" = "Добавить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Перевести"; ObjectID = "61"; */
+"61.accessibilityLabel" = "Перевести";
+
+/* Class = "IBUIButton"; normalTitle = "Перевести"; ObjectID = "61"; */
+"61.normalTitle" = "Перевести";

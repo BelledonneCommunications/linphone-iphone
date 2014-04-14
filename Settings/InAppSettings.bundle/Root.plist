@@ -92,6 +92,28 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<string>udp</string>
+			<key>Key</key>
+			<string>transport_preference</string>
+			<key>Title</key>
+			<string>Transport</string>
+			<key>Titles</key>
+			<array>
+				<string>UDP</string>
+				<string>TCP</string>
+				<string>TLS</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+				<string>tls</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>outbound_proxy_preference</string>

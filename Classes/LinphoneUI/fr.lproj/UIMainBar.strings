@@ -1,0 +1,39 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Chat"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Chat";
+
+/* Class = "IBUIButton"; normalTitle = "Chat"; ObjectID = "5"; */
+"5.normalTitle" = "Chat";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Historique"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Historique";
+
+/* Class = "IBUIButton"; normalTitle = "Historique"; ObjectID = "6"; */
+"6.normalTitle" = "Historique";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Clavier"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Clavier";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Contacts"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Contacts";
+
+/* Class = "IBUIButton"; normalTitle = "Contacts"; ObjectID = "8"; */
+"8.normalTitle" = "Contacts";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Options"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Options";
+
+/* Class = "IBUIButton"; normalTitle = "Options"; ObjectID = "9"; */
+"9.normalTitle" = "Options";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Appel(s) manqué(s)"; ObjectID = "34"; */
+"34.accessibilityLabel" = "Appel(s) manqué(s)";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "34"; */
+"34.text" = "99";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Message(s) manqué(s)"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Message(s) manqué(s)";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "38"; */
+"38.text" = "99";

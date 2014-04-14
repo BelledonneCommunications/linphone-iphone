@@ -155,7 +155,7 @@
 	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer status code [%i]", statusCode];
     
     if (statusCode == 200 && !upload) {
-        totalBytesExpectedToRead = [response expectedContentLength];
+        totalBytesExpectedToRead = (int)[response expectedContentLength];
     }
 }
 

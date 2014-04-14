@@ -91,16 +91,16 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
+
     [self startApplication];
-    
-	[[LinphoneManager instance] becomeActive];
-    
+    LinphoneManager* instance = [LinphoneManager instance];
+
+	[instance becomeActive];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    
+
 	if (call){
-		LinphoneManager* instance = [LinphoneManager instance];
 		if (call == instance->currentCallContextBeforeGoingBackground.call) {
 			const LinphoneCallParams* params = linphone_call_get_current_params(call);
 			if (linphone_call_params_video_enabled(params)) {
@@ -109,14 +109,19 @@
                                         instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
-		}
+		} else if ( linphone_call_get_state(call) == LinphoneCallIncomingReceived ) {
+            [[PhoneMainView  instance ] displayIncomingCall:call];
+            // in this case, the ringing sound comes from the notification.
+            // To stop it we have to do the iOS7 ring fix...
+            [self fixRing];
+        }
 	}
 }
 
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability];
     
 	//work around until we can access lpconfig without linphonecore
 	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -129,14 +134,20 @@
 #endif
                                  nil];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
-	
+
+    BOOL background_mode = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
+    BOOL start_at_boot   = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"];
+
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
-        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
-            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
-            // autoboot disabled, doing nothing
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground)
+    {
+        // we've been woken up directly to background;
+        if( !start_at_boot || !background_mode ) {
+            // autoboot disabled or no background, and no push: do nothing and wait for a real launch
             return YES;
         }
+
+    }
     
     [self startApplication];
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -168,14 +179,14 @@
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-	
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Application Will Terminate"];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     [self startApplication];
     if([LinphoneManager isLcReady]) {
         if([[url scheme] isEqualToString:@"sip"]) {
-            // Go to ChatRoom view
+            // Go to Dialer view
             DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
             if(controller != nil) {
                 [controller setAddress:[url absoluteString]];
@@ -183,6 +194,15 @@
         }
     }
 	return YES;
+}
+
+- (void)fixRing{
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        // iOS7 fix for notification sound not stopping.
+        // see http://stackoverflow.com/questions/19124882/stopping-ios-7-remote-notification-sound
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+    }
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
@@ -195,7 +215,7 @@
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			LinphoneCore *lc = [LinphoneManager getLc];
 			linphone_core_set_network_reachable(lc, FALSE);
-			linphone_core_set_network_reachable(lc, TRUE);
+			[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
                     [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
@@ -208,13 +228,7 @@
 					else
 						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
 
-                    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-                        // iOS7 fix for notification sound not stopping.
-                        // see http://stackoverflow.com/questions/19124882/stopping-ios-7-remote-notification-sound
-                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
-                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
-                    }
-
+                    [self fixRing];
                 }
             }
         }
@@ -227,6 +241,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    [[UIApplication sharedApplication] cancelLocalNotification:notification];
     if([notification.userInfo objectForKey:@"callId"] != nil) {
         [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
@@ -246,6 +261,30 @@
             [controller setCallLogId:callLog];
         }
     }
+}
+
+// this method is implemented for iOS7. It is invoked when receiving a push notification for a call and it has "content-available" in the aps section.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    LinphoneManager* lm = [LinphoneManager instance];
+
+    // check that linphone is still running
+    if( ![LinphoneManager isLcReady] )
+        [lm startLibLinphone];
+
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Silent PushNotification; userInfo %@", userInfo];
+
+    // save the completion handler for later execution.
+    // 2 outcomes:
+    // - if a new call/message is received, the completion handler will be called with "NEWDATA"
+    // - if nothing happens for 15 seconds, the completion handler will be called with "NODATA"
+    lm.silentPushCompletion = completionHandler;
+    [NSTimer scheduledTimerWithTimeInterval:15.0 target:lm selector:@selector(silentPushFailed:) userInfo:nil repeats:FALSE];
+
+    // Force Linphone to drop the current socket, this will trigger a refresh registers
+    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+    lm.connectivity=none; /*force connectivity to be discovered again*/
+    [lm refreshRegisters];
 }
 
 

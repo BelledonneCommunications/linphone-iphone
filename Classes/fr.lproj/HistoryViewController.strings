@@ -1,0 +1,27 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Afficher tout les contacts"; ObjectID = "4"; */
+"4.accessibilityLabel" = "Afficher tout les contacts";
+
+/* Class = "IBUIButton"; normalTitle = "Tous"; ObjectID = "4"; */
+"4.normalTitle" = "Tous";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Afficher les contacts Linphone"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Afficher les contacts Linphone";
+
+/* Class = "IBUIButton"; normalTitle = "Manqués"; ObjectID = "5"; */
+"5.normalTitle" = "Manqués";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Éditer"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Éditer";
+
+/* Class = "IBUIButton"; normalTitle = "Éditer"; ObjectID = "6"; */
+"6.normalTitle" = "Éditer";
+
+/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "6"; */
+"6.selectedTitle" = "Ok";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Supprimer tout"; ObjectID = "35"; */
+"35.accessibilityLabel" = "Supprimer tout";
+
+/* Class = "IBUIButton"; normalTitle = "Supprimer tout"; ObjectID = "35"; */
+"35.normalTitle" = "Supprimer tout";

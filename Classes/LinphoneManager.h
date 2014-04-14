@@ -40,6 +40,7 @@ extern const char *const LINPHONERC_APPLICATION_KEY;
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneTextComposeEvent;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
@@ -47,6 +48,8 @@ extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
+extern NSString *const kLinphoneConfiguringStateUpdate;
+extern NSString *const kLinphoneGlobalStateUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -95,7 +98,7 @@ typedef struct _LinphoneManagerSounds {
     SystemSoundID message;
 } LinphoneManagerSounds;
 
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
+@interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
     
@@ -125,6 +128,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)getUserAgent;
 
 
+- (void)resetLinphoneCore;
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
 - (BOOL)resignActive;
@@ -163,7 +167,7 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)lpConfigBoolForKey:(NSString*)key;
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
-
+- (void)silentPushFailed:(NSTimer*)timer;
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
@@ -181,6 +185,8 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) TunnelMode tunnelMode;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
+@property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
+@property (readonly) BOOL wasRemoteProvisioned;
 
 @end
 

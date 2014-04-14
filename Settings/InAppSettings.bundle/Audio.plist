@@ -200,7 +200,7 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<integer>32</integer>
+			<integer>36</integer>
 			<key>Key</key>
 			<string>audio_codec_bitrate_limit_preference</string>
 			<key>Title</key>
@@ -210,7 +210,7 @@
 				<string>10 kbits/s</string>
 				<string>15 kbits/s</string>
 				<string>20 kbits/s</string>
-				<string>32 kbits/s</string>
+				<string>36 kbits/s</string>
 				<string>64 kbits/s</string>
 				<string>128 kbits/s</string>
 			</array>
@@ -221,7 +221,7 @@
 				<integer>10</integer>
 				<integer>15</integer>
 				<integer>20</integer>
-				<integer>32</integer>
+				<integer>36</integer>
 				<integer>64</integer>
 				<integer>128</integer>
 			</array>

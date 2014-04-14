@@ -18,6 +18,7 @@
  */              
 
 #import <UIKit/UIKit.h>
+#import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 #import "UICompositeViewController.h"
 #import "ContactsTableViewController.h"
@@ -44,11 +45,14 @@ typedef enum _ContactSelectionMode {
 
 @end
 
-@interface ContactsViewController : UIViewController<UICompositeViewDelegate> {
+@interface ContactsViewController : UIViewController<UICompositeViewDelegate,ABPeoplePickerNavigationControllerDelegate> {
+    BOOL use_systemView;
 }
 
 @property (nonatomic, retain) IBOutlet ContactsTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
+@property (nonatomic, retain) IBOutlet UINavigationController* sysViewController;
+@property (retain, nonatomic) IBOutlet UIView *toolBar;
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
 @property (nonatomic, retain) IBOutlet UIButton *backButton;

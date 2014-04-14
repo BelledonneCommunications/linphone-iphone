@@ -34,6 +34,8 @@
 @synthesize editButton;
 @synthesize remoteAddress;
 @synthesize addressLabel;
+@synthesize composeLabel;
+@synthesize composeIndicatorView;
 @synthesize avatarImage;
 @synthesize headerView;
 @synthesize chatView;
@@ -60,6 +62,7 @@
                                 [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
                                 [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
+        self->composingVisible = TRUE;
     }
     return self;
 }
@@ -88,6 +91,8 @@
     [imageQualities release];
     [waitView release];
     
+    [composeLabel release];
+    [composeIndicatorView release];
     [super dealloc];
 }
 
@@ -163,7 +168,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(onMessageChange:) 
 												 name:UITextViewTextDidChangeNotification 
 											   object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textComposeEvent:)
+                                                 name:kLinphoneTextComposeEvent
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
@@ -172,7 +180,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
-    
+
     [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                forNinePatchNamed:@"chat_message_background"]];
     
@@ -190,11 +198,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     [messageField resignFirstResponder];
-    
-    if(chatRoom != NULL) {
-        linphone_chat_room_destroy(chatRoom);
-        chatRoom = NULL;
-    }
+
+    chatRoom = NULL;
+
+    [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidBecomeActiveNotification
                                                   object:nil];
@@ -213,6 +221,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
+												  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneTextComposeEvent
 												  object:nil];
 }
 
@@ -238,7 +249,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(remoteAddress != nil) {
         [remoteAddress release];
     }
-    if ([aRemoteAddress hasPrefix:@"sip:"]) {
+    if ([aRemoteAddress hasPrefix:@"sip:"] || [aRemoteAddress hasPrefix:@"sips:"]) {
         remoteAddress = [aRemoteAddress copy];
     } else {
         char normalizedUserName[256];
@@ -252,9 +263,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         linphone_address_destroy(linphoneAddress);
     }
     [messageField setText:@""];
+
+    chatRoom = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     [self update];
 	[tableController setRemoteAddress: remoteAddress];
     [ChatModel readConversation:remoteAddress];
+    [self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
@@ -423,6 +437,36 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     });
 }
 
+- (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
+
+    if( composingVisible == visible ) return;
+
+    CGRect keyboardFrame = [self.messageView frame];
+    CGRect newComposingFrame = [self.composeIndicatorView frame];
+    CGRect newTableFrame = [self.tableController.tableView frame];
+
+    if( visible ){
+        [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
+        // pull up the composing frame and shrink the table view
+
+        newTableFrame.size.height -= newComposingFrame.size.height;
+        newComposingFrame.origin.y = keyboardFrame.origin.y - newComposingFrame.size.height;
+    } else {
+        // pull down the composing frame and widen the tableview
+        newTableFrame.size.height += newComposingFrame.size.height;
+        newComposingFrame.origin.y = keyboardFrame.origin.y;
+    }
+    [UIView animateWithDuration:delay
+                     animations:^{
+                         self.tableController.tableView.frame = newTableFrame;
+                         self.composeIndicatorView.frame = newComposingFrame;
+                     }
+                     completion:^(BOOL finished) {
+                         composingVisible = visible;
+                         [self.tableController scrollToBottom:TRUE];
+                     }];
+}
+
 
 #pragma mark - Event Functions
 
@@ -458,6 +502,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     }
 }
 
+- (void)textComposeEvent:(NSNotification*)notif {
+    LinphoneChatRoom* room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
+    if( room && room == chatRoom ){
+        BOOL composing = linphone_chat_room_is_remote_composing(room);
+        [self setComposingVisible:composing withDelay:0.3];
+    }
+}
 
 #pragma mark - UITextFieldDelegate Functions
 
@@ -473,6 +524,11 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (BOOL)growingTextViewShouldEndEditing:(HPGrowingTextView *)growingTextView {
     [listTapGestureRecognizer setEnabled:FALSE];
     return TRUE;
+}
+
+- (void)growingTextChanged:(HPGrowingTextView *)growingTextView text:(NSString *)text {
+    if( [text length] > 0 && chatRoom )
+        linphone_chat_room_compose(chatRoom);
 }
 
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
@@ -500,6 +556,12 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         
         [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                      forNinePatchNamed:@"chat_message_background"]];
+        // if we're showing the compose message, update it position
+        if ( ![composeLabel isHidden] ) {
+            CGRect frame = [composeLabel frame];
+            frame.origin.y -= diff;
+            [composeLabel setFrame:frame];
+        }
     }
 }
 
@@ -612,6 +674,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     return FALSE;
 }
 
+- (void)resendChat:(NSString *)message {
+    [self sendMessage:message withExterlBodyUrl:nil withInternalUrl:nil];
+}
 
 #pragma mark ImageSharingDelegate
 

@@ -86,7 +86,10 @@ NSTimer *callSecurityTimer;
                                                  name:kLinphoneRegistrationUpdate
                                                object:nil];
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(globalStateUpdate:)
+                                                 name:kLinphoneGlobalStateUpdate
+                                               object:nil];
     [callQualityImage setHidden: true];
     [callSecurityImage setHidden: true];
     
@@ -104,7 +107,9 @@ NSTimer *callSecurityTimer;
     [[NSNotificationCenter defaultCenter] removeObserver:self  
                                                     name:kLinphoneRegistrationUpdate
                                                   object:nil];
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneGlobalStateUpdate
+                                                  object:nil];
     if(callQualityTimer != nil) {
         [callQualityTimer invalidate];
         callQualityTimer = nil;
@@ -124,15 +129,23 @@ NSTimer *callSecurityTimer;
     [self proxyConfigUpdate:config];
 }
 
+- (void) globalStateUpdate:(NSNotification*) notif {
+    [self registrationUpdate:notif];
+}
+
 
 #pragma mark - 
 
 - (void)proxyConfigUpdate: (LinphoneProxyConfig*) config {
-    LinphoneRegistrationState state;
+    LinphoneRegistrationState state = LinphoneRegistrationNone;
     NSString* message = nil;
     UIImage* image = nil;
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneGlobalState gstate = linphone_core_get_global_state(lc);
 
-    if (config == NULL) {
+    if( gstate == LinphoneGlobalConfiguring ){
+        message = NSLocalizedString(@"Fetching remote configuration", nil);
+    } else if (config == NULL) {
         state = LinphoneRegistrationNone;
         if(![LinphoneManager isLcReady] || linphone_core_is_network_reachable([LinphoneManager getLc]))
             message = NSLocalizedString(@"No SIP account configured", nil);
@@ -266,14 +279,15 @@ NSTimer *callSecurityTimer;
                     message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with the peer:\n%s",nil),
                                linphone_call_get_authentication_token(call)];
                 }
-                if(securitySheet == nil) {
+                if( securitySheet == nil ){
                     securitySheet = [[DTActionSheet alloc] initWithTitle:message];
+                    [securitySheet setDelegate:self];
                     [securitySheet addButtonWithTitle:NSLocalizedString(@"Ok",nil) block:^(){
                         linphone_call_set_authentication_token_verified(call, !valid);
                         [securitySheet release];
                         securitySheet = nil;
                     }];
-                    
+
                     [securitySheet addDestructiveButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:^(){
                         [securitySheet release];
                         securitySheet = nil;
@@ -285,6 +299,10 @@ NSTimer *callSecurityTimer;
     }
 }
 
+-(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    [securitySheet release];
+    securitySheet = nil;
+}
 
 #pragma mark - TPMultiLayoutViewController Functions
 

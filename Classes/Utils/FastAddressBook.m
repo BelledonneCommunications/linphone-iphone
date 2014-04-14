@@ -57,7 +57,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (BOOL)isSipURI:(NSString*)address {
-    return [address hasPrefix:@"sip:"];
+    return [address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"];
 }
 
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number {
@@ -126,11 +126,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         addressBook = nil;
     }
     NSError *error = nil;
-    if(ABAddressBookCreateWithOptions) {
-        addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-    } else {
-        addressBook = ABAddressBookCreate();
-    }
+        
+    addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
     if(addressBook != NULL) {
         if(ABAddressBookGetAuthorizationStatus) {
             ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {

@@ -24,31 +24,22 @@ host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
-			      --disable-strict \
-			      --disable-nls \
-                              --with-readline=none  \
-                              --enable-gtk_ui=no \
-                              --enable-console_ui=no \
-                              --enable-ssl-hmac=no \
-                              --enable-ssl=no \
-			      --disable-theora \
-			      --disable-sdl \
-			      --disable-x11 \
-			      --enable-bellesip \
-                              --with-gsm=$(prefix) \
-			      --disable-tests \
-			      --disable-tutorials \
-                              --enable-tunnel \
-                              --with-srtp=$(prefix) \
-                              --with-antlr=$(prefix) \
-                              --disable-msg-storage 
+				--with-readline=none  \
+				--enable-gtk_ui=no \
+				--enable-console_ui=no \
+				--enable-bellesip \
+				--with-gsm=$(prefix) \
+				--with-srtp=$(prefix) \
+				--with-antlr=$(prefix) \
+				--disable-strict \
+				--disable-nls \
+				--disable-theora \
+				--disable-sdl \
+				--disable-x11 \
+				--disable-tutorials \
+				--disable-tools \
+				--disable-msg-storage
 
-
-ifeq ($(enable_zrtp),yes)
-	linphone_configure_controls+= --enable-zrtp
-else
-	linphone_configure_controls+= --disable-zrtp
-endif
                               
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -64,12 +55,13 @@ endif
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-msisac build-msopenh264
 
 # setup the switches that might trigger a linphone reconfiguration
 
 enable_gpl_third_parties?=yes
 enable_ffmpeg?=yes
+enable_zrtp?=yes
 
 SWITCHES:=
 
@@ -84,6 +76,14 @@ ifeq ($(enable_gpl_third_parties),yes)
 		SWITCHES += disable_ffmpeg
 	endif
 
+	ifeq ($(enable_zrtp), yes)
+		linphone_configure_controls+= --enable-zrtp
+		SWITCHES += enable_zrtp
+	else
+		linphone_configure_controls+= --disable-zrtp
+		SWITCHES += disable_zrtp
+	endif
+
 else # !enable gpl
 	linphone_configure_controls+= --disable-ffmpeg 
 	SWITCHES += disable_gpl_third_parties disable_ffmpeg
@@ -93,6 +93,7 @@ SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
 
 mode_switch_check: $(SWITCHES)
 
+#generic rule to force recompilation of linphone if some options require it
 $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
 	cd $(LINPHONE_BUILD_DIR) && rm -f *able_$*
@@ -132,8 +133,8 @@ veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 # list of the submodules to build
-MS_MODULES      := msilbc libilbc msamr mssilk msx264
-SUBMODULES_LIST := polarssl openssl tunnel libantlr belle-sip srtp zrtpcpp speex libgsm libvpx libxml2 ffmpeg opus
+MS_MODULES      := msilbc libilbc msamr mssilk msx264 msisac msopenh264
+SUBMODULES_LIST := polarssl libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
 
 .NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
@@ -160,7 +161,7 @@ $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
         ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
 	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	CFLAGS="$(CFLAGS) -DMS2_MINIMAL_SIZE" $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
+	$(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 	${linphone_configure_controls}
 	
 

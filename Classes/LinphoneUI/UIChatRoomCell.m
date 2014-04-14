@@ -42,11 +42,12 @@
 @synthesize downloadButton;
 @synthesize chatRoomDelegate;
 @synthesize imageTapGestureRecognizer;
+@synthesize resendTapGestureRecognizer;
 
 static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
-static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
+static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
@@ -62,15 +63,20 @@ static UIFont *CELL_FONT = nil;
                                     options:nil];
         imageTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onImageClick:)];
         [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
+
+        resendTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResendClick:)];
+        [dateLabel addGestureRecognizer:resendTapGestureRecognizer];
+
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
         
         // shift message box, otherwise it will collide with the bubble
         CGRect messageCoords = [messageText frame];
-        messageCoords.origin.x   += 5;
+        messageCoords.origin.x   += 2;
         messageCoords.origin.y   += 2;
         messageCoords.size.width -= 5;
         [messageText setFrame:messageCoords];
+        messageText.allowSelectAll = TRUE;
     }
     return self;
 }
@@ -88,6 +94,7 @@ static UIFont *CELL_FONT = nil;
     [chat release];
     [downloadButton release];
     [imageTapGestureRecognizer release];
+    [resendTapGestureRecognizer release];
     
     [super dealloc];
 }
@@ -179,6 +186,11 @@ static UIFont *CELL_FONT = nil;
 	} else if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
 		statusImage.hidden = FALSE;
+
+        NSAttributedString* resend_text = [[NSAttributedString alloc]
+                                           initWithString:NSLocalizedString(@"Resend", @"Resend")
+                                           attributes:@{NSForegroundColorAttributeName: [UIColor redColor]}];
+        [dateLabel setAttributedText:resend_text];
 	} else {
 		statusImage.hidden = TRUE;
 	}
@@ -209,9 +221,22 @@ static UIFont *CELL_FONT = nil;
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
         }
-        messageSize = [[chat message] sizeWithFont: CELL_FONT
-                                        constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
-                                            lineBreakMode: NSLineBreakByTruncatingTail];
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
+        if( [[[UIDevice currentDevice] systemVersion] doubleValue] >= 7){
+            messageSize = [[chat message]
+                           boundingRectWithSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
+                           options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesFontLeading)
+                           attributes:@{NSFontAttributeName: CELL_FONT}
+                           context:nil].size;
+        } else
+#endif
+        {
+            messageSize = [[chat message] sizeWithFont: CELL_FONT
+                                     constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
+                                         lineBreakMode: NSLineBreakByTruncatingTail];
+        }
     } else {
         messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
     }
@@ -287,6 +312,19 @@ static UIFont *CELL_FONT = nil;
         if(controller != nil) {
             [controller setImage:messageImageView.image];
         }
+    }
+}
+
+- (IBAction)onResendClick:(id)event {
+    if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
+        NSString* message = [chat message];
+        [self onDeleteClick:nil];
+
+        double delayInSeconds = 0.4;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [chatRoomDelegate resendChat:message];
+        });
     }
 }
 

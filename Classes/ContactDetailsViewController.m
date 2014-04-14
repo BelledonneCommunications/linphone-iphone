@@ -37,7 +37,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     self = [super initWithNibName:@"ContactDetailsViewController" bundle:[NSBundle mainBundle]];
     if(self != nil) {
         inhibUpdate = FALSE;
-        addressBook = ABAddressBookCreate();
+        addressBook = ABAddressBookCreateWithOptions(nil, nil);
         ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
     }
     return self;

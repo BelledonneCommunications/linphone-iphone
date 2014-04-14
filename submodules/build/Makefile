@@ -19,9 +19,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-
 enable_gpl_third_parties=no
-enable_zrtp=no
+enable_zrtp=yes
 enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
@@ -31,9 +30,6 @@ enable_debug=no
 # check that the selected options are correct
 CHECKOPT_MSG := ""
 
-ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
-	CHECKOPT_MSG += "ZRTP is not available in non-gpl build.\n"
-endif
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 # ffmpeg is not compatible with no GPL.
@@ -43,7 +39,6 @@ endif
 ifneq ($(CHECKOPT_MSG),"")
 check_options:
 	@echo $(CHECKOPT_MSG)
-	@exit -1
 else
 check_options:
 endif
@@ -90,6 +85,9 @@ ipa: build
 	&&  make -f  builder-iphone-os.mk  ipa \
 	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin ipa \
 
+zipres:
+	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
+	@echo Archive 'ios_assets.tar.gz' placed in root directory
 
 clean:
 	make -f  builder-iphone-simulator.mk  clean \

@@ -1,0 +1,63 @@
+
+/* Class = "IBUITextField"; accessibilityLabel = "Введите адрес"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Введите адрес";
+
+/* Class = "IBUITextField"; placeholder = "Введите адрес SIP или номер телефона..."; ObjectID = "6"; */
+"6.placeholder" = "Введите адрес SIP или номер телефона...";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Звёздочка"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Звёздочка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "9"; */
+"9.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "10"; */
+"10.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Решётка"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Решётка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "12"; */
+"12.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "13"; */
+"13.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "14"; */
+"14.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "15"; */
+"15.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "16"; */
+"16.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "17"; */
+"17.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "18"; */
+"18.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "19"; */
+"19.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Перевести звонок"; ObjectID = "20"; */
+"20.accessibilityLabel" = "Перевести звонок";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Позвонить"; ObjectID = "21"; */
+"21.accessibilityLabel" = "Позвонить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Назад"; ObjectID = "22"; */
+"22.accessibilityLabel" = "Назад";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить звонок"; ObjectID = "23"; */
+"23.accessibilityLabel" = "Добавить звонок";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить контакт"; ObjectID = "24"; */
+"24.accessibilityLabel" = "Добавить контакт";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Стереть"; ObjectID = "25"; */
+"25.accessibilityLabel" = "Стереть";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Переключить камеру"; ObjectID = "71"; */
+"71.accessibilityLabel" = "Переключить камеру";

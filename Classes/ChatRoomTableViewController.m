@@ -94,9 +94,11 @@
 
 - (void)scrollToBottom:(BOOL)animated {
     [self.tableView reloadData];
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
-                          atScrollPosition:UITableViewScrollPositionBottom
-                                  animated:YES];
+    if( [data count] ){
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
+                              atScrollPosition:UITableViewScrollPositionBottom
+                                      animated:YES];
+    }
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -170,7 +172,7 @@
         ChatModel *chat = [data objectAtIndex:[indexPath row]];
         [data removeObjectAtIndex:[indexPath row]];
         [chat delete];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
         [tableView endUpdates];
     }
 }

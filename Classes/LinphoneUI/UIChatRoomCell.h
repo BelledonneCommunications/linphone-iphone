@@ -23,6 +23,7 @@
 #import "ChatRoomTableViewController.h"
 #import "UILoadingImageView.h"
 #import "UITransparentTVCell.h"
+#import "UITextViewNoDefine.h"
 
 
 @interface UIChatRoomCell : UITransparentTVCell {
@@ -32,13 +33,14 @@
 @property (nonatomic, retain) IBOutlet UIView *innerView;
 @property (nonatomic, retain) IBOutlet UIView *bubbleView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
-@property (nonatomic, retain) IBOutlet UITextView *messageText;
+@property (nonatomic, retain) IBOutlet UITextViewNoDefine *messageText;
 @property (nonatomic, retain) IBOutlet UILoadingImageView *messageImageView;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;
 @property (nonatomic, retain) IBOutlet UIButton* downloadButton;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer* imageTapGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer* resendTapGestureRecognizer;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat width:(int)width;

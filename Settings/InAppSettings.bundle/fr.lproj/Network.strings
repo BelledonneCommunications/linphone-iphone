@@ -60,3 +60,6 @@
 
 /* Download bandwidth */
 "Download bandwidth" = "Débit descendant";
+
+/* IPv6 */
+"Use IPv6" = "Utiliser IPv6";

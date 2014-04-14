@@ -1,0 +1,24 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Показать все контакты"; ObjectID = "4"; */
+"4.accessibilityLabel" = "Показать все контакты";
+
+/* Class = "IBUIButton"; normalTitle = "Все"; ObjectID = "4"; */
+"4.normalTitle" = "Все";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Показать контакты Linphone"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Показать контакты Linphone";
+
+/* Class = "IBUIButton"; normalTitle = "Linphone"; ObjectID = "5"; */
+"5.normalTitle" = "Linphone";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить контакт"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Добавить контакт";
+
+/* Class = "IBUIButton"; normalTitle = "Добавить контакт"; ObjectID = "6"; */
+"6.normalTitle" = "Добавить контакт";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Назад"; ObjectID = "87"; */
+"87.accessibilityLabel" = "Назад";
+
+/* Class = "IBUIButton"; normalTitle = "Назад"; ObjectID = "87"; */
+"87.normalTitle" = "Назад";

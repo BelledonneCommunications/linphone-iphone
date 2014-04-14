@@ -294,17 +294,19 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 			NSString* username = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
 			LinphoneAddress* address = linphone_core_interpret_url([LinphoneManager getLc]
 																   ,[username UTF8String]);
-			char* uri = linphone_address_as_string_uri_only(address);
-			CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-			CFTypeRef values[] = { [NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]], [LinphoneManager instance].contactSipField };
-			CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
-			ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
-			if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
-				[LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
-			}
-			CFRelease(lDict2);
-			linphone_address_destroy(address);
-			ms_free(uri);
+            if(address){
+                char* uri = linphone_address_as_string_uri_only(address);
+                CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
+                CFTypeRef values[] = { [NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]], [LinphoneManager instance].contactSipField };
+                CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
+                ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
+                if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+                }
+                CFRelease(lDict2);
+                linphone_address_destroy(address);
+                ms_free(uri);
+            }
 		}
 		CFRelease(lMap);
 	}
@@ -737,10 +739,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             if(contactSections[section] == ContactSections_Number ||
                contactSections[section] == ContactSections_Sip    ||
                (showEmails && contactSections[section] == ContactSections_Email)) {
+
                 [self removeEmptyEntry:self.tableView section:section animated:animated];
-                if( [[self getSectionData:section] count] == 0 ) // the section is empty -> remove titles
+                if( [[self getSectionData:section] count] == 0 && animated ) { // the section is empty -> remove titles
                     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
-                                    withRowAnimation:animated?UITableViewRowAnimationFade:UITableViewRowAnimationNone];
+                                  withRowAnimation:UITableViewRowAnimationFade];
+                }
             }
         }
     }

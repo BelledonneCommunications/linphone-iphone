@@ -141,7 +141,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         LinphoneCall* call = linphone_core_get_current_call(lc);
         LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
         [self callUpdate:call state:state];
-        
+
         if([LinphoneManager runningOnIpad]) {
             if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
@@ -154,12 +154,14 @@ static UICompositeViewDescription *compositeDescription = nil;
             }
         }
 
+        [addressField setText:@""];
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 // attributed string only available since iOS6
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
             // fix placeholder bar color in iOS7
             UIColor *color = [UIColor grayColor];
             addressField.attributedPlaceholder = [[NSAttributedString alloc]
-                                                  initWithString:addressField.placeholder
+                                                  initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
                                                   attributes:@{NSForegroundColorAttributeName: color}];
         }
 #endif
@@ -344,13 +346,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([[addressField text] length] > 0) {
         [addContactButton setEnabled:TRUE];
         [eraseButton setEnabled:TRUE];
-        [callButton setEnabled:TRUE];
         [addCallButton setEnabled:TRUE];
         [transferButton setEnabled:TRUE];
     } else {
         [addContactButton setEnabled:FALSE];
         [eraseButton setEnabled:FALSE];
-        [callButton setEnabled:FALSE];
         [addCallButton setEnabled:FALSE];
         [transferButton setEnabled:FALSE];
     }

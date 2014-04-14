@@ -25,6 +25,7 @@
 
 - (BOOL)chatRoomStartImageDownload:(NSURL*)url userInfo:(id)userInfo;
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url;
+- (void)resendChat:(NSString*)message;
 
 @end
 

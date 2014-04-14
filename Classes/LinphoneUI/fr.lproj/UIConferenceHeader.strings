@@ -1,0 +1,9 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Pause"; ObjectID = "13"; */
+"13.accessibilityLabel" = "Pause";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Conférence"; ObjectID = "15"; */
+"15.accessibilityLabel" = "Conférence";
+
+/* Class = "IBUILabel"; text = "Conférence"; ObjectID = "15"; */
+"15.text" = "Conférence";

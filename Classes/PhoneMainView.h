@@ -18,6 +18,7 @@
  */   
 
 #import <UIKit/UIKit.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 #import "LinphoneManager.h"
 #import "UICompositeViewController.h"
@@ -50,8 +51,12 @@
     NSTimer *batteryTimer;
 }
 
+@property (nonatomic, retain) IBOutlet UIView *statusBarBG;
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
+
 @property (readonly) UICompositeViewDescription *currentView;
+@property (readonly, retain) MPVolumeView* volumeView;
+
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
 - (UIViewController*)popCurrentView;
@@ -62,6 +67,7 @@
 - (void)fullScreen:(BOOL)enabled;
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view;
 - (void)startUp;
+- (void)displayIncomingCall:(LinphoneCall*) call;
 
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;

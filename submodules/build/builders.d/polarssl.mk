@@ -1,19 +1,28 @@
 polarssl_dir?=externals/polarssl
 
-update-tree:  $(BUILDER_SRC_DIR)/$(polarssl_dir)/Makefile
-	mkdir -p $(BUILDER_BUILD_DIR)/$(polarssl_dir)
-	cd $(BUILDER_BUILD_DIR)/$(polarssl_dir)/ && \
-	rsync -rvLpgoc --exclude ".git" $(BUILDER_SRC_DIR)/$(polarssl_dir)/ .
+SRC_DIR=$(BUILDER_SRC_DIR)
+BUILD_DIR=$(BUILDER_BUILD_DIR)
 
-build-polarssl: update-tree
-	host_alias=$(host) && . /$(BUILDER_SRC_DIR)/build/$(config_site) && \
-	cd $(BUILDER_BUILD_DIR)/$(polarssl_dir) && make CC="$$CC" AR="$$AR" CPPFLAGS="$$CPPFLAGS" lib && make install DESTDIR=$(prefix)
+
+$(SRC_DIR)/$(polarssl_dir)/configure:
+	cd $(SRC_DIR)/$(polarssl_dir) && ./autogen.sh
+
+$(BUILD_DIR)/$(polarssl_dir)/Makefile: $(SRC_DIR)/$(polarssl_dir)/configure
+	mkdir -p $(BUILD_DIR)/$(polarssl_dir)
+	cd $(BUILD_DIR)/$(polarssl_dir) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(SRC_DIR)/build/$(config_site) \
+	$(SRC_DIR)/$(polarssl_dir)/configure --prefix=$(prefix) --host=$(host) ${library_mode}  
+
+build-polarssl: $(BUILD_DIR)/$(polarssl_dir)/Makefile
+	cd $(BUILD_DIR)/${polarssl_dir} && \
+	host_alias=$(host) && . $(SRC_DIR)/build/$(config_site) && \
+	make && make install
 
 clean-polarssl:
-	-cd $(BUILDER_BUILD_DIR)/$(polarssl_dir) && make clean
+	-cd $(BUILD_DIR)/$(polarssl_dir) && make clean
 
 veryclean-polarssl: 
-	-rm -rf $(BUILDER_BUILD_DIR)/$(polarssl_dir)
+	-rm -rf $(BUILD_DIR)/$(polarssl_dir)
 
 clean-makefile-polarssl: veryclean-polarssl
 
