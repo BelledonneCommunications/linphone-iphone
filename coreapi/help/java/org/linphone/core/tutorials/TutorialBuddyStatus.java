@@ -97,7 +97,6 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	}
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
@@ -290,6 +289,13 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	@Override
 	public void configuringStatus(LinphoneCore lc,
 			RemoteProvisioningState state, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void authInfoRequested(LinphoneCore lc, String realm,
+			String username, String Domain) {
 		// TODO Auto-generated method stub
 		
 	}

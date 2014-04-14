@@ -24,18 +24,20 @@ static void publish_refresher_listener (belle_sip_refresher_t* refresher
 		,unsigned int status_code
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
+	const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
+	belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
+	belle_sip_response_t *response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(last_publish_trans));
 	/*belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));*/
 	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase?reason_phrase:"none",sal_op_get_proxy(op));
 	if (status_code==412){
 		/*resubmit the request after removing the SIP-If-Match*/
-		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
-		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		belle_sip_message_remove_header((belle_sip_message_t*)last_publish,"SIP-If-Match");
 		belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
 	}else if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}else if (status_code>=200){
 		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
+		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		op->base.root->callbacks.on_publish_response(op);
 	}
 }
@@ -104,7 +106,9 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event",eventname));
 		sal_op_add_body(op,BELLE_SIP_MESSAGE(req),body);
-		return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
+		if (expires!=-1)
+			return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
+		else return sal_op_send_request(op,req);
 	} else {
 		/*update status*/
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);

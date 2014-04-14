@@ -8,7 +8,7 @@ public enum SubscriptionState {
 	/**
 	 * An outgoing subcription was created.
 	 */
-	OutoingInit(1),
+	OutoingProgress(1),
 	/**
 	 * An incoming subcription is received.
 	 */
@@ -41,7 +41,7 @@ public enum SubscriptionState {
 	static protected SubscriptionState fromInt(int value) throws LinphoneCoreException{
 		switch(value){
 		case 0: return None;
-		case 1: return OutoingInit;
+		case 1: return OutoingProgress;
 		case 2: return IncomingReceived;
 		case 3: return Pending;
 		case 4: return Active;

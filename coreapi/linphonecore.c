@@ -2262,7 +2262,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
 	    && (curtime-lc->dmfs_playing_start_time)>5){
-		linphone_core_stop_dtmf_stream(lc);
+		MSPlayerState state;
+		bool_t stop=TRUE;
+		if (lc->ringstream->source && ms_filter_call_method(lc->ringstream->source,MS_PLAYER_GET_STATE,&state)==0){
+			if (state==MSPlayerPlaying) stop=FALSE;
+		}
+		if (stop) {
+			ms_message("Releasing inactive tone player.");
+			linphone_core_stop_dtmf_stream(lc);
+		}
 	}
 
 	sal_iterate(lc->sal);
@@ -4412,7 +4420,9 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
 	LinphoneCore *lc=(LinphoneCore*)ud;
-	lc->preview_finished=1;
+	if (event==MS_PLAYER_EOF){
+		lc->preview_finished=1;
+	}
 }
 
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata)
@@ -6380,6 +6390,7 @@ const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
 		case LinphoneMediaEncryptionNone:
 			return "LinphoneMediaEncryptionNone";
 	}
+	ms_error("Invalid LinphoneMediaEncryption value %i",(int)menc);
 	return "INVALID";
 }
 
@@ -6389,7 +6400,7 @@ const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
 bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc){
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
-			return ortp_srtp_supported();
+			return media_stream_srtp_supported();
 		case LinphoneMediaEncryptionZRTP:
 			return ortp_zrtp_available();
 		case LinphoneMediaEncryptionNone:
@@ -6402,7 +6413,7 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 	const char *type="none";
 	int ret=0;
 	if (menc == LinphoneMediaEncryptionSRTP){
-		if (!ortp_srtp_supported()){
+		if (!media_stream_srtp_supported()){
 			ms_warning("SRTP not supported by library.");
 			type="none";
 			ret=-1;

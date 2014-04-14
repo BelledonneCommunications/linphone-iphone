@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
@@ -72,7 +72,7 @@ static void linphone_interpret_url_test()
 	LinphoneCore* lc;
 	const char* sips_address = "sips:margaux@sip.linphone.org";
 	LinphoneAddress* address;
-	
+
 	memset ( &v_table,0,sizeof ( v_table ) );
 	lc = linphone_core_new ( &v_table,NULL,NULL,NULL );
 	CU_ASSERT_PTR_NOT_NULL_FATAL ( lc );
@@ -89,12 +89,29 @@ static void linphone_interpret_url_test()
 	linphone_core_destroy ( lc );
 }
 
+static void linphone_lpconfig_from_buffer(){
+
+	static const char* buffer = "[buffer]\ntest=ok";
+	static const char* buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok";
+	LpConfig* conf;
+
+	conf = lp_config_new_from_buffer(buffer);
+	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer","test",""),"ok");
+	lp_config_destroy(conf);
+
+	conf = lp_config_new_from_buffer(buffer_linebreaks);
+	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer_linebreaks","test",""),"ok");
+	lp_config_destroy(conf);
+
+}
+
 
 test_t setup_tests[] = {
 	{ "Linphone Address", linphone_address_test },
 	{ "Linphone core init/uninit", core_init_test },
 	{ "Linphone random transport port",core_sip_transport_test},
-	{ "Linphone interpret url", linphone_interpret_url_test }
+	{ "Linphone interpret url", linphone_interpret_url_test },
+	{ "LPConfig from buffer", linphone_lpconfig_from_buffer }
 };
 
 test_suite_t setup_test_suite = {

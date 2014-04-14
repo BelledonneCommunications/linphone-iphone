@@ -1052,6 +1052,7 @@ static void info_received(SalOp *op, const SalBody *body){
 
 static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
+	const SalErrorInfo *ei=sal_op_get_error_info(op);
 	
 	if (lev==NULL) return;
 	
@@ -1060,7 +1061,10 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	}else if (status==SalSubscribePending){
 		linphone_event_set_state(lev,LinphoneSubscriptionPending);
 	}else{
-		linphone_event_set_state(lev,LinphoneSubscriptionError);
+		if (lev->subscription_state==LinphoneSubscriptionActive && ei->reason==SalReasonIOError){
+			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingProgress);
+		}
+		else linphone_event_set_state(lev,LinphoneSubscriptionError);
 	}
 }
 
@@ -1111,9 +1115,12 @@ static void on_publish_response(SalOp* op){
 			linphone_event_set_publish_state(lev,LinphonePublishOk);
 		else 
 			linphone_event_set_publish_state(lev,LinphonePublishCleared);
-		
 	}else{
-		linphone_event_set_publish_state(lev,LinphonePublishError);
+		if (lev->publish_state==LinphonePublishOk){
+			linphone_event_set_publish_state(lev,LinphonePublishProgress);
+		}else{
+			linphone_event_set_publish_state(lev,LinphonePublishError);
+		}
 	}
 }
 

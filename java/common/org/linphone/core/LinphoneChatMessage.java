@@ -52,11 +52,6 @@ public interface LinphoneChatMessage {
 		}
 	}
 	
-	long getNativePtr();
-	
-	Object getUserData();
-	
-	void setUserData();
 	
 	/**
 	 * get text associated to this LinphoneChatMessage

@@ -132,6 +132,7 @@ typedef enum _LinphoneChatMessageDir{
 } LinphoneChatMessageDir;
 
 struct _LinphoneChatMessage {
+	belle_sip_object_t base;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessageDir dir;
 	char* message;
@@ -148,6 +149,8 @@ struct _LinphoneChatMessage {
 	unsigned int storage_id;
 	SalOp *op;
 };
+
+BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
 
 typedef struct StunCandidate{
 	char addr[64];
@@ -862,7 +865,8 @@ BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneChatMessage)
 BELLE_SIP_DECLARE_TYPES_END
 
 

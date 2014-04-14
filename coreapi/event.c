@@ -234,7 +234,10 @@ static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneConten
 		ms_error("linphone_event_update_publish(): this is not a PUBLISH event.");
 		return -1;
 	}
-	
+	if (lev->send_custom_headers){
+		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
+		lev->send_custom_headers=NULL;
+	}else sal_op_set_sent_custom_header(lev->op,NULL);
 	err=sal_publish(lev->op,NULL,NULL,lev->name,lev->expires,sal_body_from_content(&salbody,body));
 	if (err==0){
 		linphone_event_set_publish_state(lev,LinphonePublishProgress);
@@ -292,7 +295,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	}
 	
 	if (lev->publish_state!=LinphonePublishNone){
-		if (lev->publish_state==LinphonePublishOk){
+		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
 		}else sal_op_stop_refreshing(lev->op);
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);

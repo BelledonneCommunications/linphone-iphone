@@ -192,7 +192,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		isValid();
 		long lNativePtr = getDefaultProxyConfig(nativePtr);
 		if (lNativePtr!=0) {
-			return new LinphoneProxyConfigImpl(lNativePtr); 
+			return new LinphoneProxyConfigImpl(this,lNativePtr); 
 		} else {
 			return null;
 		}
@@ -218,10 +218,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		if (addProxyConfig(proxyCfg,nativePtr,((LinphoneProxyConfigImpl)proxyCfg).nativePtr) !=0) {
 			throw new LinphoneCoreException("bad proxy config");
 		}
+		((LinphoneProxyConfigImpl)proxyCfg).mCore=this;
 	}
 	public synchronized void removeProxyConfig(LinphoneProxyConfig proxyCfg) {
 		isValid();
 		removeProxyConfig(nativePtr, ((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
+		((LinphoneProxyConfigImpl)proxyCfg).mCore=null;
 	}
 	public synchronized void clearAuthInfos() {
 		isValid();
@@ -517,7 +519,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		LinphoneProxyConfig[] proxies = new LinphoneProxyConfig[typesPtr.length];
 
 		for (int i=0; i < proxies.length; i++) {
-			proxies[i] = new LinphoneProxyConfigImpl(typesPtr[i]);
+			proxies[i] = new LinphoneProxyConfigImpl(this,typesPtr[i]);
 		}
 
 		return proxies;
@@ -1137,7 +1139,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	@Override
 	public synchronized LinphoneProxyConfig createProxyConfig() {
-		return new LinphoneProxyConfigImpl(createProxyConfig(nativePtr));
+		return new LinphoneProxyConfigImpl(this,createProxyConfig(nativePtr));
 	}
 	@Override
 	public synchronized void setCallErrorTone(Reason reason, String path) {

@@ -146,17 +146,20 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	if ( stream->proto == SalProtoRtpSavp ) {
 		/* add crypto lines */
 		for ( j=0; j<SAL_CRYPTO_ALGO_MAX; j++ ) {
+			const char *enc_name=NULL;
 
 			switch ( stream->crypto[j].algo ) {
 				case AES_128_SHA1_80:
-					snprintf ( buffer, sizeof ( buffer ), "%d %s inline:%s",
-							   stream->crypto[j].tag, "AES_CM_128_HMAC_SHA1_80", stream->crypto[j].master_key );
-					belle_sdp_media_description_add_attribute ( media_desc,belle_sdp_attribute_create ( "crypto",buffer ) );
+					enc_name="AES_CM_128_HMAC_SHA1_80";
 					break;
 				case AES_128_SHA1_32:
-					snprintf ( buffer, sizeof ( buffer ), "%d %s inline:%s",
-							   stream->crypto[j].tag, "AES_CM_128_HMAC_SHA1_32", stream->crypto[j].master_key );
-					belle_sdp_media_description_add_attribute ( media_desc,belle_sdp_attribute_create ( "crypto",buffer ) );
+					enc_name="AES_CM_128_HMAC_SHA1_32";
+					break;
+				case AES_256_SHA1_32:
+					enc_name="AES_CM_256_HMAC_SHA1_32";
+					break;
+				case AES_256_SHA1_80:
+					enc_name="AES_CM_256_HMAC_SHA1_32";
 					break;
 				case AES_128_NO_AUTH:
 					ms_warning ( "Unsupported crypto suite: AES_128_NO_AUTH" );
@@ -167,6 +170,11 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 				default:
 					j = SAL_CRYPTO_ALGO_MAX;
 					/* no break */
+			}
+			if (enc_name){
+				snprintf ( buffer, sizeof ( buffer )-1, "%d %s inline:%s",
+					 stream->crypto[j].tag, enc_name, stream->crypto[j].master_key );
+					belle_sdp_media_description_add_attribute ( media_desc,belle_sdp_attribute_create ( "crypto",buffer ) );
 			}
 		}
 	}
@@ -342,11 +350,15 @@ static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *med
 							tmp,
 							tmp2 );
 			if ( nb == 3 ) {
-				if ( keywordcmp ( "AES_CM_128_HMAC_SHA1_80",tmp ) == 0 )
+				if ( keywordcmp ( "AES_CM_128_HMAC_SHA1_80",tmp ) == 0 ){
 					stream->crypto[valid_count].algo = AES_128_SHA1_80;
-				else if ( keywordcmp ( "AES_CM_128_HMAC_SHA1_32",tmp ) == 0 )
+				}else if ( keywordcmp ( "AES_CM_128_HMAC_SHA1_32",tmp ) == 0 ){
 					stream->crypto[valid_count].algo = AES_128_SHA1_32;
-				else {
+				}else if ( keywordcmp ( "AES_CM_256_HMAC_SHA1_32",tmp ) == 0 ){
+					stream->crypto[valid_count].algo = AES_256_SHA1_32;
+				}else if ( keywordcmp ( "AES_CM_256_HMAC_SHA1_80",tmp ) == 0 ){
+					stream->crypto[valid_count].algo = AES_256_SHA1_80;
+				}else {
 					ms_warning ( "Failed to parse crypto-algo: '%s'", tmp );
 					stream->crypto[valid_count].algo = 0;
 				}

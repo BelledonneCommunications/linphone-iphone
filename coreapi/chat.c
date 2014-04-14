@@ -34,6 +34,18 @@
 #define COMPOSING_DEFAULT_REFRESH_TIMEOUT 60
 #define COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT 120
 
+static void _linphone_chat_message_destroy(LinphoneChatMessage* msg);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessage,belle_sip_object_t,
+	(belle_sip_object_destroy_t)_linphone_chat_message_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+
 /**
  * @addtogroup chatroom
  * @{
@@ -491,7 +503,7 @@ const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
  * @return a new #LinphoneChatMessage
  */
 LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, const char* message) {
-	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
+	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message=message?ms_strdup(message):NULL;
 	msg->is_read=TRUE;
@@ -514,7 +526,7 @@ LinphoneChatMessage* linphone_chat_room_create_message_2(
         LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 
-	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
+	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message=message?ms_strdup(message):NULL;
 	msg->external_body_url=external_body_url?ms_strdup(external_body_url):NULL;
@@ -888,14 +900,40 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 /**
  * Destroys a LinphoneChatMessage.
 **/
-void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
+void linphone_chat_message_destroy(LinphoneChatMessage* msg){
+	belle_sip_object_unref(msg);
+}
+
+
+/**
+ * Destroys a LinphoneChatMessage.
+**/
+static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->op) sal_op_release(msg->op);
 	if (msg->message) ms_free(msg->message);
 	if (msg->external_body_url) ms_free(msg->external_body_url);
 	if (msg->from) linphone_address_destroy(msg->from);
 	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
-	ms_free(msg);
+}
+
+
+/**
+ * Acquire a reference to the chat message.
+ * @param msg the chat message
+ * @return the same chat message
+**/
+LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg){
+	belle_sip_object_ref(msg);
+	return msg;
+}
+
+/**
+ * Release reference to the chat message.
+ * @param msg the chat message.
+**/
+void linphone_chat_message_unref(LinphoneChatMessage *msg){
+	belle_sip_object_unref(msg);
 }
 
 /**

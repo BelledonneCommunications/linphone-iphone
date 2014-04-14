@@ -216,7 +216,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 		proxy_count=0;
 
 	if (proxy_count)
-		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,3000*proxy_count);
+		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,5000*proxy_count);
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
 	enable_codec(mgr->lc,"PCMU",8000);
 

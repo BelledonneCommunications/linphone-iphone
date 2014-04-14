@@ -680,6 +680,39 @@ AC_SUBST(STRICT_OPTIONS)
 
 top_srcdir=`dirname $0`
 
+AC_ARG_ENABLE(external-ortp,
+	[AS_HELP_STRING([--enable-external-ortp], [Use external oRTP library])],
+	[case "${enableval}" in
+		yes)	external_ortp=true ;;
+		no)	external_ortp=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
+	esac],
+	[external_ortp=false]
+)
+
+if test "$external_ortp" = 'true'; then
+	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
+	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
+else
+	AC_CONFIG_SUBDIRS( oRTP )
+	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
+	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
+	if test x$ac_cv_c_bigendian = xyes ; then
+		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
+	fi
+	if test x$ntptimestamp = xtrue ; then
+		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
+	fi
+	ORTP_DIR=oRTP
+	changequote(<<, >>)
+	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
+	changequote([, ])
+fi
+AC_SUBST(ORTP_CFLAGS)
+AC_SUBST(ORTP_LIBS)
+AC_SUBST([ORTP_VERSION])
+AC_SUBST([ORTP_DIR])
+
 AC_ARG_ENABLE([external-mediastreamer],
 	[AS_HELP_STRING([--enable-external-mediastreamer],[Use external mediastreamer library])],,
 	[enable_external_mediastreamer=no]
@@ -778,38 +811,7 @@ AC_DEFINE_UNQUOTED(LINPHONE_PLUGINS_DIR, "${package_prefix}/lib/liblinphone/plug
 LINPHONE_PLUGINS_DIR="${package_prefix}/lib/liblinphone/plugins"
 AC_SUBST(LINPHONE_PLUGINS_DIR)
 
-AC_ARG_ENABLE(external-ortp,
-	[AS_HELP_STRING([--enable-external-ortp], [Use external oRTP library])],
-	[case "${enableval}" in
-		yes)	external_ortp=true ;;
-		no)	external_ortp=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
-	esac],
-	[external_ortp=false]
-)
 
-if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
-	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
-else
-	AC_CONFIG_SUBDIRS( oRTP )
-	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
-	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
-	if test x$ac_cv_c_bigendian = xyes ; then
-		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
-	fi
-	if test x$ntptimestamp = xtrue ; then
-		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
-	fi
-	ORTP_DIR=oRTP
-	changequote(<<, >>)
-	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
-	changequote([, ])
-fi
-AC_SUBST(ORTP_CFLAGS)
-AC_SUBST(ORTP_LIBS)
-AC_SUBST([ORTP_VERSION])
-AC_SUBST([ORTP_DIR])
 
 AC_ARG_ENABLE(tutorials,
 	[AS_HELP_STRING([--disable-tutorials], [Disable compilation of tutorials])],

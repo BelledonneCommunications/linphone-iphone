@@ -28,7 +28,7 @@ import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 public interface LinphoneCoreListener {
 	/**< Ask the application some authentication information 
 	 * @return */
-	void authInfoRequested(LinphoneCore lc,String realm,String username); 
+	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain); 
 
 	/** General State notification  
 	 * @param state LinphoneCore.State

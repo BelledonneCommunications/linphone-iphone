@@ -270,6 +270,9 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 		if (obj->state == LinphoneRegistrationOk
 				|| obj->state == LinphoneRegistrationProgress) {
 			sal_unregister(obj->op);
+		} else {
+			/*stop refresher*/
+			if (obj->op) sal_op_stop_refreshing(obj->op);
 		}
 	}
 }
@@ -351,6 +354,9 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
 		}
 		ms_free(proxy_string);
+	} else {
+		/*stop refresher, just in case*/
+		if (obj->op) sal_op_stop_refreshing(obj->op);
 	}
 }
 
@@ -359,7 +365,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
  * This is useful if for example you resuming from suspend, thus IP address may have changed.
 **/
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
-	if (obj->reg_sendregister && obj->op){
+	if (obj->reg_sendregister && obj->op && obj->state!=LinphoneRegistrationProgress){
 		if (sal_register_refresh(obj->op,obj->expires) == 0) {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress, "Refresh registration");
 		}
@@ -1320,15 +1326,16 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
 	bool_t update_friends=FALSE;
-	if (linphone_core_should_subscribe_friends_only_when_registered(lc)){
-		update_friends=(state==LinphoneRegistrationOk && cfg->state!=LinphoneRegistrationOk)
-			|| (state!=LinphoneRegistrationOk && cfg->state==LinphoneRegistrationOk);
-	}
-	ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
+	
+	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
+		ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
 								linphone_proxy_config_get_identity(cfg),
 								linphone_registration_state_to_string(cfg->state),
 								linphone_registration_state_to_string(state));
-	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
+		if (linphone_core_should_subscribe_friends_only_when_registered(lc)){
+			update_friends=(state==LinphoneRegistrationOk && cfg->state!=LinphoneRegistrationOk)
+				|| (state!=LinphoneRegistrationOk && cfg->state==LinphoneRegistrationOk);
+		}
 		cfg->state=state;
 		
 		if (update_friends){

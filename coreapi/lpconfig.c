@@ -177,101 +177,107 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	return NULL;
 }
 
-void lp_config_parse(LpConfig *lpconfig, FILE *file){
-	char tmp[MAX_LEN]= {'\0'};
-	LpSection *cur=NULL;
+static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpSection* cur) {
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
-	char secname[MAX_LEN];
-	char key[MAX_LEN];
-	char value[MAX_LEN];
+	static char secname[MAX_LEN];
+	static char key[MAX_LEN];
+	static char value[MAX_LEN];
 	LpItem *item;
+
+	pos1=strchr(line,'[');
+	if (pos1!=NULL && is_first_char(line,pos1) ){
+		pos2=strchr(pos1,']');
+		if (pos2!=NULL){
+			secname[0]='\0';
+			/* found section */
+			*pos2='\0';
+			nbs = sscanf(pos1+1, "%s", secname);
+			if (nbs >= 1) {
+				if (strlen(secname) > 0) {
+					cur = lp_config_find_section (lpconfig,secname);
+					if (cur == NULL) {
+						cur = lp_section_new(secname);
+						lp_config_add_section(lpconfig, cur);
+					}
+
+					if (pos2 > pos1 + 1 + strlen(secname)) {
+						/* found at least one section param */
+						pos2 = pos1 + 1 + strlen(secname) + 1; // Remove the white space after the secname
+						pos1 = strchr(pos2, '=');
+						while (pos1 != NULL) {
+							/* for each section param */
+							key[0] = '\0';
+							value[0] = '\0';
+							*pos1 = ' ';
+							if (sscanf(pos2, "%s %s", key, value) == 2) {
+								params = lp_section_param_new(key, value);
+								lp_config_add_section_param(cur, params);
+
+								pos2 += strlen(key) + strlen(value) + 2; // Remove the = sign + the white space after each param
+								pos1 = strchr(pos2, '=');
+							} else {
+								ms_warning("parse section params error !");
+								pos1 = NULL;
+							}
+						}
+					}
+				}
+			} else {
+				ms_warning("parse error!");
+			}
+		}
+	}else {
+		pos1=strchr(line,'=');
+		if (pos1!=NULL){
+			key[0]='\0';
+
+			*pos1='\0';
+			if (sscanf(line,"%s",key)>0){
+
+				pos1++;
+				pos2=strchr(pos1,'\r');
+				if (pos2==NULL)
+					pos2=strchr(pos1,'\n');
+				if (pos2==NULL) pos2=pos1+strlen(pos1);
+				else {
+					*pos2='\0'; /*replace the '\n' */
+				}
+				/* remove ending white spaces */
+				for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
+
+				if (pos2-pos1>=0){
+					/* found a pair key,value */
+
+					if (cur!=NULL){
+						item=lp_section_find_item(cur,key);
+						if (item==NULL){
+							lp_section_add_item(cur,lp_item_new(key,pos1));
+						}else{
+							ortp_free(item->value);
+							item->value=ortp_strdup(pos1);
+						}
+						/*ms_message("Found %s=%s",key,pos1);*/
+					}else{
+						ms_warning("found key,item but no sections");
+					}
+				}
+			}
+		}
+	}
+	return cur;
+}
+
+void lp_config_parse(LpConfig *lpconfig, FILE *file){
+	char tmp[MAX_LEN]= {'\0'};
+	LpSection* current_section = NULL;
 
 	if (file==NULL) return;
 
 	while(fgets(tmp,MAX_LEN,file)!=NULL){
 		tmp[sizeof(tmp) -1] = '\0';
-		pos1=strchr(tmp,'[');
-		if (pos1!=NULL && is_first_char(tmp,pos1) ){
-			pos2=strchr(pos1,']');
-			if (pos2!=NULL){
-				secname[0]='\0';
-				/* found section */
-				*pos2='\0';
-				nbs = sscanf(pos1+1, "%s", secname);
-				if (nbs >= 1) {
-					if (strlen(secname) > 0) {
-						cur = lp_config_find_section (lpconfig,secname);
-						if (cur == NULL) {
-							cur = lp_section_new(secname);
-							lp_config_add_section(lpconfig, cur);
-						}
-						
-						if (pos2 > pos1 + 1 + strlen(secname)) {
-							/* found at least one section param */
-							pos2 = pos1 + 1 + strlen(secname) + 1; // Remove the white space after the secname
-							pos1 = strchr(pos2, '=');
-							while (pos1 != NULL) {
-								/* for each section param */
-								key[0] = '\0';
-								value[0] = '\0';
-								*pos1 = ' ';
-								if (sscanf(pos2, "%s %s", key, value) == 2) {
-									params = lp_section_param_new(key, value);
-									lp_config_add_section_param(cur, params);
-									
-									pos2 += strlen(key) + strlen(value) + 2; // Remove the = sign + the white space after each param
-									pos1 = strchr(pos2, '=');
-								} else {
-									ms_warning("parse section params error !");
-									pos1 = NULL;
-								}
-							}
-						}
-					}
-				} else {
-					ms_warning("parse error!");
-				}
-			}
-		}else {
-			pos1=strchr(tmp,'=');
-			if (pos1!=NULL){
-				key[0]='\0';
-
-				*pos1='\0';
-				if (sscanf(tmp,"%s",key)>0){
-
-					pos1++;
-					pos2=strchr(pos1,'\r');
-					if (pos2==NULL)
-						pos2=strchr(pos1,'\n');
-					if (pos2==NULL) pos2=pos1+strlen(pos1);
-					else {
-						*pos2='\0'; /*replace the '\n' */
-					}
-					/* remove ending white spaces */
-					for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
-
-					if (pos2-pos1>=0){
-						/* found a pair key,value */
-						
-						if (cur!=NULL){
-							item=lp_section_find_item(cur,key);
-							if (item==NULL){
-								lp_section_add_item(cur,lp_item_new(key,pos1));
-							}else{
-								ortp_free(item->value);
-								item->value=ortp_strdup(pos1);
-							}
-							/*ms_message("Found %s=%s",key,pos1);*/
-						}else{
-							ms_warning("found key,item but no sections");
-						}
-					}
-				}
-			}
-		}
+		current_section = lp_config_parse_line(lpconfig, tmp, current_section);
 	}
 }
 
@@ -279,9 +285,27 @@ LpConfig * lp_config_new(const char *filename){
 	return lp_config_new_with_factory(filename, NULL);
 }
 
+LpConfig * lp_config_new_from_buffer(const char *buffer){
+	LpConfig* conf = lp_new0(LpConfig,1);
+	LpSection* current_section = NULL;
+
+	char* ptr = ms_strdup(buffer);
+	char* strtok_storage = NULL;
+	char* line = strtok_r(ptr, "\n", &strtok_storage);
+
+	while( line != NULL ){
+		current_section = lp_config_parse_line(conf,line,current_section);
+		line = strtok_r(NULL, "\n", &strtok_storage);
+	}
+
+	ms_free(ptr);
+
+	return conf;
+}
+
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	
+
 	if (config_filename!=NULL){
 		ms_message("Using (r/w) config information from %s", config_filename);
 		lpconfig->filename=ortp_strdup(config_filename);
@@ -547,7 +571,7 @@ int lp_config_get_default_int(const LpConfig *lpconfig, const char *section, con
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
-	
+
 	return lp_config_get_int(lpconfig, default_section, key, default_value);
 }
 
@@ -555,7 +579,7 @@ int64_t lp_config_get_default_int64(const LpConfig *lpconfig, const char *sectio
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
-	
+
 	return lp_config_get_int64(lpconfig, default_section, key, default_value);
 }
 
@@ -563,7 +587,7 @@ float lp_config_get_default_float(const LpConfig *lpconfig, const char *section,
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
-	
+
 	return lp_config_get_float(lpconfig, default_section, key, default_value);
 }
 
@@ -571,6 +595,6 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 	char default_section[MAX_LEN];
 	strcpy(default_section, section);
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
-	
+
 	return lp_config_get_string(lpconfig, default_section, key, default_value);
 }

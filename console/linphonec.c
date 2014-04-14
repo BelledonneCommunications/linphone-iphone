@@ -914,7 +914,7 @@ print_usage (int exit_status)
 "  -l  logfile          specify the log file for your SIP phone\n"
 "  -s  sipaddress       specify the sip call to do at startup\n"
 "  -a                   enable auto answering for incoming calls\n"
-"  --real-early-media	enable sending early media using real audio/video (beware of privacy issue)\n"
+"  --real-early-media   enable sending early media using real audio/video (beware of privacy issue)\n"
 "  -V                   enable video features globally (disabled by default)\n"
 "  -C                   enable video capture only (disabled by default)\n"
 "  -D                   enable video display only (disabled by default)\n"
@@ -1238,7 +1238,7 @@ linphonec_parse_cmdline(int argc, char **argv)
                 {
                         auto_answer = TRUE;
                 }
-                else if (strncmp ("--real-early-media", argv[arg_num], 2) == 0)
+                else if (strncmp ("--real-early-media", argv[arg_num], strlen("--real-early-media")) == 0)
                 {
                         real_early_media_sending = TRUE;
                 }

@@ -43,8 +43,8 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
 	if (linphone_chat_message_get_external_body_url(message)) {
-			counters->number_of_LinphoneMessageExtBodyReceived++;
-			CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
+		counters->number_of_LinphoneMessageExtBodyReceived++;
+		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
 	}
 }
 

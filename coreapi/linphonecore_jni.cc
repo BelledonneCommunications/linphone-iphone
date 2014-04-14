@@ -224,6 +224,8 @@ public:
 
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listenerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
+		
+		authInfoRequestedId = env->GetMethodID(listenerClass,"authInfoRequested","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
 		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
 		notifyPresenceReceivedId = env->GetMethodID(listenerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
@@ -245,7 +247,7 @@ public:
 		
 		
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
-		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
+		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V");
 
 		callClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallImpl"));
 		callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
@@ -325,6 +327,7 @@ public:
 	jmethodID transferStateId;
 	jmethodID infoReceivedId;
 	jmethodID subscriptionStateId;
+	jmethodID authInfoRequestedId;
 	jmethodID publishStateId;
 	jmethodID notifyRecvId;
 	
@@ -413,7 +416,19 @@ public:
 
 	}
 	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener,
+							lcData->authInfoRequestedId,
+							lcData->core,
+							realm ? env->NewStringUTF(realm):NULL,
+							username ? env->NewStringUTF(username) : NULL,
+							domain ? env->NewStringUTF(domain) : NULL);
 	}
 	static void globalStateChange(LinphoneCore *lc, LinphoneGlobalState gstate,const char* message) {
 		JNIEnv *env = 0;
@@ -440,7 +455,7 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->registrationStateId
 							,lcData->core
-							,env->NewObject(lcData->proxyClass,lcData->proxyCtrId,(jlong)proxy)
+							,env->NewObject(lcData->proxyClass,lcData->proxyCtrId,lcData->core,(jlong)proxy)
 							,env->CallStaticObjectMethod(lcData->registrationStateClass,lcData->registrationStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
 	}
@@ -2432,13 +2447,6 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
     linphone_chat_room_destroy((LinphoneChatRoom*)ptr);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setUserData(JNIEnv*  env
-																		,jobject  thiz
-																		,jlong ptr) {
-	jobject ud = env->NewGlobalRef(thiz);
-	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr,(void*) ud);
-}
-
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_store(JNIEnv*  env
                                                                             ,jobject  thiz
                                                                             ,jlong ptr) {
@@ -2539,6 +2547,12 @@ extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getStorageId(JNIE
     return (jint) linphone_chat_message_get_storage_id((LinphoneChatMessage*)ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  env
+                                                                         ,jobject  thiz
+                                                                         ,jlong ptr) {
+    linphone_chat_message_unref((LinphoneChatMessage*)ptr);
+}
+
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
                                                                            ,jobject  thiz
                                                                            ,jlong ptr) {
@@ -2577,26 +2591,32 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 	jobject listener = (jobject) ud;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
-
+	jobject jmessage=(jobject)linphone_chat_message_get_user_data(msg);
 	LinphoneCore *lc = linphone_chat_room_get_lc(linphone_chat_message_get_chat_room(msg));
 	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
 	env->CallVoidMethod(
 			listener,
 			method,
-			(jobject)linphone_chat_message_get_user_data(msg),
+			jmessage,
 			env->CallStaticObjectMethod(lcData->chatMessageStateClass,lcData->chatMessageStateFromIntId,(jint)state));
-
+	
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
+		env->DeleteGlobalRef(jmessage);
+		linphone_chat_message_set_user_data(msg,NULL);
 	}
 }
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*  env
 																		,jobject  thiz
-																		,jlong ptr
-																		,jlong jmessage
+																		,jlong chatroom_ptr
+																		,jobject message
+																		,jlong messagePtr
 																		,jobject jlistener) {
 	jobject listener = env->NewGlobalRef(jlistener);
-	linphone_chat_room_send_message2((LinphoneChatRoom*)ptr, (LinphoneChatMessage*)jmessage, chat_room_impl_callback, (void*)listener);
+	message = env->NewGlobalRef(message);
+	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
+	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
+	linphone_chat_room_send_message2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr, chat_room_impl_callback, (void*)listener);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
