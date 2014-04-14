@@ -293,7 +293,10 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 #endif
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){
-			display=linphone_address_get_display_name(linphone_friend_get_address(lf));
+			if ((display=linphone_address_get_display_name(linphone_friend_get_address(lf)))) {
+				/*update display name from friend*/
+				linphone_address_set_display_name(la,display);
+			}
 		} else {
 			display=linphone_address_get_display_name(la);
 		}
@@ -302,9 +305,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			if (display==NULL){
 				display=linphone_address_get_domain (la);
 			}
-		} else {
-			linphone_address_set_display_name(la,display);
 		}
+
 		if (linphone_call_log_get_quality(cl)!=-1){
 			snprintf(quality,sizeof(quality),"%.1f",linphone_call_log_get_quality(cl));
 		}else snprintf(quality,sizeof(quality)-1,"%s",_("n/a"));
