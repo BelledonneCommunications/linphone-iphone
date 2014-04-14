@@ -567,11 +567,17 @@ static void io_recv_error_without_active_register(){
 	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
 		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 		linphone_proxy_config_edit(proxy_cfg);
+	}
+	ms_list_free(proxys);
+	/*wait for unregistrations*/
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
+
+	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
+		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 		linphone_proxy_config_enable_register(proxy_cfg,FALSE);
 		linphone_proxy_config_done(proxy_cfg);
 	}
 	ms_list_free(proxys);
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
 
 	sal_set_recv_error(lc->sal, 0);
 
