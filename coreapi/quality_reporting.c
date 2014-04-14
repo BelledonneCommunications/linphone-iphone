@@ -300,11 +300,8 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	printf("linphone_reporting_call_stats_updated type=%d\n", stats_type);
 	reporting_session_report_t * report = call->log->reports[stats_type];
 	MediaStream * stream = NULL;
-	const SalMediaDescription * remote_media_desc = sal_call_get_remote_media_description(call->op);
 	const PayloadType * local_payload = NULL;
 	const PayloadType * remote_payload = NULL;
-	const SalStreamDescription * remote_desc = NULL;
-	SalStreamType sal_stream_type = (stats_type == LINPHONE_CALL_STATS_AUDIO) ? SalAudio : SalVideo;
 	const LinphoneCallParams * local_params = linphone_call_get_current_params(call);
 	const LinphoneCallParams * remote_params = linphone_call_get_remote_params(call);
 	if (report == NULL) {
