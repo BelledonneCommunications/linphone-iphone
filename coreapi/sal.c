@@ -374,7 +374,7 @@ const char* sal_op_get_call_id(const SalOp *op) {
 }
 char* sal_op_get_dialog_id(const SalOp *op) {
 	if (op->dialog != NULL) {
-		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id, 
+		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id,
 			belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
 	}
 	return NULL;

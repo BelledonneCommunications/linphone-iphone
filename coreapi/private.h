@@ -117,7 +117,7 @@ struct _LinphoneCallLog{
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 
-	reporting_session_report_t * reports[2];
+	reporting_session_report_t * reports[2]; /**<Quality statistics of the call (rfc6035) */
 	bool_t video_enabled;
 };
 
@@ -405,6 +405,7 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	char *reg_route;
+	char *reg_statistics_collector;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
@@ -421,6 +422,7 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	bool_t send_publish;
+	bool_t send_statistics;
 	bool_t pad[3];
 	void* user_data;
 	time_t deletion_date;
