@@ -40,11 +40,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  	
  	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 
-	// remote: session desc null parce que linphone_call_get_remote_params le remplit pas
-
  // range 0 - 255 au lieu de 0 - 5 metrics->quality_estimates.rcq, metrics->quality_estimates.moslq, metrics->quality_estimates.moscq);
  // abstraction audio video
- // valgrind --leakcheck=full
  // tests liblinphonetester
  	// à voir ++ :
 		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
@@ -254,6 +251,8 @@ static void reporting_publish(LinphoneCall* call, reporting_session_report_t * r
 	} else {
 		ms_warning("Asked to submit reporting statistics but no collector address found");
 	}
+
+	linphone_content_uninit(&content);
 }
 
 
