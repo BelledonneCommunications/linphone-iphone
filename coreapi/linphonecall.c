@@ -248,7 +248,7 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	LinphoneCore *lc=call->core;
 	int i;
 	SalMediaDescription *old_md=call->localdesc;
-	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
+	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",1);
 
 	for(i=0; i<md->n_active_streams; i++) {
 		if (md->streams[i].proto == SalProtoRtpSavp) {
