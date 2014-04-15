@@ -1877,6 +1877,98 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb()
 	call_rejected_because_wrong_credentials_with_params("tester-no-403",FALSE);
 }
 
+void create_call_for_statistics_tests(
+		LinphoneCoreManager* marie,
+		LinphoneCoreManager* pauline,
+		LinphoneCall** call_marie,
+		LinphoneCall** call_pauline) {
+	CU_ASSERT_TRUE(call(pauline,marie));
+	*call_marie = linphone_core_get_current_call(marie->lc);
+	*call_pauline = linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_PTR_NOT_NULL(*call_marie);
+	CU_ASSERT_PTR_NOT_NULL(*call_pauline);
+}
+
+static void statistics_not_used_without_config() {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* call_marie = NULL;
+	LinphoneCall* call_pauline = NULL;
+
+	create_call_for_statistics_tests(marie, pauline, &call_marie, &call_pauline);
+
+	// marie has stats collection enabled since pauline has not
+	CU_ASSERT_TRUE(linphone_proxy_config_send_statistics_enabled(call_marie->dest_proxy));
+	CU_ASSERT_FALSE(linphone_proxy_config_send_statistics_enabled(call_pauline->dest_proxy));
+
+	CU_ASSERT_EQUAL(strcmp("sip:collector@sip.linphone.org", 
+		linphone_proxy_config_get_statistics_collector(call_marie->dest_proxy)), 0);
+
+	// this field should be already filled
+	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->info.local_addr.ip);
+	CU_ASSERT_PTR_NULL(call_pauline->log->reports[0]->info.local_addr.ip);
+
+	// but not this one since it is updated at the end of call
+	CU_ASSERT_PTR_NULL(call_marie->log->reports[0]->dialog_id);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void statistics_not_sent_if_call_not_started() {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCallLog* out_call_log;
+	LinphoneCall* out_call;
+
+	linphone_core_set_max_calls(pauline->lc,0);
+	out_call = linphone_core_invite(marie->lc,"pauline");
+	linphone_call_ref(out_call);
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+
+	if (ms_list_size(linphone_core_get_call_logs(marie->lc))>0) {
+		CU_ASSERT_PTR_NOT_NULL(out_call_log=(LinphoneCallLog*)(linphone_core_get_call_logs(marie->lc)->data));
+		CU_ASSERT_EQUAL(linphone_call_log_get_status(out_call_log),LinphoneCallAborted);
+	}
+	linphone_call_unref(out_call);
+
+	// wait a few time...
+	wait_for(marie->lc,NULL,NULL,0);
+	// since the callee was busy, there shouldn't be no publish to do 
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void statistics_sent_at_call_termination() {
+	// int return_code = -1;
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* call_marie = NULL;
+	LinphoneCall* call_pauline = NULL;
+
+	create_call_for_statistics_tests(marie, pauline, &call_marie, &call_pauline);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1));
+
+	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc));
+
+	// now dialog id should be filled
+	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->dialog_id);
+
+	// PUBLISH submission to the collector should be ok
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1)); // failing since server side is not implemented
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 #ifdef VIDEO_ENABLED
 #endif
 
@@ -1931,7 +2023,10 @@ test_t call_tests[] = {
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
-	{ "Call redirected by callee", call_redirect}
+	{ "Call redirected by callee", call_redirect},
+	{ "Call statistics not used if no config", statistics_not_used_without_config},
+	{ "Call statistics not sent if call did not start", statistics_not_sent_if_call_not_started},
+	{ "Call statistics sent if call ended normally", statistics_sent_at_call_termination},
 };
 
 test_suite_t call_test_suite = {
@@ -1941,4 +2036,3 @@ test_suite_t call_test_suite = {
 	sizeof(call_tests) / sizeof(call_tests[0]),
 	call_tests
 };
-

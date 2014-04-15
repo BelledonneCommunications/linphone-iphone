@@ -46,8 +46,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  	// à voir ++ :
 		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
  		// valeurs instanannées : moyenne ? valeur extreme ?
-		// only if this is a linphone account?
  		// rlq: il faut un algo
+ // #define PRINTF printf
+ #define PRINTF(...) 
 /***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -108,7 +109,7 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 #define APPEND_IF(buffer, size, offset, fmt, arg, cond) if (cond) append_to_buffer(buffer, size, offset, fmt, arg)
 #define IF_NUM_IN_RANGE(num, inf, sup, statement) if (inf <= num && num <= sup) statement
 
-static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, reporting_content_metrics_t rm) {
+static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, const reporting_content_metrics_t rm) {
 	char * timestamps_start_str = NULL;
 	char * timestamps_stop_str = NULL;
 	char * network_packet_loss_rate_str = NULL;
@@ -200,10 +201,11 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	ms_free(moscq_str);
 }
 
-static void reporting_publish(LinphoneCall* call, reporting_session_report_t * report) {
+static void reporting_publish(const LinphoneCall* call, const reporting_session_report_t * report) {
+	PRINTF("static reporting_publish\n");
+
 	LinphoneContent content = {0};
  	LinphoneAddress *addr;
- 	const char * addr_str;
 	int expires = -1;
 	size_t offset = 0;
 	size_t size = 2048;
@@ -238,23 +240,20 @@ static void reporting_publish(LinphoneCall* call, reporting_session_report_t * r
 	content.size = strlen((char*)content.data);
 
 
-
-
-	addr_str = call->dest_proxy->reg_statistics_collector;
-	if (addr_str != NULL) {
-		addr = linphone_address_new(addr_str);
+	addr = linphone_address_new(call->dest_proxy->reg_statistics_collector);
+	if (addr != NULL) {
 		linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content);
 		linphone_address_destroy(addr);
 	
 		// for debug purpose only
-		printf("%s\n", (char*) content.data);
+		PRINTF("%s\n", (char*) content.data);
 	} else {
 		ms_warning("Asked to submit reporting statistics but no collector address found");
+		PRINTF("Asked to submit reporting statistics but no collector address found\n");
 	}
 
 	linphone_content_uninit(&content);
 }
-
 
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * remote_smd, SalStreamType sal_stream_type) {
 	if (remote_smd != NULL) {
@@ -298,7 +297,7 @@ static void reporting_update_ip(LinphoneCall * call, int stats_type) {
 	}
 }
 
-static bool_t reporting_enabled(LinphoneCall * call) {
+static bool_t reporting_enabled(const LinphoneCall * call) {
 	return (call->dest_proxy != NULL && linphone_proxy_config_send_statistics_enabled(call->dest_proxy));
 }
 
@@ -307,7 +306,7 @@ void linphone_reporting_update_ip(LinphoneCall * call) {
 	// - 1) at start when call is starting, remote ip/port info might be the proxy ones to which callee is registered
 	// - 2) later, if we found a direct route between caller and callee with ICE/Stun, ip/port are updated for the direct route access
 
-	printf("linphone_reporting_update_remote_ip\n");
+	PRINTF("linphone_reporting_update_remote_ip\n");
 
 	if (! reporting_enabled(call)) 
 		return;
@@ -326,7 +325,7 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 
-	printf("linphone_reporting_call_stats_updated type=%d\n", stats_type);
+	PRINTF("linphone_reporting_call_stats_updated type=%d\n", stats_type);
 
 	if (! reporting_enabled(call)) 
 		return;
@@ -432,10 +431,11 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 }
 
 void linphone_reporting_publish(LinphoneCall* call) {
-	printf("linphone_reporting_publish\n");
+	PRINTF("linphone_reporting_publish\n");
 
-	if (! reporting_enabled(call)) 
+	if (! reporting_enabled(call))
 		return;
+
 
 	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
 		reporting_publish(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO]);
