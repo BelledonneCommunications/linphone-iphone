@@ -542,6 +542,8 @@ static void _call_with_ice(bool_t random_ports) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
+	CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	
 	liblinphone_tester_check_rtcp(marie,pauline);
 	/*then close the call*/
 	linphone_core_terminate_all_calls(pauline->lc);
