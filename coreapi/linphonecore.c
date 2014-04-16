@@ -1955,7 +1955,7 @@ static int apply_transports(LinphoneCore *lc){
 			transport_error(lc,"tcp",tr->tcp_port);
 		}
 	}
-	if (linphone_core_sip_transport_supported(LinphoneTransportTls)){
+	if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
 		if (tr->tls_port!=0){
 			if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
 				transport_error(lc,"tls",tr->tls_port);
