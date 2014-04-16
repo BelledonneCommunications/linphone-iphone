@@ -63,27 +63,17 @@ NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpda
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 
 
-extern void libmsilbc_init();
-#ifdef HAVE_AMR
-extern void libmsamr_init();
-#endif
+extern void libmsilbc_init(void);
+extern void libmsamr_init(void);
+extern void libmsx264_init(void);
+extern void libmsopenh264_init(void);
+extern void libmssilk_init(void);
+extern void libmsbcg729_init(void);
 
-#ifdef HAVE_X264
-extern void libmsx264_init();
-#endif
-#ifdef HAVE_OPENH264
-extern void libmsopenh264_init();
-#endif
 #define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
 #define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
 
-#if defined (HAVE_SILK)
-extern void libmssilk_init(); 
-#endif
 
-#if HAVE_G729
-extern  void libmsbcg729_init();
-#endif
 @implementation LinphoneCallAppData
 - (id)init {
     if ((self = [super init])) {
