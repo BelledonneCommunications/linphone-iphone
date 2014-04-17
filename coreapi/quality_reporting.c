@@ -232,8 +232,15 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	size_t size = 2048;
 	char * buffer;
 
-	buffer = (char *) ms_malloc(size);
+	// if the call was hungup too early, we might have invalid IPs information
+	// in that case, we abort the report since it's not useful data
+	if (strlen(report->info.local_addr.ip) == 0 || strlen(report->info.remote_addr.ip) == 0) {
+		ms_warning("The call was hang up too early (duration: %d sec) and IP could "
+			"not be retrieved so dropping this report", linphone_call_get_duration(call));
+		return;
+	}
 
+	buffer = (char *) ms_malloc(size);
 	content.type = ms_strdup("application");
 	content.subtype = ms_strdup("vq-rtcpxr");
 
