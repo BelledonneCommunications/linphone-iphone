@@ -17,9 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-/** 
+/**
  This header files defines the Signaling Abstraction Layer.
- The purpose of this layer is too allow experiment different call signaling 
+ The purpose of this layer is too allow experiment different call signaling
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 

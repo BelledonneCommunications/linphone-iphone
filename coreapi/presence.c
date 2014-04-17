@@ -1467,7 +1467,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	char *tmp;
 	LinphoneAddress *uri;
 	LinphoneProxyConfig *cfg;
-	
+
 	uri=linphone_address_new(from);
 	linphone_address_clean(uri);
 	tmp=linphone_address_as_string(uri);
@@ -1482,7 +1482,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 			}
 		}
 	}
-	
+
 	/* check if we answer to this subscription */
 	if (linphone_find_friend_by_address(lc->friends,uri,&lf)!=NULL){
 		lf->insub=op;

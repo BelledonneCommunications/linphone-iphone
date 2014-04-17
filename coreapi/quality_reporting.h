@@ -57,7 +57,7 @@ typedef struct reporting_content_metrics {
 	struct {
 		int adaptive; // constant
 		// int rate; // constant
-		int nominal; // no may vary during the call <- average? worst score? 
+		int nominal; // no may vary during the call <- average? worst score?
 		int max; // no may vary during the call <- average?
 		int abs_max; // constant
 	} jitter_buffer;
@@ -68,10 +68,10 @@ typedef struct reporting_content_metrics {
 		float jitter_buffer_discard_rate; //idem
 	} packet_loss;
 
-	// burst gap loss - optional 
+	// burst gap loss - optional
 	// (no) currently not implemented
 	// struct {
-	// 	int burst_loss_density; 
+	// 	int burst_loss_density;
 	// 	int burst_duration;
 	// 	float gap_loss_density;
 	// 	int gap_duration;
@@ -90,7 +90,7 @@ typedef struct reporting_content_metrics {
 
 	// signal - optional
 	struct {
-		int level; // no - vary 
+		int level; // no - vary
 		int noise_level; // no - vary
 		// int residual_echo_return_loss;
 	} signal;
@@ -101,7 +101,7 @@ typedef struct reporting_content_metrics {
 		int rcq; //voip metrics R factor - no - vary or avg  in [0..120]
 		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
-		
+
 
 		// int extri;
 		// int extro;
@@ -114,7 +114,7 @@ typedef struct reporting_content_metrics {
 		// char * qoestalg;
 	} quality_estimates;
 } reporting_content_metrics_t;
- 
+
 typedef struct reporting_session_report {
 	struct {
 		char * call_id;

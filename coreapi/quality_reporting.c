@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /***************************************************************************
  *  				TODO / REMINDER LIST
- ****************************************************************************/	
+ ****************************************************************************/
 	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 	// range 0 - 255 instead of 0 - 5 for metrics->quality_estimates.rcq, metrics->quality_estimates.moslq, metrics->quality_estimates.moscq
  	// Know issue: if call is stopped to early, IP are invalid
@@ -115,7 +115,7 @@ static bool_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	IF_NUM_IN_RANGE(rm.jitter_buffer.adaptive, 0, 3, return TRUE);
 	IF_NUM_IN_RANGE(rm.jitter_buffer.nominal, 0, 65535, return TRUE);
 	IF_NUM_IN_RANGE(rm.jitter_buffer.max, 0, 65535, return TRUE);
-	IF_NUM_IN_RANGE(rm.jitter_buffer.abs_max, 0, 65535, return TRUE); 
+	IF_NUM_IN_RANGE(rm.jitter_buffer.abs_max, 0, 65535, return TRUE);
 
 	IF_NUM_IN_RANGE(rm.delay.round_trip_delay, 0, 65535, return TRUE);
 	IF_NUM_IN_RANGE(rm.delay.end_system_delay, 0, 65535, return TRUE);
@@ -141,9 +141,9 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	char * moslq_str = NULL;
 	char * moscq_str = NULL;
 
-	if (rm.timestamps.start > 0) 
+	if (rm.timestamps.start > 0)
 		timestamps_start_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.start);
-	if (rm.timestamps.stop > 0) 
+	if (rm.timestamps.stop > 0)
 		timestamps_stop_str = linphone_timestamp_to_rfc3339_string(rm.timestamps.stop);
 
 	IF_NUM_IN_RANGE(rm.packet_loss.network_packet_loss_rate, 0, 255, network_packet_loss_rate_str = float_to_one_decimal_string(rm.packet_loss.network_packet_loss_rate / 256));
@@ -173,7 +173,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 		// APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBR=%d", rm.jitter_buffer.rate, 0, 15);
 		APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBN=%d", rm.jitter_buffer.nominal, 0, 65535);
 		APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBM=%d", rm.jitter_buffer.max, 0, 65535);
-		APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBX=%d",  rm.jitter_buffer.abs_max, 0, 65535); 
+		APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBX=%d",  rm.jitter_buffer.abs_max, 0, 65535);
 
 	append_to_buffer(buffer, size, offset, "\r\nPacketLoss:");
 		APPEND_IF_NOT_NULL_STR(buffer, size, offset, " NLR=%s", network_packet_loss_rate_str);
@@ -184,7 +184,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	// 	append_to_buffer(buffer, size, offset, " BD=%d", rm.burst_gap_loss.burst_duration);
 	// 	APPEND_IF_NOT_NULL_STR(buffer, size, offset, " GLD=%s", gap_loss_density_str);
 	// 	append_to_buffer(buffer, size, offset, " GD=%d", rm.burst_gap_loss.gap_duration);
-	// 	append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold); 
+	// 	append_to_buffer(buffer, size, offset, " GMIN=%d", rm.burst_gap_loss.min_gap_threshold);
 
 	append_to_buffer(buffer, size, offset, "\r\nDelay:");
 		APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " RTD=%d", rm.delay.round_trip_delay, 0, 65535);
@@ -256,10 +256,10 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_mac_addr);
 	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%d\r\n", report->info.remote_addr.ip, report->info.remote_addr.port, report->info.remote_addr.ssrc);
 	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_mac_addr);
-	
+
 	append_to_buffer(&buffer, &size, &offset, "LocalMetrics:\r\n");
 	append_metrics_to_buffer(&buffer, &size, &offset, report->local_metrics);
-		
+
 	if (are_metrics_filled(report->remote_metrics)) {
 		append_to_buffer(&buffer, &size, &offset, "RemoteMetrics:\r\n");
 		append_metrics_to_buffer(&buffer, &size, &offset, report->remote_metrics);
@@ -302,7 +302,7 @@ static void reporting_update_ip(LinphoneCall * call, int stats_type) {
 	if (call->log->reports[stats_type] != NULL) {
 		const SalStreamDescription * local_desc = get_media_stream_for_desc(call->localdesc, sal_stream_type);
 		const SalStreamDescription * remote_desc = get_media_stream_for_desc(sal_call_get_remote_media_description(call->op), sal_stream_type);
-		
+
 		// local info are always up-to-date and correct
 		if (local_desc != NULL) {
 			call->log->reports[stats_type]->info.local_addr.port = local_desc->rtp_port;
@@ -332,7 +332,7 @@ void linphone_reporting_update_ip(LinphoneCall * call) {
 	// - 1) at start when call is starting, remote ip/port info might be the proxy ones to which callee is registered
 	// - 2) later, if we found a direct route between caller and callee with ICE/Stun, ip/port are updated for the direct route access
 
-	if (! reporting_enabled(call)) 
+	if (! reporting_enabled(call))
 		return;
 
 	reporting_update_ip(call, LINPHONE_CALL_STATS_AUDIO);
@@ -349,7 +349,7 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 
-	if (! reporting_enabled(call)) 
+	if (! reporting_enabled(call))
 		return;
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
@@ -376,7 +376,7 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	//we use same timestamps for remote too
 	report->remote_metrics.timestamps.start = call->log->start_date_time;
 	report->remote_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
-	
+
 	// yet we use the same payload config for local and remote, since this is the largest case
 	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = &call->audiostream->ms;
@@ -417,7 +417,7 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 	LinphoneCallStats stats = call->stats[stats_type];
     mblk_t *block = NULL;
 
-    if (! reporting_enabled(call)) 
+    if (! reporting_enabled(call))
 		return;
 
     if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
@@ -463,7 +463,7 @@ void linphone_reporting_publish(LinphoneCall* call) {
 		reporting_publish(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO]);
 	}
 
-	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL 
+	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
 		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 		reporting_publish(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO]);
 	}
