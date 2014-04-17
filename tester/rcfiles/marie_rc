@@ -22,7 +22,7 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
-reg_statistics_collector=sip:collector@sip.linphone.org
+reg_statistics_collector=sip:collector@sip.example.org
 send_statistics=1
 
 [friend_0]
