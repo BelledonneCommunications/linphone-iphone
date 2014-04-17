@@ -804,6 +804,7 @@ bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_call_create_op(LinphoneCall *call);
+int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);

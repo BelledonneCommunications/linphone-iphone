@@ -2843,22 +2843,16 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
+	call->log->start_date_time=time(NULL);
 	linphone_call_init_media_streams(call);
+	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
-		linphone_call_start_media_streams_for_ice_gathering(call);
-		call->log->start_date_time=time(NULL);
-		if (linphone_core_gather_ice_candidates(lc,call)<0) {
-			/* Ice candidates gathering failed, proceed with the call anyway. */
-			linphone_call_delete_ice_session(call);
-			linphone_call_stop_media_streams_for_ice_gathering(call);
-		} else {
-			defer = TRUE;
-		}
+		if (linphone_call_prepare_ice(call,FALSE)==1)
+			defer=TRUE;
 	}
 	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
-		call->log->start_date_time=time(NULL);
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
 			linphone_call_delete_upnp_session(call);
@@ -2880,7 +2874,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			call->ping_op=sal_op_new(lc->sal);
 			sal_ping(call->ping_op,from,real_url);
 			sal_op_set_user_pointer(call->ping_op,call);
-			call->log->start_date_time=time(NULL);
 			defer = TRUE;
 		}
 	}
@@ -3106,9 +3099,7 @@ int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call){
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
 
-	if (call->ice_session != NULL) {
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-	}
+	linphone_call_make_local_media_description(lc,call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3155,10 +3146,6 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 
 		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
-			if (call->ice_session != NULL) {
-				ice_session_remove_check_list(call->ice_session, call->videostream->ms.ice_check_list);
-				call->videostream->ms.ice_check_list = NULL;
-			}
 #ifdef BUILD_UPNP
 			if(call->upnp_session != NULL) {
 				if (linphone_core_update_upnp(lc, call)<0) {
@@ -3171,27 +3158,18 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #endif /* VIDEO_ENABLED */
 
 		_linphone_call_params_copy(&call->params,params);
-		linphone_call_make_local_media_description(lc, call);
+		err=linphone_call_prepare_ice(call,FALSE);
+		if (err==1) {
+			ms_message("Defer call update to gather ICE candidates");
+			return 0;
+		}
 
 #ifdef VIDEO_ENABLED
 		// Video adding
 		if (!has_video && call->params.has_video) {
-			if (call->ice_session != NULL) {
-				/* Defer call update until the ICE candidates gathering process has finished. */
-				ms_message("Defer call update to gather ICE candidates");
-				linphone_call_init_video_stream(call);
-				video_stream_prepare_video(call->videostream);
-				if (linphone_core_gather_ice_candidates(lc,call)<0) {
-					/* Ice candidates gathering failed, proceed with the call anyway. */
-					linphone_call_delete_ice_session(call);
-				} else {
-					return err;
-				}
-			}
 #ifdef BUILD_UPNP
 			if(call->upnp_session != NULL) {
 				ms_message("Defer call update to add uPnP port mappings");
-				linphone_call_init_video_stream(call);
 				video_stream_prepare_video(call->videostream);
 				if (linphone_core_update_upnp(lc, call)<0) {
 					/* uPnP port mappings failed, proceed with the call anyway. */
@@ -3202,7 +3180,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 #endif //BUILD_UPNP
 		}
-#endif
+#endif //VIDEO_ENABLED
 		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
@@ -3248,13 +3226,9 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 			/* Defer the sending of the answer until there are no losing pairs left. */
 			return 0;
 		}
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
-#ifdef BUILD_UPNP
-	if(call->upnp_session != NULL) {
-		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
-	}
-#endif //BUILD_UPNP
+	linphone_call_make_local_media_description(lc,call);
+
 	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
@@ -3328,20 +3302,9 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	}
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
 	linphone_call_init_media_streams(call); /*so that video stream is initialized if necessary*/
-	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
-		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
-#ifdef VIDEO_ENABLED
-		if ((call->ice_session != NULL) && !ice_session_candidates_gathered(call->ice_session)) {
-			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
-				video_stream_prepare_video(call->videostream);
-				if (linphone_core_gather_ice_candidates(lc,call)<0) {
-					/* Ice candidates gathering failed, proceed with the call anyway. */
-					linphone_call_delete_ice_session(call);
-				} else return 0;
-			}
-		}
-#endif //VIDEO_ENABLED
+		if (linphone_call_prepare_ice(call,TRUE)==1)
+			return 0;/*deferred to completion of ICE gathering*/
 	}
 
 #ifdef BUILD_UPNP
@@ -3665,9 +3628,6 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	linphone_call_make_local_media_description(lc,call);
-	if (call->ice_session != NULL) {
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-	}
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3761,9 +3721,6 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
 	linphone_call_make_local_media_description(lc,call);
-	if (call->ice_session != NULL) {
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-	}
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
