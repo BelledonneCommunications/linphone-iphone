@@ -36,7 +36,7 @@
 
 @implementation LinphoneAppDelegate
 
-@synthesize started;
+@synthesize started,configURL;
 
 
 #pragma mark - Lifecycle Functions
@@ -91,31 +91,31 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
-
+    
     [self startApplication];
     LinphoneManager* instance = [LinphoneManager instance];
-
-	[instance becomeActive];
+    
+    [instance becomeActive];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-
-	if (call){
-		if (call == instance->currentCallContextBeforeGoingBackground.call) {
-			const LinphoneCallParams* params = linphone_call_get_current_params(call);
-			if (linphone_call_params_video_enabled(params)) {
-				linphone_call_enable_camera(
-                                        call, 
-                                        instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
-			}
-			instance->currentCallContextBeforeGoingBackground.call = 0;
-		} else if ( linphone_call_get_state(call) == LinphoneCallIncomingReceived ) {
+    
+    if (call){
+        if (call == instance->currentCallContextBeforeGoingBackground.call) {
+            const LinphoneCallParams* params = linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(params)) {
+                linphone_call_enable_camera(
+                                            call,
+                                            instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
+            }
+            instance->currentCallContextBeforeGoingBackground.call = 0;
+        } else if ( linphone_call_get_state(call) == LinphoneCallIncomingReceived ) {
             [[PhoneMainView  instance ] displayIncomingCall:call];
             // in this case, the ringing sound comes from the notification.
             // To stop it we have to do the iOS7 ring fix...
             [self fixRing];
         }
-	}
+    }
 }
 
 
@@ -177,19 +177,31 @@
     }
 }
 
-
 - (void)applicationWillTerminate:(UIApplication *)application {
     [LinphoneLogger log:LinphoneLoggerLog format:@"Application Will Terminate"];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    [self startApplication];
-    if([LinphoneManager isLcReady]) {
-        if([[url scheme] isEqualToString:@"sip"]) {
-            // Go to Dialer view
-            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
-            if(controller != nil) {
-                [controller setAddress:[url absoluteString]];
+    NSString *scheme = [[url scheme] lowercaseString];
+    if ([scheme isEqualToString:@"linphone-config-http"] || [scheme isEqualToString:@"linphone-config-https"]) {
+        configURL = [[NSString alloc] initWithString:[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config-" withString:@""]];
+        UIAlertView* confirmation = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Remote configuration",nil)
+                                                        message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?",nil)
+                                                       delegate:self
+                                              cancelButtonTitle:NSLocalizedString(@"No",nil)
+                                              otherButtonTitles:NSLocalizedString(@"Yes",nil),nil];
+        confirmation.tag = 1;
+        [confirmation show];
+        [confirmation release];
+    } else {
+        [self startApplication];
+        if([LinphoneManager isLcReady]) {
+            if([[url scheme] isEqualToString:@"sip"]) {
+                // Go to Dialer view
+                DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+                if(controller != nil) {
+                    [controller setAddress:[url absoluteString]];
+                }
             }
         }
     }
@@ -299,5 +311,96 @@
     [LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: Error %@", [error localizedDescription]];
     [[LinphoneManager instance] setPushNotificationToken:nil];
 }
+
+#pragma mark - Remote configuration Functions (URL Handler)
+
+
+- (void)ConfigurationStateUpdateEvent: (NSNotification*) notif {
+    LinphoneConfiguringState state = [[notif.userInfo objectForKey: @"state"] intValue];
+       if (state == LinphoneConfiguringSuccessful) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneConfiguringStateUpdate
+                                                  object:nil];
+        [_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Success",nil)
+                                                        message:NSLocalizedString(@"Remote configuration successfully fetched and applied.",nil)
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK",nil)
+                                              otherButtonTitles:nil];
+        [error show];
+        [error release];
+        [[PhoneMainView instance] startUp];
+    }
+    if (state == LinphoneConfiguringFailed) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneConfiguringStateUpdate
+                                                  object:nil];
+        [_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure",nil)
+                                                        message:NSLocalizedString(@"Failed configuring from the specified URL." ,nil)
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK",nil)
+                                              otherButtonTitles:nil];
+        [error show];
+        [error release];
+        
+    }
+}
+
+
+- (void) showWaitingIndicator {
+    _waitingIndicator = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Fetching remote configuration...",nil) message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+    UIActivityIndicatorView *progress= [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(125, 60, 30, 30)];
+    progress.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0){
+        [_waitingIndicator setValue:progress forKey:@"accessoryView"];
+        [progress setColor:[UIColor blackColor]];
+    } else {
+        [_waitingIndicator addSubview:progress];
+    }
+    [progress startAnimating];
+    [_waitingIndicator show];
+
+}
+
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if ((alertView.tag == 1) && (buttonIndex==1))  {
+        [self showWaitingIndicator];
+        if([LinphoneManager isLcReady]) {
+            [self attemptRemoteConfiguration];
+        } else {
+            [[LinphoneManager instance] startLibLinphone];
+            [self performSelector:@selector(attemptRemoteConfiguration) withObject:NULL afterDelay:5.0];
+        }
+    }
+    
+}
+
+- (void)attemptRemoteConfiguration {
+
+    if ([LinphoneManager isLcReady]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(ConfigurationStateUpdateEvent:)
+                                                     name:kLinphoneConfiguringStateUpdate
+                                                   object:nil];
+        linphone_core_set_provisioning_uri([LinphoneManager getLc] , [configURL UTF8String]);
+        [[LinphoneManager instance] destroyLibLinphone];
+        [[LinphoneManager instance] startLibLinphone];
+    } else {
+        [_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure",nil)
+                                                        message:NSLocalizedString(@"Linphone is not ready.",nil)
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK",nil)
+                                              otherButtonTitles:nil];
+        [error show];
+        [error release];
+        
+    }
+}
+
 
 @end

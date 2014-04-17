@@ -1016,9 +1016,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 
+static BOOL libStarted = FALSE;
+
 - (void)startLibLinphone {
 
-    static BOOL libStarted = FALSE;
     if ( libStarted ) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Liblinphone is already initialized!"];
         return;
@@ -1143,6 +1144,7 @@ static LinphoneCoreVTable linphonec_vtable = {
         proxyReachability=nil;
         
     }
+    libStarted  = FALSE;
 }
 
 - (void) resetLinphoneCore {

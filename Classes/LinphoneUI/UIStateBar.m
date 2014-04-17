@@ -130,7 +130,7 @@ NSTimer *callSecurityTimer;
 }
 
 - (void) globalStateUpdate:(NSNotification*) notif {
-    [self registrationUpdate:notif];
+    if ([LinphoneManager isLcReady]) [self registrationUpdate:notif];
 }
 
 
