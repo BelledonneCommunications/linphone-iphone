@@ -205,6 +205,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.notify_received=linphone_notify_received;
 	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
 	mgr->v_table.configuring_status=linphone_configuration_status;
+	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);

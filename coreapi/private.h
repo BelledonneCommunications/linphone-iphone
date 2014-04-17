@@ -224,8 +224,6 @@ struct _LinphoneCall
 	bool_t owns_call_log;
 	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
 
-	bool_t videostream_encrypted;
-	bool_t audiostream_encrypted;
 	bool_t auth_token_verified;
 	bool_t defer_update;
 

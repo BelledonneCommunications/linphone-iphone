@@ -30,9 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 
-#include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
-#include "ortp/ortp_srtp.h"
 #include "belle-sip/belle-sip.h"
 
 #ifndef LINPHONE_PUBLIC
@@ -171,7 +170,7 @@ typedef struct SalIceRemoteCandidate {
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
-	enum ortp_srtp_crypto_suite_t algo;
+	MSCryptoSuite algo;
 	char master_key[SAL_SRTP_KEY_SIZE];
 } SalSrtpCryptoAlgo;
 

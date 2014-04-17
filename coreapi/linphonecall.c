@@ -95,22 +95,21 @@ bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call){
 }
 
 static bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
-	// Check ZRTP encryption in audiostream
-	if (!call->audiostream_encrypted) {
-		return FALSE;
-	}
-
-#ifdef VIDEO_ENABLED
-	// If video enabled, check ZRTP encryption in videostream
-	{
-		const LinphoneCallParams *params=linphone_call_get_current_params(call);
-		if (params->has_video && !call->videostream_encrypted) {
-			return FALSE;
+	int number_of_encrypted_stream = 0;
+	int number_of_active_stream = 0;
+	if (call) {
+		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
+			number_of_active_stream++;
+			if(media_stream_is_secured((MediaStream *)call->audiostream))
+				number_of_encrypted_stream++;
+		}
+		if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+			number_of_active_stream++;
+			if (media_stream_is_secured((MediaStream *)call->videostream))
+				number_of_encrypted_stream++;
 		}
 	}
-#endif
-
-	return TRUE;
+	return number_of_active_stream>0 & number_of_active_stream==number_of_encrypted_stream;
 }
 
 void propagate_encryption_changed(LinphoneCall *call){
@@ -131,9 +130,6 @@ void propagate_encryption_changed(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 static void linphone_call_videostream_encryption_changed(void *data, bool_t encrypted){
 	LinphoneCall *call = (LinphoneCall *)data;
-
-	ms_message("Video stream is %s", encrypted ? "encrypted" : "not encrypted");
-	call->videostream_encrypted=encrypted;
 	propagate_encryption_changed(call);
 }
 #endif
@@ -141,10 +137,8 @@ static void linphone_call_videostream_encryption_changed(void *data, bool_t encr
 static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
 	char status[255]={0};
 	LinphoneCall *call;
-	ms_message("Audio stream is %s ", encrypted ? "encrypted" : "not encrypted");
 
 	call = (LinphoneCall *)data;
-	call->audiostream_encrypted=encrypted;
 
 	if (encrypted && call->core->vtable.display_status != NULL) {
 		snprintf(status,sizeof(status)-1,_("Authentication token is %s"),call->auth_token);
@@ -260,11 +254,11 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 				}
 			}else{
 				md->streams[i].crypto[0].tag = 1;
-				md->streams[i].crypto[0].algo = AES_128_SHA1_80;
+				md->streams[i].crypto[0].algo = MS_AES_128_SHA1_80;
 				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key, SAL_SRTP_KEY_SIZE))
 					md->streams[i].crypto[0].algo = 0;
 				md->streams[i].crypto[1].tag = 2;
-				md->streams[i].crypto[1].algo = AES_128_SHA1_32;
+				md->streams[i].crypto[1].algo = MS_AES_128_SHA1_32;
 				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key, SAL_SRTP_KEY_SIZE))
 					md->streams[i].crypto[1].algo = 0;
 				md->streams[i].crypto[2].algo = 0;
@@ -482,6 +476,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
 	call->camera_enabled=TRUE;
+	call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,0,min_port,max_port);
@@ -915,6 +910,16 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		call->current_params.recv_vsize = video_stream_get_received_video_size(vstream);
 	}
 #endif
+
+	if (linphone_call_are_all_streams_encrypted(call)) {
+		 if (linphone_call_get_authentication_token(call)) {
+			 call->current_params.media_encryption=LinphoneMediaEncryptionZRTP;
+		 } else {
+			 call->current_params.media_encryption=LinphoneMediaEncryptionSRTP;
+		 }
+	} else {
+		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
+	}
 
 	return &call->current_params;
 }
@@ -1903,12 +1908,10 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				if (crypto_idx >= 0) {
 					media_stream_set_srtp_recv_key(&call->audiostream->ms,stream->crypto[0].algo,stream->crypto[0].master_key);
 					media_stream_set_srtp_send_key(&call->audiostream->ms,stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
-					call->audiostream_encrypted=TRUE;
 				} else {
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
-					call->audiostream_encrypted=FALSE;
 				}
-			}else call->audiostream_encrypted=FALSE;
+			}
 			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
 			audio_stream_start_full(
 				call->audiostream,
@@ -2022,14 +2025,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			if (!is_inactive){
 				if (vstream->proto == SalProtoRtpSavp) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
-
 					if (crypto_idx >= 0) {
 						media_stream_set_srtp_recv_key(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key);
 						media_stream_set_srtp_send_key(&call->videostream->ms,vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
-						call->videostream_encrypted=TRUE;
-					}else call->videostream_encrypted=FALSE;
-				}else{
-					call->videostream_encrypted=FALSE;
+					}
 				}
 				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
 
@@ -2090,11 +2089,17 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 	if (call->params.media_encryption==LinphoneMediaEncryptionZRTP) {
 		OrtpZrtpParams params;
-		/*will be set later when zrtp is activated*/
-		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
-
+		memset(&params,0,sizeof(OrtpZrtpParams));
+		/*call->current_params.media_encryption will be set later when zrtp is activated*/
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
+#if VIDEO_ENABLED
+		if (media_stream_is_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+			/*audio stream is already encrypted and video stream is active*/
+			memset(&params,0,sizeof(OrtpZrtpParams));
+			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
+		}
+#endif
 	}else{
 		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
 			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
@@ -2144,8 +2149,7 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalAudio);
 	if (call->audiostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->audiostream->ms)){
-		call->audiostream_encrypted = TRUE;
-	}else call->audiostream_encrypted = FALSE;
+	}
 
 #ifdef VIDEO_ENABLED
 	local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalVideo);
@@ -2153,9 +2157,7 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalVideo);
 	if (call->videostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->videostream->ms)){
-		call->videostream_encrypted = TRUE;
 	}
-	call->videostream_encrypted = FALSE;
 #endif
 }
 

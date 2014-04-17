@@ -181,6 +181,9 @@ typedef struct _stats {
 	int number_of_LinphoneConfiguringSkipped;
 	int number_of_LinphoneConfiguringFailed;
 	int number_of_LinphoneConfiguringSuccessful;
+
+	int number_of_LinphoneCallEncryptedOn;
+	int number_of_LinphoneCallEncryptedOff;
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -212,6 +215,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, Lin
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state);
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
+void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 
 LinphoneAddress * create_linphone_address(const char * domain);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
