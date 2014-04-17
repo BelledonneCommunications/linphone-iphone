@@ -24,35 +24,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include "sal/sal.h"
-
-
 #include "ortp/rtpsession.h"
 
 #include <math.h>
 
 /***************************************************************************
  *  				TODO / REMINDER LIST
- ****************************************************************************/
-	// TO_CHECK: only if call succeeded and ran (busy should NOT call this)
-	// TO_CHECK: executed AFTER BYE's "OK" response has been received
-
-	// TO_CHECK: configurable global publish_call_statistics linphone_proxy_config_set_statistics_collector enable_collector
- 	
- 	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
-
- // range 0 - 255 au lieu de 0 - 5 metrics->quality_estimates.rcq, metrics->quality_estimates.moslq, metrics->quality_estimates.moscq);
- // abstraction audio video
- // tests liblinphonetester
- 	// à voir ++ :
-		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
- 		// valeurs instanannées : moyenne ? valeur extreme ?
- 		// rlq: il faut un algo
- #define PRINTF(...) do { if (getenv("LINPHONE_QR_DEBUG") != NULL) printf(__VA_ARGS__); } while (FALSE)
+ ****************************************************************************/	
+	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
+	// range 0 - 255 instead of 0 - 5 for metrics->quality_estimates.rcq, metrics->quality_estimates.moslq, metrics->quality_estimates.moscq
+ 	// Know issue: if call is stopped to early, IP are invalid
+ 	// to discuss
+		// video: what happens if doing stop/resume?
+ 		// one time value: average? worst value?
+ 		// rlq value: need algo to compute it
 /***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
 
-#define strass(dest, src) {\
+#define STR_REASSIGN(dest, src) {\
 	if (dest != NULL) \
 		ms_free(dest); \
 	dest = src; \
@@ -103,10 +93,10 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 }
 
 
-#define APPEND_IF_NOT_NULL_STR(buffer, size, offset, fmt, arg) if (FALSE &&arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg)
-#define APPEND_IF_NUM_IN_RANGE(buffer, size, offset, fmt, arg, inf, sup) if (FALSE &&inf <= arg && arg <= sup) append_to_buffer(buffer, size, offset, fmt, arg)
-#define APPEND_IF(buffer, size, offset, fmt, arg, cond) if (FALSE&&cond) append_to_buffer(buffer, size, offset, fmt, arg)
-#define IF_NUM_IN_RANGE(num, inf, sup, statement) if (FALSE&&inf <= num && num <= sup) statement
+#define APPEND_IF_NOT_NULL_STR(buffer, size, offset, fmt, arg) if (arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg)
+#define APPEND_IF_NUM_IN_RANGE(buffer, size, offset, fmt, arg, inf, sup) if (inf <= arg && arg <= sup) append_to_buffer(buffer, size, offset, fmt, arg)
+#define APPEND_IF(buffer, size, offset, fmt, arg, cond) if (cond) append_to_buffer(buffer, size, offset, fmt, arg)
+#define IF_NUM_IN_RANGE(num, inf, sup, statement) if (inf <= num && num <= sup) statement
 
 static bool_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	IF_NUM_IN_RANGE(rm.packet_loss.network_packet_loss_rate, 0, 255, return TRUE);
@@ -114,7 +104,7 @@ static bool_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	IF_NUM_IN_RANGE(rm.quality_estimates.moslq, 1, 5, return TRUE);
 	IF_NUM_IN_RANGE(rm.quality_estimates.moscq, 1, 5, return TRUE);
 
-	// since these are values from local metrics, do not check them
+	// since these are same values than local ones, do not check them
 	// if (rm.session_description.payload_type != -1) return TRUE;
 	// if (rm.session_description.payload_desc != NULL) return TRUE;
 	// if (rm.session_description.sample_rate != -1) return TRUE;
@@ -235,8 +225,6 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 }
 
 static void reporting_publish(const LinphoneCall* call, const reporting_session_report_t * report) {
-	PRINTF("static reporting_publish\n");
-
 	LinphoneContent content = {0};
  	LinphoneAddress *addr;
 	int expires = -1;
@@ -279,12 +267,8 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	if (addr != NULL) {
 		linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content);
 		linphone_address_destroy(addr);
-	
-		// for debug purpose only
-		PRINTF("%s\n", (char*) content.data);
 	} else {
 		ms_warning("Asked to submit reporting statistics but no collector address found");
-		PRINTF("Asked to submit reporting statistics but no collector address found\n");
 	}
 
 	linphone_content_uninit(&content);
@@ -315,7 +299,7 @@ static void reporting_update_ip(LinphoneCall * call, int stats_type) {
 		// local info are always up-to-date and correct
 		if (local_desc != NULL) {
 			call->log->reports[stats_type]->info.local_addr.port = local_desc->rtp_port;
-			strass(call->log->reports[stats_type]->info.local_addr.ip, ms_strdup(local_desc->rtp_addr));
+			STR_REASSIGN(call->log->reports[stats_type]->info.local_addr.ip, ms_strdup(local_desc->rtp_addr));
 		}
 
 		if (remote_desc != NULL) {
@@ -324,9 +308,9 @@ static void reporting_update_ip(LinphoneCall * call, int stats_type) {
 
 			// for IP it can be not set if we are using a direct route
 			if (remote_desc->rtp_addr != NULL && strlen(remote_desc->rtp_addr) > 0) {
-				strass(call->log->reports[stats_type]->info.remote_addr.ip, ms_strdup(remote_desc->rtp_addr));
+				STR_REASSIGN(call->log->reports[stats_type]->info.remote_addr.ip, ms_strdup(remote_desc->rtp_addr));
 			} else {
-				strass(call->log->reports[stats_type]->info.remote_addr.ip, ms_strdup(sal_call_get_remote_media_description(call->op)->addr));
+				STR_REASSIGN(call->log->reports[stats_type]->info.remote_addr.ip, ms_strdup(sal_call_get_remote_media_description(call->op)->addr));
 			}
 		}
 	}
@@ -340,8 +324,6 @@ void linphone_reporting_update_ip(LinphoneCall * call) {
 	// This function can be called in two different cases:
 	// - 1) at start when call is starting, remote ip/port info might be the proxy ones to which callee is registered
 	// - 2) later, if we found a direct route between caller and callee with ICE/Stun, ip/port are updated for the direct route access
-
-	PRINTF("linphone_reporting_update_remote_ip\n");
 
 	if (! reporting_enabled(call)) 
 		return;
@@ -360,26 +342,26 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 
-	PRINTF("linphone_reporting_call_stats_updated type=%d\n", stats_type);
-
 	if (! reporting_enabled(call)) 
 		return;
 
-	strass(report->info.call_id, ms_strdup(call->log->call_id));
-	strass(report->info.local_group, ms_strdup_printf(_("linphone-%s-%s"), linphone_core_get_user_agent_name(), report->info.call_id));
-	strass(report->info.remote_group, ms_strdup_printf(_("linphone-%s-%s"), linphone_call_get_remote_user_agent(call), report->info.call_id));
+	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
+	STR_REASSIGN(report->info.local_group, ms_strdup_printf(_("linphone-%s-%s-%s"), (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
+		linphone_core_get_user_agent_name(), report->info.call_id));
+	STR_REASSIGN(report->info.remote_group, ms_strdup_printf(_("linphone-%s-%s-%s"), (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
+		linphone_call_get_remote_user_agent(call), report->info.call_id));
 
 	if (call->dir == LinphoneCallIncoming) {
-		strass(report->info.remote_id, linphone_address_as_string(call->log->from));
-		strass(report->info.local_id, linphone_address_as_string(call->log->to));
-		strass(report->info.orig_id, ms_strdup(report->info.remote_id));
+		STR_REASSIGN(report->info.remote_id, linphone_address_as_string(call->log->from));
+		STR_REASSIGN(report->info.local_id, linphone_address_as_string(call->log->to));
+		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.remote_id));
 	} else {
-		strass(report->info.remote_id, linphone_address_as_string(call->log->to));
-		strass(report->info.local_id, linphone_address_as_string(call->log->from));
-		strass(report->info.orig_id, ms_strdup(report->info.local_id));
+		STR_REASSIGN(report->info.remote_id, linphone_address_as_string(call->log->to));
+		STR_REASSIGN(report->info.local_id, linphone_address_as_string(call->log->from));
+		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.local_id));
 	}
 
-	strass(report->dialog_id, sal_op_get_dialog_id(call->op));
+	STR_REASSIGN(report->dialog_id, sal_op_get_dialog_id(call->op));
 
 	report->local_metrics.timestamps.start = call->log->start_date_time;
 	report->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
@@ -408,16 +390,16 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
-		strass(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
+		STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
 		report->local_metrics.session_description.sample_rate = local_payload->clock_rate;
-		strass(report->local_metrics.session_description.fmtp, ms_strdup(local_payload->recv_fmtp));
+		STR_REASSIGN(report->local_metrics.session_description.fmtp, ms_strdup(local_payload->recv_fmtp));
 	}
 
 	if (remote_payload != NULL) {
 		report->remote_metrics.session_description.payload_type = remote_payload->type;
-		strass(report->remote_metrics.session_description.payload_desc, ms_strdup(remote_payload->mime_type));
+		STR_REASSIGN(report->remote_metrics.session_description.payload_desc, ms_strdup(remote_payload->mime_type));
 		report->remote_metrics.session_description.sample_rate = remote_payload->clock_rate;
-		strass(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
+		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
 	}
 }
 
@@ -466,8 +448,6 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 }
 
 void linphone_reporting_publish(LinphoneCall* call) {
-	PRINTF("linphone_reporting_publish\n");
-
 	if (! reporting_enabled(call))
 		return;
 
