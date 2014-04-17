@@ -47,8 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 		// video : que se passe t-il si on arrete / resume la vidéo (new stream)
  		// valeurs instanannées : moyenne ? valeur extreme ?
  		// rlq: il faut un algo
- // #define PRINTF printf
- #define PRINTF(...) 
+ #define PRINTF(...) do { if (getenv("LINPHONE_QR_DEBUG") != NULL) printf(__VA_ARGS__); } while (FALSE)
 /***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -104,10 +103,44 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 }
 
 
-#define APPEND_IF_NOT_NULL_STR(buffer, size, offset, fmt, arg) if (arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg)
-#define APPEND_IF_NUM_IN_RANGE(buffer, size, offset, fmt, arg, inf, sup) if (inf <= arg && arg <= sup) append_to_buffer(buffer, size, offset, fmt, arg)
-#define APPEND_IF(buffer, size, offset, fmt, arg, cond) if (cond) append_to_buffer(buffer, size, offset, fmt, arg)
-#define IF_NUM_IN_RANGE(num, inf, sup, statement) if (inf <= num && num <= sup) statement
+#define APPEND_IF_NOT_NULL_STR(buffer, size, offset, fmt, arg) if (FALSE &&arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg)
+#define APPEND_IF_NUM_IN_RANGE(buffer, size, offset, fmt, arg, inf, sup) if (FALSE &&inf <= arg && arg <= sup) append_to_buffer(buffer, size, offset, fmt, arg)
+#define APPEND_IF(buffer, size, offset, fmt, arg, cond) if (FALSE&&cond) append_to_buffer(buffer, size, offset, fmt, arg)
+#define IF_NUM_IN_RANGE(num, inf, sup, statement) if (FALSE&&inf <= num && num <= sup) statement
+
+static bool_t are_metrics_filled(const reporting_content_metrics_t rm) {
+	IF_NUM_IN_RANGE(rm.packet_loss.network_packet_loss_rate, 0, 255, return TRUE);
+	IF_NUM_IN_RANGE(rm.packet_loss.jitter_buffer_discard_rate, 0, 255, return TRUE);
+	IF_NUM_IN_RANGE(rm.quality_estimates.moslq, 1, 5, return TRUE);
+	IF_NUM_IN_RANGE(rm.quality_estimates.moscq, 1, 5, return TRUE);
+
+	// since these are values from local metrics, do not check them
+	// if (rm.session_description.payload_type != -1) return TRUE;
+	// if (rm.session_description.payload_desc != NULL) return TRUE;
+	// if (rm.session_description.sample_rate != -1) return TRUE;
+	if (rm.session_description.frame_duration != -1) return TRUE;
+	// if (rm.session_description.fmtp != NULL) return TRUE;
+	if (rm.session_description.packet_loss_concealment != -1) return TRUE;
+
+	IF_NUM_IN_RANGE(rm.jitter_buffer.adaptive, 0, 3, return TRUE);
+	IF_NUM_IN_RANGE(rm.jitter_buffer.nominal, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.jitter_buffer.max, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.jitter_buffer.abs_max, 0, 65535, return TRUE); 
+
+	IF_NUM_IN_RANGE(rm.delay.round_trip_delay, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.delay.end_system_delay, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.delay.symm_one_way_delay, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.delay.interarrival_jitter, 0, 65535, return TRUE);
+	IF_NUM_IN_RANGE(rm.delay.mean_abs_jitter, 0, 65535, return TRUE);
+
+	if (rm.signal.level != 127) return TRUE;
+	if (rm.signal.noise_level != 127) return TRUE;
+
+	IF_NUM_IN_RANGE(rm.quality_estimates.rlq, 1, 120, return TRUE);
+	IF_NUM_IN_RANGE(rm.quality_estimates.rcq, 1, 120, return TRUE);
+
+	return FALSE;
+}
 
 static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, const reporting_content_metrics_t rm) {
 	char * timestamps_start_str = NULL;
@@ -232,8 +265,10 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	append_to_buffer(&buffer, &size, &offset, "LocalMetrics:\r\n");
 	append_metrics_to_buffer(&buffer, &size, &offset, report->local_metrics);
 		
-	append_to_buffer(&buffer, &size, &offset, "RemoteMetrics:\r\n");
-	append_metrics_to_buffer(&buffer, &size, &offset, report->remote_metrics);
+	if (are_metrics_filled(report->remote_metrics)) {
+		append_to_buffer(&buffer, &size, &offset, "RemoteMetrics:\r\n");
+		append_metrics_to_buffer(&buffer, &size, &offset, report->remote_metrics);
+	}
 	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "DialogID: %s\r\n", report->dialog_id);
 
 	content.data = buffer;
