@@ -1286,6 +1286,7 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 
 		if (policy == LinphonePolicyUseIce)
 			CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+#ifdef VIDEO_ENABLED
 		if (enable_video) {
 			if (linphone_core_video_supported(marie->lc)) {
 				for (i=0;i<100;i++) { /*fixme to workaround a crash*/
@@ -1306,6 +1307,7 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 			}
 
 		}
+#endif
 
 
 		/*just to sleep*/
