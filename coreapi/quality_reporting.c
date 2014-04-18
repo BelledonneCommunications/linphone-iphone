@@ -31,10 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ****************************************************************************/
-	// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
-	// range 0 - 255 instead of 0 - 5 for metrics->quality_estimates.rcq, metrics->quality_estimates.moslq, metrics->quality_estimates.moscq
- 	// Know issue: if call is stopped to early, IP are invalid
  	// to discuss
+		// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
+		// moslq == moscq
 		// video: what happens if doing stop/resume?
  		// one time value: average? worst value?
  		// rlq value: need algo to compute it
@@ -281,17 +280,17 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	linphone_content_uninit(&content);
 }
 
-static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * remote_smd, SalStreamType sal_stream_type) {
-	if (remote_smd != NULL) {
-		int count;
-		for (count = 0; count < remote_smd->n_total_streams; ++count) {
-			if (remote_smd->streams[count].type == sal_stream_type) {
-				return &remote_smd->streams[count];
+static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
+	int count;
+	if (smd != NULL) {
+		for (count = 0; count < smd->n_total_streams; ++count) {
+			if (smd->streams[count].type == sal_stream_type) {
+				return &smd->streams[count];
 			}
 		}
-		if (remote_smd == NULL || count == remote_smd->n_total_streams) {
-			ms_warning("Could not find the associated stream of type %d for remote desc", sal_stream_type);
-		}
+	}
+	if (smd == NULL || count == smd->n_total_streams) {
+		ms_warning("Could not find the associated stream of type %d", sal_stream_type);
 	}
 
 	return NULL;
@@ -377,7 +376,7 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 	report->remote_metrics.timestamps.start = call->log->start_date_time;
 	report->remote_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
 
-	// yet we use the same payload config for local and remote, since this is the largest case
+	// yet we use the same payload config for local and remote, since this is the largest use case
 	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = &call->audiostream->ms;
 		local_payload = linphone_call_params_get_used_audio_codec(current_params);
@@ -435,8 +434,9 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
         switch (rtcp_XR_get_block_type(block)) {
             case RTCP_XR_VOIP_METRICS: {
                 metrics->quality_estimates.rcq = rtcp_XR_voip_metrics_get_r_factor(block);
-                metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block);
-                metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block);
+                metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+                metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+
                 metrics->jitter_buffer.nominal = rtcp_XR_voip_metrics_get_jb_nominal(block);
                 metrics->jitter_buffer.max = rtcp_XR_voip_metrics_get_jb_maximum(block);
                 metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);

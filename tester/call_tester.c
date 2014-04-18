@@ -1935,7 +1935,7 @@ static void statistics_not_sent_if_call_not_started() {
 
 	// wait a few time...
 	wait_for(marie->lc,NULL,NULL,0);
-	// since the callee was busy, there shouldn't be no publish to do
+	// since the callee was busy, there should be no publish to do
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0);
 
@@ -1963,7 +1963,7 @@ static void statistics_sent_at_call_termination() {
 
 	// PUBLISH submission to the collector should be ok
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1)); // failing since server side is not implemented
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
