@@ -90,8 +90,13 @@ static void remote_provisioning_default_values(void) {
 }
 
 static void remote_provisioning_file(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
+	LinphoneCoreManager* marie;
 	const LpConfig* conf;
+#if ANDROID
+	marie = linphone_core_manager_new2("marie_remote_localfile_android_rc", FALSE);
+#else
+	marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
+#endif
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 
 	conf = linphone_core_get_config( marie->lc );
