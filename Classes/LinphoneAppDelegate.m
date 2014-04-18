@@ -243,9 +243,18 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    [[UIApplication sharedApplication] cancelLocalNotification:notification];
+
+    [self fixRing];
+    
+
     if([notification.userInfo objectForKey:@"callId"] != nil) {
-        [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
+        // some local notifications have an internal timer to relaunch themselves at specified intervals
+        if( [[notification.userInfo objectForKey:@"timer"] intValue] == 1 ){
+            [[LinphoneManager instance] cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
+        } else {
+            // auto answer only for non-timed local notifications
+            [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
+        }
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view

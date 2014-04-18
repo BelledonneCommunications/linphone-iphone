@@ -441,6 +441,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 
 #pragma mark - Call State Functions
 
+- (void)localNotifContinue:(NSTimer*) timer {
+    UILocalNotification* notif = [timer userInfo];
+    if (notif){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"cancelling/presenting local notif"];
+        [[UIApplication sharedApplication] cancelLocalNotification:notif];
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+    }
+}
+
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     
 	// Handling wrapper
@@ -516,12 +525,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 				// Create a new local notification
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
-					data->notification.repeatInterval = 0;
+                    data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
+
+                    data->notification.repeatInterval = 0;
 					data->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
 					data->notification.alertAction = NSLocalizedString(@"Answer", nil);
-					data->notification.soundName = @"ring.caf";
-					data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
-					
+					data->notification.soundName = @"shortring.caf";
+					data->notification.userInfo = @{@"callId": callId, @"timer":[NSNumber numberWithInt:1] };
+                    data->notification.applicationIconBadgeNumber = 1;
+
 					[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
 					
 					if (!incallBgTask){
@@ -530,6 +542,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 							[[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
 							incallBgTask=0;
 						}];
+
+                        [[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
 					}
 					
 				}
@@ -555,7 +569,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             LinphoneCallLog *log = linphone_call_get_call_log(call);
         
             // cancel local notif if needed
+			if( data->timer ){
+                [data->timer invalidate];
+                data->timer = nil;
+            }
             [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+            
             [data->notification release];
             data->notification = nil;
             
@@ -1174,6 +1193,21 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
+- (void)cancelLocalNotifTimerForCallId:(NSString*)callid {
+    //first, make sure this callid is not already involved in a call
+	if ([LinphoneManager isLcReady]) {
+		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+        MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+		if (call != NULL) {
+            LinphoneCallAppData* data = linphone_call_get_user_pointer((LinphoneCall*)call->data);
+            if ( data->timer )
+                [data->timer invalidate];
+            data->timer = nil;
+			return;
+		}
+	}
+}
+
 - (void)acceptCallForCallId:(NSString*)callid {
     //first, make sure this callid is not already involved in a call
 	if ([LinphoneManager isLcReady]) {
@@ -1255,7 +1289,10 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 			if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
 															   handler:^{
 																   [LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler"];
+																   if (mLastKeepAliveDate)
+																	   [mLastKeepAliveDate release];
 																   mLastKeepAliveDate=[NSDate date];
+																   [mLastKeepAliveDate retain];
 																   if (theLinphoneCore == nil) {
 																	   [LinphoneLogger logc:LinphoneLoggerWarning format:"It seems that Linphone BG mode was deactivated, just skipping"];
 																	   return;
@@ -1291,6 +1328,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
 		linphone_core_iterate(theLinphoneCore);
 	}
+	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Entering [%s] bg mode",shouldEnterBgMode?"normal":"lite"];
 	
