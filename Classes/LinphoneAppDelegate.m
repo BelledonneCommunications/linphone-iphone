@@ -208,7 +208,12 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
+	if ([LinphoneManager instance].pushNotificationToken==Nil){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
+	}
+	
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
@@ -241,9 +246,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
-	if ([LinphoneManager instance].pushNotificationToken==Nil){
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
-	}
+	
 	[self processRemoteNotification:userInfo];
 }
 
