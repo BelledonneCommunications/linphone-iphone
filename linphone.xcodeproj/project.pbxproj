@@ -1344,6 +1344,8 @@
 		F01A77C518EBEC6200E287CA /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F01A77C618EBECCB00E287CA /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F01A77C718EBECEA00E287CA /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F01A77EB18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
+		F01A77EC18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
 		F03A9B1D18C0CF7000C4D7FE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		F03A9B1E18C0CF7000C4D7FE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		F03A9B1F18C0CF7000C4D7FE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -2464,6 +2466,7 @@
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		F01A77EA18ED989B00E287CA /* shortring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = shortring.caf; path = Resources/shortring.caf; sourceTree = "<group>"; };
 		F03A9B1C18C0CF7000C4D7FE /* linphonetester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphonetester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F03A9B2218C0CF7000C4D7FE /* tester-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "tester-Info.plist"; sourceTree = "<group>"; };
 		F03A9B2418C0CF7000C4D7FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3395,6 +3398,7 @@
 				D3804E5E15D92A57008072A5 /* msg.caf */,
 				D3804E5F15D92A57008072A5 /* msg.wav */,
 				2242E312125235120061DDCE /* ring.caf */,
+				F01A77EA18ED989B00E287CA /* shortring.caf */,
 				2237D4081084D7A9001383EE /* ring.wav */,
 				22F254801073D99800AC9B3F /* ringback.wav */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
@@ -4824,6 +4828,7 @@
 				D3F83F1E158205A100336684 /* speaker_off_over.png in Resources */,
 				D3F83F20158205A100336684 /* speaker_on_default.png in Resources */,
 				D3F83F22158205A100336684 /* speaker_on_over.png in Resources */,
+				F01A77EB18ED989B00E287CA /* shortring.caf in Resources */,
 				D3F83F24158205A100336684 /* video_off_default.png in Resources */,
 				D3F83F26158205A100336684 /* video_off_over.png in Resources */,
 				D3F83F28158205A100336684 /* video_on_default.png in Resources */,
@@ -5369,6 +5374,7 @@
 				D34BD72F15C13DD40070C209 /* LinphoneApp.xib in Resources */,
 				D34BD73015C13DD40070C209 /* AboutViewController.xib in Resources */,
 				D34BD73115C13DD40070C209 /* PhoneMainView.xib in Resources */,
+				F01A77EC18ED989B00E287CA /* shortring.caf in Resources */,
 				D34BD73215C13DD40070C209 /* SettingsViewController.xib in Resources */,
 				D38187DE15FE348A00C3EDCA /* WizardViewController.xib in Resources */,
 				D34BD62815C13DB60070C209 /* back_over.png in Resources */,

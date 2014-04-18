@@ -82,6 +82,7 @@ struct NetworkReachabilityContext {
     UILocalNotification *notification;
     NSMutableDictionary *userInfos;
 	bool_t videoRequested; /*set when user has requested for video*/
+    NSTimer* timer;
 };
 @end
 
@@ -130,6 +131,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
+- (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
 - (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;
