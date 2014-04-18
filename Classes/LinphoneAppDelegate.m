@@ -213,32 +213,37 @@
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
             NSString *loc_key = [alert objectForKey:@"loc-key"];
-			/*if we receive a remote notification, it is because our TCP background socket was no more working.
+			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
 			LinphoneCore *lc = [LinphoneManager getLc];
-			linphone_core_set_network_reachable(lc, FALSE);
-			[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
-            if(loc_key != nil) {
-                if([loc_key isEqualToString:@"IM_MSG"]) {
-                    [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
-                    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
-                } else if([loc_key isEqualToString:@"IC_MSG"]) {
-                    //it's a call
-					NSString *callid=[userInfo objectForKey:@"call-id"];
-                    if (callid)
-						[[LinphoneManager instance] enableAutoAnswerForCallId:callid];
-					else
-						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
+			if (linphone_core_get_calls(lc)==NULL){ //if there are calls, obviously our TCP socket shall be working
+				linphone_core_set_network_reachable(lc, FALSE);
+				[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
+				if(loc_key != nil) {
+					if([loc_key isEqualToString:@"IM_MSG"]) {
+						[[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
+						[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+					} else if([loc_key isEqualToString:@"IC_MSG"]) {
+						//it's a call
+						NSString *callid=[userInfo objectForKey:@"call-id"];
+						if (callid)
+							[[LinphoneManager instance] enableAutoAnswerForCallId:callid];
+						else
+							[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
 
-                    [self fixRing];
-                }
-            }
+						[self fixRing];
+					}
+				}
+			}
         }
     }
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
+	if ([LinphoneManager instance].pushNotificationToken==Nil){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
+	}
 	[self processRemoteNotification:userInfo];
 }
 
@@ -278,6 +283,10 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     LinphoneManager* lm = [LinphoneManager instance];
+	
+	if (lm.pushNotificationToken==Nil){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
+	}
 
     // check that linphone is still running
     if( ![LinphoneManager isLcReady] )
@@ -292,10 +301,14 @@
     lm.silentPushCompletion = completionHandler;
     [NSTimer scheduledTimerWithTimeInterval:15.0 target:lm selector:@selector(silentPushFailed:) userInfo:nil repeats:FALSE];
 
-    // Force Linphone to drop the current socket, this will trigger a refresh registers
-    linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
-    lm.connectivity=none; /*force connectivity to be discovered again*/
-    [lm refreshRegisters];
+	LinphoneCore *lc=[LinphoneManager getLc];
+	// If no call is yet received at this time, then force Linphone to drop the current socket and make new one to register, so that we get
+	// a better chance to receive the INVITE.
+	if (linphone_core_get_calls(lc)==NULL){
+		linphone_core_set_network_reachable(lc, FALSE);
+		lm.connectivity=none; /*force connectivity to be discovered again*/
+		[lm refreshRegisters];
+	}
 }
 
 
