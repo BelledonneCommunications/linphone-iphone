@@ -137,18 +137,20 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                object:nil];
     // Update on show
     if([LinphoneManager isLcReady]) {
+		LinphoneManager *mgr=[LinphoneManager instance];
         LinphoneCore* lc = [LinphoneManager getLc];
         LinphoneCall* call = linphone_core_get_current_call(lc);
         LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
         [self callUpdate:call state:state];
 
         if([LinphoneManager runningOnIpad]) {
-            if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
+            if(linphone_core_video_enabled(lc) && [mgr lpConfigBoolForKey:@"preview_preference"]) {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
                 [backgroundView setHidden:FALSE];
                 [videoCameraSwitch setHidden:FALSE];
             } else {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+				linphone_core_enable_video_preview(lc, FALSE);
                 [backgroundView setHidden:TRUE];
                 [videoCameraSwitch setHidden:TRUE];
             }
@@ -180,7 +182,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
                                                   object:nil];
-    
 }
 
 - (void)viewDidLoad {

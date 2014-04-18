@@ -123,20 +123,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability];
     
-	//work around until we can access lpconfig without linphonecore
-	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"YES", @"start_at_boot_preference",
-								 @"YES", @"backgroundmode_preference",
-#ifdef DEBUG
-								 @"YES",@"debugenable_preference",
-#else
-								 @"NO",@"debugenable_preference",
-#endif
-                                 nil];
-	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 
-    BOOL background_mode = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
-    BOOL start_at_boot   = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"];
+	LinphoneManager* instance = [LinphoneManager instance];
+    BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
+    BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground)

@@ -107,6 +107,7 @@ extern void libmsbcg729_init(void);
 @synthesize photoLibrary;
 @synthesize silentPushCompletion;
 @synthesize wasRemoteProvisioned;
+@synthesize configDb;
 
 struct codec_name_pref_table{
     const char *name;
@@ -260,7 +261,19 @@ struct codec_name_pref_table codec_pref_table[]={
         [self copyDefaultSettings];
         pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
         photoLibrary = [[ALAssetsLibrary alloc] init];
-
+		
+		NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
+		configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]] , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		
+		//set default values for first boot
+		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
+#ifdef DEBUG
+			[self lpConfigSetBool:TRUE forKey:@"debugenable_preference"];
+#else
+			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
+#endif
+		}
     }
     return self;
 }
@@ -360,9 +373,9 @@ static void dump_section(const char* section, void* data){
 }
 
 + (void)dumpLCConfig {
-    if(theLinphoneCore ){
-        LpConfig* conf = linphone_core_get_config(theLinphoneCore);
-        lp_config_for_each_section(conf, dump_section, conf);
+    if (theLinphoneCore ){
+		LpConfig *conf=[LinphoneManager instance].configDb;
+		lp_config_for_each_section(conf, dump_section, conf);
     }
 }
 
@@ -514,6 +527,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 					if (!incallBgTask){
 						incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
 							[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
+							[[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
+							incallBgTask=0;
 						}];
 					}
 					
@@ -657,8 +672,6 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 
 - (void)onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
     [LinphoneLogger logc:LinphoneLoggerLog format:"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message];
-	if (state==LinphoneRegistrationOk)
-		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
     
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -822,7 +835,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config(theLinphoneCore), LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
+			BOOL isWifiOnly = lp_config_get_int(lLinphoneMgr.configDb, LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
@@ -847,8 +860,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 					linphone_proxy_config_expires(proxy, 0);
 				} 
 				linphone_core_set_network_reachable(theLinphoneCore,true);
+				linphone_core_iterate(theLinphoneCore);
 				[LinphoneLogger logc:LinphoneLoggerLog format:"Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan")];
-				[lLinphoneMgr waitForRegisterToArrive];
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
 		}
@@ -1051,7 +1064,7 @@ static BOOL libStarted = FALSE;
 #endif
 
 	/*to make sure we don't loose debug trace*/
-	if ([[NSUserDefaults standardUserDefaults]  boolForKey:@"debugenable_preference"]) {
+	if ([self  lpConfigBoolForKey:@"debugenable_preference"]) {
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	}
@@ -1095,11 +1108,9 @@ static BOOL libStarted = FALSE;
 
     connectivity=none;
 
-    NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
-	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
-	theLinphoneCore = linphone_core_new (&linphonec_vtable
-										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
+
+	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
+										 ,configDb
 										 ,self /* user_data */);
 
     /* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
@@ -1206,24 +1217,6 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
     return YES;
 }
 
-- (void)waitForRegisterToArrive{
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
-        stopWaitingRegisters = FALSE;
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
-        UIBackgroundTaskIdentifier bgid = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-            [LinphoneManager instance]->stopWaitingRegisters=TRUE;
-            [LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
-        }];
-        for(int i=0;i<100 && (!stopWaitingRegisters);i++){
-            linphone_core_iterate(theLinphoneCore);
-            usleep(20000);
-        }
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
-        [[UIApplication sharedApplication] endBackgroundTask:bgid];
-    }
-}
-
 static int comp_call_state_paused  (const LinphoneCall* call, const void* param) {
 	return linphone_call_get_state(call) != LinphoneCallPaused;
 }
@@ -1262,6 +1255,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 			if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
 															   handler:^{
 																   [LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler"];
+																   mLastKeepAliveDate=[NSDate date];
 																   if (theLinphoneCore == nil) {
 																	   [LinphoneLogger logc:LinphoneLoggerWarning format:"It seems that Linphone BG mode was deactivated, just skipping"];
 																	   return;
@@ -1291,6 +1285,11 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	if (callList){
 		/*if at least one call exist, enter normal bg mode */
 		shouldEnterBgMode=TRUE;
+	}
+	/*stop the video preview*/
+	if (theLinphoneCore){
+		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
+		linphone_core_iterate(theLinphoneCore);
 	}
 	
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Entering [%s] bg mode",shouldEnterBgMode?"normal":"lite"];
@@ -1323,6 +1322,19 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
+	
+	/*start the video preview in case we are in the main view*/
+	if ([LinphoneManager runningOnIpad]  && linphone_core_video_enabled(theLinphoneCore) && [self lpConfigBoolForKey:@"preview_preference"]){
+		linphone_core_enable_video_preview(theLinphoneCore, TRUE);
+	}
+	/*check last keepalive handler date*/
+	if (mLastKeepAliveDate!=Nil){
+		NSDate *current=[NSDate date];
+		if ([current timeIntervalSinceDate:mLastKeepAliveDate]>700){
+			NSString *datestr=[mLastKeepAliveDate description];
+			[LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler was called for the last time at %@",datestr];
+		}
+	}
 
 }
 
@@ -1647,7 +1659,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString *)section {
 	if (!key) return;
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value?[value UTF8String]:NULL);
+	lp_config_set_string(configDb, [section UTF8String], [key UTF8String], value?[value UTF8String]:NULL);
 }
 
 - (NSString*)lpConfigStringForKey:(NSString*)key {
@@ -1660,7 +1672,7 @@ static void audioRouteChangeListenerCallback (
 
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString *)section {
     if (!key) return nil;
-	const char* value = lp_config_get_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], NULL);
+	const char* value = lp_config_get_string(configDb, [section UTF8String], [key UTF8String], NULL);
 	if (value)
 		return [NSString stringWithUTF8String:value];
 	else
@@ -1673,7 +1685,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString *)section {
     if (!key) return;
-	lp_config_set_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value );
+	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], value );
 }
 
 - (NSInteger)lpConfigIntForKey:(NSString*)key {
@@ -1682,7 +1694,7 @@ static void audioRouteChangeListenerCallback (
 
 - (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString *)section {
     if (!key) return -1;
-	return lp_config_get_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], -1);
+	return lp_config_get_int(configDb, [section UTF8String], [key UTF8String], -1);
 }
 
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key {
