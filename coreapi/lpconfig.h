@@ -57,7 +57,7 @@ extern "C" {
 
 /**
  * Instantiates a LpConfig object from a user config file.
- *
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
  * @param filename the filename of the config file to read to fill the instantiated LpConfig
  * @see lp_config_new_with_factory
@@ -66,7 +66,7 @@ LINPHONE_PUBLIC LpConfig * lp_config_new(const char *filename);
 
 /**
  * Instantiates a LpConfig object from a user provided buffer.
- *
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
  * @param buffer the buffer from which the lpconfig will be retrieved. We expect the buffer to be null-terminated.
  * @see lp_config_new_with_factory
@@ -76,7 +76,7 @@ LINPHONE_PUBLIC LpConfig * lp_config_new_from_buffer(const char *buffer);
 
 /**
  * Instantiates a LpConfig object from a user config file and a factory config file.
- *
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
  * @param config_filename the filename of the user config file to read to fill the instantiated LpConfig
  * @param factory_config_filename the filename of the factory config file to read to fill the instantiated LpConfig
@@ -258,6 +258,19 @@ LINPHONE_PUBLIC const char* lp_config_get_default_string(const LpConfig *lpconfi
  * The default value string is returned if the config item isn't found.
 **/
 LINPHONE_PUBLIC const char* lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
+
+
+/**
+ * increment reference count
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LpConfig *lp_config_ref(LpConfig *lpconfig);
+
+/**
+ * Decrement reference count, which will eventually free the object.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_unref(LpConfig *lpconfig);
 
 #ifdef __cplusplus
 }

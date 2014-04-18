@@ -1304,7 +1304,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	const char *remote_provisioning_uri = NULL;
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
-	lc->config=config;
+	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
 
@@ -1421,8 +1421,11 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config_path, void * userdata)
 {
+	LinphoneCore *lc;
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	return linphone_core_new_with_config(vtable, config, userdata);
+	lc=linphone_core_new_with_config(vtable, config, userdata);
+	lp_config_unref(config);
+	return lc;
 }
 
 LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata)
