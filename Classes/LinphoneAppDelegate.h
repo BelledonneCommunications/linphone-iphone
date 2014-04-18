@@ -32,12 +32,14 @@
 	UIWindow *window;
     BOOL started;
 	int savedMaxCall;
-	
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo;
 
 @property (assign) BOOL started;
+@property (nonatomic, retain) UIAlertView *waitingIndicator;
+@property (nonatomic, retain) NSString *configURL;
+
 
 @end
 

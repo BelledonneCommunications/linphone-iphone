@@ -32,12 +32,19 @@ endif
 
 openh264_dir?=externals/openh264
 
-$(BUILDER_BUILD_DIR)/$(openh264_dir)/Makefile:
+$(BUILDER_SRC_DIR)/$(openh264_dir)/openh264-permissive.patch.stamp:
+	cd $(BUILDER_SRC_DIR)/$(openh264_dir) \
+	&& patch -p1 < $(BUILDER_SRC_DIR)/build/builders.d/openh264-permissive.patch
+	touch $(BUILDER_SRC_DIR)/$(openh264_dir)/openh264-permissive.patch.stamp
+
+patch-openh264: $(BUILDER_SRC_DIR)/$(openh264_dir)/openh264-permissive.patch.stamp 
+
+update-openh264: patch-openh264
 	mkdir -p $(BUILDER_BUILD_DIR)/$(openh264_dir) \
 	&& cd $(BUILDER_BUILD_DIR)/$(openh264_dir)/ \
-	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(openh264_dir)/* . 
+	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(openh264_dir)/* .
 
-build-openh264: $(BUILDER_BUILD_DIR)/$(openh264_dir)/Makefile
+build-openh264: update-openh264
 	cd $(BUILDER_BUILD_DIR)/$(openh264_dir) \
 	&& make libraries OS=ios ARCH=$(ARCH) PREFIX=$(prefix)\
 	&& make install OS=ios ARCH=$(ARCH) PREFIX=$(prefix)

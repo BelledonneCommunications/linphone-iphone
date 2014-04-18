@@ -30,10 +30,6 @@ enable_debug=no
 # check that the selected options are correct
 CHECKOPT_MSG := ""
 
-ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
-	CHECKOPT_MSG += "ZRTP is not available in non-gpl build. disabling\n"
-	enable_zrtp=no
-endif
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 # ffmpeg is not compatible with no GPL.

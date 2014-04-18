@@ -44,6 +44,10 @@ echo "Selecting SDK path = ${SYSROOT_PATH}"
 
 COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -${CLANG_TARGET_SPECIFIER}=${SDK_VERSION} -DTARGET_OS_IPHONE=1 -D__IOS -fms-extensions"
 
+#workaround for polarssl conflicting symbols
+
+COMMON_FLAGS="$COMMON_FLAGS -Dsha256=polarssl_sha256"
+
 # silence clang unused operators. This is temporary, we should find a way to compile 3rd party with correct flags :(
 COMMON_FLAGS="-Qunused-arguments -Wno-unknown-warning-option -Wno-unused-command-line-argument-hard-error-in-future $COMMON_FLAGS"
 
