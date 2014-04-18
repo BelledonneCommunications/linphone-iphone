@@ -109,10 +109,10 @@ static bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
 				number_of_encrypted_stream++;
 		}
 	}
-	return number_of_active_stream>0 & number_of_active_stream==number_of_encrypted_stream;
+	return number_of_active_stream>0 && number_of_active_stream==number_of_encrypted_stream;
 }
 
-void propagate_encryption_changed(LinphoneCall *call){
+static void propagate_encryption_changed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	if (!linphone_call_are_all_streams_encrypted(call)) {
 		ms_message("Some streams are not encrypted");
@@ -1462,8 +1462,8 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 		if (has_video) _linphone_call_prepare_ice_for_stream(call,1,TRUE);
 		/*start ICE gathering*/
 		if (incoming_offer) 
-			linphone_core_update_ice_from_remote_media_description(call,remote);
-		if (!ice_session_candidates_gathered(call->ice_session)){
+			linphone_core_update_ice_from_remote_media_description(call,remote); /*this may delete the ice session*/
+		if (call->ice_session && !ice_session_candidates_gathered(call->ice_session)){
 			if (call->audiostream->ms.state==MSStreamInitialized)
 				audio_stream_prepare_sound(call->audiostream, NULL, NULL);
 #ifdef VIDEO_ENABLED

@@ -553,14 +553,18 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	return success;
 }
 
-static void _call_with_ice(bool_t random_ports) {
+static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
-	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
-	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	if (callee_with_ice){
+		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+	}
+	if (caller_with_ice){
+		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	}
 	
 	if (random_ports){
 		linphone_core_set_audio_port(marie->lc,-1);
@@ -571,12 +575,14 @@ static void _call_with_ice(bool_t random_ports) {
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
-	CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
-	/*wait for the ICE reINVITE to complete*/
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	if (callee_with_ice && caller_with_ice) {
+		check_ice(pauline,marie,LinphoneIceStateHostConnection);
+		/*wait for the ICE reINVITE to complete*/
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
-	CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	}
 	
 	liblinphone_tester_check_rtcp(marie,pauline);
 	/*then close the call*/
@@ -589,11 +595,19 @@ static void _call_with_ice(bool_t random_ports) {
 }
 
 static void call_with_ice(void){
-	_call_with_ice(FALSE);
+	_call_with_ice(TRUE,TRUE,FALSE);
 }
 
 static void call_with_ice_random_ports(void){
-	_call_with_ice(TRUE);
+	_call_with_ice(TRUE,TRUE,TRUE);
+}
+
+static void ice_to_not_ice(void){
+	_call_with_ice(TRUE,FALSE,FALSE);
+}
+
+static void not_ice_to_ice(void){
+	_call_with_ice(FALSE,TRUE,FALSE);
 }
 
 static void call_with_custom_headers(void) {
@@ -2000,6 +2014,8 @@ test_t call_tests[] = {
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
 	{ "Call with ICE (random ports)", call_with_ice_random_ports },
+	{ "Call from ICE to not ICE",ice_to_not_ice},
+	{ "Call from not ICE to ICE",not_ice_to_ice},
 	{ "Call with custom headers",call_with_custom_headers},
 	{ "Call established with rejected INFO",call_established_with_rejected_info},
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
