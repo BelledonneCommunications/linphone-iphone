@@ -2639,11 +2639,17 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	int ping_time;
 
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
+		LinphoneCallParams params;
+		_linphone_call_params_copy(&params,&call->current_params);
+		if (call->params.media_encryption == LinphoneMediaEncryptionZRTP) {
+			/* preserve media encryption param because at that time ZRTP negociation may still be ongoing*/
+			params.media_encryption=call->params.media_encryption;
+		}
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
 				ice_session_select_candidates(call->ice_session);
 				if (ice_session_role(call->ice_session) == IR_Controlling) {
-					linphone_core_update_call(call->core, call, &call->current_params);
+					linphone_core_update_call(call->core, call, &params);
 				}
 				break;
 			case IS_Failed:
@@ -2651,7 +2657,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 					ice_session_select_candidates(call->ice_session);
 					if (ice_session_role(call->ice_session) == IR_Controlling) {
 						/* At least one ICE session has succeeded, so perform a call update. */
-						linphone_core_update_call(call->core, call, &call->current_params);
+						linphone_core_update_call(call->core, call, &params);
 					}
 				}
 				break;

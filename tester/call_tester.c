@@ -1312,13 +1312,13 @@ static void srtp_ice_call(void) {
 	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyUseIce);
 }
 static void zrtp_video_ice_call(void) {
-	/*encrypted_ice_call(LinphoneMediaEncryptionZRTP,TRUE,FALSE);*/
+	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce);
 }
 static void zrtp_ice_call(void) {
-	/*encrypted_ice_call(LinphoneMediaEncryptionZRTP,FALSE,FALSE);*/
+	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce);
 }
 static void zrtp_ice_call_with_relay(void) {
-	/*encrypted_ice_call(LinphoneMediaEncryptionZRTP,FALSE,TRUE);*/
+	call_base(LinphoneMediaEncryptionZRTP,FALSE,TRUE,LinphonePolicyUseIce);
 }
 
 static void early_media_call(void) {
