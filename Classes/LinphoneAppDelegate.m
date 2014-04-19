@@ -210,6 +210,7 @@
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
 	if ([LinphoneManager instance].pushNotificationToken==Nil){
 		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
+		return;
 	}
 	
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
@@ -289,6 +290,7 @@
 	
 	if (lm.pushNotificationToken==Nil){
 		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
+		return;
 	}
 
     // check that linphone is still running
