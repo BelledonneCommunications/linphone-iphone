@@ -3277,7 +3277,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *remote_desc;
 	bool_t keep_sdp_version;
-#ifdef VIDEO_ENABLED
+#if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t old_has_video = call->params.has_video;
 #endif
 
