@@ -21,6 +21,7 @@ package org.linphone.core;
 import java.io.File;
 import java.io.IOException;
 
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
@@ -56,15 +57,6 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			loadOptionalLibrary("avcodec-linphone-arm");
 		}
 
-		// OPENSSL (cryptography)
-		// linphone suffix avoids collision with libs in /system/lib
-		loadOptionalLibrary("crypto-linphone-" + eabi);
-		loadOptionalLibrary("ssl-linphone-" + eabi);
-
-		// Secure RTP and key negotiation
-		loadOptionalLibrary("srtp-" + eabi);
-		loadOptionalLibrary("zrtpcpp-" + eabi); // GPLv3+
-
 		//Main library
 		System.loadLibrary("linphone-" + eabi);
 
@@ -94,9 +86,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	@Override
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener,
-			String userConfig, String factoryConfig, Object userdata)
+			String userConfig, String factoryConfig, Object userdata, Object context)
 			throws LinphoneCoreException {
 		try {
+			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
 			return new LinphoneCoreImpl(listener, user, factory, userdata);
@@ -106,8 +99,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException {
+	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
+			MediastreamerAndroidContext.setContext(context);
 			return new LinphoneCoreImpl(listener);
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);

@@ -19,6 +19,7 @@ public enum PublishState {
 	Error(3),
 	/**
 	 * Publish is about to expire. Application can trigger a refresh by calling {@link LinphoneCore.updatePublish()}
+	 * [sip]->refresh_generic_subscribe property is set to 0.
 	 */
 	Expiring(4),
 	/**

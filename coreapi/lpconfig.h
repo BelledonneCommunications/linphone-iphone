@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #ifndef LPCONFIG_H
 #define LPCONFIG_H
 #include <mediastreamer2/mscommon.h>
@@ -33,7 +33,7 @@
 
 /**
  * The LpConfig object is used to manipulate a configuration file.
- * 
+ *
  * @ingroup misc
  * The format of the configuration file is a .ini like format:
  * - sections are defined in []
@@ -55,23 +55,9 @@ typedef struct _LpConfig LpConfig;
 extern "C" {
 #endif
 
-
-#define LP_CONFIG_DEFAULT_STRING(config, name, default) \
-	(config) ? (lp_config_get_string(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_INT(config, name, default) \
-	(config) ? (lp_config_get_int(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_INT64(config, name, default) \
-	(config) ? (lp_config_get_int64(config, "default_values", name, default)) : (default)
-
-#define LP_CONFIG_DEFAULT_FLOAT(config, name, default) \
-	(config) ? (lp_config_get_float(config, "default_values", name, default)) : (default)
-
-
 /**
  * Instantiates a LpConfig object from a user config file.
- *
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
  * @param filename the filename of the config file to read to fill the instantiated LpConfig
  * @see lp_config_new_with_factory
@@ -79,8 +65,18 @@ extern "C" {
 LINPHONE_PUBLIC LpConfig * lp_config_new(const char *filename);
 
 /**
+ * Instantiates a LpConfig object from a user provided buffer.
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
+ * @ingroup misc
+ * @param buffer the buffer from which the lpconfig will be retrieved. We expect the buffer to be null-terminated.
+ * @see lp_config_new_with_factory
+ * @see lp_config_new
+ */
+LINPHONE_PUBLIC LpConfig * lp_config_new_from_buffer(const char *buffer);
+
+/**
  * Instantiates a LpConfig object from a user config file and a factory config file.
- *
+ * The caller of this constructor owns a reference. lp_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
  * @param config_filename the filename of the user config file to read to fill the instantiated LpConfig
  * @param factory_config_filename the filename of the factory config file to read to fill the instantiated LpConfig
@@ -102,7 +98,7 @@ LINPHONE_PUBLIC int lp_config_read_file(LpConfig *lpconfig, const char *filename
 
 /**
  * Retrieves a configuration item as a string, given its section, key, and default value.
- * 
+ *
  * @ingroup misc
  * The default value string is returned if the config item isn't found.
 **/
@@ -119,7 +115,7 @@ LINPHONE_PUBLIC bool_t lp_config_get_range(const LpConfig *lpconfig, const char 
 
 /**
  * Retrieves a configuration item as an integer, given its section, key, and default value.
- * 
+ *
  * @ingroup misc
  * The default integer value is returned if the config item isn't found.
 **/
@@ -127,7 +123,7 @@ LINPHONE_PUBLIC int lp_config_get_int(const LpConfig *lpconfig,const char *secti
 
 /**
  * Retrieves a configuration item as a 64 bit integer, given its section, key, and default value.
- * 
+ *
  * @ingroup misc
  * The default integer value is returned if the config item isn't found.
 **/
@@ -135,14 +131,14 @@ LINPHONE_PUBLIC int64_t lp_config_get_int64(const LpConfig *lpconfig,const char 
 
 /**
  * Retrieves a configuration item as a float, given its section, key, and default value.
- * 
+ *
  * @ingroup misc
  * The default float value is returned if the config item isn't found.
 **/
 LINPHONE_PUBLIC float lp_config_get_float(const LpConfig *lpconfig,const char *section, const char *key, float default_value);
 
 /**
- * Sets a string config item 
+ * Sets a string config item
  *
  * @ingroup misc
 **/
@@ -167,7 +163,7 @@ LINPHONE_PUBLIC void lp_config_set_int(LpConfig *lpconfig,const char *section, c
  *
  * @ingroup misc
 **/
-void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value);
+LINPHONE_PUBLIC void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value);
 
 /**
  * Sets a 64 bits integer config item
@@ -181,11 +177,11 @@ LINPHONE_PUBLIC void lp_config_set_int64(LpConfig *lpconfig,const char *section,
  *
  * @ingroup misc
 **/
-LINPHONE_PUBLIC void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value);	
+LINPHONE_PUBLIC void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value);
 
 /**
  * Writes the config file to disk.
- * 
+ *
  * @ingroup misc
 **/
 LINPHONE_PUBLIC int lp_config_sync(LpConfig *lpconfig);
@@ -220,8 +216,62 @@ void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, voi
 
 /*tells whether uncommited (with lp_config_sync()) modifications exist*/
 int lp_config_needs_commit(const LpConfig *lpconfig);
-void lp_config_destroy(LpConfig *cfg);
-	
+
+LINPHONE_PUBLIC void lp_config_destroy(LpConfig *cfg);
+
+/**
+ * Retrieves a default configuration item as an integer, given its section, key, and default value.
+ *
+ * @ingroup misc
+ * The default integer value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC int lp_config_get_default_int(const LpConfig *lpconfig, const char *section, const char *key, int default_value);
+
+/**
+ * Retrieves a default configuration item as a 64 bit integer, given its section, key, and default value.
+ *
+ * @ingroup misc
+ * The default integer value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC int64_t lp_config_get_default_int64(const LpConfig *lpconfig, const char *section, const char *key, int64_t default_value);
+
+/**
+ * Retrieves a default configuration item as a float, given its section, key, and default value.
+ *
+ * @ingroup misc
+ * The default float value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC float lp_config_get_default_float(const LpConfig *lpconfig, const char *section, const char *key, float default_value);
+
+/**
+ * Retrieves a default configuration item as a string, given its section, key, and default value.
+ *
+ * @ingroup misc
+ * The default value string is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
+
+/**
+ * Retrieves a section parameter item as a string, given its section and key.
+ *
+ * @ingroup misc
+ * The default value string is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC const char* lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value);
+
+
+/**
+ * increment reference count
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LpConfig *lp_config_ref(LpConfig *lpconfig);
+
+/**
+ * Decrement reference count, which will eventually free the object.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_unref(LpConfig *lpconfig);
+
 #ifdef __cplusplus
 }
 #endif

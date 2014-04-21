@@ -11,7 +11,11 @@ UI_FILES=	about.ui \
 		tunnel_config.ui \
 		waiting.ui \
 		dscp_settings.ui \
-		call_statistics.ui
+		call_statistics.ui \
+		ldap.ui \
+		config-uri.ui \
+		provisioning-fetch.ui \
+		audio_assistant.ui
 
 PIXMAPS=	\
 		stock_people.png 
@@ -48,6 +52,8 @@ linphone_SOURCES=	\
 			loginframe.c \
 			singleinstance.c \
 			conference.c \
+			config-fetching.c \
+			audio_assistant.c \
 			linphone.h 
 if BUILD_WIZARD
 linphone_SOURCES+=	\
@@ -55,7 +61,7 @@ linphone_SOURCES+=	\
 endif
 
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
-		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS)
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS)
 
 
 if BUILD_WIN32
@@ -77,7 +83,7 @@ endif
 
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
-		$(ORTP_CFLAGS) \
+		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
 		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
 		$(TUNNEL_CFLAGS) \
 		$(SQLITE3_CFLAGS)

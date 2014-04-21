@@ -203,6 +203,27 @@ void linphone_gtk_set_ui_config(const char *key , const char * val){
 	lp_config_set_string(cfg,"GtkUi",key,val);
 }
 
+const char *linphone_gtk_get_sound_path(const char *name){
+	static char *ret=NULL;
+	const char *file;
+	file=linphone_gtk_get_ui_config(name,NULL);
+	if (file==NULL){
+		char *dirname=g_path_get_dirname(name);
+		if (strcmp(dirname,".")!=0){
+			g_free(dirname);
+			return name;
+		}
+		g_free(dirname);
+		file=name;
+	}
+	if (ret){
+		g_free(ret);
+		ret=NULL;
+	}
+	ret=g_build_filename(PACKAGE_SOUND_DIR,name,NULL);
+	return ret;
+}
+
 static void parse_item(const char *item, const char *window_name, GtkWidget *w,  gboolean show){
 	char tmp[64];
 	char *dot;

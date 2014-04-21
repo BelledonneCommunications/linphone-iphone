@@ -2,8 +2,6 @@
 ./bin/libspeex-1.dll
 ./bin/libspeexdsp-1.dll
 ./bin/avutil-51.dll
-./bin/libeay32.dll
-./bin/ssleay32.dll
 ./bin/libbellesip-0.dll
 ./bin/libantlr3c.dll
 ./lib/libpolarssl.dll
@@ -17,5 +15,5 @@
 ./bin/libgnutls-26.dll
 ./bin/libtasn1-3.dll
 ./bin/libsqlite3-0.dll
-./bin/libzrtpcpp.dll
 ./bin/libopus-0.dll
+./bin/libbzrtp-0.dll

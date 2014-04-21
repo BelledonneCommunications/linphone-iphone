@@ -60,7 +60,9 @@ void sal_op_release_impl(SalOp *op){
 
 	if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
 	if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
+	if (op->pending_update_server_trans) belle_sip_object_unref(op->pending_update_server_trans);
 	if (op->event) belle_sip_object_unref(op->event);
+	sal_error_info_reset(&op->error_info);
 	__sal_op_free(op);
 	return ;
 }
@@ -88,18 +90,23 @@ SalAuthInfo * sal_op_get_auth_requested(SalOp *op){
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	belle_sip_header_contact_t* contact_header;
 	belle_sip_uri_t* contact_uri;
+	
 	if (sal_op_get_contact_address(op)) {
 		contact_header = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	} else {
 		contact_header= belle_sip_header_contact_new();
 	}
+	
 	if (!(contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header)))) {
 		/*no uri, just creating a new one*/
 		contact_uri=belle_sip_uri_new();
 		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
 	}
+	
 	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
-
+	if (op->privacy!=SalPrivacyNone){
+		belle_sip_uri_set_user(contact_uri,NULL);
+	}
 	belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
 	if (op->base.root->uuid){
 		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
@@ -205,16 +212,29 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	sal_op_send_request(op,request);
 }
 
-static void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg){
-	if (belle_sip_message_get_header(msg,belle_sip_header_get_name(h))==NULL)
-		belle_sip_message_add_header(msg,h);
+static void add_headers(SalOp *op, belle_sip_header_t *h, belle_sip_message_t *msg){
+	
+	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_contact_t)){
+		belle_sip_header_contact_t* newct;
+		/*special case for contact, we want to keep everything from the custom contact but set automatic mode and add our own parameters as well*/
+		sal_op_set_contact_address(op,(SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
+		newct = sal_op_create_contact(op);
+		belle_sip_message_set_header(BELLE_SIP_MESSAGE(msg),BELLE_SIP_HEADER(newct));
+		return;
+	}
+	/*if a header already exists in the message, replace it*/
+	belle_sip_message_set_header(msg,h);
+	
 }
 
-static void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
+void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
 	if (op->base.sent_custom_headers){
 		belle_sip_message_t *ch=(belle_sip_message_t*)op->base.sent_custom_headers;
 		belle_sip_list_t *l=belle_sip_message_get_all_headers(ch);
-		belle_sip_list_for_each2(l,(void (*)(void *, void *))add_headers,msg);
+		belle_sip_list_t *elem;
+		for(elem=l;elem!=NULL;elem=elem->next){
+			add_headers(op,(belle_sip_header_t*)elem->data,msg);
+		}
 		belle_sip_list_free(l);
 	}
 }
@@ -226,6 +246,11 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	belle_sip_header_contact_t* contact;
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
+	
+	if (add_contact) {
+		contact = sal_op_create_contact(op);
+		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
+	}
 	
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 	
@@ -276,14 +301,10 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	if (belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_user_agent_t)==NULL)
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(op->base.root->user_agent));
 
-	if (add_contact) {
-		contact = sal_op_create_contact(op);
-		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
-	}
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
-		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
+		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL,NULL);
 	}
 	result = belle_sip_client_transaction_send_request_to(client_transaction,next_hop_uri/*might be null*/);
 	
@@ -319,6 +340,12 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 SalReason sal_reason_to_sip_code(SalReason r){
 	int ret=500;
 	switch(r){
+		case SalReasonNone:
+			ret=200;
+			break;
+		case SalReasonIOError:
+			ret=503;
+			break;
 		case SalReasonUnknown:
 			ret=400;
 			break;
@@ -334,7 +361,7 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonForbidden:
 			ret=403;
 			break;
-		case SalReasonMedia:
+		case SalReasonUnsupportedContent:
 			ret=415;
 			break;
 		case SalReasonNotFound:
@@ -356,102 +383,153 @@ SalReason sal_reason_to_sip_code(SalReason r){
 			ret=401;
 			break;
 		case SalReasonNotAcceptable:
-			ret=488;
+			ret=488; /*or maybe 606 Not Acceptable ?*/
+			break;
+		case SalReasonNoMatch:
+			ret=481;
+			break;
+		case SalReasonRequestTimeout:
+			ret=408;
+			break;
+		case SalReasonMovedPermanently:
+			ret=301;
+			break;
+		case SalReasonGone:
+			ret=410;
+			break;
+		case SalReasonAddressIncomplete:
+			ret=484;
+			break;
+		case SalReasonNotImplemented:
+			ret=501;
+			break;
+		case SalReasonServerTimeout:
+			ret=504;
+			break;
+		case SalReasonBadGateway:
+			ret=502;
 			break;
 	}
 	return ret;
 }
 
-void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
+SalReason _sal_reason_from_sip_code(int code) {
+	if (code>=100 && code<300) return SalReasonNone;
+	
 	switch(code) {
-	case 400:
-		*sal_err=SalErrorUnknown;
-		break;
+	case 0:
+		return SalReasonIOError;
+	case 301:
+		return SalReasonMovedPermanently;
+	case 302:
+		return SalReasonRedirect;
 	case 401:
 	case 407:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonUnauthorized;
-		break;
+		return SalReasonUnauthorized;
 	case 403:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonForbidden;
-		break;
+		return SalReasonForbidden;
 	case 404:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonNotFound;
-		break;
+		return SalReasonNotFound;
+	case 408:
+		return SalReasonRequestTimeout;
+	case 410:
+		return SalReasonGone;
 	case 415:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonMedia;
-		break;
+		return SalReasonUnsupportedContent;
 	case 422:
 		ms_error ("422 not implemented yet");;
 		break;
 	case 480:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonTemporarilyUnavailable;
-		break;
+		return SalReasonTemporarilyUnavailable;
+	case 481:
+		return SalReasonNoMatch;
+	case 484:
+		return SalReasonAddressIncomplete;
 	case 486:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonBusy;
-		break;
+		return SalReasonBusy;
 	case 487:
-		break;
+		return SalReasonNone;
 	case 488:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonNotAcceptable;
-		break;
+		return SalReasonNotAcceptable;
 	case 491:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonRequestPending;
-		break;
+		return SalReasonRequestPending;
+	case 501:
+		return SalReasonNotImplemented;
+	case 502:
+		return SalReasonBadGateway;
+	case 504:
+		return SalReasonServerTimeout;
 	case 600:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonDoNotDisturb;
-		break;
+		return SalReasonDoNotDisturb;
 	case 603:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonDeclined;
-		break;
+		return SalReasonDeclined;
 	case 503:
-		*sal_err=SalErrorFailure;
-		*sal_reason=SalReasonServiceUnavailable;
-		break;
+		return SalReasonServiceUnavailable;
 	default:
-		if (code>=300){
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonUnknown;
-		}else if (code>=100){
-			*sal_err=SalErrorNone;
-			*sal_reason=SalReasonUnknown;
-		}else if (code==0){
-			*sal_err=SalErrorNoResponse;
-		}
-		/* no break */
+		return SalReasonUnknown;
+	}
+	return SalReasonUnknown;
+}
+
+const SalErrorInfo *sal_error_info_none(void){
+	static SalErrorInfo none={
+		SalReasonNone,
+		"Ok",
+		200,
+		NULL,
+		NULL
+	};
+	return &none;
+}
+
+void sal_error_info_reset(SalErrorInfo *ei){
+	if (ei->status_string){
+		ms_free(ei->status_string);
+		ei->status_string=NULL;
+	}
+	if (ei->warnings){
+		ms_free(ei->warnings);
+		ei->warnings=NULL;
+	
+	}
+	if (ei->full_string){
+		ms_free(ei->full_string);
+		ei->full_string=NULL;
+	}
+	ei->protocol_code=0;
+	ei->reason=SalReasonNone;
+}
+
+void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning){
+	sal_error_info_reset(ei);
+	if (reason==SalReasonUnknown) ei->reason=_sal_reason_from_sip_code(code);
+	else ei->reason=reason;
+	ei->protocol_code=code;
+	ei->status_string=status_string ? ms_strdup(status_string) : NULL;
+	ei->warnings=warning ? ms_strdup(warning) : NULL;
+	if (ei->status_string){
+		if (ei->warnings)
+			ei->full_string=ms_strdup_printf("%s %s",ei->status_string,ei->warnings);
+		else ei->full_string=ms_strdup(ei->status_string);
 	}
 }
-/*return TRUE if error code*/
-bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
-	int code = belle_sip_response_get_status_code(response);
-	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
-	*sal_err=SalErrorUnknown;
-	*sal_reason = SalReasonUnknown;
 
-	if (reason_header){
-		snprintf(reason
-				,reason_size
-				,"%s %s"
-				,belle_sip_response_get_reason_phrase(response)
-				,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
-	} else {
-		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
-	}
-	if (code>=400) {
-		sal_compute_sal_errors_from_code(code,sal_err,sal_reason);
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *response){
+	int code = belle_sip_response_get_status_code(response);
+	const char *reason_phrase=belle_sip_response_get_reason_phrase(response);
+	/*Remark: the reason header is to be used mainly in SIP requests, thus the use and prototype of this function should be changed.*/
+	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
+	belle_sip_header_t *warning=belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Warning");
+	SalErrorInfo *ei=&op->error_info;
+	const char *warnings;
+	
+	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
+	if (warnings==NULL) warnings=reason_header ? belle_sip_header_get_unparsed_value(reason_header) : NULL;
+	sal_error_info_set(ei,SalReasonUnknown,code,reason_phrase,warnings);
+}
+
+const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
+	return &op->error_info;
 }
 
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
@@ -540,7 +618,11 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
 }
 
 const char *sal_op_get_remote_contact(const SalOp *op){
-	return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
+	/* 
+	 * remote contact is filled in process_response
+	 * return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
+	 */
+	return op->base.remote_contact;
 }
 
 void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body){
@@ -606,3 +688,42 @@ bool_t sal_op_is_secure(const SalOp* op) {
 void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled){
 	op->manual_refresher=enabled;
 }
+
+bool_t sal_op_is_ipv6(SalOp *op){
+	belle_sip_transaction_t *tr=NULL;
+	belle_sip_header_address_t *contact;
+	belle_sip_request_t *req;
+	
+	if (op->refresher)
+		tr=(belle_sip_transaction_t *)belle_sip_refresher_get_transaction(op->refresher);
+
+	if (tr==NULL)
+		tr=(belle_sip_transaction_t *)op->pending_client_trans;
+	if (tr==NULL)
+		tr=(belle_sip_transaction_t *)op->pending_server_trans;
+	
+	if (tr==NULL){
+		ms_error("Unable to determine IP version from signaling operation.");
+		return FALSE;
+	}
+	req=belle_sip_transaction_get_request(tr);
+	contact=(belle_sip_header_address_t*)belle_sip_message_get_header_by_type(req,belle_sip_header_contact_t);
+	if (!contact){
+		ms_error("Unable to determine IP version from signaling operation, no contact header found.");
+	}
+	return sal_address_is_ipv6((SalAddress*)contact);
+}
+
+bool_t sal_op_is_idle(SalOp *op){
+	if (op->dialog){
+		return !belle_sip_dialog_request_pending(op->dialog);
+	}
+	return TRUE;
+}
+
+void sal_op_stop_refreshing(SalOp *op){
+	if (op->refresher){
+		belle_sip_refresher_stop(op->refresher);
+	}
+}
+

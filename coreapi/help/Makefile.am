@@ -53,7 +53,8 @@ LINPHONE_TUTOS=$(helloworld_SOURCES)
 
 helloworld_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 				$(MEDIASTREAMER_LIBS) \
-				$(ORTP_LIBS)
+				$(ORTP_LIBS) \
+				$(BELLESIP_LIBS)
 
 registration_SOURCES=registration.c
 LINPHONE_TUTOS+=$(registration_SOURCES)
@@ -85,7 +86,8 @@ AM_CFLAGS=\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \
 	-DORTP_INET6 \
-	$(VIDEO_CFLAGS)
+	$(VIDEO_CFLAGS) \
+	$(BELLESIP_CFLAGS)
 
 
 tutodir=$(datadir)/tutorials/linphone

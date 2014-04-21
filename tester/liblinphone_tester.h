@@ -1,20 +1,21 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #ifndef LIBLINPHONE_TESTER_H_
 #define LIBLINPHONE_TESTER_H_
@@ -52,27 +53,32 @@ extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
 extern test_suite_t upnp_test_suite;
 extern test_suite_t event_test_suite;
+extern test_suite_t flexisip_test_suite;
+extern test_suite_t stun_test_suite;
+extern test_suite_t remote_provisioning_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
 extern int liblinphone_tester_nb_tests(const char *suite_name);
 extern const char * liblinphone_tester_test_suite_name(int suite_index);
+extern int liblinphone_tester_test_suite_index(const char *suite_name);
 extern const char * liblinphone_tester_test_name(const char *suite_name, int test_index);
+extern int liblinphone_tester_test_index(const char *suite_name, const char *test_name);
 extern void liblinphone_tester_init(void);
 extern void liblinphone_tester_uninit(void);
 extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
-
 
 #ifdef __cplusplus
 };
 #endif
 
 
-const char* test_domain;
-const char* auth_domain;
-const char* test_username;
-const char* test_password;
-const char* test_route;
+extern const char* test_domain;
+extern const char* auth_domain;
+extern const char* test_username;
+extern const char* test_password;
+extern const char* test_route;
+extern const char* userhostsfile;
 
 
 typedef struct _stats {
@@ -117,7 +123,8 @@ typedef struct _stats {
 	int number_of_LinphoneMessageInProgress;
 	int number_of_LinphoneMessageDelivered;
 	int number_of_LinphoneMessageNotDelivered;
-
+	int number_of_LinphoneIsComposingActiveReceived;
+	int number_of_LinphoneIsComposingIdleReceived;
 
 	int number_of_IframeDecoded;
 
@@ -153,7 +160,7 @@ typedef struct _stats {
 	int number_of_LinphonePresenceActivityWorking;
 	int number_of_LinphonePresenceActivityWorship;
 	const LinphonePresenceModel *last_received_presence;
-	
+
 	int number_of_inforeceived;
 	LinphoneInfoMessage* last_received_info_message;
 
@@ -163,12 +170,20 @@ typedef struct _stats {
 	int number_of_LinphoneSubscriptionActive;
 	int number_of_LinphoneSubscriptionTerminated;
 	int number_of_LinphoneSubscriptionError;
+	int number_of_LinphoneSubscriptionExpiring;
 
 	int number_of_LinphonePublishProgress;
 	int number_of_LinphonePublishOk;
 	int number_of_LinphonePublishExpiring;
 	int number_of_LinphonePublishError;
 	int number_of_LinphonePublishCleared;
+	
+	int number_of_LinphoneConfiguringSkipped;
+	int number_of_LinphoneConfiguringFailed;
+	int number_of_LinphoneConfiguringSuccessful;
+
+	int number_of_LinphoneCallEncryptedOn;
+	int number_of_LinphoneCallEncryptedOff;
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -193,12 +208,14 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
+void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state);
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
+void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
+void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 
 LinphoneAddress * create_linphone_address(const char * domain);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
@@ -208,6 +225,12 @@ bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int va
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
+const char *liblinphone_tester_get_subscribe_content(void);
+const char *liblinphone_tester_get_notify_content(void);
+void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
+void liblinphone_tester_clock_start(MSTimeSpec *start);
+bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms); 
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

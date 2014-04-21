@@ -22,6 +22,7 @@ package org.linphone.core;
 
 
 
+
 abstract public class LinphoneCoreFactory {
 	
 	private static String factoryName = "org.linphone.core.LinphoneCoreFactoryImpl";
@@ -65,8 +66,8 @@ abstract public class LinphoneCoreFactory {
 	 * */
 	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1, String realm, String domain);
 	
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
-	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata, Object context) throws LinphoneCoreException;
+	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException;
 
 
 	/**
@@ -86,7 +87,8 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	
-	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
+	abstract public LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
+	
 	/**
 	 * Enable verbose traces
 	 * @param enable 
@@ -95,12 +97,14 @@ abstract public class LinphoneCoreFactory {
 	abstract public  void setDebugMode(boolean enable, String tag);
 	
 	abstract public void setLogHandler(LinphoneLogHandler handler);
+	
 	/**
 	 * Create a LinphoneFriend, similar to {@link #createLinphoneFriend()} + {@link LinphoneFriend#setAddress(LinphoneAddress)} 
 	 * @param friendUri a buddy address, must be a sip uri like sip:joe@sip.linphone.org
 	 * @return a new LinphoneFriend with address initialized
 	 */
 	abstract public LinphoneFriend createLinphoneFriend(String friendUri);
+	
 	/**
 	 * Create a new LinphoneFriend
 	 * @return

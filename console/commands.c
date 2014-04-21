@@ -558,10 +558,12 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 		opt2=strstr(args,"--early-media");
 		if (opt1){
 			opt1[0]='\0';
+			while(--opt1 > args && opt1[0]==' ') opt1[0]='\0';
 			linphone_call_params_enable_video (cp,FALSE);
 		}
 		if (opt2){
 			opt2[0]='\0';
+			while(--opt2 > args && opt2[0]==' ') opt2[0]='\0';
 			linphone_call_params_enable_early_media_sending(cp,TRUE);
 		}
 		if ( NULL == (call=linphone_core_invite_with_params(lc, args,cp)) )
@@ -615,8 +617,6 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 	}
 	LinphoneChatRoom *cr = linphone_core_create_chat_room(lc,arg1);
 	linphone_chat_room_send_message(cr,arg2);
-	linphone_chat_room_destroy(cr);
-
 	return 1;
 }
 
@@ -1514,7 +1514,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 			continue;
 		}
 
-		cfg=linphone_proxy_config_new();
+		cfg=linphone_core_create_proxy_config(lc);
 		if (linphone_proxy_config_set_server_addr(cfg,clean)<0)
 		{
 			linphonec_out("Invalid sip address (sip:sip.domain.tld).\n");

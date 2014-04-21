@@ -8,7 +8,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 	- intltool
 
 - you need at least:
- 	- belle-sip>=1.0.0
+ 	- belle-sip>=1.3.0
 	- speex>=1.2.0 (including libspeexdsp part)
 	- libxml2
 	
@@ -19,7 +19,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 		- libavcodec (ffmpeg) 
 		- libswscale (part of ffmpeg too) for better scaling performance
 		- libxv (x11 video extension)
-		- ligl1-mesa (OpenGL API -- GLX development files)
+		- libgl1-mesa (OpenGL API -- GLX development files)
 		- libglew (OpenGL Extension Wrangler library)
 		- libv4l (Video for linux)
 		- libx11 (x11)
@@ -33,7 +33,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
 	Here is the command line to get these dependencies installed for Ubuntu && Debian 
 
-	$ sudo apt-get install libtool intltool libgtk2.0-dev libosip2-dev libexosip2-dev libspeexdsp-dev libavcodec-dev libswscale-dev libx11-dev libxv-dev libgl1-mesa-dev libglew1.6-dev libv4l-dev libxml2-dev
+	$ sudo apt-get install libtool intltool libgtk2.0-dev libspeexdsp-dev libavcodec-dev libswscale-dev libx11-dev libxv-dev libgl1-mesa-dev libglew1.6-dev libv4l-dev libxml2-dev
 
 	+ for optional library
 	$ sudo apt-get install libreadline-dev libgsm1-dev libtheora-dev libsoup2.4-dev libsqlite3-dev libupnp4-dev
@@ -44,11 +44,12 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
  		$ sudo make install
 
 	+ Install zrtpcpp (optional), for unbreakable call encryption
- 		$ sudo apt-get install cmake libssl-dev
- 		$ git clone git://git.linphone.org/zrtpcpp.git
-		$ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
+ 		$ sudo apt-get install cmake
+		$ git clone https://github.com/wernerd/ZRTPCPP.git
+		$ cd ZRTPCPP 
+		$ cmake -DCORE_LIB=true -DSDES=false . && make
  		$ sudo make install
-
+		If you get this error: "cc1plus: error: unrecognized command line option ‘-std=c++11’", edit CMakeLists.txt and replace c++11 by c++0x .
 
 - Compile linphone
 

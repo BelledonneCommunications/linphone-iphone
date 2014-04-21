@@ -148,6 +148,7 @@ static char last_in_history[256];
 #endif
 //auto answer (-a) option
 static bool_t auto_answer=FALSE;
+static bool_t real_early_media_sending=FALSE;
 static bool_t answer_call=FALSE;
 static bool_t vcap_enabled=FALSE;
 static bool_t display_enabled=FALSE;
@@ -362,10 +363,17 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			linphone_call_enable_camera (call,linphonec_camera_enabled);
 			id=(long)linphone_call_get_user_pointer (call);
 			linphonec_set_caller(from);
+			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 			if ( auto_answer)  {
 				answer_call=TRUE;
+			} else if (real_early_media_sending) {
+				linphonec_out("Sending early media using real hardware\n");
+				LinphoneCallParams* callparams = linphone_core_create_default_call_parameters(lc);
+				linphone_call_params_enable_early_media_sending(callparams, TRUE);
+				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
+				linphone_core_accept_early_media_with_params(lc, call, callparams);
+				linphone_call_params_destroy(callparams);
 			}
-			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
@@ -906,6 +914,7 @@ print_usage (int exit_status)
 "  -l  logfile          specify the log file for your SIP phone\n"
 "  -s  sipaddress       specify the sip call to do at startup\n"
 "  -a                   enable auto answering for incoming calls\n"
+"  --real-early-media   enable sending early media using real audio/video (beware of privacy issue)\n"
 "  -V                   enable video features globally (disabled by default)\n"
 "  -C                   enable video capture only (disabled by default)\n"
 "  -D                   enable video display only (disabled by default)\n"
@@ -1228,6 +1237,10 @@ linphonec_parse_cmdline(int argc, char **argv)
                 else if (strncmp ("-a", argv[arg_num], 2) == 0)
                 {
                         auto_answer = TRUE;
+                }
+                else if (strncmp ("--real-early-media", argv[arg_num], strlen("--real-early-media")) == 0)
+                {
+                        real_early_media_sending = TRUE;
                 }
 		else if (strncmp ("-C", argv[arg_num], 2) == 0)
                 {

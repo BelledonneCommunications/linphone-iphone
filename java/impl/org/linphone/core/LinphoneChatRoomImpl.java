@@ -26,11 +26,13 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native long createLinphoneChatMessage(long ptr, String message);
 	private native long getPeerAddress(long ptr);
 	private native void sendMessage(long ptr, String message);
-	private native void sendMessage2(long ptr, long message, StateListener listener);
+	private native void sendMessage2(long ptr, Object msg, long messagePtr, StateListener listener);
 	private native long[] getHistory(long ptr, int limit);
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
 	private native void deleteHistory(long ptr);
+	private native void compose(long ptr);
+	private native boolean isRemoteComposing(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
 	private native void updateUrl(long room, long message);
@@ -52,7 +54,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	
 	@Override
 	public void sendMessage(LinphoneChatMessage message, StateListener listener) {
-		sendMessage2(nativePtr, message.getNativePtr(), listener);
+		sendMessage2(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr(), listener);
 	}
 
 	@Override
@@ -87,6 +89,14 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void deleteHistory() {
 		deleteHistory(nativePtr);
 	}
+
+	public void compose() {
+		compose(nativePtr);
+	}
+
+	public boolean isRemoteComposing() {
+		return isRemoteComposing(nativePtr);
+	}
 	
 	public void markAsRead() {
 		markAsRead(nativePtr);
@@ -94,12 +104,12 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	
 	public void deleteMessage(LinphoneChatMessage message) {
 		if (message != null)
-			deleteMessage(nativePtr, message.getNativePtr());
+			deleteMessage(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
 	}
 	
 	public void updateUrl(LinphoneChatMessage message) {
 		if (message != null)
-			updateUrl(nativePtr, message.getNativePtr());
+			updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
 	}
 	
 	@Override

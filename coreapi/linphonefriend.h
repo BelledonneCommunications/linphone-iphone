@@ -392,6 +392,11 @@ LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 
+
+/**
+ * Returns the LinphoneCore object managing this friend, if any.
+ */
+LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
 /**
  * @}
  */

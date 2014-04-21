@@ -26,6 +26,7 @@ import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -77,7 +78,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username) {}
+	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
@@ -118,7 +119,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = lcFactory.createLinphoneCore(this);
+		LinphoneCore lc = lcFactory.createLinphoneCore(this, null);
 
 	
 		try {
@@ -233,6 +234,19 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void configuringStatus(LinphoneCore lc,
+			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -31,9 +31,11 @@ SalAddress * sal_address_new(const char *uri){
 	if (result) belle_sip_object_ref(result);
 	return (SalAddress *)result;
 }
+
 SalAddress * sal_address_clone(const SalAddress *addr){
 	return (SalAddress *) belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(addr)));
 }
+
 const char *sal_address_get_scheme(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
@@ -123,7 +125,10 @@ void sal_address_set_port(SalAddress *addr, int port){
 void sal_address_clean(SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri=belle_sip_header_address_get_uri(header_addr);
-	if (uri) belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(uri));
+	if (uri) {
+		belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(uri));
+		belle_sip_uri_headers_clean(uri);
+	}
 	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(header_addr));
 	return ;
 }
@@ -150,6 +155,17 @@ void sal_address_set_param(SalAddress *addr,const char* name,const char* value){
 	return ;
 }
 
+
+void sal_address_set_params(SalAddress *addr, const char *params){
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(addr);
+	belle_sip_parameters_set(parameters,params);
+}
+
+void sal_address_set_uri_params(SalAddress *addr, const char *params){
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)));
+	belle_sip_parameters_set(parameters,params);
+}
+
 void sal_address_set_transport(SalAddress* addr,SalTransport transport){
 	if (!sal_address_is_secure(addr)){
 		SAL_ADDRESS_SET(addr,transport_param,sal_transport_to_string(transport));
@@ -166,6 +182,17 @@ SalAddress *sal_address_ref(SalAddress *addr){
 
 void sal_address_unref(SalAddress *addr){
 	belle_sip_object_unref(BELLE_SIP_HEADER_ADDRESS(addr));
+}
+
+bool_t sal_address_is_ipv6(SalAddress *addr){
+	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
+	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
+	if (uri){
+		const char *host=belle_sip_uri_get_host(uri);
+		if (host && strchr(host,':')!=NULL)
+			return TRUE;
+	}
+	return FALSE;
 }
 
 void sal_address_destroy(SalAddress *addr){

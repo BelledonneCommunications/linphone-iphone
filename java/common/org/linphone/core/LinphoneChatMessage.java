@@ -52,11 +52,6 @@ public interface LinphoneChatMessage {
 		}
 	}
 	
-	long getNativePtr();
-	
-	Object getUserData();
-	
-	void setUserData();
 	
 	/**
 	 * get text associated to this LinphoneChatMessage
@@ -141,4 +136,15 @@ public interface LinphoneChatMessage {
 	 * @return the id used to id this message in the database
 	 */
 	int getStorageId();
+
+	/**
+     * @return the reason if response received
+     */
+	Reason getReason();
+	
+	/**
+	 * Returns full error in case of failure when sending message.
+	 * @return an ErrorInfo.
+	 */
+	ErrorInfo getErrorInfo();
 }

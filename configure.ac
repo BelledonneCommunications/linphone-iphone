@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.6.99-linphone-daemon],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.7.0-linphone-daemon],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=5 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=6 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -49,6 +49,8 @@ AM_PROG_CC_C_O
 AC_CHECK_PROGS(MD5SUM,[md5sum md5])
 AM_CONDITIONAL(HAVE_MD5SUM,test -n $MD5SUM)
 
+ios_found=no
+
 case $target in
 	*mingw32ce)
 		CFLAGS="$CFLAGS -D_WIN32_WCE -DORTP_STATIC -D_WIN32_WINNT=0x0501"
@@ -68,6 +70,7 @@ case $target in
 	;;
 	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
+		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
 	;;
 	x86_64-apple-darwin*|i686-apple-darwin*)
@@ -79,8 +82,7 @@ case $target in
 
 esac
 
-
-
+AM_CONDITIONAL(BUILD_IOS, test x$ios_found = xyes)
 
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)
@@ -164,6 +166,53 @@ AC_ARG_ENABLE(x11,
 	esac],
 	[enable_x11=true]
 )
+
+dnl conditional build of LDAP support
+AC_ARG_ENABLE(ldap,
+	[AS_HELP_STRING([--enable-ldap], [Enables LDAP support (default=no)])],
+	[case "${enableval}" in
+		yes)	enable_ldap=true ;;
+		no)		enable_ldap=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-ldap) ;;
+	esac],
+	[enable_ldap=false]
+)
+
+if test "$enable_ldap" = "true"; then
+	PKG_CHECK_MODULES(LDAP, [openldap],[found_ldap=yes], [found_ldap=no])
+	if test  "$found_ldap" = "no"; then
+		AC_CHECK_LIB(ldap,ldap_initialize, [LDAP_LIBS="-lldap -llber"],
+			[AC_MSG_ERROR([You need libldap for LDAP support])]
+		)
+		AC_CHECK_HEADERS(ldap.h, [foo=bar], [AC_MSG_ERROR( [ldap.h not found] ) ] )
+		found_ldap=yes		
+	fi
+	
+	PKG_CHECK_MODULES(SASL, [libsasl2],[found_sasl=yes],[found_sasl=no] )
+	
+	if test "$found_sasl" = "no"; then
+		AC_CHECK_LIB(sasl2, sasl_client_init , [SASL_LIBS="-lsasl2"],
+			[AC_MSG_ERROR([You need SASL for LDAP support] ) ]
+			)
+		AC_CHECK_HEADERS(sasl/sasl.h,foo=bar, [AC_MSG_ERROR([sasl/sasl.h not found])])
+		found_sasl=yes	
+	fi
+	
+	AC_SUBST(LDAP_CFLAGS)
+	AC_SUBST(LDAP_LIBS)
+	
+	AC_SUBST(SASL_CFLAGS)
+	AC_SUBST(SASL_LIBS)
+	
+	if test "$found_ldap$found_sasl" = "yesyes"; then
+		AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
+	else
+		AC_MSG_ERROR([Can't use LDAP due to previous errors])
+	fi
+
+fi
+
+AM_CONDITIONAL(BUILD_LDAP, test x$enable_ldap != xfalse)
 
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,
@@ -286,6 +335,15 @@ if test "$gtk_ui" = "true" ; then
 	fi
 fi
 
+case "$target" in
+        #macosx 64 bits
+        x86_64-apple-darwin*)
+                LIBS="$LIBS -mmacosx-version-min=10.6"
+                CXXFLAGS="$CXXFLAGS -mmacosx-version-min=10.6"
+                CFLAGS="$CFLAGS -mmacosx-version-min=10.6"
+        ;;
+esac
+
 dnl os-specific problems not handled by existing macros.
 case "$host_os" in
 	*freebsd*)
@@ -369,9 +427,9 @@ AC_ARG_ENABLE(debug,
 )
 AS_CASE([$debug_enabled],
 		[yes],[
-			CFLAGS="$CFLAGS -g -DDEBUG"
-			CXXFLAGS="$CXXFLAGS -g -DDEBUG"
-			OBJCFLAGS="$OBJCFLAGS -g -DDEBUG"
+			CFLAGS="$CFLAGS -g -O0 -DDEBUG"
+			CXXFLAGS="$CXXFLAGS -g -O0 -DDEBUG"
+			OBJCFLAGS="$OBJCFLAGS -g -O0 -DDEBUG"
 		],
 		[no],
 		[
@@ -435,7 +493,14 @@ if test "$relativeprefix" = "yes" ; then
 fi
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.
-DATADIRNAME=share
+case "$target_os" in
+	*qnx*)
+		DATADIRNAME=app/native/assets
+	;;
+	*)
+		DATADIRNAME=share
+	;;
+esac
 AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${package_prefix}/${DATADIRNAME}/locale",[Defines the place where locales can be found])
 
 AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${package_prefix}/${DATADIRNAME}",[Defines the place where data are found])
@@ -519,17 +584,6 @@ AC_ARG_ENABLE(zrtp,
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-zrtp) ;;
 	esac],
 	[zrtp=false]
-)
-
-
-AC_ARG_ENABLE(portaudio,
-	[AS_HELP_STRING([--enable-portaudio], [Turn on portaudio native support compiling])],
-	[case "${enableval}" in
-		yes)	portaudio=true ;;
-		no)	portaudio=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-portaudio) ;;
-	esac],
-	[portaudio=false]
 )
 
 dnl build console if required
@@ -626,6 +680,39 @@ AC_SUBST(STRICT_OPTIONS)
 
 top_srcdir=`dirname $0`
 
+AC_ARG_ENABLE(external-ortp,
+	[AS_HELP_STRING([--enable-external-ortp], [Use external oRTP library])],
+	[case "${enableval}" in
+		yes)	external_ortp=true ;;
+		no)	external_ortp=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
+	esac],
+	[external_ortp=false]
+)
+
+if test "$external_ortp" = 'true'; then
+	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
+	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
+else
+	AC_CONFIG_SUBDIRS( oRTP )
+	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
+	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
+	if test x$ac_cv_c_bigendian = xyes ; then
+		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
+	fi
+	if test x$ntptimestamp = xtrue ; then
+		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
+	fi
+	ORTP_DIR=oRTP
+	changequote(<<, >>)
+	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
+	changequote([, ])
+fi
+AC_SUBST(ORTP_CFLAGS)
+AC_SUBST(ORTP_LIBS)
+AC_SUBST([ORTP_VERSION])
+AC_SUBST([ORTP_DIR])
+
 AC_ARG_ENABLE([external-mediastreamer],
 	[AS_HELP_STRING([--enable-external-mediastreamer],[Use external mediastreamer library])],,
 	[enable_external_mediastreamer=no]
@@ -633,7 +720,7 @@ AC_ARG_ENABLE([external-mediastreamer],
 
 AS_CASE($enable_external_mediastreamer,
 	[yes],
-	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer])
+	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.10.0])
 	MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`],
 	[no],
 	[AC_CONFIG_SUBDIRS( mediastreamer2 )
@@ -683,7 +770,7 @@ AC_ARG_ENABLE(msg-storage,
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 if test x$enable_msg_storage != xfalse; then
-	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[
+	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.6.0],[
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
 		AC_SUBST(SQLITE3_CFLAGS)
 		AC_SUBST(SQLITE3_LIBS)
@@ -698,7 +785,7 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 	
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.2.0])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"
@@ -713,7 +800,7 @@ AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
 LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
-LINPHONE_LIBS="-L${libdir} -llinphone -llpc2xml -lxml2lpc"
+LINPHONE_LIBS="-L${libdir} -llinphone"
 
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
@@ -724,38 +811,7 @@ AC_DEFINE_UNQUOTED(LINPHONE_PLUGINS_DIR, "${package_prefix}/lib/liblinphone/plug
 LINPHONE_PLUGINS_DIR="${package_prefix}/lib/liblinphone/plugins"
 AC_SUBST(LINPHONE_PLUGINS_DIR)
 
-AC_ARG_ENABLE(external-ortp,
-	[AS_HELP_STRING([--enable-external-ortp], [Use external oRTP library])],
-	[case "${enableval}" in
-		yes)	external_ortp=true ;;
-		no)	external_ortp=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-external-ortp) ;;
-	esac],
-	[external_ortp=false]
-)
 
-if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp])
-	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
-else
-	AC_CONFIG_SUBDIRS( oRTP )
-	ORTP_CFLAGS="-I\$(top_srcdir)/oRTP/include"
-	ORTP_LIBS="\$(top_builddir)/oRTP/src/libortp.la"
-	if test x$ac_cv_c_bigendian = xyes ; then
-		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_BIGENDIAN"
-	fi
-	if test x$ntptimestamp = xtrue ; then
-		ORTP_CFLAGS="$ORTP_CFLAGS -DORTP_TIMESTAMP"
-	fi
-	ORTP_DIR=oRTP
-	changequote(<<, >>)
-	ORTP_VERSION=`grep -E ^[AC]+_INIT ${top_srcdir}/oRTP/configure.ac | sed -e 's:^.*_INIT(.*,\[\(.*\)\]):\1:g'`
-	changequote([, ])
-fi
-AC_SUBST(ORTP_CFLAGS)
-AC_SUBST(ORTP_LIBS)
-AC_SUBST([ORTP_VERSION])
-AC_SUBST([ORTP_DIR])
 
 AC_ARG_ENABLE(tutorials,
 	[AS_HELP_STRING([--disable-tutorials], [Disable compilation of tutorials])],
@@ -847,6 +903,7 @@ AC_CONFIG_FILES([
 	share/xml/Makefile
 	share/linphone.pc
 	share/linphone.desktop
+	share/audio-assistant.desktop
 	scripts/Makefile
 	tools/Makefile
 	linphone.spec
@@ -865,6 +922,7 @@ printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
+printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"

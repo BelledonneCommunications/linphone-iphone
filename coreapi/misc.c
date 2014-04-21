@@ -54,132 +54,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define pclose _pclose
 #endif
 
-#if !defined(WIN32)
-
-static char lock_name[80];
-static char lock_set=0;
-/* put a lock file in /tmp. this is called when linphone runs as a daemon*/
-int set_lock_file()
-{
-	FILE *lockfile;
-
-	snprintf(lock_name,80,"/tmp/linphone.%i",getuid());
-	lockfile=fopen(lock_name,"w");
-	if (lockfile==NULL)
-	{
-		printf("Failed to create lock file.\n");
-		return(-1);
-	}
-	fprintf(lockfile,"%i",getpid());
-	fclose(lockfile);
-	lock_set=1;
-	return(0);
-}
-
-/* looks if there is a lock file. If presents return its content (the pid of the already running linphone), if not found, returns -1*/
-int get_lock_file()
-{
-	int pid;
-	FILE *lockfile;
-
-	snprintf(lock_name,80,"/tmp/linphone.%i",getuid());
-	lockfile=fopen(lock_name,"r");
-	if (lockfile==NULL)
-		return(-1);
-	if (fscanf(lockfile,"%i",&pid)!=1){
-		ms_warning("Could not read pid in lock file.");
-		fclose(lockfile);
-		return -1;
-	}
-	fclose(lockfile);
-	return pid;
-}
-
-/* remove the lock file if it was set*/
-int remove_lock_file()
-{
-	int err=0;
-	if (lock_set)
-	{
-		err=unlink(lock_name);
-		lock_set=0;
-	}
-	return(err);
-}
-
-#endif
-
-char *int2str(int number)
-{
-	char *numstr=ms_malloc(10);
-	snprintf(numstr,10,"%i",number);
-	return numstr;
-}
-
-void check_sound_device(LinphoneCore *lc)
-{
-#ifdef _linux
-	int fd=0;
-	int len;
-	int a;
-	char *file=NULL;
-	char *i810_audio=NULL;
-	char *snd_pcm_oss=NULL;
-	char *snd_mixer_oss=NULL;
-	char *snd_pcm=NULL;
-	fd=open("/proc/modules",O_RDONLY);
-
-	if (fd>0){
-		/* read the entire /proc/modules file and check if sound conf seems correct */
-		/*a=fstat(fd,&statbuf);
-		if (a<0) ms_warning("Can't stat /proc/modules:%s.",strerror(errno));
-		len=statbuf.st_size;
-		if (len==0) ms_warning("/proc/modules has zero size!");
-		*/
-		/***** fstat does not work on /proc/modules for unknown reason *****/
-		len=6000;
-		file=ms_malloc(len+1);
-		a=read(fd,file,len);
-		if (a<len) file=ms_realloc(file,a+1);
-		file[a]='\0';
-		i810_audio=strstr(file,"i810_audio");
-		if (i810_audio!=NULL){
-			/* I'm sorry i put this warning in comments because
-			 * i don't use yet the right driver !! */
-/*			lc->vtable.display_warning(lc,_("You are currently using the i810_audio driver.\nThis driver is buggy and so does not work with Linphone.\nWe suggest that you replace it by its equivalent ALSA driver,\neither with packages from your distribution, or by downloading\nALSA drivers at http://www.alsa-project.org."));*/
-			goto end;
-		}
-		snd_pcm=strstr(file,"snd-pcm");
-		if (snd_pcm!=NULL){
-			snd_pcm_oss=strstr(file,"snd-pcm-oss");
-			snd_mixer_oss=strstr(file,"snd-mixer-oss");
-			if (snd_pcm_oss==NULL){
-				lc->vtable.display_warning(lc,_("Your computer appears to be using ALSA sound drivers.\nThis is the best choice. However the pcm oss emulation module\nis missing and linphone needs it. Please execute\n'modprobe snd-pcm-oss' as root to load it."));
-			}
-			if (snd_mixer_oss==NULL){
-				lc->vtable.display_warning(lc,_("Your computer appears to be using ALSA sound drivers.\nThis is the best choice. However the mixer oss emulation module\nis missing and linphone needs it. Please execute\n 'modprobe snd-mixer-oss' as root to load it."));
-			}
-		}
-	}else {
-
-		ms_warning("Could not open /proc/modules.");
-	}
-	/* now check general volume. Some user forget to rise it and then complain that linphone is
-	not working */
-	/* but some other users complain that linphone should not change levels...
-	if (lc->sound_conf.sndcard!=NULL){
-		a=snd_card_get_level(lc->sound_conf.sndcard,SND_CARD_LEVEL_GENERAL);
-		if (a<50){
-			ms_warning("General level is quite low (%i). Linphone rises it up for you.",a);
-			snd_card_set_level(lc->sound_conf.sndcard,SND_CARD_LEVEL_GENERAL,80);
-		}
-	}
-	*/
-	end:
-	if (file!=NULL) ms_free(file);
-	if (fd>0) close(fd);
-#endif
-}
 
 #define UDP_HDR_SZ 8
 #define RTP_HDR_SZ 12
@@ -501,6 +375,10 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
 	}
+	if (call->media_ports[0].rtp_port==-1){
+		ms_warning("Stun-only support not available for system random port");
+		return -1;
+	}
 	if (server!=NULL){
 		const struct addrinfo *ai=linphone_core_get_stun_server_addrinfo(lc);
 		ortp_socket_t sock1=-1, sock2=-1;
@@ -520,10 +398,10 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(call->audio_port);
+		sock1=create_socket(call->media_ports[0].rtp_port);
 		if (sock1==-1) return -1;
 		if (video_enabled){
-			sock2=create_socket(call->video_port);
+			sock2=create_socket(call->media_ports[1].rtp_port);
 			if (sock2==-1) return -1;
 		}
 		got_audio=FALSE;
@@ -637,12 +515,16 @@ static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addr
 }
 
 void linphone_core_resolve_stun_server(LinphoneCore *lc){
+	/*
+	 * WARNING: stun server resolution only done in IPv4.
+	 * TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
+	 */
 	const char *server=lc->net_conf.stun_server;
 	if (lc->sal && server){
 		char host[NI_MAXHOST];
 		int port=3478;
 		linphone_parse_host_port(server,host,sizeof(host),&port);
-		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_UNSPEC,(SalResolverCallback)stun_server_resolved,lc);
+		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_INET,(SalResolverCallback)stun_server_resolved,lc);
 	}
 }
 
@@ -685,8 +567,8 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	video_check_list = ice_session_check_list(call->ice_session, 1);
 	if (audio_check_list == NULL) return -1;
 
-	if (lc->sip_conf.ipv6_enabled){
-		ms_warning("stun support is not implemented for ipv6");
+	if (call->af==AF_INET6){
+		ms_warning("Ice gathering is not implemented for ipv6");
 		return -1;
 	}
 	ai=linphone_core_get_stun_server_addrinfo(lc);
@@ -703,14 +585,14 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtp_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	}
-	if (call->params.has_video && (video_check_list != NULL)
+	if (linphone_core_video_enabled(lc) && (video_check_list != NULL)
 		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtp_port, 1, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 	}
 
@@ -1005,7 +887,12 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 		}
 		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
-			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
+			IceCheckList *removed=ice_session_check_list(call->ice_session, i - 1);
+			ice_session_remove_check_list(call->ice_session, removed);
+			if (call->audiostream && call->audiostream->ms.ice_check_list==removed)
+				call->audiostream->ms.ice_check_list=NULL;
+			if (call->videostream && call->videostream->ms.ice_check_list==removed)
+				call->videostream->ms.ice_check_list=NULL;
 		}
 		ice_session_check_mismatch(call->ice_session);
 	} else {
@@ -1133,12 +1020,12 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	socklen_t s;
 
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=(type==AF_INET6) ? PF_INET6 : PF_INET;
+	hints.ai_family=type;
 	hints.ai_socktype=SOCK_DGRAM;
 	/*hints.ai_flags=AI_NUMERICHOST|AI_CANONNAME;*/
 	err=getaddrinfo(dest,"5060",&hints,&res);
 	if (err!=0){
-		ms_error("getaddrinfo() error: %s",gai_strerror(err));
+		ms_error("getaddrinfo() error for %s : %s",dest, gai_strerror(err));
 		return -1;
 	}
 	if (res==NULL){
@@ -1153,7 +1040,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	}
 	err=connect(sock,res->ai_addr,res->ai_addrlen);
 	if (err<0) {
-		ms_error("Error in connect: %s",strerror(errno));
+		/*the network isn't reachable*/
+		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));
  		freeaddrinfo(res);
  		close_socket(sock);
 		return -1;
@@ -1178,9 +1066,13 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	if (err!=0){
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
+	/*avoid ipv6 link-local addresses*/
+	if (type==AF_INET6 && strchr(result,'%')!=NULL){
+		strcpy(result,"::1");
+		close_socket(sock);
+		return -1;
+	}
 	close_socket(sock);
-
-
 	return 0;
 }
 
@@ -1211,39 +1103,53 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 		return -1;
 	}
 #endif
-      return 0;  
-}
-
-
-void _linphone_core_configure_resolver(){
+	return 0;  
 }
 
 SalReason linphone_reason_to_sal(LinphoneReason reason){
 	switch(reason){
 		case LinphoneReasonNone:
-			return SalReasonUnknown;
+			return SalReasonNone;
 		case LinphoneReasonNoResponse:
-			return SalReasonUnknown;
-		case LinphoneReasonBadCredentials:
+			return SalReasonRequestTimeout;
+		case LinphoneReasonForbidden:
 			return SalReasonForbidden;
 		case LinphoneReasonDeclined:
 			return SalReasonDeclined;
 		case LinphoneReasonNotFound:
 			return SalReasonNotFound;
-		case LinphoneReasonNotAnswered:
+		case LinphoneReasonTemporarilyUnavailable:
 			return SalReasonTemporarilyUnavailable;
 		case LinphoneReasonBusy:
 			return SalReasonBusy;
-		case LinphoneReasonMedia:
-			return SalReasonMedia;
+		case LinphoneReasonNotAcceptable:
+			return SalReasonNotAcceptable;
 		case LinphoneReasonIOError:
 			return SalReasonServiceUnavailable;
 		case LinphoneReasonDoNotDisturb:
 			return SalReasonDoNotDisturb;
 		case LinphoneReasonUnauthorized:
 			return SalReasonUnauthorized;
-		case LinphoneReasonNotAcceptable:
-			return SalReasonNotAcceptable;
+		case LinphoneReasonUnsupportedContent:
+			return SalReasonUnsupportedContent;
+		case LinphoneReasonNoMatch:
+			return SalReasonNoMatch;
+		case LinphoneReasonMovedPermanently:
+			return SalReasonMovedPermanently;
+		case LinphoneReasonGone:
+			return SalReasonGone;
+		case LinphoneReasonAddressIncomplete:
+			return SalReasonAddressIncomplete;
+		case LinphoneReasonNotImplemented:
+			return SalReasonNotImplemented;
+		case LinphoneReasonBadGateway:
+			return SalReasonBadGateway;
+		case LinphoneReasonServerTimeout:
+			return SalReasonServerTimeout;
+		case LinphoneReasonNotAnswered:
+			return SalReasonRequestTimeout;
+		case LinphoneReasonUnknown:
+			return SalReasonUnknown;
 	}
 	return SalReasonUnknown;
 }
@@ -1251,8 +1157,14 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 LinphoneReason linphone_reason_from_sal(SalReason r){
 	LinphoneReason ret=LinphoneReasonNone;
 	switch(r){
-		case SalReasonUnknown:
+		case SalReasonNone:
 			ret=LinphoneReasonNone;
+			break;
+		case SalReasonIOError:
+			ret=LinphoneReasonIOError;
+			break;
+		case SalReasonUnknown:
+			ret=LinphoneReasonUnknown;
 			break;
 		case SalReasonBusy:
 			ret=LinphoneReasonBusy;
@@ -1266,8 +1178,8 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		case SalReasonForbidden:
 			ret=LinphoneReasonBadCredentials;
 			break;
-		case SalReasonMedia:
-			ret=LinphoneReasonMedia;
+		case SalReasonNotAcceptable:
+			ret=LinphoneReasonNotAcceptable;
 			break;
 		case SalReasonNotFound:
 			ret=LinphoneReasonNotFound;
@@ -1276,7 +1188,7 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			ret=LinphoneReasonNone;
 			break;
 		case SalReasonTemporarilyUnavailable:
-			ret=LinphoneReasonNone;
+			ret=LinphoneReasonTemporarilyUnavailable;
 			break;
 		case SalReasonServiceUnavailable:
 			ret=LinphoneReasonIOError;
@@ -1287,11 +1199,81 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		case SalReasonUnauthorized:
 			ret=LinphoneReasonUnauthorized;
 			break;
-		case SalReasonNotAcceptable:
-			ret=LinphoneReasonNotAcceptable;
+		case SalReasonUnsupportedContent:
+			ret=LinphoneReasonUnsupportedContent;
+		break;
+		case SalReasonNoMatch:
+			ret=LinphoneReasonNoMatch;
+		break;
+		case SalReasonRequestTimeout:
+			ret=LinphoneReasonNotAnswered;
+		break;
+		case SalReasonMovedPermanently:
+			ret=LinphoneReasonMovedPermanently;
+		break;
+		case SalReasonGone:
+			ret=LinphoneReasonGone;
+		break;
+		case SalReasonAddressIncomplete:
+			ret=LinphoneReasonAddressIncomplete;
+		break;
+		case SalReasonNotImplemented:
+			ret=LinphoneReasonNotImplemented;
+		break;
+		case SalReasonBadGateway:
+			ret=LinphoneReasonBadGateway;
+		break;
+		case SalReasonServerTimeout:
+			ret=LinphoneReasonServerTimeout;
 		break;
 	}
 	return ret;
+}
+
+/**
+ * Get reason code from the error info.
+ * @param ei the error info.
+ * @return a #LinphoneReason
+ * @ingroup misc
+**/
+LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return linphone_reason_from_sal(sei->reason);
+}
+
+/**
+ * Get textual phrase from the error info.
+ * This is the text that is provided by the peer in the protocol (SIP).
+ * @param ei the error info.
+ * @return the error phrase
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_phrase(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->status_string;
+}
+
+/**
+ * Provides additional information regarding the failure.
+ * With SIP protocol, the "Reason" and "Warning" headers are returned.
+ * @param ei the error info.
+ * @return more details about the failure.
+ * @ingroup misc
+**/
+const char *linphone_error_info_get_details(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->warnings;
+}
+
+/**
+ * Get the status code from the low level protocol (ex a SIP status code).
+ * @param ei the error info.
+ * @return the status code.
+ * @ingroup misc
+**/
+int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei){
+	const SalErrorInfo *sei=(const SalErrorInfo*)ei;
+	return sei->protocol_code;
 }
 
 /**
@@ -1311,5 +1293,153 @@ const char *linphone_core_get_video_display_filter(LinphoneCore *lc){
 	return lp_config_get_string(lc->config,"video","displaytype",NULL);
 }
 
+/**
+ * Queue a task into the main loop. The data pointer must remain valid until the task is completed.
+ * task_fun must return BELLE_SIP_STOP when job is finished.
+**/
+void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description){
+	belle_sip_source_t *s=sal_create_timer(lc->sal,task_fun,data, 20, task_description);
+	belle_sip_object_unref(s);
+}
 
+static int get_unique_transport(LinphoneCore *lc, LinphoneTransportType *type, int *port){
+	LCSipTransports tp;
+	linphone_core_get_sip_transports(lc,&tp);
+	if (tp.tcp_port==0 && tp.tls_port==0 && tp.udp_port!=0){
+		*type=LinphoneTransportUdp;
+		*port=tp.udp_port;
+		return 0;
+	}else if (tp.tcp_port==0 && tp.udp_port==0 && tp.tls_port!=0){
+		*type=LinphoneTransportTls;
+		*port=tp.tls_port;
+		return 0;
+	}else if (tp.tcp_port!=0 && tp.udp_port==0 && tp.tls_port==0){
+		*type=LinphoneTransportTcp;
+		*port=tp.tcp_port;
+		return 0;
+	}
+	return -1;
+}
+
+static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTransportType type){
+	const MSList *elem;
+	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
+		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
+		const char *proxy=linphone_proxy_config_get_addr(cfg);
+		const char *route=linphone_proxy_config_get_route(cfg);
+		LinphoneAddress *proxy_addr=linphone_address_new(proxy);
+		LinphoneAddress *route_addr=NULL;
+		char *tmp;
+		if (route) route_addr=linphone_address_new(route);
+		if (proxy_addr){
+			linphone_address_set_transport(proxy_addr,type);
+			tmp=linphone_address_as_string(proxy_addr);
+			linphone_proxy_config_set_server_addr(cfg,tmp);
+			ms_free(tmp);
+			linphone_address_destroy(proxy_addr);
+		}
+		if (route_addr){
+			linphone_address_set_transport(route_addr,type);
+			tmp=linphone_address_as_string(route_addr);
+			linphone_proxy_config_set_route(cfg,tmp);
+			ms_free(tmp);
+			linphone_address_destroy(route_addr);
+		}
+	}
+}
+
+/**
+ * Migrate configuration so that all SIP transports are enabled.
+ * Versions of linphone < 3.7 did not support using multiple SIP transport simultaneously.
+ * This function helps application to migrate the configuration so that all transports are enabled.
+ * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
+ * This function must be used just after creating the core, before any call to linphone_core_iterate()
+ * @param lc the linphone core
+ * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+ * @ingroup initializing
+**/
+int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
+	if (!lp_config_get_int(lc->config,"sip","multi_transport_migration_done",0)){
+		LinphoneTransportType tpt;
+		int port;
+		if (get_unique_transport(lc,&tpt,&port)==0){
+			LCSipTransports newtp={0};
+			if (lp_config_get_int(lc->config,"sip","sip_random_port",0))
+				port=-1;
+			ms_message("Core is using a single SIP transport, migrating proxy config and enabling multi-transport.");
+			linphone_core_migrate_proxy_config(lc,tpt);
+			newtp.udp_port=port;
+			newtp.tcp_port=port;
+			newtp.tls_port=LC_SIP_TRANSPORT_RANDOM;
+			lp_config_set_string(lc->config, "sip","sip_random_port",NULL); /*remove*/
+			linphone_core_set_sip_transports(lc,&newtp);
+		}
+		lp_config_set_int(lc->config,"sip","multi_transport_migration_done",1);
+		return 1;
+	}
+	return 0;
+}
+
+LinphoneToneDescription * linphone_tone_description_new(LinphoneReason reason, LinphoneToneID id, const char *audiofile){
+	LinphoneToneDescription *obj=ms_new0(LinphoneToneDescription,1);
+	obj->reason=reason;
+	obj->toneid=id;
+	obj->audiofile=audiofile ? ms_strdup(audiofile) : NULL;
+	return obj;
+}
+
+void linphone_tone_description_destroy(LinphoneToneDescription *obj){
+	if (obj->audiofile) ms_free(obj->audiofile);
+	ms_free(obj);
+}
+
+LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *lc, LinphoneReason reason){
+	const MSList *elem;
+	for (elem=lc->tones;elem!=NULL;elem=elem->next){
+		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
+		if (tone->reason==reason) return tone;
+	}
+	return NULL;
+}
+
+const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id){
+	const MSList *elem;
+	for (elem=lc->tones;elem!=NULL;elem=elem->next){
+		LinphoneToneDescription *tone=(LinphoneToneDescription*)elem->data;
+		if (tone->toneid==id && tone->reason==LinphoneReasonNone && tone->audiofile!=NULL) return tone->audiofile;
+	}
+	return NULL;
+}
+
+void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile){
+	LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
+	if (tone){
+		lc->tones=ms_list_remove(lc->tones,tone);
+		linphone_tone_description_destroy(tone);
+	}
+	tone=linphone_tone_description_new(reason,id,audiofile);
+	lc->tones=ms_list_append(lc->tones,tone);
+}
+
+/**
+ * Assign an audio file to be played locally upon call failure, for a given reason.
+ * @param lc the core
+ * @param reason the #LinphoneReason representing the failure error code.
+ * @param audiofile a wav file to be played when such call failure happens.
+ * @ingroup misc
+**/
+void linphone_core_set_call_error_tone(LinphoneCore *lc, LinphoneReason reason, const char *audiofile){
+	_linphone_core_set_tone(lc,reason,LinphoneToneUndefined, audiofile);
+}
+
+/**
+ * Assign an audio file to be played as a specific tone id.
+ * This function typically allows to customize telephony tones per country.
+ * @param lc the core
+ * @param id the tone id
+ * @param audiofile a wav file to be played.
+**/
+void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id, const char *audiofile){
+	_linphone_core_set_tone(lc, LinphoneReasonNone, id, audiofile);
+}
 

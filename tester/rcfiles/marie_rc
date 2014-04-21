@@ -1,11 +1,11 @@
 [sip]
-sip_port=5082
-sip_tcp_port=5082
-sip_tls_port=5083
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
 register_only_when_network_is_up=0
-sdp_200_ack=1
+composing_idle_timeout=1
 
 [auth_info_0]
 username=marie
@@ -31,7 +31,7 @@ subscribe=0
 
 [rtp]
 audio_rtp_port=8070
-video_rtp_port=8072
+video_rtp_port=9072
 
 [video]
 display=0

@@ -698,19 +698,19 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		 * Audio part
 		 */
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->audio->rtp, 
-			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->audio_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[0].rtp_port:0, UPNP_CALL_RETRY_DELAY);
 
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->audio->rtcp, 
-			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->audio_port+1:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[0].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
 		
 		/*
 		 * Video part
 		 */
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->video->rtp, 
-			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->video_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[1].rtp_port:0, UPNP_CALL_RETRY_DELAY);
 
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->video->rtcp, 
-			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->video_port+1:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[1].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
 	}
 
 	ms_mutex_unlock(&lupnp->mutex);

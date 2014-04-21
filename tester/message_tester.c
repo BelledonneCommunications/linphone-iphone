@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
@@ -32,19 +33,30 @@ void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const Linph
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message) {
 	char* from=linphone_address_as_string(linphone_chat_message_get_from(message));
 	stats* counters;
-	ms_message("Message from [%s]  is [%s] , external URL [%s]",from
-																,linphone_chat_message_get_text(message)
-																,linphone_chat_message_get_external_body_url(message));
+	const char *text=linphone_chat_message_get_text(message);
+	const char *external_body_url=linphone_chat_message_get_external_body_url(message);
+	ms_message("Message from [%s]  is [%s] , external URL [%s]",from?from:""
+																,text?text:""
+																,external_body_url?external_body_url:"");
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
 	if (linphone_chat_message_get_external_body_url(message)) {
-			counters->number_of_LinphoneMessageExtBodyReceived++;
-			CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
+		counters->number_of_LinphoneMessageExtBodyReceived++;
+		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
 	}
 }
 
-void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
+void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
+	stats *counters = get_stats(lc);
+	if (room->remote_is_composing == LinphoneIsComposingActive) {
+		counters->number_of_LinphoneIsComposingActiveReceived++;
+	} else {
+		counters->number_of_LinphoneIsComposingIdleReceived++;
+	}
+}
+
+void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	LinphoneCore* lc=(LinphoneCore*)ud;
 	stats* counters = get_stats(lc);
 	ms_message("Message [%s] [%s]",linphone_chat_message_get_text(msg),linphone_chat_message_state_to_string(state));
@@ -71,6 +83,63 @@ static void text_message(void) {
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
+
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,1);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void text_message_within_dialog(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	
+	lp_config_set_int(pauline->lc->config,"sip","chat_use_call_dialogs",1);
+
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
+static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	stats* counters;
+	ms_message("text_message_with_credential_from_auth_cb:Auth info requested  for user id [%s] at realm [%s]\n"
+						,username
+						,realm);
+	counters = get_stats(lc);
+	counters->number_of_auth_info_requested++;
+	linphone_core_add_auth_info(lc,text_message_with_credential_from_auth_cb_auth_info); /*add stored authentication info to LinphoneCore*/
+}
+
+
+static void text_message_with_credential_from_auth_cb(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
+
+	/*to force cb to be called*/
+	linphone_core_clear_all_auth_info(marie->lc);
+	marie->lc->vtable.auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
+
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
@@ -149,7 +218,7 @@ static void text_message_with_ack(void) {
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
-	linphone_chat_room_send_message2(chat_room,message,linphone_chat_message_state_change,pauline->lc);
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
@@ -164,7 +233,7 @@ static void text_message_with_external_body(void) {
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	linphone_chat_message_set_external_body_url(message,message_external_body_url="http://www.linphone.org");
-	linphone_chat_room_send_message2(chat_room,message,linphone_chat_message_state_change,pauline->lc);
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
@@ -183,13 +252,32 @@ static void text_message_with_send_error(void) {
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	/*simultate a network error*/
 	sal_set_send_error(marie->lc->sal, -1);
-	linphone_chat_room_send_message2(chat_room,message,linphone_chat_message_state_change,marie->lc);
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	/*CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageInProgress,1);*/
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0);
 
 	sal_set_send_error(marie->lc->sal, 0);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void text_message_denied(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	char* to = linphone_address_as_string(pauline->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
+	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+
+	/*pauline doesn't want to be disturbed*/
+	linphone_core_disable_chat(pauline->lc,LinphoneReasonDoNotDisturb);
+	
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0);
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -264,15 +352,37 @@ static void info_message_with_body(){
 	info_message_with_args(TRUE);
 }
 
+static void is_composing_notification(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc, to);
+	int dummy = 0;
+
+	ms_free(to);
+	linphone_chat_room_compose(chat_room);
+	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 1500); /*just to sleep while iterating*/
+	linphone_chat_room_send_message(chat_room, "Composing a message");
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t message_tests[] = {
 	{ "Text message", text_message },
+	{ "Text message within call's dialog", text_message_within_dialog},
+	{ "Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
 	{ "Text message with privacy", text_message_with_privacy },
 	{ "Text message compatibility mode", text_message_compatibility_mode },
 	{ "Text message with ack", text_message_with_ack },
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body },
+	{ "Text message denied", text_message_denied },
 	{ "Info message", info_message },
-	{ "Info message with body", info_message_with_body }
+	{ "Info message with body", info_message_with_body },
+	{ "IsComposing notification", is_composing_notification }
 };
 
 test_suite_t message_test_suite = {

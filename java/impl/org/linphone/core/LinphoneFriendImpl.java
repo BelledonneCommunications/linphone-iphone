@@ -34,8 +34,9 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native void edit(long nativePtr);
 	private native void done(long nativePtr);
-	
 	private native void  delete(long ptr);
+	private native Object getCore(long ptr);
+	
 	boolean ownPtr = false;
 	protected LinphoneFriendImpl()  {
 		nativePtr = newLinphoneFriend(null);
@@ -57,13 +58,17 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
-		setIncSubscribePolicy(nativePtr,policy.mValue);
+		synchronized(getSyncObject()){
+			setIncSubscribePolicy(nativePtr,policy.mValue);
+		}
 	}
 	public SubscribePolicy getIncSubscribePolicy() {
 		return SubscribePolicy.fromInt(getIncSubscribePolicy(nativePtr)) ;
 	}
 	public void enableSubscribes(boolean enable) {
-		enableSubscribes(nativePtr, enable);
+		synchronized(getSyncObject()){
+			enableSubscribes(nativePtr, enable);
+		}
 	}
 	public boolean isSubscribesEnabled() {
 		return isSubscribesEnabled(nativePtr);
@@ -75,12 +80,27 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		return (PresenceModel)getPresenceModel(nativePtr);
 	}
 	public void edit() {
-		edit(nativePtr);
+		synchronized(getSyncObject()){
+			edit(nativePtr);
+		}
 	}
 	public void done() {
-		done(nativePtr);
+		synchronized(getSyncObject()){
+			done(nativePtr);
+		}
 	}
 	public long getNativePtr() {
 		return nativePtr;
+	}
+	
+	/*
+	 * Returns a java object to synchronize this friend with.
+	 * Indeed some operation must be synchronized with the LinphoneCore object.
+	 * If the friend is not associated with a LinphoneCore object, it returns itself in order to avoid writing code for case where no synchronization is necessary.
+	 */
+	private Object getSyncObject(){
+		Object core=getCore(nativePtr);
+		if (core!=null) return core;
+		else return this;
 	}
 }

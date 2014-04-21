@@ -37,8 +37,6 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		,unsigned int status_code
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
-	SalError error=SalErrorUnknown;
-	SalReason sr=SalReasonUnknown;
 	belle_sip_transaction_t *tr=BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher));
 	/*belle_sip_response_t* response=belle_sip_transaction_get_response(tr);*/
 	SalSubscribeStatus sss=SalSubscribeTerminated;
@@ -50,8 +48,10 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		set_or_update_dialog(op,belle_sip_transaction_get_dialog(tr));
 	}
 	if (status_code>=200){
-		sal_compute_sal_errors_from_code(status_code,&error,&sr);
-		op->base.root->callbacks.subscribe_response(op,sss,error,sr);
+		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
+		op->base.root->callbacks.subscribe_response(op,sss);
+	}else if (status_code==0){
+		op->base.root->callbacks.on_expire(op);
 	}
 	
 }
@@ -170,13 +170,18 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	}
 }
 
+static belle_sip_listener_callbacks_t op_subscribe_callbacks={ 0 };
+
 void sal_op_subscribe_fill_cbs(SalOp*op) {
-	op->callbacks.process_io_error=subscribe_process_io_error;
-	op->callbacks.process_response_event=subscribe_response_event;
-	op->callbacks.process_timeout=subscribe_process_timeout;
-	op->callbacks.process_transaction_terminated=subscribe_process_transaction_terminated;
-	op->callbacks.process_request_event=subscribe_process_request_event;
-	op->callbacks.process_dialog_terminated=subscribe_process_dialog_terminated;
+	if (op_subscribe_callbacks.process_io_error==NULL){
+		op_subscribe_callbacks.process_io_error=subscribe_process_io_error;
+		op_subscribe_callbacks.process_response_event=subscribe_response_event;
+		op_subscribe_callbacks.process_timeout=subscribe_process_timeout;
+		op_subscribe_callbacks.process_transaction_terminated=subscribe_process_transaction_terminated;
+		op_subscribe_callbacks.process_request_event=subscribe_process_request_event;
+		op_subscribe_callbacks.process_dialog_terminated=subscribe_process_dialog_terminated;
+	}
+	op->callbacks=&op_subscribe_callbacks;
 	op->type=SalOpSubscribe;
 }
 

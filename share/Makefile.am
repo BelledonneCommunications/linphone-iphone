@@ -1,7 +1,7 @@
 
 SUBDIRS=C fr it ja cs xml
 
-LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav
+LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav incoming_chat.wav
 LINPHONE_RINGS=rings/orig.wav \
 				rings/oldphone.wav \
 				rings/oldphone-mono.wav \
@@ -23,7 +23,7 @@ ring_DATA=$(LINPHONE_RINGS)
 
 #to be compliant with freedesktop.org:
 linphone_fddir= $(datadir)/applications
-linphone_fd_DATA= linphone.desktop
+linphone_fd_DATA= linphone.desktop audio-assistant.desktop
 
 
 pkgconfigdir=$(libdir)/pkgconfig
@@ -43,9 +43,10 @@ rootca.pem:
 		cp -f $(srcdir)/archived-rootca.pem $(builddir)/rootca.pem ; \
 	fi
 
-EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
+EXTRA_DIST =					$(LINPHONE_SOUNDS) \
 						$(LINPHONE_RINGS) \
-					        linphone.desktop.in   \
+						linphone.desktop.in   \
+						audio-assistant.desktop.in   \
 						linphone.pc.in \
 						Makefile.inc \
 						archived-rootca.pem

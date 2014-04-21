@@ -99,7 +99,7 @@ void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted){
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
 	call->params.has_video = FALSE;
-	call->camera_active = FALSE;
+	call->camera_enabled = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
 	ms_audio_conference_mute_member(conf->conf,ep,muted);
@@ -206,6 +206,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 			lc->current_call=NULL;
 		}
 		/*this will trigger a reINVITE that will later redraw the streams */
+		/*FIXME probably a bit too much to just redraw streams !*/
 		linphone_core_update_call(lc,call,params);
 		linphone_call_params_destroy(params);
 		add_local_endpoint(conf,lc);

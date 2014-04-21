@@ -28,7 +28,7 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(notify,belle_sip_header_from_t);
 		contact_info=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
 		op->base.root->callbacks.convert_presence_to_xml_requested(op, presence, contact_info, &content);
-		ms_free(contact_info);
+		belle_sip_free(contact_info);
 		if (content == NULL) return;
 	}
 
@@ -44,8 +44,6 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 		belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),content,content_length);
 		ms_free(content);
 	}
-	
-	
 }
 
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
@@ -96,13 +94,12 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
 	belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	int code = belle_sip_response_get_status_code(response);
-	char reason[256]={0};
-	SalError error=SalErrorUnknown;
-	SalReason sr=SalReasonUnknown;
 	belle_sip_header_expires_t* expires;
+	
+	sal_op_set_error_info_from_response(op,response);
 
-	if (sal_compute_sal_errors(response,&error,&sr,reason, sizeof(reason))) {
-		ms_error("subscription to [%s] rejected reason  [%s]",sal_op_get_to(op),reason[0]!=0?reason:sal_reason_to_string(sr));
+	if (code>=300) {
+		ms_message("subscription to [%s] rejected",sal_op_get_to(op));
 		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
 		return;
 	}
@@ -269,13 +266,18 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	}
 }
 
+static belle_sip_listener_callbacks_t op_presence_callbacks={0};
+
 void sal_op_presence_fill_cbs(SalOp*op) {
-	op->callbacks.process_io_error=presence_process_io_error;
-	op->callbacks.process_response_event=presence_response_event;
-	op->callbacks.process_timeout=presence_process_timeout;
-	op->callbacks.process_transaction_terminated=presence_process_transaction_terminated;
-	op->callbacks.process_request_event=presence_process_request_event;
-	op->callbacks.process_dialog_terminated=presence_process_dialog_terminated;
+	if (op_presence_callbacks.process_request_event==NULL){
+		op_presence_callbacks.process_io_error=presence_process_io_error;
+		op_presence_callbacks.process_response_event=presence_response_event;
+		op_presence_callbacks.process_timeout=presence_process_timeout;
+		op_presence_callbacks.process_transaction_terminated=presence_process_transaction_terminated;
+		op_presence_callbacks.process_request_event=presence_process_request_event;
+		op_presence_callbacks.process_dialog_terminated=presence_process_dialog_terminated;
+	}
+	op->callbacks=&op_presence_callbacks;
 	op->type=SalOpPresence;
 }
 

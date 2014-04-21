@@ -19,14 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 #include "linphone_tunnel.h"
+#include "lpconfig.h"
 
-typedef enum {
-	CAP_IGNORE,
-	CAP_PLAYBACK,
-	CAP_CAPTURE
-}DeviceCap;
-
-static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
+void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
 	int i=0,active=-1;
 	GtkTreeModel *model;
@@ -57,6 +52,196 @@ static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, 
 	}
 	if (active!=-1)
 		gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
+}
+
+static void linphone_gtk_ldap_display( GtkWidget* param )
+{
+	LpConfig* config = linphone_core_get_config(linphone_gtk_get_core());
+	LinphoneDictionary* ldap_conf = lp_config_section_to_dict(config,"ldap");
+	GtkLabel* label;
+
+	ms_message("linphone_gtk_ldap_display");
+	label= GTK_LABEL(linphone_gtk_get_widget(param,"ldap_server"));
+	gtk_label_set_text(label, linphone_dictionary_get_string(ldap_conf,"server", "ldap://localhost") );
+
+	label = GTK_LABEL(linphone_gtk_get_widget(param,"ldap_auth_method"));
+	gtk_label_set_text(label, linphone_dictionary_get_string(ldap_conf,"auth_method", "ANONYMOUS") );
+
+	label = GTK_LABEL(linphone_gtk_get_widget(param,"ldap_username"));
+	gtk_label_set_text(label, linphone_dictionary_get_string(ldap_conf,"username", "") );
+}
+
+static void linphone_gtk_ldap_set_authcombo( GtkComboBox* box, const char* authmethod )
+{
+	GtkTreeModel* model = GTK_TREE_MODEL(gtk_combo_box_get_model(box));
+	GtkTreeIter iter;
+	g_return_if_fail(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter) );
+
+	do{
+		const char* value;
+
+		gtk_tree_model_get(model,&iter,0,&value,-1);
+		if( value && strcmp(value, authmethod) == 0){
+			gtk_combo_box_set_active_iter(box, &iter);
+			break;
+		}
+
+	}while(gtk_tree_model_iter_next(model,&iter));
+}
+
+static void linphone_gtk_ldap_load_settings(GtkWidget* param)
+{
+	LpConfig* config = linphone_core_get_config(linphone_gtk_get_core());
+	LinphoneDictionary* ldap_conf = lp_config_section_to_dict(config,"ldap");
+	GtkEntry* entry;
+	GtkToggleButton* toggle;
+	GtkSpinButton* spin;
+	GtkComboBox* cbox;
+
+
+	toggle = GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(param,"ldap_use_tls"));
+	gtk_toggle_button_set_active(toggle, linphone_dictionary_get_int(ldap_conf,"use_tls", 0) );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_server"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"server", "ldap://localhost") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_username"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"username", "") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_password"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"password", "") );
+
+	// SASL
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_bind_dn"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"bind_dn", "") );
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_sasl_authname"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"sasl_authname", "") );
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_sasl_realm"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"sasl_realm", "") );
+
+	cbox  = GTK_COMBO_BOX(linphone_gtk_get_widget(param,"ldap_auth_method"));
+	linphone_gtk_ldap_set_authcombo(cbox, linphone_dictionary_get_string(ldap_conf,"auth_method", "ANONYMOUS"));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_base_object"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"base_object", "dc=example,dc=com") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_filter"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"filter", "uid=*%s*") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_name_attribute"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"name_attribute", "cn") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_sip_attribute"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"sip_attribute", "mobile") );
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(param,"ldap_attributes"));
+	gtk_entry_set_text(entry, linphone_dictionary_get_string(ldap_conf,"attributes", "cn,givenName,sn,mobile,homePhone") );
+
+
+	toggle = GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(param,"ldap_deref_aliases"));
+	gtk_toggle_button_set_active(toggle, linphone_dictionary_get_int(ldap_conf,"deref_aliases", 0) );
+
+	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(param,"ldap_max_results"));
+	gtk_spin_button_set_value(spin, linphone_dictionary_get_int(ldap_conf,"max_results", 50) );
+
+	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(param,"ldap_timeout"));
+	gtk_spin_button_set_value(spin, linphone_dictionary_get_int(ldap_conf,"timeout", 10) );
+
+}
+
+
+void linphone_gtk_show_ldap_config(GtkWidget* button)
+{
+	GtkWidget* param = gtk_widget_get_toplevel(button);
+	GtkWidget* ldap_config = linphone_gtk_create_window("ldap");
+	linphone_gtk_ldap_load_settings(ldap_config);
+
+	// to refresh parameters when the ldap config is destroyed
+	g_object_weak_ref(G_OBJECT(ldap_config), (GWeakNotify)linphone_gtk_ldap_display, (gpointer)param);
+
+	gtk_widget_show(ldap_config);
+}
+
+void linphone_gtk_ldap_reset(GtkWidget *button)
+{
+	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
+	ms_message("RESET LDAP");
+	gtk_widget_destroy(w);
+}
+
+void linphone_gtk_ldap_save(GtkWidget *button)
+{
+	LinphoneCore *lc = linphone_gtk_get_core();
+	LpConfig* conf = linphone_core_get_config(lc);
+	LinphoneDictionary* dict = linphone_dictionary_new();
+
+	GtkWidget *ldap_widget = gtk_widget_get_toplevel(button);
+	GtkEntry* entry;
+	GtkToggleButton* toggle;
+	GtkSpinButton* spin;
+
+	ms_message("SAVE LDAP");
+
+	toggle = GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_use_tls"));
+	linphone_dictionary_set_int(dict, "use_tls", gtk_toggle_button_get_active(toggle));
+
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_server"));
+	linphone_dictionary_set_string(dict, "server", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_username"));
+	linphone_dictionary_set_string(dict, "username", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_password"));
+	linphone_dictionary_set_string(dict, "password", gtk_entry_get_text(entry));
+
+	// SASL
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_bind_dn"));
+	linphone_dictionary_set_string(dict, "bind_dn", gtk_entry_get_text(entry));
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_sasl_authname"));
+	linphone_dictionary_set_string(dict, "sasl_authname", gtk_entry_get_text(entry));
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_sasl_realm"));
+	linphone_dictionary_set_string(dict, "sasl_realm", gtk_entry_get_text(entry));
+
+
+	GtkComboBox* cbox = GTK_COMBO_BOX(linphone_gtk_get_widget(ldap_widget,"ldap_auth_method"));
+	linphone_dictionary_set_string(dict, "auth_method", gtk_combo_box_get_active_text(cbox));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_base_object"));
+	linphone_dictionary_set_string(dict, "base_object", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_filter"));
+	linphone_dictionary_set_string(dict, "filter", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_name_attribute"));
+	linphone_dictionary_set_string(dict, "name_attribute", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_sip_attribute"));
+	linphone_dictionary_set_string(dict, "sip_attribute", gtk_entry_get_text(entry));
+
+	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_attributes"));
+	linphone_dictionary_set_string(dict, "attributes", gtk_entry_get_text(entry));
+
+	toggle = GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_deref_aliases"));
+	linphone_dictionary_set_int(dict, "deref_aliases", gtk_toggle_button_get_active(toggle));
+
+	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_max_results"));
+	linphone_dictionary_set_int(dict, "max_results", gtk_spin_button_get_value(spin) );
+
+	spin = GTK_SPIN_BUTTON(linphone_gtk_get_widget(ldap_widget,"ldap_timeout"));
+	linphone_dictionary_set_int(dict, "timeout", gtk_spin_button_get_value(spin) );
+
+	ms_message("Create LDAP from config");
+	// create new LDAP according to the validated config
+	linphone_gtk_set_ldap( linphone_ldap_contact_provider_create(lc, dict) );
+	// save the config to linphonerc:
+	lp_config_load_dict_to_section(conf, "ldap", dict);
+
+	linphone_dictionary_unref(dict);
+
+	// close widget
+	gtk_widget_destroy(ldap_widget);
+
 }
 
 void linphone_gtk_fill_video_sizes(GtkWidget *combo){
@@ -1095,6 +1280,7 @@ void linphone_gtk_fill_webcams(GtkWidget *pb){
 }
 
 void linphone_gtk_fill_video_renderers(GtkWidget *pb){
+#ifdef VIDEO_ENABLED /* video_stream_get_default_video_renderer requires video enabled */
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *combo=linphone_gtk_get_widget(pb,"renderers");
 	MSList *l=ms_filter_lookup_by_interface(MSFilterVideoDisplayInterface);
@@ -1105,6 +1291,8 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	GtkListStore *store;
 	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
 	GtkTreeModel *model=GTK_TREE_MODEL(store=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING));
+
+	if (current_renderer==NULL) current_renderer=video_stream_get_default_video_renderer();
 	
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
 	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
@@ -1121,6 +1309,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	}
 	ms_list_free(l);
 	if (active!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
+#endif
 }
 
 typedef struct {
@@ -1273,8 +1462,11 @@ void linphone_gtk_show_parameters(void){
 		}
 		if (linphone_address_get_username(contact))
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_address_get_username(contact));
+		linphone_address_destroy(contact);
 	}
-	linphone_address_destroy(contact);
+#ifdef BUILD_WIZARD
+	gtk_widget_show(linphone_gtk_get_widget(pb,"wizard"));
+#endif
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
 	linphone_gtk_init_codec_list(GTK_TREE_VIEW(codec_list));
@@ -1299,6 +1491,15 @@ void linphone_gtk_show_parameters(void){
 	if (linphone_core_tunnel_available()){
 		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_edit_button")), TRUE);
 		gtk_widget_set_visible(GTK_WIDGET(linphone_gtk_get_widget(pb,"tunnel_label")), TRUE);
+	}
+
+	/* LDAP CONFIG */
+	if( linphone_gtk_is_ldap_supported() ) { // if LDAP provider is available
+		linphone_gtk_ldap_display(pb);
+	} else {
+		// hide the LDAP tab
+		GtkNotebook* notebook = GTK_NOTEBOOK(linphone_gtk_get_widget(pb, "notebook1"));
+		gtk_notebook_remove_page(notebook,5);
 	}
 
 	gtk_widget_show(pb);

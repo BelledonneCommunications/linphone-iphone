@@ -24,8 +24,6 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		,unsigned int status_code
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
-	SalError sal_err;
-	SalReason sal_reason;
 	belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));
 	ms_message("Register refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));
 	
@@ -57,13 +55,12 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 				   chooses not to re-register, the UA SHOULD discard any stored service
 				   route for that address-of-record. */
 		sal_op_set_service_route(op,NULL);
-
-		sal_compute_sal_errors_from_code(status_code,&sal_err,&sal_reason);
-		op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
+		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
+		op->base.root->callbacks.register_failure(op);
 		if (op->auth_info) {
 			/*add pending auth*/
 			sal_add_pending_auth(op->base.root,op);
-			if (status_code==403)
+			if (status_code==403 || status_code==401 || status_code==407 )
 				op->base.root->callbacks.auth_failure(op,op->auth_info);
 		}
 	}

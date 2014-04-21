@@ -2,7 +2,6 @@ package org.linphone.core;
 
 public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	protected final long nativePtr;
-	private native void setUserData(long ptr);
 	private native String getText(long ptr);
 	private native long getPeerAddress(long ptr);
 	private native String getExternalBodyUrl(long ptr);
@@ -14,27 +13,16 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native boolean isOutgoing(long ptr);
 	private native void store(long ptr);
 	private native int getStorageId(long ptr);
+	private native void unref(long ptr);
 	
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
-		setUserData();
 	}
 	
 	public long getNativePtr() {
 		return nativePtr;
 	}
 	
-	@Override
-	public Object getUserData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setUserData() {
-		setUserData(nativePtr);
-	}
-
 	@Override
 	public String getText() {
 		return getText(nativePtr);
@@ -93,5 +81,19 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	public int getStorageId() {
 		return getStorageId(nativePtr);
+	}
+
+	private native int getReason(long ptr);
+
+    public Reason getReason() {
+        return Reason.fromInt(getReason(nativePtr));
+    }
+    private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+	}
+	protected void finalize(){
+		unref(nativePtr);
 	}
 }

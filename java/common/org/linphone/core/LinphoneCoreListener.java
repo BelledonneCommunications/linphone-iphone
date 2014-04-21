@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.core;
 
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+
 
 /**
  * 
@@ -26,7 +28,7 @@ package org.linphone.core;
 public interface LinphoneCoreListener {
 	/**< Ask the application some authentication information 
 	 * @return */
-	void authInfoRequested(LinphoneCore lc,String realm,String username); 
+	void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain); 
 
 	/** General State notification  
 	 * @param state LinphoneCore.State
@@ -92,6 +94,13 @@ public interface LinphoneCoreListener {
 	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
 	/**
+	 * invoked when a composing notification is received
+	 * @param lc LinphoneCore
+	 * @param room LinphoneChatRoom involved in the conversation.
+	 */
+	void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr);
+
+	/**
 	 * invoked when a new dtmf is received
 	 * @param lc 	LinphoneCore
 	 * @param call 	LinphoneCall involved in the dtmf sending
@@ -155,6 +164,15 @@ public interface LinphoneCoreListener {
 	 * @param state the publish state
 	 */
 	void publishStateChanged(LinphoneCore lc, LinphoneEvent ev, PublishState state);
+	
+	/**
+	 * Notifies the changes about the remote provisioning step
+	 * @param lc the LinphoneCore
+	 * @param state the RemoteProvisioningState
+	 * @param message the error message if state == Failed
+	 */
+	void configuringStatus(LinphoneCore lc, RemoteProvisioningState state,
+			String message);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */

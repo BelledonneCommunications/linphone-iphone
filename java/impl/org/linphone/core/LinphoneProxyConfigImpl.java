@@ -27,6 +27,7 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 	protected final long nativePtr;
+	protected LinphoneCoreImpl mCore;
 	
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
@@ -41,9 +42,10 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		enableRegister(enableRegister);
 		ownPtr=true;
 	}
-	protected LinphoneProxyConfigImpl(long aNativePtr)  {
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core, long aNativePtr)  {
 		nativePtr = aNativePtr;
 		ownPtr=false;
+		mCore=core;
 	}
 	protected void finalize() throws Throwable {
 		//Log.e(LinphoneService.TAG,"fixme, should release underlying proxy config");
@@ -84,16 +86,24 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	private native int lookupCCCFromIso(long nativePtr, String iso);
 	private native int lookupCCCFromE164(long nativePtr, String e164);
 	
-	public void enableRegister(boolean value) {
+	public LinphoneProxyConfig enableRegister(boolean value) {
 		enableRegister(nativePtr,value);
+		return this;
 	}
 
 	public void done() {
-		done(nativePtr);
+		Object mutex=mCore!=null ? mCore : this;
+		synchronized(mutex){
+			done(nativePtr);
+		}
 	}
 
-	public void edit() {
-		edit(nativePtr);
+	public LinphoneProxyConfig edit() {
+		Object mutex=mCore!=null ? mCore : this;
+		synchronized(mutex){
+			edit(nativePtr);
+		}
+		return this;
 	}
 
 	public void setIdentity(String identity) throws LinphoneCoreException {
@@ -171,10 +181,10 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public int lookupCCCFromE164(String e164) {
 		return lookupCCCFromE164(nativePtr, e164);
 	}
-	private native int getReason(long nativeptr);
+	private native int getError(long nativeptr);
 	@Override
 	public Reason getError() {
-		return Reason.fromInt(getReason(nativePtr));
+		return Reason.fromInt(getError(nativePtr));
 	}
 	private native void setPrivacy(long nativePtr, int mask);
 	@Override
@@ -186,5 +196,28 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	@Override
 	public int getPrivacy() {
 		return getPrivacy(nativePtr);
+	}
+	
+	private native String getContactParameters(long ptr);
+	@Override
+	public String getContactParameters() {
+		return getContactParameters(nativePtr);
+	}
+	
+	private native void setContactUriParameters(long ptr, String params);
+	@Override
+	public void setContactUriParameters(String params) {
+		setContactUriParameters(nativePtr,params);
+	}
+	
+	private native String getContactUriParameters(long ptr);
+	@Override
+	public String getContactUriParameters() {
+		return getContactUriParameters(nativePtr);
+	}
+	private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
 }

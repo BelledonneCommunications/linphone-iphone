@@ -28,10 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "linphonecore.h"
 
+#include "ldap/ldapprovider.h"
+
 #ifdef ENABLE_NLS
 # include <libintl.h>
 # undef _
-# define _(String) gettext (String)
+# define _(String) dgettext (GETTEXT_PACKAGE,String)
 #else
 # define _(String) (String)
 # define ngettext(singular,plural,number) ((number>1) ? (plural) : (singular) )
@@ -45,6 +47,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #undef LINPHONE_VERSION
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
+
+enum {
+	COMPLETION_HISTORY,
+	COMPLETION_LDAP
+};
+
+typedef float (*get_volume_t)(void *data);
+
+typedef struct _volume_ctx{
+	GtkWidget *widget;
+	get_volume_t get_volume;
+	void *data;
+	float last_value;
+}volume_ctx_t;
+
+typedef enum {
+	CAP_IGNORE,
+	CAP_PLAYBACK,
+	CAP_CAPTURE
+}DeviceCap;
+
+enum {
+	START_LINPHONE,
+	START_AUDIO_ASSISTANT,
+	START_LINPHONE_WITH_CALL
+};
 
 GdkPixbuf * create_pixbuf(const gchar *filename);
 GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
@@ -85,6 +113,10 @@ int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_set_ui_config_int(const char *key , int val);
 void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, GtkWidget *w, gboolean show);
 
+LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void);
+void linphone_gtk_set_ldap(LinphoneLDAPContactProvider* ldap);
+int linphone_gtk_is_ldap_supported(void);
+
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);
 const char *linphone_gtk_get_lang(const char *config_file);
@@ -104,6 +136,7 @@ void linphone_gtk_send_text();
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
 LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+void linphone_gtk_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 
 void linphone_gtk_friend_list_update_chat_picture();
 void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la);
@@ -137,18 +170,29 @@ void linphone_gtk_unset_from_conference(LinphoneCall *call);
 void linphone_gtk_terminate_conference_participant(LinphoneCall *call);
 void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call);
 void linphone_gtk_update_video_button(LinphoneCall *call);
-typedef float (*get_volume_t)(void *data);
 void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data);
+void linphone_gtk_uninit_audio_meter(GtkWidget *w);
 
-void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg);
+void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_auto_login);
 void linphone_gtk_exit_login_frame(void);
 void linphone_gtk_set_ui_config(const char *key, const char *value);
 
 void linphone_gtk_log_uninit();
 
-bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call);
+bool_t linphone_gtk_init_instance(const char *app_name, int option, const char *addr_to_call);
 void linphone_gtk_uninit_instance(void);
 void linphone_gtk_monitor_usb(void);
 void linphone_gtk_unmonitor_usb(void);
 
+void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap);
 gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
+void linphone_gtk_schedule_restart(void);
+
+void linphone_gtk_show_audio_assistant(void);
+gboolean linphone_gtk_get_audio_assistant_option(void);
+
+void linphone_gtk_set_configuration_uri(void);
+GtkWidget * linphone_gtk_show_config_fetching(void);
+void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState state);
+const char *linphone_gtk_get_sound_path(const char *file);
+

@@ -1,0 +1,13 @@
+INSTALL :
+
+Download and install the repo rpmforge :
+	http://repoforge.org/use/
+
+	$ sudo rpm -Uvh  <path to rpmforge rpm>
+
+Download the linphone-release rpm
+	$ sudo rpm -Uvh <path to linphone rpm>
+
+	$ sudo yum install linphone
+
+	

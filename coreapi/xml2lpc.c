@@ -221,21 +221,27 @@ static int processDoc(xmlNode *node, xml2lpc_context *ctx) {
 }
 
 static int internal_convert_xml2lpc(xml2lpc_context *ctx) {
+	xmlNode *rootNode;
+	int ret;
+
 	xml2lpc_log(ctx, XML2LPC_DEBUG, "Parse started");
-	xmlNode *rootNode = xmlDocGetRootElement(ctx->doc);
+	rootNode = xmlDocGetRootElement(ctx->doc);
 	//dumpNodes(0, rootNode, cbf, ctx);
-	int ret = processDoc(rootNode, ctx);
+	ret = processDoc(rootNode, ctx);
 	xml2lpc_log(ctx, XML2LPC_DEBUG, "Parse ended ret:%d", ret);
 	return ret;
 }
 
 int xml2lpc_validate(xml2lpc_context *xmlCtx) {
-	xml2lpc_context_clear_logs(xmlCtx);
 	xmlSchemaValidCtxtPtr validCtx;
-	xmlSchemaParserCtxtPtr parserCtx = xmlSchemaNewDocParserCtxt(xmlCtx->xsd);
+	xmlSchemaParserCtxtPtr parserCtx;
+	int ret;
+
+	xml2lpc_context_clear_logs(xmlCtx);
+	parserCtx = xmlSchemaNewDocParserCtxt(xmlCtx->xsd);
 	validCtx = xmlSchemaNewValidCtxt(xmlSchemaParse(parserCtx));
 	xmlSchemaSetValidErrors(validCtx, xml2lpc_genericxml_error, xml2lpc_genericxml_warning, xmlCtx);
-	int ret =  xmlSchemaValidateDoc(validCtx, xmlCtx->doc);
+	ret = xmlSchemaValidateDoc(validCtx, xmlCtx->doc);
 	if(ret > 0) {
 		if(strlen(xmlCtx->warningBuffer) > 0)
 			xml2lpc_log(xmlCtx, XML2LPC_WARNING, "%s", xmlCtx->warningBuffer);

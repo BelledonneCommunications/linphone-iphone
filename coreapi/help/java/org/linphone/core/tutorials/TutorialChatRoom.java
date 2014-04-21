@@ -29,6 +29,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
@@ -72,7 +73,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username) {}
+	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
@@ -116,7 +117,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this);
+		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
 
 		try {
 			// Next step is to create a chat room
@@ -198,6 +199,21 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	@Override
 	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
 			PublishState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		if (cr.isRemoteComposing())
+			write("Remote is writing a message");
+		else
+			write("Remote has stop writing");
+	}
+
+	@Override
+	public void configuringStatus(LinphoneCore lc,
+			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
 		
 	}

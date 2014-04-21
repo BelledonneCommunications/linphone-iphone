@@ -315,4 +315,12 @@ public interface LinphoneCall {
 	**/
 	LinphoneCall getTransferTargetCall();
 	
+	Reason getReason();
+	
+	/**
+	 * Returns last error reported for the call.
+	 * @return an ErrorInfo.
+	 */
+	ErrorInfo getErrorInfo();
+	
 }

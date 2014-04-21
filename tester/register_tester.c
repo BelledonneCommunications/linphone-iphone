@@ -4,7 +4,7 @@
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -21,6 +21,26 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+
+static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	stats* counters;
+
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
+					,username
+					,realm);
+	counters = get_stats(lc);
+	counters->number_of_auth_info_requested++;
+
+}
+
+static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
+	LinphoneAuthInfo *info;
+	auth_info_requested2(lc,realm,username,domain);
+	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain); /*create authentication structure from identity*/
+	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+}
+
+
 
 static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL);
@@ -108,7 +128,8 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 			}
 		}
-		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials)
+		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials
+				|| (counters->number_of_auth_info_requested>2 &&linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonUnauthorized)) /*no need to continue if auth cannot be found*/
 			break; /*no need to continue*/
 		ms_usleep(100000);
 	}
@@ -261,6 +282,8 @@ static void authenticated_register_with_no_initial_credentials(){
 	
 	mgr = linphone_core_manager_new(NULL);
 	
+	mgr->lc->vtable.auth_info_requested=auth_info_requested;
+
 	counters= get_stats(mgr->lc);
 	counters->number_of_auth_info_requested=0;
 	register_with_refresh(mgr,FALSE,auth_domain,route);
@@ -268,14 +291,6 @@ static void authenticated_register_with_no_initial_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
-static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-	stats* counters;
-	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-					,username
-					,realm);
-	counters = get_stats(lc);
-	counters->number_of_auth_info_requested++;
-}
 
 static void authenticated_register_with_late_credentials(){
 	LinphoneCoreManager *mgr;
@@ -286,7 +301,7 @@ static void authenticated_register_with_late_credentials(){
 	sprintf(route,"sip:%s",test_route);
 	
 	mgr =  linphone_core_manager_new(NULL);
-	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
+
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_2(mgr->lc,FALSE,auth_domain,route,TRUE,transport);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
@@ -299,14 +314,14 @@ static void authenticated_register_with_wrong_late_credentials(){
 	LCSipTransports transport = {5070,5070,0,5071};
 	char route[256];
 	const char* saved_test_passwd=test_password;
-	char* wrong_passwd="mot de pass tout pourrit";
+	char* wrong_passwd="mot de pass tout pourri";
 
 	test_password=wrong_passwd;
 
 	sprintf(route,"sip:%s",test_route);
 
 	mgr =  linphone_core_manager_new(NULL);
-	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
+
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_3(mgr->lc,FALSE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2);
@@ -317,8 +332,7 @@ static void authenticated_register_with_wrong_late_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
-static void authenticated_register_with_wrong_credentials(){
-	LinphoneCoreManager *mgr;
+static void authenticated_register_with_wrong_credentials_with_params_base(const char* user_agent,LinphoneCoreManager *mgr) {
 	stats* counters;
 	LCSipTransports transport = {5070,5070,0,5071};
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,"wrong passwd",NULL,auth_domain,NULL); /*create authentication structure from identity*/
@@ -326,18 +340,67 @@ static void authenticated_register_with_wrong_credentials(){
 	
 	sprintf(route,"sip:%s",test_route);
 	
-	mgr=linphone_core_manager_new(NULL);
 	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
-	
+
+	sal_set_refresher_retry_after(mgr->lc->sal,500);
+	if (user_agent) {
+		linphone_core_set_user_agent(mgr->lc,user_agent,NULL);
+	}
 	linphone_core_add_auth_info(mgr->lc,info); /*add wrong authentication info to LinphoneCore*/
 	counters = get_stats(mgr->lc);
-	register_with_refresh_base_3(mgr->lc,TRUE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+	register_with_refresh_base_3(mgr->lc,TRUE,auth_domain,route,FALSE,transport,LinphoneRegistrationFailed);
+	//CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,3); register_with_refresh_base_3 does not alow to precisely check number of number_of_auth_info_requested
+	/*wait for retry*/
+	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_auth_info_requested,4));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
+	
+	/*check the detailed error info */
+	if (!user_agent || strcmp(user_agent,"tester-no-403")!=0){
+		LinphoneProxyConfig *cfg=NULL;
+		linphone_core_get_default_proxy(mgr->lc,&cfg);
+		CU_ASSERT_PTR_NOT_NULL(cfg);
+		if (cfg){
+			const LinphoneErrorInfo *ei=linphone_proxy_config_get_error_info(cfg);
+			const char *phrase=linphone_error_info_get_phrase(ei);
+			CU_ASSERT_PTR_NOT_NULL(phrase);
+			if (phrase) CU_ASSERT_TRUE(strcmp(phrase,"Forbidden")==0);
+			CU_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),403);
+			CU_ASSERT_PTR_NULL(linphone_error_info_get_details(ei));
+		}
+		
+	}
+	}
+static void authenticated_register_with_wrong_credentials_with_params(const char* user_agent) {
+	LinphoneCoreManager *mgr = linphone_core_manager_new(NULL);
+	authenticated_register_with_wrong_credentials_with_params_base(user_agent,mgr);
 	linphone_core_manager_destroy(mgr);
 }
+static void authenticated_register_with_wrong_credentials() {
+	authenticated_register_with_wrong_credentials_with_params(NULL);
+}
+static void authenticated_register_with_wrong_credentials_2() {
+	LinphoneCoreManager *mgr = linphone_core_manager_new(NULL);
+	stats* counters = get_stats(mgr->lc);
+	int current_in_progress;
+	LinphoneProxyConfig* proxy;
 
+	authenticated_register_with_wrong_credentials_with_params_base(NULL,mgr);
+
+	linphone_core_get_default_proxy(mgr->lc,&proxy);
+	/*Make sure registration attempts are stopped*/
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_register(proxy,FALSE);
+	linphone_proxy_config_done(proxy);
+	current_in_progress=counters->number_of_LinphoneRegistrationProgress;
+	CU_ASSERT_FALSE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationProgress,current_in_progress+1));
+
+	linphone_core_manager_destroy(mgr);
+}
+static void authenticated_register_with_wrong_credentials_without_403() {
+	authenticated_register_with_wrong_credentials_with_params("tester-no-403");
+}
 static LinphoneCoreManager* configure_lcm(void) {
-	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_lrc");
+	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_rc");
 	stats *counters=&mgr->stat;
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(mgr->lc))));
 	return mgr;
@@ -459,7 +522,7 @@ static void io_recv_error_late_recovery(){
 	int number_of_udp_proxy=0;
 	MSList* lcs;
 
-	mgr=linphone_core_manager_new2( "multi_account_lrc",FALSE); /*to make sure iterates are not call yet*/
+	mgr=linphone_core_manager_new2( "multi_account_rc",FALSE); /*to make sure iterates are not call yet*/
 	lc=mgr->lc;
 	sal_set_refresher_retry_after(lc->sal,1000);
 	counters=&mgr->stat;
@@ -481,7 +544,7 @@ static void io_recv_error_late_recovery(){
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 	sal_set_send_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+3000));
 
 	linphone_core_manager_destroy(mgr);
 }
@@ -504,11 +567,17 @@ static void io_recv_error_without_active_register(){
 	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
 		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 		linphone_proxy_config_edit(proxy_cfg);
+	}
+	ms_list_free(proxys);
+	/*wait for unregistrations*/
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
+
+	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
+		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 		linphone_proxy_config_enable_register(proxy_cfg,FALSE);
 		linphone_proxy_config_done(proxy_cfg);
 	}
 	ms_list_free(proxys);
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
 
 	sal_set_recv_error(lc->sal, 0);
 
@@ -545,6 +614,7 @@ static void tls_certificate_failure(){
 	linphone_core_destroy(mgr->lc);
 }
 
+/*the purpose of this test is to check that will not block the proxy config during SSL handshake for entire life in case of mistaken configuration*/
 static void tls_with_non_tls_server(){
 	LinphoneCoreManager *mgr;
 	LinphoneProxyConfig* proxy_cfg;
@@ -554,6 +624,7 @@ static void tls_with_non_tls_server(){
 	
 	mgr=linphone_core_manager_new2( "marie_rc", 0);
 	lc=mgr->lc;
+	sal_set_transport_timeout(lc->sal,3000);
 	linphone_core_get_default_proxy(lc,&proxy_cfg);
 	linphone_proxy_config_edit(proxy_cfg);
 	addr=linphone_address_new(linphone_proxy_config_get_addr(proxy_cfg));
@@ -562,9 +633,7 @@ static void tls_with_non_tls_server(){
 	linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
 	linphone_proxy_config_done(proxy_cfg);
 	linphone_address_destroy(addr);
-	/* FIXME http://git.linphone.org/mantis/view.php?id=758
-	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1));
-	*/
+	CU_ASSERT_TRUE(wait_for_until(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1,5000));
 	linphone_core_manager_destroy(mgr);
 }
 
@@ -611,6 +680,8 @@ test_t register_tests[] = {
 	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
 	{ "Digest auth with wrong credentials", authenticated_register_with_wrong_credentials },
+	{ "Digest auth with wrong credentials, check if registration attempts are stopped", authenticated_register_with_wrong_credentials_2 },
+	{ "Digest auth with wrong credentials without 403", authenticated_register_with_wrong_credentials_without_403},
 	{ "Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials},
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },

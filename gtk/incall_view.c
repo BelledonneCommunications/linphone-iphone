@@ -256,14 +256,25 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	const char *audio_media_connectivity = _("Direct or through server");
 	const char *video_media_connectivity = _("Direct or through server");
 	gboolean has_video=linphone_call_params_video_enabled(linphone_call_get_current_params(call));
+	MSVideoSize size_received = linphone_call_params_get_received_video_size(linphone_call_get_current_params(call));
+	MSVideoSize size_sent = linphone_call_params_get_sent_video_size(linphone_call_get_current_params(call));
 	gchar *tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
 		as->download_bandwidth,as->upload_bandwidth);
 	
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
 	g_free(tmp);
-	if (has_video)
+	if (has_video){
+		gchar *size_r=g_strdup_printf(_("%ix%i"),size_received.width,size_received.height);
+		gchar *size_s=g_strdup_printf(_("%ix%i"),size_sent.width,size_sent.height);
+		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_recv")),size_r);
+		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_sent")),size_s);
+		
 		tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),vs->download_bandwidth,vs->upload_bandwidth);
-	else tmp=NULL;
+		g_free(size_r);
+		g_free(size_s);
+	} else {
+		tmp=NULL;
+	}
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_bandwidth_usage")),tmp);
 	if (tmp) g_free(tmp);
 	if(as->upnp_state != LinphoneUpnpStateNotAvailable && as->upnp_state != LinphoneUpnpStateIdle) {
@@ -556,19 +567,12 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 	return TRUE;
 }
 
-typedef struct _volume_ctx{
-	GtkWidget *widget;
-	get_volume_t get_volume;
-	void *data;
-	float last_value;
-}volume_ctx_t;
-
-#define UNSIGNIFICANT_VOLUME (-26)
+#define UNSIGNIFICANT_VOLUME (-23)
 #define SMOOTH 0.15
 
 static gboolean update_audio_meter(volume_ctx_t *ctx){
 	float volume_db=ctx->get_volume(ctx->data);
-	float frac=(volume_db-UNSIGNIFICANT_VOLUME)/(float)(-UNSIGNIFICANT_VOLUME+3.0);
+	float frac=(volume_db-UNSIGNIFICANT_VOLUME)/(float)(-UNSIGNIFICANT_VOLUME-3.0);
 	if (frac<0) frac=0;
 	if (frac>1.0) frac=1.0;
 	if (frac<ctx->last_value){

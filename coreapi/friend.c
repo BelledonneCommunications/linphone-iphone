@@ -380,6 +380,37 @@ BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 	return lf->info;
 }
 
+/*
+ * updates the subscriptions.
+ * If only_when_registered is TRUE, subscribe will be sent only if the friend's corresponding proxy config is in registered.
+ * Otherwise if the proxy config goes to unregistered state, the subscription refresh will be suspended.
+ * An optional proxy whose state has changed can be passed to optimize the processing.
+**/
+void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *proxy, bool_t only_when_registered){
+	int can_subscribe=1;
+	
+	if (only_when_registered && (fr->subscribe || fr->subscribe_active)){
+		LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(fr->lc,fr->uri);
+		if (proxy && proxy!=cfg) return;
+		if (cfg && cfg->state!=LinphoneRegistrationOk){
+			char *tmp=linphone_address_as_string(fr->uri);
+			ms_message("Friend [%s] belongs to proxy config with identity [%s], but this one isn't registered. Subscription is suspended.",
+				   tmp,linphone_proxy_config_get_identity(cfg));
+			ms_free(tmp);
+			can_subscribe=0;
+		}
+	}
+	if (can_subscribe && fr->subscribe && fr->subscribe_active==FALSE){
+		ms_message("Sending a new SUBSCRIBE");
+		__linphone_friend_do_subscribe(fr);
+	}else if (can_subscribe && fr->subscribe_active && !fr->subscribe){
+		linphone_friend_unsubscribe(fr);
+	}else if (!can_subscribe && fr->outsub){
+		fr->subscribe_active=FALSE;
+		sal_op_stop_refreshing(fr->outsub);
+	}
+}
+
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	LinphonePresenceModel *model;
 
@@ -407,12 +438,8 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		}
 		fr->inc_subscribe_pending=FALSE;
 	}
-	if (fr->subscribe && fr->subscribe_active==FALSE){
-		ms_message("Sending a new SUBSCRIBE");
-		__linphone_friend_do_subscribe(fr);
-	}else if (fr->subscribe_active && !fr->subscribe){
-		linphone_friend_unsubscribe(fr);
-	}
+	if (fr->lc)
+		linphone_friend_update_subscribes(fr,NULL,linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
 	ms_message("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
 	fr->commit=FALSE;
@@ -465,31 +492,22 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 	}
 }
 
-void linphone_core_send_initial_subscribes(LinphoneCore *lc){
+void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered){
 	const MSList *elem;
-	if (lc->initial_subscribes_sent) return;
-	lc->initial_subscribes_sent=TRUE; /*set to true and see if looping on friends will change this status*/
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		LinphoneProxyConfig* cfg;
-		if (f->subscribe && !f->initial_subscribes_sent) {
-			lc->initial_subscribes_sent=FALSE; /*at least 1 was not sent */
-			if ((cfg=linphone_core_lookup_known_proxy(f->lc,linphone_friend_get_address(f)))) {
-				/*check if already registered*/
-				if (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk)
-					continue; /*skip this friend because not registered yet*/
-				else {
-					char* lf_string = linphone_address_as_string(linphone_friend_get_address(f));
-					ms_message("Identity [%s] registered, we can now subscribe to [%s]",linphone_proxy_config_get_identity(cfg),lf_string);
-					ms_free(lf_string);
-				}
-			}
-			linphone_friend_apply(f,lc);
-			f->initial_subscribes_sent=TRUE;
-		}
-
+		linphone_friend_update_subscribes(f,cfg,only_when_registered);
 	}
+}
 
+bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"sip","subscribe_presence_only_when_registered",1);
+}
+
+void linphone_core_send_initial_subscribes(LinphoneCore *lc){
+	if (lc->initial_subscribes_sent) return;
+	lc->initial_subscribes_sent=TRUE;
+	linphone_core_update_friends_subscriptions(lc,NULL,linphone_core_should_subscribe_friends_only_when_registered(lc));
 }
 
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){
@@ -654,5 +672,9 @@ void linphone_core_write_friends_config(LinphoneCore* lc)
 		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
 	}
 	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
+}
+
+LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr){
+	return fr->lc;
 }
 

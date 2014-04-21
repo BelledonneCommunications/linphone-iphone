@@ -53,6 +53,10 @@ public interface LinphoneCore {
 		 * Shutdown
 		 */
 		static public GlobalState GlobalShutdown = new GlobalState(3,"GlobalShutdown");
+		/**
+		 * Configuring
+		 */
+		static public GlobalState GlobalConfiguring = new GlobalState(4,"GlobalConfiguring");
 
 		private final int mValue;
 		private final String mStringValue;
@@ -67,6 +71,46 @@ public interface LinphoneCore {
 
 			for (int i=0; i<values.size();i++) {
 				GlobalState state = (GlobalState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * linphone remote provisioning states
+	 */
+	static public class RemoteProvisioningState {
+		
+		static private Vector<RemoteProvisioningState> values = new Vector<RemoteProvisioningState>();
+		/**
+		 * Off
+		 */
+		static public RemoteProvisioningState ConfiguringSuccessful = new RemoteProvisioningState(0,"ConfiguringSuccessful");       
+		/**
+		 * Startup
+		 */
+		static public RemoteProvisioningState ConfiguringFailed = new RemoteProvisioningState(1,"ConfiguringFailed");
+		/**
+		 * On
+		 */
+		static public RemoteProvisioningState ConfiguringSkipped = new RemoteProvisioningState(2,"ConfiguringSkipped");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		
+		private RemoteProvisioningState(int value,String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static RemoteProvisioningState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				RemoteProvisioningState state = (RemoteProvisioningState) values.elementAt(i);
 				if (state.mValue == value) return state;
 			}
 			throw new RuntimeException("state not found ["+value+"]");
@@ -380,7 +424,8 @@ public interface LinphoneCore {
 	 * Sets the default proxy.
 	 *<br>
 	 * This default proxy must be part of the list of already entered {@link LinphoneProxyConfig}. 
-	 * Toggling it as default will make LinphoneCore use the identity associated with the proxy configuration in all incoming and outgoing calls.
+	 * Toggling it as default will make LinphoneCore favor the identity associated with the proxy configuration in all incoming and outgoing calls.
+	 * Better proxy configuration match may override this choice. Pass null to unset the default proxy.
 	 * @param proxyCfg 
 	 */
 	public void setDefaultProxyConfig(LinphoneProxyConfig proxyCfg);
@@ -1088,6 +1133,16 @@ public interface LinphoneCore {
 	 * @param dest a running call whose remote person will receive the transfer
 	**/
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
+	
+	/**
+	 * Start a new call as a consequence of a transfer request received from a call.
+	 * This function is for advanced usage: the execution of transfers is automatically managed by the LinphoneCore. However if an application
+	 * wants to have control over the call parameters for the new call, it should call this function immediately during the LinphoneCallRefered notification.
+	 * @param call a call that has just been notified about LinphoneCallRefered state event.
+	 * @param params the call parameters to be applied to the new call.
+	 * @return a LinphoneCall corresponding to the new call that is attempted to the transfer destination.
+	**/
+	LinphoneCall startReferedCall(LinphoneCall call, LinphoneCallParams params);
 	/**
 	 * Search from the list of current calls if a remote address match uri
 	 * @param uri which should match call remote uri
@@ -1379,7 +1434,30 @@ public interface LinphoneCore {
 	 * @param content optional content of the subscription.
 	 * @return a LinphoneEvent representing the subscription context.
 	 */
-	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content );
+	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content);
+	
+	/**
+	 * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
+	 * If accepted, the subscription runs for a finite period, but is automatically renewed if not terminated before.
+	 * Unlike linphone_core_subscribe() the subscription isn't sent immediately. It will be send when calling linphone_event_send_subscribe().
+	 * @param resource the destination resource
+	 * @param event the event name
+	 * @param expires the whished duration of the subscription
+	 * @param body an optional body, may be NULL.
+	 * @return a LinphoneEvent holding the context of the created subcription.
+	 */
+	public LinphoneEvent createSubscribe(LinphoneAddress resource, String event, int expires);
+	
+	/**
+	 * Create a publish context for an event state.
+	 * After being created, the publish must be sent using linphone_event_send_publish().
+	 * After expiry, the publication is refreshed unless it is terminated before.
+	 * @param resource the resource uri for the event
+	 * @param event the event name
+	 * @param expires the lifetime of the publication
+	 * @return the LinphoneEvent holding the context of the publish.
+	 */
+	public LinphoneEvent createPublish(LinphoneAddress resource, String event, int expires);
 	
 	/**
 	 * Publish an event.
@@ -1403,4 +1481,113 @@ public interface LinphoneCore {
 	 * @return an array of LinphoneChatRoom
 	 */
 	public LinphoneChatRoom[] getChatRooms();
+	
+	/**
+	 * Gets the linphonecore supported resolutions for video
+	 * @return an array of String
+	 */
+	public String[] getSupportedVideoSizes();
+	
+	/**
+	 * Migrate configuration so that all SIP transports are enabled.
+	 * Versions of linphone < 3.7 did not support using multiple SIP transport simultaneously.
+	 * This function helps application to migrate the configuration so that all transports are enabled.
+	 * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
+	 * This function must be used just after creating the core, before any call to linphone_core_iterate()
+	 * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+	 */
+	public int migrateToMultiTransport();
+	
+	/**
+	 * When receiving an incoming, accept to start a media session as early-media.
+	 * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
+	 * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
+	 * The call can then later be fully accepted using linphone_core_accept_call() or linphone_core_accept_call_with_params().
+	 * @param lc the linphonecore
+	 * @param call the call
+	 * @param params the call params, can be NULL.
+	 * @return true if successful, false otherwise.
+	 */
+	public boolean acceptEarlyMedia(LinphoneCall call);
+	
+	/**
+	 * Accept an early media session for an incoming call.
+	 * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
+	 * @see linphone_core_accept_early_media_with_params()
+	 * @param lc the core
+	 * @param call the incoming call
+	 * @return true if successful, false otherwise.
+	 */
+	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);
+	
+	/**
+	 * Creates a proxy config using the default values if they exists
+	 * @return a default proxy config
+	 */
+	public LinphoneProxyConfig createProxyConfig();
+	
+	/**
+	 * Assign an audio file to played locally upon call failure, for a given reason.
+	 * @param reason the #LinphoneReason representing the failure error code.
+	 * @param path a wav file to be played when such call failure happens.
+	 */
+	public void setCallErrorTone(Reason reason, String path);
+	
+	/**
+	 * Assign an audio file to be played locally in replacement of common telephony tone.
+	 * This is typically used to internationalize tones.
+	 * @param id a tone id
+	 * @param wav a path to a 16 bit PCM linear wav file. 
+	 */
+	public void setTone(ToneID id, String wavfile);
+	
+	/**
+	 * Inform the core about the maximum transmission unit of the network.
+	 * This is used for fragmenting video RTP packets to a size compatible with the network.
+	 * @param mtu the MTU in bytes.
+	 */
+	public void setMtu(int mtu);
+	/**
+	 * Returns the mtu value previously set by setMtu().
+	 * 
+	 * @return the MTU in bytes.
+	 */
+	public int getMtu();
+	/**
+	Control when media offer is sent in SIP INVITE.
+	 * @param enable true if INVITE has to be sent whitout SDP.
+	 * */
+	public void enableSdp200Ack(boolean enable);
+	/**
+	 * Media offer control param for SIP INVITE.
+	 * @return true if INVITE has to be sent whitout SDP.
+	 */
+	public boolean isSdp200AckEnabled();
+	
+	/**
+	 * Inconditionnaly disable incoming chat messages.
+	 * @param lc the core
+	 * @param deny_reason the deny reason (using ReasonNone has no effect).
+	**/
+	public void disableChat(Reason denycode);
+	
+	/**
+	 * Enable reception of incoming chat messages.
+	 * By default it is enabled but it can be disabled with linphone_core_disable_chat().
+	 * @param lc the core
+	**/
+	public void enableChat();
+	
+
+	/**
+	 * Returns whether chat is enabled.
+	 * @return true if chat is enabled, false otherwise.
+	**/
+	public boolean chatEnabled();
+	
+	/**
+	 * Whenever the liblinphone is playing a ring to advertise an incoming call or ringback of an outgoing call, this function stops the ringing. 
+	 * Typical use is to stop ringing when the user requests to ignore the call.
+	**/
+	public void stopRinging();
 }

@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -226,6 +226,8 @@ static void unsubscribe_while_subscribing(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+#if 0
+/* the core no longer changes the presence status when a call is ongoing, this is left to the application*/
 static void call_with_presence(void) {
 	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
@@ -246,6 +248,8 @@ static void call_with_presence(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+#endif
 
 static void presence_information(void) {
 	const char *bike_description = "Riding my bike";
@@ -336,7 +340,7 @@ static void presence_information(void) {
 test_t presence_tests[] = {
 	{ "Simple Subscribe", simple_subscribe },
 	{ "Simple Publish", simple_publish },
-	{ "Call with presence", call_with_presence },
+	/*{ "Call with presence", call_with_presence },*/
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },
 	{ "App managed presence failure", subscribe_failure_handle_by_app },

@@ -28,7 +28,6 @@ void Video::exec(Daemon* app, const char* args)
 	LinphoneCore *lc = app->getCore();
 	int cid;
 	LinphoneCall *call = NULL;
-	bool current = false;
 	bool activate = false;
 	int argc = sscanf(args, "%i", &cid);
 
@@ -40,7 +39,6 @@ void Video::exec(Daemon* app, const char* args)
 		}
 	} else {
 		call = app->findCall(cid);
-		current = true;
 		if (call == NULL) {
 			app->sendResponse(Response("No call with such id."));
 			return;
@@ -94,7 +92,6 @@ void VideoSource::exec(Daemon* app, const char* args)
 	LinphoneCall *call = NULL;
 	int cid;
 	int argc = 0;
-	bool current = false;
 	bool activate = false;
 	char command[6];
 
@@ -109,7 +106,6 @@ void VideoSource::exec(Daemon* app, const char* args)
 		}
 	} else if( argc == 2 ) {
 		call = app->findCall(cid);
-		current = true;
 		if (call == NULL) {
 			app->sendResponse(Response("No call with such id."));
 			return;

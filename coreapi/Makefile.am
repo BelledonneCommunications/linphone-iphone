@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS = subdir-objects
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
 GITDESCRIBE=`cd $(top_srcdir) && git describe --always`
@@ -17,7 +18,7 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h
 
 if BUILD_TUNNEL
 linphone_include_HEADERS+=linphone_tunnel.h
@@ -48,6 +49,13 @@ liblinphone_la_SOURCES=\
 	message_storage.c \
 	info.c \
 	event.c event.h \
+	contactprovider.c contactprovider.h contact_providers_priv.h \
+	ldap/ldapprovider.c ldap/ldapprovider.h \
+	dict.c \
+	xml.c \
+	xml2lpc.c \
+	lpc2xml.c \
+	remote_provisioning.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -104,7 +112,8 @@ liblinphone_la_LIBADD= \
 		$(TUNNEL_LIBS) \
 		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
-		$(LIBXML2_LIBS) 
+		$(LIBXML2_LIBS) \
+		$(LDAP_LIBS) $(SASL_LIBS)
 
 
 if ENABLE_TESTS
@@ -139,7 +148,8 @@ AM_CFLAGS=\
 	$(VIDEO_CFLAGS) \
 	$(TUNNEL_CFLAGS) \
 	$(SQLITE3_CFLAGS) \
-	$(LIBXML2_CFLAGS)
+	$(LIBXML2_CFLAGS) \
+	$(LDAP_CFLAGS) $(SASL_CFLAGS)
 
 if BUILD_WIZARD
 AM_CFLAGS+= -DBUILD_WIZARD 

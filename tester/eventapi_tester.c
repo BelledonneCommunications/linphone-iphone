@@ -1,10 +1,10 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-    Copyright (C) 2010  Belledonne Communications SARL
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
@@ -27,6 +28,14 @@
 
 static const char *subscribe_content="<somexml>blabla</somexml>";
 static const char *notify_content="<somexml2>blabla</somexml2>";
+
+const char *liblinphone_tester_get_subscribe_content(void){
+	return subscribe_content;
+}
+
+const char *liblinphone_tester_get_notify_content(void){
+	return notify_content;
+}
 
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	CU_ASSERT_PTR_NOT_NULL_FATAL(content);
@@ -50,12 +59,13 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		break;
 		case LinphoneSubscriptionIncomingReceived:
 			counters->number_of_LinphoneSubscriptionIncomingReceived++;
+			mgr->lev=lev;
 			if (!mgr->decline_subscribe)
 				linphone_event_accept_subscription(lev);
 			else
 				linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		break;
-		case LinphoneSubscriptionOutoingInit:
+		case LinphoneSubscriptionOutgoingInit:
 			counters->number_of_LinphoneSubscriptionOutgoingInit++;
 		break;
 		case LinphoneSubscriptionPending:
@@ -76,6 +86,10 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			counters->number_of_LinphoneSubscriptionError++;
 			mgr->lev=NULL;
 		break;
+		case LinphoneSubscriptionExpiring:
+			counters->number_of_LinphoneSubscriptionExpiring++;
+			mgr->lev=NULL;
+		break;
 	}
 }
 
@@ -83,7 +97,11 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 	stats* counters = get_stats(lc);
 	switch(state){
 		case LinphonePublishProgress: counters->number_of_LinphonePublishProgress++; break;
-		case LinphonePublishOk: counters->number_of_LinphonePublishOk++; break;
+		case LinphonePublishOk: 
+			/*make sure custom header access API is working*/
+			CU_ASSERT_PTR_NOT_NULL(linphone_event_get_custom_header(ev,"From"));
+			counters->number_of_LinphonePublishOk++; 
+			break;
 		case LinphonePublishError: counters->number_of_LinphonePublishError++; break;
 		case LinphonePublishExpiring: counters->number_of_LinphonePublishExpiring++; break;
 		case LinphonePublishCleared: counters->number_of_LinphonePublishCleared++;break;
@@ -97,6 +115,8 @@ static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content={0};
+	LinphoneEvent *lev;
+	const LinphoneErrorInfo *ei;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
@@ -108,29 +128,44 @@ static void subscribe_test_declined(void) {
 	
 	pauline->decline_subscribe=TRUE;
 	
-	linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	linphone_event_ref(lev);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionError,1,21000));/*yes flexisip may wait 20 secs in case of forking*/
+	ei=linphone_event_get_error_info(lev);
+	CU_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		CU_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),603);
+		CU_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
+	}
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
 	
+	linphone_event_unref(lev);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
+typedef enum RefreshTestType{
+	NoRefresh,
+	AutoRefresh,
+	ManualRefresh
+}RefreshTestType;
 
-static void subscribe_test_with_args(bool_t terminated_by_subscriber, bool_t test_refreshing) {
+static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content={0};
 	LinphoneEvent *lev;
-	int expires= test_refreshing ? 4 : 600;
+	int expires= refresh_type!=NoRefresh ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-	
 	
 	lcs=ms_list_append(lcs,pauline->lc);
 
+	if (refresh_type==ManualRefresh){
+		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+	}
 
 	content.type="application";
 	content.subtype="somexml";
@@ -147,9 +182,73 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, bool_t tes
 	/*make sure marie receives first notification before terminating*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
 	
-	if (test_refreshing){
+	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
 		CU_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+	}else if (refresh_type==ManualRefresh){
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
+		linphone_event_update_subscribe(lev,NULL);
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,2000));
+	}
+
+	if (terminated_by_subscriber){
+		linphone_event_terminate(lev);
+	}else{
+		CU_ASSERT_PTR_NOT_NULL_FATAL(pauline->lev);
+		linphone_event_terminate(pauline->lev);
+	}
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneContent content={0};
+	LinphoneEvent *lev;
+	int expires= refresh_type!=NoRefresh ? 4 : 600;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	
+	lcs=ms_list_append(lcs,pauline->lc);
+
+	if (refresh_type==ManualRefresh){
+		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+	}
+
+	content.type="application";
+	content.subtype="somexml";
+	content.data=(char*)subscribe_content;
+	content.size=strlen(subscribe_content);
+	
+	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
+	linphone_event_add_custom_header(lev,"My-Header","pouet");
+	linphone_event_add_custom_header(lev,"My-Header2","pimpon");
+	linphone_event_send_subscribe(lev,&content);
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
+	
+	/*check good receipt of custom headers*/
+	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
+	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,1000));
+
+	/*make sure marie receives first notification before terminating*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
+	
+	if (refresh_type==AutoRefresh){
+		wait_for_list(lcs,NULL,0,6000);
+		CU_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+	}else if (refresh_type==ManualRefresh){
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
+		linphone_event_update_subscribe(lev,NULL);
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,2000));
 	}
 
 	if (terminated_by_subscriber){
@@ -167,21 +266,29 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, bool_t tes
 }
 
 static void subscribe_test_terminated_by_subscriber(void){
-	subscribe_test_with_args(TRUE,FALSE);
+	subscribe_test_with_args(TRUE,NoRefresh);
 }
 
 static void subscribe_test_terminated_by_notifier(void){
-	subscribe_test_with_args(FALSE,FALSE);
+	subscribe_test_with_args(FALSE,NoRefresh);
 }
 
 /* Caution: this test does not really check that the subscribe are refreshed, because the core is not managing the expiration of 
  * unrefreshed subscribe dialogs. So it is just checking that it is not crashing.
  */
 static void subscribe_test_refreshed(void){
-	subscribe_test_with_args(TRUE,TRUE);
+	subscribe_test_with_args(TRUE,AutoRefresh);
 }
 
-static void publish_test_with_args(bool_t refresh){
+static void subscribe_test_with_custom_header(void){
+	subscribe_test_with_args2(TRUE,NoRefresh);
+}
+
+static void subscribe_test_manually_refreshed(void){
+	subscribe_test_with_args(TRUE,ManualRefresh);
+}
+
+static void publish_test_with_args(bool_t refresh, int expires){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content={0};
@@ -195,26 +302,28 @@ static void publish_test_with_args(bool_t refresh){
 	content.data=(char*)subscribe_content;
 	content.size=strlen(subscribe_content);
 	
-	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",!refresh);
+	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
 
-	lev=linphone_core_publish(marie->lc,pauline->identity,"dodo",5,&content);
+	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
+	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
+	linphone_event_send_publish(lev,&content);
 	linphone_event_ref(lev);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
 	
 	if (!refresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishExpiring,1,5000));
 		linphone_event_update_publish(lev,&content);
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
-		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
 	}else{
 		
 	}
 
 	linphone_event_terminate(lev);
 	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,3000));
 	
 	linphone_event_unref(lev);
 	
@@ -223,19 +332,26 @@ static void publish_test_with_args(bool_t refresh){
 }
 
 static void publish_test(){
-	publish_test_with_args(TRUE);
+	publish_test_with_args(TRUE,5);
 }
 
 static void publish_no_auto_test(){
-	publish_test_with_args(FALSE);
+	publish_test_with_args(FALSE,5);
+}
+
+static void publish_without_expires(){
+	publish_test_with_args(TRUE,-1);
 }
 
 test_t event_tests[] = {
 	{ "Subscribe declined"	,	subscribe_test_declined 	},
 	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
+	{ "Subscribe with custom headers", subscribe_test_with_custom_header },
 	{ "Subscribe refreshed", subscribe_test_refreshed },
+	{ "Subscribe manually refreshed", subscribe_test_manually_refreshed },
 	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
 	{ "Publish", publish_test },
+	{ "Publish without expires", publish_without_expires },
 	{ "Publish without automatic refresh",publish_no_auto_test }
 };
 

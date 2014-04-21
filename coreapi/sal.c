@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 #include "sal/sal.h"
+#include "bellesip_sal/sal_impl.h"
 
 #include <ctype.h>
 
@@ -68,8 +69,9 @@ static void sal_media_description_destroy(SalMediaDescription *md){
 	ms_free(md);
 }
 
-void sal_media_description_ref(SalMediaDescription *md){
+SalMediaDescription * sal_media_description_ref(SalMediaDescription *md){
 	md->refcount++;
+	return md;
 }
 
 void sal_media_description_unref(SalMediaDescription *md){
@@ -251,7 +253,6 @@ static void assign_string(char **str, const char *arg){
 		*str=ms_strdup(arg);
 }
 
-#ifdef USE_BELLESIP
 void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
 	if (((SalOpBase*)op)->contact_address) sal_address_destroy(((SalOpBase*)op)->contact_address);
 	((SalOpBase*)op)->contact_address=address?sal_address_clone(address):NULL;
@@ -259,7 +260,12 @@ void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
 const SalAddress* sal_op_get_contact_address(const SalOp *op) {
 	return ((SalOpBase*)op)->contact_address;
 }
-#endif
+
+const SalAddress*sal_op_get_remote_contact_address(const SalOp* op)
+{
+	return ((SalOpBase*)op)->remote_contact_address;
+}
+
 #define SET_PARAM(op,name) \
 		char* name##_string=NULL; \
 		assign_address(&((SalOpBase*)op)->name##_address,name); \
@@ -269,14 +275,7 @@ const SalAddress* sal_op_get_contact_address(const SalOp *op) {
 		assign_string(&((SalOpBase*)op)->name,name##_string); \
 		if(name##_string) ms_free(name##_string);
 
-#ifndef USE_BELLESIP
-void sal_op_set_contact(SalOp *op, const char *contact){
-	assign_string(&((SalOpBase*)op)->contact,contact);
-}
-const char *sal_op_get_contact(const SalOp *op){
-	return ((SalOpBase*)op)->contact;
-}
-#endif
+
 void sal_op_set_route(SalOp *op, const char *route){
 	char* route_string=(void *)0;
 	SalOpBase* op_base = (SalOpBase*)op;
@@ -382,9 +381,10 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin){
 	SET_PARAM(op,origin);
 }
 
-void __sal_op_set_remote_contact(SalOp *op, const char *ct){
-	assign_string(&((SalOpBase*)op)->remote_contact,ct);
+void __sal_op_set_remote_contact(SalOp *op, const char* remote_contact){
+	SET_PARAM(op,remote_contact);
 }
+
 void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin){
 	char* address_string=sal_address_as_string(origin); /*can probably be optimized*/
 	__sal_op_set_network_origin(op,address_string);
@@ -424,16 +424,9 @@ void __sal_op_free(SalOp *op){
 		ms_free(b->route);
 		b->route=NULL;
 	}
-#ifndef USE_BELLESIP
-	if (b->contact) {
-		ms_free(b->contact);
-		b->contact=NULL;
-	}
-#else
 	if (b->contact_address) {
 		sal_address_destroy(b->contact_address);
 	}
-#endif
 	if (b->origin){
 		ms_free(b->origin);
 		b->origin=NULL;
@@ -445,6 +438,9 @@ void __sal_op_free(SalOp *op){
 	if (b->remote_contact){
 		ms_free(b->remote_contact);
 		b->remote_contact=NULL;
+	}
+	if (b->remote_contact_address){
+		sal_address_destroy(b->remote_contact_address);
 	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);
@@ -502,12 +498,22 @@ const char* sal_stream_type_to_string(SalStreamType type) {
 	}
 }
 
+const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc){
+	if (desc->type==SalOther) return desc->typeother;
+	else return sal_stream_type_to_string(desc->type);
+}
+
 const char* sal_media_proto_to_string(SalMediaProto type) {
 	switch (type) {
 	case SalProtoRtpAvp:return "RTP/AVP";
 	case SalProtoRtpSavp:return "RTP/SAVP";
 	default: return "unknown";
 	}
+}
+
+const char *sal_stream_description_get_proto_as_string(const SalStreamDescription *desc){
+	if (desc->proto==SalProtoOther) return desc->proto_other;
+	else return sal_media_proto_to_string(desc->proto);
 }
 
 
@@ -530,7 +536,7 @@ const char* sal_reason_to_string(const SalReason reason) {
 	case SalReasonTemporarilyUnavailable: return "SalReasonTemporarilyUnavailable";
 	case SalReasonNotFound: return "SalReasonNotFound";
 	case SalReasonDoNotDisturb: return "SalReasonDoNotDisturb";
-	case SalReasonMedia: return "SalReasonMedia";
+	case SalReasonUnsupportedContent: return "SalReasonUnsupportedContent";
 	case SalReasonForbidden: return "SalReasonForbidden";
 	case SalReasonUnknown: return "SalReasonUnknown";
 	case SalReasonServiceUnavailable: return "SalReasonServiceUnavailable";
@@ -625,5 +631,7 @@ int sal_body_has_type(const SalBody *body, const char *type, const char *subtype
 		&& strcmp(body->subtype,subtype)==0;
 }
 
-
+belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {
+	return sal->stack;
+}
 

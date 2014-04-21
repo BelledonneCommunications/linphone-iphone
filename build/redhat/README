@@ -1,0 +1,63 @@
+**********************************
+* Compiling linphone on RedHat   *
+**********************************
+
+Download and install the repo rpmforge :
+	http://repoforge.org/use/
+
+	$ sudo rpm -Uhv  <path to rpmforge rpm>
+	$ yum -y update
+
+- Install build time dependencies
+ 	$ sudo yum install libtool intltool
+
+- Install others dependencies		
+	$ sudo yum install gtk2-devel
+	$ sudo yum install ffmpeg-devel
+	$ sudo yum install openldap-devel
+
+- Install antlr3
+	$ git clone git://git.linphone.org/antlr3.git
+	$ cd antlr3
+	$ sudo cp antlr-3.4-complete.jar /usr/share/java/antlr3.jar
+
+- Download and install packages
+	$ sudo rpm -Uhv ftp://ftp.icm.edu.pl/vol/rzm2/linux-fedora/linux/epel/6/x86_64/polarssl-1.3.2-1.el6.x86_64.rpm
+	$ sudo rpm -Uvh ftp://ftp.icm.edu.pl/vol/rzm2/linux-fedora/linux/epel/6/x86_64/polarssl-devel-1.3.2-1.el6.x86_64.rpm
+	$ sudo rpm -Uhv ftp://ftp.pbone.net/mirror/archive.fedoraproject.org/fedora/linux/releases/15/Everything/x86_64/os/Packages/antlr3-C-3.2-14.fc15.x86_64.rpm
+	$ sudo rpm -Uhv ftp://ftp.pbone.net/mirror/archive.fedoraproject.org/fedora/linux/releases/15/Everything/x86_64/os/Packages/antlr3-C-devel-3.2-14.fc15.x86_64.rpm
+
+- Git repository
+
+	Belle-sip : git clone git://git.linphone.org/belle-sip.git
+	oRTP : git clone git://git.linphone.org/ortp.git
+	Mediastreamer : git clone git://git.linphone.org/mediastreamer2.git
+
+- Compile Belle-sip / oRTP / mediastreamer
+	$ ./autogen.sh
+	$ ./configure
+	$ make && make rpm
+	$ sudo rpm -Uvh <path to rpm and rpm-devel>
+
+- Compile Linphone
+	$ ./autogen.sh
+	$ ./configure
+	$ make && make rpm
+
+- Compile msx264
+	$ ./autogen.sh && ./configure && make
+	$ make rpm
+
+-Create yum repo :
+	$ cd rpmbuild/RPMS/*arch*/
+	$ createrepo .
+	
+	Create a file "linphone-release.repo" in /etc/yum.repos.d/ with :
+		
+	[linphone-release]
+	name = Linphone for redhat
+	baseurl = file/// *path to the new repo*
+	enabled = 1
+	gpgcheck = 0
+	
+	$ sudo yum install linphone

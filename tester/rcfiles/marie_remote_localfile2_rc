@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
+  <section name="app">
+	<entry name="show_login_view" overwrite="true">0</entry>
+	<entry name="pushnotification_preference" overwrite="true">1</entry>
+  </section>
+  <section name="misc">
+    <entry name="transient_provisioning" overwrite="true">1</entry>
+    <entry name="tester_file_ok" overwrite="true">1</entry>
+  </section>
+</config>

@@ -175,11 +175,11 @@ struct AudioStreamAndOther {
 	LinphoneCallStats stats;
 	AudioStreamAndOther(AudioStream *as) : stream(as) {
 		queue = ortp_ev_queue_new();
-		rtp_session_register_event_queue(as->ms.session, queue);
+		rtp_session_register_event_queue(as->ms.sessions.rtp_session, queue);
 		memset(&stats, 0, sizeof(stats));
 	}
 	~AudioStreamAndOther() {
-		rtp_session_unregister_event_queue(stream->ms.session, queue);
+		rtp_session_unregister_event_queue(stream->ms.sessions.rtp_session, queue);
 		ortp_ev_queue_destroy(queue);
 	}
 };

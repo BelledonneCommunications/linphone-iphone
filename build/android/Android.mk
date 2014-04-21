@@ -60,7 +60,11 @@ LOCAL_SRC_FILES := \
 	linphone_tunnel_config.c \
 	message_storage.c \
 	info.c \
-	event.c
+	event.c \
+	xml.c \
+	xml2lpc.c \
+	lpc2xml.c \
+	remote_provisioning.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -82,6 +86,9 @@ ifeq ($(_BUILD_VIDEO),1)
 LOCAL_CFLAGS += -DVIDEO_ENABLED
 ifeq ($(BUILD_X264),1)
 LOCAL_CFLAGS += -DHAVE_X264
+endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_CFLAGS += -DHAVE_OPENH264
 endif
 endif
 
@@ -171,6 +178,11 @@ LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
 	libx264
 endif
+ifeq ($(BUILD_OPENH264),1)
+LOCAL_STATIC_LIBRARIES += \
+	libmsopenh264 \
+	libwels
+endif
 endif
 
 ifeq ($(BUILD_UPNP),1)
@@ -184,30 +196,23 @@ ifeq ($(BUILD_SRTP), 1)
 	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
 endif
 
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+ifneq ($(TARGET_ARCH_ABI),armeabi)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
 LOCAL_STATIC_LIBRARIES += libmsilbc
 endif
 
-LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES) 
+LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES)
 LOCAL_WHOLE_STATIC_LIBRARIES += $(LIBLINPHONE_EXTENDED_STATIC_LIBS)
 LOCAL_SRC_FILES  += $(LIBLINPHONE_EXTENDED_SRC_FILES)
+LOCAL_CFLAGS += $(LIBLINPHONE_EXTENDED_CFLAGS)
 
-ifeq ($(BUILD_GPLV3_ZRTP),1)
-	LOCAL_SHARED_LIBRARIES += libssl-linphone libcrypto-linphone
-	LOCAL_SHARED_LIBRARIES += libzrtpcpp
+
+ifeq ($(BUILD_ZRTP),1)
+	LOCAL_STATIC_LIBRARIES += libbzrtp
 endif
 
 ifeq ($(BUILD_SRTP),1)
-	LOCAL_SHARED_LIBRARIES += libsrtp
-endif
-
-ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
-			../tools/xml2lpc_jni.cc \
-			../tools/lpc2xml.c \
-        		../tools/lpc2xml_jni.cc 
- 
+	LOCAL_STATIC_LIBRARIES += libsrtp
 endif
 
 ifeq ($(BUILD_SQLITE),1)
