@@ -118,8 +118,8 @@ linphone-deps packages.
 
 List of software included in linphone-deps:
 antlr3c (compiled)
+bzrtp (compiled)
 polarssl (compiled
-belle-sip (compiled)
 libsrtp (compiled)
 libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all these from ffmpeg)
 libtheora (from the web)
@@ -166,6 +166,14 @@ When running "make install DESTDIR=<somepath>", somepath must be absolute and sh
     $ make libsrtp.a
     $ make install
     $ make install DESTDIR=/home/<myuser>/libsrtp-install
+
+- building bzrtp
+ * download the sources with msys-git shell using the following command:
+    $ git clone git://git.linphone.org/bzrtp.git
+  * compile and install 
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make && make install
 
 - building sqlite3
   * download the sources on the following website:
