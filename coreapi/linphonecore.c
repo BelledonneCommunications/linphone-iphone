@@ -680,7 +680,7 @@ static void sip_config_read(LinphoneCore *lc)
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
 	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
- 	linphone_core_set_sip_transports(lc,&tr);
+	linphone_core_set_sip_transports(lc,&tr);
 
 	tmpstr=lp_config_get_string(lc->config,"sip","contact",NULL);
 	if (tmpstr==NULL || linphone_core_set_primary_contact(lc,tmpstr)==-1) {
@@ -844,7 +844,7 @@ static bool_t get_codec(LinphoneCore *lc, const char* type, int index, PayloadTy
 	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
 	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
-	    		mime,rate,fmtp ? fmtp : "");
+				mime,rate,fmtp ? fmtp : "");
 	*ret=pt;
 	return TRUE;
 }
@@ -902,7 +902,7 @@ static MSList *add_missing_codecs(LinphoneCore *lc, SalStreamType mtype, MSList 
 			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
 				pt=NULL;
 			else if (mtype==SalAudio && (pt->type!=PAYLOAD_AUDIO_PACKETIZED
-			    && pt->type!=PAYLOAD_AUDIO_CONTINUOUS)){
+				&& pt->type!=PAYLOAD_AUDIO_CONTINUOUS)){
 				pt=NULL;
 			}
 			if (pt && ms_filter_codec_supported(pt->mime_type)){
@@ -912,7 +912,7 @@ static MSList *add_missing_codecs(LinphoneCore *lc, SalStreamType mtype, MSList 
 						payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
 					}
 					ms_message("Adding new codec %s/%i with fmtp %s",
-					    pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
+						pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
 					l=ms_list_insert_sorted(l,pt,(int (*)(const void *, const void *))codec_compare);
 				}
 			}
@@ -1391,8 +1391,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 
-        lc->network_last_check = 0;
-        lc->network_last_status = FALSE;
+	lc->network_last_check = 0;
+	lc->network_last_status = FALSE;
 
 	lc->http_provider = belle_sip_stack_create_http_provider(sal_get_belle_sip_stack(lc->sal), "0.0.0.0");
 	lc->http_verify_policy = belle_tls_verify_policy_new();
@@ -1501,7 +1501,7 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
 	const char *ip;
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
-	    && (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
+		&& (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
@@ -2273,7 +2273,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
-	    && (curtime-lc->dmfs_playing_start_time)>5){
+		&& (curtime-lc->dmfs_playing_start_time)>5){
 		MSPlayerState state;
 		bool_t stop=TRUE;
 		if (lc->ringstream->source && ms_filter_call_method(lc->ringstream->source,MS_PLAYER_GET_STATE,&state)==0){
@@ -2426,7 +2426,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 			}
 			linphone_address_set_display_name(uri,NULL);
 			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
-			    					sizeof(normalized_username));
+									sizeof(normalized_username));
 			linphone_address_set_username(uri,normalized_username);
 			return uri;
 		}else return NULL;
@@ -3005,10 +3005,10 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
-	    (sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
+		(sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
 	if (lc->vtable.show) lc->vtable.show(lc);
 	if (lc->vtable.display_status)
-	    lc->vtable.display_status(lc,barmesg);
+		lc->vtable.display_status(lc,barmesg);
 
 	/* play the ring if this is the only call*/
 	if (ms_list_size(lc->calls)==1){
@@ -3275,7 +3275,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	if (call->state!=LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
-		         linphone_call_state_to_string(call->state));
+				 linphone_call_state_to_string(call->state));
 		return -1;
 	}
 	return _linphone_core_accept_call_update(lc, call, params);
@@ -3391,7 +3391,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		LinphoneCall *rc=(LinphoneCall*)sal_op_get_user_pointer (replaced);
 		if (rc){
 			ms_message("Call %p replaces call %p. This last one is going to be terminated automatically.",
-			           call,rc);
+					   call,rc);
 			linphone_core_terminate_call(lc,rc);
 		}
 	}
@@ -3772,7 +3772,7 @@ LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const c
 }
 
 int linphone_core_send_publish(LinphoneCore *lc,
-			       LinphonePresenceModel *presence)
+				   LinphonePresenceModel *presence)
 {
 	const MSList *elem;
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=ms_list_next(elem)){
@@ -4129,7 +4129,7 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 		if (sndcard==NULL){/*looks like a bug! take the first one !*/
 			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
 			if (elem) sndcard=(MSSndCard*)elem->data;
-        }
+		}
 	}
 	if (sndcard==NULL) ms_error("Could not find a suitable soundcard !");
 	return sndcard;
@@ -5040,7 +5040,7 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
 	if (vs && vs->source) {
 		if (ms_filter_get_id(vs->source) == MS_STATIC_IMAGE_ID) {
 
-		        float fps;
+				float fps;
 
 			ms_filter_call_method(vs->source, MS_FILTER_GET_FPS,(void *)&fps);
 			return fps;

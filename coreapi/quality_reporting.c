@@ -31,12 +31,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ****************************************************************************/
- 	// to discuss
+	// to discuss
 		// For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 		// moslq == moscq
 		// video: what happens if doing stop/resume?
- 		// one time value: average? worst value?
- 		// rlq value: need algo to compute it
+		// one time value: average? worst value?
+		// rlq value: need algo to compute it
 /***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -63,10 +63,10 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	size_t prevoffset = *offset;
 
 	#ifndef WIN32
-        va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
-        va_copy(cap,args);
+		va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
+		va_copy(cap,args);
 		ret = belle_sip_snprintf_valist(*buff, *buff_size, offset, fmt, cap);
-        va_end(cap);
+		va_end(cap);
 	#else
 		ret = belle_sip_snprintf_valist(*buff, *buff_size, offset, fmt, args);
 	#endif
@@ -225,7 +225,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 static void reporting_publish(const LinphoneCall* call, const reporting_session_report_t * report) {
 	LinphoneContent content = {0};
- 	LinphoneAddress *addr;
+	LinphoneAddress *addr;
 	int expires = -1;
 	size_t offset = 0;
 	size_t size = 2048;
@@ -414,46 +414,46 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
 	reporting_content_metrics_t * metrics = NULL;
 
 	LinphoneCallStats stats = call->stats[stats_type];
-    mblk_t *block = NULL;
+	mblk_t *block = NULL;
 
-    if (! reporting_enabled(call))
+	if (! reporting_enabled(call))
 		return;
 
-    if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
+	if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
 		metrics = &report->remote_metrics;
-        if (rtcp_is_XR(stats.received_rtcp) == TRUE) {
-            block = stats.received_rtcp;
-        }
-    } else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
+		if (rtcp_is_XR(stats.received_rtcp) == TRUE) {
+			block = stats.received_rtcp;
+		}
+	} else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
 		metrics = &report->local_metrics;
-        if (rtcp_is_XR(stats.sent_rtcp) == TRUE) {
-            block = stats.sent_rtcp;
-        }
-    }
-    if (block != NULL) {
-        switch (rtcp_XR_get_block_type(block)) {
-            case RTCP_XR_VOIP_METRICS: {
-                uint8_t config;
+		if (rtcp_is_XR(stats.sent_rtcp) == TRUE) {
+			block = stats.sent_rtcp;
+		}
+	}
+	if (block != NULL) {
+		switch (rtcp_XR_get_block_type(block)) {
+			case RTCP_XR_VOIP_METRICS: {
+				uint8_t config;
 
-                metrics->quality_estimates.rcq = rtcp_XR_voip_metrics_get_r_factor(block);
-                metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
-                metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+				metrics->quality_estimates.rcq = rtcp_XR_voip_metrics_get_r_factor(block);
+				metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+				metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
 
-                metrics->jitter_buffer.nominal = rtcp_XR_voip_metrics_get_jb_nominal(block);
-                metrics->jitter_buffer.max = rtcp_XR_voip_metrics_get_jb_maximum(block);
-                metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);
-                metrics->packet_loss.network_packet_loss_rate = rtcp_XR_voip_metrics_get_loss_rate(block);
-                metrics->packet_loss.jitter_buffer_discard_rate = rtcp_XR_voip_metrics_get_discard_rate(block);
+				metrics->jitter_buffer.nominal = rtcp_XR_voip_metrics_get_jb_nominal(block);
+				metrics->jitter_buffer.max = rtcp_XR_voip_metrics_get_jb_maximum(block);
+				metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);
+				metrics->packet_loss.network_packet_loss_rate = rtcp_XR_voip_metrics_get_loss_rate(block);
+				metrics->packet_loss.jitter_buffer_discard_rate = rtcp_XR_voip_metrics_get_discard_rate(block);
 
-                config = rtcp_XR_voip_metrics_get_rx_config(block);
-                metrics->session_description.packet_loss_concealment = (config >> 6) & 0x3;
-                metrics->jitter_buffer.adaptive = (config >> 4) & 0x3;
-                break;
-            } default: {
-                break;
-            }
-        }
-    }
+				config = rtcp_XR_voip_metrics_get_rx_config(block);
+				metrics->session_description.packet_loss_concealment = (config >> 6) & 0x3;
+				metrics->jitter_buffer.adaptive = (config >> 4) & 0x3;
+				break;
+			} default: {
+				break;
+			}
+		}
+	}
 }
 
 void linphone_reporting_publish(LinphoneCall* call) {

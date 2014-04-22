@@ -82,7 +82,7 @@ void sal_media_description_unref(SalMediaDescription *md){
 }
 
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
-    SalMediaProto proto, SalStreamType type){
+	SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
@@ -161,7 +161,7 @@ static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
 	*/
 	/*
 	if (!fmtp_equals(p1->recv_fmtp,p2->recv_fmtp) ||
-	    !fmtp_equals(p1->send_fmtp,p2->send_fmtp))
+		!fmtp_equals(p1->send_fmtp,p2->send_fmtp))
 		return FALSE;
 	*/
 	return TRUE;

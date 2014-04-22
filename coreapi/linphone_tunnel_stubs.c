@@ -46,7 +46,7 @@ void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig 
 }
 
 const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
-        return NULL;
+	return NULL;
 }
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
@@ -56,7 +56,7 @@ void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
 }
 
 bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
-        return FALSE;
+	return FALSE;
 }
 
 bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel){

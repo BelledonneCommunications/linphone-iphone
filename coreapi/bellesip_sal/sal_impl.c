@@ -117,7 +117,7 @@ void sal_process_authentication(SalOp *op) {
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)op->pending_auth_transaction);
 	belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(initial_request,belle_sip_header_from_t);
 	belle_sip_uri_t *from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)from);
-	
+
 	if (strcasecmp(belle_sip_uri_get_host(from_uri),"anonymous.invalid")==0){
 		/*prefer using the from from the SalOp*/
 		from_uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)sal_op_get_from_address(op));
@@ -137,7 +137,7 @@ void sal_process_authentication(SalOp *op) {
 		ms_error("sal_process_authentication() op=[%p] cannot obtain new request from dialog.",op);
 		return;
 	}
-	
+
 	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,new_request);
@@ -308,7 +308,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
 	int response_code = belle_sip_response_get_status_code(response);
-	
+
 	if (!client_transaction) {
 		ms_warning("Discarding stateless response [%i]",response_code);
 		return;
@@ -334,11 +334,11 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		}
 
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
-		
+
 		if (op->callbacks && op->callbacks->process_response_event) {
 			/*handle authorization*/
 			switch (response_code) {
-				case 200: 
+				case 200:
 					break;
 				case 401:
 				case 407:
@@ -677,10 +677,10 @@ static void set_tls_properties(Sal *ctx){
 	if (lp){
 		belle_sip_tls_listening_point_t *tlp=BELLE_SIP_TLS_LISTENING_POINT(lp);
 		int verify_exceptions=0;
-		
+
 		if (!ctx->tls_verify) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_ANY_REASON;
 		else if (!ctx->tls_verify_cn) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_CN_MISMATCH;
-		
+
 		belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca); /*root_ca might be NULL */
 		belle_sip_tls_listening_point_set_verify_exceptions(tlp,verify_exceptions);
 	}
@@ -802,7 +802,7 @@ void sal_auth_info_set_mode(SalAuthInfo* auth_info, SalAuthMode mode) { auth_inf
 void sal_certificates_chain_delete(SalCertificatesChain *chain) {
 	belle_sip_object_unref((belle_sip_object_t *)chain);
 }
-void sal_signing_key_delete(SalSigningKey *key) { 
+void sal_signing_key_delete(SalSigningKey *key) {
 	belle_sip_object_unref((belle_sip_object_t *)key);
 }
 
@@ -829,7 +829,7 @@ int sal_auth_compute_ha1(const char* userid,const char* realm,const char* passwo
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
 	belle_sip_message_t *msg=(belle_sip_message_t*)ch;
 	belle_sip_header_t *h;
-	
+
 	if (msg==NULL){
 		msg=(belle_sip_message_t*)belle_sip_request_new();
 		belle_sip_object_ref(msg);
@@ -846,7 +846,7 @@ SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name,
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
 	if (ch){
 		belle_sip_header_t *h=belle_sip_message_get_header((belle_sip_message_t*)ch,name);
-		
+
 		if (h){
 			return belle_sip_header_get_unparsed_value(h);
 		}
@@ -879,12 +879,12 @@ void sal_set_uuid(Sal *sal, const char *uuid){
 }
 
 typedef struct {
-    unsigned int time_low;
-    unsigned short time_mid;
-    unsigned short time_hi_and_version;
-    unsigned char clock_seq_hi_and_reserved;
-    unsigned char clock_seq_low;
-    unsigned char node[6];
+	unsigned int time_low;
+	unsigned short time_mid;
+	unsigned short time_hi_and_version;
+	unsigned char clock_seq_hi_and_reserved;
+	unsigned char clock_seq_low;
+	unsigned char node[6];
 } sal_uuid_t;
 
 
@@ -892,7 +892,7 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	sal_uuid_t uuid_struct;
 	int i;
 	int written;
-	
+
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
 	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
@@ -900,7 +900,7 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	uuid_struct.clock_seq_hi_and_reserved|=1<<7;
 	uuid_struct.time_hi_and_version&=~(0xf<<12);
 	uuid_struct.time_hi_and_version|=4<<12;
-	
+
 	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,
 			uuid_struct.time_hi_and_version, uuid_struct.clock_seq_hi_and_reserved,
 			uuid_struct.clock_seq_low);

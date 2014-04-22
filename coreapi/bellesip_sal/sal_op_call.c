@@ -111,9 +111,9 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 }
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	SalOp* op=(SalOp*)user_ctx;
-	
+
 	if (op->state==SalOpStateTerminated) return;
-	
+
 	if (!op->dialog)  {
 		/*call terminated very early*/
 		sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO error",NULL);
@@ -129,7 +129,7 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 	if (op->dialog && op->dialog==belle_sip_dialog_terminated_event_get_dialog(event))  {
 		/*belle_sip_transaction_t* trans=belle_sip_dialog_get_last_transaction(op->dialog);*/
 		ms_message("Dialog [%p] terminated for op [%p]",belle_sip_dialog_terminated_event_get_dialog(event),op);
-		
+
 		switch(belle_sip_dialog_get_previous_state(op->dialog)) {
 			case BELLE_SIP_DIALOG_CONFIRMED:
 				if (op->state!=SalOpStateTerminated && op->state!=SalOpStateTerminating) {
@@ -192,7 +192,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	set_or_update_dialog(op,belle_sip_response_event_get_dialog(event));
 	dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
-	
+
 	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,op->dialog,belle_sip_dialog_state_to_string(dialog_state));
 
 	switch(dialog_state) {
@@ -290,9 +290,9 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	SalOp* op=(SalOp*)user_ctx;
-	
+
 	if (op->state==SalOpStateTerminated) return;
-	
+
 	if (!op->dialog)  {
 		/*call terminated very early*/
 		sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
@@ -342,7 +342,7 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
  * Extract the sdp from a sip message.
  * If there is no body in the message, the session_desc is set to null, 0 is returned.
  * If body was present is not a SDP or parsing of SDP failed, -1 is returned and SalReason is set appropriately.
- * 
+ *
 **/
 static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
 	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
@@ -388,7 +388,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 			belle_sip_object_unref(sdp);
 		}else op->sdp_offering=TRUE; /*INVITE without SDP*/
 	}else err=-1;
-	
+
 	if (err==-1){
 		sal_call_decline(op,reason,NULL);
 	}
@@ -582,7 +582,7 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 	if (op->base.local_media)
 		sal_media_description_unref(op->base.local_media);
 	op->base.local_media=desc;
-	
+
 	if (op->base.remote_media){
 		/*case of an incoming call where we modify the local capabilities between the time
 		 * the call is ringing and it is accepted (for example if you want to accept without video*/
@@ -597,7 +597,7 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 
 static belle_sip_header_allow_t *create_allow(){
 	belle_sip_header_allow_t* header_allow;
-        header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO, UPDATE");
+	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO, UPDATE");
 	return header_allow;
 }
 
@@ -633,7 +633,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	}
 	if (op->referred_by)
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->referred_by));
-	
+
 	return sal_op_send_request(op,invite);
 }
 
@@ -679,7 +679,7 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	belle_sip_response_t* ringing_response = sal_op_create_response_from_request(op,req,status_code);
 	belle_sip_header_t *require;
 	const char *tags=NULL;
-	
+
 	if (early_media){
 		handle_offer_answer_response(op,ringing_response);
 	}
@@ -692,7 +692,7 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	}
 
 #ifndef SAL_OP_CALL_FORCE_CONTACT_IN_RINGING
-	if (tags && strstr(tags,"100rel")!=0) 
+	if (tags && strstr(tags,"100rel")!=0)
 #endif
 	{
 		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
@@ -740,7 +740,7 @@ int sal_call_accept(SalOp*h){
 	if ((contact_header=sal_op_create_contact(h))) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact_header));
 	}
-	
+
 	_sal_op_add_custom_headers(h, BELLE_SIP_MESSAGE(response));
 
 	handle_offer_answer_response(h,response);
@@ -757,7 +757,7 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	belle_sip_response_t* response;
 	belle_sip_header_contact_t* contact=NULL;
 	int status=sal_reason_to_sip_code(reason);
-	
+
 	if (reason==SalReasonRedirect){
 		if (redirection!=NULL) {
 			if (strstr(redirection,"sip:")!=0) status=302;
@@ -812,7 +812,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 		if (req){
 			int bodylen;
 			char dtmf_body[128]={0};
-			
+
 			snprintf(dtmf_body, sizeof(dtmf_body)-1, "Signal=%c\r\nDuration=250\r\n", dtmf);
 			bodylen=strlen(dtmf_body);
 			belle_sip_message_set_body((belle_sip_message_t*)req,dtmf_body,bodylen);

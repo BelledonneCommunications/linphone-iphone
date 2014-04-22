@@ -88,7 +88,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
 }
 
 int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
-       return payload_type_get_number(pt);
+	return payload_type_get_number(pt);
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
@@ -129,7 +129,7 @@ static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *p
 		/*special case of aac 44K because ptime= 10ms*/
 		npacket=100;
 	}
-		
+
 	bitrate=get_codec_bitrate(lc,pt);
 	packet_size= (((double)bitrate)/(npacket*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
 	return packet_size*8.0*npacket;
@@ -162,7 +162,7 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 {
 	double codec_band;
 	bool_t ret=FALSE;
-	
+
 	switch (pt->type){
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
@@ -278,7 +278,7 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	char buf[STUN_MAX_MESSAGE_SIZE];
 	int len = STUN_MAX_MESSAGE_SIZE;
 	StunAtrString username;
-   	StunAtrString password;
+	StunAtrString password;
 	StunMessage req;
 	int err;
 	memset(&req, 0, sizeof(StunMessage));
@@ -301,9 +301,9 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port){
 	char tmphost[NI_MAXHOST]={0};
 	char *p1, *p2;
-	
+
 	if ((sscanf(input, "[%64[^]]]:%d", tmphost, port) == 2) || (sscanf(input, "[%64[^]]]", tmphost) == 1)) {
-		
+
 	} else {
 		p1 = strchr(input, ':');
 		p2 = strrchr(input, ':');
@@ -324,9 +324,9 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 	char host[NI_MAXHOST];
 	int port_int=default_port;
 	int ret;
-	
+
 	linphone_parse_host_port(server,host,sizeof(host),&port_int);
-	
+
 	snprintf(port, sizeof(port), "%d", port_int);
 	memset(&hints,0,sizeof(hints));
 	hints.ai_family=AF_UNSPEC;
@@ -346,7 +346,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 
 static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id){
 	char buf[STUN_MAX_MESSAGE_SIZE];
-   	int len = STUN_MAX_MESSAGE_SIZE;
+	int len = STUN_MAX_MESSAGE_SIZE;
 	StunMessage resp;
 	len=recv(sock,buf,len,0);
 	if (len>0){
@@ -370,7 +370,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
 	StunCandidate *ac=&call->ac;
 	StunCandidate *vc=&call->vc;
-	
+
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
@@ -389,7 +389,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		struct timeval init,cur;
 		double elapsed;
 		int ret=0;
-		
+
 		if (ai==NULL){
 			ms_error("Could not obtain stun server addrinfo.");
 			return -1;
@@ -408,7 +408,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		got_video=FALSE;
 		ortp_gettimeofday(&init,NULL);
 		do{
-			
+
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
@@ -487,7 +487,7 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
 		ms_message("Stun server ping time is %i ms",ping_time_ms);
 		threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
-		
+
 		if (ping_time_ms>threshold){
 			/* we might be in a 2G network*/
 			params->low_bandwidth=TRUE;
@@ -536,7 +536,7 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc){
  * - have a cache of the stun server addrinfo
  * - this cached value is returned when it is non-null
  * - an asynchronous resolution is asked each time this function is called to ensure frequent refreshes of the cached value.
- * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is 
+ * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is
  * changed.
 **/
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
@@ -957,7 +957,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			p=n;
 		}
 	}else ret=AUDIO_STREAM_FEATURE_ALL;
-	
+
 	if (ret==AUDIO_STREAM_FEATURE_ALL){
 		/*since call recording is specified before creation of the stream in linphonecore,
 		* it will be requested on demand. It is not necessary to include it all the time*/
@@ -987,7 +987,7 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 #else
 	#define UP_FLAG IFF_RUNNING /* resources allocated */
 #endif
-	
+
 	for (ifp = ifpstart; ifp != NULL; ifp = ifp->ifa_next) {
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
 			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
@@ -1042,8 +1042,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	if (err<0) {
 		/*the network isn't reachable*/
 		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));
- 		freeaddrinfo(res);
- 		close_socket(sock);
+		freeaddrinfo(res);
+		close_socket(sock);
 		return -1;
 	}
 	freeaddrinfo(res);
@@ -1078,19 +1078,19 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	int err;
-        strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
-	
+	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+
 	if (dest==NULL){
 		if (type==AF_INET)
 			dest="87.98.157.38"; /*a public IP address*/
 		else dest="2a00:1450:8002::68";
 	}
-        err=get_local_ip_for_with_connect(type,dest,result);
+	err=get_local_ip_for_with_connect(type,dest,result);
 	if (err==0) return 0;
-	
-	/* if the connect method failed, which happens when no default route is set, 
+
+	/* if the connect method failed, which happens when no default route is set,
 	 * try to find 'the' running interface with getifaddrs*/
-	
+
 #ifdef HAVE_GETIFADDRS
 	/*we use getifaddrs for lookup of default interface */
 	int found_ifs;
@@ -1103,7 +1103,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 		return -1;
 	}
 #endif
-	return 0;  
+	return 0;
 }
 
 SalReason linphone_reason_to_sal(LinphoneReason reason){
