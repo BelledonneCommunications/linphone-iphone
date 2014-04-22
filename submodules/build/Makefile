@@ -25,11 +25,18 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
+TUNNEL_AVAILABLE=$(shell ls ../tunnel/configure.ac)
+
+
+ifneq ($(TUNNEL_AVAILABLE),)
+enable_tunnel=yes
+endif
+
+
 .NOTPARALLEL all: check_options build warning
 
 # check that the selected options are correct
 CHECKOPT_MSG := ""
-
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 # ffmpeg is not compatible with no GPL.
@@ -72,7 +79,7 @@ endif
 
 LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
-                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg)
+                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
 build:
 	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \

@@ -9,7 +9,7 @@ $(TUNNEL_BUILD_DIR)/Makefile: $(TUNNEL_SRC_DIR)/configure
 	mkdir -p  $(TUNNEL_BUILD_DIR) \
 	&& cd $(TUNNEL_BUILD_DIR) \
 	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig \
-	$(TUNNEL_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) --enable-polarssl --with-polarssl=$(prefix) --disable-servers --without-openssl ${library_mode}
+	$(TUNNEL_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) --enable-polarssl --with-polarssl=$(prefix) --disable-servers  ${library_mode}
 
 build-tunnel: $(TUNNEL_BUILD_DIR)/Makefile
 	cd $(TUNNEL_BUILD_DIR) \

@@ -23,7 +23,7 @@
 host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
-linphone_configure_controls=  \
+linphone_configure_controls = \
 				--with-readline=none  \
 				--enable-gtk_ui=no \
 				--enable-console_ui=no \
@@ -65,6 +65,22 @@ enable_zrtp?=yes
 
 SWITCHES:=
 
+ifeq ($(enable_zrtp), yes)
+                linphone_configure_controls+= --enable-zrtp
+                SWITCHES += enable_zrtp
+else
+                linphone_configure_controls+= --disable-zrtp
+                SWITCHES += disable_zrtp
+endif
+
+ifeq ($(enable_tunnel), yes)
+                linphone_configure_controls+= --enable-tunnel
+                SWITCHES += enable_tunnel
+else
+                linphone_configure_controls+= --disable-tunnel
+                SWITCHES += disable_tunnel
+endif
+
 ifeq ($(enable_gpl_third_parties),yes) 
 	SWITCHES+= enable_gpl_third_parties
 	
@@ -74,14 +90,6 @@ ifeq ($(enable_gpl_third_parties),yes)
 	else
 		linphone_configure_controls+= --disable-ffmpeg 
 		SWITCHES += disable_ffmpeg
-	endif
-
-	ifeq ($(enable_zrtp), yes)
-		linphone_configure_controls+= --enable-zrtp
-		SWITCHES += enable_zrtp
-	else
-		linphone_configure_controls+= --disable-zrtp
-		SWITCHES += disable_zrtp
 	endif
 
 else # !enable gpl
@@ -132,9 +140,15 @@ init:
 veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
-# list of the submodules to build
+# list of the submodules to build, the order is important
 MS_MODULES      := msilbc libilbc msamr mssilk msx264 msisac msopenh264
-SUBMODULES_LIST := polarssl libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
+SUBMODULES_LIST := polarssl 
+
+ifeq ($(enable_tunnel),yes)
+SUBMODULES_LIST += tunnel
+endif
+
+SUBMODULES_LIST += libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
 
 .NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
