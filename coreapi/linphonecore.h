@@ -813,6 +813,17 @@ LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyCon
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
 /**
+ * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
+ * @param cfg #LinphoneProxyConfig object 
+ * @param val if true, quality statistics publish will be stored and sent to the collector
+ *
+ */
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *obj);
+
+/**
  * Get the registration state of the given proxy config.
  * @param[in] obj #LinphoneProxyConfig object.
  * @returns The registration state of the proxy config.
