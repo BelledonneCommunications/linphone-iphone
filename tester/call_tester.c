@@ -2013,7 +2013,7 @@ static void statistics_not_sent_if_call_not_started() {
 	out_call = linphone_core_invite(marie->lc,"pauline");
 	linphone_call_ref(out_call);
 
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1, 10000));
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
 
 	if (ms_list_size(linphone_core_get_call_logs(marie->lc))>0) {
@@ -2041,8 +2041,8 @@ static void statistics_sent_at_call_termination() {
 	create_call_for_statistics_tests(marie, pauline, &call_marie, &call_pauline);
 
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
 
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc));
