@@ -433,6 +433,8 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
     if (block != NULL) {
         switch (rtcp_XR_get_block_type(block)) {
             case RTCP_XR_VOIP_METRICS: {
+                uint8_t config;
+
                 metrics->quality_estimates.rcq = rtcp_XR_voip_metrics_get_r_factor(block);
                 metrics->quality_estimates.moslq = rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
                 metrics->quality_estimates.moscq = rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
@@ -443,7 +445,7 @@ void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type) {
                 metrics->packet_loss.network_packet_loss_rate = rtcp_XR_voip_metrics_get_loss_rate(block);
                 metrics->packet_loss.jitter_buffer_discard_rate = rtcp_XR_voip_metrics_get_discard_rate(block);
 
-                uint8_t config = rtcp_XR_voip_metrics_get_rx_config(block);
+                config = rtcp_XR_voip_metrics_get_rx_config(block);
                 metrics->session_description.packet_loss_concealment = (config >> 6) & 0x3;
                 metrics->jitter_buffer.adaptive = (config >> 4) & 0x3;
                 break;
