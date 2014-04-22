@@ -12,7 +12,7 @@ Make sure that /opt/local/bin (macport tools) arrives first in your PATH env var
 
 Once xcode and macports are installed, open a terminal and install the required build-time tools with:
 
-	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig nasm cmake gmake yasm grep doxygen ImageMagick optipng antlr3
+	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm nasm grep doxygen ImageMagick optipng antlr3
 
 
 Install gas-preprosessor.pl version above Jully 2013  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
@@ -71,8 +71,8 @@ After the SDK is built, just open the linphone xcode project with Xcode, and pre
 
  * Note regarding third party components subject to license
  
-The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and  X264 codecs.
-Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_X264 positioned in xcode project.
+The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
+Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in xcode project.
 Before embeding these 4 codecs in the final application, make sure to have the right to do so.
 
 LIMITATIONS, KNOWN BUGS

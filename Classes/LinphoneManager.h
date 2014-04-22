@@ -90,6 +90,7 @@ struct NetworkReachabilityContext {
     UILocalNotification *notification;
     NSMutableDictionary *userInfos;
 	bool_t videoRequested; /*set when user has requested for video*/
+    NSTimer* timer;
 };
 @end
 
@@ -106,11 +107,10 @@ typedef struct _LinphoneManagerSounds {
 	NSTimer* mIterateTimer;
     NSMutableArray*  pendindCallIdFromRemoteNotif;
 	Connectivity connectivity;
-    BOOL stopWaitingRegisters;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
 	CTCallCenter* mCallCenter;
-    
+    NSDate *mLastKeepAliveDate;
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -138,7 +138,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
-- (void)waitForRegisterToArrive;
+- (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
+
 
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
@@ -187,6 +188,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly,copy) NSString* contactFilter;
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
 @property (readonly) BOOL wasRemoteProvisioned;
+@property (readonly) LpConfig *configDb;
 
 @end
 

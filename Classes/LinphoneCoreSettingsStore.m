@@ -214,15 +214,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     [self setBool:lp_config_get_int(conf, "sip", "use_ipv6", 0) forKey:@"use_ipv6"];
 
 	
-	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
-	BOOL start_at_boot = TRUE;
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"] != Nil)
-        start_at_boot = [[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
-	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
-	BOOL background_mode = TRUE;
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"backgroundmode_preference"] != Nil)
-        background_mode =[[NSUserDefaults standardUserDefaults]  boolForKey:@"backgroundmode_preference"];
-	[self setBool: background_mode forKey:@"backgroundmode_preference"];
+	[self setBool: lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"start_at_boot_preference",1)  forKey:@"start_at_boot_preference"];
+	[self setBool: lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"backgroundmode_preference",1) forKey:@"backgroundmode_preference"];
 	
 
 	{
@@ -232,7 +225,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setBool:(pol->automatically_initiate) forKey:@"start_video_preference"];
         [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
         [self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
-        [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
+		BOOL previewEnabled=lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"preview_preference",1);
+        [self setBool:previewEnabled forKey:@"preview_preference"];
 		MSVideoSize vsize = linphone_core_get_preferred_video_size(lc);
 		int index;
 		if ((vsize.width == MS_VIDEO_SIZE_720P_W) && (vsize.height == MS_VIDEO_SIZE_720P_H)) {
@@ -560,7 +554,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(lc, &policy);
     linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
-    linphone_core_enable_video_preview(lc, [self boolForKey:@"preview_preference"]);
+	BOOL preview_preference=[self boolForKey:@"preview_preference"];
+	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "preview_preference", preview_preference);
 	MSVideoSize vsize;
 	int bw;
 	switch ([self integerForKey:@"video_preferred_size_preference"]) {
@@ -655,7 +650,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     } else {
         linphone_core_disable_logs();
     }
-    [[NSUserDefaults standardUserDefaults]  setBool:debugmode forKey:@"debugenable_preference"]; //to be used at linphone core startup
 	
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
@@ -668,14 +662,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
-	
-
-	
-	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
-	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];
-	[[NSUserDefaults standardUserDefaults] setBool: start_at_boot forKey:@"start_at_boot_preference"];
-	BOOL background_mode = [self boolForKey:@"backgroundmode_preference"];
-	[[NSUserDefaults standardUserDefaults] setBool: background_mode forKey:@"backgroundmode_preference"];
     
     
     //Tunnel
@@ -713,9 +699,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         lp_config_set_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "tunnel_mode_preference", [lTunnelPrefMode UTF8String]);
         [[LinphoneManager instance] setTunnelMode:mode];
     }
-    
-    // Force synchronize
-    [[NSUserDefaults standardUserDefaults] synchronize];
     
 	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
