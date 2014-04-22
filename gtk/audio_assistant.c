@@ -268,6 +268,49 @@ void linphone_gtk_start_play_record_sound(GtkWidget *w,gpointer data){
 	}
 }
 
+void display_popup(GtkMessageType type,const gchar *message){
+	GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(audio_assistant),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  type,
+                                  GTK_BUTTONS_CLOSE,
+                                  "%s",
+                                  (const gchar*)message);
+	/* Destroy the dialog when the user responds to it (e.g. clicks a button) */
+	g_signal_connect_swapped (G_OBJECT (dialog), "response",
+                   G_CALLBACK (gtk_widget_destroy),
+                   G_OBJECT (dialog));
+	gtk_widget_show(dialog);
+}
+
+static void open_mixer(){
+	GError *error = NULL;
+
+#ifdef WIN32
+	if(!g_spawn_command_line_async("control mmsys.cpl",&error)){
+		display_popup(GTK_MESSAGE_WARNING,"Sound preferences not found ");
+		g_error_free(error);
+	}
+#elif __APPLE__
+	if(!g_spawn_command_line_async("open /System/Library/PreferencePanes/Sound.prefPane",&error)){
+		display_popup(GTK_MESSAGE_WARNING,"Sound preferences not found ");
+		g_error_free(error);
+	}
+#else
+	if(!g_spawn_command_line_async("gnome-volume-control",&error)){
+		if(!g_spawn_command_line_async("gnome-control-center sound",&error)){
+			if(!g_spawn_command_line_async("kmix",&error)){
+				if(!g_spawn_command_line_async("mate-volume-control",&error)){
+					if(!g_spawn_command_line_async("xterm alsamixer",&error)){
+						display_popup(GTK_MESSAGE_WARNING,"Cannot launch system sound control ");
+						g_error_free(error);
+					}
+				}
+			}
+		}
+	}
+#endif
+}
+
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
 	GtkWidget *label=gtk_label_new(_("Welcome !\nThis assistant will help you to configure audio settings for Linphone"));
@@ -286,6 +329,11 @@ static GtkWidget *create_mic_page(){
 	GtkWidget *capture_device=gtk_combo_box_new();
 	GtkWidget *box = gtk_vbox_new(FALSE,0);
 	GtkWidget *label_audiolevel=gtk_label_new(_("No voice"));
+	GtkWidget *mixer_button=gtk_button_new_with_label("System sound preferences");
+	GtkWidget *image;
+
+	image=gtk_image_new_from_stock(GTK_STOCK_PREFERENCES,GTK_ICON_SIZE_MENU);
+	gtk_button_set_image(GTK_BUTTON(mixer_button),image);
 
 	gtk_box_pack_start(GTK_BOX(box),mic_audiolevel,TRUE,TRUE,1);
 	gtk_box_pack_start(GTK_BOX(box),label_audiolevel,FALSE,FALSE,1);
@@ -294,6 +342,7 @@ static GtkWidget *create_mic_page(){
 	gtk_table_attach_defaults(GTK_TABLE(vbox), capture_device, 1, 2, 0, 1);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelMicLevel, 0, 1, 1, 2);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), box, 1, 2, 1, 2);
+	gtk_table_attach(GTK_TABLE(vbox),  mixer_button, 0, 2, 2, 3, GTK_SHRINK, GTK_SHRINK, 0,0);
 
 	gtk_table_set_row_spacings(GTK_TABLE(vbox),10);
 
@@ -306,23 +355,30 @@ static GtkWidget *create_mic_page(){
 	gtk_widget_show_all(vbox);
 
 	g_signal_connect(G_OBJECT(capture_device),"changed",(GCallback)capture_device_changed,capture_device);
+	g_signal_connect(G_OBJECT(mixer_button),"clicked",(GCallback)open_mixer,vbox);
 
 	return vbox;
 }
 
 static GtkWidget *create_speaker_page(){
-	GtkWidget *vbox=gtk_table_new(2,2,FALSE);
+	GtkWidget *vbox=gtk_table_new(3,2,FALSE);
 	LinphoneCore *lc=linphone_gtk_get_core();
 
 	GtkWidget *labelSpeakerChoice=gtk_label_new(_("Playback device"));
 	GtkWidget *labelSpeakerLevel=gtk_label_new(_("Play three beeps"));
 	GtkWidget *spk_button=gtk_button_new_from_stock(GTK_STOCK_MEDIA_PLAY);
 	GtkWidget *playback_device=gtk_combo_box_new();
+	GtkWidget *mixer_button=gtk_button_new_with_label("System sound preferences");
+	GtkWidget *image;
+
+	image=gtk_image_new_from_stock(GTK_STOCK_PREFERENCES,GTK_ICON_SIZE_MENU);
+	gtk_button_set_image(GTK_BUTTON(mixer_button),image);
 
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelSpeakerChoice, 0, 1, 0, 1);
-	gtk_table_attach_defaults(GTK_TABLE(vbox), playback_device, 1, 2, 0, 1);
+	gtk_table_attach(GTK_TABLE(vbox), playback_device, 1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0,0);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelSpeakerLevel, 0, 1, 1, 2);
 	gtk_table_attach(GTK_TABLE(vbox), spk_button, 1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0,0);
+	gtk_table_attach(GTK_TABLE(vbox), mixer_button, 0, 2, 2, 3, GTK_SHRINK, GTK_SHRINK, 0,0);
 
 	gtk_table_set_row_spacings(GTK_TABLE(vbox),10);
 
@@ -334,6 +390,7 @@ static GtkWidget *create_speaker_page(){
 	set_widget_to_assistant("speaker_page",vbox);
 	g_signal_connect(G_OBJECT(playback_device),"changed",(GCallback)playback_device_changed,playback_device);
 	g_signal_connect(G_OBJECT(spk_button),"clicked",(GCallback)linphone_gtk_start_sound,vbox);
+	g_signal_connect(G_OBJECT(mixer_button),"clicked",(GCallback)open_mixer,vbox);
 
 	return vbox;
 }
