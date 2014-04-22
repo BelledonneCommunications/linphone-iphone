@@ -2067,7 +2067,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 		params.zid_file=lc->zrtp_secrets_cache;
 
-		params.uri= linphone_address_as_string_uri_only(call->log->to);
+		params.uri= linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
 		audio_stream_enable_zrtp(call->audiostream,&params);
 	}else{
 		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
