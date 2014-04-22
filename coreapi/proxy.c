@@ -46,7 +46,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	const char *identity = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_identity", NULL) : NULL;
 	const char *proxy = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_proxy", NULL) : NULL;
 	const char *route = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_route", NULL) : NULL;
-	const char *statistics_collector = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_statistics_collector", NULL) : NULL;
+	const char *statistics_collector = lc ? lp_config_get_default_string(lc->config, "proxy", "statistics_collector", NULL) : NULL;
 	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
 	const char *contact_uri_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_uri_parameters", NULL) : NULL;
 
@@ -60,7 +60,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->reg_identity = identity ? ms_strdup(identity) : NULL;
 	obj->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
 	obj->reg_route = route ? ms_strdup(route) : NULL;
-	obj->reg_statistics_collector = statistics_collector ? ms_strdup(statistics_collector) : NULL;
+	obj->statistics_collector = statistics_collector ? ms_strdup(statistics_collector) : NULL;
 	obj->send_statistics = lc ? lp_config_get_default_int(lc->config, "proxy", "send_statistics", 0) : 0;
 	obj->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	obj->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
@@ -96,7 +96,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
-	if (obj->reg_statistics_collector!=NULL) ms_free(obj->reg_statistics_collector);
+	if (obj->statistics_collector!=NULL) ms_free(obj->statistics_collector);
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
@@ -424,7 +424,7 @@ void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t va
 
 bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg){
 	// ensure that collector address is set too!
-	return cfg->send_statistics && cfg->reg_statistics_collector != NULL;
+	return cfg->send_statistics && cfg->statistics_collector != NULL;
 }
 
 void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector){
@@ -435,16 +435,16 @@ void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, co
 			if (addr)
 				linphone_address_destroy(addr);
 		} else {
-			if (cfg->reg_statistics_collector != NULL)
-				ms_free(cfg->reg_statistics_collector);
-			cfg->reg_statistics_collector = ms_strdup(collector);
+			if (cfg->statistics_collector != NULL)
+				ms_free(cfg->statistics_collector);
+			cfg->statistics_collector = ms_strdup(collector);
 			linphone_address_destroy(addr);
 		}
 	}
 }
 
 const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *cfg){
-	return cfg->reg_statistics_collector;
+	return cfg->statistics_collector;
 }
 
 
@@ -1094,8 +1094,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->reg_route!=NULL){
 		lp_config_set_string(config,key,"reg_route",obj->reg_route);
 	}
-	if (obj->reg_statistics_collector!=NULL){
-		lp_config_set_string(config,key,"reg_statistics_collector",obj->reg_statistics_collector);
+	if (obj->statistics_collector!=NULL){
+		lp_config_set_string(config,key,"statistics_collector",obj->statistics_collector);
 	}
 	if (obj->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
@@ -1142,7 +1142,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
-	tmp=lp_config_get_string(config,key,"reg_statistics_collector",NULL);
+	tmp=lp_config_get_string(config,key,"statistics_collector",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_statistics_collector(cfg,tmp);
 	linphone_proxy_config_enable_statistics(cfg,lp_config_get_int(config,key,"send_statistics",0));
 

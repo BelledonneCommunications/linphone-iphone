@@ -127,13 +127,6 @@ static void propagate_encryption_changed(LinphoneCall *call){
 	}
 }
 
-#ifdef VIDEO_ENABLED
-static void linphone_call_videostream_encryption_changed(void *data, bool_t encrypted){
-	LinphoneCall *call = (LinphoneCall *)data;
-	propagate_encryption_changed(call);
-}
-#endif
-
 static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
 	char status[255]={0};
 	LinphoneCall *call;
@@ -2720,8 +2713,90 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	}
 }
 
+void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev){
+	OrtpEventType evt=ortp_event_get_type(ev);
+	OrtpEventData *evd=ortp_event_get_data(ev);
+	
+	if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+		stats->round_trip_delay = rtp_session_get_round_trip_propagation(ms->sessions.rtp_session);
+		if(stats->received_rtcp != NULL)
+			freemsg(stats->received_rtcp);
+		stats->received_rtcp = evd->packet;
+		evd->packet = NULL;
+		stats->updated = LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE;
+		update_local_stats(stats,ms);
+	} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+		memcpy(&stats->jitter_stats, rtp_session_get_jitter_stats(ms->sessions.rtp_session), sizeof(jitter_stats_t));
+		if (stats->sent_rtcp != NULL)
+			freemsg(stats->sent_rtcp);
+		stats->sent_rtcp = evd->packet;
+		evd->packet = NULL;
+		stats->updated = LINPHONE_CALL_STATS_SENT_RTCP_UPDATE;
+		update_local_stats(stats,ms);
+	}
+}
+
+void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
+	LinphoneCallStats *stats=&call->stats[stream_index];
+	LinphoneCore *lc=call->core;
+	if (stats->updated){
+		linphone_reporting_call_stats_updated(call, stream_index);
+		if (lc->vtable.call_stats_updated)
+			lc->vtable.call_stats_updated(lc, call, stats);
+		stats->updated = 0;
+	}
+}
+
+void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
+	MediaStream *ms=stream_index==0 ? (MediaStream *)call->audiostream : (MediaStream *)call->videostream; /*assumption to remove*/
+	OrtpEvQueue *evq;
+	OrtpEvent *ev;
+	
+	if (ms==NULL) return;
+	/* Ensure there is no dangling ICE check list. */
+	if (call->ice_session == NULL) ms->ice_check_list = NULL;
+	
+	switch(ms->type){
+		case AudioStreamType:
+			audio_stream_iterate((AudioStream*)ms);
+		break;
+		case VideoStreamType:
+#ifdef VIDEO_ENABLED
+			video_stream_iterate((VideoStream*)ms);
+#endif
+		break;
+		default:
+			ms_error("linphone_call_handle_stream_events(): unsupported stream type.");
+			return;
+		break;
+	}
+	/*yes the event queue has to be taken at each iteration, because ice events may perform operations re-creating the streams*/
+	while ((evq=stream_index==0 ? call->audiostream_app_evq : call->videostream_app_evq)  && (NULL != (ev=ortp_ev_queue_get(evq)))){
+		OrtpEventType evt=ortp_event_get_type(ev);
+		OrtpEventData *evd=ortp_event_get_data(ev);
+		
+		linphone_call_stats_fill(&call->stats[stream_index],ms,ev);
+		linphone_call_notify_stats_updated(call,stream_index);
+		
+		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+			if (ms->type==AudioStreamType)
+				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+			else if (ms->type==VideoStreamType)
+				propagate_encryption_changed(call);
+		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
+			if (ms->type==AudioStreamType)
+				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+		} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
+			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
+			handle_ice_events(call, ev);
+		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
+			linphone_core_dtmf_received(call->core,evd->info.telephone_event);
+		}
+		ortp_event_destroy(ev);
+	}
+}
+
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed){
-	LinphoneCore* lc = call->core;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
 	bool_t disconnected=FALSE;
 
@@ -2743,102 +2818,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	linphone_upnp_call_process(call);
 #endif //BUILD_UPNP
 
-#ifdef VIDEO_ENABLED
-	if (call->videostream!=NULL) {
-		OrtpEvent *ev;
-
-		/* Ensure there is no dangling ICE check list. */
-		if (call->ice_session == NULL) call->videostream->ms.ice_check_list = NULL;
-
-		// Beware that the application queue should not depend on treatments fron the
-		// mediastreamer queue.
-		video_stream_iterate(call->videostream);
-
-		while (call->videostream_app_evq && (NULL != (ev=ortp_ev_queue_get(call->videostream_app_evq)))){
-			OrtpEventType evt=ortp_event_get_type(ev);
-			OrtpEventData *evd=ortp_event_get_data(ev);
-			if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-				linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-				call->stats[LINPHONE_CALL_STATS_VIDEO].round_trip_delay = rtp_session_get_round_trip_propagation(call->videostream->ms.sessions.rtp_session);
-				if(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
-				call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
-				evd->packet = NULL;
-				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
-				if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
-					linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				memcpy(&call->stats[LINPHONE_CALL_STATS_VIDEO].jitter_stats, rtp_session_get_jitter_stats(call->videostream->ms.sessions.rtp_session), sizeof(jitter_stats_t));
-				if(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
-				call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
-				evd->packet = NULL;
-				call->stats[LINPHONE_CALL_STATS_VIDEO].updated = LINPHONE_CALL_STATS_SENT_RTCP_UPDATE;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
-				if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
-					linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_VIDEO);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
-				|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
-				handle_ice_events(call, ev);
-			}
-			ortp_event_destroy(ev);
-		}
-	}
-#endif
-	if (call->audiostream!=NULL) {
-		OrtpEvent *ev;
-
-		/* Ensure there is no dangling ICE check list. */
-		if (call->ice_session == NULL) call->audiostream->ms.ice_check_list = NULL;
-
-		// Beware that the application queue should not depend on treatments fron the
-		// mediastreamer queue.
-		audio_stream_iterate(call->audiostream);
-
-		while (call->audiostream_app_evq && (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq)))){
-			OrtpEventType evt=ortp_event_get_type(ev);
-			OrtpEventData *evd=ortp_event_get_data(ev);
-			if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
-				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-				call->stats[LINPHONE_CALL_STATS_AUDIO].round_trip_delay = rtp_session_get_round_trip_propagation(call->audiostream->ms.sessions.rtp_session);
-				if(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
-				call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
-				evd->packet = NULL;
-				call->stats[LINPHONE_CALL_STATS_AUDIO].updated = LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
-				linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_AUDIO);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				memcpy(&call->stats[LINPHONE_CALL_STATS_AUDIO].jitter_stats, rtp_session_get_jitter_stats(call->audiostream->ms.sessions.rtp_session), sizeof(jitter_stats_t));
-				if(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
-				call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
-				evd->packet = NULL;
-				call->stats[LINPHONE_CALL_STATS_AUDIO].updated = LINPHONE_CALL_STATS_SENT_RTCP_UPDATE;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
-				linphone_reporting_call_stats_updated(call, LINPHONE_CALL_STATS_AUDIO);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
-				|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
-				handle_ice_events(call, ev);
-			} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
-				linphone_core_dtmf_received(lc,evd->info.telephone_event);
-			}
-			ortp_event_destroy(ev);
-		}
-	}
+	linphone_call_handle_stream_events(call,0);
+	linphone_call_handle_stream_events(call,1);
 	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)

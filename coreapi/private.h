@@ -403,7 +403,7 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	char *reg_route;
-	char *reg_statistics_collector;
+	char *statistics_collector;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;

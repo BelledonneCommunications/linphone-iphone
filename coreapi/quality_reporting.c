@@ -269,7 +269,7 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 	content.size = strlen((char*)content.data);
 
 
-	addr = linphone_address_new(call->dest_proxy->reg_statistics_collector);
+	addr = linphone_address_new(call->dest_proxy->statistics_collector);
 	if (addr != NULL) {
 		linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content);
 		linphone_address_destroy(addr);
