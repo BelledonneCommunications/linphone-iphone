@@ -177,7 +177,7 @@ enum _LinphoneReason{
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
 	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
-	LinphoneReasonGone, /**<Resource no longer exists*/ 
+	LinphoneReasonGone, /**<Resource no longer exists*/
 	LinphoneReasonTemporarilyUnavailable, /**<Temporarily unavailable*/
 	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
 	LinphoneReasonNotImplemented, /**<Not implemented*/
@@ -684,7 +684,6 @@ LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
-LINPHONE_PUBLIC LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
@@ -814,7 +813,7 @@ LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *
 
 /**
  * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
- * @param cfg #LinphoneProxyConfig object 
+ * @param cfg #LinphoneProxyConfig object
  * @param val if true, quality statistics publish will be stored and sent to the collector
  *
  */
