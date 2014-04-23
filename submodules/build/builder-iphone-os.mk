@@ -313,7 +313,7 @@ multi-arch:
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \
 	done
-	if ! test -f $(prefix)../apple-darwin/lib/libtunnel.a ; then \
+	if ! test -f $(prefix)/../apple-darwin/lib/libtunnel.a ; then \
 		cp -f $(BUILDER_SRC_DIR)/../submodules/binaries/libdummy.a $(prefix)/../apple-darwin/lib/libtunnel.a ; \
 	fi
 
