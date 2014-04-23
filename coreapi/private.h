@@ -408,6 +408,7 @@ struct _LinphoneProxyConfig
 	char *contact_params;
 	char *contact_uri_params;
 	int expires;
+	int publish_expires;
 	SalOp *op;
 	char *type;
 	struct _SipSetupContext *ssctx;

@@ -789,6 +789,7 @@ LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *o
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int expires);
+
 #define linphone_proxy_config_expires linphone_proxy_config_set_expires
 /**
  * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
@@ -808,6 +809,21 @@ LINPHONE_PUBLIC	int linphone_proxy_config_done(LinphoneProxyConfig *obj);
  *
  */
 LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
+/**
+ * Set the publish expiration time in second.
+ * @param obj proxy config
+ * @param exires in second
+ * */
+
+LINPHONE_PUBLIC	void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires);
+/**
+ * get the publish expiration time in second. Default value is the registration expiration value.
+ * @param obj proxy config
+ * @return expires in second
+ * */
+
+LINPHONE_PUBLIC	int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj);
+
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 

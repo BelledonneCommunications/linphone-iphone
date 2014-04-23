@@ -123,13 +123,16 @@ static void wait_core(LinphoneCore *core) {
 	}
 }
 
-static void simple_publish(void) {
+static void simple_publish_with_expire(int expires) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
 
 	linphone_core_get_default_proxy(marie->lc,&proxy);
 	linphone_proxy_config_edit(proxy);
+	if (expires >0) {
+		linphone_proxy_config_set_publish_expires(proxy,expires);
+	}
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_done(proxy);
 	wait_core(marie->lc);
@@ -137,6 +140,14 @@ static void simple_publish(void) {
 	linphone_core_set_presence_model(marie->lc,presence);
 	wait_core(marie->lc);
 	linphone_core_manager_destroy(marie);
+}
+
+static void simple_publish() {
+	simple_publish_with_expire(-1);
+}
+
+static void publish_with_expires() {
+	simple_publish_with_expire(1);
 }
 
 static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
@@ -340,6 +351,7 @@ static void presence_information(void) {
 test_t presence_tests[] = {
 	{ "Simple Subscribe", simple_subscribe },
 	{ "Simple Publish", simple_publish },
+	{ "Simple Publish with expires", publish_with_expires },
 	/*{ "Call with presence", call_with_presence },*/
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },

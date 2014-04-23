@@ -64,6 +64,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->send_statistics = lc ? lp_config_get_default_int(lc->config, "proxy", "send_statistics", 0) : 0;
 	obj->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	obj->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
+	obj->publish_expires=-1;
 }
 
 /**
@@ -872,7 +873,11 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 				sal_address_unref(addr);
 			}
 		}
-		err=sal_publish_presence(proxy->publish_op,NULL,NULL,proxy->expires,(SalPresenceModel *)presence);
+		err=sal_publish_presence(proxy->publish_op
+									,NULL
+									,NULL
+									,linphone_proxy_config_get_publish_expires(proxy)
+									,(SalPresenceModel *)presence);
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }
@@ -1455,4 +1460,15 @@ void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePriv
 }
 LinphonePrivacyMask linphone_proxy_config_get_privacy(const LinphoneProxyConfig *params) {
 	return params->privacy;
+}
+void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires) {
+	obj->publish_expires=expires;
+}
+int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj) {
+	if (obj->publish_expires<0) {
+		return obj->expires; /*default value is same as register*/
+	} else {
+		return obj->publish_expires;
+	}
+
 }

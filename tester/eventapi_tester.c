@@ -95,6 +95,10 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
 	stats* counters = get_stats(lc);
+	const LinphoneAddress* from_addr = linphone_event_get_from(ev);
+	char* from = linphone_address_as_string(from_addr);
+	ms_message("Publish state [%s] from [%s]",linphone_publish_state_to_string(state),from);
+	ms_free(from);
 	switch(state){
 		case LinphonePublishProgress: counters->number_of_LinphonePublishProgress++; break;
 		case LinphonePublishOk: 
