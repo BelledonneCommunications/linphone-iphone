@@ -73,7 +73,9 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 
 	// if we are out of memory, we add some size to buffer
 	if (ret == BELLE_SIP_BUFFER_OVERFLOW) {
-		ms_warning("Buffer was too small to contain the whole report - doubling its size from %lu to %lu", *buff_size, 2 * *buff_size);
+		// some compilers complain that size_t cannot be formatted as unsigned long, hence forcing cast
+		ms_warning("Buffer was too small to contain the whole report - doubling its size from %lu to %lu",
+			(unsigned long)*buff_size, (unsigned long)2 * *buff_size);
 		*buff_size += 2048;
 		*buff = (char *) ms_realloc(*buff, *buff_size);
 
