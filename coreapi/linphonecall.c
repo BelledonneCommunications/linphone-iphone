@@ -1450,7 +1450,7 @@ static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream
 }
 
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
-	SalMediaDescription *remote;
+	SalMediaDescription *remote = NULL;
 	bool_t has_video=FALSE;
 
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
