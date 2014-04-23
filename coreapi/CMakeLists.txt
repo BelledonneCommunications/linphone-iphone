@@ -1,3 +1,7 @@
+if(MSVC)
+	find_library(LIBGCC NAMES gcc)
+	find_library(LIBMINGWEX NAMES mingwex)
+endif()
 find_library(LIBORTP NAMES ortp)
 find_library(LIBMEDIASTREAMER_BASE NAMES mediastreamer_base)
 find_library(LIBMEDIASTREAMER_VOIP NAMES mediastreamer_voip)
@@ -119,7 +123,7 @@ add_definitions(
 
 set(LIBS ws2_32)
 endif(WIN32)
-set(LIBS ${LIBS} ${LIBORTP} ${LIBMEDIASTREAMER_BASE} ${LIBMEDIASTREAMER_VOIP} ${LIBBELLESIP} ${LIBXML2})
+set(LIBS ${LIBS} ${LIBGCC} ${LIBMINGWEX} ${LIBORTP} ${LIBMEDIASTREAMER_BASE} ${LIBMEDIASTREAMER_VOIP} ${LIBBELLESIP} ${LIBXML2})
 
 add_library(linphone SHARED ${SOURCE_FILES})
 set_target_properties(linphone PROPERTIES VERSION 3.7.0 SOVERSION 5)
