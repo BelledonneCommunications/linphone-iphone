@@ -40,9 +40,6 @@
 [submodule "submodules/externals/srtp"]
 	path = submodules/externals/srtp
 	url = git://git.linphone.org/srtp.git
-[submodule "submodules/tunnel"]
-	path = submodules/tunnel
-	url = gitosis@git.linphone.org:tunnel
 [submodule "submodules/bcg729"]
 	path = submodules/bcg729
 	url = git://git.linphone.org/bcg729.git

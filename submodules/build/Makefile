@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-enable_gpl_third_parties=no
+enable_gpl_third_parties=yes
 enable_zrtp=yes
 enable_ffmpeg=yes
 enable_opus=yes
@@ -30,6 +30,7 @@ TUNNEL_AVAILABLE=$(shell ls ../tunnel/configure.ac)
 
 ifneq ($(TUNNEL_AVAILABLE),)
 enable_tunnel=yes
+enable_gpl_third_parties=no
 endif
 
 

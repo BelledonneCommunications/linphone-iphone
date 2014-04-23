@@ -687,6 +687,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"wizard_button"];
 	}
 	
+	if (!linphone_core_tunnel_available()){
+		[hiddenKeys addObject:@"tunnel_menu"];
+	}
+	
     return hiddenKeys;
 }
 

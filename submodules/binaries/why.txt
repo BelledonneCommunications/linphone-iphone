@@ -5,6 +5,7 @@ This directory is here because some of our dependencies compile incorrecly
 
 You'll find here the reasons why certain libs are furnished pre-compiled.
 
+Additionaly, the libdummy.a is an empty library created to stub the tunnel extension.
 
 = Libvpx =
 
