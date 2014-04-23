@@ -25,12 +25,13 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell ls ../tunnel/configure.ac)
-
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel)
 
 ifneq ($(TUNNEL_AVAILABLE),)
-enable_tunnel=yes
-enable_gpl_third_parties=no
+	enable_tunnel=yes
+	enable_gpl_third_parties=no
+else
+	enable_tunnel=no
 endif
 
 
