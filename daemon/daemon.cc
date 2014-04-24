@@ -515,7 +515,7 @@ void Daemon::iterateStreamStats() {
 		while (it->second->queue && (NULL != (ev=ortp_ev_queue_get(it->second->queue)))){
 			OrtpEventType evt=ortp_event_get_type(ev);
 			if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED || evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				//linphone_call_stream_stats_hack(&it->second->stream->ms, &it->second->stats, ev);
+				linphone_call_stats_fill(&it->second->stats, &it->second->stream->ms, ev);
 				if (mUseStatsEvents) mEventQueue.push(new AudioStreamStatsResponse(this,
 					it->second->stream, &it->second->stats, true));
 			}
