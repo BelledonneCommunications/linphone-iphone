@@ -62,8 +62,8 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		case LinphoneStatusPending:
 		str=_("Pending");
 		break;
-                case LinphoneStatusVacation:
-                str=_("Vacation");
+		case LinphoneStatusVacation:
+		str=_("Vacation");
 		default:
 		str=_("Unknown-bug");
 	}
@@ -109,7 +109,7 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 
 void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	LinphoneCore *lc=fr->lc;
-	
+
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
 		fr->presence=NULL;
@@ -132,7 +132,7 @@ LinphoneFriend * linphone_friend_new(){
 	obj->pol=LinphoneSPAccept;
 	obj->presence=NULL;
 	obj->subscribe=TRUE;
-	return obj;	
+	return obj;
 }
 
 LinphoneFriend *linphone_friend_new_with_address(const char *addr){
@@ -255,7 +255,7 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	if (lf->insub){
 		sal_notify_presence_close(lf->insub);
-		
+
 	}
 }
 
@@ -388,7 +388,7 @@ BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 **/
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *proxy, bool_t only_when_registered){
 	int can_subscribe=1;
-	
+
 	if (only_when_registered && (fr->subscribe || fr->subscribe_active)){
 		LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(fr->lc,fr->uri);
 		if (proxy && proxy!=cfg) return;
@@ -592,13 +592,13 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	int a;
 	LinphoneFriend *lf;
 	LpConfig *config=lc->config;
-	
+
 	sprintf(item,"friend_%i",index);
-	
+
 	if (!lp_config_has_section(config,item)){
 		return NULL;
 	}
-	
+
 	tmp=lp_config_get_string(config,item,"url",NULL);
 	if (tmp==NULL) {
 		return NULL;
@@ -614,7 +614,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	}
 	a=lp_config_get_int(config,item,"subscribe",0);
 	linphone_friend_send_subscribe(lf,a);
-		
+
 	linphone_friend_set_ref_key(lf,lp_config_get_string(config,item,"refkey",NULL));
 	return lf;
 }
@@ -639,9 +639,9 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 	char key[50];
 	char *tmp;
 	const char *refkey;
-	
+
 	sprintf(key,"friend_%i",index);
-	
+
 	if (lf==NULL){
 		lp_config_clean_section(config,key);
 		return;

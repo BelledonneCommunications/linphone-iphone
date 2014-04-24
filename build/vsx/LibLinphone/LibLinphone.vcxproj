@@ -203,6 +203,7 @@
     <ClCompile Include="..\..\..\coreapi\offeranswer.c" />
     <ClCompile Include="..\..\..\coreapi\presence.c" />
     <ClCompile Include="..\..\..\coreapi\proxy.c" />
+    <ClCompile Include="..\..\..\coreapi\quality_reporting.c" />
     <ClCompile Include="..\..\..\coreapi\sal.c" />
     <ClCompile Include="..\..\..\coreapi\siplogin.c" />
     <ClCompile Include="..\..\..\coreapi\sipsetup.c" />

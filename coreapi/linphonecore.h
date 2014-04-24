@@ -177,7 +177,7 @@ enum _LinphoneReason{
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
 	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
-	LinphoneReasonGone, /**<Resource no longer exists*/ 
+	LinphoneReasonGone, /**<Resource no longer exists*/
 	LinphoneReasonTemporarilyUnavailable, /**<Temporarily unavailable*/
 	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
 	LinphoneReasonNotImplemented, /**<Not implemented*/
@@ -684,7 +684,6 @@ LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
-LINPHONE_PUBLIC LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
@@ -790,6 +789,7 @@ LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *o
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int expires);
+
 #define linphone_proxy_config_expires linphone_proxy_config_set_expires
 /**
  * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
@@ -809,8 +809,34 @@ LINPHONE_PUBLIC	int linphone_proxy_config_done(LinphoneProxyConfig *obj);
  *
  */
 LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
+/**
+ * Set the publish expiration time in second.
+ * @param obj proxy config
+ * @param exires in second
+ * */
+
+LINPHONE_PUBLIC	void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires);
+/**
+ * get the publish expiration time in second. Default value is the registration expiration value.
+ * @param obj proxy config
+ * @return expires in second
+ * */
+
+LINPHONE_PUBLIC	int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj);
+
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
+
+/**
+ * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
+ * @param cfg #LinphoneProxyConfig object
+ * @param val if true, quality statistics publish will be stored and sent to the collector
+ *
+ */
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *obj);
 
 /**
  * Get the registration state of the given proxy config.

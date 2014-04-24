@@ -90,19 +90,19 @@ SalAuthInfo * sal_op_get_auth_requested(SalOp *op){
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	belle_sip_header_contact_t* contact_header;
 	belle_sip_uri_t* contact_uri;
-	
+
 	if (sal_op_get_contact_address(op)) {
 		contact_header = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	} else {
 		contact_header= belle_sip_header_contact_new();
 	}
-	
+
 	if (!(contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header)))) {
 		/*no uri, just creating a new one*/
 		contact_uri=belle_sip_uri_new();
 		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
 	}
-	
+
 	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
 	if (op->privacy!=SalPrivacyNone){
 		belle_sip_uri_set_user(contact_uri,NULL);
@@ -213,7 +213,7 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 }
 
 static void add_headers(SalOp *op, belle_sip_header_t *h, belle_sip_message_t *msg){
-	
+
 	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_contact_t)){
 		belle_sip_header_contact_t* newct;
 		/*special case for contact, we want to keep everything from the custom contact but set automatic mode and add our own parameters as well*/
@@ -224,7 +224,7 @@ static void add_headers(SalOp *op, belle_sip_header_t *h, belle_sip_message_t *m
 	}
 	/*if a header already exists in the message, replace it*/
 	belle_sip_message_set_header(msg,h);
-	
+
 }
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
@@ -246,20 +246,20 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	belle_sip_header_contact_t* contact;
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
-	
+
 	if (add_contact) {
 		contact = sal_op_create_contact(op);
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
 	}
-	
+
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
-	
+
 	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
 		const MSList *elem=sal_op_get_route_addresses(op);
 		const char *transport;
 		const char *method=belle_sip_request_get_method(request);
-		
+
 		if (elem) {
 			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
 			next_hop_uri=outbound_proxy;
@@ -284,7 +284,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 				}
 			}
 		}
-		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport && 
+		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport &&
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
 			/*RFC 5923: add 'alias' parameter to tell the server that we want it to keep the connection for future requests*/
 			belle_sip_header_via_t *via=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_via_t);
@@ -307,12 +307,12 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL,NULL);
 	}
 	result = belle_sip_client_transaction_send_request_to(client_transaction,next_hop_uri/*might be null*/);
-	
+
 	/*update call id if not set yet for this OP*/
 	if (result == 0 && !op->base.call_id) {
 		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request), belle_sip_header_call_id_t))));
 	}
-	
+
 	return result;
 
 }
@@ -323,9 +323,9 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 		return -1; /*sanity check*/
 	}
 	/*
-  	  Header field          where   proxy ACK BYE CAN INV OPT REG
-      ___________________________________________________________
-      Contact                 R            o   -   -   m   o   o
+	  Header field          where   proxy ACK BYE CAN INV OPT REG
+	  ___________________________________________________________
+	  Contact                 R            o   -   -   m   o   o
 	 */
 	if (strcmp(belle_sip_request_get_method(request),"INVITE")==0
 			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
@@ -415,7 +415,7 @@ SalReason sal_reason_to_sip_code(SalReason r){
 
 SalReason _sal_reason_from_sip_code(int code) {
 	if (code>=100 && code<300) return SalReasonNone;
-	
+
 	switch(code) {
 	case 0:
 		return SalReasonIOError;
@@ -490,7 +490,7 @@ void sal_error_info_reset(SalErrorInfo *ei){
 	if (ei->warnings){
 		ms_free(ei->warnings);
 		ei->warnings=NULL;
-	
+
 	}
 	if (ei->full_string){
 		ms_free(ei->full_string);
@@ -522,7 +522,7 @@ void sal_op_set_error_info_from_response(SalOp *op, belle_sip_response_t *respon
 	belle_sip_header_t *warning=belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Warning");
 	SalErrorInfo *ei=&op->error_info;
 	const char *warnings;
-	
+
 	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
 	if (warnings==NULL) warnings=reason_header ? belle_sip_header_get_unparsed_value(reason_header) : NULL;
 	sal_error_info_set(ei,SalReasonUnknown,code,reason_phrase,warnings);
@@ -618,7 +618,7 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
 }
 
 const char *sal_op_get_remote_contact(const SalOp *op){
-	/* 
+	/*
 	 * remote contact is filled in process_response
 	 * return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
 	 */
@@ -649,16 +649,16 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
 	belle_sip_header_content_type_t *content_type;
 	belle_sip_header_content_length_t *clen=NULL;
 	belle_sip_header_t *content_encoding;
-	
+
 	content_type=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_type_t);
 	if (content_type){
 		body=belle_sip_message_get_body(msg);
 		clen=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_length_t);
 	}
 	content_encoding=belle_sip_message_get_header(msg,"Content-encoding");
-	
+
 	memset(salbody,0,sizeof(SalBody));
-	
+
 	if (content_type && body && clen) {
 		salbody->type=belle_sip_header_content_type_get_type(content_type);
 		salbody->subtype=belle_sip_header_content_type_get_subtype(content_type);
@@ -693,7 +693,7 @@ bool_t sal_op_is_ipv6(SalOp *op){
 	belle_sip_transaction_t *tr=NULL;
 	belle_sip_header_address_t *contact;
 	belle_sip_request_t *req;
-	
+
 	if (op->refresher)
 		tr=(belle_sip_transaction_t *)belle_sip_refresher_get_transaction(op->refresher);
 
@@ -701,7 +701,7 @@ bool_t sal_op_is_ipv6(SalOp *op){
 		tr=(belle_sip_transaction_t *)op->pending_client_trans;
 	if (tr==NULL)
 		tr=(belle_sip_transaction_t *)op->pending_server_trans;
-	
+
 	if (tr==NULL){
 		ms_error("Unable to determine IP version from signaling operation.");
 		return FALSE;

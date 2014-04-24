@@ -22,6 +22,8 @@ liblinphonetester_la_SOURCES = tester.c \
 				stun_tester.c \
 				remote_provisioning_tester.c
 
+liblinphonetester_la_LDFLAGS= -no-undefined
+liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = $(STRICT_OPTIONS) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS)
@@ -31,7 +33,7 @@ if !BUILD_IOS
 noinst_PROGRAMS = liblinphone_tester
 
 liblinphone_tester_SOURCES = liblinphone_tester.c 
-liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la liblinphonetester.la $(SIPSTACK_LIBS) $(LIBXML2_LIBS) $(CUNIT_LIBS)
+liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la liblinphonetester.la 
 
 endif
 

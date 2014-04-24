@@ -22,6 +22,8 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
+statistics_collector=sip:collector@sip.example.org
+send_statistics=1
 
 [friend_0]
 url="Paupoche" <sip:pauline@sip.example.org>

@@ -34,6 +34,7 @@ extern "C" {
 #include "linphonecore_utils.h"
 #include "sal/sal.h"
 #include "sipsetup.h"
+#include "quality_reporting.h"
 
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
@@ -115,6 +116,8 @@ struct _LinphoneCallLog{
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
+
+	reporting_session_report_t * reports[2]; /**<Quality statistics of the call (rfc6035) */
 	bool_t video_enabled;
 };
 
@@ -191,6 +194,7 @@ struct _LinphoneCall
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
+
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams params;
@@ -399,10 +403,12 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	char *reg_route;
+	char *statistics_collector;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
 	int expires;
+	int publish_expires;
 	SalOp *op;
 	char *type;
 	struct _SipSetupContext *ssctx;
@@ -415,6 +421,7 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	bool_t send_publish;
+	bool_t send_statistics;
 	bool_t pad[3];
 	void* user_data;
 	time_t deletion_date;
@@ -669,7 +676,7 @@ struct _LinphoneCore
 	bool_t use_preview_window;
 
 	time_t network_last_check;
-	
+
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
 	bool_t pad[2];
@@ -804,6 +811,7 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
+void linphone_content_uninit(LinphoneContent * obj);
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
@@ -852,10 +860,17 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 
+/*****************************************************************************
+ * OTHER UTILITY FUNCTIONS                                                     *
+ ****************************************************************************/
+char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
+
+
 static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
 	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
+
 
 /** Belle Sip-based objects need unique ids
   */

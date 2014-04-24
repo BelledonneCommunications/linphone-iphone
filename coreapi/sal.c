@@ -17,9 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-/** 
+/**
  This header files defines the Signaling Abstraction Layer.
- The purpose of this layer is too allow experiment different call signaling 
+ The purpose of this layer is too allow experiment different call signaling
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 #ifdef HAVE_CONFIG_H
@@ -39,7 +39,7 @@ const char* sal_transport_to_string(SalTransport transport) {
 		default: {
 			ms_fatal("Unexpected transport [%i]",transport);
 			return NULL;
-		}    
+		}
 	}
 }
 
@@ -82,7 +82,7 @@ void sal_media_description_unref(SalMediaDescription *md){
 }
 
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
-    SalMediaProto proto, SalStreamType type){
+	SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
@@ -161,7 +161,7 @@ static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
 	*/
 	/*
 	if (!fmtp_equals(p1->recv_fmtp,p2->recv_fmtp) ||
-	    !fmtp_equals(p1->send_fmtp,p2->send_fmtp))
+		!fmtp_equals(p1->send_fmtp,p2->send_fmtp))
 		return FALSE;
 	*/
 	return TRUE;
@@ -372,6 +372,14 @@ const char *sal_op_get_network_origin(const SalOp *op){
 const char* sal_op_get_call_id(const SalOp *op) {
 	return  ((SalOpBase*)op)->call_id;
 }
+char* sal_op_get_dialog_id(const SalOp *op) {
+	if (op->dialog != NULL) {
+		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", ((SalOpBase*)op)->call_id,
+			belle_sip_dialog_get_remote_tag(op->dialog), belle_sip_dialog_get_local_tag(op->dialog));
+	}
+	return NULL;
+
+}
 void __sal_op_init(SalOp *b, Sal *sal){
 	memset(b,0,sizeof(SalOpBase));
 	((SalOpBase*)b)->root=sal;
@@ -401,17 +409,17 @@ void __sal_op_free(SalOp *op){
 		sal_address_destroy(b->to_address);
 		b->to_address=NULL;
 	}
-	
+
 	if (b->service_route){
 		sal_address_destroy(b->service_route);
 		b->service_route=NULL;
 	}
-	
+
 	if (b->origin_address){
 		sal_address_destroy(b->origin_address);
 		b->origin_address=NULL;
 	}
-	
+
 	if (b->from) {
 		ms_free(b->from);
 		b->from=NULL;
@@ -616,7 +624,7 @@ static int line_get_value(const char *input, const char *key, char *value, size_
 
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
 	int read=0;
-	
+
 	do{
 		if (line_get_value(data,key,value,value_size,&read))
 			return TRUE;
@@ -626,7 +634,7 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 }
 
 int sal_body_has_type(const SalBody *body, const char *type, const char *subtype){
-	return body->type && body->subtype 
+	return body->type && body->subtype
 		&& strcmp(body->type,type)==0
 		&& strcmp(body->subtype,subtype)==0;
 }
