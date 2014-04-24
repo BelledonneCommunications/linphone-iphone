@@ -2713,6 +2713,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	}
 }
 
+
+/*do not change the prototype of this function, it is also used internally in linphone-daemon.*/
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
