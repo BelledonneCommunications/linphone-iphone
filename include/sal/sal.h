@@ -618,7 +618,7 @@ int sal_unregister(SalOp *h);
 
 /*Messaging */
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
-int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri);
 int sal_message_reply(SalOp *op, SalReason reason);
 
 /*presence Subscribe/notify*/
