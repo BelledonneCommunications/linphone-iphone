@@ -74,17 +74,17 @@ LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir,
 	return lev;
 }
 
-LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name){
+static LinphoneEvent *linphone_event_new_with_op_base(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name, bool_t is_out_of_dialog){
 	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, op);
-	if (dir==LinphoneSubscriptionIncoming){
-		lev->resource_addr=linphone_address_clone((LinphoneAddress*)sal_op_get_to_address(op));
-		lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
-	}else{
-		lev->resource_addr=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(op));
-	}
+	lev->is_out_of_dialog_op=is_out_of_dialog;
 	return lev;
 }
-
+LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
+	return linphone_event_new_with_op_base(lc,op,dir,name,FALSE);
+}
+LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
+	return linphone_event_new_with_op_base(lc,op,dir,name,TRUE);
+}
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state){
 	LinphoneCore *lc=lev->lc;
 	if (lev->subscription_state!=state){
@@ -129,8 +129,6 @@ LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAd
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event, expires);
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
 	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
-	lev->resource_addr=linphone_address_clone(resource);
-	lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
 	return lev;
 }
 
@@ -318,8 +316,6 @@ static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->op)
 		sal_op_release(lev->op);
 	ms_free(lev->name);
-	if (lev->resource_addr) linphone_address_destroy(lev->resource_addr);
-	if (lev->from) linphone_address_destroy(lev->from);
 	ms_free(lev);
 }
 
@@ -341,11 +337,19 @@ const char *linphone_event_get_name(const LinphoneEvent *lev){
 }
 
 const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
-	return lev->from;
+	if (lev->is_out_of_dialog_op){
+		return (LinphoneAddress*)sal_op_get_to_address(lev->op);
+	}else{
+		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
+	}
 }
 
 const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
-	return lev->resource_addr;
+	if (lev->is_out_of_dialog_op){
+		return (LinphoneAddress*)sal_op_get_from_address(lev->op);
+	}else{
+		return (LinphoneAddress*)sal_op_get_to_address(lev->op);
+	}
 }
 
 LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){

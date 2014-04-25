@@ -48,12 +48,16 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 	stats* counters = get_stats(lc);
 	LinphoneCoreManager *mgr=get_manager(lc);
 	LinphoneContent content={0};
-	
+	const LinphoneAddress* from_addr = linphone_event_get_from(lev);
+	char* from = linphone_address_as_string(from_addr);
 	content.type="application";
 	content.subtype="somexml2";
 	content.data=(void*)notify_content;
 	content.size=strlen(notify_content);
 	
+	ms_message("Subscription state [%s] from [%s]",linphone_subscription_state_to_string(state),from);
+	ms_free(from);
+
 	switch(state){
 		case LinphoneSubscriptionNone:
 		break;

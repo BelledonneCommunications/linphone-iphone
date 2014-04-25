@@ -1388,31 +1388,32 @@ static void early_media_call_with_ringing(void){
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
 
 
-	/* send a 183 to initiate the early media */
+	if (linphone_core_inc_invite_pending(pauline->lc)) {
+		/* send a 183 to initiate the early media */
 
-	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
+		linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
-	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
-	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+		CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+		CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
 
-	liblinphone_tester_check_rtcp(marie, pauline);
+		liblinphone_tester_check_rtcp(marie, pauline);
 
-	linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
-	CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+		CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
 
-	liblinphone_tester_check_rtcp(marie, pauline);
+		liblinphone_tester_check_rtcp(marie, pauline);
 
-	linphone_core_terminate_all_calls(pauline->lc);
+		linphone_core_terminate_all_calls(pauline->lc);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 
 
-	ms_list_free(lcs);
-
+		ms_list_free(lcs);
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

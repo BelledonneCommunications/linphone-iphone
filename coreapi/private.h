@@ -710,10 +710,9 @@ struct _LinphoneEvent{
 	void *userdata;
 	int refcnt;
 	char *name;
-	LinphoneAddress *from;
-	LinphoneAddress *resource_addr;
 	int expires;
 	bool_t terminating;
+	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
 };
 
 
@@ -819,6 +818,10 @@ SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
+/**
+ * Useful for out of dialog notify
+ * */
+LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
