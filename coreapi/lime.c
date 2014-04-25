@@ -557,6 +557,11 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 }
 
 int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) {
+	int retval;
+
+	if (cacheBuffer == NULL) {
+		return LIME_INVALID_CACHE;
+	}
 	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
 	uint8_t selfZidHex[25];
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
@@ -566,7 +571,14 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	lime_strToUint8(selfZid, selfZidHex, 24);
 
 	/* parse the message into an xml doc */
-	xmlDocPtr xmlEncryptedMessage = xmlParseDoc(message);
+	/* make sure we have a valid xml message before trying to parse it */
+	if (memcmp(message, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38) != 0 ) {
+		return LIME_INVALID_ENCRYPTED_MESSAGE;
+	}
+	xmlDocPtr xmlEncryptedMessage = xmlParseDoc((const xmlChar *)message);
+	if (xmlEncryptedMessage == NULL) {
+		return LIME_INVALID_ENCRYPTED_MESSAGE;
+	}
 
 	/* retrieve the sender ZID which is the first child of root */
 	limeKey_t associatedKey;
@@ -588,7 +600,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	if (peerZidHex != NULL) {
 		/* get from cache the matching key */
-		int retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
+		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
 
 		if (retval == 0) {
 			/* retrieve the portion of message which is encrypted with our key */
@@ -633,14 +645,33 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	}
 
 	/* shall we derive our key before going for decryption */
-	if (usedSessionIndex>associatedKey.sessionIndex) {
-		/* TODO */
+	if (usedSessionIndex < associatedKey.sessionIndex) {
+		/* something wen't wrong with the cache, this shall never happend */
+		free(encryptedMessage);
+		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+	}
+
+	if ((usedSessionIndex - associatedKey.sessionIndex > MAX_DERIVATION_NUMBER) ) {
+		/* we missed to many messages, ask for a cache reset via a ZRTP call */
+		free(encryptedMessage);
+		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+	}
+
+	while (usedSessionIndex>associatedKey.sessionIndex) {
+		lime_deriveKey(&associatedKey);
 	}
 
 	/* decrypt the message */
 	*output = (uint8_t *)malloc(encryptedMessageLength - 16 +1); /* plain message is same length than encrypted one with 16 bytes less for the tag + 1 to add the null termination char */
-	lime_decryptMessage(&associatedKey, encryptedMessage, encryptedMessageLength, selfZid, *output);
+	retval = lime_decryptMessage(&associatedKey, encryptedMessage, encryptedMessageLength, selfZid, *output);
+
 	free(encryptedMessage);
+
+	if (retval!=0 ) {
+		free(*output);
+		*output = NULL;
+		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
+	}
 
 	/* update used key */
 	lime_deriveKey(&associatedKey);

@@ -1498,6 +1498,8 @@ LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
+LINPHONE_PUBLIC void linphone_core_set_lime(LinphoneCore *lc, bool_t val);
+
 LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 

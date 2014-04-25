@@ -26,10 +26,6 @@
 #include "private.h"
 #include "lpconfig.h"
 
-#include <libxml/xmlwriter.h>
-
-#include "lime.h"
-
 #define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
 #define COMPOSING_DEFAULT_REFRESH_TIMEOUT 60
 #define COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT 120
@@ -203,54 +199,21 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,lp_config_get_int(cr->lc->config,"sip","chat_msg_with_contact",0));
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
+
+
 	if (msg->external_body_url) {
 		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
-		sal_message_send(op,identity,cr->peer,content_type, NULL);
+		sal_message_send(op,identity,cr->peer,content_type, NULL, NULL);
 		ms_free(content_type);
 	} else {
-		uint8_t *multipartEncryptedMessage = NULL;
-		/* shall we try to encrypt the message?*/
-		if (1) { /* TODO : set a flag for message encryption into LinphoneChatRoom structure */
-			/* get the zrtp cache and parse it into an xml doc */
-			FILE *CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "r+");
-			ms_message("Cache file is %s", cr->lc->zrtp_secrets_cache);
-			if (CACHEFD == NULL) {
-				ms_warning("Unable to access ZRTP ZID cache to encrypt message");
-			} else {
-				fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-				int cacheSize = ftell(CACHEFD);     /* Get file length */
-				rewind(CACHEFD);               /* Back to start of file */
-				uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
-				fread(cacheString, 1, cacheSize, CACHEFD);
-				cacheString[cacheSize] = '\0';
-				cacheSize += 1;
-				fclose(CACHEFD);
-				xmlDocPtr cacheXml = xmlParseDoc(cacheString);
-				int retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg->message, (uint8_t *)linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)), &multipartEncryptedMessage);
-				if (retval != 0) {
-					ms_warning("Unable to encrypt message to %s error %x", linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)), retval);
-				}
-				/* dump updated cache to a string */
-				xmlChar *xmlStringOutput;
-				int xmlStringLength;
-				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-				/* write it to the cache file */
-				CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "w+");
-				fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
-				xmlFree(xmlStringOutput);
-				fclose(CACHEFD);
-
-
-				xmlFreeDoc(cacheXml);
-			}
-		}
-		if (multipartEncryptedMessage!=NULL) {
-			sal_text_send(op, identity, cr->peer,(const char *)multipartEncryptedMessage);
-			free(multipartEncryptedMessage);
+		if (cr->lc->lime == 1) { /* shall we try to encrypt messages? */
+			linphone_chat_message_ref(msg); /* ref the message or it may be destroyed by callback if the encryption failed */
+			sal_message_send(op, identity, cr->peer, "xml/cipher", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
 		} else {
 			sal_text_send(op, identity, cr->peer,msg->message);
 		}
 	}
+
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
 	msg->storage_id=linphone_chat_message_store(msg);
@@ -306,7 +269,6 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
 	char *cleanfrom;
-	char *from;
 	LinphoneChatMessage* msg;
 	const SalCustomHeader *ch;
 	
@@ -314,53 +276,12 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	linphone_address_clean(addr);
 	cr=linphone_core_get_chat_room(lc,addr);
 	cleanfrom=linphone_address_as_string(addr);
-	from=linphone_address_as_string_uri_only(addr);
 	if (cr==NULL){
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
 
-	/* shall we try to decrypt the message */
-	uint8_t *decryptedMessage = NULL;
-	if (1) { /* TODO : set a flag for message encryption into LinphoneChatRoom structure */
-		/* get the zrtp cache and parse it into an xml doc */
-		FILE *CACHEFD = fopen(cr->lc->zrtp_secrets_cache, "r+");
-		ms_message("Cache file is %s", lc->zrtp_secrets_cache);
-		if (CACHEFD == NULL) {
-			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
-		} else {
-			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-			int cacheSize = ftell(CACHEFD);     /* Get file length */
-			rewind(CACHEFD);               /* Back to start of file */
-			uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
-			fread(cacheString, 1, cacheSize, CACHEFD);
-			cacheString[cacheSize] = '\0';
-			cacheSize += 1;
-			fclose(CACHEFD);
-			xmlDocPtr cacheXml = xmlParseDoc(cacheString);
-			int retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)(sal_msg->text), &decryptedMessage);
-			if (retval != 0) {
-				ms_warning("Unable to decrypt message error %x", retval);
-			}
-			/* dump updated cache to a string */
-			xmlChar *xmlStringOutput;
-			int xmlStringLength;
-			xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
-			/* write it to the cache file */
-			CACHEFD = fopen(lc->zrtp_secrets_cache, "w+");
-			fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
-			xmlFree(xmlStringOutput);
-			fclose(CACHEFD);
-
-			xmlFreeDoc(cacheXml);
-		}
-	}
-
-	if (decryptedMessage == NULL) {
-		msg = linphone_chat_room_create_message(cr, sal_msg->text);
-	} else {
-		msg = linphone_chat_room_create_message(cr, (const char *)decryptedMessage);
-	}
+	msg = linphone_chat_room_create_message(cr, sal_msg->text);
 
 	linphone_chat_message_set_from(msg, cr->peer_url);
 	
@@ -384,7 +305,6 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
-	ms_free(from);
 }
 
 static int linphone_chat_room_remote_refresh_composing_expired(void *data, unsigned int revents) {
@@ -646,7 +566,7 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	}
 	content = linphone_chat_room_create_is_composing_xml(cr);
 	if (content != NULL) {
-		sal_message_send(op, identity, cr->peer, "application/im-iscomposing+xml", content);
+		sal_message_send(op, identity, cr->peer, "application/im-iscomposing+xml", content, NULL);
 		ms_free(content);
 	}
 }

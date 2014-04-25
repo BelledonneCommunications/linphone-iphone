@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
 
+#include "linphonecore.h"
+#include "private.h"
+#include "lime.h"
+#include <libxml/xmlwriter.h>
+
 static void process_error( SalOp* op) {
 	if (op->dir == SalOpDirOutgoing) {
 		op->base.root->callbacks.text_delivery_update(op, SalTextDeliveryFailed);
@@ -59,6 +64,11 @@ static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 	return strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("plain",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
+
+static bool_t is_cipher_xml(belle_sip_header_content_type_t* content_type) {
+	return strcmp("xml",belle_sip_header_content_type_get_type(content_type))==0
+			&&	strcmp("cipher",belle_sip_header_content_type_get_subtype(content_type))==0;
+}
 static bool_t is_external_body(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
@@ -69,7 +79,7 @@ static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
 }
 
 static void add_message_accept(belle_sip_message_t *msg){
-	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml"));
+	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cipher"));
 }
 
 void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event){
@@ -85,11 +95,58 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	char* from;
 	bool_t plain_text=FALSE;
 	bool_t external_body=FALSE;
+	bool_t cipher_xml=FALSE;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
+	/* check if we have a xml/cipher message to be decrypted */
+	uint8_t *decryptedMessage = NULL;
+	if (content_type && (cipher_xml=is_cipher_xml(content_type))) {
+		/* access the zrtp cache to get keys needed to decipher the message */
+		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
+		ms_message("Cache file is %s", lc->zrtp_secrets_cache);
+		if (CACHEFD == NULL) {
+			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
+		} else {
+			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
+			int cacheSize = ftell(CACHEFD);     /* Get file length */
+			rewind(CACHEFD);               /* Back to start of file */
+			uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
+			fread(cacheString, 1, cacheSize, CACHEFD);
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			xmlDocPtr cacheXml = xmlParseDoc(cacheString);
+			free(cacheString);
+			int retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
+			if (retval != 0) {
+				ms_warning("JOHAN: Unable to decrypt message, reason %x", retval);
+				free(decryptedMessage);
+				xmlFreeDoc(cacheXml);
+				resp = belle_sip_response_create_from_request(req,488);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
+				return;
+			} else {
+				ms_warning("JOHAN : Yes we did decrypt the message and it is %s", decryptedMessage);
+				/* dump updated cache to a string */
+				xmlChar *xmlStringOutput;
+				int xmlStringLength;
+				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+				/* write it to the cache file */
+				CACHEFD = fopen(lc->zrtp_secrets_cache, "w+");
+				fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
+				xmlFree(xmlStringOutput);
+				fclose(CACHEFD);
+			}
+
+			xmlFreeDoc(cacheXml);
+		}
+
+	}
 	if (content_type && ((plain_text=is_plain_text(content_type))
-						|| (external_body=is_external_body(content_type)))) {
+						|| (external_body=is_external_body(content_type))
+						|| decryptedMessage!=NULL)) {
 		SalMessage salmsg;
 		char message_id[256]={0};
 	
@@ -104,7 +161,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 				,belle_sip_header_call_id_get_call_id(call_id)
 				,belle_sip_header_cseq_get_seq_number(cseq));
 		salmsg.from=from;
-		salmsg.text=plain_text?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
+		salmsg.text=plain_text?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):(cipher_xml?(char *)decryptedMessage:NULL);
 		salmsg.url=NULL;
 		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
 			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
@@ -143,11 +200,12 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	sal_process_incoming_message(op,event);
 }
 
-int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri){
 	belle_sip_request_t* req;
 	char content_type_raw[256];
 	size_t content_length = msg?strlen(msg):0;
 	time_t curtime=time(NULL);
+	uint8_t *multipartEncryptedMessage = NULL;
 	
 	if (op->dialog){
 		/*for SIP MESSAGE that are sent in call's dialog*/
@@ -165,11 +223,56 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
 		}
 	}
+
+	/* shall we try to encrypt the message?*/
+	if (strcmp(content_type, "xml/cipher") == 0) {
+		/* access the zrtp cache to get keys needed to cipher the message */
+		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
+		ms_message("Cache file is %s", lc->zrtp_secrets_cache);
+		if (CACHEFD == NULL) {
+			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+		} else {
+			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
+			int cacheSize = ftell(CACHEFD);     /* Get file length */
+			rewind(CACHEFD);               /* Back to start of file */
+			uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
+			fread(cacheString, 1, cacheSize, CACHEFD);
+			cacheString[cacheSize] = '\0';
+			cacheSize += 1;
+			fclose(CACHEFD);
+			xmlDocPtr cacheXml = xmlParseDoc(cacheString);
+			free(cacheString);
+			int retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
+			if (retval != 0) {
+				ms_warning("Unable to encrypt message to %s error %x", peer_uri, retval);
+				xmlFreeDoc(cacheXml);
+				free(multipartEncryptedMessage);
+				sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
+				op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
+				return 0;
+			} else {
+				ms_warning("Succes in encrypting message for %s to %s", to, peer_uri);
+				/* dump updated cache to a string */
+				xmlChar *xmlStringOutput;
+				int xmlStringLength;
+				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
+				/* write it to the cache file */
+				CACHEFD = fopen(lc->zrtp_secrets_cache, "w+");
+				fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
+				xmlFree(xmlStringOutput);
+				fclose(CACHEFD);
+				content_length = strlen((const char *)multipartEncryptedMessage);
+			}
+			xmlFreeDoc(cacheXml);
+		}
+	}
+
 	snprintf(content_type_raw,sizeof(content_type_raw),BELLE_SIP_CONTENT_TYPE ": %s",content_type);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_parse(content_type_raw)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),msg,content_length);
+	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),(multipartEncryptedMessage==NULL)?msg:(const char *)multipartEncryptedMessage,content_length);
 	return sal_op_send_request(op,req);
 
 }
@@ -186,7 +289,7 @@ int sal_message_reply(SalOp *op, SalReason reason){
 }
 
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
-	return sal_message_send(op,from,to,"text/plain",msg);
+	return sal_message_send(op,from,to,"text/plain",msg, NULL);
 }
 
 static belle_sip_listener_callbacks_t op_message_callbacks={0};

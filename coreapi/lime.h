@@ -6,6 +6,10 @@
 #define LIME_UNABLE_TO_ENCRYPT_MESSAGE 0x1004
 #define LIME_UNABLE_TO_DECRYPT_MESSAGE 0x1008
 #define LIME_NO_KEY_FOUND_FOR_PEER	0x1010
+#define LIME_INVALID_ENCRYPTED_MESSAGE 0x1020
+
+/* this define the maximum key derivation number allowed to get the caches back in sync in case of missed messages */
+#define MAX_DERIVATION_NUMBER 100
 
 #define LIME_SENDER	0x01
 #define LIME_RECEIVER 0x02
