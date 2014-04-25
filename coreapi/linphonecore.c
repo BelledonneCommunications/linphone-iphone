@@ -662,6 +662,7 @@ static void sip_config_read(LinphoneCore *lc)
 		sal_use_session_timers(lc->sal,200);
 	}
 
+	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);

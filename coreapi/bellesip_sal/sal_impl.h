@@ -47,6 +47,7 @@ struct Sal{
 	bool_t use_dates;
 	bool_t auto_contacts;
 	bool_t enable_test_features;
+	bool_t no_initial_route;
 };
 
 typedef enum SalOpState {
