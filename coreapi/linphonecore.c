@@ -697,7 +697,7 @@ static void sip_config_read(LinphoneCore *lc)
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
-	tmp=lp_config_get_int(lc->config,"sip","lime",0);
+	tmp=lp_config_get_int(lc->config,"sip","lime",1);
 	linphone_core_set_lime(lc,tmp);
 
 	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
