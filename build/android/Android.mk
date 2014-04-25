@@ -64,7 +64,8 @@ LOCAL_SRC_FILES := \
 	xml.c \
 	xml2lpc.c \
 	lpc2xml.c \
-	remote_provisioning.c
+	remote_provisioning.c \
+	lime.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -109,7 +110,8 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
-	$(LOCAL_PATH)/../../externals/build/libxml2
+	$(LOCAL_PATH)/../../externals/build/libxml2 \
+	$(LOCAL_PATH)/../../externals/polarssl/include
 
 LOCAL_LDLIBS += -llog -ldl
 
