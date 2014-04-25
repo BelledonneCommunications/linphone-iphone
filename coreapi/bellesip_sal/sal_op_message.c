@@ -105,7 +105,6 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		/* access the zrtp cache to get keys needed to decipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
-		ms_message("Cache file is %s", lc->zrtp_secrets_cache);
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
 		} else {
@@ -121,14 +120,13 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			free(cacheString);
 			int retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
 			if (retval != 0) {
-				ms_warning("JOHAN: Unable to decrypt message, reason %x", retval);
+				ms_warning("Unable to decrypt message, reason %x", retval);
 				free(decryptedMessage);
 				xmlFreeDoc(cacheXml);
 				resp = belle_sip_response_create_from_request(req,488);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 				return;
 			} else {
-				ms_warning("JOHAN : Yes we did decrypt the message and it is %s", decryptedMessage);
 				/* dump updated cache to a string */
 				xmlChar *xmlStringOutput;
 				int xmlStringLength;
@@ -229,7 +227,6 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		/* access the zrtp cache to get keys needed to cipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
-		ms_message("Cache file is %s", lc->zrtp_secrets_cache);
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
 		} else {
@@ -245,14 +242,13 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			free(cacheString);
 			int retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
 			if (retval != 0) {
-				ms_warning("Unable to encrypt message to %s error %x", peer_uri, retval);
+				ms_warning("Unable to encrypt message for %s error %x", peer_uri, retval);
 				xmlFreeDoc(cacheXml);
 				free(multipartEncryptedMessage);
 				sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
 				op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
 				return 0;
 			} else {
-				ms_warning("Succes in encrypting message for %s to %s", to, peer_uri);
 				/* dump updated cache to a string */
 				xmlChar *xmlStringOutput;
 				int xmlStringLength;
