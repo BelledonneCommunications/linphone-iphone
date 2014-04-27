@@ -1127,7 +1127,7 @@ static BOOL libStarted = FALSE;
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
-		[self resignActive];
+		[self enterBackgroundMode];
 	}
 		
 }
@@ -1157,7 +1157,9 @@ static BOOL libStarted = FALSE;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configuringStateChangedNotificationHandler:) name:kLinphoneConfiguringStateUpdate object:nil];
-
+	
+	/*call iterate once immediately in order to initiate background connections with sip server, if any */
+	linphone_core_iterate(theLinphoneCore);
     // start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
 													 target:self
@@ -1273,6 +1275,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 - (void) startCallPausedLongRunningTask {
 	pausedCallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot be paused any more, too late"];
+		[[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
 	}];
 	[LinphoneLogger log:LinphoneLoggerLog format:@"Long running task started, remaining [%g s] because at least one call is paused"
 	 ,[[UIApplication  sharedApplication] backgroundTimeRemaining]];

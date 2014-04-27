@@ -134,18 +134,23 @@
         // we've been woken up directly to background;
         if( !start_at_boot || !background_mode ) {
             // autoboot disabled or no background, and no push: do nothing and wait for a real launch
+			/*output a log with NSLog, because the ortp logging system isn't activated yet at this time*/
+			NSLog(@"Linphone launch doing nothing because start_at_boot or background_mode are not activated.", NULL);
             return YES;
         }
 
     }
-    
+	bgStartId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+		[LinphoneLogger log:LinphoneLoggerWarning format:@"Background task for application launching expired."];
+		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
+	}];
     [self startApplication];
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif){
 		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
 		[self processRemoteNotification:remoteNotif];
 	}
-    
+    if (bgStartId!=UIBackgroundTaskInvalid) [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
     [[PhoneMainView instance] updateStatusBar:nil];
 
     return YES;

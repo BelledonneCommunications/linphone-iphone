@@ -632,6 +632,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	}
 
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "backgroundmode_preference", isbackgroundModeEnabled);
+	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "start_at_boot_preference", [self boolForKey:@"start_at_boot_preference"]);
 
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", firstloginview);
