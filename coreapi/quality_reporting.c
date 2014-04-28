@@ -55,7 +55,7 @@ static char * float_to_one_decimal_string(float f) {
 	int floor_part = (int) rounded_f;
 	int one_decimal_part = floorf (10 * (rounded_f - floor_part) + .5f);
 
-	return ms_strdup_printf(_("%d.%d"), floor_part, one_decimal_part);
+	return ms_strdup_printf("%d.%d", floor_part, one_decimal_part);
 }
 
 static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offset, const char *fmt, va_list args) {
@@ -354,9 +354,9 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type) {
 		return;
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
-	STR_REASSIGN(report->info.local_group, ms_strdup_printf(_("linphone-%s-%s-%s"), (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
+	STR_REASSIGN(report->info.local_group, ms_strdup_printf("linphone-%s-%s-%s", (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
 		linphone_core_get_user_agent_name(), report->info.call_id));
-	STR_REASSIGN(report->info.remote_group, ms_strdup_printf(_("linphone-%s-%s-%s"), (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
+	STR_REASSIGN(report->info.remote_group, ms_strdup_printf("linphone-%s-%s-%s", (stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
 		linphone_call_get_remote_user_agent(call), report->info.call_id));
 
 	if (call->dir == LinphoneCallIncoming) {
