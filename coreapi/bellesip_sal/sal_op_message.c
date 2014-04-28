@@ -229,6 +229,9 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+			sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
+			op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
+			return 0;
 		} else {
 			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
 			int cacheSize = ftell(CACHEFD);     /* Get file length */
