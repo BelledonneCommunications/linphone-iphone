@@ -235,7 +235,8 @@ static void reporting_publish(const LinphoneCall* call, const reporting_session_
 
 	// if the call was hungup too early, we might have invalid IPs information
 	// in that case, we abort the report since it's not useful data
-	if (strlen(report->info.local_addr.ip) == 0 || strlen(report->info.remote_addr.ip) == 0) {
+	if (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0
+		|| report->info.remote_addr.ip == NULL || strlen(report->info.remote_addr.ip) == 0) {
 		ms_warning("The call was hang up too early (duration: %d sec) and IP could "
 			"not be retrieved so dropping this report", linphone_call_get_duration(call));
 		return;
