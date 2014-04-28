@@ -794,11 +794,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
-		if (cstate==LinphoneCallReleased){
 
+		if (cstate==LinphoneCallEnd){
 			if (call->log->status == LinphoneCallSuccess)
 				linphone_reporting_publish(call);
+		}
 
+		if (cstate==LinphoneCallReleased){
 			if (call->op!=NULL) {
 				/*transfer the last error so that it can be obtained even in Released state*/
 				if (call->non_op_error.reason==SalReasonNone){
@@ -2718,7 +2720,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
-	
+
 	if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
 		stats->round_trip_delay = rtp_session_get_round_trip_propagation(ms->sessions.rtp_session);
 		if(stats->received_rtcp != NULL)
@@ -2753,11 +2755,11 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	MediaStream *ms=stream_index==0 ? (MediaStream *)call->audiostream : (MediaStream *)call->videostream; /*assumption to remove*/
 	OrtpEvQueue *evq;
 	OrtpEvent *ev;
-	
+
 	if (ms==NULL) return;
 	/* Ensure there is no dangling ICE check list. */
 	if (call->ice_session == NULL) ms->ice_check_list = NULL;
-	
+
 	switch(ms->type){
 		case AudioStreamType:
 			audio_stream_iterate((AudioStream*)ms);
@@ -2776,10 +2778,10 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	while ((evq=stream_index==0 ? call->audiostream_app_evq : call->videostream_app_evq)  && (NULL != (ev=ortp_ev_queue_get(evq)))){
 		OrtpEventType evt=ortp_event_get_type(ev);
 		OrtpEventData *evd=ortp_event_get_data(ev);
-		
+
 		linphone_call_stats_fill(&call->stats[stream_index],ms,ev);
 		linphone_call_notify_stats_updated(call,stream_index);
-		
+
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
 			if (ms->type==AudioStreamType)
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
