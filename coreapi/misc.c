@@ -168,12 +168,6 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 		case PAYLOAD_AUDIO_PACKETIZED:
 			codec_band=get_audio_payload_bandwidth(lc,pt);
 			ret=bandwidth_is_greater(bandwidth_limit*1000,codec_band);
-			/*hack to avoid using uwb codecs when having low bitrate and video*/
-			if (bandwidth_is_greater(199,bandwidth_limit)){
-				if (linphone_core_video_enabled(lc) && pt->clock_rate>16000){
-					ret=FALSE;
-				}
-			}
 			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
 			break;
 		case PAYLOAD_VIDEO:

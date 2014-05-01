@@ -39,11 +39,20 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
+		
+		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
+		if (refpt->mime_type && strcasecmp(refpt->mime_type,"opus")==0 && refpt->channels==1
+			&& strcasecmp(pt->mime_type,refpt->mime_type)==0){
+			pt->channels=1; /*so that we respond with same number of channels */
+			candidate=pt;
+			break;
+		}
+		
 		/* the compare between G729 and G729A is for some stupid uncompliant phone*/
 		if ( pt->mime_type && refpt->mime_type &&
 			(strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
 			(strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
-			&& pt->clock_rate==refpt->clock_rate){
+			&& pt->clock_rate==refpt->clock_rate && pt->channels==refpt->channels){
 			candidate=pt;
 			/*good candidate, check fmtp for H264 */
 			if (strcasecmp(pt->mime_type,"H264")==0){
@@ -106,7 +115,9 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				res=ms_list_append(res,newp);
 			}
 		}else{
-			ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
+			if (p2->channels>0)
+				ms_message("No match for %s/%i/%i",p2->mime_type,p2->clock_rate,p2->channels);
+			else ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
 		}
 	}
 	if (reading_response){
