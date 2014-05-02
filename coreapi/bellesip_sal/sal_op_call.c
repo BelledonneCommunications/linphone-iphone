@@ -597,7 +597,7 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 
 static belle_sip_header_allow_t *create_allow(){
 	belle_sip_header_allow_t* header_allow;
-	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO, UPDATE");
 	return header_allow;
 }
 
@@ -609,8 +609,8 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Supported", "timer"));
 	}
 	if (op->base.local_media){
-			op->sdp_offering=TRUE;
-			set_sdp_from_desc(BELLE_SIP_MESSAGE(invite),op->base.local_media);
+		op->sdp_offering=TRUE;
+		set_sdp_from_desc(BELLE_SIP_MESSAGE(invite),op->base.local_media);
 	}else op->sdp_offering=FALSE;
 	return;
 }
