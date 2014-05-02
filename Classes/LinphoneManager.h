@@ -73,6 +73,8 @@ typedef enum _Connectivity {
     none
 } Connectivity;
 
+extern const int kLinphoneAudioVbrCodecDefaultBitrate;
+
 /* Application specific call context */
 typedef struct _CallContext {
     LinphoneCall* call;
@@ -147,6 +149,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)refreshRegisters;
 
 - (bool)allowSpeaker;
+
+- (void)configureVbrCodecs;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;

@@ -63,6 +63,8 @@ NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpda
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 
 
+const int kLinphoneAudioVbrCodecDefaultBitrate=36; /*you can override this from linphonerc or linphonerc-factory*/
+
 extern void libmsilbc_init(void);
 extern void libmsamr_init(void);
 extern void libmsx264_init(void);
@@ -1706,6 +1708,23 @@ static void audioRouteChangeListenerCallback (
     return TRUE;
 }
 
+- (void)configureVbrCodecs{
+	PayloadType *pt;
+	int bitrate=lp_config_get_int(configDb,"audio","codec_bitrate_limit",kLinphoneAudioVbrCodecDefaultBitrate);/*default value is in linphonerc or linphonerc-factory*/
+	pt=linphone_core_find_payload_type(theLinphoneCore, "opus", 48000, -1);
+	if (pt){
+		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
+	}
+	pt=linphone_core_find_payload_type(theLinphoneCore, "mpeg4-generic", 44100, -1);
+	if (pt){
+		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
+	}
+	pt=linphone_core_find_payload_type(theLinphoneCore, "mpeg4-generic", 22050, -1);
+	if (pt){
+		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
+	}
+}
+
 
 #pragma mark - LPConfig Functions
 
@@ -1858,5 +1877,6 @@ static void audioRouteChangeListenerCallback (
             
     }
 }
+
 
 @end
