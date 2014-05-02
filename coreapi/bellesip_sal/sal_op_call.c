@@ -597,7 +597,7 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 
 static belle_sip_header_allow_t *create_allow(){
 	belle_sip_header_allow_t* header_allow;
-	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO, UPDATE");
+	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
 	return header_allow;
 }
 

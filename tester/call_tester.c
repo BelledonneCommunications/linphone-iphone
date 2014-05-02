@@ -25,6 +25,7 @@
 #include "liblinphone_tester.h"
 
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
+static void disable_all_codecs_except_one(LinphoneCore *lc, const char *mime);
 
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
@@ -245,6 +246,39 @@ static void simple_call(void) {
 	CU_ASSERT_TRUE(call(pauline,marie));
 	liblinphone_tester_check_rtcp(marie,pauline);
 
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_specified_codec_bitrate(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	const LinphoneCallStats *pauline_stats,*marie_stats;
+	bool_t call_ok;
+	if (linphone_core_find_payload_type(marie->lc,"opus",48000,-1)==NULL){
+		ms_warning("opus codec not supported, test skipped.");
+		goto end;
+	}
+	
+	disable_all_codecs_except_one(marie->lc,"opus");
+	disable_all_codecs_except_one(pauline->lc,"opus");
+	
+	linphone_core_set_payload_type_bitrate(marie->lc,
+		linphone_core_find_payload_type(marie->lc,"opus",48000,-1),
+		50);
+	linphone_core_set_payload_type_bitrate(pauline->lc,
+		linphone_core_find_payload_type(pauline->lc,"opus",48000,-1),
+		24);
+	
+	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (!call_ok) goto end;
+	liblinphone_tester_check_rtcp(marie,pauline);
+	marie_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
+	pauline_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
+	CU_ASSERT_TRUE(marie_stats->download_bandwidth<30);
+	CU_ASSERT_TRUE(pauline_stats->download_bandwidth>45);
+
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2122,6 +2156,7 @@ test_t call_tests[] = {
 	{ "Call statistics not used if no config", statistics_not_used_without_config},
 	{ "Call statistics not sent if call did not start", statistics_not_sent_if_call_not_started},
 	{ "Call statistics sent if call ended normally", statistics_sent_at_call_termination},
+	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate}
 };
 
 test_suite_t call_test_suite = {
