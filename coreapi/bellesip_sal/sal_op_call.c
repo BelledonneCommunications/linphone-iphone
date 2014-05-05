@@ -560,6 +560,18 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			belle_sip_server_transaction_send_response(server_transaction,sal_op_create_response_from_request(op,req,481));
 		} else if (strcmp("MESSAGE",method)==0){
 			sal_process_incoming_message(op,event);
+		} else if (strcmp("UPDATE",method)==0) {
+			/*rfc 3311
+			 * 5.2 Receiving an UPDATE
+			 * ...
+			 * If the UAS cannot change the session parameters without prompting the user, it SHOULD reject
+   	   	   	 * the request with a 504 response.
+			 */
+			resp=sal_op_create_response_from_request(op,req,504);
+			belle_sip_message_add_header(	BELLE_SIP_MESSAGE(resp)
+											,belle_sip_header_create( "Warning", "Cannot change the session parameters without prompting the user"));
+			belle_sip_server_transaction_send_response(server_transaction,resp);
+			return;
 		}else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 			unsupported_method(server_transaction,req);
