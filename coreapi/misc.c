@@ -1094,7 +1094,7 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
 	/*avoid ipv6 link-local addresses*/
-	if (type==AF_INET6 && strchr(result,'%')!=NULL){
+	if (p_addr->sa_family==AF_INET6 && strchr(result,'%')!=NULL){
 		strcpy(result,"::1");
 		close_socket(sock);
 		return -1;
