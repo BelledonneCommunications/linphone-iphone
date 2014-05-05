@@ -177,7 +177,7 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 }
 
 static void handle_notify(SalOp *op, belle_sip_request_t *req){
-	belle_sip_response_t* resp;
+	belle_sip_response_t* resp=NULL;
 	belle_sip_server_transaction_t* server_transaction=op->pending_server_trans;
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	SalSubscribeStatus sub_state;
@@ -202,7 +202,7 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 			ms_warning("Wrongly formatted presence document.");
 			resp = sal_op_create_response_from_request(op, req, 488);
 		}
-		belle_sip_server_transaction_send_response(server_transaction,resp);
+		if (resp) belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 }
 
