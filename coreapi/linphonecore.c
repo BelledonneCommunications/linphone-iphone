@@ -1527,7 +1527,9 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
 				strncpy(result,"::1",LINPHONE_IPADDR_SIZE);
 				return;
 			}
-		}else af=AF_INET;
+		}
+		/*in all other cases use IPv4*/
+		af=AF_INET;
 	}
 	if (linphone_core_get_local_ip_for(af,NULL,result)==0)
 		return;

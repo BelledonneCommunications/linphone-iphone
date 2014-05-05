@@ -1000,12 +1000,12 @@ bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
 #ifdef HAVE_GETIFADDRS
 
 #include <ifaddrs.h>
-static int get_local_ip_with_getifaddrs(int type, char *address, int size)
-{
+static int get_local_ip_with_getifaddrs(int type, char *address, int size){
 	struct ifaddrs *ifp;
 	struct ifaddrs *ifpstart;
-	int ret = 0;
-
+	char retaddr[LINPHONE_IPADDR_SIZE]={0};
+	bool_t found=FALSE;
+	
 	if (getifaddrs(&ifpstart) < 0) {
 		return -1;
 	}
@@ -1022,17 +1022,18 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 			if(getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
 						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
-						address, size, NULL, 0, NI_NUMERICHOST) == 0) {
-				if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+						retaddr, size, NULL, 0, NI_NUMERICHOST) == 0) {
+				if (strchr(retaddr, '%') == NULL) {	/*avoid ipv6 link-local addresses */
 					/*ms_message("getifaddrs() found %s",address);*/
-					ret++;
+					found=TRUE;
 					break;
 				}
 			}
 		}
 	}
 	freeifaddrs(ifpstart);
-	return ret;
+	if (found) strncpy(address,retaddr,size);
+	return found;
 }
 #endif
 
