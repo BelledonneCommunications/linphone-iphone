@@ -1189,13 +1189,6 @@ const char * linphone_core_get_version(void){
 static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *const_pt, int number, const char *recv_fmtp){
 	PayloadType *pt;
 
-#ifdef ANDROID
-	if (const_pt->channels==2){
-		ms_message("Stereo %s codec not supported on this platform.",const_pt->mime_type);
-		return;
-	}
-#endif
-
 	pt=payload_type_clone(const_pt);
 	if (number==-1){
 		/*look for a free number */
