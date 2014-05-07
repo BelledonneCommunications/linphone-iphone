@@ -110,7 +110,7 @@ const char *linphone_core_get_payload_type_description(LinphoneCore *lc, Payload
 
 void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
-		if (pt->flags & PAYLOAD_TYPE_IS_VBR){
+		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
 			pt->normal_bitrate=bitrate*1000;
 			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
 		}else{
