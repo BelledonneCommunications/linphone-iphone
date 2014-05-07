@@ -2089,23 +2089,32 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
-	char result[LINPHONE_IPADDR_SIZE];
 	bool_t new_status=lc->network_last_status;
+	char newip[LINPHONE_IPADDR_SIZE];
 
 	/* only do the network up checking every five seconds */
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
-		linphone_core_get_local_ip(lc,AF_UNSPEC,result);
-		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
+		linphone_core_get_local_ip(lc,AF_UNSPEC,newip);
+		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
-		}else new_status=FALSE;
-		lc->network_last_check=curtime;
+		}else new_status=FALSE; /*no network*/
+		
+		if (new_status==lc->network_last_status && new_status==TRUE && strcmp(newip,lc->localip)!=0){
+			/*IP address change detected*/
+			ms_message("IP address change detected.");
+			set_network_reachable(lc,FALSE,curtime);
+			lc->network_last_status=FALSE;
+		}
+		strncpy(lc->localip,newip,sizeof(lc->localip));
+		
 		if (new_status!=lc->network_last_status) {
 			if (new_status){
-				ms_message("New local ip address is %s",result);
+				ms_message("New local ip address is %s",lc->localip);
 			}
 			set_network_reachable(lc,new_status, curtime);
 			lc->network_last_status=new_status;
 		}
+		lc->network_last_check=curtime;
 	}
 }
 

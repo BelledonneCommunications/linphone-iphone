@@ -682,6 +682,7 @@ struct _LinphoneCore
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
 	bool_t pad[2];
+	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
