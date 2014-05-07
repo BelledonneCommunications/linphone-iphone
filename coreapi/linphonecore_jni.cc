@@ -1240,6 +1240,22 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isPayloadTypeEnabled
 																			,jlong pt) {
 	return (jboolean) linphone_core_payload_type_enabled((LinphoneCore*)lc, (PayloadType*)pt);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPayloadTypeBitrate(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt
+																			,jint bitrate) {
+	linphone_core_set_payload_type_bitrate((LinphoneCore*)lc,(PayloadType*)pt,bitrate);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getPayloadTypeBitrate(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt) {
+	return (jint)linphone_core_get_payload_type_bitrate((LinphoneCore*)lc,(PayloadType*)pt);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
