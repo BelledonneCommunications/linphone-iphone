@@ -123,10 +123,23 @@ belle_sip_header_t * sal_make_supported_header(Sal *sal){
 }
 
 static void add_initial_route_set(belle_sip_request_t *request, const MSList *list){
-	for (;list!=NULL;list=list->next){
-		SalAddress *addr=(SalAddress*)list->data;
-		belle_sip_header_route_t *route=belle_sip_header_route_create((belle_sip_header_address_t*)addr);
-		belle_sip_uri_t *uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)route);
+	const MSList *elem;
+	for (elem=list;elem!=NULL;elem=elem->next){
+		SalAddress *addr=(SalAddress*)elem->data;
+		belle_sip_header_route_t *route;
+		belle_sip_uri_t *uri;
+		/*Optimization: if the initial route set only contains one URI which is the same as the request URI, ommit it*/
+		if (elem==list && list->next==NULL){
+			belle_sip_uri_t *requri=belle_sip_request_get_uri(request);
+			/*skip the first route it is the same as the request uri*/
+			if (strcmp(sal_address_get_domain(addr),belle_sip_uri_get_host(requri))==0 ){
+				ms_message("Skipping top route of initial route-set because same as request-uri.");
+				continue;
+			}
+		}
+		
+		route=belle_sip_header_route_create((belle_sip_header_address_t*)addr);
+		uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)route);
 		belle_sip_uri_set_lr_param(uri,1);
 		belle_sip_message_add_header((belle_sip_message_t*)request,(belle_sip_header_t*)route);
 	}
