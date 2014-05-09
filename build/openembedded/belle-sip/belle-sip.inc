@@ -4,7 +4,7 @@ LICENSE = "GPL"
 DEPENDS = "polarssl antlr3c"
 RDEPENDS = "antlr3c"
 
-EXTRA_OECONF += "--with-antlr=${STAGING_DIR_HOST}${layout_exec_prefix}/usr --with-polarssl=${STAGING_DIR_HOST}${layout_exec_prefix}/usr"
+EXTRA_OECONF += "--disable-strict --with-antlr=${STAGING_DIR_HOST}${layout_exec_prefix}/usr --with-polarssl=${STAGING_DIR_HOST}${layout_exec_prefix}/usr"
 INSANE_SKIP_belle-sip += "dev-deps"
 
 inherit autotools pkgconfig
