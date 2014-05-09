@@ -242,7 +242,6 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
         CGContextRestoreGState(c);	
     }
 	
-    CGColorSpaceRelease(myColorspace);
     CGGradientRelease(myGradient);
     return;
 }
