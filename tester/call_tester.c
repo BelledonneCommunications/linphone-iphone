@@ -1347,7 +1347,7 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	} else {
-		ms_warning ("not tested because srtp not available");
+		ms_warning ("not tested because %s not available", linphone_media_encryption_to_string(mode));
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
