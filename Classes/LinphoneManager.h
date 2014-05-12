@@ -32,8 +32,8 @@
 #import "FastAddressBook.h"
 #import "Utils.h"
 
-#include "linphonecore.h"
-#include "linphone_tunnel.h"
+#include "linphone/linphonecore.h"
+#include "linphone/linphone_tunnel.h"
 
 extern const char *const LINPHONERC_APPLICATION_KEY;
 

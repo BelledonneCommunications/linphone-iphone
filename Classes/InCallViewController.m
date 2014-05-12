@@ -31,7 +31,7 @@
 #import "UILinphone.h"
 #import "DTActionSheet.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 
 const NSInteger SECURE_BUTTON_TAG=5;

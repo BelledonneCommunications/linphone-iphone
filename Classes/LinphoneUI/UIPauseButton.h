@@ -19,7 +19,7 @@
 
 #import "UIToggleButton.h"
 
-#import "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 typedef enum _UIPauseButtonType {
     UIPauseButtonType_CurrentCall,

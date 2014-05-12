@@ -28,7 +28,7 @@
 #import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation UILinphoneWindow
 

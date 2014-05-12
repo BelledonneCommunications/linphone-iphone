@@ -21,7 +21,7 @@
 
 #import "UICallCell.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @interface InCallTableViewController : UITableViewController {
     @private

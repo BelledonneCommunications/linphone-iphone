@@ -26,7 +26,7 @@
 #import "PhoneMainView.h"
 #import "Utils.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 
 @implementation DialerViewController

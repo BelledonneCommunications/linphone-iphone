@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 #include "UIPauseButton.h"
 #import "UITransparentTVCell.h"
 

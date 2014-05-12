@@ -32,7 +32,7 @@
 #import "ChatModel.h"
 
 #include "linphone/linphonecore_utils.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 #include "mediastreamer2/mscommon.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000

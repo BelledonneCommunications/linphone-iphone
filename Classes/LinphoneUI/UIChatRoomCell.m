@@ -26,7 +26,7 @@
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
 #import <NinePatch.h>
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation UIChatRoomCell
 

@@ -20,7 +20,7 @@
 #import "ChatTableViewController.h"
 #import "UIChatCell.h"
 
-#import "linphonecore.h"
+#import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"

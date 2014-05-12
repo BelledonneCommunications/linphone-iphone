@@ -22,7 +22,7 @@
 #import "Utils.h"
 #import "LinphoneManager.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation UISpeakerButton
 

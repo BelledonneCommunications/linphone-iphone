@@ -20,7 +20,7 @@
 #import <UIKit/UIKit.h>
 
 #import "UITransparentTVCell.h"
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @interface UIHistoryCell : UITransparentTVCell {
 }

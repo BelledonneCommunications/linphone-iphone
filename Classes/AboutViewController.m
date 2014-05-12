@@ -20,7 +20,7 @@
 #import "AboutViewController.h"
 #include "ConsoleViewController.h"
 #import "LinphoneManager.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 @implementation AboutViewController
 

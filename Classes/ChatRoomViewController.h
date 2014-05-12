@@ -28,7 +28,7 @@
 #import "ImageSharing.h"
 #import "OrderedDictionary.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
     LinphoneChatRoom *chatRoom;

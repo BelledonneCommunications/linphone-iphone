@@ -30,7 +30,7 @@
 #import "IASKPSTitleValueSpecifierViewCell.h"
 #import "IASKSpecifier.h"
 #import "IASKTextField.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 #ifdef DEBUG
 @interface UIDevice (debug)

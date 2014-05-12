@@ -19,7 +19,7 @@
 
 
 #import "Utils.h"
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation LinphoneLogger
 
