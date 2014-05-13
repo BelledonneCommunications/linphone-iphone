@@ -1404,7 +1404,10 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 	switch (event_id) {
 		case MS_VIDEO_DECODER_DECODING_ERRORS:
 			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
-			linphone_call_send_vfu_request(call);
+			if (call->videostream && (video_stream_is_decoding_error_to_be_reported(call->videostream, 5000) == TRUE)) {
+				video_stream_decoding_error_reported(call->videostream);
+				linphone_call_send_vfu_request(call);
+			}
 			break;
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			ms_message("First video frame decoded successfully");
