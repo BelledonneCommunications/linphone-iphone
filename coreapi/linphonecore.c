@@ -1953,7 +1953,6 @@ static int apply_transports(LinphoneCore *lc){
 	if (tr->udp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"udp",tr->udp_port);
-			return -1;
 		}
 	}
 	if (tr->tcp_port!=0){
@@ -2098,7 +2097,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE; /*no network*/
-		
+
 		if (new_status==lc->network_last_status && new_status==TRUE && strcmp(newip,lc->localip)!=0){
 			/*IP address change detected*/
 			ms_message("IP address change detected.");
@@ -2106,7 +2105,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 			lc->network_last_status=FALSE;
 		}
 		strncpy(lc->localip,newip,sizeof(lc->localip));
-		
+
 		if (new_status!=lc->network_last_status) {
 			if (new_status){
 				ms_message("New local ip address is %s",lc->localip);
