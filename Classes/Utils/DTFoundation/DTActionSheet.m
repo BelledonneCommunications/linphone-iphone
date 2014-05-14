@@ -60,7 +60,7 @@
 	if (block)
 	{
 		NSNumber *key = [NSNumber numberWithInt:retIndex];
-		[_actionsPerIndex setObject:[block copy] forKey:key];
+		[_actionsPerIndex setObject:[[block copy] autorelease] forKey:key];
 	}
 	
 	return retIndex;

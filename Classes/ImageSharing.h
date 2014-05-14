@@ -38,8 +38,8 @@
     int statusCode;
 }
 
-+ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
-+ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
++ (id)newImageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
++ (id)newImageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
 
 - (void)cancel;
 

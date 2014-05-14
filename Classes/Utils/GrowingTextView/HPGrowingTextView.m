@@ -358,7 +358,7 @@
         
         if ([textToMeasure.string hasSuffix:@"\n"])
         {
-            [textToMeasure appendAttributedString:[[NSAttributedString alloc] initWithString:@"-" attributes:@{NSFontAttributeName: internalTextView.font}]];
+            [textToMeasure appendAttributedString:[[[NSAttributedString alloc] initWithString:@"-" attributes:@{NSFontAttributeName: internalTextView.font}]autorelease]];
         }
         
         // NSAttributedString class method: boundingRectWithSize:options:context is
@@ -366,6 +366,7 @@
         CGRect size = [textToMeasure boundingRectWithSize:CGSizeMake(CGRectGetWidth(frame), MAXFLOAT)
                                                   options:NSStringDrawingUsesLineFragmentOrigin
                                                   context:nil];
+        [textToMeasure release];
         
         return CGRectGetHeight(size) + fudgeFactor.height;
     }

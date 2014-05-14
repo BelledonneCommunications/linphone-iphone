@@ -49,7 +49,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 - (void)setString:(const char*)value forKey:(NSString*)key {
 	id obj=Nil;
 	if (value) obj=[[NSString alloc] initWithCString:value encoding:[NSString defaultCStringEncoding] ];
-	[self setObject: obj forKey:key];
+	[self setObject:obj forKey:key];
+    [obj release];
 }
 
 - (NSString*)stringForKey:(NSString*) key {

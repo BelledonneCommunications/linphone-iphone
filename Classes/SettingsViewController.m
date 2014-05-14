@@ -365,6 +365,7 @@
     labelTitleView.text = viewController.title;
     [labelTitleView sizeToFit];
     viewController.navigationItem.titleView = labelTitleView;
+    [labelTitleView release];
     [super pushViewController:viewController animated:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [self.topViewController viewDidAppear:animated];
@@ -703,7 +704,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
 #ifdef DEBUG
     if([key isEqual:@"release_button"]) {
-        [[UIApplication sharedApplication].keyWindow.rootViewController  release];
+        [UIApplication sharedApplication].keyWindow.rootViewController = nil;
         [[UIApplication sharedApplication].keyWindow setRootViewController:nil];
         [[LinphoneManager instance]	destroyLibLinphone];
         [LinphoneManager instanceRelease];
