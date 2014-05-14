@@ -29,7 +29,7 @@ struct _xml2lpc_context {
 	LpConfig *lpc;
 	xml2lpc_function cbf;
 	void *ctx;
-	
+
 	xmlDoc *doc;
 	xmlDoc *xsd;
 	char errorBuffer[XML2LPC_BZ];
@@ -43,7 +43,7 @@ xml2lpc_context* xml2lpc_context_new(xml2lpc_function cbf, void *ctx) {
 		xmlCtx->lpc = NULL;
 		xmlCtx->cbf = cbf;
 		xmlCtx->ctx = ctx;
-		
+
 		xmlCtx->doc = NULL;
 		xmlCtx->xsd = NULL;
 		xmlCtx->errorBuffer[0]='\0';
@@ -70,19 +70,19 @@ static void xml2lpc_context_clear_logs(xml2lpc_context *ctx) {
 }
 
 static void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...) {
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	if(xmlCtx->cbf != NULL) {
 		xmlCtx->cbf((xmlCtx)->ctx, level, fmt, args);
 	}
- 	va_end(args);
+	va_end(args);
 }
 
 static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->errorBuffer);
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, XML2LPC_BZ-sl, fmt, args);
 	va_end(args);
 }
@@ -90,25 +90,25 @@ static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 static void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->warningBuffer);
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	vsnprintf(xmlCtx->warningBuffer + sl, XML2LPC_BZ-sl, fmt, args);
 	va_end(args);
 }
 
 #if 0
 static void dumpNodes(int level, xmlNode * a_node, xml2lpc_context *ctx) {
-    xmlNode *cur_node = NULL;
+	xmlNode *cur_node = NULL;
 
-    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-        if (cur_node->type == XML_ELEMENT_NODE) {
-        	xml2lpc_log(ctx, XML2LPC_DEBUG, "node level: %d type: Element, name: %s", level, cur_node->name);
-        } else {
-        	xml2lpc_log(ctx, XML2LPC_DEBUG, "node level: %d type: %d, name: %s", level, cur_node->type, cur_node->name);
-        }
+	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+		if (cur_node->type == XML_ELEMENT_NODE) {
+			xml2lpc_log(ctx, XML2LPC_DEBUG, "node level: %d type: Element, name: %s", level, cur_node->name);
+		} else {
+			xml2lpc_log(ctx, XML2LPC_DEBUG, "node level: %d type: %d, name: %s", level, cur_node->type, cur_node->name);
+		}
 
-        dumpNodes(level + 1, cur_node->children, ctx);
-    }
+		dumpNodes(level + 1, cur_node->children, ctx);
+	}
 }
 #endif
 
@@ -162,7 +162,7 @@ static int processEntry(xmlElement *element, const char *sectionName, xml2lpc_co
 	} else {
 		xml2lpc_log(ctx, XML2LPC_WARNING, "ignored entry with no \"name\" attribute line:%d",xmlGetLineNo((xmlNode*)element));
 	}
-        return 0;
+		return 0;
 }
 
 static int processSection(xmlElement *element, xml2lpc_context *ctx) {
@@ -185,13 +185,13 @@ static int processSection(xmlElement *element, xml2lpc_context *ctx) {
 					processEntry((xmlElement*)cur_node, name, ctx);
 				}
 			}
-			
-		}
-        } else {
-        	xml2lpc_log(ctx, XML2LPC_WARNING, "ignored section with no \"name\" attribute, line:%d", xmlGetLineNo((xmlNode*)element));
-        }
 
-        return 0;
+		}
+		} else {
+			xml2lpc_log(ctx, XML2LPC_WARNING, "ignored section with no \"name\" attribute, line:%d", xmlGetLineNo((xmlNode*)element));
+		}
+
+		return 0;
 }
 
 static int processConfig(xmlElement *element, xml2lpc_context *ctx) {
@@ -199,19 +199,19 @@ static int processConfig(xmlElement *element, xml2lpc_context *ctx) {
 
 	for (cur_node = element->children; cur_node; cur_node = cur_node->next) {
 		dumpNode(cur_node, ctx);
-		if (cur_node->type == XML_ELEMENT_NODE && 
+		if (cur_node->type == XML_ELEMENT_NODE &&
 			strcmp((const char*)cur_node->name, "section") == 0 ) {
 			processSection((xmlElement*)cur_node, ctx);
-        	}
-        	
-        }
+			}
+
+		}
 	return 0;
 }
 
 static int processDoc(xmlNode *node, xml2lpc_context *ctx) {
 	dumpNode(node, ctx);
-	
-	if (node->type == XML_ELEMENT_NODE && 
+
+	if (node->type == XML_ELEMENT_NODE &&
 		strcmp((const char*)node->name, "config") == 0 ) {
 		processConfig((xmlElement*)node, ctx);
 	} else {

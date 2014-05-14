@@ -17,9 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-/** 
+/**
  This header files defines the Signaling Abstraction Layer.
- The purpose of this layer is too allow experiment different call signaling 
+ The purpose of this layer is too allow experiment different call signaling
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 
@@ -30,9 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 
-#include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
-#include "ortp/ortp_srtp.h"
 #include "belle-sip/belle-sip.h"
 
 #ifndef LINPHONE_PUBLIC
@@ -171,7 +170,7 @@ typedef struct SalIceRemoteCandidate {
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
-	enum ortp_srtp_crypto_suite_t algo;
+	MSCryptoSuite algo;
 	char master_key[SAL_SRTP_KEY_SIZE];
 } SalSrtpCryptoAlgo;
 
@@ -531,6 +530,7 @@ void sal_verify_server_cn(Sal *ctx, bool_t verify);
 void sal_set_uuid(Sal*ctx, const char *uuid);
 int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
 void sal_enable_test_features(Sal*ctx, bool_t enabled);
+void sal_use_no_initial_route(Sal *ctx, bool_t enabled);
 
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);
@@ -572,6 +572,7 @@ const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 const char* sal_op_get_call_id(const SalOp *op);
+char* sal_op_get_dialog_id(const SalOp *op);
 
 const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);

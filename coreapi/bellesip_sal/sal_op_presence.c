@@ -164,6 +164,8 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 		return NULL;
 	if (belle_sip_header_content_length_get_content_length(content_length) == 0)
 		return NULL;
+	
+	if (body==NULL) return NULL;
 
 	op->base.root->callbacks.parse_presence_requested(op,
 							  belle_sip_header_content_type_get_type(content_type),
@@ -175,7 +177,7 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 }
 
 static void handle_notify(SalOp *op, belle_sip_request_t *req){
-	belle_sip_response_t* resp;
+	belle_sip_response_t* resp=NULL;
 	belle_sip_server_transaction_t* server_transaction=op->pending_server_trans;
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	SalSubscribeStatus sub_state;
@@ -183,30 +185,24 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 	if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
 		SalPresenceModel *presence_model = NULL;
 		const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-		if (body==NULL){
-			ms_error("No body in NOTIFY received from [%s]",sal_op_get_from(op));
-			resp = sal_op_create_response_from_request(op, req, 415);
-			belle_sip_server_transaction_send_response(server_transaction,resp);
-			return;
+		if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
+			sub_state=SalSubscribeTerminated;
+			ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
+		} else {
+			sub_state=SalSubscribeActive;
 		}
 		presence_model = process_presence_notification(op, req);
-		if (presence_model != NULL) {
+		if (presence_model != NULL || body==NULL) {
 			/* Presence notification body parsed successfully. */
-			if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
-				sub_state=SalSubscribeTerminated;
-				ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
-			} else {
-				sub_state=SalSubscribeActive;
-			}
+			
 			resp = sal_op_create_response_from_request(op, req, 200); /*create first because the op may be destroyed by notify_presence */
 			op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
-
-		} else {
+		} else if (body){
 			/* Formatting error in presence notification body. */
-			ms_error("Wrongly formatted presence notification received");
-			resp = sal_op_create_response_from_request(op, req, 400);
+			ms_warning("Wrongly formatted presence document.");
+			resp = sal_op_create_response_from_request(op, req, 488);
 		}
-		belle_sip_server_transaction_send_response(server_transaction,resp);
+		if (resp) belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 }
 

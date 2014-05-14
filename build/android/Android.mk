@@ -65,7 +65,8 @@ LOCAL_SRC_FILES := \
 	xml2lpc.c \
 	lpc2xml.c \
 	remote_provisioning.c \
-	lime.c
+	lime.c \
+	quality_reporting.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"

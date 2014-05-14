@@ -63,6 +63,7 @@ typedef struct _LpSection{
 } LpSection;
 
 struct _LpConfig{
+	int refcnt;
 	FILE *file;
 	char *filename;
 	MSList *sections;
@@ -293,6 +294,8 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 	char* strtok_storage = NULL;
 	char* line = strtok_r(ptr, "\n", &strtok_storage);
 
+	conf->refcnt=1;
+
 	while( line != NULL ){
 		current_section = lp_config_parse_line(conf,line,current_section);
 		line = strtok_r(NULL, "\n", &strtok_storage);
@@ -305,7 +308,7 @@ LpConfig * lp_config_new_from_buffer(const char *buffer){
 
 LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-
+	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
 		ms_message("Using (r/w) config information from %s", config_filename);
 		lpconfig->filename=ortp_strdup(config_filename);
@@ -354,11 +357,26 @@ void lp_item_set_value(LpItem *item, const char *value){
 }
 
 
-void lp_config_destroy(LpConfig *lpconfig){
+static void _lp_config_destroy(LpConfig *lpconfig){
 	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
 	ms_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
 	ms_list_free(lpconfig->sections);
 	free(lpconfig);
+}
+
+LpConfig *lp_config_ref(LpConfig *lpconfig){
+	lpconfig->refcnt++;
+	return lpconfig;
+}
+
+void lp_config_unref(LpConfig *lpconfig){
+	lpconfig->refcnt--;
+	if (lpconfig->refcnt==0)
+		_lp_config_destroy(lpconfig);
+}
+
+void lp_config_destroy(LpConfig *lpconfig){
+	lp_config_unref(lpconfig);
 }
 
 void lp_section_remove_item(LpSection *sec, LpItem *item){

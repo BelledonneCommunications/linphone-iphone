@@ -39,11 +39,20 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
+		
+		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
+		if (refpt->mime_type && strcasecmp(refpt->mime_type,"opus")==0 && refpt->channels==1
+			&& strcasecmp(pt->mime_type,refpt->mime_type)==0){
+			pt->channels=1; /*so that we respond with same number of channels */
+			candidate=pt;
+			break;
+		}
+		
 		/* the compare between G729 and G729A is for some stupid uncompliant phone*/
 		if ( pt->mime_type && refpt->mime_type &&
 			(strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
-		    (strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
-			&& pt->clock_rate==refpt->clock_rate){
+			(strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
+			&& pt->clock_rate==refpt->clock_rate && pt->channels==refpt->channels){
 			candidate=pt;
 			/*good candidate, check fmtp for H264 */
 			if (strcasecmp(pt->mime_type,"H264")==0){
@@ -56,7 +65,7 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 						mode2=atoi(value);
 					}
 					if (mode1==mode2)
-					    break; /*exact match */
+						break; /*exact match */
 				}
 			}else break;
 		}
@@ -69,7 +78,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 	MSList *res=NULL;
 	PayloadType *matched;
 	bool_t found_codec=FALSE;
-	
+
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
 		matched=find_payload_type_best_match(local,p2);
@@ -85,7 +94,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 					}else found_codec=TRUE;
 				}
 			}
-			
+
 			newp=payload_type_clone(matched);
 			if (p2->send_fmtp)
 				payload_type_set_send_fmtp(newp,p2->send_fmtp);
@@ -95,7 +104,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			payload_type_set_number(newp,remote_number);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
-				          newp->mime_type, local_number, remote_number);
+						  newp->mime_type, local_number, remote_number);
 				/*
 				 We must add this payload type with our local numbering in order to be able to receive it.
 				 Indeed despite we must sent with the remote numbering, we must be able to receive with
@@ -106,7 +115,9 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				res=ms_list_append(res,newp);
 			}
 		}else{
-			ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
+			if (p2->channels>0)
+				ms_message("No match for %s/%i/%i",p2->mime_type,p2->clock_rate,p2->channels);
+			else ms_message("No match for %s/%i",p2->mime_type,p2->clock_rate);
 		}
 	}
 	if (reading_response){
@@ -132,28 +143,28 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 	return res;
 }
 
-static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCryptoAlgo* remote, 
+static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCryptoAlgo* remote,
 	SalSrtpCryptoAlgo* result, unsigned int* choosen_local_tag, bool_t use_local_key) {
 	int i,j;
 	for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
 		if (remote[i].algo == 0)
 			break;
 
-        /* Look for a local enabled crypto algo that matches one of the proposed by remote */
+		/* Look for a local enabled crypto algo that matches one of the proposed by remote */
 		for(j=0; j<SAL_CRYPTO_ALGO_MAX; j++) {
 			if (remote[i].algo == local[j].algo) {
 				result->algo = remote[i].algo;
-            /* We're answering an SDP offer. Supply our master key, associated with the remote supplied tag */
+				/* We're answering an SDP offer. Supply our master key, associated with the remote supplied tag */
 				if (use_local_key) {
 					strncpy(result->master_key, local[j].master_key, 41);
 					result->tag = remote[i].tag;
-                    *choosen_local_tag = local[j].tag;
+					*choosen_local_tag = local[j].tag;
 				}
 				/* We received an answer to our SDP crypto proposal. Copy matching algo remote master key to result, and memorize local tag */
-            else {
+				else {
 					strncpy(result->master_key, remote[i].master_key, 41);
 					result->tag = local[j].tag;
-                    *choosen_local_tag = local[j].tag;
+					*choosen_local_tag = local[j].tag;
 				}
 				result->master_key[40] = '\0';
 				return TRUE;
@@ -205,8 +216,8 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 }
 
 static void initiate_outgoing(const SalStreamDescription *local_offer,
-    					const SalStreamDescription *remote_answer,
-    					SalStreamDescription *result){
+						const SalStreamDescription *remote_answer,
+						SalStreamDescription *result){
 	if (remote_answer->rtp_port!=0)
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	result->proto=remote_answer->proto;
@@ -233,8 +244,8 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 
 
 static void initiate_incoming(const SalStreamDescription *local_cap,
-    					const SalStreamDescription *remote_offer,
-    					SalStreamDescription *result, bool_t one_matching_codec){
+						const SalStreamDescription *remote_offer,
+						SalStreamDescription *result, bool_t one_matching_codec){
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
@@ -254,7 +265,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
 			result->rtp_port = 0;
-		
+
 	}
 	strcpy(result->ice_pwd, local_cap->ice_pwd);
 	strcpy(result->ice_ufrag, local_cap->ice_ufrag);
@@ -388,7 +399,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
 	result->ice_completed = local_capabilities->ice_completed;
-	
+
 	strcpy(result->name,local_capabilities->name);
 
 	// Handle session RTCP XR attribute

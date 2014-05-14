@@ -77,6 +77,11 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *p
 	return FALSE;
 }
 
+bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const PayloadType *pt){
+	if (pt->type==PAYLOAD_VIDEO) return TRUE;
+	return !!(pt->flags & PAYLOAD_TYPE_IS_VBR);
+}
+
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enabled){
 	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
@@ -88,7 +93,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
 }
 
 int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
-       return payload_type_get_number(pt);
+	return payload_type_get_number(pt);
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
@@ -103,77 +108,134 @@ const char *linphone_core_get_payload_type_description(LinphoneCore *lc, Payload
 	return NULL;
 }
 
-
-/*this function makes a special case for speex/8000.
-This codec is variable bitrate. The 8kbit/s mode is interesting when having a low upload bandwidth, but its quality
-is not very good. We 'd better use its 15kbt/s mode when we have enough bandwidth*/
-static int get_codec_bitrate(LinphoneCore *lc, const PayloadType *pt){
-	int upload_bw=linphone_core_get_upload_bandwidth(lc);
-	if (bandwidth_is_greater(upload_bw,129) || (bandwidth_is_greater(upload_bw,33) && !linphone_core_video_enabled(lc)) ) {
-		if (strcmp(pt->mime_type,"speex")==0 && pt->clock_rate==8000){
-			return 15000;
+void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate){
+	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
+		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
+			pt->normal_bitrate=bitrate*1000;
+			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
+		}else{
+			ms_error("Cannot set an explicit bitrate for codec %s/%i, because it is not VBR.",pt->mime_type,pt->clock_rate);
+			return;
 		}
 	}
-	return pt->normal_bitrate;
+	ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
 }
+
 
 /*
  *((codec-birate*ptime/8) + RTP header + UDP header + IP header)*8/ptime;
  *ptime=1/npacket
  */
-static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt){
+
+static double get_audio_payload_bandwidth_from_codec_bitrate(const PayloadType *pt){
 	double npacket=50;
 	double packet_size;
 	int bitrate;
+	
 	if (strcmp(payload_type_get_mime(&payload_type_aaceld_44k), payload_type_get_mime(pt))==0) {
 		/*special case of aac 44K because ptime= 10ms*/
 		npacket=100;
+	}else if (strcmp(payload_type_get_mime(&payload_type_ilbc), payload_type_get_mime(pt))==0) {
+		npacket=1000/30.0;
 	}
-		
-	bitrate=get_codec_bitrate(lc,pt);
+
+	bitrate=pt->normal_bitrate;
 	packet_size= (((double)bitrate)/(npacket*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
 	return packet_size*8.0*npacket;
 }
 
-void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt){
-	call->audio_bw=(int)(ceil(get_audio_payload_bandwidth(call->core,pt)/1000.0)); /*rounding codec bandwidth should be avoid, specially for AMR*/
+typedef struct vbr_codec_bitrate{
+	int max_avail_bitrate;
+	int min_rate;
+	int recomended_bitrate;
+}vbr_codec_bitrate_t;
+
+static vbr_codec_bitrate_t defauls_vbr[]={
+	//{ 100, 44100, 100 },
+	{ 64, 44100, 50 },
+	{ 64, 16000, 40 },
+	{ 32, 16000, 32 },
+	{ 32, 8000, 32 },
+	{ 0 , 8000, 24 },
+	{ 0 , 0, 0 }
+};
+
+static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
+	vbr_codec_bitrate_t *it;
+	if (maxbw<=0) maxbw=defauls_vbr[0].max_avail_bitrate;
+	for(it=defauls_vbr;it->min_rate!=0;it++){
+		if (maxbw>=it->max_avail_bitrate && clock_rate>=it->min_rate)
+			return it->recomended_bitrate;
+	}
+	ms_error("lookup_vbr_typical_bitrate(): should not happen.");
+	return 32;
+}
+
+static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, int maxbw){
+	if (linphone_core_payload_type_is_vbr(lc,pt)){
+		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
+			ms_message("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
+			return pt->normal_bitrate/1000;
+		}
+		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
+	}else return (int)ceil(get_audio_payload_bandwidth_from_codec_bitrate(pt)/1000.0);/*rounding codec bandwidth should be avoid, specially for AMR*/
+}
+
+int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt){
+	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+					linphone_core_get_upload_bandwidth(lc));
+	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED){
+		return get_audio_payload_bandwidth(lc,pt,maxbw);
+	}else if (pt->type==PAYLOAD_VIDEO){
+		int video_bw;
+		linphone_core_update_allocated_audio_bandwidth(lc);
+		if (maxbw<=0) {
+			video_bw=1500; /*default bitrate for video stream when no bandwidth limit is set, around 1.5 Mbit/s*/
+		}else{
+			video_bw=get_remaining_bandwidth_for_video(maxbw,lc->audio_bw);
+		}
+		return video_bw;
+	}
+	return 0;
+}
+
+void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt, int maxbw){
+	call->audio_bw=get_audio_payload_bandwidth(call->core,pt,maxbw);
 	ms_message("Audio bandwidth for this call is %i",call->audio_bw);
 }
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	const MSList *elem;
-	PayloadType *max=NULL;
+	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+					linphone_core_get_upload_bandwidth(lc));
+	int max_codec_bitrate=0;
+	
 	for(elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		if (payload_type_enabled(pt)){
-			int pt_bitrate=get_codec_bitrate(lc,pt);
-			if (max==NULL) max=pt;
-			else if (max->normal_bitrate<pt_bitrate){
-				max=pt;
+			int pt_bitrate=get_audio_payload_bandwidth(lc,pt,maxbw);
+			if (max_codec_bitrate==0) {
+				max_codec_bitrate=pt_bitrate;
+			}else if (max_codec_bitrate<pt_bitrate){
+				max_codec_bitrate=pt_bitrate;
 			}
 		}
 	}
-	if (max) {
-		lc->audio_bw=(int)(get_audio_payload_bandwidth(lc,max)/1000.0);
+	if (max_codec_bitrate) {
+		lc->audio_bw=max_codec_bitrate;
 	}
 }
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, PayloadType *pt,  int bandwidth_limit)
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit)
 {
 	double codec_band;
 	bool_t ret=FALSE;
-	
+
 	switch (pt->type){
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
-			codec_band=get_audio_payload_bandwidth(lc,pt);
+			codec_band=get_audio_payload_bandwidth(lc,pt,bandwidth_limit);
 			ret=bandwidth_is_greater(bandwidth_limit*1000,codec_band);
-			/*hack to avoid using uwb codecs when having low bitrate and video*/
-			if (bandwidth_is_greater(199,bandwidth_limit)){
-				if (linphone_core_video_enabled(lc) && pt->clock_rate>16000){
-					ret=FALSE;
-				}
-			}
 			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
 			break;
 		case PAYLOAD_VIDEO:
@@ -187,43 +249,8 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, Payl
 }
 
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
-bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt)
-{
-	double codec_band;
-	int allowed_bw,video_bw;
-	bool_t ret=FALSE;
-
-	linphone_core_update_allocated_audio_bandwidth(lc);
-	allowed_bw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
-					linphone_core_get_upload_bandwidth(lc));
-	if (allowed_bw==0) {
-		allowed_bw=-1;
-		video_bw=1500; /*around 1.5 Mbit/s*/
-	}else
-		video_bw=get_video_bandwidth(allowed_bw,lc->audio_bw);
-
-	switch (pt->type){
-		case PAYLOAD_AUDIO_CONTINUOUS:
-		case PAYLOAD_AUDIO_PACKETIZED:
-			codec_band=get_audio_payload_bandwidth(lc,pt);
-			ret=bandwidth_is_greater(allowed_bw*1000,codec_band);
-			/*hack to avoid using uwb codecs when having low bitrate and video*/
-			if (bandwidth_is_greater(199,allowed_bw)){
-				if (linphone_core_video_enabled(lc) && pt->clock_rate>16000){
-					ret=FALSE;
-				}
-			}
-			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
-			break;
-		case PAYLOAD_VIDEO:
-			if (video_bw>0){
-				pt->normal_bitrate=video_bw*1000;
-				ret=TRUE;
-			}
-			else ret=FALSE;
-			break;
-	}
-	return ret;
+bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt){
+	return linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
 }
 
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
@@ -278,7 +305,7 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 	char buf[STUN_MAX_MESSAGE_SIZE];
 	int len = STUN_MAX_MESSAGE_SIZE;
 	StunAtrString username;
-   	StunAtrString password;
+	StunAtrString password;
 	StunMessage req;
 	int err;
 	memset(&req, 0, sizeof(StunMessage));
@@ -301,9 +328,9 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port){
 	char tmphost[NI_MAXHOST]={0};
 	char *p1, *p2;
-	
+
 	if ((sscanf(input, "[%64[^]]]:%d", tmphost, port) == 2) || (sscanf(input, "[%64[^]]]", tmphost) == 1)) {
-		
+
 	} else {
 		p1 = strchr(input, ':');
 		p2 = strrchr(input, ':');
@@ -324,9 +351,9 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 	char host[NI_MAXHOST];
 	int port_int=default_port;
 	int ret;
-	
+
 	linphone_parse_host_port(server,host,sizeof(host),&port_int);
-	
+
 	snprintf(port, sizeof(port), "%d", port_int);
 	memset(&hints,0,sizeof(hints));
 	hints.ai_family=AF_UNSPEC;
@@ -346,7 +373,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 
 static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id){
 	char buf[STUN_MAX_MESSAGE_SIZE];
-   	int len = STUN_MAX_MESSAGE_SIZE;
+	int len = STUN_MAX_MESSAGE_SIZE;
 	StunMessage resp;
 	len=recv(sock,buf,len,0);
 	if (len>0){
@@ -370,7 +397,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
 	StunCandidate *ac=&call->ac;
 	StunCandidate *vc=&call->vc;
-	
+
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
@@ -389,7 +416,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		struct timeval init,cur;
 		double elapsed;
 		int ret=0;
-		
+
 		if (ai==NULL){
 			ms_error("Could not obtain stun server addrinfo.");
 			return -1;
@@ -408,7 +435,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		got_video=FALSE;
 		ortp_gettimeofday(&init,NULL);
 		do{
-			
+
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
@@ -487,7 +514,7 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
 		ms_message("Stun server ping time is %i ms",ping_time_ms);
 		threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
-		
+
 		if (ping_time_ms>threshold){
 			/* we might be in a 2G network*/
 			params->low_bandwidth=TRUE;
@@ -536,7 +563,7 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc){
  * - have a cache of the stun server addrinfo
  * - this cached value is returned when it is non-null
  * - an asynchronous resolution is asked each time this function is called to ensure frequent refreshes of the cached value.
- * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is 
+ * - if no cached value exists, block for a short time; this case must be unprobable because the resolution will be asked each time the stun server value is
  * changed.
 **/
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
@@ -957,7 +984,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			p=n;
 		}
 	}else ret=AUDIO_STREAM_FEATURE_ALL;
-	
+
 	if (ret==AUDIO_STREAM_FEATURE_ALL){
 		/*since call recording is specified before creation of the stream in linphonecore,
 		* it will be requested on demand. It is not necessary to include it all the time*/
@@ -973,12 +1000,12 @@ bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
 #ifdef HAVE_GETIFADDRS
 
 #include <ifaddrs.h>
-static int get_local_ip_with_getifaddrs(int type, char *address, int size)
-{
+static int get_local_ip_with_getifaddrs(int type, char *address, int size){
 	struct ifaddrs *ifp;
 	struct ifaddrs *ifpstart;
-	int ret = 0;
-
+	char retaddr[LINPHONE_IPADDR_SIZE]={0};
+	bool_t found=FALSE;
+	
 	if (getifaddrs(&ifpstart) < 0) {
 		return -1;
 	}
@@ -987,7 +1014,7 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 #else
 	#define UP_FLAG IFF_RUNNING /* resources allocated */
 #endif
-	
+
 	for (ifp = ifpstart; ifp != NULL; ifp = ifp->ifa_next) {
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
 			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
@@ -995,17 +1022,18 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 			if(getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
 						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
-						address, size, NULL, 0, NI_NUMERICHOST) == 0) {
-				if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+						retaddr, size, NULL, 0, NI_NUMERICHOST) == 0) {
+				if (strchr(retaddr, '%') == NULL) {	/*avoid ipv6 link-local addresses */
 					/*ms_message("getifaddrs() found %s",address);*/
-					ret++;
+					found=TRUE;
 					break;
 				}
 			}
 		}
 	}
 	freeifaddrs(ifpstart);
-	return ret;
+	if (found) strncpy(address,retaddr,size);
+	return found;
 }
 #endif
 
@@ -1042,8 +1070,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	if (err<0) {
 		/*the network isn't reachable*/
 		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));
- 		freeaddrinfo(res);
- 		close_socket(sock);
+		freeaddrinfo(res);
+		close_socket(sock);
 		return -1;
 	}
 	freeaddrinfo(res);
@@ -1067,7 +1095,7 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
 	/*avoid ipv6 link-local addresses*/
-	if (type==AF_INET6 && strchr(result,'%')!=NULL){
+	if (p_addr->sa_family==AF_INET6 && strchr(result,'%')!=NULL){
 		strcpy(result,"::1");
 		close_socket(sock);
 		return -1;
@@ -1078,19 +1106,19 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	int err;
-        strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
-	
+	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+
 	if (dest==NULL){
 		if (type==AF_INET)
 			dest="87.98.157.38"; /*a public IP address*/
 		else dest="2a00:1450:8002::68";
 	}
-        err=get_local_ip_for_with_connect(type,dest,result);
+	err=get_local_ip_for_with_connect(type,dest,result);
 	if (err==0) return 0;
-	
-	/* if the connect method failed, which happens when no default route is set, 
+
+	/* if the connect method failed, which happens when no default route is set,
 	 * try to find 'the' running interface with getifaddrs*/
-	
+
 #ifdef HAVE_GETIFADDRS
 	/*we use getifaddrs for lookup of default interface */
 	int found_ifs;
@@ -1103,7 +1131,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 		return -1;
 	}
 #endif
-	return 0;  
+	return 0;
 }
 
 SalReason linphone_reason_to_sal(LinphoneReason reason){

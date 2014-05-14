@@ -1075,7 +1075,7 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 	
 	if (lev==NULL) {
 		/*out of subscribe notify */
-		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
+		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	if (lc->vtable.notify_received){
 		const LinphoneContent *ct=linphone_content_from_sal_body(&content,body);

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef offeranswer_h
 #define offeranswer_h
 
-/** 
+/**
  This header files defines the SDP offer answer API.
  It can be used by implementations of SAL directly.
 **/
@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 **/
 int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 									const SalMediaDescription *remote_answer,
-    							SalMediaDescription *result);
+									SalMediaDescription *result);
 
 /**
  * Returns a media description to run the streams with, based on the local capabilities and
@@ -41,7 +41,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 **/
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
-    					SalMediaDescription *result, bool_t one_matching_codec);
-					
+						SalMediaDescription *result, bool_t one_matching_codec);
+
 #endif
 

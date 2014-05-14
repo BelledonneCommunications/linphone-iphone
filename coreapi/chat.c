@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
@@ -114,7 +114,7 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
 	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
 	LinphoneChatRoom *ret;
-	
+
 	if (to_addr==NULL){
 		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
 		return NULL;
@@ -174,7 +174,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	char* content_type;
 	const char *identity=NULL;
 	time_t t=time(NULL);
-	
+
 	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
 		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
 			if (call->state==LinphoneCallConnected ||
@@ -271,7 +271,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	char *cleanfrom;
 	LinphoneChatMessage* msg;
 	const SalCustomHeader *ch;
-	
+
 	addr=linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	cr=linphone_core_get_chat_room(lc,addr);
@@ -284,20 +284,20 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg = linphone_chat_room_create_message(cr, sal_msg->text);
 
 	linphone_chat_message_set_from(msg, cr->peer_url);
-	
+
 	{
 		LinphoneAddress *to;
 		to=sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
 		msg->to=to;
 	}
-	
+
 	msg->time=sal_msg->time;
 	msg->state=LinphoneChatMessageStateDelivered;
 	msg->is_read=FALSE;
 	msg->dir=LinphoneChatMessageIncoming;
 	ch=sal_op_get_recv_custom_header(op);
 	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
-	
+
 	if (sal_msg->url) {
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
@@ -442,8 +442,8 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
  * @return a new #LinphoneChatMessage
  */
 LinphoneChatMessage* linphone_chat_room_create_message_2(
-        LinphoneChatRoom *cr, const char* message, const char* external_body_url,
-        LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
+		LinphoneChatRoom *cr, const char* message, const char* external_body_url,
+		LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
@@ -610,13 +610,13 @@ void linphone_chat_room_compose(LinphoneChatRoom *cr) {
  */
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
 	switch (state) {
-		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle"; 
+		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle";
 		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
 		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
 		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
 		default: return "Unknown state";
 	}
-	
+
 }
 
 /**
@@ -658,8 +658,8 @@ const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessag
 
 /**
  * Linphone message can carry external body as defined by rfc2017
- * 
- * @param message a LinphoneChatMessage  
+ *
+ * @param message a LinphoneChatMessage
  * @param url ex: access-type=URL; URL="http://www.foo.com/file"
  */
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url) {
@@ -680,7 +680,7 @@ void linphone_chat_message_set_from(LinphoneChatMessage* message, const Linphone
 }
 
 /**
- * Get origin of the message 
+ * Get origin of the message
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
@@ -699,7 +699,7 @@ void linphone_chat_message_set_to(LinphoneChatMessage* message, const LinphoneAd
 }
 
 /**
- * Get destination of the message 
+ * Get destination of the message
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
@@ -785,7 +785,7 @@ bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
  * @return the id
  */
 unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message) {
-    return message->storage_id;
+	return message->storage_id;
 }
 
 /**

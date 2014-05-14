@@ -32,6 +32,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		/*only take first one for now*/
 		op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
 	}
+	sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
 	if(status_code == 200) {
 		/*check service route rfc3608*/
 		belle_sip_header_service_route_t* service_route;
@@ -41,7 +42,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		}
 		sal_op_set_service_route(op,(const SalAddress*)service_route_address);
 		if (service_route_address) belle_sip_object_unref(service_route_address);
-
+		
 		sal_remove_pending_auth(op->base.root,op); /*just in case*/
 		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {
@@ -55,7 +56,6 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 				   chooses not to re-register, the UA SHOULD discard any stored service
 				   route for that address-of-record. */
 		sal_op_set_service_route(op,NULL);
-		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
 		op->base.root->callbacks.register_failure(op);
 		if (op->auth_info) {
 			/*add pending auth*/

@@ -177,7 +177,7 @@ enum _LinphoneReason{
 	LinphoneReasonNotAcceptable, /**<Operation like call update rejected by peer*/
 	LinphoneReasonNoMatch, /**<Operation could not be executed by server or remote client because it didn't have any context for it*/
 	LinphoneReasonMovedPermanently, /**<Resource moved permanently*/
-	LinphoneReasonGone, /**<Resource no longer exists*/ 
+	LinphoneReasonGone, /**<Resource no longer exists*/
 	LinphoneReasonTemporarilyUnavailable, /**<Temporarily unavailable*/
 	LinphoneReasonAddressIncomplete, /**<Address incomplete*/
 	LinphoneReasonNotImplemented, /**<Not implemented*/
@@ -684,7 +684,6 @@ LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
-LINPHONE_PUBLIC LinphoneAddress *linphone_call_get_remote_contact_address(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
@@ -790,6 +789,7 @@ LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *o
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int expires);
+
 #define linphone_proxy_config_expires linphone_proxy_config_set_expires
 /**
  * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
@@ -809,8 +809,34 @@ LINPHONE_PUBLIC	int linphone_proxy_config_done(LinphoneProxyConfig *obj);
  *
  */
 LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
+/**
+ * Set the publish expiration time in second.
+ * @param obj proxy config
+ * @param exires in second
+ * */
+
+LINPHONE_PUBLIC	void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires);
+/**
+ * get the publish expiration time in second. Default value is the registration expiration value.
+ * @param obj proxy config
+ * @return expires in second
+ * */
+
+LINPHONE_PUBLIC	int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj);
+
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
+
+/**
+ * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
+ * @param cfg #LinphoneProxyConfig object
+ * @param val if true, quality statistics publish will be stored and sent to the collector
+ *
+ */
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *obj);
 
 /**
  * Get the registration state of the given proxy config.
@@ -1557,6 +1583,33 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *cod
 LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
 
 /**
+ * Tells whether the specified payload type represents a variable bitrate codec.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] pt The #PayloadType we want to know
+ * @returns TRUE if the payload type represents a VBR codec, FALSE if disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
+ * @param[in] lc the #LinphoneCore object
+ * @param[in] pt the #PayloadType to modify.
+ * @param[in] bitrate the IP bitrate in kbit/s.
+ * @ingroup media_parameters 
+**/
+LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate);
+
+/**
+ * Get the bitrate explicitely set with linphone_core_set_payload_type_bitrate().
+ * @param[in] lc the #LinphoneCore object
+ * @param[in] pt the #PayloadType to modify.
+ * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
+ * @ingroup media_parameters 
+**/
+LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt);
+
+/**
  * Enable or disable the use of the specified payload type.
  * @param[in] lc #LinphoneCore object.
  * @param[in] pt The #PayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
@@ -1592,7 +1645,7 @@ LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, cons
 
 LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
-LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
 
 /**
  * Create a proxy config with default values from Linphone core.
