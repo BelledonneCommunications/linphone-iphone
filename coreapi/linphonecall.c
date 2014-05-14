@@ -197,6 +197,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	if (max_sample_rate) *max_sample_rate=0;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
+		payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED); /* Disable AVPF for the moment. */
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
 			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
 				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
