@@ -147,7 +147,7 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            [self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
         }
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
@@ -513,7 +513,7 @@
     if(parentTable != nil) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
-            [parentTable reloadRowsAtIndexPaths:[[NSArray alloc] initWithObjects:index, nil] withRowAnimation:false];
+            [parentTable reloadRowsAtIndexPaths:[[[NSArray alloc] initWithObjects:index, nil] autorelease] withRowAnimation:false];
         }
     }
 }

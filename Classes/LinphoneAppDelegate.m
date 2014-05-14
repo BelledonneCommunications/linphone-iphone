@@ -382,6 +382,7 @@
         [_waitingIndicator addSubview:progress];
     }
     [progress startAnimating];
+    [progress release];
     [_waitingIndicator show];
 
 }

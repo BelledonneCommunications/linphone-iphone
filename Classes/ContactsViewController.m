@@ -154,8 +154,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         // let the toolBar be visible
         subViewFrame.origin.y += self.toolBar.frame.size.height;
 
-        self.tableController = [[ContactsTableViewController alloc] init];
-        self.tableView = [[UITableView alloc] init];
+        self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
+        self.tableView = [[[UITableView alloc] init] autorelease];
 
         self.tableController.view = self.tableView;
         self.tableView.frame = subViewFrame;
@@ -309,7 +309,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Go to dialer view
     DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
-        [controller call:phoneNumber displayName:(NSString*)ABRecordCopyCompositeName(person)];
+        [controller call:phoneNumber displayName:[(NSString*)ABRecordCopyCompositeName(person) autorelease]];
     }
     [phoneNumber release];
     CFRelease(multiValue);

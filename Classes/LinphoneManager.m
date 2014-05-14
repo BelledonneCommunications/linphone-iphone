@@ -332,7 +332,6 @@ struct codec_name_pref_table codec_pref_table[]={
 			}
 	}
 	
-	[filemgr release];
 }
 
 - (void)closeDatabase {

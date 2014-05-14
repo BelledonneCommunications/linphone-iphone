@@ -276,13 +276,17 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
 		ABMultiValueAddValueAndLabel(lMap, lDict, label, &index);
 	}
+
 	if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
 		[LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+        CFRelease(lMap);
 	} else {
 		if (entry == nil) {
-			entry = [[Entry alloc] initWithData:index];
+			entry = [[[Entry alloc] initWithData:index] autorelease];
 		}
 		CFRelease(lDict);
+        CFRelease(lMap);
+
 		/*check if message type is kept or not*/
 		lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
 		lMap = ABMultiValueCreateMutableCopy(lcMap);
@@ -308,12 +312,13 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
                 ms_free(uri);
             }
 		}
-		CFRelease(lMap);
+        CFRelease(lMap);
 	}
 	CFRelease(lDict);
 	
 	return entry;
 }
+
 -(void) setSipContactEntry:(Entry *)entry withValue:(NSString*)value {
 	[self setOrCreateSipContactEntry:entry withValue:value];
 }
@@ -337,7 +342,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, [value copy], label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
         
@@ -354,7 +359,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         Entry *entry = [self setOrCreateSipContactEntry:nil withValue:value];
         if (entry) {
 			[sectionArray addObject:entry];
-			[entry release];
 			added=true;
 		} else {
 			added=false;
@@ -371,7 +375,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, [value copy], label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
         

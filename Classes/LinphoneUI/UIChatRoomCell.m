@@ -191,6 +191,7 @@ static UIFont *CELL_FONT = nil;
                                            initWithString:NSLocalizedString(@"Resend", @"Resend")
                                            attributes:@{NSForegroundColorAttributeName: [UIColor redColor]}];
         [dateLabel setAttributedText:resend_text];
+        [resend_text release];
 	} else {
 		statusImage.hidden = TRUE;
 	}
