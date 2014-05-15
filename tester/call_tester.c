@@ -634,7 +634,6 @@ static void call_with_ice(void){
 }
 
 static void call_with_ice_no_sdp(void){
-#ifdef 0
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -643,7 +642,6 @@ static void call_with_ice_no_sdp(void){
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
 
 static void call_with_ice_random_ports(void){

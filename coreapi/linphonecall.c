@@ -637,7 +637,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_media_streams(call);
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
-			linphone_call_prepare_ice(call,TRUE);
+			linphone_call_prepare_ice(call,md!=NULL);
 			break;
 		case LinphonePolicyUseStun:
 			call->ping_time=linphone_core_run_stun_tests(call->core,call);
