@@ -633,12 +633,22 @@ static void call_with_ice(void){
 	_call_with_ice(TRUE,TRUE,FALSE);
 }
 
+/*ICE is not expected to work in this case, however this should not crash*/
 static void call_with_ice_no_sdp(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	linphone_core_enable_sdp_200_ack(pauline->lc,TRUE);
-	_call_with_ice_base(pauline,marie,TRUE,TRUE,FALSE);
+
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	
+	call(pauline,marie);
+	
+	liblinphone_tester_check_rtcp(marie,pauline);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
