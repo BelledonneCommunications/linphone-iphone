@@ -256,6 +256,20 @@
 	[self processRemoteNotification:userInfo];
 }
 
+- (LinphoneChatRoom*)findChatRoomForContact:(NSString*)contact {
+    MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    const char* from = [contact UTF8String];
+    while (rooms) {
+        const LinphoneAddress* room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom*)rooms->data);
+        char* room_from = linphone_address_as_string_uri_only(room_from_address);
+        if( room_from && strcmp(from, room_from)== 0){
+            return rooms->data;
+        }
+        rooms = rooms->next;
+    }
+    return NULL;
+}
+
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
 
     [self fixRing];
@@ -269,13 +283,14 @@
             // auto answer only for non-timed local notifications
             [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
         }
-    } else if([notification.userInfo objectForKey:@"chat"] != nil) {
-        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
+    } else if([notification.userInfo objectForKey:@"from"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from"];
         // Go to ChatRoom view
         [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
         if(controller != nil) {
-            [controller setRemoteAddress:remoteContact];
+            LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
+            [controller setChatRoom:room];
         }
     } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
         NSString *callLog = (NSString*)[notification.userInfo objectForKey:@"callLog"];

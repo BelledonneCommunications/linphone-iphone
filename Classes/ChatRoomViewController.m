@@ -32,7 +32,6 @@
 @synthesize sendButton;
 @synthesize messageField;
 @synthesize editButton;
-@synthesize remoteAddress;
 @synthesize addressLabel;
 @synthesize composeLabel;
 @synthesize composeIndicatorView;
@@ -73,7 +72,6 @@
     [messageField release];
     [sendButton release];
     [editButton release];
-    [remoteAddress release];
     [addressLabel release];
     [avatarImage release];
     [headerView release];
@@ -245,49 +243,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - 
 
-- (void)setRemoteAddress:(NSString*)aRemoteAddress {
-    if(remoteAddress != nil) {
-        [remoteAddress release];
-    }
-    if ([aRemoteAddress hasPrefix:@"sip:"] || [aRemoteAddress hasPrefix:@"sips:"]) {
-        remoteAddress = [aRemoteAddress copy];
-    } else {
-        char normalizedUserName[256];
-        LinphoneCore *lc = [LinphoneManager getLc];
-        LinphoneProxyConfig* proxyCfg;
-        linphone_core_get_default_proxy(lc,&proxyCfg);
-        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(lc));
-        linphone_proxy_config_normalize_number(proxyCfg, [aRemoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
-        linphone_address_set_username(linphoneAddress, normalizedUserName);
-        remoteAddress = [[NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphoneAddress)] copy];
-        linphone_address_destroy(linphoneAddress);
-    }
+- (void)setChatRoom:(LinphoneChatRoom *)room {
+    self->chatRoom = room;
     [messageField setText:@""];
-
-    chatRoom = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	[tableController setChatRoom:room];
     [self update];
-	[tableController setRemoteAddress: remoteAddress];
-    [ChatModel readConversation:remoteAddress];
+    linphone_chat_room_mark_as_read(chatRoom);
     [self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification*)notif {
-    if(remoteAddress != nil) {
-        [ChatModel readConversation:remoteAddress];
+    if(chatRoom != nil) {
+        linphone_chat_room_mark_as_read(chatRoom);
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
     }
 }
 
 - (void)update {
-    if(remoteAddress == NULL) {
+    if(chatRoom == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
         return;
     }
     
     NSString *displayName = nil;
     UIImage *image = nil;
-	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [remoteAddress UTF8String]);
+	const LinphoneAddress* linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
 	if (linphoneAddress == NULL) {
         [[PhoneMainView instance] popCurrentView];
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
@@ -308,8 +289,6 @@ static UICompositeViewDescription *compositeDescription = nil;
         displayName = [FastAddressBook getContactDisplayName:acontact];
         image = [FastAddressBook getContactImage:acontact thumbnail:true];
     }
-	[remoteAddress release];
-    remoteAddress = [normalizedSipAddress retain];
     
     // Display name
     if(displayName == nil) {
@@ -323,61 +302,33 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     [avatarImage setImage:image];
     
-    linphone_address_destroy(linphoneAddress);
 }
 
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
-	ChatModel *chat = (ChatModel *)linphone_chat_message_get_user_data(msg); 
+    const char*text = linphone_chat_message_get_text(msg);
 	[LinphoneLogger log:LinphoneLoggerLog 
-				 format:@"Delivery status for [%@] is [%s]",(chat.message?chat.message:@""),linphone_chat_message_state_to_string(state)];
-	[chat setState:[NSNumber numberWithInt:state]];
-	[chat update];
-	[thiz.tableController updateChatEntry:chat];
-	if (state != LinphoneChatMessageStateInProgress) {
-		linphone_chat_message_set_user_data(msg, NULL);
-		[chat release]; // no longuer need to keep reference
-	}
-	
+				 format:@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state)];
+	[thiz.tableController updateChatEntry:msg];
 }
 
-- (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl withInternalUrl:(NSURL*)internalUrl {
+- (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl {
     if(![LinphoneManager isLcReady]) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Linphone core not ready"];
         return FALSE;
     }
-    if(remoteAddress == nil) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Null remoteAddress"];
+    if(chatRoom == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: No chatroom"];
         return FALSE;
     }
-    if(chatRoom == NULL) {
-		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
-    }
-    
-    // Save message in database
-    ChatModel *chat = [[ChatModel alloc] init];
-    [chat setRemoteContact:remoteAddress];
-    [chat setLocalContact:@""];
-    if(internalUrl == nil) {
-        [chat setMessage:message];
-    } else {
-        [chat setMessage:[internalUrl absoluteString]];
-    }
-    [chat setDirection:[NSNumber numberWithInt:0]];
-    [chat setTime:[NSDate date]];
-    [chat setRead:[NSNumber numberWithInt:1]];
-	[chat setState:[NSNumber numberWithInt:1]]; //INPROGRESS
-    [chat create];
-    [tableController addChatEntry:chat];
-    [tableController scrollToBottom:true];
-    [chat release];
 
     LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
-	linphone_chat_message_set_user_data(msg, [chat retain]);
     if(externalUrl) {
         linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
     }
+    [tableController addChatEntry:linphone_chat_message_ref(msg)];
 	linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
+    [tableController scrollToBottom:true];
     return TRUE;
 }
 
@@ -476,29 +427,31 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)textReceivedEvent:(NSNotification *)notif {
-    //LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
-    //NSString *message = [[notif userInfo] objectForKey:@"message"];
-    LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
-    
-	ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
+    LinphoneAddress * from    = [[[notif userInfo] objectForKey:@"from_address"] pointerValue];
+    LinphoneChatRoom* room    = [[notif.userInfo objectForKey:@"room"] pointerValue];
+    LinphoneChatMessage* chat = [[notif.userInfo objectForKey:@"message"] pointerValue];
+
     if(from == NULL || chat == NULL) {
         return;
     }
     char *fromStr = linphone_address_as_string_uri_only(from);
-    if(fromStr != NULL) {
-        if([[NSString stringWithUTF8String:fromStr]
-            caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
+    const LinphoneAddress* cr_from = linphone_chat_room_get_peer_address(chatRoom);
+    char* cr_from_string = linphone_address_as_string_uri_only(cr_from);
+
+    if(fromStr && cr_from_string ) {
+
+        if(strcasecmp(cr_from_string, fromStr) == 0) {
             if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
                 || [UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-                [chat setRead:[NSNumber numberWithInt:1]];
-                [chat update];
+                linphone_chat_room_mark_as_read(room);
                 [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
             }
             [tableController addChatEntry:chat];
             [tableController scrollToLastUnread:TRUE];
         }
-        ms_free(fromStr);
     }
+    ms_free(fromStr);
+    ms_free(cr_from_string);
 }
 
 - (void)textComposeEvent:(NSNotification*)notif {
@@ -577,7 +530,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (IBAction)onSendClick:(id)event {
-    if([self sendMessage:[messageField text] withExterlBodyUrl:nil withInternalUrl:nil]) {
+    if([self sendMessage:[messageField text] withExterlBodyUrl:nil]) {
         scrollOnGrowingEnabled = FALSE;
         [messageField setText:@""];
         scrollOnGrowingEnabled = TRUE;
@@ -673,8 +626,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     return FALSE;
 }
 
-- (void)resendChat:(NSString *)message {
-    [self sendMessage:message withExterlBodyUrl:nil withInternalUrl:nil];
+- (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url {
+    [self sendMessage:message withExterlBodyUrl:[NSURL URLWithString:url]];
 }
 
 #pragma mark ImageSharingDelegate
@@ -717,9 +670,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)imageSharingUploadDone:(ImageSharing*)aimageSharing url:(NSURL*)url{
-    NSURL *imageURL = [aimageSharing userInfo];
-    
-    [self sendMessage:nil withExterlBodyUrl:url withInternalUrl:imageURL];
+    [self sendMessage:nil withExterlBodyUrl:url];
     
     [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
@@ -730,7 +681,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     
-    ChatModel *chat = (ChatModel *)[imageSharing userInfo];
+    __block LinphoneChatMessage *chat = (LinphoneChatMessage *)[(NSValue*)[imageSharing userInfo] pointerValue];
     [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
                                                               orientation:(ALAssetOrientation)[image imageOrientation]
                                                           completionBlock:^(NSURL *assetURL, NSError *error){
@@ -747,8 +698,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                                   return;
                                                               }
                                                               [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
-                                                              [chat setMessage:[assetURL absoluteString]];
-                                                              [chat update];
+                                                              linphone_chat_message_set_external_body_url(chat, [[assetURL absoluteString] UTF8String]);
+                                                              linphone_chat_room_update_url(chatRoom, chat);
                                                               [tableController updateChatEntry:chat];
                                                           }];
     imageSharing = nil;

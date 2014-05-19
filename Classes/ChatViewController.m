@@ -20,7 +20,6 @@
 #import "ChatViewController.h"
 #import "PhoneMainView.h"
 
-#import "ChatModel.h"
 @implementation ChatViewController
 
 @synthesize tableController;
@@ -113,7 +112,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	//Push ChatRoom
 	ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
 	if(controller != nil) {
-		[controller setRemoteAddress:[addressField text]];
+        LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [addressField.text UTF8String]);
+		[controller setChatRoom:room];
 	}
 	addressField.text = @"";
 	

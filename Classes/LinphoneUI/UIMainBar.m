@@ -19,7 +19,6 @@
 
 #import "UIMainBar.h"
 #import "PhoneMainView.h"
-#import "ChatModel.h"
 #import "CAAnimation+Blocks.h"
 
 @implementation UIMainBar
@@ -243,7 +242,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 }
 
 - (void)textReceived:(NSNotification*)notif {
-    [self updateUnreadMessage:[ChatModel unreadMessages] appear:TRUE];
+    [self updateUnreadMessage:TRUE];
 }
 
 
@@ -256,10 +255,11 @@ static NSString * const kDisappearAnimation = @"disappear";
     } else {
         [self updateMissedCall:0 appear:TRUE];
     }
-    [self updateUnreadMessage:[ChatModel unreadMessages] appear:appear];
+    [self updateUnreadMessage:appear];
 }
 
-- (void)updateUnreadMessage:(int)unreadMessage appear:(BOOL)appear{
+- (void)updateUnreadMessage:(BOOL)appear{
+    int unreadMessage = [LinphoneManager unreadMessageCount];
     if (unreadMessage > 0) {
         if([chatNotificationView isHidden]) {
             [chatNotificationView setHidden:FALSE];

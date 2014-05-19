@@ -27,14 +27,13 @@
 
 @implementation ChatRoomTableViewController
 
-@synthesize remoteAddress;
 @synthesize chatRoomDelegate;
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-    [remoteAddress release];
     [chatRoomDelegate release];
+    [self clearMessageList];
     
     [super dealloc];
 }
@@ -44,82 +43,98 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [TUNinePatchCache flushCache]; // Clear cache
-    if(data != nil) {
-        [data removeAllObjects];
-        [data release];
-        data = nil;
-    }
+    [self clearMessageList];
+    chatRoom = NULL;
 }
 - (void)viewWillAppear:(BOOL)animated {
-	[self loadData];
+	[self reloadData];
 }
 
 #pragma mark -
 
-- (void)loadData {
-    if(data != nil) {
-        [data removeAllObjects];
-        [data release];
+- (void)clearMessageList {
+    if (messageList){
+        ms_list_free_with_data(messageList, (void(*)(void*))linphone_chat_message_unref);
+        messageList = nil;
     }
-    data = [[ChatModel listMessages:remoteAddress] retain];
-    [[self tableView] reloadData];
+}
+
+- (void)updateData {
+    if( !chatRoom ) return;
+    [self clearMessageList];
+    self->messageList = linphone_chat_room_get_history(chatRoom, 0);
+}
+
+- (void)reloadData {
+    [self updateData];
+    [self.tableView reloadData];
     [self scrollToLastUnread:false];
 }
 
-- (void)addChatEntry:(ChatModel*)chat {
-    if(data == nil) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
-        return;
-    }
+- (void)addChatEntry:(LinphoneChatMessage*)chat {
+
+    messageList = ms_list_append(messageList, chat);
+    int pos = ms_list_size(messageList) - 1;
+
     [self.tableView beginUpdates];
-    int pos = [data count];
-    [data insertObject:chat atIndex:pos];
-    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView endUpdates];
 }
 
-- (void)updateChatEntry:(ChatModel*)chat {
-    if(data == nil) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update entry: null data"];
-        return;
-    }
-	NSInteger index = [data indexOfObject:chat];
+- (void)updateChatEntry:(LinphoneChatMessage*)chat {
+    NSInteger index = ms_list_index(self->messageList, chat);
     if (index<0) {
-		[LinphoneLogger logc:LinphoneLoggerWarning format:"chat entries diesn not exixt"];
+		[LinphoneLogger logc:LinphoneLoggerWarning format:"chat entry doesn't exist"];
 		return;
 	}
-	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE];; //just reload
+	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE]; //just reload
 	return;
 }
 
 - (void)scrollToBottom:(BOOL)animated {
     [self.tableView reloadData];
-    if( [data count] ){
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
+    int count = ms_list_size(messageList);
+    if( count ){
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
                               atScrollPosition:UITableViewScrollPositionBottom
                                       animated:YES];
     }
 }
 
+- (void)debugMessages {
+    if( !messageList ){
+        NSLog(@"No data to debug");
+        return;
+    }
+    MSList*item = self->messageList;
+    int count = 0;
+    while (item) {
+        LinphoneChatMessage* msg = (LinphoneChatMessage*)item->data;
+        NSLog(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
+        item = item->next;
+    }
+}
+
 - (void)scrollToLastUnread:(BOOL)animated {
-    if(data == nil) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
+    if(messageList == nil || chatRoom == nil) {
         return;
     }
     
     int index = -1;
+    int count = ms_list_size(messageList);
     // Find first unread & set all entry read
-    for(int i = 0; i <[data count]; ++i) {
-        ChatModel *chat = [data objectAtIndex:i];
-        if([[chat read] intValue] == 0) {
-            [chat setRead:[NSNumber numberWithInt:1]];
+    for(int i = 0; i <count; ++i) {
+        int read = linphone_chat_message_is_read(ms_list_nth_data(messageList, i));
+        if(read == 0) {
             if(index == -1)
                 index = i;
         }
     }
     if(index == -1) {
-        index = [data count] - 1;
+        index = count - 1;
     }
+
+    linphone_chat_room_mark_as_read(chatRoom);
     
     // Scroll to unread
     if(index >= 0) {
@@ -132,14 +147,10 @@
 
 #pragma mark - Property Functions
 
-- (void)setRemoteAddress:(NSString *)aremoteAddress {
-    if(remoteAddress != nil) {
-        [remoteAddress release]; 
-    }
-    self->remoteAddress = [aremoteAddress copy];
-    [self loadData];
+- (void)setChatRoom:(LinphoneChatRoom*)room {
+    chatRoom = room;
+    [self reloadData];
 }
-
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -148,7 +159,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [data count];
+    return ms_list_size(self->messageList);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -157,8 +168,9 @@
     if (cell == nil) {
         cell = [[[UIChatRoomCell alloc] initWithIdentifier:kCellId] autorelease];
     }
-    
-    [cell setChat:[data objectAtIndex:[indexPath row]]];
+
+    LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, [indexPath row]);
+    [cell setChatMessage:chat];
     [cell setChatRoomDelegate:chatRoomDelegate];
     return cell;
 }
@@ -169,11 +181,16 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
-        ChatModel *chat = [data objectAtIndex:[indexPath row]];
-        [data removeObjectAtIndex:[indexPath row]];
-        [chat delete];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+        LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, [indexPath row]);
+        if( chat ){
+
+            linphone_chat_room_delete_message(chatRoom, chat);
+            messageList = ms_list_remove(messageList, chat);
+
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+        }
         [tableView endUpdates];
+
     }
 }
 
@@ -186,8 +203,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ChatModel *chat = [data objectAtIndex:[indexPath row]];
-    return [UIChatRoomCell height:chat width:[self.view frame].size.width];
+    LinphoneChatMessage* message = ms_list_nth_data(self->messageList, [indexPath row]);
+    return [UIChatRoomCell height:message width:[self.view frame].size.width];
 }
 
 @end

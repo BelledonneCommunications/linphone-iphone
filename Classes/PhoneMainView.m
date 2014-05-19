@@ -219,9 +219,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - Event Functions
 
 - (void)textReceived:(NSNotification*)notif { 
-    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
-    if(chat != nil) {
-        [self displayMessage:chat];
+    LinphoneAddress*from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
+    if(from != nil) {
+        [self playMessageSound];
     }
     [self updateApplicationBadgeNumber];
 }
@@ -377,7 +377,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)updateApplicationBadgeNumber {
     int count = 0;
     count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
-    count += [ChatModel unreadMessages];
+    count += [LinphoneManager unreadMessageCount];
     count += linphone_core_get_calls_nb([LinphoneManager getLc]);
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
@@ -598,7 +598,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 #pragma mark - ActionSheet Functions
 
-- (void)displayMessage:(ChatModel*)chat {
+- (void)playMessageSound {
     if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
