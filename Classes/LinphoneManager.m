@@ -440,20 +440,20 @@ static void dump_section(const char* section, void* data){
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
 	NSLogv(format, args);
-	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
-            [[LinphoneManager instance].logs removeObjectAtIndex:0];
-        }
-        [[LinphoneManager instance].logs addObject:formatedString];
-        
-        // Post event
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
-    });
-    
-	[formatedString release];
+//	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+//    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+//            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+//        }
+//        [[LinphoneManager instance].logs addObject:formatedString];
+//        
+//        // Post event
+//        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+//    });
+//    
+//	[formatedString release];
     [format release];
 }
 
@@ -462,16 +462,16 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
 	NSLog(log, NULL);
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
-            [[LinphoneManager instance].logs removeObjectAtIndex:0];
-        }
-        [[LinphoneManager instance].logs addObject:log];
-        
-        // Post event
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:log forKey:@"log"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+//            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+//        }
+//        [[LinphoneManager instance].logs addObject:log];
+//        
+//        // Post event
+//        NSDictionary *dict = [NSDictionary dictionaryWithObject:log forKey:@"log"];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+//    });
 }
 
 
