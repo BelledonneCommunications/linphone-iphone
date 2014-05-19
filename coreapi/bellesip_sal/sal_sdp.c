@@ -117,7 +117,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			mime_param= belle_sdp_mime_parameter_create ( pt->mime_type
 					, payload_type_get_number ( pt )
 					, pt->clock_rate
-					,stream->type==SalAudio?1:-1 );
+					, pt->channels>0 ? pt->channels : -1 );
 			belle_sdp_mime_parameter_set_parameters ( mime_param,pt->recv_fmtp );
 			if ( stream->ptime>0 ) {
 				belle_sdp_mime_parameter_set_ptime ( mime_param,stream->ptime );

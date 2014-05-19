@@ -565,7 +565,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 						"foreground",CODEC_COLOR,
                                                    NULL);
 	gtk_tree_view_append_column (listview, column);
-	column = gtk_tree_view_column_new_with_attributes (_("Bitrate (kbit/s)"),
+	column = gtk_tree_view_column_new_with_attributes (_("IP Bitrate (kbit/s)"),
                                                    renderer,
                                                    "text", CODEC_BITRATE,
 						"foreground",CODEC_COLOR,
@@ -621,7 +621,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 		}
 		/* get an iterator */
 		gtk_list_store_append(store,&iter);
-		bitrate=payload_type_get_bitrate(pt)/1000.0;
+		bitrate=linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
 		rate=payload_type_get_rate(pt);
 		if (pt->recv_fmtp!=NULL) params=pt->recv_fmtp;
 		gtk_list_store_set(store,&iter,	CODEC_NAME,payload_type_get_mime(pt),
@@ -657,7 +657,7 @@ static void linphone_gtk_check_codec_bandwidth(GtkTreeView *v){
 		gfloat bitrate;
 		gtk_tree_model_get(model,&iter,CODEC_PRIVDATA,&pt,-1);
 
-		bitrate=payload_type_get_bitrate(pt)/1000.0;
+		bitrate=linphone_core_get_payload_type_bitrate(linphone_gtk_get_core(),pt);
 		gtk_list_store_set(GTK_LIST_STORE(model),&iter,CODEC_COLOR, (gpointer)get_codec_color(linphone_gtk_get_core(),pt),
 					CODEC_BITRATE, bitrate,-1);
 	}while(gtk_tree_model_iter_next(model,&iter));

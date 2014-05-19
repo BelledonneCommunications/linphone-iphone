@@ -197,6 +197,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	if (max_sample_rate) *max_sample_rate=0;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
+		payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED); /* Disable AVPF for the moment. */
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
 			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
 				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
@@ -582,6 +583,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
 	const SalMediaDescription *md;
+	LinphoneFirewallPolicy fpol;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -627,14 +629,20 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// In this case WE chose the media parameters according to policy.
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	}
+	fpol=linphone_core_get_firewall_policy(call->core);
 	/*create the ice session now if ICE is required*/
-	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseIce){
-		call->ice_session = ice_session_new();
-		ice_session_set_role(call->ice_session, IR_Controlled);
+	if (fpol==LinphonePolicyUseIce){
+		if (md){
+			call->ice_session = ice_session_new();
+			ice_session_set_role(call->ice_session, IR_Controlled);
+		}else{
+			fpol=LinphonePolicyNoFirewall;
+			ms_warning("ICE not supported for incoming INVITE without SDP.");
+		}
 	}
 	/*reserve the sockets immediately*/
 	linphone_call_init_media_streams(call);
-	switch (linphone_core_get_firewall_policy(call->core)) {
+	switch (fpol) {
 		case LinphonePolicyUseIce:
 			linphone_call_prepare_ice(call,TRUE);
 			break;
@@ -794,11 +802,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 		if (lc->vtable.call_state_changed)
 			lc->vtable.call_state_changed(lc,call,cstate,message);
-		if (cstate==LinphoneCallReleased){
 
+		if (cstate==LinphoneCallEnd){
 			if (call->log->status == LinphoneCallSuccess)
 				linphone_reporting_publish(call);
+		}
 
+		if (cstate==LinphoneCallReleased){
 			if (call->op!=NULL) {
 				/*transfer the last error so that it can be obtained even in Released state*/
 				if (call->non_op_error.reason==SalReasonNone){
@@ -1402,7 +1412,10 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 	switch (event_id) {
 		case MS_VIDEO_DECODER_DECODING_ERRORS:
 			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
-			linphone_call_send_vfu_request(call);
+			if (call->videostream && (video_stream_is_decoding_error_to_be_reported(call->videostream, 5000) == TRUE)) {
+				video_stream_decoding_error_reported(call->videostream);
+				linphone_call_send_vfu_request(call);
+			}
 			break;
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			ms_message("First video frame decoded successfully");
@@ -1691,17 +1704,65 @@ static void post_configure_audio_streams(LinphoneCall*call){
 		linphone_call_start_recording(call);
 }
 
-static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
+static int get_ideal_audio_bw(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc){
+	int remote_bw=0;
+	int upload_bw;
+	int total_upload_bw=linphone_core_get_upload_bandwidth(call->core);
+	const LinphoneCallParams *params=&call->params;
+	bool_t will_use_video=linphone_core_media_description_contains_video_stream(md);
+	bool_t forced=FALSE;
+	
+	if (desc->bandwidth>0) remote_bw=desc->bandwidth;
+	else if (md->bandwidth>0) {
+		/*case where b=AS is given globally, not per stream*/
+		remote_bw=md->bandwidth;
+	}
+	if (params->up_bw>0){
+		forced=TRUE;
+		upload_bw=params->up_bw;
+	}else upload_bw=total_upload_bw;
+	upload_bw=get_min_bandwidth(upload_bw,remote_bw);
+	if (!will_use_video || forced) return upload_bw;
+	
+	if (bandwidth_is_greater(upload_bw,512)){
+		upload_bw=100;
+	}else if (bandwidth_is_greater(upload_bw,256)){
+		upload_bw=64;
+	}else if (bandwidth_is_greater(upload_bw,128)){
+		upload_bw=40;
+	}else if (bandwidth_is_greater(upload_bw,0)){
+		upload_bw=24;
+	}
+	return upload_bw;
+}
+
+static int get_video_bw(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc){
+	int remote_bw=0;
 	int bw;
+	if (desc->bandwidth>0) remote_bw=desc->bandwidth;
+	else if (md->bandwidth>0) {
+		/*case where b=AS is given globally, not per stream*/
+		remote_bw=get_remaining_bandwidth_for_video(md->bandwidth,call->audio_bw);
+	}
+	bw=get_min_bandwidth(get_remaining_bandwidth_for_video(linphone_core_get_upload_bandwidth(call->core),call->audio_bw),remote_bw);
+	return bw;
+}
+
+static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
+	int bw=0;
 	const MSList *elem;
 	RtpProfile *prof=rtp_profile_new("Call profile");
 	bool_t first=TRUE;
-	int remote_bw=0;
 	LinphoneCore *lc=call->core;
 	int up_ptime=0;
 	const LinphoneCallParams *params=&call->params;
+	
 	*used_pt=-1;
-
+	if (desc->type==SalAudio)
+		bw=get_ideal_audio_bw(call,md,desc);
+	else if (desc->type==SalVideo)
+		bw=get_video_bw(call,md,desc);
+	
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number;
@@ -1710,8 +1771,11 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 		pt=payload_type_clone(pt);
 
 		if ((pt->flags & PAYLOAD_TYPE_FLAG_CAN_SEND) && first) {
+			/*first codec in list is the selected one*/
 			if (desc->type==SalAudio){
-				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt);
+				/*this will update call->audio_bw*/
+				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt,bw);
+				bw=call->audio_bw;
 				if (params->up_ptime)
 					up_ptime=params->up_ptime;
 				else up_ptime=linphone_core_get_upload_ptime(lc);
@@ -1719,27 +1783,9 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
 		}
-		if (desc->bandwidth>0) remote_bw=desc->bandwidth;
-		else if (md->bandwidth>0) {
-			/*case where b=AS is given globally, not per stream*/
-			remote_bw=md->bandwidth;
-			if (desc->type==SalVideo){
-				remote_bw=get_video_bandwidth(remote_bw,call->audio_bw);
-			}
-		}
-
-		if (desc->type==SalAudio){
-			int audio_bw=call->audio_bw;
-			if (params->up_bw){
-				if (params->up_bw< audio_bw)
-					audio_bw=params->up_bw;
-			}
-			bw=get_min_bandwidth(audio_bw,remote_bw);
-		}else bw=get_min_bandwidth(get_video_bandwidth(linphone_core_get_upload_bandwidth (lc),call->audio_bw),remote_bw);
-		if (bw>0) pt->normal_bitrate=bw*1000;
-		else if (desc->type==SalAudio){
-			pt->normal_bitrate=-1;
-		}
+		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
+			pt->normal_bitrate=get_min_bandwidth(pt->normal_bitrate,bw*1000);
+		} else pt->normal_bitrate=bw*1000;
 		if (desc->ptime>0){
 			up_ptime=desc->ptime;
 		}
@@ -2718,7 +2764,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
-	
+
 	if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
 		stats->round_trip_delay = rtp_session_get_round_trip_propagation(ms->sessions.rtp_session);
 		if(stats->received_rtcp != NULL)
@@ -2753,11 +2799,11 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	MediaStream *ms=stream_index==0 ? (MediaStream *)call->audiostream : (MediaStream *)call->videostream; /*assumption to remove*/
 	OrtpEvQueue *evq;
 	OrtpEvent *ev;
-	
+
 	if (ms==NULL) return;
 	/* Ensure there is no dangling ICE check list. */
 	if (call->ice_session == NULL) ms->ice_check_list = NULL;
-	
+
 	switch(ms->type){
 		case AudioStreamType:
 			audio_stream_iterate((AudioStream*)ms);
@@ -2776,10 +2822,10 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	while ((evq=stream_index==0 ? call->audiostream_app_evq : call->videostream_app_evq)  && (NULL != (ev=ortp_ev_queue_get(evq)))){
 		OrtpEventType evt=ortp_event_get_type(ev);
 		OrtpEventData *evd=ortp_event_get_data(ev);
-		
+
 		linphone_call_stats_fill(&call->stats[stream_index],ms,ev);
 		linphone_call_notify_stats_updated(call,stream_index);
-		
+
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
 			if (ms->type==AudioStreamType)
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);

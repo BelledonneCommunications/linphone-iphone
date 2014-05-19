@@ -1188,5 +1188,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void stopRinging() {
 		stopRinging(nativePtr);
 	}
+	private native void setPayloadTypeBitrate(long coreptr, long payload_ptr, int bitrate);
+	@Override
+	public void setPayloadTypeBitrate(PayloadType pt, int bitrate) {
+		setPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr, bitrate);
+	}
+	private native int getPayloadTypeBitrate(long coreptr, long payload_ptr);
+	@Override
+	public int getPayloadTypeBitrate(PayloadType pt) {
+		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
 	
 }

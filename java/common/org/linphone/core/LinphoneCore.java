@@ -694,6 +694,20 @@ public interface LinphoneCore {
 	boolean isPayloadTypeEnabled(PayloadType pt);
 	
 	/**
+	 * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
+	 * @param pt the payload type
+	 * @param bitrate target IP bitrate in kbit/s
+	 */
+	void setPayloadTypeBitrate(PayloadType pt, int bitrate);
+	
+	/**
+	 * Get target bitrate previously set by setPayloadTypeBitrate().
+	 * @param pt
+	 * @return IP bitrate in kbit/s
+	 */
+	int getPayloadTypeBitrate(PayloadType pt);
+	
+	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
 	 */

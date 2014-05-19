@@ -122,14 +122,37 @@ belle_sip_header_t * sal_make_supported_header(Sal *sal){
 	return belle_sip_header_create("Supported","replaces, outbound");
 }
 
+static void add_initial_route_set(belle_sip_request_t *request, const MSList *list){
+	const MSList *elem;
+	for (elem=list;elem!=NULL;elem=elem->next){
+		SalAddress *addr=(SalAddress*)elem->data;
+		belle_sip_header_route_t *route;
+		belle_sip_uri_t *uri;
+		/*Optimization: if the initial route set only contains one URI which is the same as the request URI, ommit it*/
+		if (elem==list && list->next==NULL){
+			belle_sip_uri_t *requri=belle_sip_request_get_uri(request);
+			/*skip the first route it is the same as the request uri*/
+			if (strcmp(sal_address_get_domain(addr),belle_sip_uri_get_host(requri))==0 ){
+				ms_message("Skipping top route of initial route-set because same as request-uri.");
+				continue;
+			}
+		}
+		
+		route=belle_sip_header_route_create((belle_sip_header_address_t*)addr);
+		uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)route);
+		belle_sip_uri_set_lr_param(uri,1);
+		belle_sip_message_add_header((belle_sip_message_t*)request,(belle_sip_header_t*)route);
+	}
+}
+
 belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to_header;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
+	const MSList *elem=sal_op_get_route_addresses(op);
 	char token[10];
-
 
 	if (strcmp("REGISTER",method)==0 || op->privacy==SalPrivacyNone) {
 		from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
@@ -157,6 +180,11 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		belle_sip_header_p_preferred_identity_t* p_preferred_identity=belle_sip_header_p_preferred_identity_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op)));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(p_preferred_identity));
 	}
+	
+	if (elem && strcmp(method,"REGISTER")!=0 && !op->base.root->no_initial_route){
+		add_initial_route_set(req,elem);
+	}
+	
 	if (strcmp("REGISTER",method)!=0 && op->privacy!=SalPrivacyNone ){
 		belle_sip_header_privacy_t* privacy_header=belle_sip_header_privacy_new();
 		if (op->privacy&SalPrivacyCritical)

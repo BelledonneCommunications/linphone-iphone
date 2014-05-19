@@ -662,6 +662,7 @@ static void sip_config_read(LinphoneCore *lc)
 		sal_use_session_timers(lc->sal,200);
 	}
 
+	sal_use_no_initial_route(lc->sal,lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
@@ -1188,13 +1189,6 @@ const char * linphone_core_get_version(void){
 static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *const_pt, int number, const char *recv_fmtp){
 	PayloadType *pt;
 
-#ifdef ANDROID
-	if (const_pt->channels==2){
-		ms_message("Stereo %s codec not supported on this platform.",const_pt->mime_type);
-		return;
-	}
-#endif
-
 	pt=payload_type_clone(const_pt);
 	if (number==-1){
 		/*look for a free number */
@@ -1376,7 +1370,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
-	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; usedtx=0; cbr=1");
+	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; stereo=0; sprop-stereo=0");
 	linphone_core_assign_payload_type(lc,&payload_type_isac,-1,NULL);
 	linphone_core_handle_static_payloads(lc);
 
@@ -1526,7 +1520,9 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
 				strncpy(result,"::1",LINPHONE_IPADDR_SIZE);
 				return;
 			}
-		}else af=AF_INET;
+		}
+		/*in all other cases use IPv4*/
+		af=AF_INET;
 	}
 	if (linphone_core_get_local_ip_for(af,NULL,result)==0)
 		return;
@@ -1957,7 +1953,6 @@ static int apply_transports(LinphoneCore *lc){
 	if (tr->udp_port!=0){
 		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
 			transport_error(lc,"udp",tr->udp_port);
-			return -1;
 		}
 	}
 	if (tr->tcp_port!=0){
@@ -2093,23 +2088,32 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
-	char result[LINPHONE_IPADDR_SIZE];
 	bool_t new_status=lc->network_last_status;
+	char newip[LINPHONE_IPADDR_SIZE];
 
 	/* only do the network up checking every five seconds */
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
-		linphone_core_get_local_ip(lc,AF_UNSPEC,result);
-		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
+		linphone_core_get_local_ip(lc,AF_UNSPEC,newip);
+		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
-		}else new_status=FALSE;
-		lc->network_last_check=curtime;
+		}else new_status=FALSE; /*no network*/
+
+		if (new_status==lc->network_last_status && new_status==TRUE && strcmp(newip,lc->localip)!=0){
+			/*IP address change detected*/
+			ms_message("IP address change detected.");
+			set_network_reachable(lc,FALSE,curtime);
+			lc->network_last_status=FALSE;
+		}
+		strncpy(lc->localip,newip,sizeof(lc->localip));
+
 		if (new_status!=lc->network_last_status) {
 			if (new_status){
-				ms_message("New local ip address is %s",result);
+				ms_message("New local ip address is %s",lc->localip);
 			}
 			set_network_reachable(lc,new_status, curtime);
 			lc->network_last_status=new_status;
 		}
+		lc->network_last_check=curtime;
 	}
 }
 

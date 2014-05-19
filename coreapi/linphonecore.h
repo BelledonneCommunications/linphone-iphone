@@ -1581,6 +1581,33 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *cod
 LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
 
 /**
+ * Tells whether the specified payload type represents a variable bitrate codec.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] pt The #PayloadType we want to know
+ * @returns TRUE if the payload type represents a VBR codec, FALSE if disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
+ * @param[in] lc the #LinphoneCore object
+ * @param[in] pt the #PayloadType to modify.
+ * @param[in] bitrate the IP bitrate in kbit/s.
+ * @ingroup media_parameters 
+**/
+LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate);
+
+/**
+ * Get the bitrate explicitely set with linphone_core_set_payload_type_bitrate().
+ * @param[in] lc the #LinphoneCore object
+ * @param[in] pt the #PayloadType to modify.
+ * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
+ * @ingroup media_parameters 
+**/
+LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt);
+
+/**
  * Enable or disable the use of the specified payload type.
  * @param[in] lc #LinphoneCore object.
  * @param[in] pt The #PayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
@@ -1616,7 +1643,7 @@ LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, cons
 
 LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
-LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
 
 /**
  * Create a proxy config with default values from Linphone core.

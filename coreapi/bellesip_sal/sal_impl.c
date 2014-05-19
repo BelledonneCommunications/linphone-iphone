@@ -424,14 +424,18 @@ Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
 	sal->auto_contacts=TRUE;
+	
+	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
+	belle_sip_set_log_handler(_belle_sip_log);
+	sal->stack = belle_sip_stack_new(NULL);
+	
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
-	belle_sip_set_log_handler(_belle_sip_log);
-	sal->stack = belle_sip_stack_new(NULL);
+	
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
 	sal_nat_helper_enable(sal,TRUE);
 	memset(&listener_callbacks,0,sizeof(listener_callbacks));
@@ -936,6 +940,10 @@ void sal_enable_auto_contacts(Sal *ctx, bool_t enabled){
 
 void sal_enable_test_features(Sal*ctx, bool_t enabled){
 	ctx->enable_test_features=enabled;
+}
+
+void sal_use_no_initial_route(Sal *ctx, bool_t enabled){
+	ctx->no_initial_route=enabled;
 }
 
 SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data){

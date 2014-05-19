@@ -141,7 +141,7 @@ bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int va
 }
 
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
-	return wait_for_until(lc_1, lc_2,counter,value,3000);
+	return wait_for_until(lc_1, lc_2,counter,value,10000);
 }
 
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
