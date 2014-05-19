@@ -19,8 +19,8 @@ void AudioStreamStopCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("No Audio Stream with such id."));
 			return;
 		}
-		audio_stream_stop(stream);
 		app->removeAudioStream(id);
+		audio_stream_stop(stream);
 		app->sendResponse(Response());
 	} else {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
