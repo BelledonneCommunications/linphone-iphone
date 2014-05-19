@@ -451,6 +451,7 @@ struct _LinphoneChatRoom{
 	LinphoneAddress *peer_url;
 	void * user_data;
 	MSList *messages_hist;
+	MSList *transient_messages;
 	LinphoneIsComposingState remote_is_composing;
 	LinphoneIsComposingState is_composing;
 	belle_sip_source_t *remote_composing_refresh_timer;

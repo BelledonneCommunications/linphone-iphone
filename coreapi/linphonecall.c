@@ -583,6 +583,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
 	const SalMediaDescription *md;
+	LinphoneFirewallPolicy fpol;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -628,14 +629,20 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// In this case WE chose the media parameters according to policy.
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	}
+	fpol=linphone_core_get_firewall_policy(call->core);
 	/*create the ice session now if ICE is required*/
-	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseIce){
-		call->ice_session = ice_session_new();
-		ice_session_set_role(call->ice_session, IR_Controlled);
+	if (fpol==LinphonePolicyUseIce){
+		if (md){
+			call->ice_session = ice_session_new();
+			ice_session_set_role(call->ice_session, IR_Controlled);
+		}else{
+			fpol=LinphonePolicyNoFirewall;
+			ms_warning("ICE not supported for incoming INVITE without SDP.");
+		}
 	}
 	/*reserve the sockets immediately*/
 	linphone_call_init_media_streams(call);
-	switch (linphone_core_get_firewall_policy(call->core)) {
+	switch (fpol) {
 		case LinphonePolicyUseIce:
 			linphone_call_prepare_ice(call,TRUE);
 			break;

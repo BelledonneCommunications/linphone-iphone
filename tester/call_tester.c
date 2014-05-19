@@ -587,10 +587,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	return success;
 }
 
-static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-
+static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
 	if (callee_with_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
@@ -624,12 +621,37 @@ static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 
+}
+static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	_call_with_ice_base(pauline,marie,caller_with_ice,callee_with_ice,random_ports);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-
 static void call_with_ice(void){
 	_call_with_ice(TRUE,TRUE,FALSE);
+}
+
+/*ICE is not expected to work in this case, however this should not crash*/
+static void call_with_ice_no_sdp(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
+	linphone_core_enable_sdp_200_ack(pauline->lc,TRUE);
+
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	
+	call(pauline,marie);
+	
+	liblinphone_tester_check_rtcp(marie,pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 static void call_with_ice_random_ports(void){
@@ -909,9 +931,7 @@ static void call_with_declined_video(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void video_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie) {
 	LinphoneCallParams* callee_params;
 	LinphoneCallParams* caller_params;
 	LinphoneCall* marie_call;
@@ -946,6 +966,19 @@ static void video_call(void) {
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	}
 
+}
+static void video_call(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	video_call_base(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void video_call_no_sdp(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	linphone_core_enable_sdp_200_ack(pauline->lc,TRUE);
+	video_call_base(pauline,marie);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2122,6 +2155,7 @@ test_t call_tests[] = {
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
 #ifdef VIDEO_ENABLED
 	{ "Simple video call",video_call},
+	{ "Video call without SDP",video_call_no_sdp},
 	{ "SRTP ice video call", srtp_video_ice_call },
 	{ "ZRTP ice video call", zrtp_video_ice_call },
 	{ "Call with video added", call_with_video_added },
@@ -2144,6 +2178,7 @@ test_t call_tests[] = {
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
+	{ "Call with ICE without SDP", call_with_ice_no_sdp },
 	{ "Call with ICE (random ports)", call_with_ice_random_ports },
 	{ "Call from ICE to not ICE",ice_to_not_ice},
 	{ "Call from not ICE to ICE",not_ice_to_ice},

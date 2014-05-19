@@ -84,11 +84,11 @@ static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char*
 
 static void belle_request_process_response_event(void *ctx, const belle_http_response_event_t *event) {
 	LinphoneCore *lc = (LinphoneCore *)ctx;
-	belle_sip_message_t *body = BELLE_SIP_MESSAGE(event->response);
-	const char *message = belle_sip_message_get_body(body);
+	belle_sip_message_t *message = BELLE_SIP_MESSAGE(event->response);
+	const char *body = belle_sip_message_get_body(message);
 
 	if (belle_http_response_get_status_code(event->response) == 200) {
-		linphone_remote_provisioning_apply(lc, message);
+		linphone_remote_provisioning_apply(lc, body);
 	} else {
 		linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "http error");
 	}
@@ -118,14 +118,17 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 		return linphone_remote_provisioning_load_file(lc, file_path);
 	} else {
 		belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
-		belle_http_request_listener_callbacks_t belle_request_listener = {
-			belle_request_process_response_event,
-			belle_request_process_io_error,
-			belle_request_process_timeout,
-			belle_request_process_auth_requested
-		};
-		belle_http_request_listener_t *listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+		belle_http_request_listener_callbacks_t belle_request_listener={0};
+		belle_http_request_listener_t *listener;
 		belle_http_request_t *request;
+		
+		belle_request_listener.process_response=belle_request_process_response_event;
+		belle_request_listener.process_auth_requested=belle_request_process_auth_requested;
+		belle_request_listener.process_io_error=belle_request_process_io_error;
+		belle_request_listener.process_timeout=belle_request_process_timeout;
+		
+		listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+		
 
 		if (uri==NULL) {
 			belle_sip_error("Invalid provisioning URI [%s]",remote_provisioning_uri);

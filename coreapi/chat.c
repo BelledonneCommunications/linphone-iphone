@@ -159,6 +159,7 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
  */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	LinphoneCore *lc=cr->lc;
+	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_unref);
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
@@ -211,6 +212,9 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
 	msg->storage_id=linphone_chat_message_store(msg);
+
+	// add to transient list
+	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 
 	if (cr->is_composing == LinphoneIsComposingActive) {
 		cr->is_composing = LinphoneIsComposingIdle;
