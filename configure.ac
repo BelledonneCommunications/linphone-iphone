@@ -773,18 +773,15 @@ if test x$enable_msg_storage != xfalse; then
 	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
 	if test "$found_sqlite" = "no"; then
 		dnl Check the lib presence in case the PKG-CONFIG version is not found
-		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "
-		found_sqlite=yes],
-			[AC_MSG_ERROR([No pkg-config or alternate SQLITE found, needed for message storage.])]
-		)
+		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
 	fi
 	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
 	else
 		if test x$enable_msg_storage = xtrue; then
 			AC_MSG_ERROR([sqlite3, required for message storage, not found])
-			enable_msg_storage=false
 		fi
+		enable_msg_storage=false
 	fi
 	
 	AC_SUBST(SQLITE3_CFLAGS)
