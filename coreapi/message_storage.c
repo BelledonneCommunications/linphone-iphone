@@ -321,7 +321,7 @@ static int migrate_messages(void* data,int argc, char** argv, char** column_name
 			sqlite3_free(buf);
 		}
 	} else {
-		printf("Cannot parse time %s from id %s", argv[1], argv[0]);
+		ms_warning("Cannot parse time %s from id %s\n", argv[1], argv[0]);
 	}
 	return 0;
 }
@@ -332,10 +332,10 @@ static void linphone_migrate_timestamps(sqlite3* db){
 
 	ret = sqlite3_exec(db,"SELECT id,time,direction FROM history WHERE time != '-1'", migrate_messages, db, &errmsg);
 	if( ret != SQLITE_OK ){
-		printf("Error migrating outgoing messages: %s.\n", errmsg);
+		ms_warning("Error migrating outgoing messages: %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		printf("Migrated message timestamps to UTC\n");
+		ms_message("Migrated message timestamps to UTC\n");
 	}
 }
 
