@@ -311,7 +311,7 @@ struct codec_name_pref_table codec_pref_table[]={
 
 #pragma mark - Database Functions
 
-- (void)migrateChatDBIfNeeded:(LinphoneCore*)lc {
+- (BOOL)migrateChatDBIfNeeded:(LinphoneCore*)lc {
     sqlite3* newDb;
     char *errMsg;
     NSError* error;
@@ -320,15 +320,17 @@ struct codec_name_pref_table codec_pref_table[]={
     BOOL shouldMigrate  = [[NSFileManager defaultManager] fileExistsAtPath:oldDbPath];
     LinphoneProxyConfig* default_proxy;
     const char* identity = NULL;
+    BOOL migrated = FALSE;
 
     linphone_core_get_default_proxy(lc, &default_proxy);
 
-    if( !shouldMigrate ) return;
+    if( !shouldMigrate ) return FALSE;
 
 	if( sqlite3_open([newDbPath UTF8String], &newDb) != SQLITE_OK) {
         [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", newDbPath];
-		return;
+		return FALSE;
     }
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Starting migration procedure"];
 
     // attach old database to the new one:
     char* attach_stmt = sqlite3_mprintf("ATTACH DATABASE %Q AS oldchats", [oldDbPath UTF8String]);
@@ -339,11 +341,9 @@ struct codec_name_pref_table codec_pref_table[]={
     }
 
 
-
-
-    // migrate old chats to the new db
-    const char* migration_statement = "INSERT INTO history (localContact,remoteContact,direction,message,time,read,status) "
-                                                    "SELECT localContact,remoteContact,direction,message,time,read,state FROM oldchats.chat";
+    // migrate old chats to the new db. The iOS stores timestamp in UTC already, so we can directly put it in the 'utc' field and set 'time' to -1
+    const char* migration_statement = "INSERT INTO history (localContact,remoteContact,direction,message,utc,read,status,time) "
+                                                    "SELECT localContact,remoteContact,direction,message,time,read,state,'-1' FROM oldchats.chat";
 
     if( sqlite3_exec(newDb, migration_statement, NULL, NULL, &errMsg) != SQLITE_OK ){
         [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
@@ -380,6 +380,7 @@ struct codec_name_pref_table codec_pref_table[]={
         sqlite3_free(errMsg);
     }
     // We will lose received messages with remote url, they will be displayed in plain. We can't do much for them..
+    migrated = TRUE;
 
 exit_dbmigration:
 
@@ -391,6 +392,9 @@ exit_dbmigration:
     if(![[NSFileManager defaultManager] removeItemAtPath:oldDbPath error:&error] ){
         [LinphoneLogger logc:LinphoneLoggerError format:"Could not remove old chat DB: %@", error];
     }
+
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? "TRUE":"FALSE"];
+    return migrated;
 }
 
 
@@ -1049,7 +1053,12 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
-    [self migrateChatDBIfNeeded:theLinphoneCore];
+    // we need to proceed to the migration *after* the chat database was opened, so that we know it is in consistent state
+    BOOL migrated = [self migrateChatDBIfNeeded:theLinphoneCore];
+    if( migrated ){
+        // if a migration was performed, we should reinitialize the chat database
+        linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    }
 
     [self setupNetworkReachabilityCallback];
 
