@@ -87,7 +87,7 @@ static void create_chat_message(char **argv, void *data){
 static int callback_all(void *data, int argc, char **argv, char **colName){
 	LinphoneCore* lc = (LinphoneCore*) data;
 	char* address = argv[0];
-	linphone_core_create_chat_room(lc, address);
+	linphone_core_get_or_create_chat_room(lc, address);
 	return 0;
 }
 
@@ -378,6 +378,9 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
+
+	linphone_core_message_storage_close(lc);
+
 	ret=sqlite3_open(lc->chat_db_file,&db);
 	if(ret != SQLITE_OK) {
 		errmsg=sqlite3_errmsg(db);
