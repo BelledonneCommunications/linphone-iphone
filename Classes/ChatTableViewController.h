@@ -18,12 +18,10 @@
  */ 
 
 #import <UIKit/UIKit.h>
+#include "linphone/linphonecore.h"
 
 @interface ChatTableViewController : UITableViewController {
-@private
-    NSMutableArray *data;
 }
 
 - (void)loadData;
-
 @end

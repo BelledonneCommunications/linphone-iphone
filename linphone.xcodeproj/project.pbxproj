@@ -297,8 +297,6 @@
 		D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
 		D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
-		D32B6E3815A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
-		D32B6E3915A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32D5AA715ADE5D9008593F3 /* button_alert_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */; };
@@ -1707,8 +1705,6 @@
 		D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomTableViewController.h; sourceTree = "<group>"; };
 		D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatRoomTableViewController.m; sourceTree = "<group>"; };
 		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
-		D32B6E3615A5C2430033019F /* ChatModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChatModel.h; path = Model/ChatModel.h; sourceTree = "<group>"; };
-		D32B6E3715A5C2430033019F /* ChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ChatModel.m; path = Model/ChatModel.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
 		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
 		D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_alert_background_default.png; path = Resources/button_alert_background_default.png; sourceTree = "<group>"; };
@@ -2600,7 +2596,6 @@
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
 				D3EA53FC159850E80037DC6B /* LinphoneManager.m */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
-				D32B6E3515A5C2200033019F /* Model */,
 				D3F83F8C158229C500336684 /* PhoneMainView.h */,
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				D34734791580DDF1003C7B8C /* PhoneMainView.xib */,
@@ -2869,15 +2864,6 @@
 				D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */,
 			);
 			name = Utils;
-			sourceTree = "<group>";
-		};
-		D32B6E3515A5C2200033019F /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				D32B6E3615A5C2430033019F /* ChatModel.h */,
-				D32B6E3715A5C2430033019F /* ChatModel.m */,
-			);
-			name = Model;
 			sourceTree = "<group>";
 		};
 		D3554EC615CA79A900478841 /* Products */ = {
@@ -4913,7 +4899,6 @@
 				D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */,
 				D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
-				D32B6E3815A5C2430033019F /* ChatModel.m in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639515AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
@@ -5013,7 +4998,6 @@
 				D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */,
 				D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */,
 				D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
-				D32B6E3915A5C2430033019F /* ChatModel.m in Sources */,
 				D3A8BB7115A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639615AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,

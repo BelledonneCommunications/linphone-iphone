@@ -26,14 +26,15 @@
 #import "UILinphone.h"
 #import "Utils.h"
 
-@implementation ChatTableViewController
+@implementation ChatTableViewController {
+    @private
+    MSList* data;
+}
 
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-    if(data != nil)
-        [data release];
     [super dealloc];
 }
 
@@ -49,9 +50,7 @@
 #pragma mark - 
 
 - (void)loadData {
-    if(data != nil)
-        [data release];
-    data = [[ChatModel listConversations] retain];
+    data = linphone_core_get_chat_rooms([LinphoneManager getLc]);
     [[self tableView] reloadData];
 }
 
@@ -62,7 +61,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [data count];
+    return ms_list_size(data);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -78,7 +77,7 @@
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
-    [cell setChat:[data objectAtIndex:[indexPath row]]];
+    [cell setChatRoom:(LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row])];
     
     return cell;
 }
@@ -88,12 +87,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    ChatModel *chat = [data objectAtIndex:[indexPath row]];
+    LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
     
     // Go to ChatRoom view
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
     if(controller != nil) {
-        [controller setRemoteAddress:[chat remoteContact]];
+        [controller setChatRoom:chatRoom];
     }
 }
 
@@ -108,9 +107,12 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
-        ChatModel *chat = [data objectAtIndex:[indexPath row]];
-        [ChatModel removeConversation:[chat remoteContact]];
-        [data removeObjectAtIndex:[indexPath row]];
+
+        LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
+        linphone_chat_room_delete_history(chatRoom);
+        linphone_chat_room_destroy(chatRoom);
+        data = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];

@@ -38,7 +38,7 @@ linphone_configure_controls = \
 				--disable-x11 \
 				--disable-tutorials \
 				--disable-tools \
-				--disable-msg-storage
+				--enable-msg-storage=yes
 
                               
 #path

@@ -20,13 +20,13 @@
 #import <UIKit/UIKit.h>
 
 #import "UITransparentTVCell.h"
-#import "ChatModel.h"
 
+#include "linphone/linphonecore.h"
 
 @interface UIChatCell : UITransparentTVCell {
+    LinphoneChatRoom* chatRoom;
 }
 
-@property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
@@ -38,4 +38,5 @@
 
 - (IBAction)onDeleteClick:(id)event;
 
+- (void)setChatRoom:(LinphoneChatRoom *)achat;
 @end

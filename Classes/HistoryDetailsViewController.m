@@ -401,7 +401,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
     if(controller != nil) {
-        [controller setRemoteAddress:[NSString stringWithUTF8String:lAddress]];
+        LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], lAddress);
+        [controller setChatRoom:room];
     }
     ms_free(lAddress);
 }

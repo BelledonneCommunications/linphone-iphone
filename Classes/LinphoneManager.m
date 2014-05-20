@@ -29,7 +29,6 @@
 
 #import "LinphoneManager.h"
 #import "LinphoneCoreSettingsStore.h"
-#import "ChatModel.h"
 
 #include "linphone/linphonecore_utils.h"
 #include "linphone/lpconfig.h"
@@ -75,6 +74,9 @@ extern void libmsbcg729_init(void);
 #define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
 #define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
 
+
+NSString *const kLinphoneOldChatDBFilename      = @"chat_database.sqlite";
+NSString *const kLinphoneInternalChatDBFilename = @"linphone_chats.db";
 
 @implementation LinphoneCallAppData
 - (id)init {
@@ -261,7 +263,6 @@ struct codec_name_pref_table codec_pref_table[]={
         speakerEnabled = FALSE;
         bluetoothEnabled = FALSE;
         tunnelMode = FALSE;
-        [self openDatabase];
         [self copyDefaultSettings];
         pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
         photoLibrary = [[ALAssetsLibrary alloc] init];
@@ -291,7 +292,6 @@ struct codec_name_pref_table codec_pref_table[]={
     }
     
     [fastAddressBook release];
-    [self closeDatabase];
     [logs release];
     
     OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
@@ -311,35 +311,90 @@ struct codec_name_pref_table codec_pref_table[]={
 
 #pragma mark - Database Functions
 
-- (void)openDatabase {
-    NSString *databasePath = [LinphoneManager documentFile:@"chat_database.sqlite"];
-	NSFileManager *filemgr = [NSFileManager defaultManager];
-	//[filemgr removeItemAtPath:databasePath error:nil];
-	BOOL firstInstall= ![filemgr fileExistsAtPath: databasePath ];
-    
-	if(sqlite3_open([databasePath UTF8String], &database) != SQLITE_OK) {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", databasePath];
-		return;
-    } 
-	
-	if (firstInstall) {
-		char *errMsg;
-		//better to create the db from the code
-		const char *sql_stmt = "CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, localContact TEXT NOT NULL, remoteContact TEXT NOT NULL, direction INTEGER, message TEXT NOT NULL, time NUMERIC, read INTEGER, state INTEGER)";
-			
-			if (sqlite3_exec(database, sql_stmt, NULL, NULL, &errMsg) != SQLITE_OK) {
-				[LinphoneLogger logc:LinphoneLoggerError format:"Can't create table error[%s] ", errMsg];
-			}
-	}
-	
-}
+- (BOOL)migrateChatDBIfNeeded:(LinphoneCore*)lc {
+    sqlite3* newDb;
+    char *errMsg;
+    NSError* error;
+    NSString *oldDbPath = [LinphoneManager documentFile:kLinphoneOldChatDBFilename];
+    NSString *newDbPath = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
+    BOOL shouldMigrate  = [[NSFileManager defaultManager] fileExistsAtPath:oldDbPath];
+    LinphoneProxyConfig* default_proxy;
+    const char* identity = NULL;
+    BOOL migrated = FALSE;
 
-- (void)closeDatabase {
-    if(database != NULL) {
-        if(sqlite3_close(database) != SQLITE_OK) {
-            [LinphoneLogger logc:LinphoneLoggerError format:"Can't close sqlite3 database."];
-        }
+    linphone_core_get_default_proxy(lc, &default_proxy);
+
+    if( !shouldMigrate ) return FALSE;
+
+	if( sqlite3_open([newDbPath UTF8String], &newDb) != SQLITE_OK) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", newDbPath];
+		return FALSE;
     }
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Starting migration procedure"];
+
+    // attach old database to the new one:
+    char* attach_stmt = sqlite3_mprintf("ATTACH DATABASE %Q AS oldchats", [oldDbPath UTF8String]);
+    if( sqlite3_exec(newDb, attach_stmt, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't attach old chat table, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+        goto exit_dbmigration;
+    }
+
+
+    // migrate old chats to the new db. The iOS stores timestamp in UTC already, so we can directly put it in the 'utc' field and set 'time' to -1
+    const char* migration_statement = "INSERT INTO history (localContact,remoteContact,direction,message,utc,read,status,time) "
+                                                    "SELECT localContact,remoteContact,direction,message,time,read,state,'-1' FROM oldchats.chat";
+
+    if( sqlite3_exec(newDb, migration_statement, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+        goto exit_dbmigration;
+    }
+
+    // replace empty from: or to: by the current identity.
+    if( default_proxy ){
+        identity = linphone_proxy_config_get_identity(default_proxy);
+    }
+    if( !identity ){
+        identity = "sip:unknown@sip.linphone.org";
+    }
+
+    char* from_conversion = sqlite3_mprintf("UPDATE history SET localContact = %Q WHERE localContact = ''", identity);
+    if( sqlite3_exec(newDb, from_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"FROM conversion failed, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+    }
+    sqlite3_free(from_conversion);
+
+    char* to_conversion = sqlite3_mprintf("UPDATE history SET remoteContact = %Q WHERE remoteContact = ''", identity);
+    if( sqlite3_exec(newDb, to_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+    }
+    sqlite3_free(to_conversion);
+
+    // move already stored images from the messages to the url field
+    const char* assetslib_migration = "UPDATE history SET url=message, message='' WHERE message LIKE 'assets-library%'";
+    if( sqlite3_exec(newDb, assetslib_migration, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"Assets-history migration failed, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+    }
+    // We will lose received messages with remote url, they will be displayed in plain. We can't do much for them..
+    migrated = TRUE;
+
+exit_dbmigration:
+
+    if( attach_stmt ) sqlite3_free(attach_stmt);
+
+    sqlite3_close(newDb);
+
+    // in any case, we should remove the old chat db
+    if(![[NSFileManager defaultManager] removeItemAtPath:oldDbPath error:&error] ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"Could not remove old chat DB: %@", error];
+    }
+
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? "TRUE":"FALSE"];
+    return migrated;
 }
 
 
@@ -389,20 +444,20 @@ static void dump_section(const char* section, void* data){
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
 	NSLogv(format, args);
-	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
-            [[LinphoneManager instance].logs removeObjectAtIndex:0];
-        }
-        [[LinphoneManager instance].logs addObject:formatedString];
-        
-        // Post event
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
-    });
-    
-	[formatedString release];
+//	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+//    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+//            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+//        }
+//        [[LinphoneManager instance].logs addObject:formatedString];
+//        
+//        // Post event
+//        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+//    });
+//    
+//	[formatedString release];
     [format release];
 }
 
@@ -411,16 +466,16 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
 	NSLog(log, NULL);
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
-            [[LinphoneManager instance].logs removeObjectAtIndex:0];
-        }
-        [[LinphoneManager instance].logs addObject:log];
-        
-        // Post event
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:log forKey:@"log"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+//            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+//        }
+//        [[LinphoneManager instance].logs addObject:log];
+//        
+//        // Post event
+//        NSDictionary *dict = [NSDictionary dictionaryWithObject:log forKey:@"log"];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+//    });
 }
 
 
@@ -712,10 +767,6 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room  message:(LinphoneChatMessage*)msg {
-    
-    char *fromStr = linphone_address_as_string_uri_only(linphone_chat_message_get_from(msg));
-    if(fromStr == NULL)
-        return;
 
     if (silentPushCompletion) {
 
@@ -726,34 +777,20 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
         silentPushCompletion = nil;
     }
     
-    // Save message in database
-    ChatModel *chat = [[ChatModel alloc] init];
-    [chat setLocalContact:@""];
-    [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
-    if (linphone_chat_message_get_external_body_url(msg)) {
-		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(msg)]];
-	} else {
-		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
-    }
-	[chat setDirection:[NSNumber numberWithInt:1]];
-    [chat setTime:[NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(msg)]];
-    [chat setRead:[NSNumber numberWithInt:0]];
-    [chat create];
-    
-    ms_free(fromStr);
-    
-    
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
         
-        NSString* address = [chat remoteContact];
-        NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
-        ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
+        const LinphoneAddress* remoteAddress = linphone_chat_message_get_from(msg);
+        char* c_address = linphone_address_as_string_uri_only(remoteAddress);
+        NSString* address = [NSString stringWithUTF8String:c_address];
+        NSString* from_address = [address copy];
+
+        ABRecordRef contact = [fastAddressBook getContact:address];
         if(contact) {
             address = [FastAddressBook getContactDisplayName:contact];
         } else {
             if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
-                LinphoneAddress *linphoneAddress = linphone_address_new([normalizedSipAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+                LinphoneAddress *linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
                 address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
                 linphone_address_destroy(linphoneAddress);
             }
@@ -765,26 +802,23 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
-			notif.repeatInterval = 0;
-			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
-			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = @"msg.caf";
-			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
-			
+            notif.repeatInterval = 0;
+            notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
+            notif.alertAction    = NSLocalizedString(@"Show", nil);
+            notif.soundName      = @"msg.caf";
+            notif.userInfo       = @{@"from":from_address };
+
 			
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
+        [from_address release];
 	}
     
     // Post event
-    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSValue valueWithPointer:room], @"room", 
-							[NSValue valueWithPointer:linphone_chat_message_get_from(msg)], @"from",
-							chat.message, @"message", 
-							chat, @"chat",
-                           nil];
+    NSDictionary* dict = @{@"room"        :[NSValue valueWithPointer:room],
+                           @"from_address":[NSValue valueWithPointer:linphone_chat_message_get_from(msg)],
+                           @"message"     :[NSValue valueWithPointer:msg]};
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
-    [chat release];
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
@@ -995,8 +1029,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 - (void)finishCoreConfiguration {
 
 	//get default config from bundle
-	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
-	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
+    NSString *chatDBFileName      = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
+    const char* lRootCa           = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
     linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
                                  [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
@@ -1016,6 +1051,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+
+    // we need to proceed to the migration *after* the chat database was opened, so that we know it is in consistent state
+    BOOL migrated = [self migrateChatDBIfNeeded:theLinphoneCore];
+    if( migrated ){
+        // if a migration was performed, we should reinitialize the chat database
+        linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    }
 
     [self setupNetworkReachabilityCallback];
 
@@ -1678,6 +1721,20 @@ static void audioRouteChangeListenerCallback (
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0];
     return [documentsPath stringByAppendingPathComponent:file];
+}
+
++ (int)unreadMessageCount {
+    int count = 0;
+    MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    MSList* item = rooms;
+    while (item) {
+        LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
+        if( room ){
+            count += linphone_chat_room_get_unread_messages_count(room);
+        }
+        item = item->next;
+    }
+    return count;
 }
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override {

@@ -651,7 +651,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
                 [[PhoneMainView instance] popToView:[ChatViewController compositeViewDescription]]; // Got to Chat and push ChatRoom
                 ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
                 if(controller != nil) {
-                   [controller setRemoteAddress:dest];
+                    LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [dest UTF8String]);
+                   [controller setChatRoom:room];
                 }
             }
         }

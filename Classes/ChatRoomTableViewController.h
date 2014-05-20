@@ -19,27 +19,28 @@
 
 
 #import <UIKit/UIKit.h>
-#import "ChatModel.h"
+#include "linphone/linphonecore.h"
 
 @protocol ChatRoomDelegate <NSObject>
 
 - (BOOL)chatRoomStartImageDownload:(NSURL*)url userInfo:(id)userInfo;
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url;
-- (void)resendChat:(NSString*)message;
+- (void)resendChat:(NSString*)message withExternalUrl:(NSString*)url;
 
 @end
 
 @interface ChatRoomTableViewController : UITableViewController {
 @private
-    NSMutableArray *data;
+    LinphoneChatRoom* chatRoom;
+    MSList *messageList;
 }
 
-@property (nonatomic, copy) NSString *remoteAddress;
 @property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
 
-- (void)addChatEntry:(ChatModel*)chat;
+- (void)addChatEntry:(LinphoneChatMessage*)chat;
 - (void)scrollToBottom:(BOOL)animated;
 - (void)scrollToLastUnread:(BOOL)animated;
-- (void)updateChatEntry:(ChatModel*)chat;
+- (void)updateChatEntry:(LinphoneChatMessage*)chat;
+- (void)setChatRoom:(LinphoneChatRoom*)room;
 
 @end

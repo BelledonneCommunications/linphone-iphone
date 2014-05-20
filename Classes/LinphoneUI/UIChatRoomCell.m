@@ -37,7 +37,6 @@
 @synthesize messageText;
 @synthesize deleteButton;
 @synthesize dateLabel;
-@synthesize chat;
 @synthesize statusImage;
 @synthesize downloadButton;
 @synthesize chatRoomDelegate;
@@ -91,7 +90,6 @@ static UIFont *CELL_FONT = nil;
     [deleteButton release];
     [dateLabel release];
     [statusImage release];
-    [chat release];
     [downloadButton release];
     [imageTapGestureRecognizer release];
     [resendTapGestureRecognizer release];
@@ -106,17 +104,8 @@ static UIFont *CELL_FONT = nil;
 
 #pragma mark - 
 
-- (void)setChat:(ChatModel *)achat {
-    if(chat != achat) {
-		if(chat != nil) {
-			[chat release];
-			chat = nil;
-		}
-		
-		if(achat != nil) {
-			chat = [achat retain];
-		}
-	}
+- (void)setChatMessage:(LinphoneChatMessage *)message {
+    self->chat = message;
 	[self update];
 	
 }
@@ -126,20 +115,23 @@ static UIFont *CELL_FONT = nil;
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
         return;
     }
-    
-    if([chat isExternalImage]) {
+    const char*url   = linphone_chat_message_get_external_body_url(chat);
+    const char*text  = linphone_chat_message_get_text(chat);
+    BOOL is_external = url && (strstr(url, "http") == url);
+
+    if(is_external) {
         [messageText setHidden:TRUE];
-        
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
-        
         [downloadButton setHidden:FALSE];
-    } else if([chat isInternalImage]) {
+
+    } else if(url) {
+
         [messageText setHidden:TRUE];
         [messageImageView setImage:nil];
         [messageImageView startLoading];
-        ChatModel *achat = chat;
-        [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
+        __block LinphoneChatMessage *achat = chat;
+        [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]] resultBlock:^(ALAsset *asset) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
                 ALAssetRepresentation* representation = [asset defaultRepresentation];
                 UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]
@@ -161,7 +153,7 @@ static UIFont *CELL_FONT = nil;
         [downloadButton setHidden:TRUE];
     } else {
         [messageText setHidden:FALSE];
-        [messageText setText:[chat message]];
+        [messageText setText:[NSString stringWithUTF8String:text]];
         
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
@@ -170,20 +162,24 @@ static UIFont *CELL_FONT = nil;
     }
     
     // Date
+    NSDate* message_date = [NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(chat)];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     NSLocale *locale = [NSLocale currentLocale];
     [dateFormatter setLocale:locale];
-    [dateLabel setText:[dateFormatter stringFromDate:[chat time]]];
+    [dateLabel setText:[dateFormatter stringFromDate:message_date]];
     [dateFormatter release];
-	if ([chat.state intValue] == LinphoneChatMessageStateInProgress) {
+
+    LinphoneChatMessageState state = linphone_chat_message_get_state(chat);
+
+	if (state== LinphoneChatMessageStateInProgress) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"]];
 		statusImage.hidden = FALSE;
-	} else if ([chat.state intValue] == LinphoneChatMessageStateDelivered) {
+	} else if (state == LinphoneChatMessageStateDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"]];
 		statusImage.hidden = FALSE;
-	} else if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
+	} else if (state == LinphoneChatMessageStateNotDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
 		statusImage.hidden = FALSE;
 
@@ -216,9 +212,12 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
-+ (CGSize)viewSize:(ChatModel*)chat width:(int)width {
++ (CGSize)viewSize:(LinphoneChatMessage*)chat width:(int)width {
     CGSize messageSize;
-    if(!([chat isExternalImage] || [chat isInternalImage])) {
+    const char* url  = linphone_chat_message_get_external_body_url(chat);
+    const char* text = linphone_chat_message_get_text(chat);
+    NSString* messageText = text ? [NSString stringWithUTF8String:text] : @"";
+    if(url == nil) {
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
         }
@@ -226,7 +225,7 @@ static UIFont *CELL_FONT = nil;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 
         if( [[[UIDevice currentDevice] systemVersion] doubleValue] >= 7){
-            messageSize = [[chat message]
+            messageSize = [messageText
                            boundingRectWithSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
                            options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesFontLeading)
                            attributes:@{NSFontAttributeName: CELL_FONT}
@@ -234,7 +233,7 @@ static UIFont *CELL_FONT = nil;
         } else
 #endif
         {
-            messageSize = [[chat message] sizeWithFont: CELL_FONT
+            messageSize = [messageText sizeWithFont: CELL_FONT
                                      constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
                                          lineBreakMode: NSLineBreakByTruncatingTail];
         }
@@ -250,8 +249,8 @@ static UIFont *CELL_FONT = nil;
     return messageSize;
 }
 
-+ (CGFloat)height:(ChatModel*)chat width:(int)width {
-    return [UIChatRoomCell viewSize:chat width:width].height;
++ (CGFloat)height:(LinphoneChatMessage*)chatMessage width:(int)width {
+    return [UIChatRoomCell viewSize:chatMessage width:width].height;
 }
 
 
@@ -262,8 +261,9 @@ static UIFont *CELL_FONT = nil;
     if(chat != nil) {
         // Resize inner
         CGRect innerFrame;
+        BOOL is_outgoing = linphone_chat_message_is_outgoing(chat);
         innerFrame.size = [UIChatRoomCell viewSize:chat width:[self frame].size.width];
-        if([[chat direction] intValue]) { // Inverted
+        if(is_outgoing) { // Inverted
             innerFrame.origin.x = 0.0f;
             innerFrame.origin.y = 0.0f;
         } else {
@@ -274,7 +274,7 @@ static UIFont *CELL_FONT = nil;
 
         CGRect messageFrame = [bubbleView frame];
         messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
-        if([[chat direction] intValue]) { // Inverted
+        if(is_outgoing) { // Inverted
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];
             messageFrame.origin.y += 5;
@@ -304,7 +304,9 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (IBAction)onDownloadClick:(id)event {
-    [chatRoomDelegate chatRoomStartImageDownload:[NSURL URLWithString:chat.message] userInfo:chat];
+    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(chat)]];
+    [chatRoomDelegate chatRoomStartImageDownload:url userInfo:[NSValue valueWithPointer:chat]];
+
 }
 
 - (IBAction)onImageClick:(id)event {
@@ -317,14 +319,21 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (IBAction)onResendClick:(id)event {
-    if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
-        NSString* message = [chat message];
+    if( chat == nil ) return;
+
+    LinphoneChatMessageState state = linphone_chat_message_get_state(self->chat);
+    if (state == LinphoneChatMessageStateNotDelivered) {
+        const char* text = linphone_chat_message_get_text(self->chat);
+        const char* url = linphone_chat_message_get_external_body_url(self->chat);
+        NSString* message = text ? [NSString stringWithUTF8String:text] : nil;
+        NSString* exturl  = url ? [NSString stringWithUTF8String:url] : nil;
+
         [self onDeleteClick:nil];
 
         double delayInSeconds = 0.4;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [chatRoomDelegate resendChat:message];
+            [chatRoomDelegate resendChat:message withExternalUrl:exturl];
         });
     }
 }
