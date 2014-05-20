@@ -234,11 +234,18 @@ static void text_message_with_external_body(void) {
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	linphone_chat_message_set_external_body_url(message,message_external_body_url="http://www.linphone.org");
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+
+	/* check transient message list: the message should be in it, and should be the only one */
+	CU_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 1);
+	CU_ASSERT_EQUAL(ms_list_nth_data(chat_room->transient_messages,0), message);
+
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+
+	CU_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -254,9 +261,17 @@ static void text_message_with_send_error(void) {
 	sal_set_send_error(marie->lc->sal, -1);
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
 
+	/* check transient message list: the message should be in it, and should be the only one */
+	CU_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 1);
+	CU_ASSERT_EQUAL(ms_list_nth_data(chat_room->transient_messages,0), message);
+
+
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	/*CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageInProgress,1);*/
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0);
+
+	/* the message should have been discarded from transient list after an error */
+	CU_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0);
 
 	sal_set_send_error(marie->lc->sal, 0);
 	linphone_core_manager_destroy(marie);
