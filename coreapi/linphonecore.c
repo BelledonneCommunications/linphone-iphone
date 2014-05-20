@@ -5664,7 +5664,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	if (lc->network_reachable) {
 		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-			linphone_proxy_config_edit(cfg);	/* to unregister */
+			_linphone_proxy_config_unregister(cfg);	/* to unregister without changing the stored flag enable_register */
 		}
 
 		ms_message("Unregistration started.");

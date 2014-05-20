@@ -393,6 +393,9 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
 static const int linphone_proxy_config_magic=0x7979;
+bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
+bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
@@ -428,6 +431,12 @@ struct _LinphoneProxyConfig
 	void* user_data;
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
+	/*use to check if server config has changed  between edit() and done()*/
+	LinphoneAddress *saved_proxy;
+	LinphoneAddress *saved_identity;
+	LinphoneAddress *saved_route;
+	/*---*/
+
 };
 
 struct _LinphoneAuthInfo

@@ -21,7 +21,7 @@
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
-
+#include "private.h"
 
 static void core_init_test(void) {
 	LinphoneCoreVTable v_table;
@@ -104,10 +104,70 @@ static void linphone_lpconfig_from_buffer(){
 	lp_config_destroy(conf);
 
 }
+void linphone_proxy_config_address_equal_test() {
+	LinphoneAddress *a = linphone_address_new("sip:toto@titi");
+	LinphoneAddress *b = linphone_address_new("sips:toto@titi");
+	LinphoneAddress *c = linphone_address_new("sip:toto@titi;transport=tcp");
+	LinphoneAddress *d = linphone_address_new("sip:toto@titu");
+	LinphoneAddress *e = linphone_address_new("sip:toto@titi;transport=udp");
 
+	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,NULL));
+	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,b));
+	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,c));
+	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,d));
+	CU_ASSERT_TRUE(linphone_proxy_config_address_equal(a,e));
+	CU_ASSERT_TRUE(linphone_proxy_config_address_equal(NULL,NULL));
+
+	linphone_address_destroy(a);
+	linphone_address_destroy(b);
+	linphone_address_destroy(c);
+	linphone_address_destroy(d);
+}
+
+void linphone_proxy_config_is_server_config_changed_test() {
+	LinphoneProxyConfig* proxy_config = linphone_proxy_config_new();
+
+	linphone_proxy_config_set_identity(proxy_config,"sip:toto@titi");
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_identity(proxy_config,"sips:toto@titi");
+	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:toto.com");
+	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org:4444");
+	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org;transport=tcp");
+	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org;param=blue");
+	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_set_contact_parameters(proxy_config,"blabla=blue");
+	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_register(proxy_config,TRUE);
+	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+
+	linphone_proxy_config_destroy(proxy_config);
+}
 
 test_t setup_tests[] = {
 	{ "Linphone Address", linphone_address_test },
+	{ "Linphone proxy config address equal (internal api)", linphone_proxy_config_address_equal_test},
+	{ "Linphone proxy config server address change (internal api)", linphone_proxy_config_is_server_config_changed_test},
 	{ "Linphone core init/uninit", core_init_test },
 	{ "Linphone random transport port",core_sip_transport_test},
 	{ "Linphone interpret url", linphone_interpret_url_test },

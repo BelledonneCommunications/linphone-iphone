@@ -26,6 +26,60 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 #include <ctype.h>
 
+/*store current config related to server location*/
+static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* obj) {
+	if (obj->saved_identity) linphone_address_destroy(obj->saved_identity);
+	if (obj->reg_identity)
+		obj->saved_identity = linphone_address_new(obj->reg_identity);
+	else
+		obj->saved_identity = NULL;
+
+	if (obj->saved_proxy) linphone_address_destroy(obj->saved_proxy);
+	if (obj->reg_proxy)
+		obj->saved_proxy = linphone_address_new(obj->reg_proxy);
+	else
+		obj->saved_proxy = NULL;
+
+	if (obj->saved_route) linphone_address_destroy(obj->saved_route);
+	if (obj->reg_route)
+		obj->saved_route = linphone_address_new(obj->reg_route);
+	else
+		obj->saved_route = NULL;
+}
+
+bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b) {
+	if (a == NULL && b == NULL)
+		return TRUE;
+	else if (!a || !b)
+		return FALSE;
+
+	if (linphone_address_weak_equal(a,b)) {
+		/*also check both transport and uri */
+		if (!(linphone_address_is_secure(a) ^ linphone_address_is_secure(b))) {
+			return linphone_address_get_transport(a) == linphone_address_get_transport(b);
+		} else
+			return FALSE; /*secure flag not equals*/
+	} else
+		return FALSE; /*either username, domain or port ar not equals*/
+
+}
+
+bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
+	LinphoneAddress *current_identity=obj->reg_identity?linphone_address_new(obj->reg_identity):NULL;
+	LinphoneAddress *current_proxy=obj->reg_proxy?linphone_address_new(obj->reg_proxy):NULL;
+	LinphoneAddress *current_route=obj->reg_route?linphone_address_new(obj->reg_route):NULL;
+
+	if (!linphone_proxy_config_address_equal(obj->saved_identity,current_identity))
+		return TRUE;
+
+	if (!linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy))
+		return TRUE;
+
+	if (!linphone_proxy_config_address_equal(obj->saved_route,current_route))
+		return TRUE;
+
+	return FALSE;
+}
 
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	MSList *elem;
@@ -106,6 +160,9 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->publish_op) sal_op_release(obj->publish_op);
 	if (obj->contact_params) ms_free(obj->contact_params);
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
+	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
+	if (obj->saved_identity!=NULL) ms_free(obj->saved_identity);
+	if (obj->saved_route!=NULL) ms_free(obj->saved_route);
 	ms_free(obj);
 }
 
@@ -265,21 +322,16 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 **/
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	if (obj->publish && obj->publish_op){
-		/*unpublish*/
-		sal_publish_presence(obj->publish_op,NULL,NULL,0,(SalPresenceModel *)NULL);
-		sal_op_release(obj->publish_op);
-		obj->publish_op=NULL;
+	        /*unpublish*/
+	        sal_publish_presence(obj->publish_op,NULL,NULL,0,(SalPresenceModel *)NULL);
+	        sal_op_release(obj->publish_op);
+	        obj->publish_op=NULL;
 	}
-	if (obj->reg_sendregister){
-		/* unregister */
-		if (obj->state == LinphoneRegistrationOk
-				|| obj->state == LinphoneRegistrationProgress) {
-			sal_unregister(obj->op);
-		} else {
-			/*stop refresher*/
-			if (obj->op) sal_op_stop_refreshing(obj->op);
-		}
-	}
+	/*store current config related to server location*/
+	linphone_proxy_config_store_server_config(obj);
+
+	/*stop refresher in any case*/
+	if (obj->op) sal_op_stop_refreshing(obj->op);
 }
 
 void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc){
@@ -336,6 +388,14 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	return ret;
 }
 
+/**
+ * unregister without moving the register_enable flag
+ */
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
+	if (obj->state == LinphoneRegistrationOk) {
+		sal_unregister(obj->op);
+	}
+}
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
@@ -360,8 +420,14 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		}
 		ms_free(proxy_string);
 	} else {
-		/*stop refresher, just in case*/
-		if (obj->op) sal_op_stop_refreshing(obj->op);
+		/* unregister if registered*/
+		if (obj->state == LinphoneRegistrationProgress) {
+			linphone_proxy_config_set_state(obj,LinphoneRegistrationCleared,"Registration cleared");
+		}
+		_linphone_proxy_config_unregister(obj);
+
+
+
 	}
 }
 
@@ -843,7 +909,19 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 **/
 int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 {
-	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
+	if (!linphone_proxy_config_check(obj->lc,obj))
+		return -1;
+
+	/*check if server address as changed*/
+	if (linphone_proxy_config_is_server_config_changed(obj)) {
+		/* server config has changed, need to unregister from previous first*/
+		if (obj->op) {
+			_linphone_proxy_config_unregister(obj);
+			sal_op_set_user_pointer(obj->op,NULL); /*we don't want to receive status for this un register*/
+			sal_op_unref(obj->op); /*but we keep refresher to handle authentication if needed*/
+			obj->op=NULL;
+		}
+	}
 	obj->commit=TRUE;
 	linphone_proxy_config_write_all_to_config_file(obj->lc);
 	return 0;

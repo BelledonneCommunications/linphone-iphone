@@ -551,6 +551,9 @@ void sal_op_set_to_address(SalOp *op, const SalAddress *to);
 SalOp *sal_op_ref(SalOp* h);
 void sal_op_stop_refreshing(SalOp *op);
 void sal_op_release(SalOp *h);
+/*same as release, but does not stop refresher if any*/
+void* sal_op_unref(SalOp* op);
+
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);

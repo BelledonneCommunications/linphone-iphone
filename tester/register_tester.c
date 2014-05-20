@@ -119,7 +119,8 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	linphone_core_add_proxy_config(lc,proxy_cfg);
 	linphone_core_set_default_proxy(lc,proxy_cfg);
 
-	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0) && retry++ <310) {
+	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0)
+			&& retry++ <(110 /*only wait 11 s if final state is progress*/+(expected_final_state==LinphoneRegistrationProgress?0:200))) {
 		linphone_core_iterate(lc);
 		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
 			if (!linphone_core_get_auth_info_list(lc)) {
@@ -194,6 +195,52 @@ static void simple_register(){
 	stats* counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,NULL,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
+	linphone_core_manager_destroy(lcm);
+}
+
+static void simple_unregister(){
+	LinphoneCoreManager* lcm = create_lcm();
+	stats* counters = &lcm->stat;
+	LinphoneProxyConfig* proxy_config;
+	register_with_refresh_base(lcm->lc,FALSE,NULL,NULL);
+
+	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+
+	linphone_proxy_config_edit(proxy_config);
+	reset_counters(counters); /*clear stats*/
+
+	/*nothing is supposed to arrive until done*/
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
+	linphone_proxy_config_enable_register(proxy_config,FALSE);
+	linphone_proxy_config_done(proxy_config);
+	CU_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1));
+	linphone_core_manager_destroy(lcm);
+}
+
+static void change_expires(){
+	LinphoneCoreManager* lcm = create_lcm();
+	stats* counters = &lcm->stat;
+	LinphoneProxyConfig* proxy_config;
+	register_with_refresh_base(lcm->lc,FALSE,NULL,NULL);
+
+	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+
+	linphone_proxy_config_edit(proxy_config);
+	reset_counters(counters); /*clear stats*/
+
+	/*nothing is supposed to arrive until done*/
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
+
+	linphone_proxy_config_set_expires(proxy_config,3);
+
+	linphone_proxy_config_done(proxy_config);
+	CU_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
+	/*wait 2s without receive refresh*/
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,2,2000));
+	/* now, it should be ok*/
+	CU_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,2));
+
+
 	linphone_core_manager_destroy(lcm);
 }
 
@@ -467,6 +514,101 @@ static void transport_change(){
 	linphone_core_manager_destroy(mgr);
 }
 
+static void proxy_transport_change(){
+	LinphoneCoreManager* lcm = create_lcm();
+	stats* counters = &lcm->stat;
+	LinphoneProxyConfig* proxy_config;
+	LinphoneAddress* addr;
+	char* addr_as_string;
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+
+	register_with_refresh_base(lcm->lc,FALSE,auth_domain,NULL);
+
+	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	reset_counters(counters); /*clear stats*/
+	linphone_proxy_config_edit(proxy_config);
+
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
+	addr = linphone_address_new(linphone_proxy_config_get_addr(proxy_config));
+
+	if (LinphoneTransportTcp == linphone_address_get_transport(addr)) {
+		linphone_address_set_transport(addr,LinphoneTransportUdp);
+	} else {
+		linphone_address_set_transport(addr,LinphoneTransportTcp);
+	}
+	linphone_proxy_config_set_server_addr(proxy_config,addr_as_string=linphone_address_as_string(addr));
+
+	linphone_proxy_config_done(proxy_config);
+
+	CU_ASSERT(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
+	/*as we change p[roxy server destination, we should'nt be notified about the clear*/
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
+	ms_free(addr_as_string);
+	linphone_address_destroy(addr);
+	linphone_core_manager_destroy(lcm);
+
+}
+static void proxy_transport_change_with_wrong_port() {
+	LinphoneCoreManager* lcm = create_lcm();
+	stats* counters = &lcm->stat;
+	LinphoneProxyConfig* proxy_config;
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+	char route[256];
+	LCSipTransports transport= {LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM};
+	sprintf(route,"sip:%s",test_route);
+
+	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+
+	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
+
+	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
+	linphone_proxy_config_set_server_addr(proxy_config,route);
+	linphone_proxy_config_done(proxy_config);
+
+	CU_ASSERT(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
+	/*as we change proxy server destination, we should'nt be notified about the clear*/
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
+
+	linphone_core_manager_destroy(lcm);
+
+}
+
+static void proxy_transport_change_with_wrong_port_givin_up() {
+	LinphoneCoreManager* lcm = create_lcm();
+	stats* counters = &lcm->stat;
+	LinphoneProxyConfig* proxy_config;
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+	char route[256];
+	LCSipTransports transport= {LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM,LC_SIP_TRANSPORT_RANDOM};
+	sprintf(route,"sip:%s",test_route);
+
+	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+
+	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
+
+	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+
+	CU_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
+	linphone_proxy_config_enableregister(proxy_config,FALSE);
+	linphone_proxy_config_done(proxy_config);
+
+	CU_ASSERT(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,0);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
+
+	linphone_core_manager_destroy(lcm);
+
+}
+
 static void io_recv_error(){
 	LinphoneCoreManager *mgr;
 	LinphoneCore* lc;
@@ -567,22 +709,17 @@ static void io_recv_error_without_active_register(){
 	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
 		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 		linphone_proxy_config_edit(proxy_cfg);
+		linphone_proxy_config_enableregister(proxy_cfg,FALSE);
+		linphone_proxy_config_done(proxy_cfg);
 	}
 	ms_list_free(proxys);
 	/*wait for unregistrations*/
 	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
 
-	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
-		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
-		linphone_proxy_config_enable_register(proxy_cfg,FALSE);
-		linphone_proxy_config_done(proxy_cfg);
-	}
-	ms_list_free(proxys);
-
 	sal_set_recv_error(lc->sal, 0);
 
 	/*nothing should happen because no active registration*/
-	CU_ASSERT_FALSE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/));
+	CU_ASSERT_FALSE(wait_for_until(lc,lc,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/,3000));
 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
 
@@ -669,6 +806,7 @@ static void tls_wildcard_register(){
 
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
+	{ "Simple register unregister", simple_unregister },
 	{ "TCP register", simple_tcp_register },
 	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 	{ "TLS register", simple_tls_register },
@@ -688,7 +826,11 @@ test_t register_tests[] = {
 	{ "Authenticated register with refresh", simple_auth_register_with_refresh },
 	{ "Register with refresh and send error", register_with_refresh_with_send_error },
 	{ "Multi account", multiple_proxy },
-	{ "Transport change", transport_change },
+	{ "Transport changes", transport_change },
+	{ "Proxy transport changes", proxy_transport_change},
+	{ "Proxy transport changes with wrong address at first", proxy_transport_change_with_wrong_port},
+	{ "Proxy transport changes with wrong address, giving up",proxy_transport_change_with_wrong_port_givin_up},
+	{ "Change expires", change_expires},
 	{ "Network state change", network_state_change },
 	{ "Io recv error", io_recv_error },
 	{ "Io recv error with recovery", io_recv_error_retry_immediatly},
