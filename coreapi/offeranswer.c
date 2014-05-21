@@ -156,17 +156,16 @@ static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCry
 				result->algo = remote[i].algo;
 				/* We're answering an SDP offer. Supply our master key, associated with the remote supplied tag */
 				if (use_local_key) {
-					strncpy(result->master_key, local[j].master_key, 41);
+					strncpy(result->master_key, local[j].master_key, sizeof(result->master_key) );
 					result->tag = remote[i].tag;
 					*choosen_local_tag = local[j].tag;
 				}
 				/* We received an answer to our SDP crypto proposal. Copy matching algo remote master key to result, and memorize local tag */
 				else {
-					strncpy(result->master_key, remote[i].master_key, 41);
+					strncpy(result->master_key, remote[i].master_key, sizeof(result->master_key));
 					result->tag = local[j].tag;
 					*choosen_local_tag = local[j].tag;
 				}
-				result->master_key[40] = '\0';
 				return TRUE;
 			}
 		}

@@ -166,7 +166,7 @@ typedef struct SalIceRemoteCandidate {
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
 /*sufficient for 256bit keys encoded in base 64*/
-#define SAL_SRTP_KEY_SIZE 64
+#define SAL_SRTP_KEY_SIZE 128
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;

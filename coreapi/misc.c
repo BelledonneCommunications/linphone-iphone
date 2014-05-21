@@ -1471,3 +1471,52 @@ void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id, const char *aud
 	_linphone_core_set_tone(lc, LinphoneReasonNone, id, audiofile);
 }
 
+const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
+	const char *config=lp_config_get_string(lc->config,"sip","srtp_crypto_suites","AES_CM_128_HMAC_SHA1_80, AES_CM_128_HMAC_SHA1_32");
+	char *tmp=ms_strdup(config);
+	char *sep;
+	char *pos;
+	char *nextpos;
+	char *params;
+	int found=0;
+	MSCryptoSuite *result=NULL;
+	pos=tmp;
+	do{
+		sep=strchr(pos,',');
+		if (!sep) {
+			sep=pos+strlen(pos);
+			nextpos=NULL;
+		}else {
+			*sep='\0';
+			nextpos=sep+1;
+		}
+		while(*pos==' ') ++pos; /*strip leading spaces*/
+		params=strchr(pos,' '); /*look for params that arrive after crypto suite name*/
+		if (params){
+			while(*params==' ') ++params; /*strip parameters leading space*/
+		}
+		if (sep-pos>0){
+			MSCryptoSuiteNameParams np;
+			MSCryptoSuite suite;
+			np.name=pos;
+			np.params=params;
+			suite=ms_crypto_suite_build_from_name_params(&np);
+			if (suite!=MS_CRYPTO_SUITE_INVALID){
+				result=ms_realloc(result,found+1+1);
+				result[found]=suite;
+				result[found+1]=MS_CRYPTO_SUITE_INVALID;
+				found++;
+				ms_message("Configured srtp crypto suite: %s %s",np.name,np.params ? np.params : "");
+			}
+		}
+		pos=nextpos;
+	}while(pos);
+	ms_free(tmp);
+	if (lc->rtp_conf.srtp_suites){
+		ms_free(lc->rtp_conf.srtp_suites);
+		lc->rtp_conf.srtp_suites=NULL;
+	}
+	lc->rtp_conf.srtp_suites=result;
+	return result;
+}
+

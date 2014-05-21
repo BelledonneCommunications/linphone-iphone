@@ -999,3 +999,4 @@ void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	belle_sip_main_loop_remove_source(ml, timer);
 }
+

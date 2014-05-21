@@ -519,6 +519,7 @@ typedef struct rtp_config
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
 	int disable_upnp;
+	MSCryptoSuite *srtp_suites;
 	bool_t rtp_no_xmit_on_audio_mute;
 							  /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
@@ -886,6 +887,7 @@ static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const Sal
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
 
+const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 
 /** Belle Sip-based objects need unique ids
   */

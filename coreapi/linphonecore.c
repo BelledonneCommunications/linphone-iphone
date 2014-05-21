@@ -5738,6 +5738,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);
 	lp_config_set_int(lc->config,"rtp","audio_adaptive_jitt_comp_enabled",config->audio_adaptive_jitt_comp_enabled);
 	lp_config_set_int(lc->config,"rtp","video_adaptive_jitt_comp_enabled",config->video_adaptive_jitt_comp_enabled);
+	ms_free(config->srtp_suites);
 }
 
 static void sound_config_uninit(LinphoneCore *lc)

@@ -232,9 +232,35 @@ static void update_media_description_from_stun(SalMediaDescription *md, const St
 	}
 }
 
+static int setup_encryption_key(SalSrtpCryptoAlgo *crypto, MSCryptoSuite suite, unsigned int tag){
+	int keylen=0;
+	crypto->tag=tag;
+	crypto->algo=suite;
+	switch(suite){
+		case MS_AES_128_SHA1_80:
+		case MS_AES_128_SHA1_32:
+		case MS_AES_128_NO_AUTH:
+		case MS_NO_CIPHER_SHA1_80: /*not sure for this one*/
+			keylen=30;
+		break;
+		case MS_AES_256_SHA1_80:
+		case MS_AES_256_SHA1_32:
+			keylen=46;
+		break;
+		case MS_CRYPTO_SUITE_INVALID:
+		break;
+	}
+	if (keylen==0 || !generate_b64_crypto_key(30, crypto->master_key, SAL_SRTP_KEY_SIZE)){
+		ms_error("Could not generate SRTP key.");
+		crypto->algo = 0;
+		return -1;
+	}
+	return 0;
+}
+
 static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	LinphoneCore *lc=call->core;
-	int i;
+	int i,j;
 	SalMediaDescription *old_md=call->localdesc;
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",1);
 
@@ -247,15 +273,10 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 					memcpy(&md->streams[i].crypto[j],&old_md->streams[i].crypto[j],sizeof(SalSrtpCryptoAlgo));
 				}
 			}else{
-				md->streams[i].crypto[0].tag = 1;
-				md->streams[i].crypto[0].algo = MS_AES_128_SHA1_80;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key, SAL_SRTP_KEY_SIZE))
-					md->streams[i].crypto[0].algo = 0;
-				md->streams[i].crypto[1].tag = 2;
-				md->streams[i].crypto[1].algo = MS_AES_128_SHA1_32;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key, SAL_SRTP_KEY_SIZE))
-					md->streams[i].crypto[1].algo = 0;
-				md->streams[i].crypto[2].algo = 0;
+				const MSCryptoSuite *suites=linphone_core_get_srtp_crypto_suites(lc);
+				for(j=0;suites!=NULL && suites[j]!=MS_CRYPTO_SUITE_INVALID && j<SAL_CRYPTO_ALGO_MAX;++j){
+					setup_encryption_key(&md->streams[i].crypto[j],suites[j],j+1);
+				}
 			}
 		}
 	}
