@@ -321,7 +321,7 @@ static int migrate_messages(void* data,int argc, char** argv, char** column_name
 			sqlite3_free(buf);
 		}
 	} else {
-		ms_warning("Cannot parse time %s from id %s\n", argv[1], argv[0]);
+		ms_warning("Cannot parse time %s from id %s", argv[1], argv[0]);
 	}
 	return 0;
 }
@@ -335,7 +335,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 		ms_warning("Error migrating outgoing messages: %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_message("Migrated message timestamps to UTC\n");
+		ms_message("Migrated message timestamps to UTC");
 	}
 }
 
@@ -346,7 +346,7 @@ void linphone_update_table(sqlite3* db) {
 	// for image url storage
 	ret=sqlite3_exec(db,"ALTER TABLE history ADD COLUMN url TEXT;",NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_warning("Table already up to date: %s.\n", errmsg);
+		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
 		ms_debug("Table updated successfully for URL.");
@@ -355,14 +355,13 @@ void linphone_update_table(sqlite3* db) {
 	// for UTC timestamp storage
 	ret = sqlite3_exec(db, "ALTER TABLE history ADD COLUMN utc INTEGER;", NULL,NULL,&errmsg);
 	if( ret != SQLITE_OK ){
-		ms_warning("Table already up to date: %s.\n", errmsg);
+		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
 		ms_debug("Table updated successfully for UTC.");
+		// migrate from old text-based timestamps to unix time-based timestamps
+		linphone_migrate_timestamps(db);
 	}
-
-	// migrate from old text-based timestamps to unix time-based timestamps
-	linphone_migrate_timestamps(db);
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
