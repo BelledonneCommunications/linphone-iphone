@@ -1221,10 +1221,8 @@ static void call_waiting_indication_with_privacy(void) {
 	call_waiting_indication_with_param(TRUE);
 }
 
-static void simple_conference(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, LinphoneCoreManager* laure) {
+
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
 	stats initial_laure_stat;
@@ -1266,6 +1264,16 @@ static void simple_conference(void) {
 	CU_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
 	CU_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3)
 
+	if (linphone_core_get_firewall_policy(marie->lc) == LinphonePolicyUseIce) {
+		if (linphone_core_get_firewall_policy(pauline->lc) == LinphonePolicyUseIce) {
+			check_ice(marie,pauline,LinphoneIceStateHostConnection);
+		}
+		if (linphone_core_get_firewall_policy(laure->lc) == LinphonePolicyUseIce) {
+			check_ice(marie,laure,LinphoneIceStateHostConnection);
+		}
+	}
+
+
 	linphone_core_terminate_conference(marie->lc);
 
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
@@ -1273,10 +1281,35 @@ static void simple_conference(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,2000));
 
 
+
+	ms_list_free(lcs);
+}
+static void simple_conference(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	simple_conference_base(marie,pauline,laure);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-	ms_list_free(lcs);
+}
+
+static void simple_conference_with_ice(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	linphone_core_set_firewall_policy(laure->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(laure->lc,"stun.linphone.org");
+
+	simple_conference_base(marie,pauline,laure);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
 }
 
 static void srtp_call() {
@@ -2173,6 +2206,7 @@ test_t call_tests[] = {
 	{ "Call waiting indication", call_waiting_indication },
 	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
 	{ "Simple conference", simple_conference },
+	{ "Simple conference with ICE",simple_conference_with_ice},
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Unattended call transfer", unattended_call_transfer },
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
