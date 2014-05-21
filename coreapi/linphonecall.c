@@ -1981,6 +1981,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				}
 			}
 			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
+			audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -2007,7 +2008,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (send_ringbacktone){
 				setup_ring_player(lc,call);
 			}
-			audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
@@ -2105,12 +2105,12 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				video_stream_set_direction (call->videostream, dir);
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
+				video_stream_set_rtcp_information(call->videostream, cname, rtcp_tool);
 				video_stream_start(call->videostream,
 					call->video_profile, rtp_addr, vstream->rtp_port,
 					rtcp_addr,
 					linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
 					used_pt, linphone_core_get_video_jittcomp(lc), cam);
-				video_stream_set_rtcp_information(call->videostream, cname,rtcp_tool);
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{
