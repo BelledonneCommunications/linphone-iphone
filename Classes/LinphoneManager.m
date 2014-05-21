@@ -393,7 +393,7 @@ exit_dbmigration:
         [LinphoneLogger logc:LinphoneLoggerError format:"Could not remove old chat DB: %@", error];
     }
 
-    [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? "TRUE":"FALSE"];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? @"TRUE":@"FALSE"];
     return migrated;
 }
 
