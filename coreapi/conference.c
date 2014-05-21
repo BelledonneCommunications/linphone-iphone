@@ -200,7 +200,8 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		params->has_video=FALSE;
 		
 		if (call->audiostream || call->videostream){
-			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
+			linphone_call_stop_media_streams(call); /*free the audio & video local resources*/
+			linphone_call_init_media_streams(call);
 		}
 		if (call==lc->current_call){
 			lc->current_call=NULL;
