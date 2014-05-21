@@ -39,12 +39,6 @@ static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* obj) 
 		obj->saved_proxy = linphone_address_new(obj->reg_proxy);
 	else
 		obj->saved_proxy = NULL;
-
-	if (obj->saved_route) linphone_address_destroy(obj->saved_route);
-	if (obj->reg_route)
-		obj->saved_route = linphone_address_new(obj->reg_route);
-	else
-		obj->saved_route = NULL;
 }
 
 bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b) {
@@ -67,15 +61,11 @@ bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const Linph
 bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
 	LinphoneAddress *current_identity=obj->reg_identity?linphone_address_new(obj->reg_identity):NULL;
 	LinphoneAddress *current_proxy=obj->reg_proxy?linphone_address_new(obj->reg_proxy):NULL;
-	LinphoneAddress *current_route=obj->reg_route?linphone_address_new(obj->reg_route):NULL;
 
 	if (!linphone_proxy_config_address_equal(obj->saved_identity,current_identity))
 		return TRUE;
 
 	if (!linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy))
-		return TRUE;
-
-	if (!linphone_proxy_config_address_equal(obj->saved_route,current_route))
 		return TRUE;
 
 	return FALSE;
@@ -162,7 +152,6 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
 	if (obj->saved_identity!=NULL) ms_free(obj->saved_identity);
-	if (obj->saved_route!=NULL) ms_free(obj->saved_route);
 	ms_free(obj);
 }
 

@@ -434,7 +434,6 @@ struct _LinphoneProxyConfig
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
-	LinphoneAddress *saved_route;
 	/*---*/
 
 };

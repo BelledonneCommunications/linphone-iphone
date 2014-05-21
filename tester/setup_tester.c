@@ -137,19 +137,19 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:toto.com");
 	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
 
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org:4444");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org:4444");
 	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
 
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org;transport=tcp");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;transport=tcp");
 	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
 
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
-	linphone_proxy_config_set_route(proxy_config,"sip:sip.linphone.org;param=blue");
+	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;param=blue");
 	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
 
 
