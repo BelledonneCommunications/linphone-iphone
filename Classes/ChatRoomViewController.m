@@ -197,8 +197,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [messageField resignFirstResponder];
 
-    chatRoom = NULL;
-
     [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -521,6 +519,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
+    [self.tableController setChatRoom:NULL];
     [[PhoneMainView instance] popCurrentView];
 }
 
@@ -657,7 +656,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 		[errorAlert show];
         [errorAlert release];
 	} else {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot dowanlod file from [%@] because [%@]", url, [error localizedDescription]];
+		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot download file from [%@] because [%@]", url, [error localizedDescription]];
         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
                                                              message:NSLocalizedString(@"Cannot transfer file from remote contact", nil)
                                                             delegate:nil

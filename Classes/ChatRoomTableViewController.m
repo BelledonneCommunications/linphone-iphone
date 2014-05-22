@@ -43,8 +43,8 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [TUNinePatchCache flushCache]; // Clear cache
-    [self clearMessageList];
-    chatRoom = NULL;
+//    [self clearMessageList];
+//    chatRoom = NULL;
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[self reloadData];
