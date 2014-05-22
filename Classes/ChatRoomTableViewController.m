@@ -43,8 +43,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [TUNinePatchCache flushCache]; // Clear cache
-    [self clearMessageList];
-    chatRoom = NULL;
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[self reloadData];
@@ -110,7 +108,10 @@
     int count = 0;
     while (item) {
         LinphoneChatMessage* msg = (LinphoneChatMessage*)item->data;
-        NSLog(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
+        const char* text = linphone_chat_message_get_text(msg);
+        const char* url  = linphone_chat_message_get_external_body_url(msg);
+        const char* state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
+        NSLog(@"Message %d type %s (%s): %s", count++, text?"TEXT":"IMG", state,text?text:url);
         item = item->next;
     }
 }
