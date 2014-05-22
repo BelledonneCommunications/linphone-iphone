@@ -197,7 +197,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [messageField resignFirstResponder];
 
-    //chatRoom = NULL;
+    chatRoom = NULL;
 
     [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
@@ -250,6 +250,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self update];
     linphone_chat_room_mark_as_read(chatRoom);
     [self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification*)notif {
@@ -306,9 +307,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
     const char*text = linphone_chat_message_get_text(msg);
-    const char*url  = linphone_chat_message_get_external_body_url(msg);
 	[LinphoneLogger log:LinphoneLoggerLog 
-				 format:@"Delivery status for %p [%s] is [%s]",msg, text?text:url,linphone_chat_message_state_to_string(state)];
+				 format:@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state)];
 	[thiz.tableController updateChatEntry:msg];
 }
 
