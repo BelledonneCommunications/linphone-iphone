@@ -1313,12 +1313,16 @@ static bool_t notify_actions_supported() {
 	return accepts_actions;
 }
 
-static NotifyNotification* build_notification(const char *title, const char *body){
-	 return notify_notification_new(title,body,linphone_gtk_get_ui_config("icon",LINPHONE_ICON)
+static NotifyNotification* build_notification(const char *title, const char *body) {
+	const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
+	GdkPixbuf *pbuf = create_pixbuf(icon_path);
+	NotifyNotification *n = notify_notification_new(title, body, NULL
 #ifdef HAVE_NOTIFY1
-        ,NULL
+		,NULL
 #endif
 	);
+	notify_notification_set_icon_from_pixbuf(n, pbuf);
+	return n;
 }
 
 static void show_notification(NotifyNotification* n){
