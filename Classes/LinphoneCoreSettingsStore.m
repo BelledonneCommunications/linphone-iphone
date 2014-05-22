@@ -209,7 +209,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
 	[self setBool: lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"start_at_boot_preference",1)  forKey:@"start_at_boot_preference"];
 	[self setBool: lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"backgroundmode_preference",1) forKey:@"backgroundmode_preference"];
-	
+	[self setBool: lp_config_get_int(conf,LINPHONERC_APPLICATION_KEY,"autoanswer_notif_preference",1) forKey:@"autoanswer_notif_preference"];
+
 
 	{
 		const LinphoneVideoPolicy *pol;
@@ -625,6 +626,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "backgroundmode_preference", isbackgroundModeEnabled);
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "start_at_boot_preference", [self boolForKey:@"start_at_boot_preference"]);
+    lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "autoanswer_notif_preference", [self boolForKey:@"autoanswer_notif_preference"]);
+
 
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", firstloginview);

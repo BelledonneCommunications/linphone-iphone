@@ -28,6 +28,7 @@ edge_opt_preference=0
 use_system_contacts=0
 start_at_boot_preference=1
 backgroundmode_preference=1
+autoanswer_notif_preference=1
 
 
 [default_values]

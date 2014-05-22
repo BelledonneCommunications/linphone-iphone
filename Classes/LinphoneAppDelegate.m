@@ -276,11 +276,14 @@
     
 
     if([notification.userInfo objectForKey:@"callId"] != nil) {
+        BOOL auto_answer = TRUE;
         // some local notifications have an internal timer to relaunch themselves at specified intervals
         if( [[notification.userInfo objectForKey:@"timer"] intValue] == 1 ){
             [[LinphoneManager instance] cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
-        } else {
-            // auto answer only for non-timed local notifications
+            auto_answer = [[LinphoneManager instance] lpConfigBoolForKey:@"autoanswer_notif_preference"];
+        }
+        if(auto_answer)
+        {
             [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
         }
     } else if([notification.userInfo objectForKey:@"from"] != nil) {
