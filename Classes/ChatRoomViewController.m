@@ -326,8 +326,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     if(externalUrl) {
         linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
     }
-    [tableController addChatEntry:linphone_chat_message_ref(msg)];
 	linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
+    [tableController addChatEntry:linphone_chat_message_ref(msg)];
     [tableController scrollToBottom:true];
     return TRUE;
 }
