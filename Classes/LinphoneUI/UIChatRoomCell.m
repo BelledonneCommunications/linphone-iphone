@@ -127,21 +127,21 @@ static UIFont *CELL_FONT = nil;
 
     } else if(url) {
 
+        NSURL* imageUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
+
         [messageText setHidden:TRUE];
         [messageImageView setImage:nil];
         [messageImageView startLoading];
         __block LinphoneChatMessage *achat = chat;
-        [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]] resultBlock:^(ALAsset *asset) {
+        [[LinphoneManager instance].photoLibrary assetForURL:imageUrl resultBlock:^(ALAsset *asset) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
-                ALAssetRepresentation* representation = [asset defaultRepresentation];
-                UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]
-                                                     scale:representation.scale
-                                               orientation:(UIImageOrientation)representation.orientation];
-                image = [UIImage decodedImageWithImage:image];
+                UIImage* image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
                 if(achat == self->chat) { //Avoid glitch and scrolling
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [messageImageView setImage:image];
+                        [messageImageView setFullImageUrl:asset];
                         [messageImageView stopLoading];
+                        [image release];
                     });
                 }
             });
@@ -313,7 +313,9 @@ static UIFont *CELL_FONT = nil;
     if(![messageImageView isLoading]) {
         ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
         if(controller != nil) {
-            [controller setImage:messageImageView.image];
+            CGImageRef fullScreenRef = [[messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
+            UIImage* fullScreen = [UIImage imageWithCGImage:fullScreenRef];
+            [controller setImage:fullScreen];
         }
     }
 }

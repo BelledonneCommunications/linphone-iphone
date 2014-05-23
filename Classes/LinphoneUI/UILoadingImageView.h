@@ -18,6 +18,8 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/ALAsset.h>
+#import <AssetsLibrary/ALAssetRepresentation.h>
 
 @interface UILoadingImageView : UIImageView
 
@@ -26,6 +28,7 @@
 - (BOOL)isLoading;
 - (void)stopLoading;
 
+@property (nonatomic, retain) ALAsset* fullImageUrl;
 @property (nonatomic, readonly) IBOutlet UIActivityIndicatorView *waitIndicatorView;
 
 @end
