@@ -389,9 +389,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
     if( composingVisible == visible ) return;
 
-    CGRect keyboardFrame = [self.messageView frame];
+    CGRect keyboardFrame     = [self.messageView frame];
     CGRect newComposingFrame = [self.composeIndicatorView frame];
-    CGRect newTableFrame = [self.tableController.tableView frame];
+    CGRect newTableFrame     = [self.tableController.tableView frame];
 
     if( visible ){
         [composeLabel setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
@@ -407,7 +407,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [UIView animateWithDuration:delay
                      animations:^{
                          self.tableController.tableView.frame = newTableFrame;
-                         self.composeIndicatorView.frame = newComposingFrame;
+                         self.composeIndicatorView.frame      = newComposingFrame;
                      }
                      completion:^(BOOL finished) {
                          composingVisible = visible;
@@ -733,6 +733,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
+    CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
     
     // Resize chat view
     {
@@ -754,7 +755,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect tableFrame = [tableController.view frame];
         tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
         double diff = tableFrame.size.height;
-        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y;
+        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
         diff = tableFrame.size.height - diff;
         [tableController.view setFrame:tableFrame];
         
@@ -774,6 +775,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
+
     [UIView beginAnimations:@"resize" context:nil];
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
@@ -810,7 +813,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     {
         CGRect tableFrame = [tableController.view frame];
         tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y;
+        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
         [tableController.view setFrame:tableFrame];
     }
     
