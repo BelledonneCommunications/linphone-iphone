@@ -227,6 +227,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                  forNinePatchNamed:@"chat_message_background"]];
+    [tableController scrollToBottom:true];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
