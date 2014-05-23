@@ -618,6 +618,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [[LinphoneManager instance] acceptCall:call];
 		}else{
 			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 			if(controller != nil) {
 				[controller setCall:call];
 				[controller setDelegate:self];
