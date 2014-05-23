@@ -603,6 +603,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
         }
     }
 }

@@ -99,6 +99,7 @@ struct NetworkReachabilityContext {
 typedef struct _LinphoneManagerSounds {
     SystemSoundID call;
     SystemSoundID message;
+    SystemSoundID vibrate;
 } LinphoneManagerSounds;
 
 @interface LinphoneManager : NSObject {

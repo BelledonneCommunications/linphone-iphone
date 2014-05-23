@@ -257,6 +257,7 @@ struct codec_name_pref_table codec_pref_table[]={
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
             }
         }
+        sounds.vibrate = kSystemSoundID_Vibrate;
         
         logs = [[NSMutableArray alloc] init];
         database = NULL;
