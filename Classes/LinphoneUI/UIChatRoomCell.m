@@ -173,13 +173,15 @@ static UIFont *CELL_FONT = nil;
 
     LinphoneChatMessageState state = linphone_chat_message_get_state(chat);
 
-	if (state== LinphoneChatMessageStateInProgress) {
+    if( !linphone_chat_message_is_outgoing(chat) ){
+        statusImage.hidden = TRUE; // not useful for incoming chats..
+    } else if (state== LinphoneChatMessageStateInProgress) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"]];
 		statusImage.hidden = FALSE;
 	} else if (state == LinphoneChatMessageStateDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"]];
 		statusImage.hidden = FALSE;
-	} else if (state == LinphoneChatMessageStateNotDelivered) {
+	} else {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
 		statusImage.hidden = FALSE;
 
@@ -188,8 +190,6 @@ static UIFont *CELL_FONT = nil;
                                            attributes:@{NSForegroundColorAttributeName: [UIColor redColor]}];
         [dateLabel setAttributedText:resend_text];
         [resend_text release];
-	} else {
-		statusImage.hidden = TRUE;
 	}
 }
 
