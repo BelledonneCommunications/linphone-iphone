@@ -546,7 +546,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [waitView setHidden:false];
 }
 
-- (void)registrationUpdate:(LinphoneRegistrationState)state {
+- (void)registrationUpdate:(LinphoneRegistrationState)state message:(NSString*)message{
     switch (state) {
         case LinphoneRegistrationOk: {
             [waitView setHidden:true];
@@ -560,6 +560,13 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         case LinphoneRegistrationFailed: {
             [waitView setHidden:true];
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+                                                            message:message
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
             break;
         }
         case LinphoneRegistrationProgress: {
@@ -874,7 +881,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Event Functions
 
 - (void)registrationUpdateEvent:(NSNotification*)notif {
-    [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue]];
+    NSString* message = [notif.userInfo objectForKey:@"message"];
+    [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue] message:message];
 }
 
 
