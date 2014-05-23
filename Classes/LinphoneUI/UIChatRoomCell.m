@@ -274,7 +274,7 @@ static UIFont *CELL_FONT = nil;
 
         CGRect messageFrame = [bubbleView frame];
         messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
-        if(is_outgoing) { // Inverted
+        if(!is_outgoing) { // Inverted
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];
             messageFrame.origin.y += 5;
