@@ -263,7 +263,7 @@ static UIFont *CELL_FONT = nil;
         CGRect innerFrame;
         BOOL is_outgoing = linphone_chat_message_is_outgoing(chat);
         innerFrame.size = [UIChatRoomCell viewSize:chat width:[self frame].size.width];
-        if(is_outgoing) { // Inverted
+        if(!is_outgoing) { // Inverted
             innerFrame.origin.x = 0.0f;
             innerFrame.origin.y = 0.0f;
         } else {
