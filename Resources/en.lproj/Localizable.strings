@@ -302,3 +302,8 @@
 "Enter an address" = "Enter SIP address or phone number...";
 "%@ is composing..." = "%@ is composing...";
 "Resend" = "Resend";
+
+/* Alert view for Wizard in Settings */
+"Warning" = "Warning";
+"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?" = "Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?";
+"Launch Wizard" = "Launch Wizard";
