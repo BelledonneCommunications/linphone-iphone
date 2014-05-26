@@ -1880,15 +1880,6 @@ static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *ca
 		session = call->videostream->ms.sessions.rtp_session;
 	}
 	rtp_session_configure_rtcp_xr(session, &currentconfig);
-	if (currentconfig.rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
-		rtp_session_set_rtcp_xr_rcvr_rtt_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_rcvr_rtt_interval_duration", 5000));
-	}
-	if (currentconfig.stat_summary_enabled == TRUE) {
-		rtp_session_set_rtcp_xr_stat_summary_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_stat_summary_interval_duration", 5000));
-	}
-	if (currentconfig.voip_metrics_enabled == TRUE) {
-		rtp_session_set_rtcp_xr_voip_metrics_interval(session, lp_config_get_int(lc->config, "rtp", "rtcp_xr_voip_metrics_interval_duration", 5000));
-	}
 }
 
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
