@@ -1081,8 +1081,10 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,cfg);
 	cfg->deletion_date=ms_time(NULL);
 	if (cfg->state==LinphoneRegistrationOk){
-		/* this will unREGISTER */
+		/* unREGISTER */
 		linphone_proxy_config_edit(cfg);
+		linphone_proxy_config_enable_register(cfg,FALSE);
+		linphone_proxy_config_done(cfg);
 	}
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
