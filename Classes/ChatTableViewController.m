@@ -49,8 +49,35 @@
 
 #pragma mark - 
 
+static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem){
+    MSList*                   new_history  = linphone_chat_room_get_history(to_insert, 1);
+    LinphoneChatMessage* last_new_message  = new_history? new_history->data : NULL;
+    MSList*                  elem_history  = linphone_chat_room_get_history(elem, 1);
+    LinphoneChatMessage* last_elem_message = elem_history?elem_history->data:NULL;
+
+    if( last_new_message && last_elem_message ){
+        time_t new = linphone_chat_message_get_time(last_new_message);
+        time_t old = linphone_chat_message_get_time(last_elem_message);
+        if ( new < old ) return 1;
+        else if ( new > old) return -1;
+    }
+    return 0;
+}
+
+- (MSList*)sortChatRooms {
+    MSList* sorted   = nil;
+    MSList* unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    MSList* iter     = unsorted;
+
+    while (iter) {
+        sorted = ms_list_insert_sorted(sorted, iter->data, (MSCompareFunc)sorted_history_comparison);
+        iter = iter->next;
+    }
+    return sorted;
+}
+
 - (void)loadData {
-    data = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    data = [self sortChatRooms];
     [[self tableView] reloadData];
 }
 
