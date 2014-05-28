@@ -100,6 +100,7 @@ struct _LinphoneCallParams{
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
 	LinphonePrivacyMask privacy;
+	uint8_t avpf_rr_interval;
 };
 
 struct _LinphoneCallLog{
@@ -430,7 +431,9 @@ struct _LinphoneProxyConfig
 	bool_t dial_escape_plus;
 	bool_t send_publish;
 	bool_t send_statistics;
-	bool_t pad[3];
+	bool_t avpf_enabled;
+	bool_t pad;
+	uint8_t avpf_rr_interval;
 	void* user_data;
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;

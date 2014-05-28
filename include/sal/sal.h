@@ -221,6 +221,7 @@ typedef struct SalMediaDescription{
 	unsigned int session_ver;
 	unsigned int session_id;
 	SalStreamDir dir;
+	uint8_t avpf_rr_interval;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 	OrtpRtcpXrConfiguration rtcp_xr;
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];

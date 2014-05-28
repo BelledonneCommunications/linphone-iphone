@@ -2825,6 +2825,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	char *real_url=NULL;
 	LinphoneCall *call;
 	bool_t defer = FALSE;
+	LinphoneCallParams *cp = linphone_call_params_copy(params);
 
 	linphone_core_preempt_sound_resources(lc);
 
@@ -2837,20 +2838,24 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	real_url=linphone_address_as_string(addr);
 	proxy=linphone_core_lookup_known_proxy(lc,addr);
 
-	if (proxy!=NULL)
+	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
+		cp->avpf_enabled = proxy->avpf_enabled;
+		cp->avpf_rr_interval = proxy->avpf_rr_interval;
+	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
 	if (from==NULL) from=linphone_core_get_primary_contact(lc);
 
 	parsed_url2=linphone_address_new(from);
 
-	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params,proxy);
+	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),cp,proxy);
 
 	if(linphone_core_add_call(lc,call)!= 0)
 	{
 		ms_warning("we had a problem in adding the call into the invite ... weird");
 		linphone_call_unref(call);
+		linphone_call_params_destroy(cp);
 		return NULL;
 	}
 
@@ -2895,6 +2900,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (defer==FALSE) linphone_core_start_invite(lc,call,NULL);
 
 	if (real_url!=NULL) ms_free(real_url);
+	linphone_call_params_destroy(cp);
 	return call;
 }
 

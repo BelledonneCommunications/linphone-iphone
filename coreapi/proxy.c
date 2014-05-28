@@ -1183,6 +1183,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
+	lp_config_set_int(config, key, "avpf", obj->avpf_enabled);
+	lp_config_set_int(config, key, "avpf_rr_interval", obj->avpf_rr_interval);
 	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
 	lp_config_set_int(config,key,"send_statistics",obj->send_statistics);
 	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
@@ -1228,6 +1230,9 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 
 	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
+
+	linphone_proxy_config_enable_avpf(cfg, lp_config_get_int(config, key, "avpf", 0));
+	linphone_proxy_config_set_avpf_rr_interval(cfg, lp_config_get_int(config, key, "avpf_rr_interval", 0));
 
 	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",lp_config_get_default_int(config,"proxy","dial_escape_plus",0)));
 	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",lp_config_get_default_string(config,"proxy","dial_prefix",NULL)));
@@ -1540,4 +1545,17 @@ int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj) {
 		return obj->publish_expires;
 	}
 
+}
+
+void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable) {
+	cfg->avpf_enabled = enable;
+}
+
+void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
+	if (interval > 5) interval = 5;
+	cfg->avpf_rr_interval = interval;
+}
+
+uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cfg) {
+	return cfg->avpf_rr_interval;
 }

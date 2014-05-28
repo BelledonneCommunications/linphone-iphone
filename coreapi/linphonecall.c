@@ -340,6 +340,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->n_total_streams=(call->biggestdesc ? call->biggestdesc->n_total_streams : 1);
+	md->avpf_rr_interval = call->params.avpf_rr_interval;
 
 	strncpy(md->addr,local_ip,sizeof(md->addr));
 	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
