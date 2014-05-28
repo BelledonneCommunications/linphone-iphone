@@ -1,11 +1,11 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,6 +67,7 @@ extern int liblinphone_tester_test_index(const char *suite_name, const char *tes
 extern void liblinphone_tester_init(void);
 extern void liblinphone_tester_uninit(void);
 extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
+extern void liblinphone_tester_set_fileprefix(const char* file_prefix);
 
 #ifdef __cplusplus
 };
@@ -177,7 +178,7 @@ typedef struct _stats {
 	int number_of_LinphonePublishExpiring;
 	int number_of_LinphonePublishError;
 	int number_of_LinphonePublishCleared;
-	
+
 	int number_of_LinphoneConfiguringSkipped;
 	int number_of_LinphoneConfiguringFailed;
 	int number_of_LinphoneConfiguringSuccessful;
@@ -230,7 +231,7 @@ const char *liblinphone_tester_get_notify_content(void);
 void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
 void liblinphone_tester_clock_start(MSTimeSpec *start);
-bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms); 
+bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

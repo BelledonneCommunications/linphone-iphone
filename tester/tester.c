@@ -80,8 +80,8 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-               ,username
-               ,realm);
+			   ,username
+			   ,realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
@@ -147,7 +147,7 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	MSList* iterator;
 	MSTimeSpec start;
-	
+
 	liblinphone_tester_clock_start(&start);
 	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
@@ -164,7 +164,7 @@ static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t e
 	MSList* codecs_it;
 	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
-        linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
+		linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
 	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
@@ -321,6 +321,11 @@ const char * liblinphone_tester_test_name(const char *suite_name, int test_index
 	if (test_index >= test_suite[suite_index]->nb_tests) return NULL;
 	return test_suite[suite_index]->tests[test_index].name;
 }
+
+void liblinphone_tester_set_fileprefix(const char* file_prefix){
+	liblinphone_tester_file_prefix = file_prefix;
+}
+
 
 void liblinphone_tester_init(void) {
 	add_test_suite(&setup_test_suite);
