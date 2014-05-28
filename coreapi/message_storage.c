@@ -333,11 +333,15 @@ static void linphone_migrate_timestamps(sqlite3* db){
 	char* errmsg = NULL;
 	uint64_t begin=ortp_get_cur_time_ms();
 
+	linphone_sql_request(db,"BEGIN TRANSACTION");
+
 	ret = sqlite3_exec(db,"SELECT id,time,direction FROM history WHERE time != '-1'", migrate_messages, db, &errmsg);
 	if( ret != SQLITE_OK ){
 		ms_warning("Error migrating outgoing messages: %s.\n", errmsg);
 		sqlite3_free(errmsg);
+		linphone_sql_request(db, "ROLLBACK");
 	} else {
+		linphone_sql_request(db, "COMMIT");
 		uint64_t end=ortp_get_cur_time_ms();
 		ms_message("Migrated message timestamps to UTC in %i ms",(int)(end-begin));
 	}
