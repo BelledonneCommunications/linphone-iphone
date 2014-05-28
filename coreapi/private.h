@@ -95,6 +95,7 @@ struct _LinphoneCallParams{
 	char *session_name;
 	SalCustomHeader *custom_headers;
 	bool_t has_video;
+	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
@@ -389,6 +390,8 @@ bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 
 LinphoneCall * is_a_linphone_call(void *user_pointer);
 LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
+bool_t is_video_active(const SalStreamDescription *sd);
+bool_t is_encryption_active(const SalStreamDescription *sd);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 

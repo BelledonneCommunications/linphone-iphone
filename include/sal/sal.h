@@ -123,6 +123,8 @@ const char* sal_stream_type_to_string(SalStreamType type);
 typedef enum{
 	SalProtoRtpAvp,
 	SalProtoRtpSavp,
+	SalProtoRtpAvpf,
+	SalProtoRtpSavpf,
 	SalProtoOther
 }SalMediaProto;
 const char* sal_media_proto_to_string(SalMediaProto type);
@@ -251,6 +253,10 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
+unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription *md, SalStreamType type);
+SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaDescription *md, SalStreamType type, unsigned int idx);
+SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMediaDescription *md, SalStreamType type);
+SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
 

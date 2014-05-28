@@ -2972,7 +2972,7 @@ bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md){
 
 	for(i=0;i<md->n_active_streams;i++){
 		const SalStreamDescription *sd=&md->streams[i];
-		if (sd->proto!=SalProtoRtpSavp){
+		if (is_encryption_active(sd) != TRUE){
 			return FALSE;
 		}
 	}

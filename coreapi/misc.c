@@ -1520,3 +1520,10 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	return result;
 }
 
+bool_t is_video_active(const SalStreamDescription *sd) {
+	return (sd->rtp_port != 0) && (sd->dir != SalStreamInactive);
+}
+
+bool_t is_encryption_active(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoRtpSavpf) || (sd->proto == SalProtoRtpSavp));
+}

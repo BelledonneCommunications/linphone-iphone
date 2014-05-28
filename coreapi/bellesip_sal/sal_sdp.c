@@ -143,7 +143,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	if ( stream->bandwidth>0 )
 		belle_sdp_media_description_set_bandwidth ( media_desc,"AS",stream->bandwidth );
 
-	if ( stream->proto == SalProtoRtpSavp ) {
+	if ((stream->proto == SalProtoRtpSavpf) || (stream->proto == SalProtoRtpSavp)) {
 		/* add crypto lines */
 		for ( j=0; j<SAL_CRYPTO_ALGO_MAX; j++ ) {
 			MSCryptoSuiteNameParams desc;
@@ -469,11 +469,15 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	proto = belle_sdp_media_get_protocol ( media );
 	stream->proto=SalProtoOther;
 	if ( proto ) {
-		if ( strcasecmp ( proto,"RTP/AVP" ) ==0 )
-			stream->proto=SalProtoRtpAvp;
-		else if ( strcasecmp ( proto,"RTP/SAVP" ) ==0 ) {
-			stream->proto=SalProtoRtpSavp;
-		}else{
+		if (strcasecmp(proto, "RTP/AVP") == 0) {
+			stream->proto = SalProtoRtpAvp;
+		} else if (strcasecmp(proto, "RTP/SAVP") == 0) {
+			stream->proto = SalProtoRtpSavp;
+		} else if (strcasecmp(proto, "RTP/AVPF") == 0) {
+			stream->proto = SalProtoRtpAvpf;
+		} else if (strcasecmp(proto, "RTP/SAVPF") == 0) {
+			stream->proto = SalProtoRtpSavpf;
+		} else {
 			strncpy(stream->proto_other,proto,sizeof(stream->proto_other)-1);
 		}
 	}
@@ -532,7 +536,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 
 	/* Read crypto lines if any */
-	if ( stream->proto == SalProtoRtpSavp ) {
+	if ((stream->proto == SalProtoRtpSavpf) || (stream->proto == SalProtoRtpSavp)) {
 		sdp_parse_media_crypto_parameters(media_desc, stream);
 	}
 

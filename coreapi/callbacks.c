@@ -670,24 +670,32 @@ static void call_failure(SalOp *op){
 		break;
 		case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
 		case SalReasonNotAcceptable:
-		//media_encryption_mandatory
-			if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
-				!linphone_core_is_media_encryption_mandatory(lc)) {
+			ms_message("Outgoing call [%p] failed with SRTP and/or AVPF enabled", call);
+			if ((call->state == LinphoneCallOutgoingInit)
+				|| (call->state == LinphoneCallOutgoingProgress)
+				|| (call->state == LinphoneCallOutgoingRinging) /* Push notification case */
+				|| (call->state == LinphoneCallOutgoingEarlyMedia)) {
 				int i;
-				ms_message("Outgoing call [%p] failed with SRTP (SAVP) enabled",call);
-				if (call->state==LinphoneCallOutgoingInit
-						|| call->state==LinphoneCallOutgoingProgress
-						|| call->state==LinphoneCallOutgoingRinging /*push case*/
-						|| call->state==LinphoneCallOutgoingEarlyMedia){
-					ms_message("Retrying call [%p] with AVP",call);
-					/* clear SRTP local params */
-					call->params.media_encryption = LinphoneMediaEncryptionNone;
-					for(i=0; i<call->localdesc->n_active_streams; i++) {
-						call->localdesc->streams[i].proto = SalProtoRtpAvp;
-						memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+				for (i = 0; i < call->localdesc->n_active_streams; i++) {
+					if (call->params.media_encryption == LinphoneMediaEncryptionSRTP) {
+						if (call->params.avpf_enabled == TRUE) {
+							if (i == 0) ms_message("Retrying call [%p] with SAVP", call);
+							call->params.avpf_enabled = FALSE;
+							linphone_core_restart_invite(lc, call);
+							return;
+						} else if (!linphone_core_is_media_encryption_mandatory(lc)) {
+							if (i == 0) ms_message("Retrying call [%p] with AVP", call);
+							call->params.media_encryption = LinphoneMediaEncryptionNone;
+							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+							linphone_core_restart_invite(lc, call);
+							return;
+						}
+					} else if (call->params.avpf_enabled == TRUE) {
+						if (i == 0) ms_message("Retrying call [%p] with AVP", call);
+						call->params.avpf_enabled = FALSE;
+						linphone_core_restart_invite(lc, call);
+						return;
 					}
-					linphone_core_restart_invite(lc, call);
-					return;
 				}
 			}
 			msg=_("Incompatible media parameters.");
