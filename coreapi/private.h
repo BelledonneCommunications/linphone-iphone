@@ -151,6 +151,8 @@ struct _LinphoneChatMessage {
 	bool_t is_read;
 	unsigned int storage_id;
 	SalOp *op;
+	LinphoneContent *file_transfer_information;
+	char *content_type;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -700,6 +702,7 @@ struct _LinphoneCore
 	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
+	char *file_transfer_server;
 };
 
 

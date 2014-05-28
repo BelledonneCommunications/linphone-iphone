@@ -1392,6 +1392,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->http_verify_policy = belle_tls_verify_policy_new();
 	belle_http_provider_set_tls_verify_policy(lc->http_provider,lc->http_verify_policy);
 
+	lc->file_transfer_server = NULL;
+
 	certificates_config_read(lc);
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
@@ -5891,6 +5893,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
 
 	// Free struct variable
+	ms_free(lc->file_transfer_server);
+
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
@@ -6536,3 +6540,11 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 	return lc->sip_conf.sdp_200_ack!=0;
 }
 
+/**
+ * Globaly set an http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml. This value can also be set for a dedicated account using #linphone_proxy_config_set_file_transfer_server
+ * @param #LinphoneCore to be modified
+ * @param const char* url of the file server like https://file.linphone.org/upload.php
+ **/
+void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
+	core->file_transfer_server=ms_strdup(server_url);
+}

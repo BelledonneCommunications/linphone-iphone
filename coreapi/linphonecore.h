@@ -137,6 +137,7 @@ struct _LinphoneContent{
 	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.
 				When provided by callback #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferReceiveCb, it states the total number of bytes of the transfered file*/
 	char *encoding; /**<The encoding of the data buffer, for example "gzip"*/
+	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
 };
 
 /**
@@ -1124,6 +1125,8 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to(LinphoneChatMessage* message, 
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC void linphone_chat_message_start_file_download(const LinphoneChatMessage*message);
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);

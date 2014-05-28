@@ -55,6 +55,11 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 	op->base.root->callbacks.text_delivery_update(op,status);
 }
 
+static bool_t is_rcs_filetransfer(belle_sip_header_content_type_t* content_type) {
+	return strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
+			&&	strcmp("vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0;
+}
+
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 	return strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("plain",belle_sip_header_content_type_get_subtype(content_type))==0;
@@ -69,7 +74,7 @@ static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
 }
 
 static void add_message_accept(belle_sip_message_t *msg){
-	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml"));
+	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, application/vnd.gsma.rcs-ft-http+xml"));
 }
 
 void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event){
@@ -85,11 +90,13 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	char* from;
 	bool_t plain_text=FALSE;
 	bool_t external_body=FALSE;
+	bool_t rcs_filetransfer=FALSE;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	if (content_type && ((plain_text=is_plain_text(content_type))
-						|| (external_body=is_external_body(content_type)))) {
+						|| (external_body=is_external_body(content_type))
+						|| (rcs_filetransfer=is_rcs_filetransfer(content_type)))) {
 		SalMessage salmsg;
 		char message_id[256]={0};
 	
@@ -104,8 +111,12 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 				,belle_sip_header_call_id_get_call_id(call_id)
 				,belle_sip_header_cseq_get_seq_number(cseq));
 		salmsg.from=from;
-		salmsg.text=plain_text?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
+		salmsg.text=(plain_text||rcs_filetransfer)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
 		salmsg.url=NULL;
+		salmsg.content_type = NULL;
+		if (rcs_filetransfer) { /* if we have a rcs file transfer, set the type, message body (stored in salmsg.text) contains all needed information to retrieve the file */
+			salmsg.content_type = "application/vnd.gsma.rcs-ft-http+xml";
+		}
 		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
 			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
 			salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/

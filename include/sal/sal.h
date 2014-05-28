@@ -233,6 +233,7 @@ typedef struct SalMessage{
 	const char *text;
 	const char *url;
 	const char *message_id;
+	const char *content_type;
 	time_t time;
 }SalMessage;
 

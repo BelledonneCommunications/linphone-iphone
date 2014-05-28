@@ -79,6 +79,8 @@ notify_LDADD=$(helloworld_LDADD)
 filetransfer_SOURCES=filetransfer.c
 LINPHONE_TUTOS+=$(filetransfer_SOURCES)
 
+filetransfer_LDADD=$(helloworld_LDADD)
+
 AM_CFLAGS=\
 	-I$(top_srcdir)/coreapi \
 	$(STRICT_OPTIONS) \
