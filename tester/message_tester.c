@@ -462,7 +462,7 @@ static void message_storage_migration() {
 
 	// the messages.db has 10000 dummy messages with the very first DB scheme.
 	// This will test the migration procedure
-	linphone_core_set_chat_database_path(marie->lc, "tmp.db");
+	linphone_core_set_chat_database_path(marie->lc, tmp_db);
 
 	MSList* chatrooms = linphone_core_get_chat_rooms(marie->lc);
 	CU_ASSERT(ms_list_size(chatrooms) > 0);
