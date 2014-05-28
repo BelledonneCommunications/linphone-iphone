@@ -20,17 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "linphonecore.h"
 
-#ifdef WIN32
-
-static inline char *my_ctime_r(const time_t *t, char *buf){
-	strcpy(buf,ctime(t));
-	return buf;
-}
-
-#else
-#define my_ctime_r ctime_r
-#endif
-
 #ifdef MSG_STORAGE_ENABLED
 
 #include "sqlite3.h"
@@ -157,8 +146,8 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
 		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (message = %Q OR url = %Q) AND utc = %i;",
-                                  msg->state,msg->message,msg->external_body_url,msg->time);
-        linphone_sql_request(lc->db,buf);
+								  msg->state,msg->message,msg->external_body_url,msg->time);
+		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 	}
 
@@ -381,6 +370,27 @@ void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
 	sqlite3_free(buf);
 }
 
+static void _linphone_message_storage_profile(void*data,const char*statement, sqlite3_uint64 duration){
+	ms_warning("SQL statement '%s' took %" PRId64 " microseconds", statement, duration / 1000 );
+}
+
+static void linphone_message_storage_activate_debug(sqlite3* db, bool_t debug){
+	if( debug  ){
+		sqlite3_profile(db, _linphone_message_storage_profile, NULL );
+	} else {
+		sqlite3_profile(db, NULL, NULL );
+	}
+}
+
+void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
+
+	lc->debug_storage = debug;
+
+	if( lc->db ){
+		linphone_message_storage_activate_debug(lc->db, debug);
+	}
+}
+
 void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
@@ -394,6 +404,9 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 		ms_error("Error in the opening: %s.\n", errmsg);
 		sqlite3_close(db);
 	}
+
+	linphone_message_storage_activate_debug(db, lc->debug_storage);
+
 	linphone_create_table(db);
 	linphone_update_table(db);
 	lc->db=db;

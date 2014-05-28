@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -22,6 +22,11 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+
+#ifdef MSG_STORAGE_ENABLED
+#include <sqlite3.h>
+#endif
+
 
 static char* message_external_body_url;
 
@@ -97,7 +102,7 @@ static void text_message(void) {
 static void text_message_within_dialog(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	
+
 	lp_config_set_int(pauline->lc->config,"sip","chat_use_call_dialogs",1);
 
 	char* to = linphone_address_as_string(marie->identity);
@@ -105,7 +110,7 @@ static void text_message_within_dialog(void) {
 	ms_free(to);
 
 	CU_ASSERT_TRUE(call(marie,pauline));
-	
+
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 
@@ -287,7 +292,7 @@ static void text_message_denied(void) {
 
 	/*pauline doesn't want to be disturbed*/
 	linphone_core_disable_chat(pauline->lc,LinphoneReasonDoNotDisturb);
-	
+
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
@@ -385,6 +390,89 @@ static void is_composing_notification(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+#ifdef MSG_STORAGE_ENABLED
+
+/*
+ * Copy file "from" to file "to".
+ * Destination file is truncated if existing.
+ * Return 1 on success, 0 on error (printing an error).
+ */
+static int
+message_tester_copy_file(const char *from, const char *to)
+{
+	char message[256];
+	FILE *in, *out;
+	char buf[256];
+	size_t n;
+
+	/* Open "from" file for reading */
+	in=fopen(from, "r");
+	if ( in == NULL )
+	{
+		snprintf(message, 255, "Can't open %s for reading: %s\n",
+			from, strerror(errno));
+		fprintf(stderr, "%s", message);
+		return 0;
+	}
+
+	/* Open "to" file for writing (will truncate existing files) */
+	out=fopen(to, "w");
+	if ( out == NULL )
+	{
+		snprintf(message, 255, "Can't open %s for writing: %s\n",
+			to, strerror(errno));
+		fprintf(stderr, "%s", message);
+		fclose(in);
+		return 0;
+	}
+
+	/* Copy data from "in" to "out" */
+	while ( (n=fread(buf, 1, sizeof buf, in)) > 0 )
+	{
+		if ( ! fwrite(buf, 1, n, out) )
+		{
+			fclose(in);
+			fclose(out);
+			return 0;
+		}
+	}
+
+	fclose(in);
+	fclose(out);
+
+	return 1;
+}
+
+static int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
+	CU_ASSERT_EQUAL(argc, 0);
+	return 0;
+}
+
+static void message_storage_migration() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	char src_db[256];
+	char tmp_db[256];
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_file_prefix);
+
+	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 1);
+
+	// enable to test the performances of the migration step
+	//linphone_core_message_storage_set_debug(marie->lc, TRUE);
+
+	// the messages.db has 10000 dummy messages with the very first DB scheme.
+	// This will test the migration procedure
+	linphone_core_set_chat_database_path(marie->lc, "tmp.db");
+
+	MSList* chatrooms = linphone_core_get_chat_rooms(marie->lc);
+	CU_ASSERT(ms_list_size(chatrooms) > 0);
+
+	// check that all messages have been migrated to the UTC time storage
+	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT * FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
+}
+
+#endif
+
 test_t message_tests[] = {
 	{ "Text message", text_message },
 	{ "Text message within call's dialog", text_message_within_dialog},
@@ -398,6 +486,9 @@ test_t message_tests[] = {
 	{ "Info message", info_message },
 	{ "Info message with body", info_message_with_body },
 	{ "IsComposing notification", is_composing_notification }
+#ifdef MSG_STORAGE_ENABLED
+	,{ "Database migration", message_storage_migration }
+#endif
 };
 
 test_suite_t message_test_suite = {

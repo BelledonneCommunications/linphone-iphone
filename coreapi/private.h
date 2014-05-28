@@ -701,6 +701,7 @@ struct _LinphoneCore
 	char *chat_db_file;
 #ifdef MSG_STORAGE_ENABLED
 	sqlite3 *db;
+	bool_t debug_storage;
 #endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
@@ -815,6 +816,7 @@ void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
+void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
