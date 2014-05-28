@@ -242,6 +242,7 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	MSList *ret;
 	char *buf;
 	char *peer;
+	uint64_t begin,end;
 
 	if (lc->db==NULL) return NULL;
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
@@ -250,7 +251,10 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC LIMIT %i ;",peer,nb_message);
 	else
 		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC;",peer);
+	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
+	end=ortp_get_cur_time_ms();
+	ms_message("linphone_chat_room_get_history(): completed in %i ms",(int)(end-begin));
 	sqlite3_free(buf);
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;
@@ -327,13 +331,15 @@ static int migrate_messages(void* data,int argc, char** argv, char** column_name
 static void linphone_migrate_timestamps(sqlite3* db){
 	int ret;
 	char* errmsg = NULL;
+	uint64_t begin=ortp_get_cur_time_ms();
 
 	ret = sqlite3_exec(db,"SELECT id,time,direction FROM history WHERE time != '-1'", migrate_messages, db, &errmsg);
 	if( ret != SQLITE_OK ){
 		ms_warning("Error migrating outgoing messages: %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_message("Migrated message timestamps to UTC");
+		uint64_t end=ortp_get_cur_time_ms();
+		ms_message("Migrated message timestamps to UTC in %i ms",(int)(end-begin));
 	}
 }
 
