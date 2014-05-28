@@ -68,6 +68,40 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
+static void add_rtcp_fb_nack_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_NACK);
+	belle_sdp_rtcp_fb_attribute_set_param(attribute, param);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+}
+
+static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, const SalMediaDescription *md, const SalStreamDescription *stream, int nb_avpf_pt) {
+	MSList *pt_it;
+	PayloadType *pt;
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, -1);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_TRR_INT);
+	belle_sdp_rtcp_fb_attribute_set_trr_int(attribute, md->avpf_rr_interval);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+	if ((stream->type == SalVideo) && (nb_avpf_pt > 0)) {
+		if (nb_avpf_pt == ms_list_size(stream->payloads)) {
+			add_rtcp_fb_nack_attribute(media_desc, -1, BELLE_SDP_RTCP_FB_PLI);
+			add_rtcp_fb_nack_attribute(media_desc, -1, BELLE_SDP_RTCP_FB_SLI);
+			add_rtcp_fb_nack_attribute(media_desc, -1, BELLE_SDP_RTCP_FB_RPSI);
+		} else {
+			for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
+				pt = (PayloadType *) pt_it->data;
+				if (payload_type_get_flags(pt) & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
+					add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_PLI);
+					add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_SLI);
+					add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+				}
+			}
+		}
+	}
+}
+
 static belle_sdp_attribute_t * create_rtcp_xr_attribute(const OrtpRtcpXrConfiguration *config) {
 	belle_sdp_rtcp_xr_attribute_t *attribute = belle_sdp_rtcp_xr_attribute_new();
 	if (config->rcvr_rtt_mode != OrtpRtcpXrRcvrRttNone) {
@@ -100,6 +134,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	int rtp_port;
 	int rtcp_port;
 	bool_t different_rtp_and_rtcp_addr;
+	int nb_avpf_pt = 0;
 	
 	rtp_addr=stream->rtp_addr;
 	rtcp_addr=stream->rtcp_addr;
@@ -114,6 +149,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	if (stream->payloads) {
 		for ( pt_it=stream->payloads; pt_it!=NULL; pt_it=pt_it->next ) {
 			pt= ( PayloadType* ) pt_it->data;
+			if (payload_type_get_flags(pt) & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) nb_avpf_pt++;
 			mime_param= belle_sdp_mime_parameter_create ( pt->mime_type
 					, payload_type_get_number ( pt )
 					, pt->clock_rate
@@ -199,6 +235,10 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			add_ice_candidates(media_desc,stream);
 			add_ice_remote_candidates(media_desc,stream);
 		}
+	}
+
+	if ((stream->proto == SalProtoRtpAvpf) || (stream->proto == SalProtoRtpSavpf)) {
+		add_rtcp_fb_attributes(media_desc, md, stream, nb_avpf_pt);
 	}
 
 	if (stream->rtcp_xr.enabled == TRUE) {
