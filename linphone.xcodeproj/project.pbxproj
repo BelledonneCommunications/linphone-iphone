@@ -1347,56 +1347,6 @@
 		F01A77C718EBECEA00E287CA /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		F01A77EB18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
 		F01A77EC18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
-		F03A9B1D18C0CF7000C4D7FE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		F03A9B1E18C0CF7000C4D7FE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		F03A9B1F18C0CF7000C4D7FE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		F03A9B2518C0CF7000C4D7FE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F03A9B2318C0CF7000C4D7FE /* InfoPlist.strings */; };
-		F03A9B2718C0CF7000C4D7FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B2618C0CF7000C4D7FE /* main.m */; };
-		F03A9B2B18C0CF7000C4D7FE /* TesterAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B2A18C0CF7000C4D7FE /* TesterAppDelegate.m */; };
-		F03A9B2D18C0CF7000C4D7FE /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F03A9B2C18C0CF7000C4D7FE /* Images.xcassets */; };
-		F03A9B6F18C0D1A500C4D7FE /* call_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6318C0D1A500C4D7FE /* call_tester.c */; };
-		F03A9B7018C0D1A500C4D7FE /* eventapi_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6418C0D1A500C4D7FE /* eventapi_tester.c */; };
-		F03A9B7118C0D1A500C4D7FE /* flexisip_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6518C0D1A500C4D7FE /* flexisip_tester.c */; };
-		F03A9B7218C0D1A500C4D7FE /* liblinphone_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6618C0D1A500C4D7FE /* liblinphone_tester.c */; };
-		F03A9B7318C0D1A500C4D7FE /* message_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6818C0D1A500C4D7FE /* message_tester.c */; };
-		F03A9B7418C0D1A500C4D7FE /* presence_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6918C0D1A500C4D7FE /* presence_tester.c */; };
-		F03A9B7518C0D1A500C4D7FE /* register_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6A18C0D1A500C4D7FE /* register_tester.c */; };
-		F03A9B7618C0D1A500C4D7FE /* remote_provisioning_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6B18C0D1A500C4D7FE /* remote_provisioning_tester.c */; };
-		F03A9B7718C0D1A500C4D7FE /* setup_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6C18C0D1A500C4D7FE /* setup_tester.c */; };
-		F03A9B7818C0D1A500C4D7FE /* stun_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6D18C0D1A500C4D7FE /* stun_tester.c */; };
-		F03A9B7918C0D1A500C4D7FE /* upnp_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A9B6E18C0D1A500C4D7FE /* upnp_tester.c */; };
-		F03A9B7F18C0D9C900C4D7FE /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
-		F03A9B8018C0D9FB00C4D7FE /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
-		F03A9B8118C0DA0000C4D7FE /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
-		F03A9B8218C0DA0200C4D7FE /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
-		F03A9B8318C0DA0D00C4D7FE /* libbellesip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E516D9255800EF1BEC /* libbellesip.a */; };
-		F03A9B8418C0DA2000C4D7FE /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
-		F03A9B8518C0DA2A00C4D7FE /* libantlr3c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E416D9255800EF1BEC /* libantlr3c.a */; };
-		F03A9B8618C0DA6400C4D7FE /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AF73C11754C0D000BE8398 /* libopus.a */; };
-		F03A9B8718C0DA6400C4D7FE /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
-		F03A9B8818C0DA6400C4D7FE /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
-		F03A9B8918C0DABE00C4D7FE /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
-		F03A9B8A18C0DABE00C4D7FE /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
-		F03A9B8B18C0DABE00C4D7FE /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
-		F03A9B8C18C0DABE00C4D7FE /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
-		F03A9B8D18C0DABE00C4D7FE /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
-		F03A9B8E18C0DABE00C4D7FE /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
-		F03A9B8F18C0DABE00C4D7FE /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
-		F03A9B9918C0DB8800C4D7FE /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; };
-		F03A9B9A18C0DB8800C4D7FE /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; };
-		F03A9B9B18C0DBAF00C4D7FE /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
-		F03A9B9C18C0DDC100C4D7FE /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
-		F03A9C6C18C0E2ED00C4D7FE /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6318C0E2ED00C4D7FE /* certificates */; };
-		F03A9C6D18C0E2ED00C4D7FE /* flexisip.conf in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6418C0E2ED00C4D7FE /* flexisip.conf */; };
-		F03A9C6E18C0E2ED00C4D7FE /* images in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6518C0E2ED00C4D7FE /* images */; };
-		F03A9C6F18C0E2ED00C4D7FE /* local_tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6618C0E2ED00C4D7FE /* local_tester_hosts */; };
-		F03A9C7018C0E2ED00C4D7FE /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6718C0E2ED00C4D7FE /* marie_xml */; };
-		F03A9C7118C0E2ED00C4D7FE /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6818C0E2ED00C4D7FE /* rcfiles */; };
-		F03A9C7218C0E2ED00C4D7FE /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6918C0E2ED00C4D7FE /* sounds */; };
-		F03A9C7318C0E2ED00C4D7FE /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6A18C0E2ED00C4D7FE /* tester_hosts */; };
-		F03A9C7418C0E2ED00C4D7FE /* userdb.conf in Resources */ = {isa = PBXBuildFile; fileRef = F03A9C6B18C0E2ED00C4D7FE /* userdb.conf */; };
-		F03A9C7518C46E7700C4D7FE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
-		F03A9C7618C46EAF00C4D7FE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F03CA84418C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
@@ -1421,6 +1371,62 @@
 		F0B89C2D18DC973E0050B60E /* wizard_linphone_existing.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2618DC973E0050B60E /* wizard_linphone_existing.rc */; };
 		F0B89C2E18DC973E0050B60E /* wizard_remote.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2718DC973E0050B60E /* wizard_remote.rc */; };
 		F0B89C2F18DC973E0050B60E /* wizard_remote.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2718DC973E0050B60E /* wizard_remote.rc */; };
+		F0BB8BD61936208100974404 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		F0BB8BDE1936208100974404 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BDC1936208100974404 /* InfoPlist.strings */; };
+		F0BB8BE01936208100974404 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BDF1936208100974404 /* main.m */; };
+		F0BB8BE41936208100974404 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BE31936208100974404 /* AppDelegate.m */; };
+		F0BB8BE71936208200974404 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BE51936208100974404 /* Main_iPhone.storyboard */; };
+		F0BB8BEA1936208200974404 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BE81936208200974404 /* Main_iPad.storyboard */; };
+		F0BB8BED1936208200974404 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEC1936208200974404 /* MasterViewController.m */; };
+		F0BB8BF01936208200974404 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEF1936208200974404 /* DetailViewController.m */; };
+		F0BB8BF21936208200974404 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BF11936208200974404 /* Images.xcassets */; };
+		F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
+		F0BB8C121936240300974404 /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C111936240300974404 /* libcunit.a */; };
+		F0BB8C131936242400974404 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
+		F0BB8C141936242400974404 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
+		F0BB8C151936242400974404 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
+		F0BB8C161936245300974404 /* libantlr3c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E416D9255800EF1BEC /* libantlr3c.a */; };
+		F0BB8C171936245300974404 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
+		F0BB8C181936245300974404 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
+		F0BB8C191936245300974404 /* libbellesip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E516D9255800EF1BEC /* libbellesip.a */; };
+		F0BB8C1A1936245300974404 /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
+		F0BB8C1B1936245300974404 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
+		F0BB8C1C1936245300974404 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
+		F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
+		F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
+		F0BB8C1F1936245300974404 /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
+		F0BB8C201936245300974404 /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
+		F0BB8C211936245300974404 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFC13D7125500B30535 /* libmsx264.a */; };
+		F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
+		F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
+		F0BB8C241936245300974404 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AF73C11754C0D000BE8398 /* libopus.a */; };
+		F0BB8C251936245300974404 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
+		F0BB8C261936245300974404 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
+		F0BB8C271936245300974404 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
+		F0BB8C281936245300974404 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
+		F0BB8C291936245300974404 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
+		F0BB8C2A1936245300974404 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
+		F0BB8C2B1936245300974404 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
+		F0BB8C2C1936245300974404 /* libtunnel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D30BF33216A427BC00AF0026 /* libtunnel.a */; };
+		F0BB8C2D1936245300974404 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
+		F0BB8C2E1936245300974404 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFB13D7125500B30535 /* libx264.a */; };
+		F0BB8C2F1936245300974404 /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
+		F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
+		F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
+		F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C34193624C800974404 /* libresolv.9.dylib */; };
+		F0BB8C3819362C1500974404 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3719362C1500974404 /* rcfiles */; };
+		F0BB8C3C19362C2200974404 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
+		F0BB8C3D19362C2200974404 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
+		F0BB8C3E19362C2200974404 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
+		F0BB8C44193630CA00974404 /* flexisip.conf in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3F193630CA00974404 /* flexisip.conf */; };
+		F0BB8C45193630CA00974404 /* local_tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C40193630CA00974404 /* local_tester_hosts */; };
+		F0BB8C46193630CA00974404 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C41193630CA00974404 /* marie_xml */; };
+		F0BB8C47193630CA00974404 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C42193630CA00974404 /* tester_hosts */; };
+		F0BB8C48193630CA00974404 /* userdb.conf in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C43193630CA00974404 /* userdb.conf */; };
+		F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
+		F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 /* End PBXBuildFile section */
 
@@ -2246,40 +2252,10 @@
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F01A77EA18ED989B00E287CA /* shortring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = shortring.caf; path = Resources/shortring.caf; sourceTree = "<group>"; };
-		F03A9B1C18C0CF7000C4D7FE /* linphonetester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphonetester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F03A9B2218C0CF7000C4D7FE /* tester-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "tester-Info.plist"; sourceTree = "<group>"; };
-		F03A9B2418C0CF7000C4D7FE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F03A9B2618C0CF7000C4D7FE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		F03A9B2818C0CF7000C4D7FE /* tester-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "tester-Prefix.pch"; sourceTree = "<group>"; };
-		F03A9B2918C0CF7000C4D7FE /* TesterAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TesterAppDelegate.h; sourceTree = "<group>"; };
-		F03A9B2A18C0CF7000C4D7FE /* TesterAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TesterAppDelegate.m; sourceTree = "<group>"; };
-		F03A9B2C18C0CF7000C4D7FE /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F03A9B3318C0CF7000C4D7FE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		F03A9B6318C0D1A500C4D7FE /* call_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = call_tester.c; path = submodules/linphone/tester/call_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6418C0D1A500C4D7FE /* eventapi_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = eventapi_tester.c; path = submodules/linphone/tester/eventapi_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6518C0D1A500C4D7FE /* flexisip_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = flexisip_tester.c; path = submodules/linphone/tester/flexisip_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6618C0D1A500C4D7FE /* liblinphone_tester.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = liblinphone_tester.c; path = submodules/linphone/tester/liblinphone_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6718C0D1A500C4D7FE /* liblinphone_tester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = liblinphone_tester.h; path = submodules/linphone/tester/liblinphone_tester.h; sourceTree = SOURCE_ROOT; };
-		F03A9B6818C0D1A500C4D7FE /* message_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = message_tester.c; path = submodules/linphone/tester/message_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6918C0D1A500C4D7FE /* presence_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = presence_tester.c; path = submodules/linphone/tester/presence_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6A18C0D1A500C4D7FE /* register_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = register_tester.c; path = submodules/linphone/tester/register_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6B18C0D1A500C4D7FE /* remote_provisioning_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = remote_provisioning_tester.c; path = submodules/linphone/tester/remote_provisioning_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6C18C0D1A500C4D7FE /* setup_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = setup_tester.c; path = submodules/linphone/tester/setup_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6D18C0D1A500C4D7FE /* stun_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stun_tester.c; path = submodules/linphone/tester/stun_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B6E18C0D1A500C4D7FE /* upnp_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = upnp_tester.c; path = submodules/linphone/tester/upnp_tester.c; sourceTree = SOURCE_ROOT; };
-		F03A9B7A18C0D5A000C4D7FE /* sal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sal.h; path = submodules/linphone/include/sal/sal.h; sourceTree = SOURCE_ROOT; };
 		F03A9B7E18C0D9C900C4D7FE /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		F03A9C6318C0E2ED00C4D7FE /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = submodules/linphone/tester/certificates; sourceTree = SOURCE_ROOT; };
-		F03A9C6418C0E2ED00C4D7FE /* flexisip.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flexisip.conf; path = submodules/linphone/tester/flexisip.conf; sourceTree = SOURCE_ROOT; };
-		F03A9C6518C0E2ED00C4D7FE /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = submodules/linphone/tester/images; sourceTree = SOURCE_ROOT; };
-		F03A9C6618C0E2ED00C4D7FE /* local_tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = local_tester_hosts; path = submodules/linphone/tester/local_tester_hosts; sourceTree = SOURCE_ROOT; };
-		F03A9C6718C0E2ED00C4D7FE /* marie_xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = marie_xml; path = submodules/linphone/tester/marie_xml; sourceTree = SOURCE_ROOT; };
-		F03A9C6818C0E2ED00C4D7FE /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = submodules/linphone/tester/rcfiles; sourceTree = SOURCE_ROOT; };
-		F03A9C6918C0E2ED00C4D7FE /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = submodules/linphone/tester/sounds; sourceTree = SOURCE_ROOT; };
-		F03A9C6A18C0E2ED00C4D7FE /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
-		F03A9C6B18C0E2ED00C4D7FE /* userdb.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = userdb.conf; path = submodules/linphone/tester/userdb.conf; sourceTree = SOURCE_ROOT; };
 		F03CA84118C72F1A0008889D /* UITextViewNoDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITextViewNoDefine.h; sourceTree = "<group>"; };
 		F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITextViewNoDefine.m; sourceTree = "<group>"; };
 		F04892FE180C3296002FED35 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ImageOptim.sh; sourceTree = "<group>"; };
@@ -2365,6 +2341,37 @@
 		F0B89C2518DC973E0050B60E /* wizard_linphone_create.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_linphone_create.rc; path = Resources/wizard_linphone_create.rc; sourceTree = "<group>"; };
 		F0B89C2618DC973E0050B60E /* wizard_linphone_existing.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_linphone_existing.rc; path = Resources/wizard_linphone_existing.rc; sourceTree = "<group>"; };
 		F0B89C2718DC973E0050B60E /* wizard_remote.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_remote.rc; path = Resources/wizard_remote.rc; sourceTree = "<group>"; };
+		F0BB8BD51936208100974404 /* LinphoneTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinphoneTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0BB8BDB1936208100974404 /* LinphoneTester-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LinphoneTester-Info.plist"; sourceTree = "<group>"; };
+		F0BB8BDD1936208100974404 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0BB8BDF1936208100974404 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F0BB8BE11936208100974404 /* LinphoneTester-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester-Prefix.pch"; sourceTree = "<group>"; };
+		F0BB8BE21936208100974404 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F0BB8BE31936208100974404 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F0BB8BE61936208100974404 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		F0BB8BE91936208200974404 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		F0BB8BEB1936208200974404 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
+		F0BB8BEC1936208200974404 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		F0BB8BEE1936208200974404 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		F0BB8BEF1936208200974404 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		F0BB8BF11936208200974404 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F0BB8BFF1936208200974404 /* LinphoneTesterTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LinphoneTesterTests-Info.plist"; sourceTree = "<group>"; };
+		F0BB8C011936208200974404 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0BB8C031936208200974404 /* LinphoneTesterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LinphoneTesterTests.m; sourceTree = "<group>"; };
+		F0BB8C0F193623F200974404 /* liblinphonetester.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphonetester.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphonetester.a"; sourceTree = "<group>"; };
+		F0BB8C111936240300974404 /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
+		F0BB8C311936246600974404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		F0BB8C34193624C800974404 /* libresolv.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.9.dylib; path = usr/lib/libresolv.9.dylib; sourceTree = SDKROOT; };
+		F0BB8C3719362C1500974404 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = submodules/linphone/tester/rcfiles; sourceTree = SOURCE_ROOT; };
+		F0BB8C3919362C2200974404 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = submodules/linphone/tester/certificates; sourceTree = SOURCE_ROOT; };
+		F0BB8C3A19362C2200974404 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = submodules/linphone/tester/images; sourceTree = SOURCE_ROOT; };
+		F0BB8C3B19362C2200974404 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = submodules/linphone/tester/sounds; sourceTree = SOURCE_ROOT; };
+		F0BB8C3F193630CA00974404 /* flexisip.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flexisip.conf; path = submodules/linphone/tester/flexisip.conf; sourceTree = SOURCE_ROOT; };
+		F0BB8C40193630CA00974404 /* local_tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = local_tester_hosts; path = submodules/linphone/tester/local_tester_hosts; sourceTree = SOURCE_ROOT; };
+		F0BB8C41193630CA00974404 /* marie_xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = marie_xml; path = submodules/linphone/tester/marie_xml; sourceTree = SOURCE_ROOT; };
+		F0BB8C42193630CA00974404 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
+		F0BB8C43193630CA00974404 /* userdb.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = userdb.conf; path = submodules/linphone/tester/userdb.conf; sourceTree = SOURCE_ROOT; };
+		F0BB8C4A193631B300974404 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		FD61C862169FC495001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/HistoryDetailsViewController.xib; sourceTree = "<group>"; };
 		FD61C88216A00E69001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UICallCell.xib; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2488,36 +2495,49 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F03A9B1918C0CF7000C4D7FE /* Frameworks */ = {
+		F0BB8BD21936208100974404 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F03A9C7618C46EAF00C4D7FE /* AVFoundation.framework in Frameworks */,
-				F03A9C7518C46E7700C4D7FE /* CoreMedia.framework in Frameworks */,
-				F03A9B1E18C0CF7000C4D7FE /* CoreGraphics.framework in Frameworks */,
-				F03A9B1F18C0CF7000C4D7FE /* UIKit.framework in Frameworks */,
-				F03A9B1D18C0CF7000C4D7FE /* Foundation.framework in Frameworks */,
-				F03A9B9C18C0DDC100C4D7FE /* libresolv.dylib in Frameworks */,
-				F03A9B9918C0DB8800C4D7FE /* libc++.1.dylib in Frameworks */,
-				F03A9B9A18C0DB8800C4D7FE /* libstdc++.6.dylib in Frameworks */,
-				F03A9B8018C0D9FB00C4D7FE /* liblinphone.a in Frameworks */,
-				F03A9B7F18C0D9C900C4D7FE /* libcunit.a in Frameworks */,
-				F03A9B8218C0DA0200C4D7FE /* libmediastreamer_voip.a in Frameworks */,
-				F03A9B8118C0DA0000C4D7FE /* libmediastreamer_base.a in Frameworks */,
-				F03A9B8318C0DA0D00C4D7FE /* libbellesip.a in Frameworks */,
-				F03A9B8418C0DA2000C4D7FE /* libavcodec.a in Frameworks */,
-				F03A9B8518C0DA2A00C4D7FE /* libantlr3c.a in Frameworks */,
-				F03A9B8618C0DA6400C4D7FE /* libopus.a in Frameworks */,
-				F03A9B8718C0DA6400C4D7FE /* libavutil.a in Frameworks */,
-				F03A9B9B18C0DBAF00C4D7FE /* libswscale.a in Frameworks */,
-				F03A9B8818C0DA6400C4D7FE /* libortp.a in Frameworks */,
-				F03A9B8918C0DABE00C4D7FE /* libxml2.a in Frameworks */,
-				F03A9B8A18C0DABE00C4D7FE /* libpolarssl.a in Frameworks */,
-				F03A9B8B18C0DABE00C4D7FE /* libgsm.a in Frameworks */,
-				F03A9B8C18C0DABE00C4D7FE /* libspeex.a in Frameworks */,
-				F03A9B8D18C0DABE00C4D7FE /* libspeexdsp.a in Frameworks */,
-				F03A9B8E18C0DABE00C4D7FE /* libsrtp.a in Frameworks */,
-				F03A9B8F18C0DABE00C4D7FE /* libvpx.a in Frameworks */,
+				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
+				F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */,
+				F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */,
+				F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */,
+				F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */,
+				F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */,
+				F0BB8C161936245300974404 /* libantlr3c.a in Frameworks */,
+				F0BB8C171936245300974404 /* libavcodec.a in Frameworks */,
+				F0BB8C181936245300974404 /* libavutil.a in Frameworks */,
+				F0BB8C191936245300974404 /* libbellesip.a in Frameworks */,
+				F0BB8C1A1936245300974404 /* libbzrtp.a in Frameworks */,
+				F0BB8C121936240300974404 /* libcunit.a in Frameworks */,
+				F0BB8C1B1936245300974404 /* libgsm.a in Frameworks */,
+				F0BB8C1C1936245300974404 /* libilbc.a in Frameworks */,
+				F0BB8C131936242400974404 /* liblinphone.a in Frameworks */,
+				F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */,
+				F0BB8C141936242400974404 /* libmediastreamer_base.a in Frameworks */,
+				F0BB8C151936242400974404 /* libmediastreamer_voip.a in Frameworks */,
+				F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */,
+				F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */,
+				F0BB8C1F1936245300974404 /* libmsilbc.a in Frameworks */,
+				F0BB8C201936245300974404 /* libmssilk.a in Frameworks */,
+				F0BB8C211936245300974404 /* libmsx264.a in Frameworks */,
+				F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */,
+				F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */,
+				F0BB8C241936245300974404 /* libopus.a in Frameworks */,
+				F0BB8C251936245300974404 /* libortp.a in Frameworks */,
+				F0BB8C261936245300974404 /* libpolarssl.a in Frameworks */,
+				F0BB8C271936245300974404 /* libSKP_SILK_SDK.a in Frameworks */,
+				F0BB8C281936245300974404 /* libspeex.a in Frameworks */,
+				F0BB8C291936245300974404 /* libspeexdsp.a in Frameworks */,
+				F0BB8C2A1936245300974404 /* libsrtp.a in Frameworks */,
+				F0BB8C2B1936245300974404 /* libswscale.a in Frameworks */,
+				F0BB8C2C1936245300974404 /* libtunnel.a in Frameworks */,
+				F0BB8C2D1936245300974404 /* libvpx.a in Frameworks */,
+				F0BB8C2E1936245300974404 /* libx264.a in Frameworks */,
+				F0BB8C2F1936245300974404 /* libxml2.a in Frameworks */,
+				F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */,
+				F0BB8BD61936208100974404 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2619,7 +2639,7 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* linphone.app */,
 				22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */,
-				F03A9B1C18C0CF7000C4D7FE /* linphonetester.app */,
+				F0BB8BD51936208100974404 /* LinphoneTester.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2713,54 +2733,46 @@
 			path = LinphoneUI;
 			sourceTree = "<group>";
 		};
-		22F9B087178470F400E0212F /* liblinphone */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = liblinphone;
-			sourceTree = "<group>";
-		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				D30BF33216A427BC00AF0026 /* libtunnel.a */,
-				F04892FE180C3296002FED35 /* ImageOptim.sh */,
-				15017E6F1773578400784ACB /* libxml2.a */,
-				57B0E35F173C010400A476B8 /* libpolarssl.a */,
-				223CA7E416D9255800EF1BEC /* libantlr3c.a */,
-				223CA7E516D9255800EF1BEC /* libbellesip.a */,
-				22AF73C11754C0D000BE8398 /* libopus.a */,
+				F0938158188E629800A55DFA /* iTunesArtwork */,
 				2258633C11410BAC00C5A737 /* README */,
+				223CA7E416D9255800EF1BEC /* libantlr3c.a */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
+				223CA7E516D9255800EF1BEC /* libbellesip.a */,
+				045B5CB218D72E9A0088350C /* libbzrtp.a */,
+				F03A9B7E18C0D9C900C4D7FE /* libcunit.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
+				F0BB8C0F193623F200974404 /* liblinphonetester.a */,
 				22405EE916006F0700B92522 /* libmediastreamer_base.a */,
 				22405EEA16006F0700B92522 /* libmediastreamer_voip.a */,
 				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
-				F03A9B7E18C0D9C900C4D7FE /* libcunit.a */,
 				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
 				226183AF147259670037138E /* libmssilk.a */,
 				22AA8AFC13D7125500B30535 /* libmsx264.a */,
 				226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */,
 				226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */,
+				22AF73C11754C0D000BE8398 /* libopus.a */,
 				220FAD2C10765B400068D98F /* libortp.a */,
+				57B0E35F173C010400A476B8 /* libpolarssl.a */,
 				226183AA1472527D0037138E /* libSKP_SILK_SDK.a */,
 				220FAD2F10765B400068D98F /* libspeex.a */,
 				220FAD3010765B400068D98F /* libspeexdsp.a */,
 				226183AB1472527D0037138E /* libsrtp.a */,
 				22276E8213C73D3100210156 /* libswscale.a */,
+				D30BF33216A427BC00AF0026 /* libtunnel.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
-				045B5CB218D72E9A0088350C /* libbzrtp.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
+				15017E6F1773578400784ACB /* libxml2.a */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
 				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
-				F0938158188E629800A55DFA /* iTunesArtwork */,
-				22F9B087178470F400E0212F /* liblinphone */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
@@ -2778,13 +2790,16 @@
 				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
 				22744043106F33FC006EC466 /* Security.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
+				F04892FE180C3296002FED35 /* ImageOptim.sh */,
 				080E96DDFE201D6D7F000001 /* Classes */,
-				F03A9B2018C0CF7000C4D7FE /* tester */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				F0BB8BD91936208100974404 /* LinphoneTester */,
+				F0BB8BFD1936208200974404 /* LinphoneTesterTests */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				D398D3031594B0FB00FD553C /* Settings */,
+				F0BB8C111936240300974404 /* libcunit.a */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2828,6 +2843,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0BB8C4A193631B300974404 /* ImageIO.framework */,
+				F0BB8C34193624C800974404 /* libresolv.9.dylib */,
+				F0BB8C311936246600974404 /* AudioUnit.framework */,
 				1560821E18EEF26100765332 /* libmsopenh264.a */,
 				1560821C18EEF23F00765332 /* libwels.a */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
@@ -3015,66 +3033,6 @@
 				D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */,
 			);
 			name = UACellBackgroundView;
-			sourceTree = "<group>";
-		};
-		F03A9B2018C0CF7000C4D7FE /* tester */ = {
-			isa = PBXGroup;
-			children = (
-				F03A9C1E18C0DFC200C4D7FE /* Resources */,
-				F03A9B4B18C0D11900C4D7FE /* linphone-tester */,
-				F03A9B2918C0CF7000C4D7FE /* TesterAppDelegate.h */,
-				F03A9B2A18C0CF7000C4D7FE /* TesterAppDelegate.m */,
-				F03A9B2C18C0CF7000C4D7FE /* Images.xcassets */,
-				F03A9B2118C0CF7000C4D7FE /* Supporting Files */,
-			);
-			path = tester;
-			sourceTree = "<group>";
-		};
-		F03A9B2118C0CF7000C4D7FE /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F03A9B2218C0CF7000C4D7FE /* tester-Info.plist */,
-				F03A9B2318C0CF7000C4D7FE /* InfoPlist.strings */,
-				F03A9B2618C0CF7000C4D7FE /* main.m */,
-				F03A9B2818C0CF7000C4D7FE /* tester-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		F03A9B4B18C0D11900C4D7FE /* linphone-tester */ = {
-			isa = PBXGroup;
-			children = (
-				F03A9B7A18C0D5A000C4D7FE /* sal.h */,
-				F03A9B6318C0D1A500C4D7FE /* call_tester.c */,
-				F03A9B6418C0D1A500C4D7FE /* eventapi_tester.c */,
-				F03A9B6518C0D1A500C4D7FE /* flexisip_tester.c */,
-				F03A9B6618C0D1A500C4D7FE /* liblinphone_tester.c */,
-				F03A9B6718C0D1A500C4D7FE /* liblinphone_tester.h */,
-				F03A9B6818C0D1A500C4D7FE /* message_tester.c */,
-				F03A9B6918C0D1A500C4D7FE /* presence_tester.c */,
-				F03A9B6A18C0D1A500C4D7FE /* register_tester.c */,
-				F03A9B6B18C0D1A500C4D7FE /* remote_provisioning_tester.c */,
-				F03A9B6C18C0D1A500C4D7FE /* setup_tester.c */,
-				F03A9B6D18C0D1A500C4D7FE /* stun_tester.c */,
-				F03A9B6E18C0D1A500C4D7FE /* upnp_tester.c */,
-			);
-			name = "linphone-tester";
-			sourceTree = "<group>";
-		};
-		F03A9C1E18C0DFC200C4D7FE /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F03A9C6318C0E2ED00C4D7FE /* certificates */,
-				F03A9C6418C0E2ED00C4D7FE /* flexisip.conf */,
-				F03A9C6518C0E2ED00C4D7FE /* images */,
-				F03A9C6618C0E2ED00C4D7FE /* local_tester_hosts */,
-				F03A9C6718C0E2ED00C4D7FE /* marie_xml */,
-				F03A9C6818C0E2ED00C4D7FE /* rcfiles */,
-				F03A9C6918C0E2ED00C4D7FE /* sounds */,
-				F03A9C6A18C0E2ED00C4D7FE /* tester_hosts */,
-				F03A9C6B18C0E2ED00C4D7FE /* userdb.conf */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		F0B89C2318DC90850050B60E /* images */ = {
@@ -3569,6 +3527,61 @@
 			name = images;
 			sourceTree = "<group>";
 		};
+		F0BB8BD91936208100974404 /* LinphoneTester */ = {
+			isa = PBXGroup;
+			children = (
+				F0BB8BE21936208100974404 /* AppDelegate.h */,
+				F0BB8BE31936208100974404 /* AppDelegate.m */,
+				F0BB8BE51936208100974404 /* Main_iPhone.storyboard */,
+				F0BB8BE81936208200974404 /* Main_iPad.storyboard */,
+				F0BB8BEB1936208200974404 /* MasterViewController.h */,
+				F0BB8BEC1936208200974404 /* MasterViewController.m */,
+				F0BB8BEE1936208200974404 /* DetailViewController.h */,
+				F0BB8BEF1936208200974404 /* DetailViewController.m */,
+				F0BB8BF11936208200974404 /* Images.xcassets */,
+				F0BB8BDA1936208100974404 /* Supporting Files */,
+			);
+			path = LinphoneTester;
+			sourceTree = "<group>";
+		};
+		F0BB8BDA1936208100974404 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F0BB8C3F193630CA00974404 /* flexisip.conf */,
+				F0BB8C40193630CA00974404 /* local_tester_hosts */,
+				F0BB8C41193630CA00974404 /* marie_xml */,
+				F0BB8C42193630CA00974404 /* tester_hosts */,
+				F0BB8C43193630CA00974404 /* userdb.conf */,
+				F0BB8C3919362C2200974404 /* certificates */,
+				F0BB8C3A19362C2200974404 /* images */,
+				F0BB8C3B19362C2200974404 /* sounds */,
+				F0BB8C3719362C1500974404 /* rcfiles */,
+				F0BB8BDB1936208100974404 /* LinphoneTester-Info.plist */,
+				F0BB8BDC1936208100974404 /* InfoPlist.strings */,
+				F0BB8BDF1936208100974404 /* main.m */,
+				F0BB8BE11936208100974404 /* LinphoneTester-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F0BB8BFD1936208200974404 /* LinphoneTesterTests */ = {
+			isa = PBXGroup;
+			children = (
+				F0BB8C031936208200974404 /* LinphoneTesterTests.m */,
+				F0BB8BFE1936208200974404 /* Supporting Files */,
+			);
+			path = LinphoneTesterTests;
+			sourceTree = "<group>";
+		};
+		F0BB8BFE1936208200974404 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F0BB8BFF1936208200974404 /* LinphoneTesterTests-Info.plist */,
+				F0BB8C001936208200974404 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3614,21 +3627,21 @@
 			productReference = 22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F03A9B1B18C0CF7000C4D7FE /* linphonetester */ = {
+		F0BB8BD41936208100974404 /* LinphoneTester */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F03A9B4918C0CF7100C4D7FE /* Build configuration list for PBXNativeTarget "linphonetester" */;
+			buildConfigurationList = F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "LinphoneTester" */;
 			buildPhases = (
-				F03A9B1818C0CF7000C4D7FE /* Sources */,
-				F03A9B1918C0CF7000C4D7FE /* Frameworks */,
-				F03A9B1A18C0CF7000C4D7FE /* Resources */,
+				F0BB8BD11936208100974404 /* Sources */,
+				F0BB8BD21936208100974404 /* Frameworks */,
+				F0BB8BD31936208100974404 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = linphonetester;
-			productName = tester;
-			productReference = F03A9B1C18C0CF7000C4D7FE /* linphonetester.app */;
+			name = LinphoneTester;
+			productName = LinphoneTester;
+			productReference = F0BB8BD51936208100974404 /* LinphoneTester.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -3645,7 +3658,7 @@
 					22D8F11D147548E2008C97DB = {
 						DevelopmentTeam = Z2V957B3D6;
 					};
-					F03A9B1B18C0CF7000C4D7FE = {
+					F0BB8BD41936208100974404 = {
 						DevelopmentTeam = Z2V957B3D6;
 					};
 				};
@@ -3680,7 +3693,7 @@
 			targets = (
 				1D6058900D05DD3D006BFB54 /* linphone */,
 				22D8F11D147548E2008C97DB /* linphone-no-gpl-thirdparties */,
-				F03A9B1B18C0CF7000C4D7FE /* linphonetester */,
+				F0BB8BD41936208100974404 /* LinphoneTester */,
 			);
 		};
 /* End PBXProject section */
@@ -4795,21 +4808,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F03A9B1A18C0CF7000C4D7FE /* Resources */ = {
+		F0BB8BD31936208100974404 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F03A9C6E18C0E2ED00C4D7FE /* images in Resources */,
-				F03A9C6F18C0E2ED00C4D7FE /* local_tester_hosts in Resources */,
-				F03A9B2518C0CF7000C4D7FE /* InfoPlist.strings in Resources */,
-				F03A9C7318C0E2ED00C4D7FE /* tester_hosts in Resources */,
-				F03A9C6D18C0E2ED00C4D7FE /* flexisip.conf in Resources */,
-				F03A9C7018C0E2ED00C4D7FE /* marie_xml in Resources */,
-				F03A9C7218C0E2ED00C4D7FE /* sounds in Resources */,
-				F03A9C6C18C0E2ED00C4D7FE /* certificates in Resources */,
-				F03A9C7418C0E2ED00C4D7FE /* userdb.conf in Resources */,
-				F03A9B2D18C0CF7000C4D7FE /* Images.xcassets in Resources */,
-				F03A9C7118C0E2ED00C4D7FE /* rcfiles in Resources */,
+				F0BB8C3819362C1500974404 /* rcfiles in Resources */,
+				F0BB8C44193630CA00974404 /* flexisip.conf in Resources */,
+				F0BB8C46193630CA00974404 /* marie_xml in Resources */,
+				F0BB8BEA1936208200974404 /* Main_iPad.storyboard in Resources */,
+				F0BB8C48193630CA00974404 /* userdb.conf in Resources */,
+				F0BB8C3E19362C2200974404 /* sounds in Resources */,
+				F0BB8BF21936208200974404 /* Images.xcassets in Resources */,
+				F0BB8BE71936208200974404 /* Main_iPhone.storyboard in Resources */,
+				F0BB8C47193630CA00974404 /* tester_hosts in Resources */,
+				F0BB8C3C19362C2200974404 /* certificates in Resources */,
+				F0BB8C45193630CA00974404 /* local_tester_hosts in Resources */,
+				F0BB8C3D19362C2200974404 /* images in Resources */,
+				F0BB8BDE1936208100974404 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5043,23 +5058,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F03A9B1818C0CF7000C4D7FE /* Sources */ = {
+		F0BB8BD11936208100974404 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F03A9B7518C0D1A500C4D7FE /* register_tester.c in Sources */,
-				F03A9B7318C0D1A500C4D7FE /* message_tester.c in Sources */,
-				F03A9B7818C0D1A500C4D7FE /* stun_tester.c in Sources */,
-				F03A9B7918C0D1A500C4D7FE /* upnp_tester.c in Sources */,
-				F03A9B7018C0D1A500C4D7FE /* eventapi_tester.c in Sources */,
-				F03A9B7218C0D1A500C4D7FE /* liblinphone_tester.c in Sources */,
-				F03A9B6F18C0D1A500C4D7FE /* call_tester.c in Sources */,
-				F03A9B2718C0CF7000C4D7FE /* main.m in Sources */,
-				F03A9B7418C0D1A500C4D7FE /* presence_tester.c in Sources */,
-				F03A9B7618C0D1A500C4D7FE /* remote_provisioning_tester.c in Sources */,
-				F03A9B7118C0D1A500C4D7FE /* flexisip_tester.c in Sources */,
-				F03A9B7718C0D1A500C4D7FE /* setup_tester.c in Sources */,
-				F03A9B2B18C0CF7000C4D7FE /* TesterAppDelegate.m in Sources */,
+				F0BB8BE41936208100974404 /* AppDelegate.m in Sources */,
+				F0BB8BED1936208200974404 /* MasterViewController.m in Sources */,
+				F0BB8BE01936208100974404 /* main.m in Sources */,
+				F0BB8BF01936208200974404 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5349,10 +5355,34 @@
 			name = "IncomingCallViewController~ipad.xib";
 			sourceTree = "<group>";
 		};
-		F03A9B2318C0CF7000C4D7FE /* InfoPlist.strings */ = {
+		F0BB8BDC1936208100974404 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F03A9B2418C0CF7000C4D7FE /* en */,
+				F0BB8BDD1936208100974404 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F0BB8BE51936208100974404 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F0BB8BE61936208100974404 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		F0BB8BE81936208200974404 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F0BB8BE91936208200974404 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		F0BB8C001936208200974404 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F0BB8C011936208200974404 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -5783,11 +5813,10 @@
 			};
 			name = Debug;
 		};
-		F03A9B4118C0CF7100C4D7FE /* Debug */ = {
+		F0BB8C061936208200974404 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -5805,42 +5834,40 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "tester/tester-Prefix.pch";
+				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
-					"$(SRCROOT)/submodules/linphone/include/",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include/libxml2",
+					"liblinphone-sdk/apple-darwin/include",
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "tester/tester-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "72278EC2-F54D-4717-86AD-08D6E2AEC22B";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		F03A9B4218C0CF7100C4D7FE /* Release */ = {
+		F0BB8C071936208200974404 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -5857,37 +5884,35 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "tester/tester-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = TARGET_OS_IPHONE;
+				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
-					"$(SRCROOT)/submodules/linphone/include/",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include/libxml2",
+					"liblinphone-sdk/apple-darwin/include",
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "tester/tester-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "72278EC2-F54D-4717-86AD-08D6E2AEC22B";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
-		F03A9B4318C0CF7100C4D7FE /* Distribution */ = {
+		F0BB8C081936208200974404 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -5904,37 +5929,35 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "tester/tester-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = TARGET_OS_IPHONE;
+				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
-					"$(SRCROOT)/submodules/linphone/include/",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include/libxml2",
+					"liblinphone-sdk/apple-darwin/include",
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "tester/tester-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "72278EC2-F54D-4717-86AD-08D6E2AEC22B";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Distribution;
 		};
-		F03A9B4418C0CF7100C4D7FE /* DistributionAdhoc */ = {
+		F0BB8C091936208200974404 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -5951,27 +5974,26 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "tester/tester-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = TARGET_OS_IPHONE;
+				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
-					"$(SRCROOT)/submodules/linphone/include/",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include/libxml2",
+					"liblinphone-sdk/apple-darwin/include",
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "tester/tester-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-lstdc++";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "72278EC2-F54D-4717-86AD-08D6E2AEC22B";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
@@ -6013,16 +6035,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F03A9B4918C0CF7100C4D7FE /* Build configuration list for PBXNativeTarget "linphonetester" */ = {
+		F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "LinphoneTester" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F03A9B4118C0CF7100C4D7FE /* Debug */,
-				F03A9B4218C0CF7100C4D7FE /* Release */,
-				F03A9B4318C0CF7100C4D7FE /* Distribution */,
-				F03A9B4418C0CF7100C4D7FE /* DistributionAdhoc */,
+				F0BB8C061936208200974404 /* Debug */,
+				F0BB8C071936208200974404 /* Release */,
+				F0BB8C081936208200974404 /* Distribution */,
+				F0BB8C091936208200974404 /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

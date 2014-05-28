@@ -1,34 +1,26 @@
 //
-//  TesterAppDelegate.m
-//  tester
+//  AppDelegate.m
+//  LinphoneTester
 //
-//  Created by guillaume on 28/02/2014.
+//  Created by guillaume on 28/05/2014.
 //
 //
 
-#import "TesterAppDelegate.h"
-#include "liblinphonetester_ios.h"
+#import "AppDelegate.h"
 
-@implementation TesterAppDelegate
+@implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
-
-    char* prefix = strdup([[[NSBundle mainBundle] resourcePath] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
-    NSLog(@"Bundle path: %s", prefix);
-
-    static char* args[] = { "linphone_tester", "--config", NULL, "--dns-hosts", NULL, "--verbose", NULL  };
-    args[2] = prefix;
-    args[4] = prefix;
-    apple_start_tests( 3, args);
-
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+        UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
+        splitViewController.delegate = (id)navigationController.topViewController;
+    }
     return YES;
 }
-
+							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
