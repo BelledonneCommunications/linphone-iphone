@@ -371,7 +371,7 @@ void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
 }
 
 static void _linphone_message_storage_profile(void*data,const char*statement, sqlite3_uint64 duration){
-	ms_warning("SQL statement '%s' took %" PRId64 " microseconds", statement, duration / 1000 );
+	ms_warning("SQL statement '%s' took %llu microseconds", statement, (unsigned long long)duration / 1000LL );
 }
 
 static void linphone_message_storage_activate_debug(sqlite3* db, bool_t debug){
