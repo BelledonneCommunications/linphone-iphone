@@ -324,9 +324,11 @@ static bool_t local_stream_not_already_used(const SalMediaDescription *result, c
 }
 
 /*in answering mode, we consider that if we are able to make AVPF/SAVP/SAVPF, then we can do AVP as well*/
-static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote){
-	if (local==remote) return TRUE;
-	if ((remote==SalProtoRtpAvp) && ((local==SalProtoRtpSavp) || (local==SalProtoRtpAvpf) || (local==SalProtoRtpSavpf)))
+static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
+	if (local == remote) return TRUE;
+	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf))
+		return TRUE;
+	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpAvpf) || (local == SalProtoRtpSavpf)))
 		return TRUE;
 	return FALSE;
 }

@@ -1551,6 +1551,10 @@ void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable) 
 	cfg->avpf_enabled = enable;
 }
 
+bool_t linphone_proxy_config_is_avpf_enabled(LinphoneProxyConfig *cfg) {
+	return cfg->avpf_enabled;
+}
+
 void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
 	if (interval > 5) interval = 5;
 	cfg->avpf_rr_interval = interval;

@@ -2840,8 +2840,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
-		cp->avpf_enabled = proxy->avpf_enabled;
-		cp->avpf_rr_interval = proxy->avpf_rr_interval;
+		cp->avpf_enabled = linphone_proxy_config_is_avpf_enabled(proxy);
+		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy);
 	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -6438,6 +6438,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 	params->privacy=LinphonePrivacyDefault;
+	params->avpf_enabled=TRUE;
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

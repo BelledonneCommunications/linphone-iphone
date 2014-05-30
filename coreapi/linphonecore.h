@@ -937,6 +937,13 @@ LINPHONE_PUBLIC LinphonePrivacyMask linphone_proxy_config_get_privacy(const Linp
 LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable);
 
 /**
+ * Indicates whether AVPF/SAVPF is being used for calls using this proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return True if AVPF/SAVPF is enabled, false otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_avpf_enabled(LinphoneProxyConfig *cfg);
+
+/**
  * Set the interval between regular RTCP reports when using AVPF/SAVPF.
  * @param[in] cfg #LinphoneProxyConfig object
  * @param[in] interval The interval in seconds (between 0 and 5 seconds).
