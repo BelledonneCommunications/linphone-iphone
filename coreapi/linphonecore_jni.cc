@@ -121,7 +121,13 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 	}
 	if (handler_obj){
 		JNIEnv *env=ms_get_jni_env();
-		env->CallVoidMethod(handler_obj,loghandler_id,env->NewStringUTF(LogDomain),(jint)lev,env->NewStringUTF(levname),env->NewStringUTF(str),NULL);
+		jstring jdomain=env->NewStringUTF(LogDomain);
+		jstring jlevname=env->NewStringUTF(levname);
+		jstring jstr=env->NewStringUTF(str);
+		env->CallVoidMethod(handler_obj,loghandler_id,jdomain,(jint)lev,jlevname,jstr,NULL);
+		if (jdomain) env->DeleteLocalRef(jdomain);
+		if (jlevname) env->DeleteLocalRef(jlevname);
+		if (jstr) env->DeleteLocalRef(jstr);
 	}else
 		linphone_android_log_handler(prio, str);
 }
