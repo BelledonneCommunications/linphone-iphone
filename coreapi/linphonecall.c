@@ -281,6 +281,31 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	}
 }
 
+static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
+	MSList *pt_it;
+	PayloadType *pt;
+	PayloadTypeAvpfParams avpf_params;
+	int i;
+
+	for (i = 0; i < md->n_active_streams; i++) {
+		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
+			pt = (PayloadType *)pt_it->data;
+			if (call->params.avpf_enabled == TRUE) {
+				payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				avpf_params = payload_type_get_avpf_params(pt);
+				avpf_params.trr_interval = call->params.avpf_rr_interval;
+				if (md->streams[i].type == SalVideo) {
+					avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+				}
+			} else {
+				payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				memset(&avpf_params, 0, sizeof(avpf_params));
+			}
+			payload_type_set_avpf_params(pt, avpf_params);
+		}
+	}
+}
+
 static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
 	LinphoneCore *lc = call->core;
 	int i;
@@ -339,7 +364,6 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->n_total_streams=(call->biggestdesc ? call->biggestdesc->n_total_streams : 1);
-	md->avpf_rr_interval = call->params.avpf_rr_interval;
 
 	strncpy(md->addr,local_ip,sizeof(md->addr));
 	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
@@ -392,6 +416,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	}
 
 	setup_encryption_keys(call,md);
+	setup_rtcp_fb(call, md);
 	setup_rtcp_xr(call, md);
 
 	update_media_description_from_stun(md,&call->ac,&call->vc);

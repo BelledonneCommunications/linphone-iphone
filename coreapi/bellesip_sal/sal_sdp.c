@@ -68,6 +68,31 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
+static bool_t is_rtcp_fb_trr_int_the_same_for_all_payloads(const SalStreamDescription *stream, uint8_t *trr_int) {
+	MSList *pt_it;
+	bool_t first = TRUE;
+	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
+		PayloadType *pt = (PayloadType *)pt_it->data;
+		if (payload_type_get_flags(pt) & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
+			if (first == TRUE) {
+				*trr_int = payload_type_get_avpf_params(pt).trr_interval;
+				first = FALSE;
+			} else if (payload_type_get_avpf_params(pt).trr_interval != *trr_int) {
+				return FALSE;
+			}
+		}
+	}
+	return TRUE;
+}
+
+static void add_rtcp_fb_trr_int_attribute(belle_sdp_media_description_t *media_desc, int8_t id, uint8_t trr_int) {
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_TRR_INT);
+	belle_sdp_rtcp_fb_attribute_set_trr_int(attribute, trr_int);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+}
+
 static void add_rtcp_fb_nack_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
 	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
 	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
@@ -80,12 +105,13 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	MSList *pt_it;
 	PayloadType *pt;
 	PayloadTypeAvpfParams avpf_params;
-	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	bool_t general_trr_int;
+	uint8_t trr_int = 0;
 
-	belle_sdp_rtcp_fb_attribute_set_id(attribute, -1);
-	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_TRR_INT);
-	belle_sdp_rtcp_fb_attribute_set_trr_int(attribute, md->avpf_rr_interval);
-	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+	general_trr_int = is_rtcp_fb_trr_int_the_same_for_all_payloads(stream, &trr_int);
+	if (general_trr_int == TRUE) {
+		add_rtcp_fb_trr_int_attribute(media_desc, -1, trr_int);
+	}
 
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 		pt = (PayloadType *)pt_it->data;
@@ -93,7 +119,6 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		/* AVPF/SAVPF profile is used so enable AVPF for all paylad types. */
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 		avpf_params = payload_type_get_avpf_params(pt);
-		avpf_params.trr_interval = md->avpf_rr_interval;
 
 		/* Add rtcp-fb attributes according to the AVPF features of the payload types. */
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_PLI) {
@@ -457,7 +482,9 @@ static void enable_avpf_for_stream(SalStreamDescription *stream) {
 		pt = (PayloadType *)pt_it->data;
 		avpf_params = payload_type_get_avpf_params(pt);
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-		avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+		if (stream->type == SalVideo) {
+			avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+		}
 		avpf_params.trr_interval = 0;
 		payload_type_set_avpf_params(pt, avpf_params);
 	}
