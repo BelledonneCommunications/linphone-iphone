@@ -306,6 +306,11 @@ static void setup_rtcp_xr(LinphoneCall *call, SalMediaDescription *md) {
 	}
 }
 
+void linphone_call_increment_local_media_description(LinphoneCall *call){
+	SalMediaDescription *md=call->localdesc;
+	md->session_ver++;
+}
+
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;

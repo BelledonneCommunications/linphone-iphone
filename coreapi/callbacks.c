@@ -460,6 +460,8 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
+	/*when we are resumed, increment session id, because sdp is changed (a=recvonly disapears)*/
+	linphone_call_increment_local_media_description(call);
 	call_accept_update(lc,call);
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
@@ -467,6 +469,8 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	/*when we are resumed, increment session id, because sdp is changed (a=recvonly appears)*/
+	linphone_call_increment_local_media_description(call);
 	call_accept_update(lc,call);
 	/* we are being paused */
 	if(lc->vtable.display_status)

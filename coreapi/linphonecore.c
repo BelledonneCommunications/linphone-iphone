@@ -3153,23 +3153,28 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #ifdef VIDEO_ENABLED
 	bool_t has_video = FALSE;
 #endif
+	
+	if (call->state!=LinphoneCallStreamsRunning){
+		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	
 	if (params!=NULL){
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
-#ifdef VIDEO_ENABLED
+#if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		has_video = call->params.has_video;
 
 		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
-#ifdef BUILD_UPNP
 			if(call->upnp_session != NULL) {
 				if (linphone_core_update_upnp(lc, call)<0) {
 					/* uPnP port mappings failed, proceed with the call anyway. */
 					linphone_call_delete_upnp_session(call);
 				}
 			}
-#endif //BUILD_UPNP
+
 		}
-#endif /* VIDEO_ENABLED */
+#endif /* defined(VIDEO_ENABLED) && defined(BUILD_UPNP) */
 
 		_linphone_call_params_copy(&call->params,params);
 		err=linphone_call_prepare_ice(call,FALSE);
@@ -3178,10 +3183,9 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			return 0;
 		}
 
-#ifdef VIDEO_ENABLED
+#if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		// Video adding
 		if (!has_video && call->params.has_video) {
-#ifdef BUILD_UPNP
 			if(call->upnp_session != NULL) {
 				ms_message("Defer call update to add uPnP port mappings");
 				video_stream_prepare_video(call->videostream);
@@ -3192,9 +3196,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 					return err;
 				}
 			}
-#endif //BUILD_UPNP
 		}
-#endif //VIDEO_ENABLED
+#endif //defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
