@@ -99,6 +99,10 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			if (p2->send_fmtp)
 				payload_type_set_send_fmtp(newp,p2->send_fmtp);
 			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
+			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
+				newp->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
+				newp->avpf = payload_type_get_avpf_params(p2);
+			}
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(newp,remote_number);
