@@ -7,13 +7,14 @@
 //
 
 #import "MasterViewController.h"
-
+#import "LogsViewController.h"
 #import "DetailViewController.h"
 
 #include "linphone/liblinphone_tester.h"
 
 @interface MasterViewController () {
     NSMutableArray *_objects;
+    NSString* bundlePath;
 }
 @end
 
@@ -28,18 +29,63 @@
     [super awakeFromNib];
 }
 
+NSMutableArray* lastLogs = nil;
+NSMutableArray* logsBuffer = nil;
+static int const kLastLogsCapacity = 5000;
+static int const kLogsBufferCapacity = 10;
+NSString* const  kLogsUpdateNotification = @"kLogsUpdateNotification";
+
+void LSLog(NSString* fmt, ...){
+    va_list args;
+    va_start(args, fmt);
+    linphone_log_function(ORTP_MESSAGE, [fmt UTF8String], args);
+    va_end(args);
+}
+
+static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list args) {
+    NSString* log = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:fmt] arguments:args];
+    //NSLog(@"%@",log);
+    
+    [logsBuffer addObject:log];
+    
+    if (logsBuffer.count >= kLogsBufferCapacity ) {
+        [lastLogs addObjectsFromArray:logsBuffer];
+        
+        if( lastLogs.count >= kLastLogsCapacity - kLogsBufferCapacity ){
+            [lastLogs removeObjectsInRange:NSMakeRange(0, kLogsBufferCapacity)];
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLogsUpdateNotification
+                                                            object:nil
+                                                          userInfo:@{@"newlogs": [logsBuffer copy]}];
+        [logsBuffer removeAllObjects];
+    }
+    
+
+}
+
+- (void)setupLogging {
+    lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
+    logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
+
+    linphone_core_set_log_handler(linphone_log_function);
+    linphone_core_set_log_level(ORTP_DEBUG|ORTP_ERROR|ORTP_FATAL|ORTP_WARNING|ORTP_MESSAGE|ORTP_TRACE);
+    
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-    const char* prefix = strdup([[[NSBundle mainBundle] bundlePath] UTF8String]);
+    
+    [self setupLogging];
+    
+    bundlePath = [[NSBundle mainBundle] bundlePath];
     liblinphone_tester_init();
-    liblinphone_tester_set_fileprefix(prefix);
+    liblinphone_tester_set_fileprefix([bundlePath UTF8String]);
 
-    NSLog(@"Bundle path: %s", liblinphone_tester_file_prefix);
-
-
+    LSLog(@"Bundle path: %@", bundlePath);
 
     int count = liblinphone_tester_nb_test_suites();
     _objects = [[NSMutableArray alloc] initWithCapacity:count];
@@ -48,6 +94,11 @@
         [_objects addObject:[NSString stringWithUTF8String:suite]];
     }
 
+}
+
+- (void)displayLogs {
+    LSLog(@"Should display logs");
+    [self.navigationController performSegueWithIdentifier:@"viewLogs" sender:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -125,5 +176,6 @@
         [[segue destinationViewController] setDetailItem:object];
     }
 }
+
 
 @end
