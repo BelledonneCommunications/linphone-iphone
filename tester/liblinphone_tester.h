@@ -46,6 +46,7 @@ extern "C" {
 #endif
 
 extern const char *liblinphone_tester_file_prefix;
+extern const char *liblinphone_tester_writable_dir_prefix;
 extern test_suite_t setup_test_suite;
 extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;
@@ -68,6 +69,7 @@ extern void liblinphone_tester_init(void);
 extern void liblinphone_tester_uninit(void);
 extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
 extern void liblinphone_tester_set_fileprefix(const char* file_prefix);
+extern void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix);
 
 #ifdef __cplusplus
 };

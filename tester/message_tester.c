@@ -453,7 +453,7 @@ static void message_storage_migration() {
 	char src_db[256];
 	char tmp_db[256];
 	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_file_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_writable_dir_prefix);
 
 	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 1);
 

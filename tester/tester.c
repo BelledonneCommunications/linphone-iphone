@@ -49,6 +49,9 @@ const char *liblinphone_tester_file_prefix="./app/native/assets/";
 const char *liblinphone_tester_file_prefix=".";
 #endif
 
+/* TODO: have the same "static" for QNX and windows as above? */
+const char *liblinphone_tester_writable_dir_prefix = ".";
+
 const char *userhostsfile = "tester_hosts";
 
 void liblinphone_tester_clock_start(MSTimeSpec *start){
@@ -324,6 +327,10 @@ const char * liblinphone_tester_test_name(const char *suite_name, int test_index
 
 void liblinphone_tester_set_fileprefix(const char* file_prefix){
 	liblinphone_tester_file_prefix = file_prefix;
+}
+
+void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix){
+	liblinphone_tester_writable_dir_prefix = writable_dir_prefix;
 }
 
 
