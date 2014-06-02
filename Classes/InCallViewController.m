@@ -175,6 +175,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callTableController viewDidDisappear:animated];
     }
     
+    [[PhoneMainView instance] fullScreen:false];
     // Disable tap
     [singleFingerTap setEnabled:FALSE];
 }
