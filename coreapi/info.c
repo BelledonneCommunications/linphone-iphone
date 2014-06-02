@@ -42,10 +42,11 @@ struct _LinphoneInfoMessage{
 		ptr->field=ms_strdup(val); \
 	}
 
-static void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref){
+void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref){
 	SET_STRING(obj,type,ref->type);
 	SET_STRING(obj,subtype,ref->subtype);
 	SET_STRING(obj,encoding,ref->encoding);
+	SET_STRING(obj,name,ref->name);
 	if (obj->data) {
 		ms_free(obj->data);
 		obj->data=NULL;
@@ -63,6 +64,7 @@ void linphone_content_uninit(LinphoneContent * obj){
 	if (obj->subtype) ms_free(obj->subtype);
 	if (obj->data) ms_free(obj->data);
 	if (obj->encoding) ms_free(obj->encoding);
+	if (obj->name) ms_free(obj->name);
 }
 
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){

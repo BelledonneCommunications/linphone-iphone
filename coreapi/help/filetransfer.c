@@ -82,6 +82,8 @@ static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *messag
 
 	if (size==0) {
 		printf("File transfert completed\n");
+		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+		linphone_chat_message_destroy(message);
 		close(file);
 		running=FALSE;
 	} else { /* store content on a file*/
@@ -219,6 +221,7 @@ int main(int argc, char *argv[]){
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
+
 
 	printf("Shutting down...\n");
 	linphone_chat_room_destroy(chat_room);

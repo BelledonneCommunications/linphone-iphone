@@ -153,6 +153,8 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 		if (code == 200 ) { /* file has been uplaoded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			msg->message = ms_strdup(body);
+			linphone_content_uninit(msg->file_transfer_information);
+			ms_free(msg->file_transfer_information);
 			msg->file_transfer_information = NULL;
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
 			_linphone_chat_room_send_message(msg->chat_room, msg);
@@ -644,6 +646,7 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->message=message?ms_strdup(message):NULL;
 	msg->is_read=TRUE;
 	msg->content_type = NULL; /* this property is used only when transfering file */
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	return msg;
 }
 
@@ -671,6 +674,7 @@ LinphoneChatMessage* linphone_chat_room_create_message_2(
 	msg->state=state;
 	msg->is_read=is_read;
 	msg->content_type = NULL; /* this property is used only when transfering file */
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	if (is_incoming) {
 		msg->dir=LinphoneChatMessageIncoming;
 		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
@@ -1135,6 +1139,10 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
 	if (msg->content_type) ms_free(msg->content_type);
+	if (msg->file_transfer_information) {
+		linphone_content_uninit(msg->file_transfer_information);
+		ms_free(msg->file_transfer_information);
+	}
 }
 
 
@@ -1182,7 +1190,9 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message = NULL;
-	msg->file_transfer_information = initial_content;
+	msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+	memset(msg->file_transfer_information, 0, sizeof(LinphoneContent));
+	linphone_content_copy(msg->file_transfer_information, initial_content);
 	msg->dir=LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
