@@ -668,6 +668,36 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,co
 	message->external_body_url=url?ms_strdup(url):NULL;
 }
 
+
+/**
+ * Linphone message has an app-specific field that can store a text. The application might want
+ * to use it for keeping data over restarts, like thumbnail image path.
+ * @param message #LinphoneChatMessage
+ * @return the application-specific data or NULL if none has been stored.
+ */
+const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message){
+	return message->appdata;
+}
+
+/**
+ * Linphone message has an app-specific field that can store a text. The application might want
+ * to use it for keeping data over restarts, like thumbnail image path.
+ *
+ * Invoking this function will attempt to update the message storage to reflect the changeif it is
+ * enabled.
+ *
+ * @param message #LinphoneChatMessage
+ * @param data the data to store into the message
+ */
+void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data){
+	if( message->appdata ){
+		ms_free(message->appdata);
+	}
+	message->appdata = data? ms_strdup(data) : NULL;
+	linphone_chat_message_store_appdata(message);
+}
+
+
 /**
  * Set origin of the message
  *@param message #LinphoneChatMessage obj
@@ -805,6 +835,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	 };*/
 	LinphoneChatMessage* new_message = linphone_chat_room_create_message(msg->chat_room,msg->message);
 	if (msg->external_body_url) new_message->external_body_url=ms_strdup(msg->external_body_url);
+	if (msg->appdata) new_message->appdata = ms_strdup(msg->appdata);
 	new_message->cb=msg->cb;
 	new_message->cb_ud=msg->cb_ud;
 	new_message->message_userdata=msg->message_userdata;
@@ -831,6 +862,7 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->op) sal_op_release(msg->op);
 	if (msg->message) ms_free(msg->message);
 	if (msg->external_body_url) ms_free(msg->external_body_url);
+	if (msg->appdata) ms_free(msg->appdata);
 	if (msg->from) linphone_address_destroy(msg->from);
 	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);

@@ -1130,7 +1130,9 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to(LinphoneChatMessage* message, 
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
-LINPHONE_PUBLIC	const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);
+LINPHONE_PUBLIC	const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
@@ -1622,7 +1624,7 @@ LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const
  * @param[in] lc the #LinphoneCore object
  * @param[in] pt the #PayloadType to modify.
  * @param[in] bitrate the IP bitrate in kbit/s.
- * @ingroup media_parameters 
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate);
 
@@ -1631,7 +1633,7 @@ LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, Pa
  * @param[in] lc the #LinphoneCore object
  * @param[in] pt the #PayloadType to modify.
  * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
- * @ingroup media_parameters 
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt);
 

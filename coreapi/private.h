@@ -144,6 +144,7 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageStateChangedCb cb;
 	void* cb_ud;
 	void* message_userdata;
+	char* appdata;
 	char* external_body_url;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
@@ -821,6 +822,7 @@ sqlite3 * linphone_message_storage_init();
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
+void linphone_chat_message_store_appdata(LinphoneChatMessage* msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
 void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
