@@ -472,26 +472,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
     // In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
     // status bar style for each transition to/from these views
     BOOL toLightStatus   = (to_view != NULL) && ![PhoneMainView isDarkBackgroundView:to_view];
-    BOOL fromLightStatus = ![PhoneMainView isDarkBackgroundView:currentView];
-
     if( !toLightStatus ) {
         // black bg: white text on black background
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-        if(statusBarBG.hidden == YES){
-            statusBarBG.alpha = 0;
-            statusBarBG.hidden = NO;
-            [UIView animateWithDuration:0.3f
-                             animations:^{statusBarBG.alpha = 1;} ];
-        }
-    } else if(!fromLightStatus && toLightStatus) {
+
+        [UIView animateWithDuration:0.3f
+                         animations:^{statusBarBG.backgroundColor = [UIColor blackColor];} ];
+
+    } else  {
         // light bg: black text on white bg
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-        if( statusBarBG.hidden == NO ){
-            [UIView animateWithDuration:0.3f
-                             animations:^{ statusBarBG.alpha = 0; }
-                             completion:^(BOOL finished) {statusBarBG.hidden = YES;}];
-        }
+        [UIView animateWithDuration:0.3f
+                         animations:^{ statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1]; }];
+
     }
 #endif
 }
