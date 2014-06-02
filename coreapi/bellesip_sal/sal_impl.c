@@ -451,6 +451,7 @@ Sal * sal_init(){
 	sal->tls_verify=TRUE;
 	sal->tls_verify_cn=TRUE;
 	sal->refresher_retry_after=60000; /*default value in ms*/
+	sal->enable_sip_update=TRUE;
 	return sal;
 }
 
@@ -998,5 +999,8 @@ belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, vo
 void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	belle_sip_main_loop_remove_source(ml, timer);
+}
+void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
+	ctx->enable_sip_update=value;
 }
 

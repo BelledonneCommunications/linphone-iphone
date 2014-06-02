@@ -754,6 +754,7 @@ static void sip_config_read(LinphoneCore *lc)
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
+	sal_enable_sip_update_method(lc->sal,lp_config_get_int(lc->config,"sip","sip_update",1));
 }
 
 static void rtp_config_read(LinphoneCore *lc)

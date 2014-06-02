@@ -519,6 +519,9 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient);
 void sal_disable_tunnel(Sal *ctx);
+/*Default value is true*/
+void sal_enable_sip_update_method(Sal *ctx,bool_t value);
+
 /**
  * returns keepalive period in ms
  * 0 desactiaved

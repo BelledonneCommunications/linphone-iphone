@@ -564,6 +564,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		} else if (strcmp("MESSAGE",method)==0){
 			sal_process_incoming_message(op,event);
 		} else if (strcmp("UPDATE",method)==0) {
+
+			/*FIXME jehan:  It might be better to silently accept UPDATE which do not modify either the number or the nature of streams*/
+
 			/*rfc 3311
 			 * 5.2 Receiving an UPDATE
 			 * ...
@@ -571,8 +574,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
    	   	   	 * the request with a 504 response.
 			 */
 			resp=sal_op_create_response_from_request(op,req,504);
-			belle_sip_message_add_header(	BELLE_SIP_MESSAGE(resp)
-											,belle_sip_header_create( "Warning", "Cannot change the session parameters without prompting the user"));
+			belle_sip_response_set_reason_phrase(resp,"Cannot change the session parameters without prompting the user");
+			/*belle_sip_message_add_header(	BELLE_SIP_MESSAGE(resp)
+											,belle_sip_header_create( "Warning", "Cannot change the session parameters without prompting the user"));*/
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 			return;
 		}else{
@@ -610,14 +614,16 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 	return 0;
 }
 
-static belle_sip_header_allow_t *create_allow(){
+static belle_sip_header_allow_t *create_allow(bool_t enable_update){
 	belle_sip_header_allow_t* header_allow;
-	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO, UPDATE");
+	char allow [256];
+	snprintf(allow,sizeof(allow),"INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO%s",(enable_update?", UPDATE":""));
+	header_allow = belle_sip_header_allow_create(allow);
 	return header_allow;
 }
 
 static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow()));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow(op->base.root->enable_sip_update)));
 
 	if (op->base.root->session_expires!=0){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "200"));
@@ -745,7 +751,7 @@ int sal_call_accept(SalOp*h){
 		ms_error("Fail to build answer for call");
 		return -1;
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow()));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow(h->base.root->enable_sip_update)));
 	if (h->base.root->session_expires!=0){
 		if (h->supports_session_timers) {
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create("Supported", "timer"));
