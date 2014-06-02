@@ -5890,6 +5890,15 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 #endif //BUILD_UPNP
 
+	if (lc->chatrooms){
+		MSList *cr=ms_list_copy(lc->chatrooms);
+		MSList *elem;
+		for(elem=cr;elem!=NULL;elem=elem->next){
+			linphone_chat_room_destroy((LinphoneChatRoom*)elem->data);
+		}
+		ms_list_free(cr);
+	}
+
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */

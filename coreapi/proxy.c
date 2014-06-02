@@ -49,10 +49,7 @@ bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const Linph
 
 	if (linphone_address_weak_equal(a,b)) {
 		/*also check both transport and uri */
-		if (!(linphone_address_is_secure(a) ^ linphone_address_is_secure(b))) {
-			return linphone_address_get_transport(a) == linphone_address_get_transport(b);
-		} else
-			return FALSE; /*secure flag not equals*/
+		return linphone_address_is_secure(a) == linphone_address_is_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b);
 	} else
 		return FALSE; /*either username, domain or port ar not equals*/
 
@@ -61,14 +58,21 @@ bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const Linph
 bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
 	LinphoneAddress *current_identity=obj->reg_identity?linphone_address_new(obj->reg_identity):NULL;
 	LinphoneAddress *current_proxy=obj->reg_proxy?linphone_address_new(obj->reg_proxy):NULL;
+	bool_t result=FALSE;
+	
+	if (!linphone_proxy_config_address_equal(obj->saved_identity,current_identity)){
+		result=TRUE;
+		goto end;
+	}
+	if (!linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy)){
+		result=TRUE;
+		goto end;
+	}
 
-	if (!linphone_proxy_config_address_equal(obj->saved_identity,current_identity))
-		return TRUE;
-
-	if (!linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy))
-		return TRUE;
-
-	return FALSE;
+	end:
+	if (current_identity) linphone_address_destroy(current_identity);
+	if (current_proxy) linphone_address_destroy(current_proxy);
+	return result;
 }
 
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
@@ -151,7 +155,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->contact_params) ms_free(obj->contact_params);
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
-	if (obj->saved_identity!=NULL) ms_free(obj->saved_identity);
+	if (obj->saved_identity!=NULL) linphone_address_destroy(obj->saved_identity);
 	ms_free(obj);
 }
 

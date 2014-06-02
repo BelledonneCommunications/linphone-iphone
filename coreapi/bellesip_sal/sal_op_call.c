@@ -154,6 +154,9 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	SalReason reason;
 	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
 		if (sdp){
+			if (op->base.remote_media){
+				sal_media_description_unref(op->base.remote_media);
+			}
 			op->base.remote_media=sal_media_description_new();
 			sdp_to_media_description(sdp,op->base.remote_media);
 			if (op->base.local_media) sdp_process(op);

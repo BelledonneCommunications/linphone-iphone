@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/mssndcard.h"
 
+static void linphone_call_stats_uninit(LinphoneCallStats *stats);
+
 #ifdef VIDEO_ENABLED
 static MSWebCam *get_nowebcam_device(){
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
@@ -743,7 +745,8 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	linphone_call_delete_upnp_session(call);
 	linphone_call_delete_ice_session(call);
 	linphone_core_update_allocated_audio_bandwidth(lc);
-
+	linphone_call_stats_uninit(&call->stats[0]);
+	linphone_call_stats_uninit(&call->stats[1]);
 	call->owns_call_log=FALSE;
 	linphone_call_log_completed(call);
 
@@ -2697,20 +2700,14 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 }
 
 static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
-	char temp[256];
+	char temp[256]={0};
 	char *from=NULL;
-	if(call)
-		from = linphone_call_get_remote_address_as_string(call);
-	if (from)
-	{
-		snprintf(temp,sizeof(temp),"Remote end %s seems to have disconnected, the call is going to be closed.",from);
-		ms_free(from);
-	}
-	else
-	{
-		snprintf(temp,sizeof(temp),"Remote end seems to have disconnected, the call is going to be closed.");
-	}
-	ms_message("On call [%p] %s",call,temp);
+
+	from = linphone_call_get_remote_address_as_string(call);
+	snprintf(temp,sizeof(temp)-1,"Remote end %s seems to have disconnected, the call is going to be closed.",from ? from : "");
+	if (from) ms_free(from);
+	
+	ms_message("On call [%p]: %s",call,temp);
 	if (lc->vtable.display_warning!=NULL)
 		lc->vtable.display_warning(lc,temp);
 	linphone_core_terminate_call(lc,call);
@@ -2815,6 +2812,17 @@ void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEve
 		evd->packet = NULL;
 		stats->updated = LINPHONE_CALL_STATS_SENT_RTCP_UPDATE;
 		update_local_stats(stats,ms);
+	}
+}
+
+void linphone_call_stats_uninit(LinphoneCallStats *stats){
+	if (stats->received_rtcp) {
+		freemsg(stats->received_rtcp);
+		stats->received_rtcp=NULL;
+	}
+	if (stats->sent_rtcp){
+		freemsg(stats->sent_rtcp);
+		stats->sent_rtcp=NULL;
 	}
 }
 
@@ -2952,8 +2960,8 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 	if (state != call->transfer_state) {
 		LinphoneCore* lc = call->core;
 		ms_message("Transfer state for call [%p] changed  from [%s] to [%s]",call
-																			,linphone_call_state_to_string(call->transfer_state)
-																			,linphone_call_state_to_string(state));
+						,linphone_call_state_to_string(call->transfer_state)
+						,linphone_call_state_to_string(state));
 		call->transfer_state = state;
 		if (lc->vtable.transfer_state_changed)
 			lc->vtable.transfer_state_changed(lc, call, state);
