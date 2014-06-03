@@ -163,6 +163,24 @@ public interface LinphoneProxyConfig {
 	 */
 	int getPrivacy();
 	
+	/**
+	 * Indicates whether AVPF/SAVPF must be used for calls using this proxy config.
+	 * @param enable True to enable AVPF/SAVF, false to disable it.
+	 */
+	void enableAvpf(boolean enable);
+	
+	/**
+	 * Set the interval between regular RTCP reports when using AVPF/SAVPF.
+	 * @param interval The interval in seconds (between 0 and 5 seconds).
+	 */
+	void setAvpfRRInterval(int interval);
+	
+	/**
+	 * Get the interval between regular RTCP reports when using AVPF/SAVPF.
+	 * @return The interval in seconds.
+	 */
+	int getAvpfRRInterval();
+	
 	
 	/**
 	 * Set optional contact parameters that will be added to the contact information sent in the registration.
