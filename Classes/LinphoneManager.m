@@ -1782,6 +1782,33 @@ static void audioRouteChangeListenerCallback (
 	}
 }
 
++(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg {
+
+    if(msg == nil ) return nil;
+
+    id value = nil;
+    const char* appData = linphone_chat_message_get_appdata(msg);
+    if( appData) {
+        NSDictionary* appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)] options:0 error:nil];
+        value = [appDataDict objectForKey:key];
+    }
+    return value;
+}
+
++(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg {
+
+    NSMutableDictionary* appDataDict = [NSMutableDictionary dictionary];
+    const char* appData = linphone_chat_message_get_appdata(msg);
+    if( appData) {
+        appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)] options:NSJSONReadingMutableContainers error:nil];
+    }
+
+    [appDataDict setValue:value forKey:key];
+
+    NSData* data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
+    NSString* appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String] );
+}
 
 #pragma mark - LPConfig Functions
 

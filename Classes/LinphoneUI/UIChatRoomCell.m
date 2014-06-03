@@ -115,19 +115,21 @@ static UIFont *CELL_FONT = nil;
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
         return;
     }
-    const char*url   = linphone_chat_message_get_external_body_url(chat);
-    const char*text  = linphone_chat_message_get_text(chat);
-    BOOL is_external = url && (strstr(url, "http") == url);
+    const char*url       = linphone_chat_message_get_external_body_url(chat);
+    const char*text      = linphone_chat_message_get_text(chat);
+    BOOL is_external     = url && (strstr(url, "http") == url);
+    NSString* localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
 
-    if(is_external) {
+
+    if(is_external && !localImage ) {
         [messageText setHidden:TRUE];
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
         [downloadButton setHidden:FALSE];
 
-    } else if(url) {
+    } else if(localImage) {
 
-        NSURL* imageUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url]];
+        NSURL* imageUrl = [NSURL URLWithString:localImage];
 
         [messageText setHidden:TRUE];
         [messageImageView setImage:nil];
@@ -152,6 +154,7 @@ static UIFont *CELL_FONT = nil;
         [messageImageView setHidden:FALSE];
         [downloadButton setHidden:TRUE];
     } else {
+        // simple text message
         [messageText setHidden:FALSE];
         [messageText setText:[NSString stringWithUTF8String:text]];
         
