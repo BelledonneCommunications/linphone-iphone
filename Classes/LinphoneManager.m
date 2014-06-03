@@ -312,6 +312,11 @@ struct codec_name_pref_table codec_pref_table[]={
 
 #pragma mark - Database Functions
 
+static int check_should_migrate_images(void* data ,int argc,char** argv,char** cnames){
+    *((BOOL*)data) = TRUE;
+    return 0;
+}
+
 - (BOOL)migrateChatDBIfNeeded:(LinphoneCore*)lc {
     sqlite3* newDb;
     char *errMsg;
@@ -319,67 +324,94 @@ struct codec_name_pref_table codec_pref_table[]={
     NSString *oldDbPath = [LinphoneManager documentFile:kLinphoneOldChatDBFilename];
     NSString *newDbPath = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
     BOOL shouldMigrate  = [[NSFileManager defaultManager] fileExistsAtPath:oldDbPath];
+    BOOL shouldMigrateImages = FALSE;
     LinphoneProxyConfig* default_proxy;
     const char* identity = NULL;
     BOOL migrated = FALSE;
+    char* attach_stmt = NULL;
 
     linphone_core_get_default_proxy(lc, &default_proxy);
 
-    if( !shouldMigrate ) return FALSE;
 
 	if( sqlite3_open([newDbPath UTF8String], &newDb) != SQLITE_OK) {
         [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", newDbPath];
 		return FALSE;
     }
+
+    const char* check_appdata = "SELECT url,message FROM history WHERE url LIKE 'assets-library%' OR message LIKE 'assets-library%' LIMIT 1;";
+    // will set "needToMigrateImages to TRUE if a result comes by
+    sqlite3_exec(newDb, check_appdata, check_should_migrate_images, &shouldMigrateImages, NULL);
+    if( !shouldMigrate && !shouldMigrateImages ) {
+        sqlite3_close(newDb);
+        return FALSE;
+    }
+
+
     [LinphoneLogger logc:LinphoneLoggerLog format:"Starting migration procedure"];
 
-    // attach old database to the new one:
-    char* attach_stmt = sqlite3_mprintf("ATTACH DATABASE %Q AS oldchats", [oldDbPath UTF8String]);
-    if( sqlite3_exec(newDb, attach_stmt, NULL, NULL, &errMsg) != SQLITE_OK ){
-        [LinphoneLogger logc:LinphoneLoggerError format:"Can't attach old chat table, error[%s] ", errMsg];
-        sqlite3_free(errMsg);
-        goto exit_dbmigration;
+    if( shouldMigrate ){
+
+        // attach old database to the new one:
+        attach_stmt = sqlite3_mprintf("ATTACH DATABASE %Q AS oldchats", [oldDbPath UTF8String]);
+        if( sqlite3_exec(newDb, attach_stmt, NULL, NULL, &errMsg) != SQLITE_OK ){
+            [LinphoneLogger logc:LinphoneLoggerError format:"Can't attach old chat table, error[%s] ", errMsg];
+            sqlite3_free(errMsg);
+            goto exit_dbmigration;
+        }
+
+
+        // migrate old chats to the new db. The iOS stores timestamp in UTC already, so we can directly put it in the 'utc' field and set 'time' to -1
+        const char* migration_statement = "INSERT INTO history (localContact,remoteContact,direction,message,utc,read,status,time) "
+        "SELECT localContact,remoteContact,direction,message,time,read,state,'-1' FROM oldchats.chat";
+
+        if( sqlite3_exec(newDb, migration_statement, NULL, NULL, &errMsg) != SQLITE_OK ){
+            [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
+            sqlite3_free(errMsg);
+            goto exit_dbmigration;
+        }
+
+        // replace empty from: or to: by the current identity.
+        if( default_proxy ){
+            identity = linphone_proxy_config_get_identity(default_proxy);
+        }
+        if( !identity ){
+            identity = "sip:unknown@sip.linphone.org";
+        }
+
+        char* from_conversion = sqlite3_mprintf("UPDATE history SET localContact = %Q WHERE localContact = ''", identity);
+        if( sqlite3_exec(newDb, from_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
+            [LinphoneLogger logc:LinphoneLoggerError format:"FROM conversion failed, error[%s] ", errMsg];
+            sqlite3_free(errMsg);
+        }
+        sqlite3_free(from_conversion);
+
+        char* to_conversion = sqlite3_mprintf("UPDATE history SET remoteContact = %Q WHERE remoteContact = ''", identity);
+        if( sqlite3_exec(newDb, to_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
+            [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
+            sqlite3_free(errMsg);
+        }
+        sqlite3_free(to_conversion);
+        
     }
 
+    // local image paths were stored in the 'message' field historically. They were
+    // very temporarily stored in the 'url' field, and now we migrated them to a JSON-
+    // encoded field. These are the migration steps to migrate them.
 
-    // migrate old chats to the new db. The iOS stores timestamp in UTC already, so we can directly put it in the 'utc' field and set 'time' to -1
-    const char* migration_statement = "INSERT INTO history (localContact,remoteContact,direction,message,utc,read,status,time) "
-                                                    "SELECT localContact,remoteContact,direction,message,time,read,state,'-1' FROM oldchats.chat";
-
-    if( sqlite3_exec(newDb, migration_statement, NULL, NULL, &errMsg) != SQLITE_OK ){
-        [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
-        sqlite3_free(errMsg);
-        goto exit_dbmigration;
-    }
-
-    // replace empty from: or to: by the current identity.
-    if( default_proxy ){
-        identity = linphone_proxy_config_get_identity(default_proxy);
-    }
-    if( !identity ){
-        identity = "sip:unknown@sip.linphone.org";
-    }
-
-    char* from_conversion = sqlite3_mprintf("UPDATE history SET localContact = %Q WHERE localContact = ''", identity);
-    if( sqlite3_exec(newDb, from_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
-        [LinphoneLogger logc:LinphoneLoggerError format:"FROM conversion failed, error[%s] ", errMsg];
-        sqlite3_free(errMsg);
-    }
-    sqlite3_free(from_conversion);
-
-    char* to_conversion = sqlite3_mprintf("UPDATE history SET remoteContact = %Q WHERE remoteContact = ''", identity);
-    if( sqlite3_exec(newDb, to_conversion, NULL, NULL, &errMsg) != SQLITE_OK ){
-        [LinphoneLogger logc:LinphoneLoggerError format:"DB migration failed, error[%s] ", errMsg];
-        sqlite3_free(errMsg);
-    }
-    sqlite3_free(to_conversion);
-
-    // move already stored images from the messages to the url field
-    const char* assetslib_migration = "UPDATE history SET url=message, message='' WHERE message LIKE 'assets-library%'";
+    // move already stored images from the messages to the appdata JSON field
+    const char* assetslib_migration = "UPDATE history SET appdata='{\"localimage\":\"'||message||'\"}' , message='' WHERE message LIKE 'assets-library%'";
     if( sqlite3_exec(newDb, assetslib_migration, NULL, NULL, &errMsg) != SQLITE_OK ){
-        [LinphoneLogger logc:LinphoneLoggerError format:"Assets-history migration failed, error[%s] ", errMsg];
+        [LinphoneLogger logc:LinphoneLoggerError format:"Assets-history migration for MESSAGE failed, error[%s] ", errMsg];
         sqlite3_free(errMsg);
     }
+
+    // move already stored images from the url to the appdata JSON field
+    const char* assetslib_migration_fromurl = "UPDATE history SET appdata='{\"localimage\":\"'||url||'\"}' , url='' WHERE url LIKE 'assets-library%'";
+    if( sqlite3_exec(newDb, assetslib_migration_fromurl, NULL, NULL, &errMsg) != SQLITE_OK ){
+        [LinphoneLogger logc:LinphoneLoggerError format:"Assets-history migration for URL failed, error[%s] ", errMsg];
+        sqlite3_free(errMsg);
+    }
+
     // We will lose received messages with remote url, they will be displayed in plain. We can't do much for them..
     migrated = TRUE;
 
@@ -390,7 +422,7 @@ exit_dbmigration:
     sqlite3_close(newDb);
 
     // in any case, we should remove the old chat db
-    if(![[NSFileManager defaultManager] removeItemAtPath:oldDbPath error:&error] ){
+    if( shouldMigrate && ![[NSFileManager defaultManager] removeItemAtPath:oldDbPath error:&error] ){
         [LinphoneLogger logc:LinphoneLoggerError format:"Could not remove old chat DB: %@", error];
     }
 
