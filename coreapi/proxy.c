@@ -112,6 +112,8 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->send_statistics = lc ? lp_config_get_default_int(lc->config, "proxy", "send_statistics", 0) : 0;
 	obj->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	obj->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
+	obj->avpf_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", 0) : 0;
+	obj->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	obj->publish_expires=-1;
 }
 
@@ -1236,7 +1238,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
 
 	linphone_proxy_config_enable_avpf(cfg, lp_config_get_int(config, key, "avpf", 0));
-	linphone_proxy_config_set_avpf_rr_interval(cfg, lp_config_get_int(config, key, "avpf_rr_interval", 0));
+	linphone_proxy_config_set_avpf_rr_interval(cfg, lp_config_get_int(config, key, "avpf_rr_interval", 5));
 
 	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",lp_config_get_default_int(config,"proxy","dial_escape_plus",0)));
 	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",lp_config_get_default_string(config,"proxy","dial_prefix",NULL)));
