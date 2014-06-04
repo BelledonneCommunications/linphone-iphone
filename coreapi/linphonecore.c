@@ -3148,7 +3148,13 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	bool_t has_video = FALSE;
 #endif
 	
-	if (call->state!=LinphoneCallStreamsRunning){
+	switch(call->state){
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallStreamsRunning:
+			/*these states are allowed for linphone_core_update_call()*/
+			break;
+		default:
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
 		return -1;
 	}
