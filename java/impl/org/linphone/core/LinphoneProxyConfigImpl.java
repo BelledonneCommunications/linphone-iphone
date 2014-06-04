@@ -203,6 +203,12 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public void enableAvpf(boolean enable) {
 		enableAvpf(nativePtr, enable);
 	}
+
+	private native boolean avpfEnabled(long nativePtr);
+	@Override
+	public boolean avpfEnabled() {
+		return avpfEnabled(nativePtr);
+	}
 	
 	private native void setAvpfRRInterval(long nativePtr, int interval);
 	@Override
