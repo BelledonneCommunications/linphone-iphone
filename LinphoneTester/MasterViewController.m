@@ -15,6 +15,7 @@
 @interface MasterViewController () {
     NSMutableArray *_objects;
     NSString* bundlePath;
+    NSString* documentPath;
 }
 @end
 
@@ -44,7 +45,7 @@ void LSLog(NSString* fmt, ...){
 
 static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list args) {
     NSString* log = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:fmt] arguments:args];
-    //NSLog(@"%@",log);
+    NSLog(@"%@",log);
     
     [logsBuffer addObject:log];
     
@@ -82,10 +83,14 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     [self setupLogging];
     
     bundlePath = [[NSBundle mainBundle] bundlePath];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    documentPath = [paths objectAtIndex:0];
     liblinphone_tester_init();
     liblinphone_tester_set_fileprefix([bundlePath UTF8String]);
+    liblinphone_tester_set_writable_dir_prefix( ms_strdup([documentPath UTF8String]) );
 
     LSLog(@"Bundle path: %@", bundlePath);
+    LSLog(@"Document path: %@", documentPath);
 
     int count = liblinphone_tester_nb_test_suites();
     _objects = [[NSMutableArray alloc] initWithCapacity:count];
