@@ -203,6 +203,7 @@ int main (int argc, char *argv[])
 			}
 			return 0;
 		} else {
+			fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
 			helper(argv[0]);
 			return -1;
 		}
