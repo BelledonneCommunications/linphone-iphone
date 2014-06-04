@@ -135,8 +135,9 @@ void linphone_reporting_update(LinphoneCall * call, int stats_type);
 
 /**
  * Fill IP information about a given call. This function must be called each
- * time state is 'LinphoneCallStreamsRunning' since IP might be updated (if we
+ * time call state is 'LinphoneCallStreamsRunning' since IP might be updated (if we
  * found a direct route between caller and callee for example).
+ * When call is starting, remote IP/port might be the proxy ones to which callee is registered
  * @param call #LinphoneCall object to consider
  *
  */
