@@ -258,9 +258,12 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	gboolean has_video=linphone_call_params_video_enabled(linphone_call_get_current_params(call));
 	MSVideoSize size_received = linphone_call_params_get_received_video_size(linphone_call_get_current_params(call));
 	MSVideoSize size_sent = linphone_call_params_get_sent_video_size(linphone_call_get_current_params(call));
-	gchar *tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
+	const char *rtp_profile = linphone_call_params_get_rtp_profile(linphone_call_get_current_params(call));
+	gchar *tmp = g_strdup_printf("%s", rtp_profile);
+	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"rtp_profile")),tmp);
+	g_free(tmp);
+	tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
 		as->download_bandwidth,as->upload_bandwidth);
-	
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
 	g_free(tmp);
 	if (has_video){

@@ -429,6 +429,13 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
  */
 LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
 
+/**
+ * Gets the RTP profile being used.
+ * @param[in] cp #LinphoneCallParams object
+ * @returns The RTP profile.
+ */
+LINPHONE_PUBLIC const char * linphone_call_params_get_rtp_profile(const LinphoneCallParams *cp);
+
 
 /*
  * Note for developers: this enum must be kept synchronized with the SalPrivacy enum declared in sal.h

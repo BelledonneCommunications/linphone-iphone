@@ -337,7 +337,7 @@ void linphone_call_increment_local_media_description(LinphoneCall *call){
 	md->session_ver++;
 }
 
-static SalMediaProto get_proto_from_call_params(LinphoneCallParams *params) {
+static SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
 	if ((params->media_encryption == LinphoneMediaEncryptionSRTP) && params->avpf_enabled) return SalProtoRtpSavpf;
 	if (params->media_encryption == LinphoneMediaEncryptionSRTP) return SalProtoRtpSavp;
 	if (params->avpf_enabled) return SalProtoRtpAvpf;
@@ -1278,6 +1278,10 @@ MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *c
 
 MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp) {
 	return cp->recv_vsize;
+}
+
+const char * linphone_call_params_get_rtp_profile(const LinphoneCallParams *cp) {
+	return sal_media_proto_to_string(get_proto_from_call_params(cp));
 }
 
 /**
