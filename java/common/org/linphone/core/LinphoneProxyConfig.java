@@ -183,8 +183,9 @@ public interface LinphoneProxyConfig {
 	
 	/**
 	 * Whether AVPF is used for calls through this proxy.
+	 * @return 
 	 */
-	void avpfEnabled();
+	boolean avpfEnabled();
 	
 	/**
 	 * Set optional contact parameters that will be added to the contact information sent in the registration.

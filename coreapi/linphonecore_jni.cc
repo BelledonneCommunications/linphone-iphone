@@ -2948,6 +2948,10 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_enableAvpf
 	linphone_proxy_config_enable_avpf((LinphoneProxyConfig *)ptr, (bool)enable);
 }
 
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_avpfEnabled(JNIEnv *env, jobject thiz, jlong ptr) {
+	return linphone_proxy_config_avpf_enabled((LinphoneProxyConfig *)ptr);
+}
+
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setAvpfRRInterval(JNIEnv *env, jobject thiz, jlong ptr, jint interval) {
 	linphone_proxy_config_set_avpf_rr_interval((LinphoneProxyConfig *)ptr, (uint8_t)interval);
 }
