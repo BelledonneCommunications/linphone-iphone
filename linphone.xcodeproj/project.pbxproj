@@ -6062,6 +6062,7 @@
 				F0BB8C091936208200974404 /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
