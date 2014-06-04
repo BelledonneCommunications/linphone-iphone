@@ -1557,7 +1557,7 @@ void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable) 
 	cfg->avpf_enabled = enable;
 }
 
-bool_t linphone_proxy_config_is_avpf_enabled(LinphoneProxyConfig *cfg) {
+bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg) {
 	return cfg->avpf_enabled;
 }
 

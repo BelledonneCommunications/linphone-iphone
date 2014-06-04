@@ -941,7 +941,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg,
  * @param[in] cfg #LinphoneProxyConfig object
  * @return True if AVPF/SAVPF is enabled, false otherwise.
  */
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_avpf_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
 
 /**
  * Set the interval between regular RTCP reports when using AVPF/SAVPF.

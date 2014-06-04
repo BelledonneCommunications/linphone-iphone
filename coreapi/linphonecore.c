@@ -2841,7 +2841,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
-		cp->avpf_enabled = linphone_proxy_config_is_avpf_enabled(proxy);
+		cp->avpf_enabled = linphone_proxy_config_avpf_enabled(proxy);
 		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy);
 	}
 

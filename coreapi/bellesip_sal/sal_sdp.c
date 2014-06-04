@@ -581,7 +581,7 @@ static void sdp_parse_rtcp_xr_parameters(const belle_sdp_attribute_t *attribute,
 		}
 		config->stat_summary_enabled = (belle_sdp_rtcp_xr_attribute_has_stat_summary(xr_attr) != 0);
 		if (config->stat_summary_enabled) {
-			belle_sip_list_t *stat_summary_flag_it;
+			const belle_sip_list_t *stat_summary_flag_it;
 			for (stat_summary_flag_it = belle_sdp_rtcp_xr_attribute_get_stat_summary_flags(xr_attr); stat_summary_flag_it != NULL; stat_summary_flag_it = stat_summary_flag_it->next ) {
 				const char *flag = (const char *)stat_summary_flag_it->data;
 				if (flag != NULL) {
