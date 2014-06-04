@@ -152,11 +152,12 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	belle_sdp_session_description_t* sdp;
 	SalReason reason;
+	if (op->base.remote_media){
+		sal_media_description_unref(op->base.remote_media);
+		op->base.remote_media=NULL;
+	}
 	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
 		if (sdp){
-			if (op->base.remote_media){
-				sal_media_description_unref(op->base.remote_media);
-			}
 			op->base.remote_media=sal_media_description_new();
 			sdp_to_media_description(sdp,op->base.remote_media);
 			if (op->base.local_media) sdp_process(op);
@@ -177,6 +178,7 @@ static int vfu_retry (void *user_data, unsigned int events) {
 	sal_op_unref(op);
 	return BELLE_SIP_STOP;
 }
+
 static void call_process_response(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
@@ -186,17 +188,17 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
 	int code = belle_sip_response_get_status_code(response);
 	belle_sip_header_content_type_t *header_content_type=NULL;
-
+	belle_sip_dialog_t *dialog=belle_sip_response_event_get_dialog(event);
 
 	if (!client_transaction) {
 		ms_warning("Discarding stateless response [%i] on op [%p]",code,op);
 		return;
 	}
 	req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
-	set_or_update_dialog(op,belle_sip_response_event_get_dialog(event));
-	dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
+	set_or_update_dialog(op,dialog);
+	dialog_state=dialog ? belle_sip_dialog_get_state(dialog) : BELLE_SIP_DIALOG_NULL;
 
-	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,op->dialog,belle_sip_dialog_state_to_string(dialog_state));
+	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,dialog,belle_sip_dialog_state_to_string(dialog_state));
 
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_NULL:
@@ -218,14 +220,18 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 							if (op->dialog==NULL) call_set_released(op);
 						}
 					}
-				} else if (code >= 180 && code<300) {
-					handle_sdp_from_response(op,response);
-					op->base.root->callbacks.call_ringing(op);
+				} else if (code >= 180 && code<200) {
+					belle_sip_response_t *prev_response=belle_sip_object_data_get(BELLE_SIP_OBJECT(dialog),"early_response");
+					if (!prev_response || code>belle_sip_response_get_status_code(prev_response)){
+						handle_sdp_from_response(op,response);
+						op->base.root->callbacks.call_ringing(op);
+					}
+					belle_sip_object_data_set(BELLE_SIP_OBJECT(dialog),"early_response",belle_sip_object_ref(response),belle_sip_object_unref);
 				} else if (code>=300){
 					call_set_error(op,response);
 					if (op->dialog==NULL) call_set_released(op);
 				}
-			} else if (	code >=200
+			} else if (code >=200
 						&& code<300
 						&& strcmp("UPDATE",belle_sip_request_get_method(req))==0) {
 					handle_sdp_from_response(op,response);

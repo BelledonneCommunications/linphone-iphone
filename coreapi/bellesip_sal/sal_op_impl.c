@@ -560,20 +560,28 @@ const SalErrorInfo *sal_op_get_error_info(const SalOp *op){
 	return &op->error_info;
 }
 
+static void unlink_op_with_dialog(SalOp *op, belle_sip_dialog_t* dialog){
+	belle_sip_dialog_set_application_data(dialog,NULL);
+	sal_op_unref(op);
+	belle_sip_object_unref(dialog);
+}
+
+static belle_sip_dialog_t *link_op_with_dialog(SalOp *op, belle_sip_dialog_t* dialog){
+	belle_sip_dialog_set_application_data(dialog,sal_op_ref(op));
+	belle_sip_object_ref(dialog);
+	return dialog;
+}
+
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
-	/*check if dialog has changed*/
-	if (dialog && dialog != op->dialog) {
-		ms_message("Dialog set from [%p] to [%p] for op [%p]",op->dialog,dialog,op);
-		/*fixme, shouldn't we cancel previous dialog*/
-		if (op->dialog) {
-			belle_sip_dialog_set_application_data(op->dialog,NULL);
-			belle_sip_object_unref(op->dialog);
-			sal_op_unref(op);
+	if (dialog==NULL) return;
+	ms_message("op [%p] : set_or_update_dialog() current=[%p] new=[%p]",op,op->dialog,dialog);
+	if (dialog && op->dialog!=dialog){
+		if (op->dialog){
+			/*FIXME: shouldn't we delete unconfirmed dialogs ?*/
+			unlink_op_with_dialog(op,op->dialog);
+			op->dialog=NULL;
 		}
-		op->dialog=dialog;
-		belle_sip_dialog_set_application_data(op->dialog,op);
-		sal_op_ref(op);
-		belle_sip_object_ref(op->dialog);
+		op->dialog=link_op_with_dialog(op,dialog);
 	}
 }
 /*return reffed op*/

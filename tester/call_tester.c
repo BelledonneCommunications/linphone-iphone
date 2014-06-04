@@ -1200,7 +1200,8 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 
 	if (pauline_called_by_laure && enable_caller_privacy )
 		CU_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(pauline_called_by_laure)),LinphonePrivacyId);
-
+	/*wait a bit for ACK to be sent*/
+	wait_for_list(lcs,NULL,0,1000);
 	linphone_core_terminate_all_calls(pauline->lc);
 
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
@@ -2162,6 +2163,86 @@ static void statistics_sent_at_call_termination() {
 }
 
 #ifdef VIDEO_ENABLED
+/*this is call forking with early media managed at client side (not by flexisip server)*/
+static void multiple_early_media(void) {
+	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+	MSList *lcs=NULL;
+	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneVideoPolicy pol;
+	LinphoneCall *marie1_call;
+	LinphoneCall *marie2_call;
+	LinphoneCall *pauline_call;
+	int dummy=0;
+	char ringbackpath[256];
+	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
+	
+	pol.automatically_accept=1;
+	pol.automatically_initiate=1;
+	
+	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
+	
+	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
+	linphone_core_set_video_policy(marie1->lc,&pol);
+	/*use playfile for marie1 to avoid locking on capture card*/
+	linphone_core_use_files(marie1->lc,TRUE);
+	linphone_core_set_play_file(marie1->lc,ringbackpath);
+
+	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
+	linphone_core_set_video_policy(marie2->lc,&pol);
+	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
+	linphone_core_set_video_port_range(marie2->lc,40400,40500);
+	/*use playfile for marie2 to avoid locking on capture card*/
+	linphone_core_use_files(marie2->lc,TRUE);
+	linphone_core_set_play_file(marie2->lc,ringbackpath);
+	
+	
+	lcs=ms_list_append(lcs,marie1->lc);
+	lcs=ms_list_append(lcs,marie2->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+	linphone_call_params_enable_early_media_sending(params,TRUE);
+	linphone_call_params_enable_video(params,TRUE);
+	
+	linphone_core_invite_address_with_params(pauline->lc,marie1->identity,params);
+	linphone_call_params_destroy(params);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,3000));
+	
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	marie1_call=linphone_core_get_current_call(marie1->lc);
+	marie2_call=linphone_core_get_current_call(marie2->lc);
+	
+	/*wait a bit that streams are established*/
+	wait_for_list(lcs,&dummy,1,6000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
+	
+	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	
+	/*marie2 should get her call terminated*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+	
+	/*wait a bit that streams are established*/
+	wait_for_list(lcs,&dummy,1,1000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
+	
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
+
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(pauline);
+}
 #endif
 
 test_t call_tests[] = {
@@ -2196,6 +2277,7 @@ test_t call_tests[] = {
 	{ "Call with video added", call_with_video_added },
 	{ "Call with video added (random ports)", call_with_video_added_random_ports },
 	{ "Call with video declined",call_with_declined_video},
+	{ "Call with multiple early media", multiple_early_media },
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
