@@ -266,8 +266,8 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",1);
 
 	for(i=0; i<md->n_active_streams; i++) {
-		if (is_encryption_active(&md->streams[i]) == TRUE) {
-			if (keep_srtp_keys && old_md && is_encryption_active(&old_md->streams[i]) == TRUE){
+		if (stream_description_has_srtp(&md->streams[i]) == TRUE) {
+			if (keep_srtp_keys && old_md && stream_description_has_srtp(&old_md->streams[i]) == TRUE){
 				int j;
 				ms_message("Keeping same crypto keys.");
 				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
@@ -687,6 +687,12 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
+
+		/* Handle AVPF and SRTP. */
+		call->params.avpf_enabled = media_description_has_avpf(md);
+		if ((media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
+			call->params.media_encryption = LinphoneMediaEncryptionSRTP;
+		}
 	}
 	fpol=linphone_core_get_firewall_policy(call->core);
 	/*create the ice session now if ICE is required*/
@@ -1015,11 +1021,11 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			for (i = 0; i < nb_video_streams; i++) {
 				sd = sal_media_description_get_active_stream_of_type(md, SalVideo, i);
 				if (is_video_active(sd) == TRUE) cp->has_video = TRUE;
-				if (is_encryption_active(sd) == TRUE) cp->media_encryption = LinphoneMediaEncryptionSRTP;
+				if (stream_description_has_srtp(sd) == TRUE) cp->media_encryption = LinphoneMediaEncryptionSRTP;
 			}
 			for (i = 0; i < nb_audio_streams; i++) {
 				sd = sal_media_description_get_active_stream_of_type(md, SalAudio, i);
-				if (is_encryption_active(sd) == TRUE) cp->media_encryption = LinphoneMediaEncryptionSRTP;
+				if (stream_description_has_srtp(sd) == TRUE) cp->media_encryption = LinphoneMediaEncryptionSRTP;
 			}
 			if (!cp->has_video){
 				if (md->bandwidth>0 && md->bandwidth<=linphone_core_get_edge_bw(call->core)){
@@ -1992,7 +1998,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				call->current_params.record_file=ms_strdup(call->params.record_file);
 			}
 			/* valid local tags are > 0 */
-			if (is_encryption_active(stream) == TRUE) {
+			if (stream_description_has_srtp(stream) == TRUE) {
 				local_st_desc=sal_media_description_find_stream(call->localdesc,stream->proto,SalAudio);
 				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
@@ -2109,7 +2115,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				cam=get_nowebcam_device();
 			}
 			if (!is_inactive){
-				if (is_encryption_active(vstream) == TRUE) {
+				if (stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
 					if (crypto_idx >= 0) {
 						media_stream_set_srtp_recv_key(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key);

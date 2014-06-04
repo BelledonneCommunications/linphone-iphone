@@ -2973,21 +2973,8 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
-bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md){
-	int i;
-	if (md->n_active_streams==0) return FALSE;
-
-	for(i=0;i<md->n_active_streams;i++){
-		const SalStreamDescription *sd=&md->streams[i];
-		if (is_encryption_active(sd) != TRUE){
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
-	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !linphone_core_media_description_has_srtp(md);
+	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !media_description_has_srtp(md);
 }
 
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
@@ -3432,7 +3419,14 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		_linphone_call_params_copy(&call->params,params);
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
-		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
+		if (md) {
+			call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
+			/* Handle AVPF and SRTP. */
+			call->params.avpf_enabled = media_description_has_avpf(md);
+			if ((media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
+				call->params.media_encryption = LinphoneMediaEncryptionSRTP;
+			}
+		}
 		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 		sal_op_set_sent_custom_header(call->op,params->custom_headers);

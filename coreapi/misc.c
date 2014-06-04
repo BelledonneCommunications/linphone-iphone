@@ -1524,6 +1524,28 @@ bool_t is_video_active(const SalStreamDescription *sd) {
 	return (sd->rtp_port != 0) && (sd->dir != SalStreamInactive);
 }
 
-bool_t is_encryption_active(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpSavpf) || (sd->proto == SalProtoRtpSavp));
+bool_t stream_description_has_avpf(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf));
+}
+
+bool_t stream_description_has_srtp(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
+}
+
+bool_t media_description_has_avpf(const SalMediaDescription *md) {
+	int i;
+	if (md->n_active_streams == 0) return FALSE;
+	for (i = 0; i < md->n_active_streams; i++) {
+		if (stream_description_has_avpf(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t media_description_has_srtp(const SalMediaDescription *md) {
+	int i;
+	if (md->n_active_streams == 0) return FALSE;
+	for (i = 0; i < md->n_active_streams; i++) {
+		if (stream_description_has_srtp(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
 }

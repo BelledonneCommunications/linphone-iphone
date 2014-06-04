@@ -237,7 +237,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	}else{
 		result->rtp_port=0;
 	}
-	if (is_encryption_active(result) == TRUE) {
+	if (stream_description_has_srtp(result) == TRUE) {
 		/* verify crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
@@ -263,7 +263,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	}else{
 		result->rtp_port=0;
 	}
-	if (is_encryption_active(result) == TRUE) {
+	if (stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
@@ -330,10 +330,8 @@ static bool_t local_stream_not_already_used(const SalMediaDescription *result, c
 /*in answering mode, we consider that if we are able to make AVPF/SAVP/SAVPF, then we can do AVP as well*/
 static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
 	if (local == remote) return TRUE;
-	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf))
-		return TRUE;
-	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpAvpf) || (local == SalProtoRtpSavpf)))
-		return TRUE;
+	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpSavpf))) return TRUE;
+	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf)) return TRUE;
 	return FALSE;
 }
 

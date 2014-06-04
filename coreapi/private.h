@@ -337,7 +337,6 @@ void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEve
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
-bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -393,7 +392,10 @@ bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 LinphoneCall * is_a_linphone_call(void *user_pointer);
 LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 bool_t is_video_active(const SalStreamDescription *sd);
-bool_t is_encryption_active(const SalStreamDescription *sd);
+bool_t stream_description_has_avpf(const SalStreamDescription *sd);
+bool_t stream_description_has_srtp(const SalStreamDescription *sd);
+bool_t media_description_has_avpf(const SalMediaDescription *md);
+bool_t media_description_has_srtp(const SalMediaDescription *md);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
