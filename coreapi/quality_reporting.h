@@ -28,7 +28,7 @@ extern "C"{
 
 
 /**
- * Linphone quality report sub object storing address related information (ip / port / MAC).
+ * Linphone quality report sub object storing address related information (IP/port/MAC).
  */
 typedef struct reporting_addr {
 	char * ip;
@@ -60,15 +60,15 @@ typedef struct reporting_content_metrics {
 	// jitter buffet - optional
 	struct {
 		int adaptive; // constant
-		int nominal; // no may vary during the call <- average? worst score?
-		int max; // no may vary during the call <- average?
+		int nominal; // average
+		int max; // average
 		int abs_max; // constant
 	} jitter_buffer;
 
 	// packet loss - optional
 	struct {
-		float network_packet_loss_rate;
-		float jitter_buffer_discard_rate;
+		float network_packet_loss_rate; // average
+		float jitter_buffer_discard_rate; // average
 	} packet_loss;
 
 	// delay - optional
@@ -93,6 +93,16 @@ typedef struct reporting_content_metrics {
 		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 	} quality_estimates;
+
+	// adaptive algorithm - custom extension
+	struct {
+		char* input;
+		char* output;
+	} adaptive_algorithm;
+
+	// for internal processing
+	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)
+
 } reporting_content_metrics_t;
 
 
@@ -131,7 +141,7 @@ void linphone_reporting_destroy(reporting_session_report_t * report);
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
-void linphone_reporting_update(LinphoneCall * call, int stats_type);
+void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type);
 
 /**
  * Fill IP information about a given call. This function must be called each
@@ -148,7 +158,7 @@ void linphone_reporting_update_ip(LinphoneCall * call);
  * @param call #LinphoneCall object to consider
  *
  */
-void linphone_reporting_publish(LinphoneCall* call);
+void linphone_reporting_publish_on_call_term(LinphoneCall* call);
 
 /**
  * Update publish report data with fresh RTCP stats, if needed.
@@ -156,7 +166,7 @@ void linphone_reporting_publish(LinphoneCall* call);
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
-void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
+void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type);
 
 #ifdef __cplusplus
 }
