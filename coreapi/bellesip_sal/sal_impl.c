@@ -423,6 +423,8 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
+	
+	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
 	
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/

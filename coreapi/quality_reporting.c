@@ -479,7 +479,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->log->reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
-
+	MSQosAnalyser *analyser=NULL;
 	LinphoneCallStats stats = call->stats[stats_type];
 	mblk_t *block = NULL;
 
@@ -497,11 +497,14 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 			block = stats.sent_rtcp;
 		}
 	}
-
-	ms_qos_analyser_set_on_action_suggested(
-		ms_bitrate_controller_get_qos_analyser(call->audiostream->ms.rc),
-		qos_analyser_on_action_suggested,
-		&report->local_metrics);
+	if (call->audiostream->ms.rc){
+		analyser=ms_bitrate_controller_get_qos_analyser(call->audiostream->ms.rc);
+		if (analyser){
+			ms_qos_analyser_set_on_action_suggested(analyser,
+				qos_analyser_on_action_suggested,
+				&report->local_metrics);
+		}
+	}
 
 	if (block != NULL) {
 		switch (rtcp_XR_get_block_type(block)) {

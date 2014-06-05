@@ -718,7 +718,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 	/*set video support */
 	md=sal_call_get_remote_media_description(op);
-	call->params.has_video = !!lc->video_policy.automatically_accept;
+	call->params.has_video = lc->video_policy.automatically_accept;
 	if (md) {
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
@@ -1582,7 +1582,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		if (incoming_offer){
 			remote=sal_call_get_remote_media_description(call->op);
-			has_video=linphone_core_media_description_contains_video_stream(remote);
+			has_video=call->params.has_video && linphone_core_media_description_contains_video_stream(remote);
 		}else has_video=call->params.has_video;
 
 		_linphone_call_prepare_ice_for_stream(call,0,TRUE);

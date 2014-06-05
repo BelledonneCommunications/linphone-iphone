@@ -803,6 +803,13 @@ static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescri
 	if ((*addr)[0] == '\0') *addr = md->addr;
 }
 
+static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
+	if (call->audiostream && call->audiostream->ms.ice_check_list==removed)
+		call->audiostream->ms.ice_check_list=NULL;
+	if (call->videostream && call->videostream->ms.ice_check_list==removed)
+		call->videostream->ms.ice_check_list=NULL;
+}
+
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	bool_t ice_restarted = FALSE;
@@ -853,6 +860,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			/*
 			if ((cl == NULL) && (i < md->n_active_streams)) {
 				cl = ice_check_list_new();
 				ice_session_add_check_list(call->ice_session, cl);
@@ -867,16 +875,13 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						break;
 				}
 			}
+			*/
+			if (cl==NULL) continue;
 			if (stream->ice_mismatch == TRUE) {
 				ice_check_list_set_state(cl, ICL_Failed);
 			} else if (stream->rtp_port == 0) {
 				ice_session_remove_check_list(call->ice_session, cl);
-#ifdef VIDEO_ENABLED
-				if (stream->type==SalVideo && call->videostream){
-					video_stream_stop(call->videostream);
-					call->videostream=NULL;
-				}
-#endif
+				clear_ice_check_list(call,cl);
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
@@ -916,10 +921,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
 			IceCheckList *removed=ice_session_check_list(call->ice_session, i - 1);
 			ice_session_remove_check_list(call->ice_session, removed);
-			if (call->audiostream && call->audiostream->ms.ice_check_list==removed)
-				call->audiostream->ms.ice_check_list=NULL;
-			if (call->videostream && call->videostream->ms.ice_check_list==removed)
-				call->videostream->ms.ice_check_list=NULL;
+			clear_ice_check_list(call,removed);
 		}
 		ice_session_check_mismatch(call->ice_session);
 	} else {
@@ -932,12 +934,11 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
-bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md)
-{
+bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
-	for (i = 0; i < md->n_active_streams; i++) {
-		if (md->streams[i].type == SalVideo)
+	for (i = 0; i < md->n_total_streams; i++) {
+		if (md->streams[i].type == SalVideo && md->streams[i].rtp_port!=0)
 			return TRUE;
 	}
 	return FALSE;
@@ -1502,7 +1503,7 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 			np.params=params;
 			suite=ms_crypto_suite_build_from_name_params(&np);
 			if (suite!=MS_CRYPTO_SUITE_INVALID){
-				result=ms_realloc(result,found+1+1);
+				result=ms_realloc(result,(found+2)*sizeof(MSCryptoSuite));
 				result[found]=suite;
 				result[found+1]=MS_CRYPTO_SUITE_INVALID;
 				found++;
