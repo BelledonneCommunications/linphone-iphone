@@ -869,7 +869,7 @@ LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collecto
 /**
  * Set the interval between 2 interval reports sending when using quality reporting. If call exceed interval size, an
  * interval report will be sent to the collector. On call termination, a session report will be sent
- * for the remaining period. Value must be 0 (disabled) or greater than 120sec to avoid overloading.
+ * for the remaining period. Value must be 0 (disabled) or positive.
  * @param[in] cfg #LinphoneProxyConfig object
  * @param[in] interval The interval in seconds, 0 means interval reports are disabled.
  */

@@ -75,7 +75,7 @@ typedef struct reporting_content_metrics {
 	struct {
 		int round_trip_delay; // no - vary
 		int end_system_delay; // no - not implemented yet
-		int symm_one_way_delay; // no - vary (depends on round_trip_delay) + not implemented (depends on end_system_delay)
+		int symm_one_way_delay; // no - not implemented (depends on end_system_delay)
 		int interarrival_jitter; // no - not implemented yet
 		int mean_abs_jitter; // to check
 	} delay;
@@ -94,11 +94,13 @@ typedef struct reporting_content_metrics {
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 	} quality_estimates;
 
-	// adaptive algorithm - custom extension
+	// Quality of Service analyzer - custom extension
+	/* This should allow us to analysis bad network conditions and quality adaptation
+	on server side*/
 	struct {
 		char* input;
 		char* output;
-	} adaptive_algorithm;
+	} qos_analyzer;
 
 	// for internal processing
 	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)

@@ -2202,7 +2202,6 @@ static void quality_reporting_not_sent_if_call_not_started() {
 	linphone_core_manager_destroy(pauline);
 }
 static void quality_reporting_at_call_termination() {
-	// int return_code = -1;
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_marie = NULL;
@@ -2227,6 +2226,27 @@ static void quality_reporting_at_call_termination() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void quality_reporting_interval_report() {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* call_marie = NULL;
+	LinphoneCall* call_pauline = NULL;
+
+	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
+	linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
+
+	// PUBLISH submission to the collector should be ok
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,15000));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,15000));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 #ifdef VIDEO_ENABLED
 /*this is call forking with early media managed at client side (not by flexisip server)*/
@@ -2374,9 +2394,10 @@ test_t call_tests[] = {
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
 	{ "Call redirected by callee", call_redirect},
-	{ "Call quality reporting not used if no config", quality_reporting_not_used_without_config},
-	{ "Call quality reporting not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
-	{ "Call quality reporting sent if call ended normally", quality_reporting_at_call_termination},
+	{ "Quality reporting not used if no config", quality_reporting_not_used_without_config},
+	{ "Quality reporting session report not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
+	{ "Quality reporting session report sent if call ended normally", quality_reporting_at_call_termination},
+	{ "Quality reporting interval report if interval is configured", quality_reporting_interval_report},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate}
 };
 

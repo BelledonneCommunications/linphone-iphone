@@ -35,6 +35,8 @@ For codecs that are able to change sample rates, the lowest and highest sample r
 moslq == moscq
 valgrind
 video: what happens if doing stop/resume?
+one single report <- merge audio/video?
+unit test interval report
 rlq value: need algo to compute it
 3.4 overload avoidance?
 
@@ -111,7 +113,7 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 
 		metrics[i]->delay.round_trip_delay = 0;
 
-		metrics[i]->delay.symm_one_way_delay = 0;
+		/*metrics[i]->delay.symm_one_way_delay = 0;*/
 	}
 	report->last_report_date = ms_time(NULL);
 }
@@ -147,15 +149,15 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	IF_NUM_IN_RANGE(rm.jitter_buffer.abs_max, 0, 65535, ret|=METRICS_JITTER_BUFFER);
 
 	IF_NUM_IN_RANGE(rm.delay.end_system_delay, 0, 65535, ret|=METRICS_DELAY);
-	IF_NUM_IN_RANGE(rm.delay.symm_one_way_delay, 0, 65535, ret|=METRICS_DELAY);
+	/*IF_NUM_IN_RANGE(rm.delay.symm_one_way_delay, 0, 65535, ret|=METRICS_DELAY);*/
 	IF_NUM_IN_RANGE(rm.delay.interarrival_jitter, 0, 65535, ret|=METRICS_DELAY);
 	IF_NUM_IN_RANGE(rm.delay.mean_abs_jitter, 0, 65535, ret|=METRICS_DELAY);
 
 	if (rm.signal.level != 127) ret|=METRICS_SIGNAL;
 	if (rm.signal.noise_level != 127) ret|=METRICS_SIGNAL;
 
-	if (rm.adaptive_algorithm.input!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-	if (rm.adaptive_algorithm.output!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
+	if (rm.qos_analyzer.input!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
+	if (rm.qos_analyzer.output!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 
 	if (rm.rtcp_xr_count>0){
 		IF_NUM_IN_RANGE(rm.jitter_buffer.nominal/rm.rtcp_xr_count, 0, 65535, ret|=METRICS_JITTER_BUFFER);
@@ -236,7 +238,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 			}
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " ESD=%d", rm.delay.end_system_delay, 0, 65535);
 			/*APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " OWD=%d", rm.delay.one_way_delay, 0, 65535);*/
-			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " SOWD=%d", rm.delay.symm_one_way_delay, 0, 65535);
+			/*APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " SOWD=%d", rm.delay.symm_one_way_delay, 0, 65535);*/
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " IAJ=%d", rm.delay.interarrival_jitter, 0, 65535);
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " MAJ=%d", rm.delay.mean_abs_jitter, 0, 65535);
 	}
@@ -271,8 +273,8 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 	if ((available_metrics & METRICS_ADAPTIVE_ALGORITHM) != 0){
 		append_to_buffer(buffer, size, offset, "\r\nAdaptiveAlg:");
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN=%s", rm.adaptive_algorithm.input);
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT=%s", rm.adaptive_algorithm.output);
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN=%s", rm.qos_analyzer.input);
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT=%s", rm.qos_analyzer.output);
 	}
 
 	append_to_buffer(buffer, size, offset, "\r\n");
@@ -395,11 +397,11 @@ static bool_t is_reporting_enabled(const LinphoneCall * call) {
 static void qos_analyser_on_action_suggested(void *user_data, const char * input, const char * output){
 	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
 	char * newstr = NULL;
-	newstr = ms_strdup_printf("%s%s;", metrics->adaptive_algorithm.input?metrics->adaptive_algorithm.input:"", input);
-	STR_REASSIGN(metrics->adaptive_algorithm.input, newstr)
+	newstr = ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", input);
+	STR_REASSIGN(metrics->qos_analyzer.input, newstr)
 
-	newstr = ms_strdup_printf("%s%s;", metrics->adaptive_algorithm.output?metrics->adaptive_algorithm.output:"", output);
-	STR_REASSIGN(metrics->adaptive_algorithm.output, newstr)
+	newstr = ms_strdup_printf("%s%s;", metrics->qos_analyzer.output?metrics->qos_analyzer.output:"", output);
+	STR_REASSIGN(metrics->qos_analyzer.output, newstr)
 }
 
 void linphone_reporting_update_ip(LinphoneCall * call) {
@@ -566,11 +568,13 @@ void linphone_reporting_publish_interval_report(LinphoneCall* call) {
 		return;
 
 	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
+		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQIntervalReport");
 	}
 
 	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
 		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_VIDEO);
 		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO], "VQIntervalReport");
 	}
 }
@@ -625,8 +629,8 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
 	if (report->remote_metrics.session_description.fmtp != NULL) ms_free(report->remote_metrics.session_description.fmtp);
 	if (report->remote_metrics.session_description.payload_desc != NULL) ms_free(report->remote_metrics.session_description.payload_desc);
-	if (report->local_metrics.adaptive_algorithm.input != NULL) ms_free(report->local_metrics.adaptive_algorithm.input);
-	if (report->local_metrics.adaptive_algorithm.output != NULL) ms_free(report->local_metrics.adaptive_algorithm.output);
+	if (report->local_metrics.qos_analyzer.input != NULL) ms_free(report->local_metrics.qos_analyzer.input);
+	if (report->local_metrics.qos_analyzer.output != NULL) ms_free(report->local_metrics.qos_analyzer.output);
 
 	ms_free(report);
 }
