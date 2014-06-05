@@ -299,7 +299,7 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 		return;
 	}
 
-	addr = linphone_address_new(call->dest_proxy->statistics_collector);
+	addr = linphone_address_new(linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy));
 	if (addr == NULL) {
 		ms_warning("Asked to submit reporting statistics but no collector address found");
 		return;
@@ -384,7 +384,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 }
 
 static bool_t is_reporting_enabled(const LinphoneCall * call) {
-	return (call->dest_proxy != NULL && linphone_proxy_config_send_statistics_enabled(call->dest_proxy));
+	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
 }
 
 static void qos_analyser_on_action_suggested(void *user_data, const char * input, const char * output){

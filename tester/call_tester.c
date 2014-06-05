@@ -259,17 +259,17 @@ static void call_with_specified_codec_bitrate(void) {
 		ms_warning("opus codec not supported, test skipped.");
 		goto end;
 	}
-	
+
 	disable_all_codecs_except_one(marie->lc,"opus");
 	disable_all_codecs_except_one(pauline->lc,"opus");
-	
+
 	linphone_core_set_payload_type_bitrate(marie->lc,
 		linphone_core_find_payload_type(marie->lc,"opus",48000,-1),
 		50);
 	linphone_core_set_payload_type_bitrate(pauline->lc,
 		linphone_core_find_payload_type(pauline->lc,"opus",48000,-1),
 		24);
-	
+
 	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
@@ -663,9 +663,9 @@ static void call_with_ice_no_sdp(void){
 
 	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
-	
+
 	call(pauline,marie);
-	
+
 	liblinphone_tester_check_rtcp(marie,pauline);
 
 	linphone_core_manager_destroy(marie);
@@ -2136,7 +2136,7 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb()
 	call_rejected_because_wrong_credentials_with_params("tester-no-403",FALSE);
 }
 
-void create_call_for_statistics_tests(
+void create_call_for_quality_reporting_tests(
 		LinphoneCoreManager* marie,
 		LinphoneCoreManager* pauline,
 		LinphoneCall** call_marie,
@@ -2148,20 +2148,20 @@ void create_call_for_statistics_tests(
 	CU_ASSERT_PTR_NOT_NULL(*call_pauline);
 }
 
-static void statistics_not_used_without_config() {
+static void quality_reporting_not_used_without_config() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
-	create_call_for_statistics_tests(marie, pauline, &call_marie, &call_pauline);
+	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
 
 	// marie has stats collection enabled since pauline has not
-	CU_ASSERT_TRUE(linphone_proxy_config_send_statistics_enabled(call_marie->dest_proxy));
-	CU_ASSERT_FALSE(linphone_proxy_config_send_statistics_enabled(call_pauline->dest_proxy));
+	CU_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(call_marie->dest_proxy));
+	CU_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(call_pauline->dest_proxy));
 
 	CU_ASSERT_EQUAL(strcmp("sip:collector@sip.example.org",
-		linphone_proxy_config_get_statistics_collector(call_marie->dest_proxy)), 0);
+		linphone_proxy_config_get_quality_reporting_collector(call_marie->dest_proxy)), 0);
 
 	// this field should be already filled
 	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->info.local_addr.ip);
@@ -2173,7 +2173,7 @@ static void statistics_not_used_without_config() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void statistics_not_sent_if_call_not_started() {
+static void quality_reporting_not_sent_if_call_not_started() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCallLog* out_call_log;
@@ -2201,14 +2201,14 @@ static void statistics_not_sent_if_call_not_started() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void statistics_sent_at_call_termination() {
+static void quality_reporting_at_call_termination() {
 	// int return_code = -1;
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
-	create_call_for_statistics_tests(marie, pauline, &call_marie, &call_pauline);
+	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
 
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
@@ -2243,12 +2243,12 @@ static void multiple_early_media(void) {
 	int dummy=0;
 	char ringbackpath[256];
 	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-	
+
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
-	
+
 	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
-	
+
 	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
 	/*use playfile for marie1 to avoid locking on capture card*/
@@ -2262,44 +2262,44 @@ static void multiple_early_media(void) {
 	/*use playfile for marie2 to avoid locking on capture card*/
 	linphone_core_use_files(marie2->lc,TRUE);
 	linphone_core_set_play_file(marie2->lc,ringbackpath);
-	
-	
+
+
 	lcs=ms_list_append(lcs,marie1->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
 	linphone_call_params_enable_early_media_sending(params,TRUE);
 	linphone_call_params_enable_video(params,TRUE);
-	
+
 	linphone_core_invite_address_with_params(pauline->lc,marie1->identity,params);
 	linphone_call_params_destroy(params);
 
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,3000));
-	
+
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie1_call=linphone_core_get_current_call(marie1->lc);
 	marie2_call=linphone_core_get_current_call(marie2->lc);
-	
+
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,6000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
-	
+
 	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
-	
+
 	/*marie2 should get her call terminated*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
-	
+
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,1000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
@@ -2374,9 +2374,9 @@ test_t call_tests[] = {
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
 	{ "Call redirected by callee", call_redirect},
-	{ "Call statistics not used if no config", statistics_not_used_without_config},
-	{ "Call statistics not sent if call did not start", statistics_not_sent_if_call_not_started},
-	{ "Call statistics sent if call ended normally", statistics_sent_at_call_termination},
+	{ "Call quality reporting not used if no config", quality_reporting_not_used_without_config},
+	{ "Call quality reporting not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
+	{ "Call quality reporting sent if call ended normally", quality_reporting_at_call_termination},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate}
 };
 

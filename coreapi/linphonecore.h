@@ -840,10 +840,10 @@ LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *
  * @param val if true, quality statistics publish will be stored and sent to the collector
  *
  */
-LINPHONE_PUBLIC	void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t val);
-LINPHONE_PUBLIC	bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg);
-LINPHONE_PUBLIC	void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector);
-LINPHONE_PUBLIC	const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collector(const LinphoneProxyConfig *obj);
 
 /**
  * Get the registration state of the given proxy config.

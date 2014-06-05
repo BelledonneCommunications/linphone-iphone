@@ -415,7 +415,7 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	char *reg_route;
-	char *statistics_collector;
+	char *quality_reporting_collector;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
@@ -433,7 +433,7 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	bool_t send_publish;
-	bool_t send_statistics;
+	bool_t quality_reporting_enabled;
 	bool_t avpf_enabled;
 	bool_t pad;
 	uint8_t avpf_rr_interval;
