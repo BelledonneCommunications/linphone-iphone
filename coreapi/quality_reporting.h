@@ -129,6 +129,9 @@ typedef struct reporting_session_report {
 	reporting_content_metrics_t remote_metrics; // optional
 
 	char * dialog_id; // optional
+
+	// for internal processing
+	time_t last_report_date;
 } reporting_session_report_t;
 
 reporting_session_report_t * linphone_reporting_new();
@@ -154,11 +157,19 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type);
 void linphone_reporting_update_ip(LinphoneCall * call);
 
 /**
- * Publish the report on the call end.
+ * Publish a session report. This function should be called when session terminates,
+ * media change (codec change or session fork), session terminates due to no media packets being received.
  * @param call #LinphoneCall object to consider
  *
  */
-void linphone_reporting_publish_on_call_term(LinphoneCall* call);
+void linphone_reporting_publish_session_report(LinphoneCall* call);
+
+/**
+ * Publish an interval report. This function should be used for periodic interval
+ * @param call #LinphoneCall object to consider
+ *
+ */
+void linphone_reporting_publish_interval_report(LinphoneCall* call);
 
 /**
  * Update publish report data with fresh RTCP stats, if needed.

@@ -33,8 +33,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  ***************************************************************************
 For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
 moslq == moscq
+valgrind
 video: what happens if doing stop/resume?
 rlq value: need algo to compute it
+3.4 overload avoidance?
 
 	- The Session report when session terminates, media change (codec change or a session fork), session terminates due to no media packets being received
 	- The Interval report SHOULD be used for periodic or interval reporting
@@ -282,7 +284,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	ms_free(moscq_str);
 }
 
-static void send_report(const LinphoneCall* call, reporting_session_report_t * report) {
+static void send_report(const LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
 	LinphoneContent content = {0};
 	LinphoneAddress *addr;
 	int expires = -1;
@@ -295,7 +297,15 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 	if (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0
 		|| report->info.remote_addr.ip == NULL || strlen(report->info.remote_addr.ip) == 0) {
 		ms_warning("The call was hang up too early (duration: %d sec) and IP could "
-			"not be retrieved so dropping this report", linphone_call_get_duration(call));
+			"not be retrieved so dropping this report"
+			, linphone_call_get_duration(call));
+		return;
+	}
+
+	/*do not send report if the previous one was sent less than 30seconds ago*/
+	if (ms_time(NULL) - report->last_report_date < 30){
+		ms_warning("Already sent a report %ld sec ago. Cancel sending this report"
+			, ms_time(NULL) - report->last_report_date);
 		return;
 	}
 
@@ -309,7 +319,7 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 	content.type = ms_strdup("application");
 	content.subtype = ms_strdup("vq-rtcpxr");
 
-	append_to_buffer(&buffer, &size, &offset, "VQSessionReport: CallTerm\r\n");
+	append_to_buffer(&buffer, &size, &offset, "%s\r\n", report_event);
 	append_to_buffer(&buffer, &size, &offset, "CallID: %s\r\n", report->info.call_id);
 	append_to_buffer(&buffer, &size, &offset, "LocalID: %s\r\n", report->info.local_id);
 	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", report->info.remote_id);
@@ -339,6 +349,8 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 
 	reset_avg_metrics(report);
 	linphone_content_uninit(&content);
+
+	report->last_report_date = ms_time(NULL);
 }
 
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
@@ -533,20 +545,39 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 			}
 		}
 	}
+
+	/* check if we should send an interval report */
+	if (ms_time(NULL) - report->last_report_date > linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy)){
+		linphone_reporting_publish_interval_report(call);
+	}
 }
 
-void linphone_reporting_publish_on_call_term(LinphoneCall* call) {
+void linphone_reporting_publish_session_report(LinphoneCall* call) {
+	if (! is_reporting_enabled(call))
+		return;
+
+	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
+		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQSessionReport: CallTerm");
+	}
+
+	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
+		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport: CallTerm");
+	}
+}
+
+void linphone_reporting_publish_interval_report(LinphoneCall* call) {
 	if (! is_reporting_enabled(call))
 		return;
 
 
 	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO]);
+		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQIntervalReport");
 	}
 
 	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
 		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO]);
+		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO], "VQIntervalReport");
 	}
 }
 

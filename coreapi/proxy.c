@@ -108,8 +108,9 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->reg_identity = identity ? ms_strdup(identity) : NULL;
 	obj->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
 	obj->reg_route = route ? ms_strdup(route) : NULL;
-	obj->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
 	obj->quality_reporting_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
+	obj->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
+	obj->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
 	obj->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	obj->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
 	obj->avpf_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", 0) : 0;
@@ -487,6 +488,14 @@ void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bo
 bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg){
 	// ensure that collector address is set too!
 	return cfg->quality_reporting_enabled && cfg->quality_reporting_collector != NULL;
+}
+
+void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
+	cfg->quality_reporting_interval = interval;
+}
+
+int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg) {
+	return cfg->quality_reporting_interval;
 }
 
 void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector){
@@ -1174,9 +1183,6 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->reg_route!=NULL){
 		lp_config_set_string(config,key,"reg_route",obj->reg_route);
 	}
-	if (obj->quality_reporting_collector!=NULL){
-		lp_config_set_string(config,key,"quality_reporting_collector",obj->quality_reporting_collector);
-	}
 	if (obj->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
@@ -1186,13 +1192,17 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->contact_uri_params!=NULL){
 		lp_config_set_string(config,key,"contact_uri_parameters",obj->contact_uri_params);
 	}
+	if (obj->quality_reporting_collector!=NULL){
+		lp_config_set_string(config,key,"quality_reporting_collector",obj->quality_reporting_collector);
+	}
+	lp_config_set_int(config,key,"quality_reporting_enabled",obj->quality_reporting_enabled);
+	lp_config_set_int(config,key,"quality_reporting_interval",obj->quality_reporting_interval);
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
 	lp_config_set_int(config, key, "avpf", obj->avpf_enabled);
 	lp_config_set_int(config, key, "avpf_rr_interval", obj->avpf_rr_interval);
 	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
-	lp_config_set_int(config,key,"quality_reporting_enabled",obj->quality_reporting_enabled);
 	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
 	lp_config_set_int(config,key,"privacy",obj->privacy);
 }
@@ -1224,9 +1234,10 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
+	linphone_proxy_config_enable_quality_reporting(cfg,lp_config_get_int(config,key,"quality_reporting_enabled",0));
 	tmp=lp_config_get_string(config,key,"quality_reporting_collector",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_quality_reporting_collector(cfg,tmp);
-	linphone_proxy_config_enable_quality_reporting(cfg,lp_config_get_int(config,key,"quality_reporting_enabled",0));
+	linphone_proxy_config_set_quality_reporting_interval(cfg, lp_config_get_int(config, key, "quality_reporting_interval", 5));
 
 	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
 

@@ -834,16 +834,54 @@ LINPHONE_PUBLIC	int linphone_proxy_config_get_publish_expires(const LinphoneProx
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
-/**
- * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
- * @param cfg #LinphoneProxyConfig object
- * @param val if true, quality statistics publish will be stored and sent to the collector
- *
+ /**
+ * Indicates whether quality statistics during call should be stored and sent to a collector according to RFC 6035.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] enable True to sotre quality statistics and sent them to the collector, false to disable it.
  */
-LINPHONE_PUBLIC	void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bool_t enable);
+
+/**
+ * Indicates whether quality statistics during call should be stored and sent to a collector according to RFC 6035.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return True if quality repotring is enabled, false otherwise.
+ */
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg);
+
+ /**
+ * Set the SIP address of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly then discard packets. Collector address
+ * should be a non existing account and should not received any packets.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] collector SIP address of the collector end-point.
+ */
 LINPHONE_PUBLIC	void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector);
-LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collector(const LinphoneProxyConfig *obj);
+
+ /**
+ * Get the SIP address of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly then discard packets. Collector address
+ * should be a non existing account and should not received any packets.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return The SIP address of the collector end-point.
+ */
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collector(const LinphoneProxyConfig *cfg);
+
+/**
+ * Set the interval between 2 interval reports sending when using quality reporting. If call exceed interval size, an
+ * interval report will be sent to the collector. On call termination, a session report will be sent
+ * for the remaining period.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] interval The interval in seconds.
+ */
+void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval);
+
+/**
+ * Get the interval between interval reports when using quality reporting.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return The interval in seconds.
+ */
+
+int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg);
 
 /**
  * Get the registration state of the given proxy config.

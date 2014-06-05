@@ -907,7 +907,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 		if (cstate==LinphoneCallEnd){
 			if (call->log->status == LinphoneCallSuccess)
-				linphone_reporting_publish_on_call_term(call);
+				linphone_reporting_publish_session_report(call);
 		}
 
 		if (cstate==LinphoneCallReleased){

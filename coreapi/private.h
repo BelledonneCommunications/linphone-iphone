@@ -437,6 +437,7 @@ struct _LinphoneProxyConfig
 	bool_t avpf_enabled;
 	bool_t pad;
 	uint8_t avpf_rr_interval;
+	uint8_t quality_reporting_interval;
 	void* user_data;
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
