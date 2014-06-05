@@ -96,27 +96,63 @@ bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call){
 	return call->auth_token_verified;
 }
 
-static bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
+static bool_t linphone_call_all_streams_encrypted(const LinphoneCall *call) {
 	int number_of_encrypted_stream = 0;
 	int number_of_active_stream = 0;
 	if (call) {
 		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
 			number_of_active_stream++;
-			if(media_stream_is_secured((MediaStream *)call->audiostream))
+			if(media_stream_secured((MediaStream *)call->audiostream))
 				number_of_encrypted_stream++;
 		}
 		if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
 			number_of_active_stream++;
-			if (media_stream_is_secured((MediaStream *)call->videostream))
+			if (media_stream_secured((MediaStream *)call->videostream))
 				number_of_encrypted_stream++;
 		}
 	}
 	return number_of_active_stream>0 && number_of_active_stream==number_of_encrypted_stream;
 }
 
+static bool_t linphone_call_all_streams_avpf_enabled(const LinphoneCall *call) {
+	int nb_active_streams = 0;
+	int nb_avpf_enabled_streams = 0;
+	if (call) {
+		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
+			nb_active_streams++;
+			if (media_stream_avpf_enabled((MediaStream *)call->audiostream))
+				nb_avpf_enabled_streams++;
+		}
+		if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+			nb_active_streams++;
+			if (media_stream_avpf_enabled((MediaStream *)call->videostream))
+				nb_avpf_enabled_streams++;
+		}
+	}
+	return ((nb_active_streams > 0) && (nb_active_streams == nb_avpf_enabled_streams));
+}
+
+static uint8_t linphone_call_get_avpf_rr_interval(const LinphoneCall *call) {
+	uint8_t rr_interval = 0;
+	uint8_t stream_rr_interval;
+	if (call) {
+		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
+			stream_rr_interval = media_stream_get_avpf_rr_interval((MediaStream *)call->audiostream);
+			if (stream_rr_interval > rr_interval) rr_interval = stream_rr_interval;
+		}
+		if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+			stream_rr_interval = media_stream_get_avpf_rr_interval((MediaStream *)call->videostream);
+			if (stream_rr_interval > rr_interval) rr_interval = stream_rr_interval;
+		}
+	} else {
+		rr_interval = 5;
+	}
+	return rr_interval;
+}
+
 static void propagate_encryption_changed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
-	if (!linphone_call_are_all_streams_encrypted(call)) {
+	if (!linphone_call_all_streams_encrypted(call)) {
 		ms_message("Some streams are not encrypted");
 		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 		if (lc->vtable.call_encryption_changed)
@@ -988,7 +1024,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	}
 #endif
 
-	if (linphone_call_are_all_streams_encrypted(call)) {
+	if (linphone_call_all_streams_encrypted(call)) {
 		 if (linphone_call_get_authentication_token(call)) {
 			 call->current_params.media_encryption=LinphoneMediaEncryptionZRTP;
 		 } else {
@@ -996,6 +1032,12 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		 }
 	} else {
 		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
+	}
+	call->current_params.avpf_enabled = linphone_call_all_streams_avpf_enabled(call);
+	if (call->current_params.avpf_enabled == TRUE) {
+		call->current_params.avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
+	} else {
+		call->current_params.avpf_rr_interval = 0;
 	}
 
 	return &call->current_params;
@@ -2189,14 +2231,14 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
 #if VIDEO_ENABLED
-		if (media_stream_is_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+		if (media_stream_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
 			/*audio stream is already encrypted and video stream is active*/
 			memset(&params,0,sizeof(OrtpZrtpParams));
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 		}
 #endif
 	}else{
-		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
+		call->current_params.media_encryption=linphone_call_all_streams_encrypted(call) ?
 			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
 
