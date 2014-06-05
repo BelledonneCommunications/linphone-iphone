@@ -491,7 +491,7 @@ bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg)
 }
 
 void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
-	cfg->quality_reporting_interval = interval;
+	cfg->quality_reporting_interval = interval ? MAX(interval, 120) : 0;
 }
 
 int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg) {
@@ -1237,7 +1237,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	linphone_proxy_config_enable_quality_reporting(cfg,lp_config_get_int(config,key,"quality_reporting_enabled",0));
 	tmp=lp_config_get_string(config,key,"quality_reporting_collector",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_quality_reporting_collector(cfg,tmp);
-	linphone_proxy_config_set_quality_reporting_interval(cfg, lp_config_get_int(config, key, "quality_reporting_interval", 5));
+	linphone_proxy_config_set_quality_reporting_interval(cfg, lp_config_get_int(config, key, "quality_reporting_interval", 0));
 
 	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
 

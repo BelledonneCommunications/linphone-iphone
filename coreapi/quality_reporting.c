@@ -100,9 +100,9 @@ static void append_to_buffer(char **buff, size_t *buff_size, size_t *offset, con
 	va_end(args);
 }
 
-static void reset_avg_metrics(reporting_session_report_t * rm){
+static void reset_avg_metrics(reporting_session_report_t * report){
 	int i;
-	reporting_content_metrics_t * metrics[2] = {&rm->local_metrics, &rm->remote_metrics};
+	reporting_content_metrics_t * metrics[2] = {&report->local_metrics, &report->remote_metrics};
 
 	for (i = 0; i < 2; i++) {
 		metrics[i]->rtcp_xr_count = 0;
@@ -110,8 +110,10 @@ static void reset_avg_metrics(reporting_session_report_t * rm){
 		metrics[i]->jitter_buffer.max = 0;
 
 		metrics[i]->delay.round_trip_delay = 0;
+
 		metrics[i]->delay.symm_one_way_delay = 0;
 	}
+	report->last_report_date = ms_time(NULL);
 }
 
 #define APPEND_IF_NOT_NULL_STR(buffer, size, offset, fmt, arg) if (arg != NULL) append_to_buffer(buffer, size, offset, fmt, arg)
@@ -302,13 +304,6 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 		return;
 	}
 
-	/*do not send report if the previous one was sent less than 30seconds ago*/
-	if (ms_time(NULL) - report->last_report_date < 30){
-		ms_warning("Already sent a report %ld sec ago. Cancel sending this report"
-			, ms_time(NULL) - report->last_report_date);
-		return;
-	}
-
 	addr = linphone_address_new(linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy));
 	if (addr == NULL) {
 		ms_warning("Asked to submit reporting statistics but no collector address found");
@@ -349,8 +344,6 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 
 	reset_avg_metrics(report);
 	linphone_content_uninit(&content);
-
-	report->last_report_date = ms_time(NULL);
 }
 
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
@@ -495,6 +488,8 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	LinphoneCallStats stats = call->stats[stats_type];
 	mblk_t *block = NULL;
 
+	int report_interval = linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy);
+
 	if (! is_reporting_enabled(call))
 		return;
 
@@ -547,7 +542,7 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	}
 
 	/* check if we should send an interval report */
-	if (ms_time(NULL) - report->last_report_date > linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy)){
+	if (report_interval>0 && ms_time(NULL)-report->last_report_date>report_interval){
 		linphone_reporting_publish_interval_report(call);
 	}
 }
@@ -569,7 +564,6 @@ void linphone_reporting_publish_session_report(LinphoneCall* call) {
 void linphone_reporting_publish_interval_report(LinphoneCall* call) {
 	if (! is_reporting_enabled(call))
 		return;
-
 
 	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
 		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQIntervalReport");
