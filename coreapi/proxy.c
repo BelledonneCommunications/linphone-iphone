@@ -1029,7 +1029,7 @@ void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, cons
 /**
  * Set optional contact parameters that will be added to the contact information sent in the registration, inside the URI.
  * @param obj the proxy config object
- * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+ * @param contact_uri_params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
  *
  * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
  * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.

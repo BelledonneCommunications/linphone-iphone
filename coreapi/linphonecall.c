@@ -1447,7 +1447,7 @@ void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParam
  * Set requested level of privacy for the call.
  * \xmlonly <language-tags>javascript</language-tags> \endxmlonly
  * @param params the call parameters to be modified
- * @param LinphonePrivacy to configure privacy
+ * @param privacy LinphonePrivacy to configure privacy
  * */
 void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
 	params->privacy=privacy;

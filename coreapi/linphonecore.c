@@ -2037,6 +2037,7 @@ int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
  * A zero value means that the transport is not activated.
  * If LC_SIP_TRANSPORT_RANDOM was passed to linphone_core_set_sip_transports(), the random port choosed by the system is returned.
  * @ingroup network_parameters
+ * @param lc the LinphoneCore
  * @param tr a LCSipTransports structure.
 **/
 void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr){
@@ -2914,7 +2915,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
  *
  * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
  * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
- * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallOutgoingConnected.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallConnected.
 **/
 int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *url)
 {
@@ -3147,7 +3148,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
 #endif
-	
+
 	switch(call->state){
 		case LinphoneCallIncomingEarlyMedia:
 		case LinphoneCallIncomingReceived:
@@ -3158,7 +3159,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	
+
 	if (params!=NULL){
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
@@ -5614,6 +5615,7 @@ void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTran
 
 /**
  * Retrieve RTP statistics regarding current call.
+ * @param lc the LinphoneCore
  * @param local RTP statistics computed locally.
  * @param remote RTP statistics computed by far end (obtained via RTCP feedback).
  *

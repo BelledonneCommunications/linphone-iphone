@@ -819,7 +819,7 @@ LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *o
 /**
  * Set the publish expiration time in second.
  * @param obj proxy config
- * @param exires in second
+ * @param expires in second
  * */
 
 LINPHONE_PUBLIC	void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires);
@@ -964,7 +964,7 @@ LINPHONE_PUBLIC	void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *
 /**
  * Set default privacy policy for all calls routed through this proxy.
  * @param params to be modified
- * @param LinphonePrivacy to configure privacy
+ * @param privacy LinphonePrivacy to configure privacy
  * */
 LINPHONE_PUBLIC void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy);
 /**
@@ -1581,7 +1581,7 @@ LINPHONE_PUBLIC	int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneC
 /**
  * @ingroup media_parameters
  * Get default call parameters reflecting current linphone core configuration
- * @param LinphoneCore object
+ * @param lc LinphoneCore object
  * @return  LinphoneCallParams
  */
 LINPHONE_PUBLIC	LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
@@ -2023,7 +2023,7 @@ LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 
 /**
  * Get mic state.
- * @deprecated Use #linphone_core_is_mic_enabled instead
+ * @deprecated Use #linphone_core_mic_enabled instead
 **/
 LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 

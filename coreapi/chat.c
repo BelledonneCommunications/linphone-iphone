@@ -247,7 +247,7 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 /**
  * Retrieve an existing chat room whose peer is the supplied address, if exists.
  * @param lc the linphone core
- * @param add a linphone address.
+ * @param addr a linphone address.
  * @returns the matching chatroom, or NULL if no such chatroom exists.
 **/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){

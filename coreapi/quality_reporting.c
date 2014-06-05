@@ -36,7 +36,6 @@ moslq == moscq
 valgrind
 video: what happens if doing stop/resume?
 one single report <- merge audio/video?
-unit test interval report
 rlq value: need algo to compute it
 3.4 overload avoidance?
 
