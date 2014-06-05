@@ -266,11 +266,11 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 		}
 	}
 
-	if ((stream->proto == SalProtoRtpAvpf) || (stream->proto == SalProtoRtpSavpf)) {
+	if ((rtp_port != 0) && ((stream->proto == SalProtoRtpAvpf) || (stream->proto == SalProtoRtpSavpf))) {
 		add_rtcp_fb_attributes(media_desc, md, stream);
 	}
 
-	if (stream->rtcp_xr.enabled == TRUE) {
+	if ((rtp_port != 0) && (stream->rtcp_xr.enabled == TRUE)) {
 		char sastr[1024] = {0};
 		char mastr[1024] = {0};
 		size_t saoff = 0;
