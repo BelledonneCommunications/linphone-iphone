@@ -63,6 +63,7 @@ extern int liblinphone_tester_nb_test_suites(void);
 extern int liblinphone_tester_nb_tests(const char *suite_name);
 extern const char * liblinphone_tester_test_suite_name(int suite_index);
 extern int liblinphone_tester_test_suite_index(const char *suite_name);
+extern void liblinphone_tester_list_suite_tests(const char *suite_name);
 extern const char * liblinphone_tester_test_name(const char *suite_name, int test_index);
 extern int liblinphone_tester_test_index(const char *suite_name, const char *test_name);
 extern void liblinphone_tester_init(void);

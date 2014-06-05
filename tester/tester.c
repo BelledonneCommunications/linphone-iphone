@@ -288,6 +288,14 @@ int liblinphone_tester_test_suite_index(const char *suite_name) {
 	return -1;
 }
 
+void liblinphone_tester_list_suite_tests(const char *suite_name) {
+	int j;
+	for( j = 0; j < liblinphone_tester_nb_tests(suite_name); j++) {
+		const char *test_name = liblinphone_tester_test_name(suite_name, j);
+		fprintf(stdout, "%s\n", test_name);
+	}
+}
+
 int liblinphone_tester_test_index(const char *suite_name, const char *test_name) {
 	int j,i;
 

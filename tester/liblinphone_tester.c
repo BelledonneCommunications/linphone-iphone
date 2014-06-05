@@ -197,10 +197,7 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i],"--list-tests")==0){
 			CHECK_ARG("--list-tests", ++i, argc);
 			suite_name = argv[i];
-			for(j=0;j<liblinphone_tester_nb_tests(suite_name);j++) {
-				test_name = liblinphone_tester_test_name(suite_name, j);
-				fprintf(stdout, "%s\n", test_name);
-			}
+			liblinphone_tester_list_suite_tests(suite_name);
 			return 0;
 		} else {
 			fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
@@ -217,7 +214,8 @@ int main (int argc, char *argv[])
 		}
 		if(test_name != NULL) {
 			if(liblinphone_tester_test_index(suite_name, test_name) == -1) {
-				fprintf(stderr, "Test \"%s\" not found\n", test_name);
+				fprintf(stderr, "Test \"%s\" not found. Available tests are:\n", test_name);
+				liblinphone_tester_list_suite_tests(suite_name);
 				return -1;
 			}
 		}
