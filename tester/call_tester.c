@@ -967,6 +967,9 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
+	
+	linphone_call_params_destroy(caller_params);
+	linphone_call_params_destroy(callee_params);
 
 	if (marie_call && pauline_call ) {
 		CU_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));
