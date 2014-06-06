@@ -2245,8 +2245,8 @@ static void quality_reporting_interval_report() {
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 
 	// PUBLISH submission to the collector should be ok
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,15000));
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,15000));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,25000));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,25000));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

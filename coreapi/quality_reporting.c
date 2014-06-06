@@ -174,6 +174,20 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	return ret;
 }
 
+static bool_t quality_reporting_enabled(const LinphoneCall * call) {
+	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
+}
+
+static bool_t media_report_enabled(LinphoneCall * call, int stats_type){
+	if (! quality_reporting_enabled(call))
+		return FALSE;
+
+	if (stats_type == LINPHONE_CALL_STATS_VIDEO && !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
+		return FALSE;
+
+	return (call->log->reports[stats_type] != NULL);
+}
+
 static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * offset, const reporting_content_metrics_t rm) {
 	char * timestamps_start_str = NULL;
 	char * timestamps_stop_str = NULL;
@@ -360,16 +374,14 @@ static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDesc
 			}
 		}
 	}
-	if (smd == NULL || count == smd->n_total_streams) {
-		ms_warning("Could not find the associated stream of type %d", sal_stream_type);
-	}
 
+	ms_warning("Could not find the associated stream of type %d", sal_stream_type);
 	return NULL;
 }
 
 static void update_ip(LinphoneCall * call, int stats_type) {
 	SalStreamType sal_stream_type = (stats_type == LINPHONE_CALL_STATS_AUDIO) ? SalAudio : SalVideo;
-	if (call->log->reports[stats_type] != NULL) {
+	if (media_report_enabled(call,stats_type)) {
 		const SalStreamDescription * local_desc = get_media_stream_for_desc(call->localdesc, sal_stream_type);
 		const SalStreamDescription * remote_desc = get_media_stream_for_desc(sal_call_get_remote_media_description(call->op), sal_stream_type);
 
@@ -393,10 +405,6 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 	}
 }
 
-static bool_t is_reporting_enabled(const LinphoneCall * call) {
-	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
-}
-
 static void qos_analyzer_on_action_suggested(void *user_data, const char * input, const char * output){
 	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
 	char * newstr = NULL;
@@ -408,24 +416,18 @@ static void qos_analyzer_on_action_suggested(void *user_data, const char * input
 }
 
 void linphone_reporting_update_ip(LinphoneCall * call) {
-	if (! is_reporting_enabled(call))
-		return;
-
 	update_ip(call, LINPHONE_CALL_STATS_AUDIO);
-
-	if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		update_ip(call, LINPHONE_CALL_STATS_VIDEO);
-	}
+	update_ip(call, LINPHONE_CALL_STATS_VIDEO);
 }
 
 void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
-	reporting_session_report_t * report = call->log->reports[stats_type];
 	MediaStream * stream = NULL;
 	const PayloadType * local_payload = NULL;
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
+	reporting_session_report_t * report = call->log->reports[stats_type];
 
-	if (! is_reporting_enabled(call))
+	if (!media_report_enabled(call, stats_type))
 		return;
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
@@ -495,7 +497,7 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 
 	int report_interval = linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy);
 
-	if (! is_reporting_enabled(call))
+	if (! media_report_enabled(call,stats_type))
 		return;
 
 	if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
@@ -545,34 +547,21 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	}
 }
 
+static void publish_report(LinphoneCall *call, const char *event_type){
+	int i;
+	for (i = 0; i < 2; i++){
+		if (media_report_enabled(call, i)){
+			linphone_reporting_update_media_info(call, i);
+			send_report(call, call->log->reports[i], event_type);
+		}
+	}
+}
 void linphone_reporting_publish_session_report(LinphoneCall* call) {
-	if (! is_reporting_enabled(call))
-		return;
-
-	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQSessionReport: CallTerm");
-	}
-
-	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
-		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport: CallTerm");
-	}
+	publish_report(call, "VQSessionReport: CallTerm");
 }
 
 void linphone_reporting_publish_interval_report(LinphoneCall* call) {
-	if (! is_reporting_enabled(call))
-		return;
-
-	if (call->log->reports[LINPHONE_CALL_STATS_AUDIO] != NULL) {
-		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_AUDIO], "VQIntervalReport");
-	}
-
-	if (call->log->reports[LINPHONE_CALL_STATS_VIDEO] != NULL
-		&& linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_VIDEO);
-		send_report(call, call->log->reports[LINPHONE_CALL_STATS_VIDEO], "VQIntervalReport");
-	}
+	publish_report(call, "VQIntervalReport");
 }
 
 reporting_session_report_t * linphone_reporting_new() {
