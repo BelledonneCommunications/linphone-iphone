@@ -32,18 +32,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *  				TODO / REMINDER LIST
  ***************************************************************************
 	For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
-	moslq == moscq
+
 	rlq value: need algo to compute it
 
 	3.4 overload avoidance?
 	   a.  Send only one report at the end of each call. (audio | video?)
 	   b.  Use interval reports only on "problem" calls that are being closely monitored.
 
+	move "on_action_suggested" stuff in init
 
 	- The Session report when
 		codec change
 		session fork
 		video enable/disable <-- what happens if doing stop/resume?
+
+
+	if BYE and continue received packet drop them
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -250,8 +254,8 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 	/*if quality estimates metrics are available, rtcp_xr_count should be always not null*/
 	if ((available_metrics & METRICS_QUALITY_ESTIMATES) != 0){
-		IF_NUM_IN_RANGE(rm.quality_estimates.moslq/rm.rtcp_xr_count, 1, 5, moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq));
-		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq));
+		IF_NUM_IN_RANGE(rm.quality_estimates.moslq/rm.rtcp_xr_count, 1, 5, moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq/rm.rtcp_xr_count));
+		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq/rm.rtcp_xr_count));
 
 		append_to_buffer(buffer, size, offset, "\r\nQualityEst:");
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " RLQ=%d", rm.quality_estimates.rlq/rm.rtcp_xr_count, 1, 120);
@@ -496,15 +500,12 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 
 	if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
 		metrics = &report->remote_metrics;
-		if (rtcp_is_XR(stats.received_rtcp) == TRUE) {
-			block = stats.received_rtcp;
-		}
+		block = stats.received_rtcp;
 	} else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
 		metrics = &report->local_metrics;
-		if (rtcp_is_XR(stats.sent_rtcp) == TRUE) {
-			block = stats.sent_rtcp;
-		}
+		block = stats.sent_rtcp;
 	}
+	/*should not be done there*/
 	if (call->audiostream->ms.use_rc&&call->audiostream->ms.rc){
 		analyzer=ms_bitrate_controller_get_qos_analyzer(call->audiostream->ms.rc);
 		if (analyzer){
@@ -514,33 +515,29 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 		}
 	}
 
-	if (block != NULL) {
-		switch (rtcp_XR_get_block_type(block)) {
-			case RTCP_XR_VOIP_METRICS: {
-				uint8_t config = rtcp_XR_voip_metrics_get_rx_config(block);
+	do{
+		if (rtcp_is_XR(block) && (rtcp_XR_get_block_type(block) == RTCP_XR_VOIP_METRICS)){
 
-				metrics->rtcp_xr_count++;
+			uint8_t config = rtcp_XR_voip_metrics_get_rx_config(block);
 
-				metrics->quality_estimates.rcq += rtcp_XR_voip_metrics_get_r_factor(block);
-				metrics->quality_estimates.moslq += rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
-				metrics->quality_estimates.moscq += rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+			metrics->rtcp_xr_count++;
 
-				metrics->jitter_buffer.nominal += rtcp_XR_voip_metrics_get_jb_nominal(block);
-				metrics->jitter_buffer.max += rtcp_XR_voip_metrics_get_jb_maximum(block);
-				metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);
-				metrics->jitter_buffer.adaptive = (config >> 4) & 0x3;
-				metrics->packet_loss.network_packet_loss_rate = rtcp_XR_voip_metrics_get_loss_rate(block);
-				metrics->packet_loss.jitter_buffer_discard_rate = rtcp_XR_voip_metrics_get_discard_rate(block);
+			metrics->quality_estimates.rcq += rtcp_XR_voip_metrics_get_r_factor(block);
+			metrics->quality_estimates.moslq += rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+			metrics->quality_estimates.moscq += rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
 
-				metrics->session_description.packet_loss_concealment = (config >> 6) & 0x3;
+			metrics->jitter_buffer.nominal += rtcp_XR_voip_metrics_get_jb_nominal(block);
+			metrics->jitter_buffer.max += rtcp_XR_voip_metrics_get_jb_maximum(block);
+			metrics->jitter_buffer.abs_max = rtcp_XR_voip_metrics_get_jb_abs_max(block);
+			metrics->jitter_buffer.adaptive = (config >> 4) & 0x3;
+			metrics->packet_loss.network_packet_loss_rate = rtcp_XR_voip_metrics_get_loss_rate(block);
+			metrics->packet_loss.jitter_buffer_discard_rate = rtcp_XR_voip_metrics_get_discard_rate(block);
 
-				metrics->delay.round_trip_delay += rtcp_XR_voip_metrics_get_round_trip_delay(block);
-				break;
-			} default: {
-				break;
-			}
+			metrics->session_description.packet_loss_concealment = (config >> 6) & 0x3;
+
+			metrics->delay.round_trip_delay += rtcp_XR_voip_metrics_get_round_trip_delay(block);
 		}
-	}
+	}while(rtcp_next_packet(block));
 
 	/* check if we should send an interval report */
 	if (report_interval>0 && ms_time(NULL)-report->last_report_date>report_interval){
