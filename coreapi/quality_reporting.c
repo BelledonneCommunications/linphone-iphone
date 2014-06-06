@@ -31,20 +31,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ***************************************************************************
-For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
-moslq == moscq
-valgrind
-video: what happens if doing stop/resume?
-one single report <- merge audio/video?
-rlq value: need algo to compute it
-3.4 overload avoidance?
+	For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
+	moslq == moscq
+	rlq value: need algo to compute it
 
-	- The Session report when session terminates, media change (codec change or a session fork), session terminates due to no media packets being received
-	- The Interval report SHOULD be used for periodic or interval reporting
+	3.4 overload avoidance?
+	   a.  Send only one report at the end of each call. (audio | video?)
+	   b.  Use interval reports only on "problem" calls that are being closely monitored.
 
-	-> avg values
-	-> interval report
-	-> custom metrics
+
+	- The Session report when
+		codec change
+		session fork
+		video enable/disable <-- what happens if doing stop/resume?
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -340,6 +339,7 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 	content.data = buffer;
 	content.size = strlen(buffer);
 
+	/*(WIP) Memory leak: PUBLISH message is never freed (issue 1283)*/
 	linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content);
 	linphone_address_destroy(addr);
 

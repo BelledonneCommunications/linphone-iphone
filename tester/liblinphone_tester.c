@@ -119,7 +119,7 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 
 
 void helper(const char *name) {
-	fprintf(stderr,"%s \t--help\n"
+	fprintf(stderr,"%s --help\n"
 			"\t\t\t--verbose\n"
 			"\t\t\t--silent\n"
 			"\t\t\t--list-suites\n"

@@ -576,7 +576,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 		}
 		ms_usleep(50000);
 	}
-	
+
 	if (video_enabled){
 		for (i=0;i<200;i++){
 			if ((c1 != NULL) && (c2 != NULL)) {
@@ -967,7 +967,7 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
-	
+
 	linphone_call_params_destroy(caller_params);
 	linphone_call_params_destroy(callee_params);
 
@@ -2213,14 +2213,16 @@ static void quality_reporting_at_call_termination() {
 	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
 
 	linphone_core_terminate_all_calls(marie->lc);
+
+	// now dialog id should be filled
+	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->dialog_id);
+
 	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
 
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc));
 
-	// now dialog id should be filled
-	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->dialog_id);
 
 	// PUBLISH submission to the collector should be ok
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
