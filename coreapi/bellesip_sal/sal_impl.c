@@ -342,7 +342,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					break;
 				case 401:
 				case 407:
-					/*belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*//*remove op from trans*/
 					if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 						/*only bye are completed*/
 						belle_sip_message("Op is in state terminating, nothing else to do ");
@@ -396,7 +395,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	if(client_transaction)
 		trans=BELLE_SIP_TRANSACTION(client_transaction);
 	 else
-		 trans=BELLE_SIP_TRANSACTION(server_transaction);
+		trans=BELLE_SIP_TRANSACTION(server_transaction);
 
 	op = (SalOp*)belle_sip_transaction_get_application_data(trans);
 	if (op && op->callbacks && op->callbacks->process_transaction_terminated) {
@@ -404,7 +403,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	} else {
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
-	if (op && client_transaction) sal_op_unref(op); /*because every client transaction ref op*/
+	if (op) sal_op_unref(op); /*because every transaction ref op*/
 
 }
 

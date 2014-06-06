@@ -427,8 +427,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	if (strcmp("ACK",method)!=0){  /*ACK does'nt create srv transaction*/
 		server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
 		belle_sip_object_ref(server_transaction);
-		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),op);
-		sal_op_ref(op);
+		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),sal_op_ref(op));
 	}
 
 	if (strcmp("INVITE",method)==0) {
