@@ -393,7 +393,7 @@ static bool_t is_reporting_enabled(const LinphoneCall * call) {
 	return (call->dest_proxy != NULL && linphone_proxy_config_quality_reporting_enabled(call->dest_proxy));
 }
 
-static void qos_analyser_on_action_suggested(void *user_data, const char * input, const char * output){
+static void qos_analyzer_on_action_suggested(void *user_data, const char * input, const char * output){
 	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
 	char * newstr = NULL;
 	newstr = ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", input);
@@ -485,7 +485,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->log->reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
-	MSQosAnalyser *analyser=NULL;
+	MSQosAnalyzer *analyzer=NULL;
 	LinphoneCallStats stats = call->stats[stats_type];
 	mblk_t *block = NULL;
 
@@ -505,11 +505,11 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 			block = stats.sent_rtcp;
 		}
 	}
-	if (call->audiostream->ms.rc){
-		analyser=ms_bitrate_controller_get_qos_analyser(call->audiostream->ms.rc);
-		if (analyser){
-			ms_qos_analyser_set_on_action_suggested(analyser,
-				qos_analyser_on_action_suggested,
+	if (call->audiostream->ms.use_rc&&call->audiostream->ms.rc){
+		analyzer=ms_bitrate_controller_get_qos_analyzer(call->audiostream->ms.rc);
+		if (analyzer){
+			ms_qos_analyzer_set_on_action_suggested(analyzer,
+				qos_analyzer_on_action_suggested,
 				&report->local_metrics);
 		}
 	}
