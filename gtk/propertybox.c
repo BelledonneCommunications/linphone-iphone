@@ -922,6 +922,10 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 			linphone_proxy_config_register_enabled(cfg));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"publish")),
 			linphone_proxy_config_publish_enabled(cfg));
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf")),
+			linphone_proxy_config_avpf_enabled(cfg));
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval")),
+			linphone_proxy_config_get_avpf_rr_interval(cfg));
 	}
 	g_object_set_data(G_OBJECT(w),"config",(gpointer)cfg);
 	g_object_set_data(G_OBJECT(w),"parameters",(gpointer)pb);
@@ -978,6 +982,12 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 	linphone_proxy_config_enable_register(cfg,
 		gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register"))));
+	linphone_proxy_config_enable_avpf(cfg,
+		gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf"))));
+	linphone_proxy_config_set_avpf_rr_interval(cfg,
+		(int)gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval"))));
 
 	/* check if tls was asked but is not enabled in transport configuration*/
 	if (tport==LinphoneTransportTls){
