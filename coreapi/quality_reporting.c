@@ -158,7 +158,9 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	if (rm.signal.level != 127) ret|=METRICS_SIGNAL;
 	if (rm.signal.noise_level != 127) ret|=METRICS_SIGNAL;
 
+	if (rm.qos_analyzer.input_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 	if (rm.qos_analyzer.input!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
+	if (rm.qos_analyzer.output_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 	if (rm.qos_analyzer.output!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 
 	if (rm.rtcp_xr_count>0){
@@ -289,7 +291,9 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 	if ((available_metrics & METRICS_ADAPTIVE_ALGORITHM) != 0){
 		append_to_buffer(buffer, size, offset, "\r\nAdaptiveAlg:");
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN_LEG=%s", rm.qos_analyzer.input_leg);
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN=%s", rm.qos_analyzer.input);
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT_LEG=%s", rm.qos_analyzer.output_leg);
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT=%s", rm.qos_analyzer.output);
 	}
 
@@ -405,14 +409,17 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 	}
 }
 
-static void qos_analyzer_on_action_suggested(void *user_data, const char * input, const char * output){
+static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** data){
 	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
-	char * newstr = NULL;
-	newstr = ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", input);
-	STR_REASSIGN(metrics->qos_analyzer.input, newstr)
+	char * appendbuf;
 
-	newstr = ms_strdup_printf("%s%s;", metrics->qos_analyzer.output?metrics->qos_analyzer.output:"", output);
-	STR_REASSIGN(metrics->qos_analyzer.output, newstr)
+	STR_REASSIGN(metrics->qos_analyzer.input_leg, ms_strdup(data[0]));
+	appendbuf=ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", data[1]);
+	STR_REASSIGN(metrics->qos_analyzer.input,appendbuf);
+
+	STR_REASSIGN(metrics->qos_analyzer.output_leg, ms_strdup(data[2]));
+	appendbuf=ms_strdup_printf("%s%s;", metrics->qos_analyzer.output?metrics->qos_analyzer.output:"", data[3]);
+	STR_REASSIGN(metrics->qos_analyzer.output, appendbuf);
 }
 
 void linphone_reporting_update_ip(LinphoneCall * call) {
@@ -614,7 +621,9 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
 	if (report->remote_metrics.session_description.fmtp != NULL) ms_free(report->remote_metrics.session_description.fmtp);
 	if (report->remote_metrics.session_description.payload_desc != NULL) ms_free(report->remote_metrics.session_description.payload_desc);
+	if (report->local_metrics.qos_analyzer.input_leg != NULL) ms_free(report->local_metrics.qos_analyzer.input_leg);
 	if (report->local_metrics.qos_analyzer.input != NULL) ms_free(report->local_metrics.qos_analyzer.input);
+	if (report->local_metrics.qos_analyzer.output_leg != NULL) ms_free(report->local_metrics.qos_analyzer.output_leg);
 	if (report->local_metrics.qos_analyzer.output != NULL) ms_free(report->local_metrics.qos_analyzer.output);
 
 	ms_free(report);

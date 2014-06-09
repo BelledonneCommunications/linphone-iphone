@@ -98,7 +98,9 @@ typedef struct reporting_content_metrics {
 	/* This should allow us to analysis bad network conditions and quality adaptation
 	on server side*/
 	struct {
+		char* input_leg;
 		char* input;
+		char* output_leg;
 		char* output;
 	} qos_analyzer;
 
