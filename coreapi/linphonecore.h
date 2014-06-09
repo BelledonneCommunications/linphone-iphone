@@ -1158,6 +1158,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChat
 
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 LINPHONE_PUBLIC	void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);

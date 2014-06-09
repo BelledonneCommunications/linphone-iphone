@@ -2630,6 +2630,15 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 		linphone_chat_message_set_user_data(msg,NULL);
 	}
 }
+
+extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong chatroom_ptr){
+	LinphoneCore *lc=linphone_chat_room_get_core((LinphoneChatRoom*)chatroom_ptr);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	return lcd->core;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong chatroom_ptr
@@ -3667,6 +3676,12 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHa
 	if (jhandler){
 		handler_obj=env->NewGlobalRef(jhandler);
 	}
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneEventImpl_getCore(JNIEnv *env, jobject jobj, jlong evptr){
+	LinphoneCore *lc=linphone_event_get_core((LinphoneEvent*)evptr);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	return lcd->core;
 }
 
 /*

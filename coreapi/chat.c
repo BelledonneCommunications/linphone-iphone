@@ -387,8 +387,16 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 
 /**
  * Returns back pointer to LinphoneCore object.
+ * @deprecated use linphone_chat_room_get_core()
 **/
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
+	return cr->lc;
+}
+
+/**
+ * Returns back pointer to LinphoneCore object.
+**/
+LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr){
 	return cr->lc;
 }
 

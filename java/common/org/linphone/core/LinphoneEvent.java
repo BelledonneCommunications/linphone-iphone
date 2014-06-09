@@ -100,4 +100,10 @@ public interface LinphoneEvent {
 	 * @param body the new data to be published
 	 */
 	void sendPublish(LinphoneContent body);
+	
+	/**
+	 * Get a back pointer to the LinphoneCore object managing this LinphoneEvent.
+	 * @return
+	 */
+	LinphoneCore getCore();
 }

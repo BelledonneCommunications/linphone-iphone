@@ -119,4 +119,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		return new LinphoneChatMessageImpl(createLinphoneChatMessage2(
 				nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
 	}
+	private native Object getCore(long nativePtr);
+	@Override
+	public LinphoneCore getCore() {
+		return (LinphoneCore)getCore(nativePtr);
+	}
 }
