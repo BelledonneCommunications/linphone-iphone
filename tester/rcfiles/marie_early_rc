@@ -30,8 +30,8 @@ subscribe=0
 
 
 [rtp]
-audio_rtp_port=8070
-video_rtp_port=8072
+audio_rtp_port=18070
+video_rtp_port=19072
 
 [video]
 display=0

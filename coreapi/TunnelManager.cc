@@ -30,82 +30,6 @@
 using namespace belledonnecomm;
 using namespace ::std;
 
-#ifndef USE_BELLESIP
-
-Mutex TunnelManager::sMutex;
-
-int TunnelManager::eXosipSendto(int fd,const void *buf, size_t len, int flags, const struct sockaddr *to, socklen_t tolen,void* userdata){
-	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
-	
-	sMutex.lock();
-	if (lTunnelMgr->mSipSocket==NULL){
-		sMutex.unlock();
-		return len;
-	}
-	lTunnelMgr->mSipSocket->sendto(buf,len,to,tolen);
-	sMutex.unlock();
-	//ignore the error in all cases, retransmissions might be successful.
-	return len;
-}
-
-int TunnelManager::eXosipRecvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen,void* userdata){
-	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
-	int err;
-	sMutex.lock();
-	if (lTunnelMgr->mSipSocket==NULL){
-		sMutex.unlock();
-		return 0;//let ignore the error
-	}
-	err=lTunnelMgr->mSipSocket->recvfrom(buf,len,from,*fromlen);
-	sMutex.unlock();
-	return err;
-}
-
-int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3, struct timeval *tv,void* userdata){
-	struct timeval begin,cur;
-	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
-	if (s1 && tv!=0 && tv->tv_sec){
-		/*this is the select from udp.c, the one that is interesting to us*/
-		NativeSocket udp_fd=(NativeSocket)eXosip_get_udp_socket();
-		NativeSocket controlfd=(NativeSocket)eXosip_get_control_fd();
-
-		FD_ZERO(s1);
-		gettimeofday(&begin,NULL);
-		do{
-			struct timeval abit;
-
-			abit.tv_sec=0;
-			abit.tv_usec=20000;
-			sMutex.lock();
-			if (lTunnelMgr->mSipSocket!=NULL){
-				if (lTunnelMgr->mSipSocket->hasData()) {
-					sMutex.unlock();
-					/* we make exosip believe that it has udp data to read*/
-					FD_SET(udp_fd,s1);
-					return 1;
-				}
-			}
-			sMutex.unlock();
-			gettimeofday(&cur,NULL);
-			if (cur.tv_sec-begin.tv_sec>tv->tv_sec) {
-				FD_SET(controlfd,s1);
-				FD_SET(udp_fd,s1);
-				return 0;
-			}
-			FD_ZERO(s1);
-			FD_SET(controlfd,s1);
-			if (select(max_fds,s1,s2,s3,&abit)==1) {
-				return 1;
-			}
-		}while(1);
-		
-	}else{
-		/*select called from other places, only the control fd is present */
-		return select(max_fds,s1,s2,s3,tv);
-	}
-}
-#endif
-
 
 void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay) {
 	if (ip == NULL) {
@@ -186,10 +110,6 @@ void TunnelManager::start() {
 		mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
 	}
 	mTunnelClient->start();
-
-#ifndef USE_BELLESIP
-	if (mSipSocket == NULL) mSipSocket =mTunnelClient->createSocket(5060);
-#endif
 }
 
 bool TunnelManager::isStarted() {
@@ -217,9 +137,6 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 
 TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mCore(lc)
-#ifndef USE_BELLESIP
-,mSipSocket(NULL)
-#endif
 ,mCallback(NULL)
 ,mEnabled(false)
 ,mTunnelClient(NULL)
@@ -227,12 +144,6 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mReady(false)
 ,mHttpProxyPort(0){
 
-#ifndef USE_BELLESIP
-	mExosipTransport.data=this;
-	mExosipTransport.recvfrom=eXosipRecvfrom;
-	mExosipTransport.sendto=eXosipSendto;
-	mExosipTransport.select=eXosipSelect;
-#endif
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
 	mTransportFactories.audio_rtcp_func_data=this;
@@ -249,17 +160,7 @@ TunnelManager::~TunnelManager(){
 }
 
 void TunnelManager::stopClient(){
-#ifdef USE_BELLESIP
 	sal_disable_tunnel(mCore->sal);
-#else
-	eXosip_transport_hook_register(NULL);
-	if (mSipSocket != NULL){
-		sMutex.lock();
-		mTunnelClient->closeSocket(mSipSocket);
-		mSipSocket = NULL;
-		sMutex.unlock();
-	}
-#endif
 	if (mTunnelClient){
 		delete mTunnelClient;
 		mTunnelClient=NULL;
@@ -279,16 +180,11 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 
 		//register
 		if (lProxy) {
-			linphone_proxy_config_done(lProxy);
+			linphone_proxy_config_refresh_register(lProxy);
 		}
 		mReady=true;
 	}else if (mEnabled && !mTunnelClient->isReady()){
 		/* we got disconnected from the tunnel */
-		if (lProxy && linphone_proxy_config_is_registered(lProxy)) {
-			/*forces de-registration so that we register again when the tunnel is up*/
-			linphone_proxy_config_edit(lProxy);
-			linphone_core_iterate(mCore);
-		}
 		mReady=false;
 	}
 }
@@ -299,6 +195,8 @@ void TunnelManager::waitUnRegistration(){
 	if (lProxy && linphone_proxy_config_get_state(lProxy)==LinphoneRegistrationOk) {
 		int i=0;
 		linphone_proxy_config_edit(lProxy);
+		linphone_proxy_config_enable_register(lProxy,FALSE);
+		linphone_proxy_config_done(lProxy);
 		//make sure unregister is sent and authenticated
 		do{
 			linphone_core_iterate(mCore);
@@ -348,6 +246,8 @@ void TunnelManager::enable(bool isEnable) {
 		LinphoneProxyConfig* lProxy;
 		linphone_core_get_default_proxy(mCore, &lProxy);
 		if (lProxy) {
+			linphone_proxy_config_edit(lProxy);
+			linphone_proxy_config_enable_register(lProxy,TRUE);
 			linphone_proxy_config_done(lProxy);
 		}
 

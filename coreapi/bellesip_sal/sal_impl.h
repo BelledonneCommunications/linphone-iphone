@@ -48,6 +48,7 @@ struct Sal{
 	bool_t auto_contacts;
 	bool_t enable_test_features;
 	bool_t no_initial_route;
+	bool_t enable_sip_update; /*true by default*/
 };
 
 typedef enum SalOpState {

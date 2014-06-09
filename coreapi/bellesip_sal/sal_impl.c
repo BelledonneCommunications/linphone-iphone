@@ -342,7 +342,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					break;
 				case 401:
 				case 407:
-					/*belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*//*remove op from trans*/
 					if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 						/*only bye are completed*/
 						belle_sip_message("Op is in state terminating, nothing else to do ");
@@ -396,7 +395,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	if(client_transaction)
 		trans=BELLE_SIP_TRANSACTION(client_transaction);
 	 else
-		 trans=BELLE_SIP_TRANSACTION(server_transaction);
+		trans=BELLE_SIP_TRANSACTION(server_transaction);
 
 	op = (SalOp*)belle_sip_transaction_get_application_data(trans);
 	if (op && op->callbacks && op->callbacks->process_transaction_terminated) {
@@ -404,7 +403,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	} else {
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
-	if (op && client_transaction) sal_op_unref(op); /*because every client transaction ref op*/
+	if (op) sal_op_unref(op); /*because every transaction ref op*/
 
 }
 
@@ -423,6 +422,8 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
+	
+	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
 	
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
@@ -451,6 +452,7 @@ Sal * sal_init(){
 	sal->tls_verify=TRUE;
 	sal->tls_verify_cn=TRUE;
 	sal->refresher_retry_after=60000; /*default value in ms*/
+	sal->enable_sip_update=TRUE;
 	return sal;
 }
 
@@ -999,3 +1001,7 @@ void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	belle_sip_main_loop_remove_source(ml, timer);
 }
+void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
+	ctx->enable_sip_update=value;
+}
+

@@ -123,6 +123,8 @@ const char* sal_stream_type_to_string(SalStreamType type);
 typedef enum{
 	SalProtoRtpAvp,
 	SalProtoRtpSavp,
+	SalProtoRtpAvpf,
+	SalProtoRtpSavpf,
 	SalProtoOther
 }SalMediaProto;
 const char* sal_media_proto_to_string(SalMediaProto type);
@@ -166,7 +168,7 @@ typedef struct SalIceRemoteCandidate {
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
 /*sufficient for 256bit keys encoded in base 64*/
-#define SAL_SRTP_KEY_SIZE 64
+#define SAL_SRTP_KEY_SIZE 128
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
@@ -252,6 +254,10 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
+unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription *md, SalStreamType type);
+SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaDescription *md, SalStreamType type, unsigned int idx);
+SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMediaDescription *md, SalStreamType type);
+SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 
 
@@ -514,6 +520,9 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient);
 void sal_disable_tunnel(Sal *ctx);
+/*Default value is true*/
+void sal_enable_sip_update_method(Sal *ctx,bool_t value);
+
 /**
  * returns keepalive period in ms
  * 0 desactiaved
@@ -552,6 +561,9 @@ void sal_op_set_to_address(SalOp *op, const SalAddress *to);
 SalOp *sal_op_ref(SalOp* h);
 void sal_op_stop_refreshing(SalOp *op);
 void sal_op_release(SalOp *h);
+/*same as release, but does not stop refresher if any*/
+void* sal_op_unref(SalOp* op);
+
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);

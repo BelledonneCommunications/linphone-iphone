@@ -431,6 +431,13 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
  */
 LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
 
+/**
+ * Gets the RTP profile being used.
+ * @param[in] cp #LinphoneCallParams object
+ * @returns The RTP profile.
+ */
+LINPHONE_PUBLIC const char * linphone_call_params_get_rtp_profile(const LinphoneCallParams *cp);
+
 
 /*
  * Note for developers: this enum must be kept synchronized with the SalPrivacy enum declared in sal.h
@@ -814,7 +821,7 @@ LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *o
 /**
  * Set the publish expiration time in second.
  * @param obj proxy config
- * @param exires in second
+ * @param expires in second
  * */
 
 LINPHONE_PUBLIC	void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *obj, int expires);
@@ -829,16 +836,54 @@ LINPHONE_PUBLIC	int linphone_proxy_config_get_publish_expires(const LinphoneProx
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
-/**
- * Indicates  either or not, quality statistics during call should be stored and sent to a collector at termination.
- * @param cfg #LinphoneProxyConfig object
- * @param val if true, quality statistics publish will be stored and sent to the collector
- *
+ /**
+ * Indicates whether quality statistics during call should be stored and sent to a collector according to RFC 6035.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] enable True to sotre quality statistics and sent them to the collector, false to disable it.
  */
-LINPHONE_PUBLIC	void linphone_proxy_config_enable_statistics(LinphoneProxyConfig *cfg, bool_t val);
-LINPHONE_PUBLIC	bool_t linphone_proxy_config_send_statistics_enabled(LinphoneProxyConfig *cfg);
-LINPHONE_PUBLIC	void linphone_proxy_config_set_statistics_collector(LinphoneProxyConfig *cfg, const char *collector);
-LINPHONE_PUBLIC	const char *linphone_proxy_config_get_statistics_collector(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bool_t enable);
+
+/**
+ * Indicates whether quality statistics during call should be stored and sent to a collector according to RFC 6035.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return True if quality repotring is enabled, false otherwise.
+ */
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg);
+
+ /**
+ * Set the SIP address of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly then discard packets. Collector address
+ * should be a non existing account and should not received any packets.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] collector SIP address of the collector end-point.
+ */
+LINPHONE_PUBLIC	void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector);
+
+ /**
+ * Get the SIP address of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly then discard packets. Collector address
+ * should be a non existing account and should not received any packets.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return The SIP address of the collector end-point.
+ */
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collector(const LinphoneProxyConfig *cfg);
+
+/**
+ * Set the interval between 2 interval reports sending when using quality reporting. If call exceed interval size, an
+ * interval report will be sent to the collector. On call termination, a session report will be sent
+ * for the remaining period. Value must be 0 (disabled) or positive.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] interval The interval in seconds, 0 means interval reports are disabled.
+ */
+void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval);
+
+/**
+ * Get the interval between interval reports when using quality reporting.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return The interval in seconds, 0 means interval reports are disabled.
+ */
+
+int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg);
 
 /**
  * Get the registration state of the given proxy config.
@@ -921,7 +966,7 @@ LINPHONE_PUBLIC	void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *
 /**
  * Set default privacy policy for all calls routed through this proxy.
  * @param params to be modified
- * @param LinphonePrivacy to configure privacy
+ * @param privacy LinphonePrivacy to configure privacy
  * */
 LINPHONE_PUBLIC void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy);
 /**
@@ -942,6 +987,34 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_file_transfert_server(LinphonePro
  * @return const char* url of the file server like https://file.linphone.org/upload.php
  * */
 LINPHONE_PUBLIC const char* linphone_proxy_config_get_file_transfer_server(const LinphoneProxyConfig *params);
+
+/**
+ * Indicates whether AVPF/SAVPF must be used for calls using this proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] enable True to enable AVPF/SAVF, false to disable it.
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable);
+
+/**
+ * Indicates whether AVPF/SAVPF is being used for calls using this proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return True if AVPF/SAVPF is enabled, false otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
+
+/**
+ * Set the interval between regular RTCP reports when using AVPF/SAVPF.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @param[in] interval The interval in seconds (between 0 and 5 seconds).
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_t interval);
+
+/**
+ * Get the interval between regular RTCP reports when using AVPF/SAVPF.
+ * @param[in] cfg #LinphoneProxyConfig object
+ * @return The interval in seconds.
+ */
+LINPHONE_PUBLIC uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cfg);
 
 /**
  * @}
@@ -1108,6 +1181,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChat
 
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 LINPHONE_PUBLIC	void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
@@ -1127,7 +1201,9 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const Li
 LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC void linphone_chat_message_start_file_download(const LinphoneChatMessage*message);
-LINPHONE_PUBLIC	const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);
+LINPHONE_PUBLIC	const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
@@ -1571,7 +1647,7 @@ LINPHONE_PUBLIC	int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneC
 /**
  * @ingroup media_parameters
  * Get default call parameters reflecting current linphone core configuration
- * @param LinphoneCore object
+ * @param lc LinphoneCore object
  * @return  LinphoneCallParams
  */
 LINPHONE_PUBLIC	LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
@@ -1659,7 +1735,7 @@ LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const
  * @param[in] lc the #LinphoneCore object
  * @param[in] pt the #PayloadType to modify.
  * @param[in] bitrate the IP bitrate in kbit/s.
- * @ingroup media_parameters 
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate);
 
@@ -1668,7 +1744,7 @@ LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, Pa
  * @param[in] lc the #LinphoneCore object
  * @param[in] pt the #PayloadType to modify.
  * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
- * @ingroup media_parameters 
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt);
 
@@ -2013,7 +2089,7 @@ LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 
 /**
  * Get mic state.
- * @deprecated Use #linphone_core_is_mic_enabled instead
+ * @deprecated Use #linphone_core_mic_enabled instead
 **/
 LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 

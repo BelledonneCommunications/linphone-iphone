@@ -22,7 +22,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #ifndef LINPHONETUNNEL_H
 #define LINPHONETUNNEL_H
 
@@ -86,7 +86,7 @@ LINPHONE_PUBLIC void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunne
 LINPHONE_PUBLIC int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel);
 
 /**
- * Set the remote port on the tunnel server side used to test udp reachability. 
+ * Set the remote port on the tunnel server side used to test udp reachability.
  *
  * @param tunnel configuration object
  * @param remote_udp_mirror_port remote port on the tunnel server side used to test udp reachability, set to -1 to disable the feature
@@ -110,7 +110,7 @@ LINPHONE_PUBLIC void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunn
 
 /**
  * Get the udp packet round trip delay in ms for a tunnel configuration.
- * 
+ *
  * @param tunnel configuration object
  */
 LINPHONE_PUBLIC int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
@@ -132,7 +132,7 @@ LINPHONE_PUBLIC void linphone_tunnel_add_server(LinphoneTunnel *tunnel, Linphone
 
 /**
  * Remove tunnel server configuration
- * 
+ *
  * @param tunnel object
  * @param tunnel_config object
  */
@@ -208,7 +208,7 @@ LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunne
  * @param host Http proxy host.
  * @param port http proxy port.
  * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
- * @param password optional http proxy password. Use NULL if not needed.
+ * @param passwd optional http proxy password. Use NULL if not needed.
  **/
 LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, int port, const char* username,const char* passwd);
 
@@ -218,7 +218,7 @@ LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, cons
  * @param host Http proxy host.
  * @param port http proxy port.
  * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
- * @param password optional http proxy password. Use NULL if not needed.
+ * @param passwd optional http proxy password. Use NULL if not needed.
  **/
 LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd);
 

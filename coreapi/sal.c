@@ -91,6 +91,39 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 	return NULL;
 }
 
+unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription *md, SalStreamType type) {
+	unsigned int i;
+	unsigned int nb = 0;
+	for (i = 0; i < md->n_active_streams; ++i) {
+		if (md->streams[i].type == type) nb++;
+	}
+	return nb;
+}
+
+SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaDescription *md, SalStreamType type, unsigned int idx) {
+	unsigned int i;
+	for (i = 0; i < md->n_active_streams; ++i) {
+		if (md->streams[i].type == type) {
+			if (idx-- == 0) return &md->streams[i];
+		}
+	}
+	return NULL;
+}
+
+SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMediaDescription *md, SalStreamType type) {
+	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavp, type);
+	return desc;
+}
+
+SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type) {
+	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavp, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvpf, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvp, type);
+	return desc;
+}
+
 bool_t sal_media_description_empty(const SalMediaDescription *md){
 	if (md->n_active_streams > 0) return FALSE;
 	return TRUE;
@@ -515,6 +548,8 @@ const char* sal_media_proto_to_string(SalMediaProto type) {
 	switch (type) {
 	case SalProtoRtpAvp:return "RTP/AVP";
 	case SalProtoRtpSavp:return "RTP/SAVP";
+	case SalProtoRtpAvpf:return "RTP/AVPF";
+	case SalProtoRtpSavpf:return "RTP/SAVPF";
 	default: return "unknown";
 	}
 }

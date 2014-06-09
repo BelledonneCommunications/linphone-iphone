@@ -198,6 +198,30 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		return getPrivacy(nativePtr);
 	}
 	
+	private native void enableAvpf(long nativePtr, boolean enable);
+	@Override
+	public void enableAvpf(boolean enable) {
+		enableAvpf(nativePtr, enable);
+	}
+
+	private native boolean avpfEnabled(long nativePtr);
+	@Override
+	public boolean avpfEnabled() {
+		return avpfEnabled(nativePtr);
+	}
+	
+	private native void setAvpfRRInterval(long nativePtr, int interval);
+	@Override
+	public void setAvpfRRInterval(int interval) {
+		setAvpfRRInterval(nativePtr, interval);
+	}
+	
+	private native int getAvpfRRInterval(long nativePtr);
+	@Override
+	public int getAvpfRRInterval() {
+		return getAvpfRRInterval(nativePtr);
+	}
+	
 	private native String getContactParameters(long ptr);
 	@Override
 	public String getContactParameters() {

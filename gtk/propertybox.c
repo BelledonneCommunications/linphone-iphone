@@ -25,8 +25,8 @@ void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const c
 	const char **p=devices;
 	int i=0,active=-1;
 	GtkTreeModel *model;
-	
-	
+
+
 	if ((model=gtk_combo_box_get_model(GTK_COMBO_BOX(combo)))==NULL){
 		/*case where combo box is created with no model*/
 		GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
@@ -40,7 +40,7 @@ void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const c
 		unless we fill it with a dummy text.
 		This dummy text needs to be removed first*/
 	}
-	
+
 	for(;*p!=NULL;++p){
 		if ( cap==CAP_IGNORE
 			|| (cap==CAP_CAPTURE && linphone_core_sound_device_can_capture(linphone_gtk_get_core(),*p))
@@ -836,9 +836,9 @@ static void linphone_gtk_proxy_closed(GtkWidget *w){
 static void fill_transport_combo_box(GtkWidget *combo, LinphoneTransportType choice, gboolean is_sensitive){
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	
+
 	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(combo),"combo-updating"))) return;
-	
+
 	if ((model=gtk_combo_box_get_model(GTK_COMBO_BOX(combo)))==NULL){
 		/*case where combo box is created with no model*/
 		GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
@@ -882,9 +882,9 @@ void linphone_gtk_proxy_transport_changed(GtkWidget *combo){
 	const char *addr=gtk_entry_get_text(GTK_ENTRY(proxy));
 	LinphoneAddress *laddr;
 	LinphoneTransportType new_transport=(LinphoneTransportType)index;
-	
+
 	if (index==-1) return;
-	
+
 	g_object_set_data(G_OBJECT(w),"combo-updating",GINT_TO_POINTER(1));
 	laddr=linphone_address_new(addr);
 	if (laddr){
@@ -922,6 +922,10 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 			linphone_proxy_config_register_enabled(cfg));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"publish")),
 			linphone_proxy_config_publish_enabled(cfg));
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf")),
+			linphone_proxy_config_avpf_enabled(cfg));
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval")),
+			linphone_proxy_config_get_avpf_rr_interval(cfg));
 	}
 	g_object_set_data(G_OBJECT(w),"config",(gpointer)cfg);
 	g_object_set_data(G_OBJECT(w),"parameters",(gpointer)pb);
@@ -941,7 +945,7 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 	int index=gtk_combo_box_get_active(GTK_COMBO_BOX(linphone_gtk_get_widget(w,"transport")));
 	LinphoneTransportType tport=(LinphoneTransportType)index;
 	gboolean was_editing=TRUE;
-	
+
 	if (!cfg){
 		was_editing=FALSE;
 		cfg=linphone_proxy_config_new();
@@ -978,7 +982,13 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 	linphone_proxy_config_enable_register(cfg,
 		gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register"))));
-	
+	linphone_proxy_config_enable_avpf(cfg,
+		gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf"))));
+	linphone_proxy_config_set_avpf_rr_interval(cfg,
+		(int)gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval"))));
+
 	/* check if tls was asked but is not enabled in transport configuration*/
 	if (tport==LinphoneTransportTls){
 		LCSipTransports tports;
@@ -988,7 +998,7 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 		}
 		linphone_core_set_sip_transports(lc,&tports);
 	}
-	
+
 	if (was_editing){
 		if (linphone_proxy_config_done(cfg)==-1)
 			return;
@@ -1203,15 +1213,15 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	GtkListStore *store;
 	GtkTreeIter iter;
 	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
-	
+
 	model=GTK_TREE_MODEL((store=gtk_list_store_new(1,G_TYPE_STRING)));
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"text",0,NULL);
-	
+
 	gtk_list_store_append(store,&iter);
 	gtk_list_store_set(store,&iter,0,_("None"),-1);
-	
+
 	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionSRTP)){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,_("SRTP"),-1);
@@ -1293,19 +1303,26 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	GtkTreeModel *model=GTK_TREE_MODEL(store=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING));
 
 	if (current_renderer==NULL) current_renderer=video_stream_get_default_video_renderer();
-	
+
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
 	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"text",1,NULL);
-	
-	for(i=0,elem=l;elem!=NULL && i<4 ;elem=elem->next,++i){
+
+	for(i=0,elem=l;elem!=NULL && i<4 ;elem=elem->next){
 		MSFilterDesc *desc=(MSFilterDesc *)elem->data;
 		GtkTreeIter iter;
+
+		/* do not offer the user to select combo 'decoding/rendering' filter */
+		if (desc->enc_fmt != NULL)
+			continue;
+
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,desc->name,1,desc->text,-1);
 		if (current_renderer && strcmp(current_renderer,desc->name)==0)
 			active=i;
+
+		i++;
 	}
 	ms_list_free(l);
 	if (active!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
@@ -1386,7 +1403,7 @@ void linphone_gtk_show_parameters(void){
 				tr.udp_port);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_tcp_port")),
 				tr.tcp_port);
-	
+
 
 	linphone_core_get_audio_port_range(lc, &min_port, &max_port);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")), min_port);
@@ -1404,7 +1421,7 @@ void linphone_gtk_show_parameters(void){
 	}
 
 	linphone_gtk_show_media_encryption(pb);
-	
+
 	tmp=linphone_core_get_nat_address(lc);
 	if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"nat_address")),tmp);
 	tmp=linphone_core_get_stun_server(lc);
@@ -1466,6 +1483,8 @@ void linphone_gtk_show_parameters(void){
 	}
 #ifdef BUILD_WIZARD
 	gtk_widget_show(linphone_gtk_get_widget(pb,"wizard"));
+#else
+	gtk_widget_hide(linphone_gtk_get_widget(pb,"wizard"));
 #endif
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
@@ -1548,9 +1567,9 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 	const MSList *configs;
 	const char *host = NULL;
 	int port=0;
-	
+
 	if (!tunnel) return;
-	
+
 	configs = linphone_tunnel_get_servers(tunnel);
 	if(configs != NULL) {
 		LinphoneTunnelConfig *ltc = (LinphoneTunnelConfig *)configs->data;
@@ -1598,7 +1617,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	gint http_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"http_port")));
 	const char *username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"username")));
 	const char *password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"password")));
-	
+
 	if (tunnel==NULL) return;
 	if (host && *host=='\0') host=NULL;
 	if (http_port==0) http_port=8080;
@@ -1608,7 +1627,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	linphone_tunnel_add_server(tunnel, config);
 	linphone_tunnel_enable(tunnel,enabled);
 	linphone_tunnel_set_http_proxy(tunnel,http_host,http_port,username,password);
-	
+
 	gtk_widget_destroy(w);
 }
 
@@ -1621,7 +1640,7 @@ static void show_dscp(GtkWidget *entry, int val){
 	char tmp[20];
 	snprintf(tmp,sizeof(tmp),"0x%x",val);
 	gtk_entry_set_text(GTK_ENTRY(entry),tmp);
-	
+
 }
 
 static int read_dscp(GtkWidget *entry){
@@ -1660,7 +1679,7 @@ void linphone_gtk_dscp_edit_response(GtkWidget *dialog, guint response_id){
 				read_dscp(linphone_gtk_get_widget(dialog,"audio_dscp")));
 			linphone_core_set_video_dscp(lc,
 				read_dscp(linphone_gtk_get_widget(dialog,"video_dscp")));
-			
+
 		break;
 		default:
 		break;
