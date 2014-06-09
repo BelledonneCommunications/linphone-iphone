@@ -2265,6 +2265,7 @@ static void multiple_early_media(void) {
 	LinphoneCall *marie1_call;
 	LinphoneCall *marie2_call;
 	LinphoneCall *pauline_call;
+	LinphoneInfoMessage *info;
 	int dummy=0;
 	char ringbackpath[256];
 	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
@@ -2325,9 +2326,14 @@ static void multiple_early_media(void) {
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
 
+	/*send an INFO in reverse side to check that dialogs are properly established*/
+	info=linphone_core_create_info_message(marie1->lc);
+	linphone_call_send_info_message(marie1_call,info);
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_inforeceived,1,2000));
+	
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,2000));
 
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
