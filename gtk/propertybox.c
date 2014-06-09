@@ -1483,6 +1483,8 @@ void linphone_gtk_show_parameters(void){
 	}
 #ifdef BUILD_WIZARD
 	gtk_widget_show(linphone_gtk_get_widget(pb,"wizard"));
+#else
+	gtk_widget_hide(linphone_gtk_get_widget(pb,"wizard"));
 #endif
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
