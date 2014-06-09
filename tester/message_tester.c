@@ -76,7 +76,9 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 			counters->number_of_LinphoneMessageExtBodyReceived++;
 			close(file);
 		} else { /* store content on a file*/
-			write(file,buff,size);
+			if (write(file,buff,size)==-1){
+				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
+			}
 		}
 	}
 }

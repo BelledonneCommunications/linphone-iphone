@@ -62,7 +62,7 @@ static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMess
 }
 /**
  * function invoked when a file transfer is received.
- * */
+ **/
 static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
 	int file=-1;
 	if (!linphone_chat_message_get_user_data(message)) {
@@ -81,7 +81,9 @@ static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *messag
 			close(file);
 			running=FALSE;
 		} else { /* store content on a file*/
-			write(file,buff,size);
+			if (write(file,buff,size)==-1){
+				ms_warning("file_transfer_received() write failed: %s",strerror(errno));
+			}
 		}
 	}
 }

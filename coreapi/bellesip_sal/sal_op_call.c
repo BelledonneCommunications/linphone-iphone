@@ -27,15 +27,10 @@ static void call_set_released(SalOp* op){
 		op->state=SalOpStateTerminated;
 		op->base.root->callbacks.call_released(op);
 		op->call_released=TRUE;
+		/*be aware that the following line may destroy the op*/
+		set_or_update_dialog(op,NULL);
 	}
 }
-
-/*used when the SalOp was ref'd by the dialog, in which case we rely only on the dialog terminated notification*/
-static void call_set_released_and_unref(SalOp* op) {
-	call_set_released(op);
-	sal_op_unref(op);
-}
-
 
 static void call_set_error(SalOp* op,belle_sip_response_t* response){
 	sal_op_set_error_info_from_response(op,response);
@@ -142,7 +137,7 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 			break;
 		}
 		belle_sip_main_loop_do_later(belle_sip_stack_get_main_loop(op->base.root->stack)
-							,(belle_sip_callback_t) call_set_released_and_unref
+							,(belle_sip_callback_t) call_set_released
 							, op);
 	} else {
 		ms_error("dialog unknown for op ");

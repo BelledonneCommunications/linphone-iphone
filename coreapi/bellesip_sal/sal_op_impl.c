@@ -573,16 +573,17 @@ static belle_sip_dialog_t *link_op_with_dialog(SalOp *op, belle_sip_dialog_t* di
 }
 
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
-	if (dialog==NULL) return;
 	ms_message("op [%p] : set_or_update_dialog() current=[%p] new=[%p]",op,op->dialog,dialog);
-	if (dialog && op->dialog!=dialog){
+	sal_op_ref(op);
+	if (op->dialog!=dialog){
 		if (op->dialog){
 			/*FIXME: shouldn't we delete unconfirmed dialogs ?*/
 			unlink_op_with_dialog(op,op->dialog);
 			op->dialog=NULL;
 		}
-		op->dialog=link_op_with_dialog(op,dialog);
+		if (dialog) op->dialog=link_op_with_dialog(op,dialog);
 	}
+	sal_op_unref(op);
 }
 /*return reffed op*/
 SalOp* sal_op_ref(SalOp* op) {
@@ -607,6 +608,13 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 			belle_sip_object_unref(op->refresher);
 		}
 		if ((op->refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
+			/*since refresher acquires the transaction, we should remove our context from the transaction, because we won't be notified 
+			 * that it is terminated anymore.*/
+			sal_op_unref(op);/*loose the reference that was given to the transaction when creating it*/
+			/* Note that the refresher will replace our data with belle_sip_transaction_set_application_data().
+			 Something in the design is not very good here, it makes things complicated to the belle-sip user.
+			 Possible ideas to improve things: refresher shall not use belle_sip_transaction_set_application_data() internally, refresher should let the first transaction
+			 notify the user as a normal transaction*/
 			belle_sip_refresher_set_listener(op->refresher,listener,op);
 			belle_sip_refresher_set_retry_after(op->refresher,op->base.root->refresher_retry_after);
 			belle_sip_refresher_enable_manual_mode(op->refresher,op->manual_refresher);

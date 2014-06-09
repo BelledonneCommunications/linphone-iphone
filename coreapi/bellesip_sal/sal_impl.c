@@ -375,8 +375,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			ms_error("Unhandled event response [%p]",event);
 		}
 	}
-
 }
+
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
@@ -386,6 +386,7 @@ static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *eve
 		ms_error("Unhandled event timeout [%p]",event);
 	}
 }
+
 static void process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_transaction_terminated_event_get_server_transaction(event);
@@ -404,7 +405,6 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
 	if (op) sal_op_unref(op); /*because every transaction ref op*/
-
 }
 
 
