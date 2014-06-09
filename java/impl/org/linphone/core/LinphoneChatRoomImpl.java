@@ -44,84 +44,110 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		nativePtr = aNativePtr;
 	}
 
-	public LinphoneAddress getPeerAddress() {
+	public synchronized LinphoneAddress getPeerAddress() {
 		return new LinphoneAddressImpl(getPeerAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 
-	public void sendMessage(String message) {
-		sendMessage(nativePtr,message);
-	}
-	
-	@Override
-	public void sendMessage(LinphoneChatMessage message, StateListener listener) {
-		sendMessage2(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr(), listener);
-	}
-
-	@Override
-	public LinphoneChatMessage createLinphoneChatMessage(String message) {
-		return new LinphoneChatMessageImpl(createLinphoneChatMessage(nativePtr, message));
-	}
-	
-	public LinphoneChatMessage[] getHistory() {
-		return getHistory(0);
-	}
-	
-	public LinphoneChatMessage[] getHistory(int limit) {
-		long[] typesPtr = getHistory(nativePtr, limit);
-		if (typesPtr == null) return null;
-		
-		LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];
-		for (int i=0; i < messages.length; i++) {
-			messages[i] = new LinphoneChatMessageImpl(typesPtr[i]);
+	public synchronized void sendMessage(String message) {
+		synchronized(getCore()){
+			sendMessage(nativePtr,message);
 		}
-
-		return messages;
 	}
 	
-	public void destroy() {
+	@Override
+	public synchronized void sendMessage(LinphoneChatMessage message, StateListener listener) {
+		synchronized(getCore()){
+			sendMessage2(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr(), listener);
+		}
+	}
+
+	@Override
+	public synchronized LinphoneChatMessage createLinphoneChatMessage(String message) {
+		synchronized(getCore()){
+			return new LinphoneChatMessageImpl(createLinphoneChatMessage(nativePtr, message));
+		}
+	}
+	
+	public synchronized LinphoneChatMessage[] getHistory() {
+		synchronized(getCore()){
+			return getHistory(0);
+		}
+	}
+	
+	public synchronized LinphoneChatMessage[] getHistory(int limit) {
+		synchronized(getCore()){
+			long[] typesPtr = getHistory(nativePtr, limit);
+			if (typesPtr == null) return null;
+			
+			LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];
+			for (int i=0; i < messages.length; i++) {
+				messages[i] = new LinphoneChatMessageImpl(typesPtr[i]);
+			}
+	
+			return messages;
+		}
+	}
+	
+	public synchronized void destroy() {
 		destroy(nativePtr);
 	}
 	
-	public int getUnreadMessagesCount() {
-		return getUnreadMessagesCount(nativePtr);
+	public synchronized int getUnreadMessagesCount() {
+		synchronized(getCore()){
+			return getUnreadMessagesCount(nativePtr);
+		}
 	}
 	
-	public void deleteHistory() {
-		deleteHistory(nativePtr);
+	public synchronized void deleteHistory() {
+		synchronized(getCore()){
+			deleteHistory(nativePtr);
+		}
 	}
 
-	public void compose() {
-		compose(nativePtr);
+	public synchronized void compose() {
+		synchronized(getCore()){
+			compose(nativePtr);
+		}
 	}
 
-	public boolean isRemoteComposing() {
-		return isRemoteComposing(nativePtr);
+	public synchronized boolean isRemoteComposing() {
+		synchronized(getCore()){
+			return isRemoteComposing(nativePtr);
+		}
 	}
 	
-	public void markAsRead() {
-		markAsRead(nativePtr);
+	public synchronized void markAsRead() {
+		synchronized(getCore()){
+			markAsRead(nativePtr);
+		}
 	}
 	
-	public void deleteMessage(LinphoneChatMessage message) {
-		if (message != null)
-			deleteMessage(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
+	public synchronized void deleteMessage(LinphoneChatMessage message) {
+		synchronized(getCore()){
+			if (message != null)
+				deleteMessage(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
+		}
 	}
 	
-	public void updateUrl(LinphoneChatMessage message) {
-		if (message != null)
-			updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
+	public synchronized void updateUrl(LinphoneChatMessage message) {
+		synchronized(getCore()){
+			if (message != null)
+				updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
+		}
 	}
 	
 	@Override
-	public LinphoneChatMessage createLinphoneChatMessage(String message,
+	public synchronized LinphoneChatMessage createLinphoneChatMessage(String message,
 			String url, State state, long timestamp, boolean isRead,
 			boolean isIncoming) {
-		return new LinphoneChatMessageImpl(createLinphoneChatMessage2(
-				nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
+		synchronized(getCore()){
+			return new LinphoneChatMessageImpl(createLinphoneChatMessage2(
+					nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
+		}
 	}
 	private native Object getCore(long nativePtr);
 	@Override
-	public LinphoneCore getCore() {
+	public synchronized LinphoneCore getCore() {
 		return (LinphoneCore)getCore(nativePtr);
 	}
 }
