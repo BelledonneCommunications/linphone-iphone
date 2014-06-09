@@ -103,6 +103,11 @@ struct _LinphoneCallParams{
 	uint8_t avpf_rr_interval;
 };
 
+struct _LinphoneQualityReporting{
+	reporting_session_report_t * reports[2]; /**Store information on audio and video media streams (RFC 6035) */
+	bool_t was_video_running; /*Keep video state since last check in order to detect its (de)activation*/
+};
+
 struct _LinphoneCallLog{
 	struct _LinphoneCore *lc;
 	LinphoneCallDir dir; /**< The direction of the call*/
@@ -119,9 +124,11 @@ struct _LinphoneCallLog{
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 
-	reporting_session_report_t * reports[2]; /**<Quality statistics of the call (rfc6035) */
+	struct _LinphoneQualityReporting reporting;
+
 	bool_t video_enabled;
 };
+
 
 typedef struct _CallCallbackObj
 {

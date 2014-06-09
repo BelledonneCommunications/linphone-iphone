@@ -129,8 +129,8 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
 
-	cl->reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
-	cl->reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
+	cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
+	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
 	return cl;
 }
 
@@ -394,8 +394,8 @@ void linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
 	if (cl->call_id) ms_free(cl->call_id);
-	if (cl->reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reports[LINPHONE_CALL_STATS_AUDIO]);
-	if (cl->reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reports[LINPHONE_CALL_STATS_VIDEO]);
+	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
+	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
 
 	ms_free(cl);
 }
@@ -3257,7 +3257,6 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 		linphone_core_update_streams (lc,call,md);
 		linphone_call_fix_call_parameters(call);
 	}
-
 	if (call->state != LinphoneCallOutgoingEarlyMedia) /*don't change the state in case of outgoing early (SIP UPDATE)*/
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	return 0;

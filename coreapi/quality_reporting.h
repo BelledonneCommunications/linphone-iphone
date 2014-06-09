@@ -164,24 +164,34 @@ void linphone_reporting_update_ip(LinphoneCall * call);
  * Publish a session report. This function should be called when session terminates,
  * media change (codec change or session fork), session terminates due to no media packets being received.
  * @param call #LinphoneCall object to consider
+ * @param call_term whether the call has ended or is continuing
  *
+ * @return error code. 0 for success, positive value otherwise.
  */
-void linphone_reporting_publish_session_report(LinphoneCall* call);
+int linphone_reporting_publish_session_report(LinphoneCall* call, bool_t call_term);
 
 /**
  * Publish an interval report. This function should be used for periodic interval
  * @param call #LinphoneCall object to consider
+ * @return error code. 0 for success, positive value otherwise.
  *
  */
-void linphone_reporting_publish_interval_report(LinphoneCall* call);
+int linphone_reporting_publish_interval_report(LinphoneCall* call);
 
 /**
- * Update publish report data with fresh RTCP stats, if needed.
+ * Update publish reports with newly received RTCP-XR packets (if available).
  * @param call #LinphoneCall object to consider
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
 void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type);
+
+/**
+ * Update publish reports on call state change.
+ * @param call #LinphoneCall object to consider
+ *
+ */
+void linphone_reporting_call_state_updated(LinphoneCall *call);
 
 #ifdef __cplusplus
 }

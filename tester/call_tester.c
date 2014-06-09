@@ -2199,11 +2199,11 @@ static void quality_reporting_not_used_without_config() {
 		linphone_proxy_config_get_quality_reporting_collector(call_marie->dest_proxy)), 0);
 
 	// this field should be already filled
-	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->info.local_addr.ip);
-	CU_ASSERT_PTR_NULL(call_pauline->log->reports[0]->info.local_addr.ip);
+	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reporting.reports[0]->info.local_addr.ip);
+	CU_ASSERT_PTR_NULL(call_pauline->log->reporting.reports[0]->info.local_addr.ip);
 
 	// but not this one since it is updated at the end of call
-	CU_ASSERT_PTR_NULL(call_marie->log->reports[0]->dialog_id);
+	CU_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2247,7 +2247,7 @@ static void quality_reporting_at_call_termination() {
 	linphone_core_terminate_all_calls(marie->lc);
 
 	// now dialog id should be filled
-	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->dialog_id);
+	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reporting.reports[0]->dialog_id);
 
 	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
