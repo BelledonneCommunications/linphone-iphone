@@ -64,13 +64,7 @@ static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMess
  * function invoked when a file transfer is received.
  * */
 static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
-	const LinphoneAddress* from_address = linphone_chat_message_get_from(message);
-	char *from = linphone_address_as_string(from_address);
 	int file=-1;
-	printf(" File transfer receive [%i] bytes of type [%s/%s] from [%s] \n"	, (int)size
-																			, content->type
-																			, content->subtype
-																			, from);
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
 		file = open("receive_file.dump",O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
@@ -78,20 +72,18 @@ static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *messag
 	} else {
 		/*next chunk*/
 		file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
+
+		if (size==0) {
+
+			printf("File transfert completed\n");
+			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+			linphone_chat_message_destroy(message);
+			close(file);
+			running=FALSE;
+		} else { /* store content on a file*/
+			write(file,buff,size);
+		}
 	}
-
-	if (size==0) {
-		printf("File transfert completed\n");
-		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-		linphone_chat_message_destroy(message);
-		close(file);
-		running=FALSE;
-	} else { /* store content on a file*/
-		write(file,buff,size);
-	}
-
-
-	free(from);
 }
 
 char big_file [128000];
@@ -99,10 +91,7 @@ char big_file [128000];
  * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
  * */
 static void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
-	//const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
-	//char *to = linphone_address_as_string(to_address);
 	int offset=-1;
-	/*content->size can be feed*/
 
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk*/
@@ -119,14 +108,8 @@ static void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  
 	}
 	memcpy(buff,big_file+offset,*size);
 
-	printf(" File transfer sending [%i] bytes of type [%s/%s] from [%s] \n"	, (int)*size
-																			, content->type
-																			, content->subtype
-																			, "pipo");
 	/*store offset for next chunk*/
 	linphone_chat_message_set_user_data(message,(void*)(offset+*size));
-
-	//free(to);
 
 }
 
@@ -193,8 +176,8 @@ int main(int argc, char *argv[]){
 	/**
 	 * Globally configure an http file transfer server.
 	 */
-	linphone_core_set_file_transfer_server(lc,"http://npasc.al/lft.php");
-	//linphone_core_set_file_transfer_server(lc,"https://www.linphone.org:444/upload.php");
+	//linphone_core_set_file_transfer_server(lc,"http://npasc.al/lft.php");
+	linphone_core_set_file_transfer_server(lc,"https://www.linphone.org:444/lft.php");
 
 
 	/*Next step is to create a chat room*/

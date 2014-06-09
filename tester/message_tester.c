@@ -63,16 +63,16 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 	} else {
 		/*next chunk*/
 		file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
-	}
 
-	if (size==0) {
-		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-		linphone_chat_message_destroy(message);
-		stats* counters = get_stats(lc);
-		counters->number_of_LinphoneMessageExtBodyReceived++;
-		close(file);
-	} else { /* store content on a file*/
-		write(file,buff,size);
+		if (size==0) { /* tranfer complerte */
+			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+			linphone_chat_message_destroy(message);
+			stats* counters = get_stats(lc);
+			counters->number_of_LinphoneMessageExtBodyReceived++;
+			close(file);
+		} else { /* store content on a file*/
+			write(file,buff,size);
+		}
 	}
 }
 
@@ -319,7 +319,6 @@ static void text_message_with_external_body(void) {
 static void file_transfer_message(void) {
 	int i;
 	/* setting dummy file content to something */
-
 	const char* big_file_content="big file";
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
 		memcpy(big_file+i, big_file_content, strlen(big_file_content));
@@ -331,7 +330,7 @@ static void file_transfer_message(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	/* Globally configure an http file transfer server. */
-	linphone_core_set_file_transfer_server(pauline->lc,"http://npasc.al/lft.php");
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 	/* create a chatroom on pauline's side */
 	char* to = linphone_address_as_string(marie->identity);
