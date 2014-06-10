@@ -20,7 +20,8 @@ liblinphonetester_la_SOURCES = tester.c \
 				eventapi_tester.c \
 				flexisip_tester.c \
 				stun_tester.c \
-				remote_provisioning_tester.c
+				remote_provisioning_tester.c \
+				quality_reporting_tester.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
@@ -32,14 +33,14 @@ if !BUILD_IOS
 
 noinst_PROGRAMS = liblinphone_tester
 
-liblinphone_tester_SOURCES = liblinphone_tester.c 
-liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la liblinphonetester.la 
+liblinphone_tester_SOURCES = liblinphone_tester.c
+liblinphone_tester_LDADD   = $(top_builddir)/coreapi/liblinphone.la liblinphonetester.la
 
 endif
 
 
 test: liblinphone_tester
-	./liblinphone_tester  --config $(abs_srcdir) 
+	./liblinphone_tester  --config $(abs_srcdir)
 
 else !BUILD_CUNIT_TESTS
 

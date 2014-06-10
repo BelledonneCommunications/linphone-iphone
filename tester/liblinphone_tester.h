@@ -57,12 +57,14 @@ extern test_suite_t event_test_suite;
 extern test_suite_t flexisip_test_suite;
 extern test_suite_t stun_test_suite;
 extern test_suite_t remote_provisioning_test_suite;
+extern test_suite_t quality_reporting_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
 extern int liblinphone_tester_nb_tests(const char *suite_name);
 extern const char * liblinphone_tester_test_suite_name(int suite_index);
 extern int liblinphone_tester_test_suite_index(const char *suite_name);
+extern void liblinphone_tester_list_suites();
 extern void liblinphone_tester_list_suite_tests(const char *suite_name);
 extern const char * liblinphone_tester_test_name(const char *suite_name, int test_index);
 extern int liblinphone_tester_test_index(const char *suite_name, const char *test_name);
@@ -229,6 +231,10 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value,int timout_ms);
 
+bool_t call_with_params(LinphoneCoreManager* caller_mgr
+						,LinphoneCoreManager* callee_mgr
+						, const LinphoneCallParams *caller_params
+						, const LinphoneCallParams *callee_params);
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
