@@ -39,13 +39,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	   a.  Send only one report at the end of each call. (audio | video?)
 	   b.  Use interval reports only on "problem" calls that are being closely monitored.
 
-	move "on_action_suggested" stuff in init
-
 	- The Session report when
 		codec change
 		session fork
-		video enable/disable <-- what happens if doing stop/resume?
-
 
 	if BYE and continue received packet drop them
  ***************************************************************************
@@ -506,7 +502,6 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
-	MSQosAnalyzer *analyzer=NULL;
 	LinphoneCallStats stats = call->stats[stats_type];
 	mblk_t *block = NULL;
 
@@ -521,15 +516,6 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	} else if (stats.updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
 		metrics = &report->local_metrics;
 		block = stats.sent_rtcp;
-	}
-	/*should not be done there*/
-	if (call->audiostream->ms.use_rc&&call->audiostream->ms.rc){
-		analyzer=ms_bitrate_controller_get_qos_analyzer(call->audiostream->ms.rc);
-		if (analyzer){
-			ms_qos_analyzer_set_on_action_suggested(analyzer,
-				qos_analyzer_on_action_suggested,
-				&report->local_metrics);
-		}
 	}
 
 	do{
@@ -651,6 +637,23 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
 	bool_t enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
 	switch (state){
+		case LinphoneCallConnected:{
+			int i;
+			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
+			MSQosAnalyzer *analyzer;
+			for (i=0;i<2;i++){
+				if (streams[i]==NULL)
+					continue;
+
+				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
+				if (analyzer){
+					ms_qos_analyzer_set_on_action_suggested(analyzer,
+						qos_analyzer_on_action_suggested,
+						&call->log->reporting.reports[i]->local_metrics);
+				}
+			}
+			break;
+		}
 		case LinphoneCallStreamsRunning:
 			linphone_reporting_update_ip(call);
 			if (!enabled && call->log->reporting.was_video_running){
@@ -668,7 +671,6 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 			}
 			break;
 		default:
-
 			break;
 	}
 }
