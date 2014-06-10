@@ -435,7 +435,9 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	nb_active_streams++;
 
 	if (call->params.has_video){
-		strncpy(md->streams[0].name,"Video",sizeof(md->streams[0].name)-1);
+		strncpy(md->streams[1].rtp_addr,local_ip,sizeof(md->streams[1].rtp_addr));
+		strncpy(md->streams[1].rtcp_addr,local_ip,sizeof(md->streams[1].rtcp_addr));
+		strncpy(md->streams[1].name,"Video",sizeof(md->streams[1].name)-1);
 		md->streams[1].rtp_port=call->media_ports[1].rtp_port;
 		md->streams[1].rtcp_port=call->media_ports[1].rtcp_port;
 		md->streams[1].proto=md->streams[0].proto;
