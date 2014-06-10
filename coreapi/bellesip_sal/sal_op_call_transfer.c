@@ -122,9 +122,9 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 SalOp *sal_call_get_replaces(SalOp *op){
 	if (op && op->replaces){
 		belle_sip_dialog_t* dialog=belle_sip_provider_find_dialog(op->base.root->prov
-												,belle_sip_header_replaces_get_call_id(op->replaces)
-												,belle_sip_header_replaces_get_from_tag(op->replaces)
-												,belle_sip_header_replaces_get_to_tag(op->replaces));
+								,belle_sip_header_replaces_get_call_id(op->replaces)
+								,belle_sip_header_replaces_get_from_tag(op->replaces)
+								,belle_sip_header_replaces_get_to_tag(op->replaces));
 
 		if (dialog) {
 			return (SalOp*)belle_sip_dialog_get_application_data(dialog);

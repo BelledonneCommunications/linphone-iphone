@@ -114,4 +114,9 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message, String url, State state, long timestamp, boolean isRead, boolean isIncoming);
+	/**
+	 * Returns a back pointer to the core managing the chat room.
+	 * @return the LinphoneCore
+	 */
+	LinphoneCore getCore();
 }

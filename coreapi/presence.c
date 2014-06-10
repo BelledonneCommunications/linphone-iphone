@@ -278,6 +278,7 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 
 int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
 	LinphonePresenceService *service;
+	int err = 0;
 
 	if (model == NULL) return -1;
 
@@ -285,8 +286,9 @@ int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, Linph
 	service = linphone_presence_service_new(NULL, basic_status, NULL);
 	if (service == NULL) return -1;
 
-	if (linphone_presence_model_add_service(model, service) < 0) return -1;
-	return 0;
+	err = linphone_presence_model_add_service(model, service);
+	linphone_presence_service_unref(service);
+	return err;
 }
 
 static void presence_service_find_newer_timestamp(LinphonePresenceService *service, time_t *timestamp) {
@@ -363,6 +365,7 @@ LinphonePresenceActivity * linphone_presence_model_get_activity(const LinphonePr
 int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusOpen;
 	LinphonePresenceActivity *activity;
+	int err = 0;
 
 	if (model == NULL) return -1;
 
@@ -383,8 +386,9 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 	linphone_presence_model_clear_activities(model);
 	activity = linphone_presence_activity_new(acttype, description);
 	if (activity == NULL) return -1;
-	return linphone_presence_model_add_activity(model, activity);
-
+	err = linphone_presence_model_add_activity(model, activity);
+	linphone_presence_activity_unref(activity);
+	return err;
 }
 
 unsigned int linphone_presence_model_get_nb_activities(const LinphonePresenceModel *model) {

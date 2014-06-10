@@ -49,6 +49,9 @@ const char *liblinphone_tester_file_prefix="./app/native/assets/";
 const char *liblinphone_tester_file_prefix=".";
 #endif
 
+/* TODO: have the same "static" for QNX and windows as above? */
+const char *liblinphone_tester_writable_dir_prefix = ".";
+
 const char *userhostsfile = "tester_hosts";
 
 void liblinphone_tester_clock_start(MSTimeSpec *start){
@@ -80,8 +83,8 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-               ,username
-               ,realm);
+			   ,username
+			   ,realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
@@ -147,7 +150,7 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	MSList* iterator;
 	MSTimeSpec start;
-	
+
 	liblinphone_tester_clock_start(&start);
 	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
@@ -164,7 +167,7 @@ static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t e
 	MSList* codecs_it;
 	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
-        linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
+		linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
 	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, enable);
@@ -196,6 +199,9 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
+	mgr->v_table.file_transfer_received=file_transfer_received;
+	mgr->v_table.file_transfer_send=file_transfer_send;
+	mgr->v_table.file_transfer_progress_indication=file_transfer_progress_indication;
 	mgr->v_table.is_composing_received=is_composing_received;
 	mgr->v_table.new_subscription_requested=new_subscription_requested;
 	mgr->v_table.notify_presence_received=notify_presence_received;
@@ -285,6 +291,14 @@ int liblinphone_tester_test_suite_index(const char *suite_name) {
 	return -1;
 }
 
+void liblinphone_tester_list_suite_tests(const char *suite_name) {
+	int j;
+	for( j = 0; j < liblinphone_tester_nb_tests(suite_name); j++) {
+		const char *test_name = liblinphone_tester_test_name(suite_name, j);
+		fprintf(stdout, "%s\n", test_name);
+	}
+}
+
 int liblinphone_tester_test_index(const char *suite_name, const char *test_name) {
 	int j,i;
 
@@ -321,6 +335,15 @@ const char * liblinphone_tester_test_name(const char *suite_name, int test_index
 	if (test_index >= test_suite[suite_index]->nb_tests) return NULL;
 	return test_suite[suite_index]->tests[test_index].name;
 }
+
+void liblinphone_tester_set_fileprefix(const char* file_prefix){
+	liblinphone_tester_file_prefix = file_prefix;
+}
+
+void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix){
+	liblinphone_tester_writable_dir_prefix = writable_dir_prefix;
+}
+
 
 void liblinphone_tester_init(void) {
 	add_test_suite(&setup_test_suite);
@@ -383,6 +406,13 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	}
 
 	ret=CU_get_number_of_tests_failed()!=0;
+
+	/* Redisplay list of failed tests on end */
+	if (CU_get_number_of_failure_records()){
+		CU_basic_show_failures(CU_get_failure_list());
+		printf("\n");
+	}
+
 	CU_cleanup_registry();
 	return ret;
 }

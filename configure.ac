@@ -767,22 +767,27 @@ AC_ARG_ENABLE(msg-storage,
 	[enable_msg_storage=auto]
 )
 
-
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+
 if test x$enable_msg_storage != xfalse; then
-	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.6.0],[
+	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
+	if test "$found_sqlite" = "no"; then
+		dnl Check the lib presence in case the PKG-CONFIG version is not found
+		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
+	fi
+	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
-		AC_SUBST(SQLITE3_CFLAGS)
-		AC_SUBST(SQLITE3_LIBS)
-		enable_msg_storage=true
-		],[
-		if test x$enable_msg_storage = xtrue; then 
-			AC_MSG_ERROR([sqlite3 required for message storage not found.])
+	else
+		if test x$enable_msg_storage = xtrue; then
+			AC_MSG_ERROR([sqlite3, required for message storage, not found])
 		fi
 		enable_msg_storage=false
-		] )
+	fi
 	
+	AC_SUBST(SQLITE3_CFLAGS)
+	AC_SUBST(SQLITE3_LIBS)
 fi
+
 
 	
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
@@ -919,7 +924,7 @@ printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
-printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
+printf "* %-30s %s\n" "zRTP encryption"		$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 

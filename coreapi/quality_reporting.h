@@ -28,7 +28,7 @@ extern "C"{
 
 
 /**
- * Linphone quality report sub object storing address related information (ip / port / MAC).
+ * Linphone quality report sub object storing address related information (IP/port/MAC).
  */
 typedef struct reporting_addr {
 	char * ip;
@@ -60,22 +60,22 @@ typedef struct reporting_content_metrics {
 	// jitter buffet - optional
 	struct {
 		int adaptive; // constant
-		int nominal; // no may vary during the call <- average? worst score?
-		int max; // no may vary during the call <- average?
+		int nominal; // average
+		int max; // average
 		int abs_max; // constant
 	} jitter_buffer;
 
 	// packet loss - optional
 	struct {
-		float network_packet_loss_rate;
-		float jitter_buffer_discard_rate;
+		float network_packet_loss_rate; // average
+		float jitter_buffer_discard_rate; // average
 	} packet_loss;
 
 	// delay - optional
 	struct {
 		int round_trip_delay; // no - vary
 		int end_system_delay; // no - not implemented yet
-		int symm_one_way_delay; // no - vary (depends on round_trip_delay) + not implemented (depends on end_system_delay)
+		int symm_one_way_delay; // no - not implemented (depends on end_system_delay)
 		int interarrival_jitter; // no - not implemented yet
 		int mean_abs_jitter; // to check
 	} delay;
@@ -93,6 +93,20 @@ typedef struct reporting_content_metrics {
 		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 	} quality_estimates;
+
+	// Quality of Service analyzer - custom extension
+	/* This should allow us to analysis bad network conditions and quality adaptation
+	on server side*/
+	struct {
+		char* input_leg;
+		char* input;
+		char* output_leg;
+		char* output;
+	} qos_analyzer;
+
+	// for internal processing
+	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)
+
 } reporting_content_metrics_t;
 
 
@@ -119,6 +133,9 @@ typedef struct reporting_session_report {
 	reporting_content_metrics_t remote_metrics; // optional
 
 	char * dialog_id; // optional
+
+	// for internal processing
+	time_t last_report_date;
 } reporting_session_report_t;
 
 reporting_session_report_t * linphone_reporting_new();
@@ -131,23 +148,32 @@ void linphone_reporting_destroy(reporting_session_report_t * report);
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
-void linphone_reporting_update(LinphoneCall * call, int stats_type);
+void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type);
 
 /**
  * Fill IP information about a given call. This function must be called each
- * time state is 'LinphoneCallStreamsRunning' since IP might be updated (if we
+ * time call state is 'LinphoneCallStreamsRunning' since IP might be updated (if we
  * found a direct route between caller and callee for example).
+ * When call is starting, remote IP/port might be the proxy ones to which callee is registered
  * @param call #LinphoneCall object to consider
  *
  */
 void linphone_reporting_update_ip(LinphoneCall * call);
 
 /**
- * Publish the report on the call end.
+ * Publish a session report. This function should be called when session terminates,
+ * media change (codec change or session fork), session terminates due to no media packets being received.
  * @param call #LinphoneCall object to consider
  *
  */
-void linphone_reporting_publish(LinphoneCall* call);
+void linphone_reporting_publish_session_report(LinphoneCall* call);
+
+/**
+ * Publish an interval report. This function should be used for periodic interval
+ * @param call #LinphoneCall object to consider
+ *
+ */
+void linphone_reporting_publish_interval_report(LinphoneCall* call);
 
 /**
  * Update publish report data with fresh RTCP stats, if needed.
@@ -155,7 +181,7 @@ void linphone_reporting_publish(LinphoneCall* call);
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
-void linphone_reporting_call_stats_updated(LinphoneCall *call, int stats_type);
+void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type);
 
 #ifdef __cplusplus
 }

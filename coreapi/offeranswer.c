@@ -99,6 +99,10 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			if (p2->send_fmtp)
 				payload_type_set_send_fmtp(newp,p2->send_fmtp);
 			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
+			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
+				newp->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
+				newp->avpf = payload_type_get_avpf_params(p2);
+			}
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(newp,remote_number);
@@ -156,17 +160,16 @@ static bool_t match_crypto_algo(const SalSrtpCryptoAlgo* local, const SalSrtpCry
 				result->algo = remote[i].algo;
 				/* We're answering an SDP offer. Supply our master key, associated with the remote supplied tag */
 				if (use_local_key) {
-					strncpy(result->master_key, local[j].master_key, 41);
+					strncpy(result->master_key, local[j].master_key, sizeof(result->master_key) );
 					result->tag = remote[i].tag;
 					*choosen_local_tag = local[j].tag;
 				}
 				/* We received an answer to our SDP crypto proposal. Copy matching algo remote master key to result, and memorize local tag */
 				else {
-					strncpy(result->master_key, remote[i].master_key, 41);
+					strncpy(result->master_key, remote[i].master_key, sizeof(result->master_key));
 					result->tag = local[j].tag;
 					*choosen_local_tag = local[j].tag;
 				}
-				result->master_key[40] = '\0';
 				return TRUE;
 			}
 		}
@@ -234,7 +237,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	}else{
 		result->rtp_port=0;
 	}
-	if (result->proto == SalProtoRtpSavp) {
+	if (stream_description_has_srtp(result) == TRUE) {
 		/* verify crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
@@ -260,7 +263,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	}else{
 		result->rtp_port=0;
 	}
-	if (result->proto == SalProtoRtpSavp) {
+	if (stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
@@ -324,10 +327,11 @@ static bool_t local_stream_not_already_used(const SalMediaDescription *result, c
 	return TRUE;
 }
 
-/*in answering mode, we consider that if we are able to make SAVP, then we can do AVP as well*/
-static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote){
-	if (local==remote) return TRUE;
-	if (remote==SalProtoRtpAvp && local==SalProtoRtpSavp) return TRUE;
+/*in answering mode, we consider that if we are able to make AVPF/SAVP/SAVPF, then we can do AVP as well*/
+static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
+	if (local == remote) return TRUE;
+	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpSavpf))) return TRUE;
+	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf)) return TRUE;
 	return FALSE;
 }
 
