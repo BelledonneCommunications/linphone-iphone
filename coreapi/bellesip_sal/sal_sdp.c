@@ -344,7 +344,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
 	}
 
-	for ( i=0; i<desc->n_total_streams; i++ ) {
+	for ( i=0; i<desc->nb_streams; i++ ) {
 		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;
@@ -616,7 +616,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	const char* value;
 	const char *mtype,*proto;
 
-	stream=&md->streams[md->n_total_streams];
+	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
 
 	memset ( stream,0,sizeof ( *stream ) );
@@ -641,9 +641,6 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 
 	stream->rtp_port=belle_sdp_media_get_media_port ( media );
-
-	if ( stream->rtp_port > 0 )
-		md->n_active_streams++;
 
 	mtype = belle_sdp_media_get_media_type ( media );
 	if ( strcasecmp ( "audio", mtype ) == 0 ) {
@@ -708,7 +705,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined
 	sdp_parse_media_rtcp_xr_parameters(media_desc, &stream->rtcp_xr);
 
-	md->n_total_streams++;
+	md->nb_streams++;
 	return stream;
 }
 
@@ -720,8 +717,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	belle_sdp_session_name_t *sname;
 	const char* value;
 	
-	desc->n_active_streams = 0;
-	desc->n_total_streams = 0;
+	desc->nb_streams = 0;
 	desc->dir = SalStreamSendRecv;
 
 	if ( ( cnx=belle_sdp_session_description_get_connection ( session_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
@@ -762,8 +758,8 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	for ( media_desc_it=belle_sdp_session_description_get_media_descriptions ( session_desc )
 						; media_desc_it!=NULL
 			; media_desc_it=media_desc_it->next ) {
-		if (desc->n_total_streams==SAL_MEDIA_DESCRIPTION_MAX_STREAMS){
-			ms_warning("Cannot convert mline at position [%i] from SDP to SalMediaDescription",desc->n_total_streams);
+		if (desc->nb_streams==SAL_MEDIA_DESCRIPTION_MAX_STREAMS){
+			ms_warning("Cannot convert mline at position [%i] from SDP to SalMediaDescription",desc->nb_streams);
 			break;
 		}
 		media_desc=BELLE_SDP_MEDIA_DESCRIPTION ( media_desc_it->data );

@@ -237,7 +237,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	}else{
 		result->rtp_port=0;
 	}
-	if (stream_description_has_srtp(result) == TRUE) {
+	if (sal_stream_description_has_srtp(result) == TRUE) {
 		/* verify crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
@@ -263,7 +263,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	}else{
 		result->rtp_port=0;
 	}
-	if (stream_description_has_srtp(result) == TRUE) {
+	if (sal_stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
@@ -289,7 +289,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	int i,j;
 	const SalStreamDescription *ls,*rs;
 
-	for(i=0,j=0;i<local_offer->n_total_streams;++i){
+	for(i=0,j=0;i<local_offer->nb_streams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
@@ -303,8 +303,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		}
 		else ms_warning("No matching stream for %i",i);
 	}
-	result->n_active_streams=j;
-	result->n_total_streams=local_offer->n_total_streams;
+	result->nb_streams=local_offer->nb_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
 	memcpy(&result->rtcp_xr, &local_offer->rtcp_xr, sizeof(result->rtcp_xr));
@@ -317,7 +316,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 
 static bool_t local_stream_not_already_used(const SalMediaDescription *result, const SalStreamDescription *stream){
 	int i;
-	for(i=0;i<result->n_total_streams;++i){
+	for(i=0;i<result->nb_streams;++i){
 		const SalStreamDescription *ss=&result->streams[i];
 		if (strcmp(ss->name,stream->name)==0){
 			ms_message("video stream already used in answer");
@@ -337,8 +336,9 @@ static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
 
 static const SalStreamDescription *find_local_matching_stream(const SalMediaDescription *result, const SalMediaDescription *local_capabilities, const SalStreamDescription *remote_stream){
 	int i;
-	for(i=0;i<local_capabilities->n_active_streams;++i){
+	for(i=0;i<local_capabilities->nb_streams;++i){
 		const SalStreamDescription *ss=&local_capabilities->streams[i];
+		if (!sal_stream_description_active(ss)) continue;
 		if (ss->type==remote_stream->type && proto_compatible(ss->proto,remote_stream->proto)
 			&& local_stream_not_already_used(result,ss)) return ss;
 	}
@@ -356,15 +356,13 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	int i;
 	const SalStreamDescription *ls=NULL,*rs;
 
-	result->n_active_streams=0;
-	for(i=0;i<remote_offer->n_total_streams;++i){
+	for(i=0;i<remote_offer->nb_streams;++i){
 		rs=&remote_offer->streams[i];
 		if (rs->proto!=SalProtoOther){
 			ls=find_local_matching_stream(result,local_capabilities,rs);
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
-			if (result->streams[i].rtp_port!=0) result->n_active_streams++;
 
 			// Handle media RTCP XR attribute
 			memset(&result->streams[i].rtcp_xr, 0, sizeof(result->streams[i].rtcp_xr));
@@ -393,7 +391,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			}
 		}
 	}
-	result->n_total_streams=i;
+	result->nb_streams=i;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
 	result->bandwidth=local_capabilities->bandwidth;

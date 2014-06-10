@@ -215,8 +215,7 @@ typedef struct SalMediaDescription{
 	char name[64];
 	char addr[64];
 	char username[64];
-	int n_active_streams;
-	int n_total_streams;
+	int nb_streams;
 	int bandwidth;
 	unsigned int session_ver;
 	unsigned int session_id;
@@ -259,6 +258,12 @@ SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaD
 SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMediaDescription *md, SalStreamType type);
 SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type);
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
+bool_t sal_stream_description_active(const SalStreamDescription *sd);
+bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd);
+bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd);
+bool_t sal_media_description_has_avpf(const SalMediaDescription *md);
+bool_t sal_media_description_has_srtp(const SalMediaDescription *md);
+int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 
 
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/

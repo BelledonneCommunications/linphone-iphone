@@ -372,7 +372,7 @@ static void send_report(const LinphoneCall* call, reporting_session_report_t * r
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
 	int count;
 	if (smd != NULL) {
-		for (count = 0; count < smd->n_total_streams; ++count) {
+		for (count = 0; count < smd->nb_streams; ++count) {
 			if (smd->streams[count].type == sal_stream_type) {
 				return &smd->streams[count];
 			}

@@ -47,7 +47,8 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < new_md->n_active_streams; i++) {
+	for (i = 0; i < new_md->nb_streams; i++) {
+		if (!sal_stream_description_active(&new_md->streams[i])) continue;
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
 		} else if (new_md->streams[i].type == SalVideo) {
@@ -108,7 +109,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		ms_error("linphone_core_update_streams() called with null media description");
 		return;
 	}
-	if (call->biggestdesc==NULL || new_md->n_total_streams>call->biggestdesc->n_total_streams){
+	if (call->biggestdesc==NULL || new_md->nb_streams>call->biggestdesc->nb_streams){
 		/*we have been offered and now are ready to proceed, or we added a new stream*/
 		/*store the media description to remember the mapping of calls*/
 		if (call->biggestdesc){
@@ -312,7 +313,8 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 	SalStreamDescription *ref_stream,*new_stream;
 	ms_message("Early media response received from another branch, checking if media can be forked to this new destination.");
 	
-	for (i=0;i<cur_md->n_active_streams;++i){
+	for (i=0;i<cur_md->nb_streams;++i){
+		if (!sal_stream_description_active(&cur_md->streams[i])) continue;
 		ref_stream=&cur_md->streams[i];
 		new_stream=&md->streams[i];
 		if (ref_stream->type==new_stream->type && ref_stream->payloads && new_stream->payloads){
@@ -738,7 +740,8 @@ static void call_failure(SalOp *op){
 				|| (call->state == LinphoneCallOutgoingRinging) /* Push notification case */
 				|| (call->state == LinphoneCallOutgoingEarlyMedia)) {
 				int i;
-				for (i = 0; i < call->localdesc->n_active_streams; i++) {
+				for (i = 0; i < call->localdesc->nb_streams; i++) {
+					if (!sal_stream_description_active(&call->localdesc->streams[i])) continue;
 					if (call->params.media_encryption == LinphoneMediaEncryptionSRTP) {
 						if (call->params.avpf_enabled == TRUE) {
 							if (i == 0) ms_message("Retrying call [%p] with SAVP", call);

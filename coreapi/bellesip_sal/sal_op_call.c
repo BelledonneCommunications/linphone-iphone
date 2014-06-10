@@ -57,7 +57,7 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<h->result->n_active_streams;++i){
+		for(i=0;i<sal_media_description_get_nb_active_streams(h->result);++i){
 			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
 			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
@@ -368,7 +368,7 @@ static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_descriptio
 }
 
 static int is_media_description_acceptable(SalMediaDescription *md){
-	if (md->n_total_streams==0){
+	if (md->nb_streams==0){
 		ms_warning("Media description does not define any stream.");
 		return FALSE;
 	}

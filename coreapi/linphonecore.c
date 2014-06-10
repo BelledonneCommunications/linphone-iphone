@@ -2977,7 +2977,7 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 }
 
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
-	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !media_description_has_srtp(md);
+	return linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP && !sal_media_description_has_srtp(md);
 }
 
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
@@ -3431,8 +3431,8 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		if (md) {
 			call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 			/* Handle AVPF and SRTP. */
-			call->params.avpf_enabled = media_description_has_avpf(md);
-			if ((media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
+			call->params.avpf_enabled = sal_media_description_has_avpf(md);
+			if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
 				call->params.media_encryption = LinphoneMediaEncryptionSRTP;
 			}
 		}
