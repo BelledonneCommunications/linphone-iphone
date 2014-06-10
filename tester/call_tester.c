@@ -246,14 +246,24 @@ static void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
 }
 
 static void simple_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	belle_sip_object_enable_leak_detector(TRUE);
+	int begin=belle_sip_object_get_object_count();
+	int leaked_objects;
+	{	
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-	CU_ASSERT_TRUE(call(pauline,marie));
-	liblinphone_tester_check_rtcp(marie,pauline);
-	end_call(marie,pauline);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
+		CU_ASSERT_TRUE(call(pauline,marie));
+		liblinphone_tester_check_rtcp(marie,pauline);
+		end_call(marie,pauline);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	}
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
 }
 
 static void call_with_specified_codec_bitrate(void) {

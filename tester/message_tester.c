@@ -28,7 +28,7 @@
 #endif
 
 
-static char* message_external_body_url;
+static char* message_external_body_url=NULL;
 
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
 	stats* counters = get_stats(lc);
@@ -52,7 +52,8 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 		linphone_chat_message_start_file_download(message);
 	} else if (linphone_chat_message_get_external_body_url(message)) {
 		counters->number_of_LinphoneMessageExtBodyReceived++;
-		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
+		if (message_external_body_url)
+			CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
 	}
 }
 

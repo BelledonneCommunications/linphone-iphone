@@ -44,8 +44,8 @@ void sal_op_release(SalOp *op){
 void sal_op_release_impl(SalOp *op){
 	ms_message("Destroying op [%p] of type [%s]",op,sal_op_type_to_string(op->type));
 	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);
+	sal_remove_pending_auth(op->base.root,op);
 	if (op->auth_info) {
-		sal_remove_pending_auth(op->base.root,op);
 		sal_auth_info_delete(op->auth_info);
 	}
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);

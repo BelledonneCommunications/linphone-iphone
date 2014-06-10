@@ -817,7 +817,11 @@ static void call_released(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call!=NULL){
 		linphone_call_set_state(call,LinphoneCallReleased,"Call released");
-	}else ms_error("call_released() for already destroyed call ?");
+	}else{
+		/*we can arrive here when the core manages call at Sal level without creating a LinphoneCall object. Typicially:
+		 * - when declining an incoming call with busy because maximum number of calls is reached.
+		 */
+	}
 }
 
 static void auth_failure(SalOp *op, SalAuthInfo* info) {

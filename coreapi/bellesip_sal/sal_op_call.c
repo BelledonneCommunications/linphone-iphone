@@ -167,6 +167,7 @@ static void cancelling_invite(SalOp* op ){
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
+
 static int vfu_retry (void *user_data, unsigned int events) {
 	SalOp *op=(SalOp *)user_data;
 	sal_call_send_vfu_request(op);

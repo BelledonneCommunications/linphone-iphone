@@ -97,14 +97,13 @@ void sal_disable_logs() {
 
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
-		sal->pending_auths=ms_list_append(sal->pending_auths,sal_op_ref(op));
+		sal->pending_auths=ms_list_append(sal->pending_auths,op);
 	}
 }
 
 void sal_remove_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)){
 		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
-		sal_op_unref(op);
 	}
 }
 
@@ -157,7 +156,10 @@ void sal_process_authentication(SalOp *op) {
 		}
 	}
 	/*always store auth info, for case of wrong credential*/
-	if (op->auth_info) sal_auth_info_delete(op->auth_info);
+	if (op->auth_info) {
+		sal_auth_info_delete(op->auth_info);
+		op->auth_info=NULL;
+	}
 	if (auth_list){
 		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
 		op->auth_info=sal_auth_info_create(auth_event);
