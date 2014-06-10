@@ -90,11 +90,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     [super viewDidLoad];
 
-    // insert invisible volumeView to prevent iOS from displaying the volume notification all the time.
     volumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(-100,-100,16,16)];
     volumeView.showsRouteButton = false;
     volumeView.userInteractionEnabled = false;
-    [self.view addSubview:volumeView];
 
     [self.view addSubview: mainViewController.view];
 }
@@ -179,6 +177,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     // Avoid IOS 4 bug
     loadCount--;
+}
+
+- (void)setVolumeHidden:(BOOL)hidden {
+    // sometimes when placing a call, the volume view will appear. Inserting a
+    // carefully hidden MPVolumeView into the view hierarchy will hide it
+    if( hidden ){
+        if ( !(volumeView.superview == self.view) ){
+            [self.view addSubview:volumeView];
+        }
+    } else {
+        if( volumeView.superview == self.view ){
+            [volumeView removeFromSuperview];
+        }
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

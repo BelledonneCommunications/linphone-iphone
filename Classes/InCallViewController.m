@@ -36,7 +36,9 @@
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
-@implementation InCallViewController
+@implementation InCallViewController {
+    BOOL hiddenVolume;
+}
 
 @synthesize callTableController;
 @synthesize callTableView;
@@ -116,6 +118,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
+
+    [[PhoneMainView instance] setVolumeHidden:TRUE];
+    hiddenVolume = TRUE;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -128,6 +133,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callTableController viewWillDisappear:animated];
     }
     
+    if( hiddenVolume ) {
+        [[PhoneMainView instance] setVolumeHidden:FALSE];
+        hiddenVolume = FALSE;
+    }
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self 
@@ -211,6 +220,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
 	LinphoneCore *lc = [LinphoneManager getLc];
+
+    if( hiddenVolume ){
+        [[PhoneMainView instance] setVolumeHidden:FALSE];
+        hiddenVolume = FALSE;
+    }
+
     // Update table
     [callTableView reloadData];  
     
