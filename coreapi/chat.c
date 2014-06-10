@@ -477,7 +477,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 								while (contentType[contentTypeIndex]!='/' && contentType[contentTypeIndex]!='\0') {
 									contentTypeIndex++;
 								}
-								msg->file_transfer_information->type = ms_strdup((char *)contentType, contentTypeIndex);
+								msg->file_transfer_information->type = ms_strndup((char *)contentType, contentTypeIndex);
 								msg->file_transfer_information->subtype = ms_strdup(((char *)contentType+contentTypeIndex+1));
 								xmlFree(contentType);
 							}
