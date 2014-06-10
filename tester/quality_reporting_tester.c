@@ -139,7 +139,7 @@ static void quality_reporting_interval_report() {
 static void quality_reporting_session_report_if_video_stopped() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* call_marie = NULL;
+	/*LinphoneCall* call_marie = NULL;*/
 	LinphoneCall* call_pauline = NULL;
 	LinphoneCallParams* pauline_params;
 	LinphoneCallParams* marie_params;
@@ -153,7 +153,7 @@ static void quality_reporting_session_report_if_video_stopped() {
 	pauline_params=linphone_core_create_default_call_parameters(pauline->lc);
 	linphone_call_params_enable_video(pauline_params,TRUE);
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,pauline_params,marie_params));
-	call_marie=linphone_core_get_current_call(marie->lc);
+	/*call_marie=linphone_core_get_current_call(marie->lc);*/
 	call_pauline=linphone_core_get_current_call(pauline->lc);
 
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
