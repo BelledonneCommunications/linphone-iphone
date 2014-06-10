@@ -1057,6 +1057,32 @@ static void call_with_ice_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void video_call_with_ice_no_matching_audio_codecs(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCall *out_call;
+
+	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
+	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
+	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc, "stun.linphone.org");
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc, "stun.linphone.org");
+
+	out_call = linphone_core_invite(marie->lc, "pauline");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingInit, 1));
+
+	/* flexisip will retain the 488 until the "urgent reply" timeout arrives. */
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1, 6000));
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingReceived, 0);
+
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 #endif /*VIDEO_ENABLED*/
 
 static void _call_with_media_relay(bool_t random_ports) {
@@ -2383,6 +2409,7 @@ test_t call_tests[] = {
 	{ "Call with multiple early media", multiple_early_media },
 	{ "Call with ICE from video to non-video", call_with_ice_video_to_novideo},
 	{ "Call with ICE and video added", call_with_ice_video_added },
+	{ "Video call with ICE no matching audio codecs", video_call_with_ice_no_matching_audio_codecs },
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
