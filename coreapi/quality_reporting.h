@@ -98,10 +98,11 @@ typedef struct reporting_content_metrics {
 	/* This should allow us to analysis bad network conditions and quality adaptation
 	on server side*/
 	struct {
-		char* input_leg;
-		char* input;
-		char* output_leg;
-		char* output;
+		char* timestamp; /*time of each decision in seconds*/
+		char* input_leg; /*input parameters' name*/
+		char* input; /*set of inputs for each decision, semicolon separated*/
+		char* output_leg; /*output parameters' name*/
+		char* output; /*set of outputs for each decision, semicolon separated*/
 	} qos_analyzer;
 
 	// for internal processing

@@ -42,8 +42,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	- The Session report when
 		codec change
 		session fork
-
-	if BYE and continue received packet drop them
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -154,6 +152,7 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	if (rm.signal.level != 127) ret|=METRICS_SIGNAL;
 	if (rm.signal.noise_level != 127) ret|=METRICS_SIGNAL;
 
+	if (rm.qos_analyzer.timestamp!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 	if (rm.qos_analyzer.input_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 	if (rm.qos_analyzer.input!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
 	if (rm.qos_analyzer.output_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
@@ -287,6 +286,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 	if ((available_metrics & METRICS_ADAPTIVE_ALGORITHM) != 0){
 		append_to_buffer(buffer, size, offset, "\r\nAdaptiveAlg:");
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " TS=%s", rm.qos_analyzer.timestamp);
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN_LEG=%s", rm.qos_analyzer.input_leg);
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN=%s", rm.qos_analyzer.input);
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT_LEG=%s", rm.qos_analyzer.output_leg);
@@ -415,6 +415,9 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** data){
 	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
 	char * appendbuf;
+
+	appendbuf=ms_strdup_printf("%s%d;", metrics->qos_analyzer.timestamp?metrics->qos_analyzer.timestamp:"", ms_time(0));
+	STR_REASSIGN(metrics->qos_analyzer.timestamp,appendbuf);
 
 	STR_REASSIGN(metrics->qos_analyzer.input_leg, ms_strdup(data[0]));
 	appendbuf=ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", data[1]);
@@ -575,6 +578,53 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 	return publish_report(call, "VQIntervalReport");
 }
 
+void linphone_reporting_call_state_updated(LinphoneCall *call){
+	LinphoneCallState state=linphone_call_get_state(call);
+	bool_t enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
+
+	switch (state){
+		case LinphoneCallStreamsRunning:{
+			int i;
+			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
+			MSQosAnalyzer *analyzer;
+			for (i=0;i<2;i++){
+				if (streams[i]==NULL||streams[i]->rc==NULL){
+					ms_message("QualityReporting[%p] Cannot set on_action_suggested"
+					" callback for %s stream because something is null", call, i?"video":"audio");
+					continue;
+				}
+
+				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
+				if (analyzer){
+					ms_qos_analyzer_set_on_action_suggested(analyzer,
+						qos_analyzer_on_action_suggested,
+						&call->log->reporting.reports[i]->local_metrics);
+				}
+			}
+			linphone_reporting_update_ip(call);
+			if (!enabled && call->log->reporting.was_video_running){
+				ms_message("QualityReporting[%p]: Send midterm report with status %d",
+					call,
+					send_report(call, call->log->reporting.reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport")
+				);
+			}
+			call->log->reporting.was_video_running=enabled;
+			break;
+		}
+		case LinphoneCallEnd:{
+			if (call->log->status==LinphoneCallSuccess || call->log->status==LinphoneCallAborted){
+				ms_message("QualityReporting[%p]: Send end reports with status %d",
+					call,
+					linphone_reporting_publish_session_report(call, TRUE)
+				);
+			}
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+}
 reporting_session_report_t * linphone_reporting_new() {
 	int i;
 	reporting_session_report_t * rm = ms_new0(reporting_session_report_t,1);
@@ -625,6 +675,7 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
 	if (report->remote_metrics.session_description.fmtp != NULL) ms_free(report->remote_metrics.session_description.fmtp);
 	if (report->remote_metrics.session_description.payload_desc != NULL) ms_free(report->remote_metrics.session_description.payload_desc);
+	if (report->local_metrics.qos_analyzer.timestamp != NULL) ms_free(report->local_metrics.qos_analyzer.timestamp);
 	if (report->local_metrics.qos_analyzer.input_leg != NULL) ms_free(report->local_metrics.qos_analyzer.input_leg);
 	if (report->local_metrics.qos_analyzer.input != NULL) ms_free(report->local_metrics.qos_analyzer.input);
 	if (report->local_metrics.qos_analyzer.output_leg != NULL) ms_free(report->local_metrics.qos_analyzer.output_leg);
@@ -633,46 +684,4 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 	ms_free(report);
 }
 
-void linphone_reporting_call_state_updated(LinphoneCall *call){
-	LinphoneCallState state=linphone_call_get_state(call);
-	bool_t enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
-	switch (state){
-		case LinphoneCallConnected:{
-			int i;
-			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
-			MSQosAnalyzer *analyzer;
-			for (i=0;i<2;i++){
-				if (streams[i]==NULL||streams[i]->rc==NULL)
-					continue;
 
-				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
-				if (analyzer){
-					ms_qos_analyzer_set_on_action_suggested(analyzer,
-						qos_analyzer_on_action_suggested,
-						&call->log->reporting.reports[i]->local_metrics);
-				}
-			}
-			break;
-		}
-		case LinphoneCallStreamsRunning:
-			linphone_reporting_update_ip(call);
-			if (!enabled && call->log->reporting.was_video_running){
-				ms_message("QualityReporting[%p]: Send midterm report with status %d",
-					call,
-					send_report(call, call->log->reporting.reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport")
-				);
-			}
-			call->log->reporting.was_video_running=enabled;
-			break;
-		case LinphoneCallEnd:
-			if (call->log->status==LinphoneCallSuccess || call->log->status==LinphoneCallAborted){
-				ms_message("QualityReporting[%p]: Send report with status %d",
-					call,
-					linphone_reporting_publish_session_report(call, TRUE)
-				);
-			}
-			break;
-		default:
-			break;
-	}
-}
