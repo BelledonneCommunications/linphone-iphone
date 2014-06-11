@@ -58,6 +58,7 @@ static void quality_reporting_not_used_without_config() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
 static void quality_reporting_not_sent_if_call_not_started() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -88,6 +89,26 @@ static void quality_reporting_not_sent_if_call_not_started() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void quality_reporting_not_sent_if_low_bandwidth() {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCallParams* marie_params;
+
+	marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_enable_low_bandwidth(marie_params,TRUE);
+
+	CU_ASSERT_TRUE(call_with_params(marie,pauline,marie_params,NULL));
+
+	linphone_core_terminate_all_calls(marie->lc);
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void quality_reporting_at_call_termination() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -178,10 +199,10 @@ static void quality_reporting_session_report_if_video_stopped() {
 	linphone_core_manager_destroy(pauline);
 }
 
-
 test_t quality_reporting_tests[] = {
 	{ "Not used if no config", quality_reporting_not_used_without_config},
 	{ "Call term session report not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
+	{ "Call term session report not sent if low bandwidth", quality_reporting_not_sent_if_low_bandwidth},
 	{ "Call term session report sent if call ended normally", quality_reporting_at_call_termination},
 	{ "Interval report if interval is configured", quality_reporting_interval_report},
 	{ "Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped},

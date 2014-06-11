@@ -31,17 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ***************************************************************************
-	For codecs that are able to change sample rates, the lowest and highest sample rates MUST be reported (e.g., 8000;16000).
-
-	rlq value: need algo to compute it
-
-	3.4 overload avoidance?
-	   a.  Send only one report at the end of each call. (audio | video?)
-	   b.  Use interval reports only on "problem" calls that are being closely monitored.
-
-	- The Session report when
-		codec change
-		session fork
+	rtt SR recuperer
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -108,8 +98,6 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 		metrics[i]->jitter_buffer.max = 0;
 
 		metrics[i]->delay.round_trip_delay = 0;
-
-		/*metrics[i]->delay.symm_one_way_delay = 0;*/
 	}
 	report->last_report_date = ms_time(NULL);
 }
@@ -164,8 +152,6 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 		IF_NUM_IN_RANGE(rm.delay.round_trip_delay, 0, 65535, ret|=METRICS_DELAY);
 		IF_NUM_IN_RANGE(rm.quality_estimates.moslq/rm.rtcp_xr_count, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
 		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
-		IF_NUM_IN_RANGE(rm.quality_estimates.rlq/rm.rtcp_xr_count, 1, 120, ret|=METRICS_QUALITY_ESTIMATES);
-		IF_NUM_IN_RANGE(rm.quality_estimates.rcq/rm.rtcp_xr_count, 1, 120, ret|=METRICS_QUALITY_ESTIMATES);
 	}
 
 	return ret;
@@ -210,18 +196,13 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " PD=%s", rm.session_description.payload_desc);
 			APPEND_IF(buffer, size, offset, " SR=%d", rm.session_description.sample_rate, rm.session_description.sample_rate != -1);
 			APPEND_IF(buffer, size, offset, " FD=%d", rm.session_description.frame_duration, rm.session_description.frame_duration != -1);
-			/*append_to_buffer(buffer, size, offset, " FO=%d", rm.session_description.frame_ocets);*/
-			/*append_to_buffer(buffer, size, offset, " FPP=%d", rm.session_description.frames_per_sec);*/
-			/*append_to_buffer(buffer, size, offset, " PPS=%d", rm.session_description.packets_per_sec);*/
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " FMTP=\"%s\"", rm.session_description.fmtp);
 			APPEND_IF(buffer, size, offset, " PLC=%d", rm.session_description.packet_loss_concealment, rm.session_description.packet_loss_concealment != -1);
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " SSUP=%s", rm.session_description.silence_suppression_state);*/
 	}
 
 	if ((available_metrics & METRICS_JITTER_BUFFER) != 0){
 		append_to_buffer(buffer, size, offset, "\r\nJitterBuffer:");
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBA=%d", rm.jitter_buffer.adaptive, 0, 3);
-			/*APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBR=%d", rm.jitter_buffer.rate, 0, 15);*/
 			if (rm.rtcp_xr_count){
 				APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBN=%d", rm.jitter_buffer.nominal/rm.rtcp_xr_count, 0, 65535);
 				APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " JBM=%d", rm.jitter_buffer.max/rm.rtcp_xr_count, 0, 65535);
@@ -250,8 +231,6 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 				APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " RTD=%d", rm.delay.round_trip_delay/rm.rtcp_xr_count, 0, 65535);
 			}
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " ESD=%d", rm.delay.end_system_delay, 0, 65535);
-			/*APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " OWD=%d", rm.delay.one_way_delay, 0, 65535);*/
-			/*APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " SOWD=%d", rm.delay.symm_one_way_delay, 0, 65535);*/
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " IAJ=%d", rm.delay.interarrival_jitter, 0, 65535);
 			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " MAJ=%d", rm.delay.mean_abs_jitter, 0, 65535);
 	}
@@ -260,7 +239,6 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 		append_to_buffer(buffer, size, offset, "\r\nSignal:");
 			APPEND_IF(buffer, size, offset, " SL=%d", rm.signal.level, rm.signal.level != 127);
 			APPEND_IF(buffer, size, offset, " NL=%d", rm.signal.noise_level, rm.signal.noise_level != 127);
-			/*append_to_buffer(buffer, size, offset, " RERL=%d", rm.signal.residual_echo_return_loss);*/
 	}
 
 	/*if quality estimates metrics are available, rtcp_xr_count should be always not null*/
@@ -269,19 +247,8 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq/rm.rtcp_xr_count));
 
 		append_to_buffer(buffer, size, offset, "\r\nQualityEst:");
-			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " RLQ=%d", rm.quality_estimates.rlq/rm.rtcp_xr_count, 1, 120);
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " RLQEstAlg=%s", rm.quality_estimates.rlqestalg);*/
-			APPEND_IF_NUM_IN_RANGE(buffer, size, offset, " RCQ=%d", rm.quality_estimates.rcq/rm.rtcp_xr_count, 1, 120);
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " RCQEstAlgo=%s", rm.quality_estimates.rcqestalg);*/
-			/*append_to_buffer(buffer, size, offset, " EXTRI=%d", rm.quality_estimates.extri);*/
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " ExtRIEstAlg=%s", rm.quality_estimates.extriestalg);*/
-			/*append_to_buffer(buffer, size, offset, " EXTRO=%d", rm.quality_estimates.extro);*/
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " ExtROEstAlg=%s", rm.quality_estimates.extroutestalg);*/
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSLQ=%s", moslq_str);
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSLQEstAlgo=%s", rm.quality_estimates.moslqestalg);*/
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSCQ=%s", moscq_str);
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSCQEstAlgo=%s", rm.quality_estimates.moscqestalg);*/
-			/*APPEND_IF_NOT_NULL_STR(buffer, size, offset, " QoEEstAlg=%s", rm.quality_estimates.qoestalg);*/
 	}
 
 	if ((available_metrics & METRICS_ADAPTIVE_ALGORITHM) != 0){
@@ -304,7 +271,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 	ms_free(moscq_str);
 }
 
-static int send_report(const LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
+static int send_report(LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
 	LinphoneContent content = {0};
 	LinphoneAddress *addr;
 	int expires = -1;
@@ -312,6 +279,12 @@ static int send_report(const LinphoneCall* call, reporting_session_report_t * re
 	size_t size = 2048;
 	char * buffer;
 	int ret = 0;
+
+	/*if we are on a low bandwidth network, do not send reports to not overload it*/
+	if (linphone_call_params_low_bandwidth_enabled(linphone_call_get_current_params(call))){
+		ms_warning("QualityReporting[%p]: Avoid sending reports on low bandwidth network", call);
+		return 1;
+	}
 
 	/*if the call was hung up too early, we might have invalid IPs information
 	in that case, we abort the report since it's not useful data*/
@@ -323,14 +296,14 @@ static int send_report(const LinphoneCall* call, reporting_session_report_t * re
 			, report_event
 			, linphone_call_get_duration(call)
 			, (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0) ? "local" : "remote");
-		return 1;
+		return 2;
 	}
 
 	addr = linphone_address_new(linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy));
 	if (addr == NULL) {
 		ms_warning("QualityReporting[%p]: Asked to submit reporting statistics but no collector address found"
 			, call);
-		return 2;
+		return 3;
 	}
 
 	buffer = (char *) ms_malloc(size);
@@ -364,7 +337,7 @@ static int send_report(const LinphoneCall* call, reporting_session_report_t * re
 
 	/*(WIP) Memory leak: PUBLISH message is never freed (issue 1283)*/
 	if (! linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content)){
-		ret=3;
+		ret=4;
 	}
 	linphone_address_destroy(addr);
 
@@ -502,6 +475,11 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	}
 }
 
+/* generate random float in interval ] 0.9 t ; 1.1 t [*/
+static float reporting_rand(float t){
+	return t * (.2f * (rand() / (RAND_MAX * 1.0f)) + 0.9f);
+}
+
 void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
@@ -528,7 +506,6 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 
 			metrics->rtcp_xr_count++;
 
-			metrics->quality_estimates.rcq += rtcp_XR_voip_metrics_get_r_factor(block);
 			metrics->quality_estimates.moslq += rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
 			metrics->quality_estimates.moscq += rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
 
@@ -545,8 +522,9 @@ void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
 		}
 	}while(rtcp_next_packet(block));
 
-	/* check if we should send an interval report */
-	if (report_interval>0 && ms_time(NULL)-report->last_report_date>report_interval){
+	/* check if we should send an interval report - use a random sending time to
+	dispatch reports and avoid sending them too close from each other */
+	if (report_interval>0 && ms_time(NULL)-report->last_report_date>reporting_rand(report_interval)){
 		linphone_reporting_publish_interval_report(call);
 	}
 }
@@ -625,6 +603,7 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 		}
 	}
 }
+
 reporting_session_report_t * linphone_reporting_new() {
 	int i;
 	reporting_session_report_t * rm = ms_new0(reporting_session_report_t,1);

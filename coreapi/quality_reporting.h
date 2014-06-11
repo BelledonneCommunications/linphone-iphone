@@ -88,8 +88,6 @@ typedef struct reporting_content_metrics {
 
 	// quality estimates - optional
 	struct {
-		int rlq; // linked to moslq - in [0..120]
-		int rcq; //voip metrics R factor - no - vary or avg  in [0..120]
 		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 	} quality_estimates;
