@@ -69,20 +69,19 @@ static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *messag
 		/*first chunk, creating file*/
 		file = open("receive_file.dump",O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
 		linphone_chat_message_set_user_data(message,(void*)(long)(0x00000000FFFFFFFF&file)); /*store fd for next chunks*/
-	} else {
-		/*next chunk*/
-		file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
+	}
 
-		if (size==0) {
+	/*next chunk*/
+	file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
 
-			printf("File transfert completed\n");
-			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-			linphone_chat_message_destroy(message);
-			close(file);
-			running=FALSE;
-		} else { /* store content on a file*/
-			write(file,buff,size);
-		}
+	if (size==0) {
+		printf("File transfert completed\n");
+		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+		linphone_chat_message_destroy(message);
+		close(file);
+		running=FALSE;
+	} else { /* store content on a file*/
+		write(file,buff,size);
 	}
 }
 
@@ -192,9 +191,6 @@ int main(int argc, char *argv[]){
 
 	/*now create a chat message with custom content*/
 	LinphoneChatMessage* chat_message = linphone_chat_room_create_file_transfer_message(chat_room,&content);
-	if (chat_message == NULL) {
-		printf("returned message is null\n");
-	}
 
 	/*initiating file transfer*/
 	linphone_chat_room_send_message2(chat_room, chat_message, linphone_file_transfer_state_changed, NULL);

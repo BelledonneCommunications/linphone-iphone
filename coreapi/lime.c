@@ -436,6 +436,56 @@ int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageL
 	return 0;
 }
 
+
+int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
+	gcm_context *gcmContext;
+
+	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
+		gcmContext = (gcm_context *)malloc(sizeof(gcm_context));
+		*cryptoContext = (void *)gcmContext;
+		gcm_init(gcmContext, POLARSSL_CIPHER_ID_AES, key, 192);
+		gcm_starts(gcmContext, GCM_ENCRYPT, key+24, 8, NULL, 0); /* key contains 192bits of key || 64 bits of Initialisation Vector */
+	} else { /* this is not the first call, get the context */
+		gcmContext = (gcm_context *)*cryptoContext;
+	}
+
+	if (length != 0) {
+		gcm_update(gcmContext, length, (const unsigned char *)plain, (unsigned char *)cipher);
+	} else { /* lenght is 0, finish the stream */
+		gcm_finish(gcmContext, NULL, 0); /* do not generate tag */
+		gcm_free(gcmContext);
+		free(*cryptoContext);
+		*cryptoContext = NULL;
+	}
+
+	return 0;
+}
+
+int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
+	gcm_context *gcmContext;
+
+	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
+		gcmContext = (gcm_context *)malloc(sizeof(gcm_context));
+		*cryptoContext = (void *)gcmContext;
+		gcm_init(gcmContext, POLARSSL_CIPHER_ID_AES, key, 192);
+		gcm_starts(gcmContext, GCM_DECRYPT, key+24, 8, NULL, 0); /* key contains 192bits of key || 64 bits of Initialisation Vector */
+	} else { /* this is not the first call, get the context */
+		gcmContext = (gcm_context *)*cryptoContext;
+	}
+	
+	if (length != 0) {
+		gcm_update(gcmContext, length, (const unsigned char *)cipher, (unsigned char *)plain);
+	} else { /* lenght is 0, finish the stream */
+		gcm_finish(gcmContext, NULL, 0); /* do not generate tag */
+		gcm_free(gcmContext);
+		free(*cryptoContext);
+		*cryptoContext = NULL;
+	}
+
+	return 0;
+}
+
+
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
 	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	uint8_t authenticatedData[28];

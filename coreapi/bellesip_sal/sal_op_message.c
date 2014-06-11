@@ -61,8 +61,8 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 }
 
 static bool_t is_rcs_filetransfer(belle_sip_header_content_type_t* content_type) {
-	return strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
-			&&	strcmp("vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0;
+	return (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0)
+			&&	((strcmp("vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0) || (strcmp("cipher.vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0));
 }
 
 static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
@@ -71,8 +71,11 @@ static bool_t is_plain_text(belle_sip_header_content_type_t* content_type) {
 }
 
 static bool_t is_cipher_xml(belle_sip_header_content_type_t* content_type) {
-	return strcmp("xml",belle_sip_header_content_type_get_type(content_type))==0
-			&&	strcmp("cipher",belle_sip_header_content_type_get_subtype(content_type))==0;
+	return (strcmp("xml",belle_sip_header_content_type_get_type(content_type))==0
+			&&	strcmp("cipher",belle_sip_header_content_type_get_subtype(content_type))==0)
+
+		|| (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
+			&&	strcmp("cipher.vnd.gsma.rcs-ft-http+xml",belle_sip_header_content_type_get_subtype(content_type))==0);
 }
 static bool_t is_external_body(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
@@ -84,7 +87,7 @@ static bool_t is_im_iscomposing(belle_sip_header_content_type_t* content_type) {
 }
 
 static void add_message_accept(belle_sip_message_t *msg){
-	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cioher, application/vnd.gsma.rcs-ft-http+xml"));
+	belle_sip_message_add_header(msg,belle_sip_header_create("Accept","text/plain, message/external-body, application/im-iscomposing+xml, xml/cipher, application/vnd.gsma.rcs-ft-http+xml, application/cipher.vnd.gsma.rcs-ft-http+xml"));
 }
 
 void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *event){
@@ -148,10 +151,12 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		}
 
 	}
+
+	rcs_filetransfer=is_rcs_filetransfer(content_type);
 	if (content_type && ((plain_text=is_plain_text(content_type))
 						|| (external_body=is_external_body(content_type))
 						|| (decryptedMessage!=NULL) 
-						|| (rcs_filetransfer=is_rcs_filetransfer(content_type)))) {
+						|| rcs_filetransfer)) {
 		SalMessage salmsg;
 		char message_id[256]={0};
 	
@@ -166,8 +171,12 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 				,belle_sip_header_call_id_get_call_id(call_id)
 				,belle_sip_header_cseq_get_seq_number(cseq));
 		salmsg.from=from;
-		salmsg.text=(plain_text||rcs_filetransfer)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):(cipher_xml?(char *)decryptedMessage:NULL);
-		salmsg.text=(plain_text||rcs_filetransfer)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
+		/* if we just deciphered a message, use the deciphered part(which can be a rcs xml body pointing to the file to retreive from server)*/
+		if (cipher_xml) {
+			salmsg.text = (char *)decryptedMessage;
+		} else { /* message body wasn't ciphered */
+			salmsg.text=(plain_text||rcs_filetransfer)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
+		}
 		salmsg.url=NULL;
 		salmsg.content_type = NULL;
 		if (rcs_filetransfer) { /* if we have a rcs file transfer, set the type, message body (stored in salmsg.text) contains all needed information to retrieve the file */
@@ -235,7 +244,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	}
 
 	/* shall we try to encrypt the message?*/
-	if (strcmp(content_type, "xml/cipher") == 0) {
+	if ((strcmp(content_type, "xml/cipher") == 0) || ((strcmp(content_type, "application/cipher.vnd.gsma.rcs-ft-http+xml") == 0))) {
 		/* access the zrtp cache to get keys needed to cipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");

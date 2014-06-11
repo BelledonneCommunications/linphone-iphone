@@ -47,6 +47,14 @@ void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref){
 	SET_STRING(obj,subtype,ref->subtype);
 	SET_STRING(obj,encoding,ref->encoding);
 	SET_STRING(obj,name,ref->name);
+	if (obj->key) {
+		ms_free(obj->key);
+		obj->key=NULL;
+	}
+	if (ref->key) {
+		obj->key = (unsigned char *)ms_strdup((const char *)ref->key);
+	}
+
 	if (obj->data) {
 		ms_free(obj->data);
 		obj->data=NULL;
@@ -65,6 +73,7 @@ void linphone_content_uninit(LinphoneContent * obj){
 	if (obj->data) ms_free(obj->data);
 	if (obj->encoding) ms_free(obj->encoding);
 	if (obj->name) ms_free(obj->name);
+	if (obj->key) ms_free(obj->key);
 }
 
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
@@ -81,6 +90,8 @@ LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const
 		((char*)obj->data)[ref->size]='\0';
 	}
 	obj->size=ref->size;
+	obj->name = NULL;
+	obj->key = NULL;
 	return obj;
 }
 
@@ -91,6 +102,8 @@ const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, cons
 		obj->data=(void*)ref->data;
 		obj->encoding=(char*)ref->encoding;
 		obj->size=ref->size;
+		obj->name = NULL;
+		obj->key = NULL;
 		return obj;
 	}
 	return NULL;
