@@ -319,7 +319,7 @@ static int send_report(const LinphoneCall* call, reporting_session_report_t * re
 		|| report->info.remote_addr.ip == NULL || strlen(report->info.remote_addr.ip) == 0) {
 		ms_warning("QualityReporting[%p]: Trying to submit a %s too early (call duration: %d sec) but %s IP could "
 			"not be retrieved so dropping this report"
-			, report
+			, call
 			, report_event
 			, linphone_call_get_duration(call)
 			, (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0) ? "local" : "remote");
@@ -329,7 +329,7 @@ static int send_report(const LinphoneCall* call, reporting_session_report_t * re
 	addr = linphone_address_new(linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy));
 	if (addr == NULL) {
 		ms_warning("QualityReporting[%p]: Asked to submit reporting statistics but no collector address found"
-			, report);
+			, call);
 		return 2;
 	}
 
@@ -642,7 +642,7 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
 			MSQosAnalyzer *analyzer;
 			for (i=0;i<2;i++){
-				if (streams[i]==NULL)
+				if (streams[i]==NULL||streams[i]->rc==NULL)
 					continue;
 
 				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
@@ -657,7 +657,8 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 		case LinphoneCallStreamsRunning:
 			linphone_reporting_update_ip(call);
 			if (!enabled && call->log->reporting.was_video_running){
-				ms_message("Send midterm report with status %d",
+				ms_message("QualityReporting[%p]: Send midterm report with status %d",
+					call,
 					send_report(call, call->log->reporting.reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport")
 				);
 			}
@@ -665,7 +666,8 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 			break;
 		case LinphoneCallEnd:
 			if (call->log->status==LinphoneCallSuccess || call->log->status==LinphoneCallAborted){
-				ms_message("Send report with status %d",
+				ms_message("QualityReporting[%p]: Send report with status %d",
+					call,
 					linphone_reporting_publish_session_report(call, TRUE)
 				);
 			}
