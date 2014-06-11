@@ -105,6 +105,7 @@ typedef struct reporting_content_metrics {
 
 	// for internal processing
 	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)
+	uint8_t rtcp_sr_count; // number of RTCP SR packets received since last report, used to compute RTT average values in case RTCP XR voip metrics is not enabled
 
 } reporting_content_metrics_t;
 
