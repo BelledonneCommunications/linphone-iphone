@@ -71,3 +71,4 @@ tools/lp-gen-wrappers
 tools/lpc2xml_test
 tools/xml2lpc_test
 coreapi/help/filetransfer
+tester/receive_file.dump

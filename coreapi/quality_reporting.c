@@ -337,7 +337,6 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	content.data = buffer;
 	content.size = strlen(buffer);
 
-	/*(WIP) Memory leak: PUBLISH message is never freed (issue 1283)*/
 	if (! linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content)){
 		ret=4;
 	} else {
