@@ -1093,6 +1093,24 @@ static LinphoneCoreVTable linphonec_vtable = {
         linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     }
 
+    /* AVPF migration */
+    if( [self lpConfigBoolForKey:@"avpf_migration_done" forSection:@"app"] == FALSE ){
+        const MSList* proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+        while(proxies){
+            LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
+            const char* addr = linphone_proxy_config_get_addr(proxy);
+            // we want to enable AVPF for the proxies
+            if( addr && strstr(addr, "sip.linphone.org") != 0 ){
+                linphone_proxy_config_enable_avpf(proxy, TRUE);
+            }
+            proxies = proxies->next;
+        }
+        [self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
+    } else {
+        ;
+    }
+
+
     [self setupNetworkReachabilityCallback];
 
     NSString* path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];

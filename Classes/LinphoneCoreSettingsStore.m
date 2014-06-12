@@ -111,6 +111,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 			[self setBool: (linphone_proxy_config_get_route(cfg)!=NULL) forKey:@"outbound_proxy_preference"];
 			[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
+            [self setBool:linphone_proxy_config_is_avpf_enabled(cfg) forKey:@"avpf_preference"];
 			
 		}
 	} else {
@@ -121,6 +122,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setObject:@""   forKey:@"password_preference"];
         [self setBool:FALSE   forKey:@"outbound_proxy_preference"];
         [self setString:"udp" forKey:@"transport_preference"];
+        [self setBool:FALSE   forKey:@"avpf_preference"];
 
 	}
 
@@ -326,6 +328,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         linphone_core_enable_ipv6(lc, enable_ipv6);
     }
 
+
 	//configure sip account
 	
 	//mandatory parameters
@@ -334,7 +337,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     NSString*       transport = [self stringForKey:@"transport_preference"];
     NSString*      accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString* accountPassword = [self stringForKey:@"password_preference"];
-	bool      isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
+    bool      isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
+    BOOL             use_avpf = [self boolForKey:@"avpf_preference"];
 
 	//clear auth info list
 	linphone_core_clear_all_auth_info(lc);
@@ -377,6 +381,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_set_identity(proxyCfg, identity);
 		linphone_proxy_config_set_server_addr(proxyCfg, proxy);
 		linphone_proxy_config_enable_register(proxyCfg, true);
+
+        linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
 		
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
@@ -485,6 +491,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 				|| [self valueChangedForKey:@"prefix_preference"]
 				|| [self valueChangedForKey:@"substitute_+_by_00_preference"]
                 || [self valueChangedForKey:@"use_ipv6"]
+                || [self valueChangedForKey:@"avpf_preference"]
                 || [self valueChangedForKey:@"pushnotification_preference"];
 	
 	if (account_changed)

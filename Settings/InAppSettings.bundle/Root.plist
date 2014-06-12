@@ -113,12 +113,22 @@
 			</array>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Outbound proxy</string>
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>outbound_proxy_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
 			<key>Title</key>
-			<string>Outbound proxy</string>
+			<string>AVPF</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>avpf_preference</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -158,34 +168,34 @@
 			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
 		</dict>
-        <dict>
-            <key>Key</key>
-            <string>call_menu</string>
-            <key>File</key>
-            <string>Call</string>
-            <key>Title</key>
-            <string>Call</string>
-            <key>Type</key>
-            <string>PSChildPaneSpecifier</string>
-        </dict>
-        <dict>
-            <key>Key</key>
-            <string>network_menu</string>
-            <key>File</key>
-            <string>Network</string>
-            <key>Title</key>
-            <string>Network</string>
-            <key>Type</key>
-            <string>PSChildPaneSpecifier</string>
-        </dict>
 		<dict>
-            <key>Key</key>
-            <string>tunnel_menu</string>
-		   <key>File</key>
-		   <string>Tunnel</string>
-		   <key>Title</key>
-		   <string>Tunnel</string>
-		   <key>Type</key>
+			<key>Key</key>
+			<string>call_menu</string>
+			<key>File</key>
+			<string>Call</string>
+			<key>Title</key>
+			<string>Call</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>network_menu</string>
+			<key>File</key>
+			<string>Network</string>
+			<key>Title</key>
+			<string>Network</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_menu</string>
+			<key>File</key>
+			<string>Tunnel</string>
+			<key>Title</key>
+			<string>Tunnel</string>
+			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
