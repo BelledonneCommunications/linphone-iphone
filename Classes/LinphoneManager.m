@@ -1106,10 +1106,7 @@ static LinphoneCoreVTable linphonec_vtable = {
             proxies = proxies->next;
         }
         [self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
-    } else {
-        ;
     }
-
 
     [self setupNetworkReachabilityCallback];
 
