@@ -83,33 +83,32 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
                  enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
-build:
-	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  host=armv7s-apple-darwin $(LINPHONE_OPTIONS) all  \
-	&& make -f builder-iphone-os.mk delivery-sdk 
+build-% clean-% veryclean-%: 
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $@
 
-ipa: build
-	make -f  builder-iphone-simulator.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin ipa \
+# sends the target after 'broadcast_' to all sub-architectures (armv7, armv7s, simulator)
+broadcast_%:
+	@echo "Broadcasting target '$*' to all sub-architectures"
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
+	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+
+sdk: 
+	make -f builder-iphone-os.mk delivery-sdk 
+
+build: broadcast_all sdk
+	make -f builder-iphone-os.mk delivery-sdk 
+
+ipa: build broadcast_ipa
+
+clean: broadcast_clean
+
+veryclean: broadcast_veryclean
+
 
 zipres:
 	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
 	@echo Archive 'ios_assets.tar.gz' placed in root directory
-
-clean:
-	make -f  builder-iphone-simulator.mk  clean \
-	&&  make -f  builder-iphone-os.mk  clean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean \
-
-clean-makefile:
-	make -f  builder-iphone-simulator.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean-makefile \
-
-veryclean:
-	make -f  builder-iphone-simulator.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin veryclean
 
