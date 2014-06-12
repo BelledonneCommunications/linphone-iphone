@@ -502,13 +502,15 @@ void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *
 	if (collector!=NULL && strlen(collector)>0){
 		LinphoneAddress *addr=linphone_address_new(collector);
 		if (!addr || linphone_address_get_username(addr)==NULL){
-			ms_warning("Invalid sip collector identity: %s",collector);
-			if (addr)
-				linphone_address_destroy(addr);
+			ms_error("Invalid SIP collector URI: %s. Quality reporting will be DISABLED.",collector);
 		} else {
-			if (cfg->quality_reporting_collector != NULL)
+			if (cfg->quality_reporting_collector != NULL){
 				ms_free(cfg->quality_reporting_collector);
+			}
 			cfg->quality_reporting_collector = ms_strdup(collector);
+		}
+
+		if (addr){
 			linphone_address_destroy(addr);
 		}
 	}

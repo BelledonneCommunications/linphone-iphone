@@ -592,6 +592,9 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 void linphone_reporting_call_state_updated(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
 
+	if (! quality_reporting_enabled(call)){
+		return;
+	}
 	switch (state){
 		case LinphoneCallStreamsRunning:{
 			bool_t video_enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
