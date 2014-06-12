@@ -106,6 +106,7 @@ struct _LinphoneCallParams{
 struct _LinphoneQualityReporting{
 	reporting_session_report_t * reports[2]; /**Store information on audio and video media streams (RFC 6035) */
 	bool_t was_video_running; /*Keep video state since last check in order to detect its (de)activation*/
+	LinphoneQualityReportingReportSendCb on_report_sent;
 };
 
 struct _LinphoneCallLog{
@@ -859,7 +860,6 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
-
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *

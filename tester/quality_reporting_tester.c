@@ -22,6 +22,93 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+/*avoid crash if x is NULL on libc versions <4.5.26 */
+#define __strstr(x, y) ((x==NULL)?NULL:strstr(x,y))
+
+void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+	const MediaStream * ms = ((stream_type == LINPHONE_CALL_STATS_AUDIO)?&call->audiostream->ms:&call->videostream->ms);
+	char * body = (char *)content->data;
+	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
+	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
+
+	CU_ASSERT_TRUE(
+			__strstr(body, "VQIntervalReport\r\n")			== body ||
+			__strstr(body, "VQSessionReport\r\n")			== body ||
+			__strstr(body, "VQSessionReport: CallTerm\r\n") == body
+	);
+
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "CallID:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalID:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteID:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "OrigID:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalGroup:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteGroup:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalAddr:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "IP="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PORT="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SSRC="));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteAddr:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "IP="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PORT="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SSRC="));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalMetrics:"));
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Timestamps:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "START="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "STOP="));
+
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SessionDesc:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PT="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PD="));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SR="));
+
+	/* We should have not reached RemoteMetrics section yet */
+	CU_ASSERT_TRUE(!remote_metrics_start || body < remote_metrics_start);
+
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
+
+	if (report->remote_metrics.rtcp_sr_count&&ms->rc!=NULL){
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
+	}
+}
+
+char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics, char * body){
+	if (metrics->rtcp_xr_count){
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SessionDesc:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "JitterBuffer:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PacketLoss:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "QualityEst:"));
+	}
+	if (metrics->rtcp_sr_count){
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Delay:"));
+	}
+
+	return body;
+}
+
+void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+	char * body = (char*)content->data;
+	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
+	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
+	on_report_send_mandatory(call,stream_type,content);
+	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalMetrics:"));
+	CU_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics,body) < remote_metrics_start);
+}
+void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+	char * body = (char*)content->data;
+	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
+
+	on_report_send_mandatory(call,stream_type,content);
+	if (report->remote_metrics.rtcp_sr_count+report->remote_metrics.rtcp_xr_count>0){
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteMetrics:"));
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Timestamps:"));
+		on_report_send_verify_metrics(&report->remote_metrics,body);
+	}
+}
+void on_report_send_with_rtcp_xr_both(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+	on_report_send_with_rtcp_xr_local(call,stream_type,content);
+	on_report_send_with_rtcp_xr_remote(call,stream_type,content);
+}
+
 void create_call_for_quality_reporting_tests(
 		LinphoneCoreManager* marie,
 		LinphoneCoreManager* pauline,
@@ -42,7 +129,7 @@ static void quality_reporting_not_used_without_config() {
 
 	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
 
-	// marie has stats collection enabled since pauline has not
+	// marie has stats collection enabled but pauline has not
 	CU_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(call_marie->dest_proxy));
 	CU_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(call_pauline->dest_proxy));
 
@@ -111,11 +198,12 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 
 static void quality_reporting_at_call_termination() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
 	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
+	linphone_reporting_set_on_report_send(call_marie, on_report_send_with_rtcp_xr_remote);
 
 	linphone_core_terminate_all_calls(marie->lc);
 
@@ -128,7 +216,6 @@ static void quality_reporting_at_call_termination() {
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc));
 
-
 	// PUBLISH submission to the collector should be ok
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
 	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1));
@@ -138,12 +225,13 @@ static void quality_reporting_at_call_termination() {
 }
 
 static void quality_reporting_interval_report() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
 	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
+	linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
 	linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
@@ -158,7 +246,7 @@ static void quality_reporting_interval_report() {
 }
 
 static void quality_reporting_session_report_if_video_stopped() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_pauline = NULL;
 	LinphoneCallParams* pauline_params;
@@ -174,6 +262,7 @@ static void quality_reporting_session_report_if_video_stopped() {
 	linphone_call_params_enable_video(pauline_params,TRUE);
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,pauline_params,marie_params));
 	call_pauline=linphone_core_get_current_call(pauline->lc);
+	linphone_reporting_set_on_report_send(linphone_core_get_current_call(marie->lc), on_report_send_with_rtcp_xr_local);
 
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0);

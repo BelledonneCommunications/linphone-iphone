@@ -139,6 +139,9 @@ typedef struct reporting_session_report {
 	time_t last_report_date;
 } reporting_session_report_t;
 
+
+typedef void (*LinphoneQualityReportingReportSendCb)(const LinphoneCall *call, int stream_type, const LinphoneContent *content);
+
 reporting_session_report_t * linphone_reporting_new();
 void linphone_reporting_destroy(reporting_session_report_t * report);
 
@@ -193,6 +196,16 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type);
  *
  */
 void linphone_reporting_call_state_updated(LinphoneCall *call);
+
+/**
+ * Setter of the #LinphoneQualityReportingReportSendCb callback method which is
+ * notified each time a report will be submitted to the collector, if quality
+ * reporting is enabled
+ * @param call #LinphoneCall object to consider
+ * @param cb #LinphoneQualityReportingReportSendCb callback function to notify
+ *
+ */
+void linphone_reporting_set_on_report_send(LinphoneCall *call, LinphoneQualityReportingReportSendCb cb);
 
 #ifdef __cplusplus
 }

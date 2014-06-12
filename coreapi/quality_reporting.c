@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ***************************************************************************
-	- move qos data at report's end? <-- unit test recup publish body
+	bug ms_debug
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -122,19 +122,15 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	IF_NUM_IN_RANGE(rm.packet_loss.network_packet_loss_rate, 0, 255, ret|=METRICS_PACKET_LOSS);
 	IF_NUM_IN_RANGE(rm.packet_loss.jitter_buffer_discard_rate, 0, 255, ret|=METRICS_PACKET_LOSS);
 
-	/*since these are same values than local ones, do not check them*/
-	/*if (rm.session_description.payload_type != -1) ret|=METRICS_SESSION_DESCRIPTION;*/
-	/*if (rm.session_description.payload_desc != NULL) ret|=METRICS_SESSION_DESCRIPTION;*/
-	/*if (rm.session_description.sample_rate != -1) ret|=METRICS_SESSION_DESCRIPTION;*/
-	/*if (rm.session_description.fmtp != NULL) ret|=METRICS_SESSION_DESCRIPTION;*/
-	if (rm.session_description.frame_duration != -1) ret|=METRICS_SESSION_DESCRIPTION;
-	if (rm.session_description.packet_loss_concealment != -1) ret|=METRICS_SESSION_DESCRIPTION;
+	if (rm.session_description.payload_type != -1) ret|=METRICS_SESSION_DESCRIPTION;
+	if (rm.session_description.payload_desc != NULL) ret|=METRICS_SESSION_DESCRIPTION;
+	if (rm.session_description.sample_rate != -1) ret|=METRICS_SESSION_DESCRIPTION;
+	if (rm.session_description.fmtp != NULL) ret|=METRICS_SESSION_DESCRIPTION;
 
 	IF_NUM_IN_RANGE(rm.jitter_buffer.adaptive, 0, 3, ret|=METRICS_JITTER_BUFFER);
 	IF_NUM_IN_RANGE(rm.jitter_buffer.abs_max, 0, 65535, ret|=METRICS_JITTER_BUFFER);
 
 	IF_NUM_IN_RANGE(rm.delay.end_system_delay, 0, 65535, ret|=METRICS_DELAY);
-	/*IF_NUM_IN_RANGE(rm.delay.symm_one_way_delay, 0, 65535, ret|=METRICS_DELAY);*/
 	IF_NUM_IN_RANGE(rm.delay.interarrival_jitter, 0, 65535, ret|=METRICS_DELAY);
 	IF_NUM_IN_RANGE(rm.delay.mean_abs_jitter, 0, 65535, ret|=METRICS_DELAY);
 
@@ -337,6 +333,13 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	content.data = buffer;
 	content.size = strlen(buffer);
 
+	if (call->log->reporting.on_report_sent != NULL){
+		call->log->reporting.on_report_sent(
+			call,
+			(report==call->log->reporting.reports[0])?LINPHONE_CALL_STATS_AUDIO:LINPHONE_CALL_STATS_VIDEO,
+			&content);
+	}
+
 	if (! linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content)){
 		ret=4;
 	} else {
@@ -485,9 +488,9 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
-		STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
+		if (local_payload->mime_type!=NULL) STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
 		report->local_metrics.session_description.sample_rate = local_payload->clock_rate;
-		STR_REASSIGN(report->local_metrics.session_description.fmtp, ms_strdup(local_payload->recv_fmtp));
+		if (local_payload->recv_fmtp!=NULL) STR_REASSIGN(report->local_metrics.session_description.fmtp, ms_strdup(local_payload->recv_fmtp));
 	}
 
 	if (remote_payload != NULL) {
@@ -694,3 +697,6 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 }
 
 
+void linphone_reporting_set_on_report_send(LinphoneCall *call, LinphoneQualityReportingReportSendCb cb){
+	call->log->reporting.on_report_sent = cb;
+}
