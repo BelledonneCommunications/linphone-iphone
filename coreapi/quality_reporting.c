@@ -512,16 +512,17 @@ static float reporting_rand(float t){
 	return t * (.2f * (rand() / (RAND_MAX * 1.0f)) + 0.9f);
 }
 
-void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type) {
+void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
 	reporting_content_metrics_t * metrics = NULL;
 	LinphoneCallStats stats = call->stats[stats_type];
 	mblk_t *block = NULL;
-
-	int report_interval = linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy);
+	int report_interval;
 
 	if (! media_report_enabled(call,stats_type))
 		return;
+
+	report_interval = linphone_proxy_config_get_quality_reporting_interval(call->dest_proxy);
 
 	if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
 		metrics = &report->remote_metrics;
@@ -599,10 +600,10 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 
 void linphone_reporting_call_state_updated(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
-	bool_t enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
 
 	switch (state){
 		case LinphoneCallStreamsRunning:{
+			bool_t video_enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
 			int i;
 			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
 			MSQosAnalyzer *analyzer;
@@ -621,10 +622,10 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 				}
 			}
 			linphone_reporting_update_ip(call);
-			if (!enabled && call->log->reporting.was_video_running){
+			if (!video_enabled && call->log->reporting.was_video_running){
 				send_report(call, call->log->reporting.reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport");
 			}
-			call->log->reporting.was_video_running=enabled;
+			call->log->reporting.was_video_running=video_enabled;
 			break;
 		}
 		case LinphoneCallEnd:{
@@ -657,11 +658,9 @@ reporting_session_report_t * linphone_reporting_new() {
 		metrics[i]->session_description.packet_loss_concealment = -1;
 
 		metrics[i]->jitter_buffer.adaptive = -1;
-		/*metrics[i]->jitter_buffer.rate = -1;*/
 		metrics[i]->jitter_buffer.abs_max = -1;
 
 		metrics[i]->delay.end_system_delay = -1;
-		/*metrics[i]->delay.one_way_delay = -1;*/
 		metrics[i]->delay.interarrival_jitter = -1;
 		metrics[i]->delay.mean_abs_jitter = -1;
 

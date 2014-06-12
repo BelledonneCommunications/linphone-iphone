@@ -179,12 +179,12 @@ int linphone_reporting_publish_session_report(LinphoneCall* call, bool_t call_te
 int linphone_reporting_publish_interval_report(LinphoneCall* call);
 
 /**
- * Update publish reports with newly received RTCP-XR packets (if available).
+ * Update publish reports with newly sent/received RTCP-XR packets (if available).
  * @param call #LinphoneCall object to consider
  * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
  *
  */
-void linphone_reporting_on_rtcp_received(LinphoneCall *call, int stats_type);
+void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type);
 
 /**
  * Update publish reports on call state change.

@@ -2884,7 +2884,7 @@ void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
 	LinphoneCallStats *stats=&call->stats[stream_index];
 	LinphoneCore *lc=call->core;
 	if (stats->updated){
-		linphone_reporting_on_rtcp_received(call, stream_index);
+		linphone_reporting_on_rtcp_update(call, stream_index);
 		if (lc->vtable.call_stats_updated)
 			lc->vtable.call_stats_updated(lc, call, stats);
 		stats->updated = 0;
