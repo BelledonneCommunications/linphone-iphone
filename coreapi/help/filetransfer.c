@@ -64,24 +64,24 @@ static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMess
  * function invoked when a file transfer is received.
  **/
 static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
-	int file=-1;
+	FILE* file=NULL;
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
-		file = open("receive_file.dump",O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
-		linphone_chat_message_set_user_data(message,(void*)(long)(0x00000000FFFFFFFF&file)); /*store fd for next chunks*/
+		file = fopen("receive_file.dump","wb");
+		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
 	} else {
 		/*next chunk*/
-		file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
+		file = (FILE*)linphone_chat_message_get_user_data(message);
 
 		if (size==0) {
 
 			printf("File transfert completed\n");
 			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
 			linphone_chat_message_destroy(message);
-			close(file);
+			fclose(file);
 			running=FALSE;
 		} else { /* store content on a file*/
-			if (write(file,buff,size)==-1){
+			if (fwrite(buff,size,1,file)==-1){
 				ms_warning("file_transfer_received() write failed: %s",strerror(errno));
 			}
 		}
@@ -120,7 +120,7 @@ static void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  
  */
 static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
-	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, file_transfer_info->size);
+	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
 
 	linphone_chat_message_start_file_download(msg);
 
