@@ -31,11 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /***************************************************************************
  *  				TODO / REMINDER LIST
  ***************************************************************************
-check:
-	- removed qos data
-	- rand interval
-todo:
-	- move qos data at report's end?
+	- move qos data at report's end? <-- unit test recup publish body
  ***************************************************************************
  *  				END OF TODO / REMINDER LIST
  ****************************************************************************/
@@ -145,12 +141,6 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	if (rm.signal.level != 127) ret|=METRICS_SIGNAL;
 	if (rm.signal.noise_level != 127) ret|=METRICS_SIGNAL;
 
-	if (rm.qos_analyzer.timestamp!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-	if (rm.qos_analyzer.input_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-	if (rm.qos_analyzer.input!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-	if (rm.qos_analyzer.output_leg!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-	if (rm.qos_analyzer.output!=NULL) ret|=METRICS_ADAPTIVE_ALGORITHM;
-
 	if (rm.rtcp_xr_count>0){
 		IF_NUM_IN_RANGE(rm.jitter_buffer.nominal/rm.rtcp_xr_count, 0, 65535, ret|=METRICS_JITTER_BUFFER);
 		IF_NUM_IN_RANGE(rm.jitter_buffer.max/rm.rtcp_xr_count, 0, 65535, ret|=METRICS_JITTER_BUFFER);
@@ -258,15 +248,6 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSCQ=%s", moscq_str);
 	}
 
-	if ((available_metrics & METRICS_ADAPTIVE_ALGORITHM) != 0){
-		append_to_buffer(buffer, size, offset, "\r\nAdaptiveAlg:");
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " TS=%s", rm.qos_analyzer.timestamp);
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN_LEG=%s", rm.qos_analyzer.input_leg);
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " IN=%s", rm.qos_analyzer.input);
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT_LEG=%s", rm.qos_analyzer.output_leg);
-			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " OUT=%s", rm.qos_analyzer.output);
-	}
-
 	append_to_buffer(buffer, size, offset, "\r\n");
 
 	ms_free(timestamps_start_str);
@@ -342,6 +323,17 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	}
 	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "DialogID: %s\r\n", report->dialog_id);
 
+	if (report->qos_analyzer.timestamp!=NULL){
+		append_to_buffer(&buffer, &size, &offset, "AdaptiveAlg:");
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " NAME=%s", report->qos_analyzer.name);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " TS=%s", report->qos_analyzer.timestamp);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN_LEG=%s", report->qos_analyzer.input_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN=%s", report->qos_analyzer.input);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT_LEG=%s", report->qos_analyzer.output_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=%s", report->qos_analyzer.output);
+		append_to_buffer(&buffer, &size, &offset, "\r\n");
+	}
+
 	content.data = buffer;
 	content.size = strlen(buffer);
 
@@ -350,11 +342,11 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		ret=4;
 	} else {
 		reset_avg_metrics(report);
-		STR_REASSIGN(report->local_metrics.qos_analyzer.timestamp, NULL);
-		STR_REASSIGN(report->local_metrics.qos_analyzer.input_leg, NULL);
-		STR_REASSIGN(report->local_metrics.qos_analyzer.input, NULL);
-		STR_REASSIGN(report->local_metrics.qos_analyzer.output_leg, NULL);
-		STR_REASSIGN(report->local_metrics.qos_analyzer.output, NULL);
+		STR_REASSIGN(report->qos_analyzer.timestamp, NULL);
+		STR_REASSIGN(report->qos_analyzer.input_leg, NULL);
+		STR_REASSIGN(report->qos_analyzer.input, NULL);
+		STR_REASSIGN(report->qos_analyzer.output_leg, NULL);
+		STR_REASSIGN(report->qos_analyzer.output, NULL);
 	}
 
 	linphone_address_destroy(addr);
@@ -412,19 +404,19 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 }
 
 static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** data){
-	reporting_content_metrics_t *metrics = (reporting_content_metrics_t*) user_data;
+	reporting_session_report_t *report = (reporting_session_report_t*) user_data;
 	char * appendbuf;
 
-	appendbuf=ms_strdup_printf("%s%d;", metrics->qos_analyzer.timestamp?metrics->qos_analyzer.timestamp:"", ms_time(0));
-	STR_REASSIGN(metrics->qos_analyzer.timestamp,appendbuf);
+	appendbuf=ms_strdup_printf("%s%d;", report->qos_analyzer.timestamp?report->qos_analyzer.timestamp:"", ms_time(0));
+	STR_REASSIGN(report->qos_analyzer.timestamp,appendbuf);
 
-	STR_REASSIGN(metrics->qos_analyzer.input_leg, ms_strdup(data[0]));
-	appendbuf=ms_strdup_printf("%s%s;", metrics->qos_analyzer.input?metrics->qos_analyzer.input:"", data[1]);
-	STR_REASSIGN(metrics->qos_analyzer.input,appendbuf);
+	STR_REASSIGN(report->qos_analyzer.input_leg, ms_strdup(data[0]));
+	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.input?report->qos_analyzer.input:"", data[1]);
+	STR_REASSIGN(report->qos_analyzer.input,appendbuf);
 
-	STR_REASSIGN(metrics->qos_analyzer.output_leg, ms_strdup(data[2]));
-	appendbuf=ms_strdup_printf("%s%s;", metrics->qos_analyzer.output?metrics->qos_analyzer.output:"", data[3]);
-	STR_REASSIGN(metrics->qos_analyzer.output, appendbuf);
+	STR_REASSIGN(report->qos_analyzer.output_leg, ms_strdup(data[2]));
+	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.output?report->qos_analyzer.output:"", data[3]);
+	STR_REASSIGN(report->qos_analyzer.output, appendbuf);
 }
 
 void linphone_reporting_update_ip(LinphoneCall * call) {
@@ -616,9 +608,10 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 
 				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
 				if (analyzer){
+					STR_REASSIGN(call->log->reporting.reports[i]->qos_analyzer.name, ms_strdup(ms_qos_analyzer_get_name(analyzer)));
 					ms_qos_analyzer_set_on_action_suggested(analyzer,
 						qos_analyzer_on_action_suggested,
-						&call->log->reporting.reports[i]->local_metrics);
+						call->log->reporting.reports[i]);
 				}
 			}
 			linphone_reporting_update_ip(call);
@@ -688,11 +681,12 @@ void linphone_reporting_destroy(reporting_session_report_t * report) {
 	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
 	if (report->remote_metrics.session_description.fmtp != NULL) ms_free(report->remote_metrics.session_description.fmtp);
 	if (report->remote_metrics.session_description.payload_desc != NULL) ms_free(report->remote_metrics.session_description.payload_desc);
-	if (report->local_metrics.qos_analyzer.timestamp != NULL) ms_free(report->local_metrics.qos_analyzer.timestamp);
-	if (report->local_metrics.qos_analyzer.input_leg != NULL) ms_free(report->local_metrics.qos_analyzer.input_leg);
-	if (report->local_metrics.qos_analyzer.input != NULL) ms_free(report->local_metrics.qos_analyzer.input);
-	if (report->local_metrics.qos_analyzer.output_leg != NULL) ms_free(report->local_metrics.qos_analyzer.output_leg);
-	if (report->local_metrics.qos_analyzer.output != NULL) ms_free(report->local_metrics.qos_analyzer.output);
+	if (report->qos_analyzer.name != NULL) ms_free(report->qos_analyzer.name);
+	if (report->qos_analyzer.timestamp != NULL) ms_free(report->qos_analyzer.timestamp);
+	if (report->qos_analyzer.input_leg != NULL) ms_free(report->qos_analyzer.input_leg);
+	if (report->qos_analyzer.input != NULL) ms_free(report->qos_analyzer.input);
+	if (report->qos_analyzer.output_leg != NULL) ms_free(report->qos_analyzer.output_leg);
+	if (report->qos_analyzer.output != NULL) ms_free(report->qos_analyzer.output);
 
 	ms_free(report);
 }

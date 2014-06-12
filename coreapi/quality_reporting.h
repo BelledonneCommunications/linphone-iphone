@@ -92,17 +92,6 @@ typedef struct reporting_content_metrics {
 		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
 	} quality_estimates;
 
-	// Quality of Service analyzer - custom extension
-	/* This should allow us to analysis bad network conditions and quality adaptation
-	on server side*/
-	struct {
-		char* timestamp; /*time of each decision in seconds*/
-		char* input_leg; /*input parameters' name*/
-		char* input; /*set of inputs for each decision, semicolon separated*/
-		char* output_leg; /*output parameters' name*/
-		char* output; /*set of outputs for each decision, semicolon separated*/
-	} qos_analyzer;
-
 	// for internal processing
 	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)
 	uint8_t rtcp_sr_count; // number of RTCP SR packets received since last report, used to compute RTT average values in case RTCP XR voip metrics is not enabled
@@ -133,6 +122,18 @@ typedef struct reporting_session_report {
 	reporting_content_metrics_t remote_metrics; // optional
 
 	char * dialog_id; // optional
+
+	// Quality of Service analyzer - custom extension
+	/* This should allow us to analysis bad network conditions and quality adaptation
+	on server side*/
+	struct {
+		char * name; /*type of the QoS analyzer used*/
+		char* timestamp; /*time of each decision in seconds*/
+		char* input_leg; /*input parameters' name*/
+		char* input; /*set of inputs for each decision, semicolon separated*/
+		char* output_leg; /*output parameters' name*/
+		char* output; /*set of outputs for each decision, semicolon separated*/
+	} qos_analyzer;
 
 	// for internal processing
 	time_t last_report_date;
