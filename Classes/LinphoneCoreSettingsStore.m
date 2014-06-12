@@ -111,7 +111,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 			[self setBool: (linphone_proxy_config_get_route(cfg)!=NULL) forKey:@"outbound_proxy_preference"];
 			[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
-            [self setBool:linphone_proxy_config_is_avpf_enabled(cfg) forKey:@"avpf_preference"];
+            [self setBool:linphone_proxy_config_avpf_enabled(cfg) forKey:@"avpf_preference"];
 			
 		}
 	} else {
