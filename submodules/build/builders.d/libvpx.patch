@@ -1,17 +1,61 @@
-diff --git a/vp8/decoder/decodframe.c b/vp8/decoder/decodframe.c
-index 16da78a..fd9ca61 100644
---- a/vp8/decoder/decodframe.c
-+++ b/vp8/decoder/decodframe.c
-@@ -248,7 +248,11 @@ static void decode_macroblock(VP8D_COMP *pbi, MACROBLOCKD *xd,
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index a65d395..579e0d6 100755
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -172,6 +172,7 @@ add_cflags() {
  
-                     vp8_short_inv_walsh4x4(&b->dqcoeff[0],
-                         xd->qcoeff);
--                    vpx_memset(b->qcoeff, 0, 16 * sizeof(b->qcoeff[0]));
-+                    // TODO(johannkoenig): figure out why bzero below
-+                    // works great on iOS Release but memset or
-+                    // vpx_memset create terrible corruption on decode
-+                    // (https://code.google.com/p/webm/issues/detail?id=603).
-+                    bzero(b->qcoeff, 16 * sizeof(b->qcoeff[0]));
-                 }
-                 else
-                 {
+ 
+ add_cflags_only() {
++    log_echo "Adding $@ to CFLAGS"
+     CFLAGS="${CFLAGS} $@"
+ }
+ 
+@@ -792,7 +793,7 @@ process_common_toolchain() {
+     arm*)
+         # on arm, isa versions are supersets
+         case ${tgt_isa} in
+-        armv7)
++        armv7*)
+             soft_enable neon
+             soft_enable media
+             soft_enable edsp
+@@ -820,7 +821,9 @@ process_common_toolchain() {
+             arch_int=${arch_int%%te}
+             check_add_asflags --defsym ARCHITECTURE=${arch_int}
+             tune_cflags="-mtune="
+-            if [ ${tgt_isa} = "armv7" ]; then
++
++            case ${tgt_isa} in
++            armv7*)
+                 if [ -z "${float_abi}" ]; then
+                     check_cpp <<EOF && float_abi=hard || float_abi=softfp
+ #ifndef __ARM_PCS_VFP
+@@ -840,10 +843,12 @@ EOF
+                 if [ -z "${tune_cpu}" ]; then
+                     tune_cpu=cortex-a8
+                 fi
+-            else
++                ;;
++            *)
+                 check_add_cflags -march=${tgt_isa}
+                 check_add_asflags -march=${tgt_isa}
+-            fi
++                ;;
++            esac
+ 
+             enabled debug && add_asflags -g
+             asm_conversion_cmd="${source_path}/build/make/ads2gas.pl"
+diff --git a/build/make/rtcd.pl b/build/make/rtcd.pl
+index 18ee80d..a3dc890 100755
+--- a/build/make/rtcd.pl
++++ b/build/make/rtcd.pl
+@@ -383,6 +383,9 @@ if ($opts{arch} eq 'x86') {
+ } elsif ($opts{arch} eq 'armv7') {
+   @ALL_ARCHS = filter(qw/edsp media neon/);
+   arm;
++} elsif ($opts{arch} eq 'armv7s') {
++  @ALL_ARCHS = filter(qw/edsp media neon/);
++  arm;
+ } else {
+   unoptimized;
+ }

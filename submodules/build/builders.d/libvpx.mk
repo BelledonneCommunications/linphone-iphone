@@ -30,20 +30,20 @@ all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
 ifeq ($(force_non_binary_libvpx),1)
 take_binary=
+libvpx_configure_options+= --extra-cflags="-fno-strict-aliasing"
 endif
 
-# $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
-# 	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-# 	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
-# 	&& touch $@
+$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
+	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
+	&& touch $@
 
 
-#$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& export all_platforms="${all_p}" &&  $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) --sdk-path=$$SDK_BIN_PATH/../../ --libc=$$SYSROOT_PATH $(libvpx_configure_options) --extra-cflags="-fno-strict-aliasing"
+	&& export all_platforms="${all_p}" &&  $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) --sdk-path=$$SDK_BIN_PATH/../../ --libc=$$SYSROOT_PATH $(libvpx_configure_options)
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) \
@@ -53,7 +53,7 @@ ifeq ($(force_non_binary_libvpx),1)
 	@echo "\033[01;32m DON'T get BINARY version of libvpx for $(take_binary), because 'force_non_binary_libvpx' is 1 \033[0m"
 endif
 ifneq (,$(take_binary))
-# we have to take binary version of libvpx for ARM because Clang introduces bugs in optimized assembly
+# sometimes when clang gets updated we have to take binary version of libvpx for ARM because the compiler introduces bugs in optimized assembly
 	@echo "\033[01;32m Getting BINARY version of libvpx for $(take_binary) \033[0m"
 	cp $(BUILDER_SRC_DIR)/binaries/libvpx-$(take_binary).a $(prefix)/lib/libvpx.a
 endif
@@ -64,7 +64,7 @@ clean-libvpx:
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git clean -f && git reset --hard 
+	&& git clean -f && git reset --hard && rm patched.stamp
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
