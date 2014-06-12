@@ -2377,7 +2377,7 @@ void linphone_core_iterate(LinphoneCore *lc){
  *
  * @ingroup call_control
  *
- * A sip address should look like DisplayName <sip:username@domain:port> .
+ * A sip address should look like DisplayName \<sip:username\@domain:port\> .
  * Basically this function performs the following tasks
  * - if a phone number is entered, prepend country prefix of the default proxy
  *   configuration, eventually escape the '+' by 00.
@@ -2957,7 +2957,7 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
  *
  * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
  * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
- * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallOutgoingConnected.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallConnected.
 **/
 int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
 	int result = sal_call_refer_with_replaces (call->op,dest->op);
@@ -6563,11 +6563,6 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 	return lc->sip_conf.sdp_200_ack!=0;
 }
 
-/**
- * Globaly set an http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml. This value can also be set for a dedicated account using #linphone_proxy_config_set_file_transfer_server
- * @param #LinphoneCore to be modified
- * @param const char* url of the file server like https://file.linphone.org/upload.php
- **/
 void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
 	core->file_transfer_server=ms_strdup(server_url);
 }

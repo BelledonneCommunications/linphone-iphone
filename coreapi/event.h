@@ -37,9 +37,9 @@ typedef struct _LinphoneEvent LinphoneEvent;
  * Enum for subscription direction (incoming or outgoing).
 **/
 enum _LinphoneSubscriptionDir{
-	LinphoneSubscriptionIncoming,
-	LinphoneSubscriptionOutgoing,
-	LinphoneSubscriptionInvalidDir
+	LinphoneSubscriptionIncoming, /**< Incoming subscription. */
+	LinphoneSubscriptionOutgoing, /**< Outgoing subscription. */
+	LinphoneSubscriptionInvalidDir /**< Invalid subscription direction. */
 };
 
 /**
