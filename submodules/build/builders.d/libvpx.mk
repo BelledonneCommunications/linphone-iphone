@@ -64,7 +64,7 @@ clean-libvpx:
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git clean -f && git reset --hard && rm patched.stamp
+	&& git clean -f && git reset --hard && rm -f patched.stamp
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
