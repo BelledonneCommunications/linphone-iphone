@@ -1,5 +1,5 @@
 ############################################################################
-# msisac.mk 
+# mswebrtc.mk 
 # Copyright (C) 2014  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -19,28 +19,28 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-msisac_dir?=msisac
+mswebrtc_dir?=mswebrtc
 
 
 
-$(BUILDER_SRC_DIR)/$(msisac_dir)/configure:
-	cd $(BUILDER_SRC_DIR)/$(msisac_dir) && ./autogen.sh
+$(BUILDER_SRC_DIR)/$(mswebrtc_dir)/configure:
+	cd $(BUILDER_SRC_DIR)/$(mswebrtc_dir) && ./autogen.sh
 
-$(BUILDER_BUILD_DIR)/$(msisac_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msisac_dir)/configure
-	mkdir -p $(BUILDER_BUILD_DIR)/$(msisac_dir)
-	cd $(BUILDER_BUILD_DIR)/$(msisac_dir)/ \
+$(BUILDER_BUILD_DIR)/$(mswebrtc_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mswebrtc_dir)/configure
+	mkdir -p $(BUILDER_BUILD_DIR)/$(mswebrtc_dir)
+	cd $(BUILDER_BUILD_DIR)/$(mswebrtc_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(msisac_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-Wno-error"
+	$(BUILDER_SRC_DIR)/$(mswebrtc_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-aec CFLAGS="-Wno-error"
 
-build-msisac: $(BUILDER_BUILD_DIR)/$(msisac_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(msisac_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+build-mswebrtc: $(BUILDER_BUILD_DIR)/$(mswebrtc_dir)/Makefile
+	cd $(BUILDER_BUILD_DIR)/$(mswebrtc_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
-clean-msisac:
-	cd  $(BUILDER_BUILD_DIR)/$(msisac_dir) && make clean
+clean-mswebrtc:
+	cd  $(BUILDER_BUILD_DIR)/$(mswebrtc_dir) && make clean
 
-veryclean-msisac:
-	-cd $(BUILDER_BUILD_DIR)/$(msisac_dir) && make distclean 
-	-cd $(BUILDER_SRC_DIR)/$(msisac_dir) && rm -f configure
+veryclean-mswebrtc:
+	-cd $(BUILDER_BUILD_DIR)/$(mswebrtc_dir) && make distclean 
+	-cd $(BUILDER_SRC_DIR)/$(mswebrtc_dir) && rm -f configure
 
-clean-makefile-msisac:
-	cd $(BUILDER_BUILD_DIR)/$(msisac_dir) && rm -f Makefile
+clean-makefile-mswebrtc:
+	cd $(BUILDER_BUILD_DIR)/$(mswebrtc_dir) && rm -f Makefile

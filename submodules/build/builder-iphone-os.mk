@@ -55,7 +55,7 @@ endif
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-msisac build-msopenh264
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-mswebrtc build-msopenh264
 
 # setup the switches that might trigger a linphone reconfiguration
 
@@ -141,7 +141,7 @@ veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 # list of the submodules to build, the order is important
-MS_MODULES      := msilbc libilbc msamr mssilk msx264 msisac msopenh264
+MS_MODULES      := msilbc libilbc msamr mssilk msx264 mswebrtc msopenh264
 SUBMODULES_LIST := polarssl 
 
 ifeq ($(enable_tunnel),yes)
