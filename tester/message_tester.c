@@ -61,23 +61,26 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
  * function invoked when a file transfer is received.
  * */
 void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
-	int file=-1;
+	FILE* file=NULL;
+	char receive_file[256];
+	snprintf(receive_file,sizeof(receive_file), "%s/receive_file.dump", liblinphone_tester_writable_dir_prefix);
+
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
-		file = open("receive_file.dump",O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
-		linphone_chat_message_set_user_data(message,(void*)(long)(0x00000000FFFFFFFF&file)); /*store fd for next chunks*/
+		file = fopen("receive_file.dump","wb");
+		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
 	} else {
 		/*next chunk*/
-		file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
+		file = (FILE*)linphone_chat_message_get_user_data(message);
 
 		if (size==0) { /* tranfer complerte */
 			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
 			linphone_chat_message_destroy(message);
 			stats* counters = get_stats(lc);
 			counters->number_of_LinphoneMessageExtBodyReceived++;
-			close(file);
+			fclose(file);
 		} else { /* store content on a file*/
-			if (write(file,buff,size)==-1){
+			if (fwrite(buff,size,1,file)==-1){
 				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 			}
 		}
