@@ -208,7 +208,7 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event, bel
 		belle_sip_free(refer_to_uri_str);
 	} else {
 		ms_warning("cannot do anything with the refer without destination\n");
-		resp = sal_op_create_response_from_request(op,req,501);
+		resp = sal_op_create_response_from_request(op,req,400);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 
@@ -233,9 +233,9 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 		if (sipfrag){
 			int code=belle_sip_response_get_status_code(sipfrag);
 			SalReferStatus status=SalReferFailed;
-			if (code==100){
+			if (code<200){
 				status=SalReferTrying;
-			}else if (code==200){
+			}else if (code<300){
 				status=SalReferSuccess;
 			}else if (code>=400){
 				status=SalReferFailed;

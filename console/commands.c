@@ -2113,7 +2113,11 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 #ifdef __APPLE__
 	mktemp(wavfile);
 #else
-	mkstemp(wavfile);
+	if (mkstemp(wavfile)==-1){
+		ms_error("Could not create temporary filename: %s", strerror(errno));
+		linphonec_out("An error occured, please consult logs for details.");
+		return 1;
+	}
 #endif
 
 	snprintf(cl,sizeof(cl),"espeak -v %s -s 100 -w %s --stdin",voice,wavfile);
