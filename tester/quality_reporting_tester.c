@@ -26,11 +26,15 @@
 #define __strstr(x, y) ((x==NULL)?NULL:strstr(x,y))
 
 void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
-	const MediaStream * ms = ((stream_type == LINPHONE_CALL_STATS_AUDIO)?&call->audiostream->ms:&call->videostream->ms);
 	char * body = (char *)content->data;
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
-
+	MediaStream * ms;
+	if (stream_type == LINPHONE_CALL_STATS_AUDIO){
+		ms = (MediaStream*)call->audiostream;
+	}else{
+		ms = (MediaStream*)call->videostream;
+	}
 	CU_ASSERT_TRUE(
 			__strstr(body, "VQIntervalReport\r\n")			== body ||
 			__strstr(body, "VQSessionReport\r\n")			== body ||
@@ -66,7 +70,7 @@ void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const L
 
 	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
 
-	if (report->remote_metrics.rtcp_sr_count&&ms->rc!=NULL){
+	if (report->remote_metrics.rtcp_sr_count&&ms!=NULL&&ms->rc!=NULL){
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
 	}
 }
@@ -78,7 +82,7 @@ char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics,
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PacketLoss:"));
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "QualityEst:"));
 	}
-	if (metrics->rtcp_sr_count){
+	if (metrics->rtcp_sr_count+metrics->rtcp_xr_count>0){
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Delay:"));
 	}
 
