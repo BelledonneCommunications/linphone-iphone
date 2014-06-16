@@ -27,6 +27,7 @@
 #include "lpconfig.h"
 #include "belle-sip/belle-sip.h"
 
+#include <libxml/parser.h>
 #include <libxml/xmlwriter.h>
 
 #define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
