@@ -28,12 +28,16 @@ extern "C"{
 
 
 /**
- * Linphone quality report sub object storing address related information (IP/port/MAC).
+ * Linphone quality report sub object storing address related information.
  */
 typedef struct reporting_addr {
+	char * id;
 	char * ip;
 	int port;
 	uint32_t ssrc;
+
+	char * group;
+	char * mac; // optional
 } reporting_addr_t;
 
 /**
@@ -106,16 +110,9 @@ typedef struct reporting_content_metrics {
 typedef struct reporting_session_report {
 	struct {
 		char * call_id;
-		char * local_id;
-		char * remote_id;
 		char * orig_id;
 		reporting_addr_t local_addr;
 		reporting_addr_t remote_addr;
-		char * local_group;
-		char * remote_group;
-
-		char * local_mac_addr; // optional
-		char * remote_mac_addr; // optional
 	} info;
 
 	reporting_content_metrics_t local_metrics;

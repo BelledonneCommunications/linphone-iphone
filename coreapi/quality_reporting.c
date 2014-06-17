@@ -291,16 +291,16 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	append_to_buffer(&buffer, &size, &offset, "%s\r\n", report_event);
 	append_to_buffer(&buffer, &size, &offset, "CallID: %s\r\n", report->info.call_id);
-	append_to_buffer(&buffer, &size, &offset, "LocalID: %s\r\n", report->info.local_id);
-	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", report->info.remote_id);
+	append_to_buffer(&buffer, &size, &offset, "LocalID: %s\r\n", report->info.local_addr.id);
+	append_to_buffer(&buffer, &size, &offset, "RemoteID: %s\r\n", report->info.remote_addr.id);
 	append_to_buffer(&buffer, &size, &offset, "OrigID: %s\r\n", report->info.orig_id);
 
-	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "LocalGroup: %s\r\n", report->info.local_group);
-	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "RemoteGroup: %s\r\n", report->info.remote_group);
+	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "LocalGroup: %s\r\n", report->info.local_addr.group);
+	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "RemoteGroup: %s\r\n", report->info.remote_addr.group);
 	append_to_buffer(&buffer, &size, &offset, "LocalAddr: IP=%s PORT=%d SSRC=%u\r\n", report->info.local_addr.ip, report->info.local_addr.port, report->info.local_addr.ssrc);
-	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_mac_addr);
+	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "LocalMAC: %s\r\n", report->info.local_addr.mac);
 	append_to_buffer(&buffer, &size, &offset, "RemoteAddr: IP=%s PORT=%d SSRC=%u\r\n", report->info.remote_addr.ip, report->info.remote_addr.port, report->info.remote_addr.ssrc);
-	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_mac_addr);
+	APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "RemoteMAC: %s\r\n", report->info.remote_addr.mac);
 
 	append_to_buffer(&buffer, &size, &offset, "LocalMetrics:\r\n");
 	append_metrics_to_buffer(&buffer, &size, &offset, report->local_metrics);
@@ -351,7 +351,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	ms_message("QualityReporting[%p]: Send '%s' for '%s' stream with status %d",
 		call,
 		report_event,
-		report->info.local_group,
+		report->info.local_addr.group,
 		ret
 	);
 
@@ -430,25 +430,25 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
-	STR_REASSIGN(report->info.local_group, ms_strdup_printf("linphone-%s-%s-%s",
+	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("linphone-%s-%s-%s",
 		(stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
 		linphone_core_get_user_agent_name(),
 		report->info.call_id)
 	);
-	STR_REASSIGN(report->info.remote_group, ms_strdup_printf("linphone-%s-%s-%s",
+	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("linphone-%s-%s-%s",
 		(stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
 		linphone_call_get_remote_user_agent(call),
 		report->info.call_id)
 	);
 
 	if (call->dir == LinphoneCallIncoming) {
-		STR_REASSIGN(report->info.remote_id, linphone_address_as_string(call->log->from));
-		STR_REASSIGN(report->info.local_id, linphone_address_as_string(call->log->to));
-		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.remote_id));
+		STR_REASSIGN(report->info.remote_addr.id, linphone_address_as_string(call->log->from));
+		STR_REASSIGN(report->info.local_addr.id, linphone_address_as_string(call->log->to));
+		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.remote_addr.id));
 	} else {
-		STR_REASSIGN(report->info.remote_id, linphone_address_as_string(call->log->to));
-		STR_REASSIGN(report->info.local_id, linphone_address_as_string(call->log->from));
-		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.local_id));
+		STR_REASSIGN(report->info.remote_addr.id, linphone_address_as_string(call->log->to));
+		STR_REASSIGN(report->info.local_addr.id, linphone_address_as_string(call->log->from));
+		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.local_addr.id));
 	}
 
 	STR_REASSIGN(report->dialog_id, sal_op_get_dialog_id(call->op));
@@ -664,15 +664,15 @@ reporting_session_report_t * linphone_reporting_new() {
 
 void linphone_reporting_destroy(reporting_session_report_t * report) {
 	if (report->info.call_id != NULL) ms_free(report->info.call_id);
-	if (report->info.local_id != NULL) ms_free(report->info.local_id);
-	if (report->info.remote_id != NULL) ms_free(report->info.remote_id);
+	if (report->info.local_addr.id != NULL) ms_free(report->info.local_addr.id);
+	if (report->info.remote_addr.id != NULL) ms_free(report->info.remote_addr.id);
 	if (report->info.orig_id != NULL) ms_free(report->info.orig_id);
 	if (report->info.local_addr.ip != NULL) ms_free(report->info.local_addr.ip);
 	if (report->info.remote_addr.ip != NULL) ms_free(report->info.remote_addr.ip);
-	if (report->info.local_group != NULL) ms_free(report->info.local_group);
-	if (report->info.remote_group != NULL) ms_free(report->info.remote_group);
-	if (report->info.local_mac_addr != NULL) ms_free(report->info.local_mac_addr);
-	if (report->info.remote_mac_addr != NULL) ms_free(report->info.remote_mac_addr);
+	if (report->info.local_addr.group != NULL) ms_free(report->info.local_addr.group);
+	if (report->info.remote_addr.group != NULL) ms_free(report->info.remote_addr.group);
+	if (report->info.local_addr.mac != NULL) ms_free(report->info.local_addr.mac);
+	if (report->info.remote_addr.mac != NULL) ms_free(report->info.remote_addr.mac);
 	if (report->dialog_id != NULL) ms_free(report->dialog_id);
 	if (report->local_metrics.session_description.fmtp != NULL) ms_free(report->local_metrics.session_description.fmtp);
 	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
