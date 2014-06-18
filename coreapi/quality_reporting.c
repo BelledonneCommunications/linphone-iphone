@@ -313,12 +313,12 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	if (report->qos_analyzer.timestamp!=NULL){
 		append_to_buffer(&buffer, &size, &offset, "AdaptiveAlg:");
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " NAME=%s", report->qos_analyzer.name);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " TS=%s", report->qos_analyzer.timestamp);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN_LEG=%s", report->qos_analyzer.input_leg);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN=%s", report->qos_analyzer.input);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT_LEG=%s", report->qos_analyzer.output_leg);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=%s", report->qos_analyzer.output);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " NAME=\"%s\"", report->qos_analyzer.name);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " TS=\"%s\"", report->qos_analyzer.timestamp);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN_LEG=\"%s\"", report->qos_analyzer.input_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN=\"%s\"", report->qos_analyzer.input);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT_LEG=\"%s\"", report->qos_analyzer.output_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=\"%s\"", report->qos_analyzer.output);
 		append_to_buffer(&buffer, &size, &offset, "\r\n");
 	}
 
@@ -641,11 +641,11 @@ reporting_session_report_t * linphone_reporting_new() {
 		metrics[i]->session_description.payload_type = -1;
 		metrics[i]->session_description.sample_rate = -1;
 		metrics[i]->session_description.frame_duration = -1;
+		metrics[i]->session_description.packet_loss_concealment = -1;
 
 		metrics[i]->packet_loss.network_packet_loss_rate = -1;
 		metrics[i]->packet_loss.jitter_buffer_discard_rate = -1;
 
-		metrics[i]->session_description.packet_loss_concealment = -1;
 
 		metrics[i]->jitter_buffer.adaptive = -1;
 		metrics[i]->jitter_buffer.abs_max = -1;
