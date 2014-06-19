@@ -132,9 +132,9 @@ static bool_t linphone_call_all_streams_avpf_enabled(const LinphoneCall *call) {
 	return ((nb_active_streams > 0) && (nb_active_streams == nb_avpf_enabled_streams));
 }
 
-static uint8_t linphone_call_get_avpf_rr_interval(const LinphoneCall *call) {
-	uint8_t rr_interval = 0;
-	uint8_t stream_rr_interval;
+static uint16_t linphone_call_get_avpf_rr_interval(const LinphoneCall *call) {
+	uint16_t rr_interval = 0;
+	uint16_t stream_rr_interval;
 	if (call) {
 		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
 			stream_rr_interval = media_stream_get_avpf_rr_interval((MediaStream *)call->audiostream);
@@ -145,7 +145,7 @@ static uint8_t linphone_call_get_avpf_rr_interval(const LinphoneCall *call) {
 			if (stream_rr_interval > rr_interval) rr_interval = stream_rr_interval;
 		}
 	} else {
-		rr_interval = 5;
+		rr_interval = 5000;
 	}
 	return rr_interval;
 }
@@ -682,6 +682,26 @@ static void linphone_call_incoming_select_ip_version(LinphoneCall *call){
 	}else call->af=AF_INET;
 }
 
+/**
+ * Fix call parameters on incoming call to eg. enable AVPF if the incoming call propose it and it is not enabled locally.
+ */
+void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md) {
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
+
+	/* Handle AVPF and SRTP. */
+	call->params.avpf_enabled = sal_media_description_has_avpf(md);
+	if (call->params.avpf_enabled == TRUE) {
+		if (call->dest_proxy != NULL) {
+			call->params.avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(call->dest_proxy) * 1000;
+		} else {
+			call->params.avpf_rr_interval = 5000;
+		}
+	}
+	if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
+		call->params.media_encryption = LinphoneMediaEncryptionSRTP;
+	}
+}
+
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
@@ -716,6 +736,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_core_get_local_ip(lc,call->af,call->localip);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
+	call->dest_proxy = linphone_core_lookup_known_proxy(call->core, to);
 	linphone_core_init_default_params(lc, &call->params);
 
 	/*
@@ -730,13 +751,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	if (md) {
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
-		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
-
-		/* Handle AVPF and SRTP. */
-		call->params.avpf_enabled = sal_media_description_has_avpf(md);
-		if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
-			call->params.media_encryption = LinphoneMediaEncryptionSRTP;
-		}
+		linphone_call_set_compatible_incoming_call_parameters(call, md);
 	}
 	fpol=linphone_core_get_firewall_policy(call->core);
 	/*create the ice session now if ICE is required*/
