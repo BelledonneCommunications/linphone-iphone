@@ -5930,7 +5930,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		linphone_presence_model_unref(lc->presence_model);
 	}
 	linphone_core_free_payload_types(lc);
-
+	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");

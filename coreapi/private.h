@@ -726,6 +726,7 @@ struct _LinphoneCore
 	MSList *tones;
 	LinphoneReason chat_deny_code;
 	char *file_transfer_server;
+	const char **supported_formats;
 };
 
 

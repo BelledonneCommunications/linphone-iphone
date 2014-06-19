@@ -1522,3 +1522,18 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	lc->rtp_conf.srtp_suites=result;
 	return result;
 }
+
+
+
+const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
+	static const char *mkv="mkv";
+	static const char *wav="wav";
+	if (core->supported_formats==NULL){
+		core->supported_formats=ms_malloc0(3*sizeof(char*));
+		core->supported_formats[0]=wav;
+		if (ms_factory_lookup_filter_by_id(ms_factory_get_fallback(),MS_MKV_WRITER_ID)){
+			core->supported_formats[1]=mkv;
+		}
+	}
+	return core->supported_formats;
+}

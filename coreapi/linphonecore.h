@@ -2602,6 +2602,14 @@ LINPHONE_PUBLIC void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id,
  * */
 LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url);
 
+/**
+ * Returns a null terminated table of strings containing the file format extension supported for call recording.
+ * @param core the core
+ * @return the supported formats, typically 'wav' and 'mkv'
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
+
 #ifdef __cplusplus
 }
 #endif
