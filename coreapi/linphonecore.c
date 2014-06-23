@@ -717,7 +717,7 @@ static void sip_config_read(LinphoneCore *lc)
 
 	/* get proxies config */
 	for(i=0;; i++){
-		LinphoneProxyConfig *cfg=linphone_proxy_config_new_from_config_file(lc->config,i);
+		LinphoneProxyConfig *cfg=linphone_proxy_config_new_from_config_file(lc,i);
 		if (cfg!=NULL){
 			linphone_core_add_proxy_config(lc,cfg);
 		}else{

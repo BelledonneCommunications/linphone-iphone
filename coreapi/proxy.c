@@ -1211,7 +1211,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 
 
 
-LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config, int index)
+LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {
 	const char *tmp;
 	const char *identity;
@@ -1219,6 +1219,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	LinphoneProxyConfig *cfg;
 	char key[50];
 	int interval;
+	LpConfig *config=lc->config;
 
 	sprintf(key,"proxy_%i",index);
 
@@ -1226,7 +1227,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 		return NULL;
 	}
 
-	cfg=linphone_proxy_config_new();
+	cfg=linphone_core_create_proxy_config(lc);
 
 	identity=lp_config_get_string(config,key,"reg_identity",NULL);
 	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);
