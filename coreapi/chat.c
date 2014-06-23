@@ -80,32 +80,33 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
  * @param	size	size in byte of the data requested, as output it will contain the effective copied size
  *
  */
-static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, char *buffer, size_t *size){
+static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size){
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
+	char *buf = (char *)buffer;
 
 	char *content_type=belle_sip_strdup_printf("%s/%s", chatMsg->file_transfer_information->type, chatMsg->file_transfer_information->subtype);
 	size_t end_of_file=linphone_chat_message_compute_multipart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
 
 	if (offset==0){
 		int partlen=linphone_chat_message_compute_multipart_header_size(chatMsg->file_transfer_information->name, content_type);
-		memcpy(buffer,MULTIPART_HEADER_1,strlen(MULTIPART_HEADER_1));
-		buffer += strlen(MULTIPART_HEADER_1);
-		memcpy(buffer,chatMsg->file_transfer_information->name,strlen(chatMsg->file_transfer_information->name));
-		buffer += strlen(chatMsg->file_transfer_information->name);
-		memcpy(buffer,MULTIPART_HEADER_2,strlen(MULTIPART_HEADER_2));
-		buffer += strlen(MULTIPART_HEADER_2);
-		memcpy(buffer,content_type,strlen(content_type));
-		buffer += strlen(content_type);
-		memcpy(buffer,MULTIPART_HEADER_3,strlen(MULTIPART_HEADER_3));
+		memcpy(buf,MULTIPART_HEADER_1,strlen(MULTIPART_HEADER_1));
+		buf += strlen(MULTIPART_HEADER_1);
+		memcpy(buf,chatMsg->file_transfer_information->name,strlen(chatMsg->file_transfer_information->name));
+		buf += strlen(chatMsg->file_transfer_information->name);
+		memcpy(buf,MULTIPART_HEADER_2,strlen(MULTIPART_HEADER_2));
+		buf += strlen(MULTIPART_HEADER_2);
+		memcpy(buf,content_type,strlen(content_type));
+		buf += strlen(content_type);
+		memcpy(buf,MULTIPART_HEADER_3,strlen(MULTIPART_HEADER_3));
 
 		*size=partlen;
 	}else if (offset<end_of_file){
 		/* get data from call back */
-		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buffer, size);
+		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
 	}else{
 		*size=strlen(MULTIPART_END);
-		strncpy(buffer,MULTIPART_END,*size);
+		strncpy(buf,MULTIPART_END,*size);
 	}
 	belle_sip_free(content_type);
 	return BELLE_SIP_CONTINUE;
@@ -946,13 +947,13 @@ const LinphoneContent *linphone_chat_message_get_file_transfer_information(const
 	return message->file_transfer_information;
 }
 
-static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const char *buffer, size_t size){
+static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
 	//printf("Receive %ld bytes\n\n%s\n\n", size, (char *)buffer);
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	/* call back given by application level */
 	if (lc->vtable.file_transfer_received != NULL) {
-		lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, buffer, size);
+		lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
 	}
 	return;
 
