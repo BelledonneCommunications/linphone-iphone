@@ -90,6 +90,9 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 		metrics[i]->jitter_buffer.nominal = 0;
 		metrics[i]->jitter_buffer.max = 0;
 
+		metrics[i]->quality_estimates.moslq = 0;
+		metrics[i]->quality_estimates.moscq = 0;
+
 		metrics[i]->delay.round_trip_delay = 0;
 	}
 	report->last_report_date = ms_time(NULL);
@@ -353,10 +356,9 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	linphone_content_uninit(&content);
 
 	end:
-	ms_message("QualityReporting[%p]: Send '%s' for '%s' stream with status %d",
+	ms_message("QualityReporting[%p]: Send '%s' with status %d",
 		call,
 		report_event,
-		report->info.local_addr.group,
 		ret
 	);
 
@@ -429,13 +431,14 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
+	char * dialog_id;
 
 	if (!media_report_enabled(call, stats_type))
 		return;
 
+	dialog_id = sal_op_get_dialog_id(call->op);
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
-	STR_REASSIGN(report->dialog_id, sal_op_get_dialog_id(call->op));
 
 	STR_REASSIGN(report->local_metrics.user_agent, ms_strdup(linphone_core_get_user_agent(call->core)));
 	STR_REASSIGN(report->remote_metrics.user_agent, ms_strdup(linphone_call_get_remote_user_agent(call)));
@@ -443,13 +446,13 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	// RFC states: "LocalGroupID provides the identification for the purposes
 	// of aggregation for the local endpoint.".
 	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
-		, report->dialog_id
+		, dialog_id
 		, "local"
 		, report->local_metrics.user_agent
 		)
 	);
 	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
-		, report->dialog_id
+		, dialog_id
 		, "remote"
 		, report->remote_metrics.user_agent
 		)
@@ -492,6 +495,8 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
 	}
 
+	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id, report->info.local_addr.ssrc));
+
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
 		if (local_payload->mime_type!=NULL) STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
@@ -505,6 +510,8 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->remote_metrics.session_description.sample_rate = remote_payload->clock_rate;
 		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
 	}
+
+	ms_free(dialog_id);
 }
 
 /* generate random float in interval ] 0.9 t ; 1.1 t [*/
@@ -531,7 +538,6 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 		metrics = &report->local_metrics;
 		block = stats.sent_rtcp;
 	}
-
 	do{
 		if (rtcp_is_XR(block) && (rtcp_XR_get_block_type(block) == RTCP_XR_VOIP_METRICS)){
 
@@ -539,8 +545,10 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 
 			metrics->rtcp_xr_count++;
 
-			metrics->quality_estimates.moslq += rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
-			metrics->quality_estimates.moscq += rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+			metrics->quality_estimates.moslq = (rtcp_XR_voip_metrics_get_mos_lq(block)==127) ?
+				127 : metrics->quality_estimates.moslq + rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+			metrics->quality_estimates.moscq = (rtcp_XR_voip_metrics_get_mos_cq(block)==127) ?
+				127 : metrics->quality_estimates.moscq + rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
 
 			metrics->jitter_buffer.nominal += rtcp_XR_voip_metrics_get_jb_nominal(block);
 			metrics->jitter_buffer.max += rtcp_XR_voip_metrics_get_jb_maximum(block);
