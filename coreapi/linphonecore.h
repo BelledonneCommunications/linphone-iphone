@@ -1542,7 +1542,14 @@ LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
 LINPHONE_PUBLIC	const char *linphone_core_get_version(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_user_agent(LinphoneCore *lc);
+/**
+ * @deprecated Use #linphone_core_get_user_agent instead.
+**/
 LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_name(void);
+/**
+ * @deprecated Use #linphone_core_get_user_agent instead.
+**/
 LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_version(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
