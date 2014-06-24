@@ -335,9 +335,6 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 				payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 				avpf_params = payload_type_get_avpf_params(pt);
 				avpf_params.trr_interval = call->params.avpf_rr_interval;
-				if (md->streams[i].type == SalVideo) {
-					avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
-				}
 			} else {
 				payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 				memset(&avpf_params, 0, sizeof(avpf_params));

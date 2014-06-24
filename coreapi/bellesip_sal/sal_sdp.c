@@ -101,6 +101,14 @@ static void add_rtcp_fb_nack_attribute(belle_sdp_media_description_t *media_desc
 	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
 }
 
+static void add_rtcp_fb_ccm_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_CCM);
+	belle_sdp_rtcp_fb_attribute_set_param(attribute, param);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+}
+
 static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, const SalMediaDescription *md, const SalStreamDescription *stream) {
 	MSList *pt_it;
 	PayloadType *pt;
@@ -129,6 +137,9 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		}
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_RPSI) {
 			add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+		}
+		if (avpf_params.features & PAYLOAD_TYPE_AVPF_FIR) {
+			add_rtcp_fb_ccm_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_FIR);
 		}
 	}
 }
@@ -475,17 +486,9 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 
 static void enable_avpf_for_stream(SalStreamDescription *stream) {
 	MSList *pt_it;
-	PayloadType *pt;
-	PayloadTypeAvpfParams avpf_params;
-
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
-		pt = (PayloadType *)pt_it->data;
-		avpf_params = payload_type_get_avpf_params(pt);
+		PayloadType *pt = (PayloadType *)pt_it->data;
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-		if (stream->type == SalVideo) {
-			avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
-		}
-		payload_type_set_avpf_params(pt, avpf_params);
 	}
 }
 
@@ -512,6 +515,15 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 			break;
 		case BELLE_SDP_RTCP_FB_TRR_INT:
 			avpf_params.trr_interval = belle_sdp_rtcp_fb_attribute_get_trr_int(fb_attribute);
+			break;
+		case BELLE_SDP_RTCP_FB_CCM:
+			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
+				case BELLE_SDP_RTCP_FB_FIR:
+					avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+					break;
+				default:
+					break;
+			}
 			break;
 		case BELLE_SDP_RTCP_FB_ACK:
 		default:
