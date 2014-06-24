@@ -1531,7 +1531,7 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	if (core->supported_formats==NULL){
 		core->supported_formats=ms_malloc0(3*sizeof(char*));
 		core->supported_formats[0]=wav;
-		if (ms_factory_lookup_filter_by_id(ms_factory_get_fallback(),MS_MKV_WRITER_ID)){
+        if (ms_factory_lookup_filter_by_id(ms_factory_get_fallback(),MS_MKV_RECORDER_ID)){
 			core->supported_formats[1]=mkv;
 		}
 	}
