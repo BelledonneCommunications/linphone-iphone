@@ -1,3 +1,4 @@
+
 /* LinphoneManager.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
