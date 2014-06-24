@@ -418,9 +418,9 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	object_ids[1]=NULL;
 
 	if (get_ui_file(filename,path,sizeof(path))==-1) return NULL;
-	
+
 	gtk_builder_set_translation_domain(builder,GETTEXT_PACKAGE);
-	
+
 	if (!gtk_builder_add_objects_from_file(builder,path,object_ids,&error)){
 		g_error("Couldn't load %s from builder file %s: %s", widget_name,path,error->message);
 		g_error_free (error);
@@ -983,14 +983,14 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	char date[64]={0};
 	time_t curtime=time(NULL);
 	struct tm loctime;
-	
+
 #ifdef WIN32
 	loctime=*localtime(&curtime);
 #else
 	localtime_r(&curtime,&loctime);
 #endif
 	snprintf(date,sizeof(date)-1,"%i%02i%02i-%02i%02i",loctime.tm_year+1900,loctime.tm_mon+1,loctime.tm_mday, loctime.tm_hour, loctime.tm_min);
-	
+
 	if (address){
 		id=linphone_address_get_username(address);
 		if (id==NULL) id=linphone_address_get_domain(address);
@@ -1015,7 +1015,7 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneAddress *addr=linphone_core_interpret_url(lc,entered);
-	
+
 	if (addr!=NULL){
 		LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
 		gchar *record_file=linphone_gtk_get_record_path(addr,FALSE);
@@ -1632,13 +1632,13 @@ static GtkWidget *create_icon_menu(){
 }
 
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data){
-       gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y); 
+       gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y);
 }
 
 static void handle_icon_click() {
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (!gtk_window_is_active((GtkWindow*)mw)) {
-		if(!gtk_widget_is_drawable(mw)){ 
+		if(!gtk_widget_is_drawable(mw)){
 			//we only move if window was hidden. If it was simply behind the window stack, ie, drawable, we keep it as it was
 			gtk_window_move (GTK_WINDOW(mw), main_window_x, main_window_y);
 		}
@@ -2180,6 +2180,7 @@ int main(int argc, char *argv[]){
 	const char *app_name="Linphone";
 	LpConfig *factory;
 	const char *db_file;
+	GError *error=NULL;
 
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
@@ -2234,8 +2235,9 @@ int main(int argc, char *argv[]){
 	gdk_threads_enter();
 
 	if (!gtk_init_with_args(&argc,&argv,_("A free SIP video-phone"),
-				linphone_options,NULL,NULL)){
+				linphone_options,NULL,&error)){
 		gdk_threads_leave();
+		g_critical("%s", error->message);
 		return -1;
 	}
 	if (config_file) free(config_file);
@@ -2261,7 +2263,7 @@ int main(int argc, char *argv[]){
 			g_error("Could not change directory to %s : %s",workingdir,strerror(errno));
 		}
 	}
-	
+
 #if defined(__APPLE__) && defined(ENABLE_NLS)
 	/*workaround for bundles. GTK is unable to find translations in the bundle (obscure bug again).
 	So we help it:*/
@@ -2312,18 +2314,18 @@ core_start:
 
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
-	
+
 	db_file=linphone_gtk_message_storage_get_db_file(NULL);
 
 	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
-	
+
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
-	
+
 	gtk_main();
 	linphone_gtk_quit();
-	
+
 	if (restart){
 		quit_done=FALSE;
 		restart=FALSE;
