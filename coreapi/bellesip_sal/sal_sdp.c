@@ -494,6 +494,9 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 	switch (belle_sdp_rtcp_fb_attribute_get_type(fb_attribute)) {
 		case BELLE_SDP_RTCP_FB_NACK:
 			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
+				case BELLE_SDP_RTCP_FB_NONE:
+					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI | PAYLOAD_TYPE_AVPF_SLI | PAYLOAD_TYPE_AVPF_RPSI;
+					break;
 				case BELLE_SDP_RTCP_FB_PLI:
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI;
 					break;
