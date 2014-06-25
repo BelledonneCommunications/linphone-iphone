@@ -49,7 +49,8 @@ static size_t linphone_chat_message_compute_multipart_header_size(const char *fi
 	return strlen(MULTIPART_HEADER_1)+strlen(filename)+strlen(MULTIPART_HEADER_2)+strlen(content_type)+strlen(MULTIPART_HEADER_3);
 }
 static void process_io_error(void *data, const belle_sip_io_error_event_t *event){
-	printf("We have a response io error!\n");
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
 }
 static void process_auth_requested(void *data, belle_sip_auth_event_t *event){
 	printf("We have a auth requested!\n");
