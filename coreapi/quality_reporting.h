@@ -205,7 +205,7 @@ void linphone_reporting_call_state_updated(LinphoneCall *call);
  * @param cb #LinphoneQualityReportingReportSendCb callback function to notify
  *
  */
-void linphone_reporting_set_on_report_send(LinphoneCall *call, LinphoneQualityReportingReportSendCb cb);
+LINPHONE_PUBLIC void linphone_reporting_set_on_report_send(LinphoneCall *call, LinphoneQualityReportingReportSendCb cb);
 
 #ifdef __cplusplus
 }

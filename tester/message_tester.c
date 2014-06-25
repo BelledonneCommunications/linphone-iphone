@@ -74,9 +74,9 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 		file = (FILE*)linphone_chat_message_get_user_data(message);
 
 		if (size==0) { /* tranfer complerte */
+			stats* counters = get_stats(lc);
 			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
 			linphone_chat_message_destroy(message);
-			stats* counters = get_stats(lc);
 			counters->number_of_LinphoneMessageExtBodyReceived++;
 			fclose(file);
 		} else { /* store content on a file*/
@@ -178,13 +178,15 @@ static void text_message(void) {
 }
 
 static void text_message_within_dialog(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	lp_config_set_int(pauline->lc->config,"sip","chat_use_call_dialogs",1);
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 
 	CU_ASSERT_TRUE(call(marie,pauline));
@@ -211,6 +213,8 @@ static void text_message_with_credential_from_auth_cb_auth_info_requested(Linpho
 
 
 static void text_message_with_credential_from_auth_cb(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
@@ -219,8 +223,8 @@ static void text_message_with_credential_from_auth_cb(void) {
 	linphone_core_clear_all_auth_info(marie->lc);
 	marie->lc->vtable.auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 
 
@@ -336,32 +340,34 @@ static void text_message_with_external_body(void) {
 
 static void file_transfer_message(void) {
 	int i;
-	/* setting dummy file content to something */
-	const char* big_file_content="big file";
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+	LinphoneContent content;
+	const char* big_file_content="big file"; /* setting dummy file content to something */
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
 		memcpy(big_file+i, big_file_content, strlen(big_file_content));
 
 	big_file[0]=*"S";
 	big_file[sizeof(big_file)-1]=*"E";
 
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 	/* create a chatroom on pauline's side */
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 
 	/* create a file transfer message */
-	LinphoneContent content;
 	memset(&content,0,sizeof(content));
 	content.type="text";
 	content.subtype="plain";
 	content.size=sizeof(big_file); /*total size to be transfered*/
 	content.name = "bigfile.txt";
-	LinphoneChatMessage* message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
 
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));

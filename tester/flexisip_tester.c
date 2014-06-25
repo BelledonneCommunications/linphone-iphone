@@ -376,13 +376,14 @@ static void call_forking_declined_localy(void){
 
 static void call_forking_with_push_notification_single(void){
 	char hellopath[256];
+	MSList* lcs;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
 	
-	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	lcs=ms_list_append(NULL,pauline->lc);
 	
 	lcs=ms_list_append(lcs,marie->lc);
 	

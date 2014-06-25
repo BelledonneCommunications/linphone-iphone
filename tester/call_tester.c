@@ -246,19 +246,22 @@ static void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
 }
 
 static void simple_call(void) {
-	belle_sip_object_enable_leak_detector(TRUE);
-	int begin=belle_sip_object_get_object_count();
+	int begin;
 	int leaked_objects;
-	{	
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
 
-		CU_ASSERT_TRUE(call(pauline,marie));
-		liblinphone_tester_check_rtcp(marie,pauline);
-		end_call(marie,pauline);
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	CU_ASSERT_TRUE(call(pauline,marie));
+	liblinphone_tester_check_rtcp(marie,pauline);
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
 	leaked_objects=belle_sip_object_get_object_count()-begin;
 	CU_ASSERT_TRUE(leaked_objects==0);
 	if (leaked_objects>0){
@@ -816,11 +819,11 @@ static void call_with_custom_headers(void) {
 				*pauline_remote_contact,
 				*marie_remote_contact,
 				*marie_remote_contact_header;
-
+	LinphoneAddress* marie_identity;
 	char* tmp=linphone_address_as_string_uri_only(marie->identity);
 	char tmp2[256];
 	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
-	LinphoneAddress* marie_identity=linphone_address_new(tmp2);
+	marie_identity=linphone_address_new(tmp2);
 	ms_free(tmp);
 	linphone_address_destroy(marie->identity);
 	marie->identity=marie_identity;
@@ -1358,6 +1361,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	char hellopath[256];
 	MSList *iterator;
+	MSList* lcs;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
 	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
@@ -1366,7 +1370,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(marie_params,LinphonePrivacyId);
 
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 

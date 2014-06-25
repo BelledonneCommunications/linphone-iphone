@@ -875,7 +875,7 @@ LINPHONE_PUBLIC	const char *linphone_proxy_config_get_quality_reporting_collecto
  * @param[in] cfg #LinphoneProxyConfig object
  * @param[in] interval The interval in seconds, 0 means interval reports are disabled.
  */
-void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval);
+LINPHONE_PUBLIC void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval);
 
 /**
  * Get the interval between interval reports when using quality reporting.
@@ -883,7 +883,7 @@ void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *c
  * @return The interval in seconds, 0 means interval reports are disabled.
  */
 
-int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg);
 
 /**
  * Get the registration state of the given proxy config.
@@ -2317,7 +2317,7 @@ LINPHONE_PUBLIC int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
 void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 
 /*play/record support: use files instead of soundcard*/
-void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
+LINPHONE_PUBLIC void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
