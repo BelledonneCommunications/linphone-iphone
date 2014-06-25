@@ -375,8 +375,6 @@ void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
-void linphone_call_stop_audio_stream(LinphoneCall *call);
-void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_delete_upnp_session(LinphoneCall *call);
