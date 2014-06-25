@@ -56,13 +56,15 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 				   chooses not to re-register, the UA SHOULD discard any stored service
 				   route for that address-of-record. */
 		sal_op_set_service_route(op,NULL);
+		sal_op_ref(op); /*take a ref while invoking the callback to make sure the operations done after are valid*/
 		op->base.root->callbacks.register_failure(op);
-		if (op->auth_info) {
+		if (op->state!=SalOpStateTerminated && op->auth_info) {
 			/*add pending auth*/
 			sal_add_pending_auth(op->base.root,op);
 			if (status_code==403 || status_code==401 || status_code==407 )
 				op->base.root->callbacks.auth_failure(op,op->auth_info);
 		}
+		sal_op_unref(op);
 	}
 }
 

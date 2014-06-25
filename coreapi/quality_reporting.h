@@ -54,47 +54,50 @@ typedef struct reporting_content_metrics {
 	// session description - optional
 	struct {
 		int payload_type;
-		char * payload_desc; // mime type
-		int sample_rate; // clock rate
-		int frame_duration; // to check (ptime?) - audio only
+		char * payload_desc;
+		int sample_rate;
+		int frame_duration;
 		char * fmtp;
-		int packet_loss_concealment; // in voip metrics - audio only
+		int packet_loss_concealment;
 	} session_description;
 
 	// jitter buffet - optional
 	struct {
-		int adaptive; // constant
-		int nominal; // average
-		int max; // average
-		int abs_max; // constant
+		int adaptive;
+		int nominal;
+		int max;
+		int abs_max;
 	} jitter_buffer;
 
 	// packet loss - optional
 	struct {
-		float network_packet_loss_rate; // average
-		float jitter_buffer_discard_rate; // average
+		float network_packet_loss_rate;
+		float jitter_buffer_discard_rate;
 	} packet_loss;
 
 	// delay - optional
 	struct {
-		int round_trip_delay; // no - vary
-		int end_system_delay; // no - not implemented yet
-		int symm_one_way_delay; // no - not implemented (depends on end_system_delay)
-		int interarrival_jitter; // no - not implemented yet
-		int mean_abs_jitter; // to check
+		int round_trip_delay;
+		int end_system_delay;
+		int symm_one_way_delay;
+		int interarrival_jitter;
+		int mean_abs_jitter;
 	} delay;
 
 	// signal - optional
 	struct {
-		int level; // no - vary
-		int noise_level; // no - vary
+		int level;
+		int noise_level;
 	} signal;
 
 	// quality estimates - optional
 	struct {
-		float moslq; // no - vary or avg - voip metrics - in [0..4.9]
-		float moscq; // no - vary or avg - voip metrics - in [0..4.9]
+		float moslq;
+		float moscq;
 	} quality_estimates;
+
+	// custom extension
+	char * user_agent;
 
 	// for internal processing
 	uint8_t rtcp_xr_count; // number of RTCP XR packets received since last report, used to compute average of instantaneous parameters as stated in the RFC 6035 (4.5)
@@ -127,9 +130,9 @@ typedef struct reporting_session_report {
 		char * name; /*type of the QoS analyzer used*/
 		char* timestamp; /*time of each decision in seconds*/
 		char* input_leg; /*input parameters' name*/
-		char* input; /*set of inputs for each decision, semicolon separated*/
+		char* input; /*set of inputs for each semicolon separated decision*/
 		char* output_leg; /*output parameters' name*/
-		char* output; /*set of outputs for each decision, semicolon separated*/
+		char* output; /*set of outputs for each semicolon separated decision*/
 	} qos_analyzer;
 
 	// for internal processing

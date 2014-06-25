@@ -424,21 +424,21 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
-	
+
 	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
-	
+
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
-	
+
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
-	
+
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
 	sal_nat_helper_enable(sal,TRUE);
 	memset(&listener_callbacks,0,sizeof(listener_callbacks));
@@ -615,6 +615,12 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	belle_sip_header_user_agent_set_products(ctx->user_agent,NULL);
 	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);
 	return ;
+}
+
+const char* sal_get_user_agent(Sal *ctx){
+	static char user_agent[255];
+	belle_sip_header_user_agent_get_products_as_string(ctx->user_agent, user_agent, 254);
+	return user_agent;
 }
 
 void sal_append_stack_string_to_user_agent(Sal *ctx) {

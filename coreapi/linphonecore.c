@@ -1914,6 +1914,15 @@ void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char
 	apply_user_agent(lc);
 #endif
 }
+const char *linphone_core_get_user_agent(LinphoneCore *lc){
+#if USE_BELLESIP
+	return sal_get_user_agent(lc->sal);
+#else
+	static char ua_buffer[255] = {0};
+	snprintf(ua_buffer, "%s/%s", _ua_name, _ua_version, 254);
+	return ua_buffer;
+#endif
+}
 
 const char *linphone_core_get_user_agent_name(void){
 	return _ua_name;
@@ -2845,7 +2854,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
 		cp->avpf_enabled = linphone_proxy_config_avpf_enabled(proxy);
-		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy);
+		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000;
 	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -3428,12 +3437,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
 		if (md) {
-			call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
-			/* Handle AVPF and SRTP. */
-			call->params.avpf_enabled = sal_media_description_has_avpf(md);
-			if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
-				call->params.media_encryption = LinphoneMediaEncryptionSRTP;
-			}
+			linphone_call_set_compatible_incoming_call_parameters(call, md);
 		}
 		linphone_call_prepare_ice(call,TRUE);
 		linphone_call_make_local_media_description(lc,call);

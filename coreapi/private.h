@@ -100,7 +100,7 @@ struct _LinphoneCallParams{
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
 	LinphonePrivacyMask privacy;
-	uint8_t avpf_rr_interval;
+	uint16_t avpf_rr_interval;
 };
 
 struct _LinphoneQualityReporting{
@@ -255,6 +255,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
+void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
@@ -293,24 +294,24 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
-static inline int get_min_bandwidth(int dbw, int ubw){
+static MS2_INLINE int get_min_bandwidth(int dbw, int ubw){
 	if (dbw<=0) return ubw;
 	if (ubw<=0) return dbw;
 	return MIN(dbw,ubw);
 }
 
-static inline bool_t bandwidth_is_greater(int bw1, int bw2){
+static MS2_INLINE bool_t bandwidth_is_greater(int bw1, int bw2){
 	if (bw1<0) return TRUE;
 	else if (bw2<0) return FALSE;
 	else return bw1>=bw2;
 }
 
-static inline int get_remaining_bandwidth_for_video(int total, int audio){
+static MS2_INLINE int get_remaining_bandwidth_for_video(int total, int audio){
 	if (total<=0) return 0;
 	return total-audio-10;
 }
 
-static inline void set_string(char **dest, const char *src){
+static MS2_INLINE void set_string(char **dest, const char *src){
 	if (*dest){
 		ms_free(*dest);
 		*dest=NULL;
@@ -903,7 +904,7 @@ xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context
 char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
 
 
-static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
+static MS2_INLINE const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
 	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }

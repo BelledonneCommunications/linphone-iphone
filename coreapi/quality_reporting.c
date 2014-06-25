@@ -90,6 +90,9 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 		metrics[i]->jitter_buffer.nominal = 0;
 		metrics[i]->jitter_buffer.max = 0;
 
+		metrics[i]->quality_estimates.moslq = 0;
+		metrics[i]->quality_estimates.moscq = 0;
+
 		metrics[i]->delay.round_trip_delay = 0;
 	}
 	report->last_report_date = ms_time(NULL);
@@ -236,6 +239,11 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSCQ=%s", moscq_str);
 	}
 
+	if (rm.user_agent!=NULL){
+		append_to_buffer(buffer, size, offset, "\r\nLinphoneExt:");
+			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " UA=\"%s\"", rm.user_agent);
+	}
+
 	append_to_buffer(buffer, size, offset, "\r\n");
 
 	ms_free(timestamps_start_str);
@@ -313,12 +321,12 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	if (report->qos_analyzer.timestamp!=NULL){
 		append_to_buffer(&buffer, &size, &offset, "AdaptiveAlg:");
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " NAME=%s", report->qos_analyzer.name);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " TS=%s", report->qos_analyzer.timestamp);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN_LEG=%s", report->qos_analyzer.input_leg);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN=%s", report->qos_analyzer.input);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT_LEG=%s", report->qos_analyzer.output_leg);
-			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=%s", report->qos_analyzer.output);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " NAME=\"%s\"", report->qos_analyzer.name);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " TS=\"%s\"", report->qos_analyzer.timestamp);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN_LEG=\"%s\"", report->qos_analyzer.input_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " IN=\"%s\"", report->qos_analyzer.input);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT_LEG=\"%s\"", report->qos_analyzer.output_leg);
+			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=\"%s\"", report->qos_analyzer.output);
 		append_to_buffer(&buffer, &size, &offset, "\r\n");
 	}
 
@@ -348,10 +356,9 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	linphone_content_uninit(&content);
 
 	end:
-	ms_message("QualityReporting[%p]: Send '%s' for '%s' stream with status %d",
+	ms_message("QualityReporting[%p]: Send '%s' with status %d",
 		call,
 		report_event,
-		report->info.local_addr.group,
 		ret
 	);
 
@@ -424,22 +431,33 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	const PayloadType * remote_payload = NULL;
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
+	char * dialog_id;
 
 	if (!media_report_enabled(call, stats_type))
 		return;
 
+	dialog_id = sal_op_get_dialog_id(call->op);
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(call->log->call_id));
-	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("linphone-%s-%s-%s",
-		(stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
-		linphone_core_get_user_agent_name(),
-		report->info.call_id)
+
+	STR_REASSIGN(report->local_metrics.user_agent, ms_strdup(linphone_core_get_user_agent(call->core)));
+	STR_REASSIGN(report->remote_metrics.user_agent, ms_strdup(linphone_call_get_remote_user_agent(call)));
+
+	// RFC states: "LocalGroupID provides the identification for the purposes
+	// of aggregation for the local endpoint.".
+	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
+		, dialog_id
+		, "local"
+		, report->local_metrics.user_agent
+		)
 	);
-	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("linphone-%s-%s-%s",
-		(stats_type == LINPHONE_CALL_STATS_AUDIO ? "audio" : "video"),
-		linphone_call_get_remote_user_agent(call),
-		report->info.call_id)
+	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
+		, dialog_id
+		, "remote"
+		, report->remote_metrics.user_agent
+		)
 	);
+
 
 	if (call->dir == LinphoneCallIncoming) {
 		STR_REASSIGN(report->info.remote_addr.id, linphone_address_as_string(call->log->from));
@@ -451,7 +469,6 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.local_addr.id));
 	}
 
-	STR_REASSIGN(report->dialog_id, sal_op_get_dialog_id(call->op));
 
 	report->local_metrics.timestamps.start = call->log->start_date_time;
 	report->local_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
@@ -478,6 +495,8 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
 	}
 
+	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id, report->info.local_addr.ssrc));
+
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
 		if (local_payload->mime_type!=NULL) STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(local_payload->mime_type));
@@ -491,6 +510,8 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->remote_metrics.session_description.sample_rate = remote_payload->clock_rate;
 		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
 	}
+
+	ms_free(dialog_id);
 }
 
 /* generate random float in interval ] 0.9 t ; 1.1 t [*/
@@ -517,7 +538,6 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 		metrics = &report->local_metrics;
 		block = stats.sent_rtcp;
 	}
-
 	do{
 		if (rtcp_is_XR(block) && (rtcp_XR_get_block_type(block) == RTCP_XR_VOIP_METRICS)){
 
@@ -525,8 +545,10 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 
 			metrics->rtcp_xr_count++;
 
-			metrics->quality_estimates.moslq += rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
-			metrics->quality_estimates.moscq += rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+			metrics->quality_estimates.moslq = (rtcp_XR_voip_metrics_get_mos_lq(block)==127) ?
+				127 : metrics->quality_estimates.moslq + rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+			metrics->quality_estimates.moscq = (rtcp_XR_voip_metrics_get_mos_cq(block)==127) ?
+				127 : metrics->quality_estimates.moscq + rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
 
 			metrics->jitter_buffer.nominal += rtcp_XR_voip_metrics_get_jb_nominal(block);
 			metrics->jitter_buffer.max += rtcp_XR_voip_metrics_get_jb_maximum(block);
@@ -641,11 +663,11 @@ reporting_session_report_t * linphone_reporting_new() {
 		metrics[i]->session_description.payload_type = -1;
 		metrics[i]->session_description.sample_rate = -1;
 		metrics[i]->session_description.frame_duration = -1;
+		metrics[i]->session_description.packet_loss_concealment = -1;
 
 		metrics[i]->packet_loss.network_packet_loss_rate = -1;
 		metrics[i]->packet_loss.jitter_buffer_discard_rate = -1;
 
-		metrics[i]->session_description.packet_loss_concealment = -1;
 
 		metrics[i]->jitter_buffer.adaptive = -1;
 		metrics[i]->jitter_buffer.abs_max = -1;
@@ -663,27 +685,29 @@ reporting_session_report_t * linphone_reporting_new() {
 }
 
 void linphone_reporting_destroy(reporting_session_report_t * report) {
-	if (report->info.call_id != NULL) ms_free(report->info.call_id);
-	if (report->info.local_addr.id != NULL) ms_free(report->info.local_addr.id);
-	if (report->info.remote_addr.id != NULL) ms_free(report->info.remote_addr.id);
-	if (report->info.orig_id != NULL) ms_free(report->info.orig_id);
-	if (report->info.local_addr.ip != NULL) ms_free(report->info.local_addr.ip);
-	if (report->info.remote_addr.ip != NULL) ms_free(report->info.remote_addr.ip);
-	if (report->info.local_addr.group != NULL) ms_free(report->info.local_addr.group);
-	if (report->info.remote_addr.group != NULL) ms_free(report->info.remote_addr.group);
-	if (report->info.local_addr.mac != NULL) ms_free(report->info.local_addr.mac);
-	if (report->info.remote_addr.mac != NULL) ms_free(report->info.remote_addr.mac);
-	if (report->dialog_id != NULL) ms_free(report->dialog_id);
-	if (report->local_metrics.session_description.fmtp != NULL) ms_free(report->local_metrics.session_description.fmtp);
-	if (report->local_metrics.session_description.payload_desc != NULL) ms_free(report->local_metrics.session_description.payload_desc);
-	if (report->remote_metrics.session_description.fmtp != NULL) ms_free(report->remote_metrics.session_description.fmtp);
-	if (report->remote_metrics.session_description.payload_desc != NULL) ms_free(report->remote_metrics.session_description.payload_desc);
-	if (report->qos_analyzer.name != NULL) ms_free(report->qos_analyzer.name);
-	if (report->qos_analyzer.timestamp != NULL) ms_free(report->qos_analyzer.timestamp);
-	if (report->qos_analyzer.input_leg != NULL) ms_free(report->qos_analyzer.input_leg);
-	if (report->qos_analyzer.input != NULL) ms_free(report->qos_analyzer.input);
-	if (report->qos_analyzer.output_leg != NULL) ms_free(report->qos_analyzer.output_leg);
-	if (report->qos_analyzer.output != NULL) ms_free(report->qos_analyzer.output);
+	STR_REASSIGN(report->info.call_id, NULL);
+	STR_REASSIGN(report->info.local_addr.id, NULL);
+	STR_REASSIGN(report->info.remote_addr.id, NULL);
+	STR_REASSIGN(report->info.orig_id, NULL);
+	STR_REASSIGN(report->info.local_addr.ip, NULL);
+	STR_REASSIGN(report->info.remote_addr.ip, NULL);
+	STR_REASSIGN(report->info.local_addr.group, NULL);
+	STR_REASSIGN(report->info.remote_addr.group, NULL);
+	STR_REASSIGN(report->info.local_addr.mac, NULL);
+	STR_REASSIGN(report->info.remote_addr.mac, NULL);
+	STR_REASSIGN(report->dialog_id, NULL);
+	STR_REASSIGN(report->local_metrics.session_description.fmtp, NULL);
+	STR_REASSIGN(report->local_metrics.session_description.payload_desc, NULL);
+	STR_REASSIGN(report->local_metrics.user_agent, NULL);
+	STR_REASSIGN(report->remote_metrics.session_description.fmtp, NULL);
+	STR_REASSIGN(report->remote_metrics.session_description.payload_desc, NULL);
+	STR_REASSIGN(report->remote_metrics.user_agent, NULL);
+	STR_REASSIGN(report->qos_analyzer.name, NULL);
+	STR_REASSIGN(report->qos_analyzer.timestamp, NULL);
+	STR_REASSIGN(report->qos_analyzer.input_leg, NULL);
+	STR_REASSIGN(report->qos_analyzer.input, NULL);
+	STR_REASSIGN(report->qos_analyzer.output_leg, NULL);
+	STR_REASSIGN(report->qos_analyzer.output, NULL);
 
 	ms_free(report);
 }

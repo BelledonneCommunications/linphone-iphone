@@ -101,7 +101,11 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
 			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
 				newp->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
-				newp->avpf = payload_type_get_avpf_params(p2);
+				newp->avpf = payload_type_get_avpf_params(p2); /* Take remote AVPF features */
+				/* Take bigger AVPF trr interval */
+				if (p2->avpf.trr_interval < matched->avpf.trr_interval) {
+					newp->avpf.trr_interval = matched->avpf.trr_interval;
+				}
 			}
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
