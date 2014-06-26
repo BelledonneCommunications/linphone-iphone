@@ -162,8 +162,26 @@
     <None Include="..\..\coreapi\TunnelManager.hh" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\bcg729\build\wp8\bcg729\bcg729.vcxproj">
+      <Project>{1db09afe-fc9b-472e-a746-0e33f8ef8883}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip.vcxproj">
       <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\msamr\build\wp8\msamr\msamr.vcxproj">
+      <Project>{9924ac72-f96c-4e56-94d9-2b025da43c6b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\msilbc\build\wp8\msilbc\msilbc.vcxproj">
+      <Project>{072fad20-7007-4da2-b2e7-16ce2b219f67}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mssilk\build\wp8\mssilk\mssilk.vcxproj">
+      <Project>{36b528f9-fb79-4078-a16b-0a7442581bb7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mswasapi\mswasapi\mswasapi.vcxproj">
+      <Project>{d22bd217-d0f8-4274-9b3a-f3f35f46482c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mswp8vid\mswp8vid\mswp8vid.vcxproj">
+      <Project>{0565952a-ea62-46a2-8261-f5b4b490da42}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\tunnel\build\wp8\tunnel\tunnel.vcxproj">
       <Project>{59500dd1-b192-4ddf-a402-8a8e3739e032}</Project>
