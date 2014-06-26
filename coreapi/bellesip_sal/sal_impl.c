@@ -323,9 +323,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
 			return;
 		}
-		if (!op->base.remote_ua) {
-			sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
-		}
+		/*do it all the time, since we can receive provisional responses from a different instance than the final one*/
+		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
 
 		if(remote_contact) {
 			__sal_op_set_remote_contact(op, belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(remote_contact)));
