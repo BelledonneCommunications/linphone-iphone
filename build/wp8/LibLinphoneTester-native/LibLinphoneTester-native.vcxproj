@@ -136,7 +136,7 @@
       <Project>{0565952a-ea62-46a2-8261-f5b4b490da42}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\mediastreamer2\build\wp8\mediastreamer2\mediastreamer2.vcxproj">
-      <Project>{b9bd3213-b7c4-431e-a827-9a92682045af}</Project>
+      <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\oRTP\build\wp8\oRTP\oRTP.vcxproj">
       <Project>{ffc7b532-0502-4d88-ac98-9e89071cbc97}</Project>
