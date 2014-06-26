@@ -180,6 +180,9 @@
     <ProjectReference Include="..\..\..\mswasapi\mswasapi\mswasapi.vcxproj">
       <Project>{d22bd217-d0f8-4274-9b3a-f3f35f46482c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\mswebrtc\build\wp8\mswebrtc\mswebrtc.vcxproj">
+      <Project>{b16b81a9-bef2-44c9-b603-1065183ae844}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\mswp8vid\mswp8vid\mswp8vid.vcxproj">
       <Project>{0565952a-ea62-46a2-8261-f5b4b490da42}</Project>
     </ProjectReference>
