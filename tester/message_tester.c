@@ -121,13 +121,13 @@ void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *me
 	const LinphoneAddress* from_address = linphone_chat_message_get_from(message);
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
+	stats* counters = get_stats(lc);
 	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)progress
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
 																	, content->type
 																	, content->subtype
 																	,(linphone_chat_message_is_outgoing(message)?"to":"from")
 																	, address);
-	stats* counters = get_stats(lc);
 	counters->progress_of_LinphoneFileTransfer = progress;
 	free(address);
 }
