@@ -132,11 +132,12 @@ static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	if (rm.signal.level != 127) ret|=METRICS_SIGNAL;
 	if (rm.signal.noise_level != 127) ret|=METRICS_SIGNAL;
 
+	IF_NUM_IN_RANGE(rm.quality_estimates.moslq, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
+	IF_NUM_IN_RANGE(rm.quality_estimates.moscq, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
+
 	if (rm.rtcp_xr_count>0){
 		IF_NUM_IN_RANGE(rm.jitter_buffer.nominal/rm.rtcp_xr_count, 0, 65535, ret|=METRICS_JITTER_BUFFER);
 		IF_NUM_IN_RANGE(rm.jitter_buffer.max/rm.rtcp_xr_count, 0, 65535, ret|=METRICS_JITTER_BUFFER);
-		IF_NUM_IN_RANGE(rm.quality_estimates.moslq/rm.rtcp_xr_count, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
-		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, ret|=METRICS_QUALITY_ESTIMATES);
 	}
 	if (rm.rtcp_sr_count+rm.rtcp_xr_count>0){
 		IF_NUM_IN_RANGE(rm.delay.round_trip_delay/(rm.rtcp_sr_count+rm.rtcp_xr_count), 0, 65535, ret|=METRICS_DELAY);
@@ -231,8 +232,8 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 
 	/*if quality estimates metrics are available, rtcp_xr_count should be always not null*/
 	if ((available_metrics & METRICS_QUALITY_ESTIMATES) != 0){
-		IF_NUM_IN_RANGE(rm.quality_estimates.moslq/rm.rtcp_xr_count, 1, 5, moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq/rm.rtcp_xr_count));
-		IF_NUM_IN_RANGE(rm.quality_estimates.moscq/rm.rtcp_xr_count, 1, 5, moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq/rm.rtcp_xr_count));
+		IF_NUM_IN_RANGE(rm.quality_estimates.moslq, 1, 5, moslq_str = float_to_one_decimal_string(rm.quality_estimates.moslq));
+		IF_NUM_IN_RANGE(rm.quality_estimates.moscq, 1, 5, moscq_str = float_to_one_decimal_string(rm.quality_estimates.moscq));
 
 		append_to_buffer(buffer, size, offset, "\r\nQualityEst:");
 			APPEND_IF_NOT_NULL_STR(buffer, size, offset, " MOSLQ=%s", moslq_str);
@@ -477,6 +478,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	report->remote_metrics.timestamps.start = call->log->start_date_time;
 	report->remote_metrics.timestamps.stop = call->log->start_date_time + linphone_call_get_duration(call);
 
+
 	/*yet we use the same payload config for local and remote, since this is the largest use case*/
 	if (stats_type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL) {
 		stream = &call->audiostream->ms;
@@ -493,6 +495,11 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 
 		report->info.local_addr.ssrc = rtp_session_get_send_ssrc(session);
 		report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
+
+		if (stream->qi != NULL){
+			report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(stream->qi);
+			report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(stream->qi);
+		}
 	}
 
 	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id, report->info.local_addr.ssrc));
@@ -545,10 +552,14 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type) {
 
 			metrics->rtcp_xr_count++;
 
-			metrics->quality_estimates.moslq = (rtcp_XR_voip_metrics_get_mos_lq(block)==127) ?
-				127 : metrics->quality_estimates.moslq + rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
-			metrics->quality_estimates.moscq = (rtcp_XR_voip_metrics_get_mos_cq(block)==127) ?
-				127 : metrics->quality_estimates.moscq + rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+			// for local mos rating, we'll use the quality indicator directly
+			// because rtcp XR might not be enabled
+			if (stats.updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE){
+				metrics->quality_estimates.moslq = (rtcp_XR_voip_metrics_get_mos_lq(block)==127) ?
+					127 : rtcp_XR_voip_metrics_get_mos_lq(block) / 10.f;
+				metrics->quality_estimates.moscq = (rtcp_XR_voip_metrics_get_mos_cq(block)==127) ?
+					127 : rtcp_XR_voip_metrics_get_mos_cq(block) / 10.f;
+			}
 
 			metrics->jitter_buffer.nominal += rtcp_XR_voip_metrics_get_jb_nominal(block);
 			metrics->jitter_buffer.max += rtcp_XR_voip_metrics_get_jb_maximum(block);
