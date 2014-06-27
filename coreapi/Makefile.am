@@ -91,7 +91,7 @@ if HAVE_LD_OUTPUT_DEF
 liblinphone_la_LDFLAGS += -Wl,--output-def,liblinphone-$(LIBLINPHONE_SO_CURRENT).def
 defexecdir = $(libdir)
 defexec_DATA = liblinphone-$(LIBLINPHONE_SO_CURRENT).def
-CLEANFILES = $(defexec_DATA)
+CLEANFILES += $(defexec_DATA)
 
 liblinphone-$(LIBLINPHONE_SO_CURRENT).def: liblinphone.la
 
@@ -156,15 +156,21 @@ AM_CFLAGS+= -DUSE_BELLESIP
 
 AM_CXXFLAGS=$(AM_CFLAGS)
 
+#Make sure that we are in linphone's git tree by doing git log $(top_srcdir)/configure.ac.
+#if it is something known to git, then that will be ok to check the git describe number and make sure it is consistent with 
+#the PACKAGE_VERSION given in configure.ac
+
 make_gitversion_h:
-	if test "$(GITDESCRIBE)" != "" ; then \
-		if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
-			echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
-			exit 1; \
+	if test -d $(top_srcdir)/.git ; then  \
+		if test "$(GITDESCRIBE)" != "" ; then \
+			if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
+				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
+				exit 1; \
+			fi ; \
+			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
+		elif test "$(GITREVISION)" != "" ; then \
+			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
 		fi ; \
-		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
-	elif test "$(GITREVISION)" != "" ; then \
-		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
 	else \
 		$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
 	fi
