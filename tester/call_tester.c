@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -269,51 +269,88 @@ static void simple_call(void) {
 	}
 }
 
+static void call_outbound_with_multiple_proxy() {
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_rc", FALSE);
+	LinphoneCoreManager* marie   = linphone_core_manager_new2( "marie_rc", FALSE);
+
+	LinphoneProxyConfig* lpc = NULL;
+	LinphoneProxyConfig* registered_lpc = linphone_proxy_config_new();
+
+	linphone_core_get_default_proxy(marie->lc, &lpc);
+	linphone_core_set_default_proxy(marie->lc,NULL);
+
+	CU_ASSERT_FATAL(lpc != NULL);
+	CU_ASSERT_FATAL(registered_lpc != NULL);
+
+	// create new LPC that will successfully register
+	linphone_proxy_config_set_identity(registered_lpc, linphone_proxy_config_get_identity(lpc));
+	linphone_proxy_config_set_server_addr(registered_lpc, linphone_proxy_config_get_addr(lpc));
+	linphone_proxy_config_set_route(registered_lpc, linphone_proxy_config_get_route(lpc));
+	linphone_proxy_config_enable_register(registered_lpc, TRUE);
+
+	linphone_core_add_proxy_config(marie->lc, registered_lpc);
+
+	// set first LPC to unreacheable proxy addr
+	linphone_proxy_config_edit(lpc);
+	linphone_proxy_config_set_server_addr(lpc,"12.13.14.15:5223;transport=udp");
+	linphone_proxy_config_set_route(lpc, "12.13.14.15:5223;transport=udp;lr");
+	linphone_proxy_config_done(lpc);
+
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationProgress, 2, 200));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	// calling marie should go through the second proxy config
+	CU_ASSERT_TRUE(call(marie, pauline));
+
+}
+
 #if 0 /* TODO: activate test when the implementation is ready */
 static void multiple_answers_call() {
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
-	   Both linphones answer at the same time, and only one should get the 
+	   Both linphones answer at the same time, and only one should get the
 	   call running, the other should be terminated */
 	char ringbackpath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
 	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
 	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
-	
+
 	LinphoneCall* call1, *call2;
-	
+
 	MSList* lcs = ms_list_append(NULL,pauline->lc);
 	lcs = ms_list_append(lcs,marie1->lc);
 	lcs = ms_list_append(lcs,marie2->lc);
-	
+
 	linphone_core_use_files(pauline->lc, TRUE);
 	linphone_core_use_files(marie1->lc, TRUE);
 	linphone_core_use_files(marie2->lc, TRUE);
-	
+
 	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-	
+
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
-	
+
 	CU_ASSERT_PTR_NOT_NULL( linphone_core_invite_address(pauline->lc, marie1->identity ) );
 
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 2000));
-	
+
 	// marie 1 and 2 answer at the same time
 	call1 = linphone_core_get_current_call(marie1->lc);
 	call2 = linphone_core_get_current_call(marie2->lc);
-	
+
 	CU_ASSERT_PTR_NOT_NULL_FATAL(call1);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(call2);
-	
+
 	CU_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0);
 	CU_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0);
-	
+
 	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	CU_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	CU_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
-	
-	
+
+
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
@@ -321,54 +358,54 @@ static void multiple_answers_call() {
 #endif
 
 static void multiple_answers_call_with_media_relay() {
-	
+
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
-	 *   Both linphones answer at the same time, and only one should get the 
+	 *   Both linphones answer at the same time, and only one should get the
 	 *   call running, the other should be terminated */
 	char ringbackpath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
 	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
 	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
-	
+
 	LinphoneCall* call1, *call2;
-	
+
 	MSList* lcs = ms_list_append(NULL,pauline->lc);
 	lcs = ms_list_append(lcs,marie1->lc);
 	lcs = ms_list_append(lcs,marie2->lc);
-	
+
 	linphone_core_use_files(pauline->lc, TRUE);
 	linphone_core_use_files(marie1->lc, TRUE);
 	linphone_core_use_files(marie2->lc, TRUE);
-	
+
 	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie1->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie2->lc, "Natted Linphone", NULL);
-	
+
 	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-	
+
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
-	
+
 	CU_ASSERT_PTR_NOT_NULL( linphone_core_invite_address(pauline->lc, marie1->identity ) );
-	
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 2000));
-	
+
 	// marie 1 and 2 answer at the same time
 	call1 = linphone_core_get_current_call(marie1->lc);
 	call2 = linphone_core_get_current_call(marie2->lc);
-	
+
 	CU_ASSERT_PTR_NOT_NULL_FATAL(call1);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(call2);
-	
+
 	CU_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0);
 	CU_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0);
-	
+
 	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	CU_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	CU_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
-	
-	
+
+
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
@@ -2497,6 +2534,7 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
+	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
 #if 0 /* not yet activated because not implemented */
 	{ "Multiple answers to a call", multiple_answers_call },
 #endif

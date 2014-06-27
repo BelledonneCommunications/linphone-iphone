@@ -2570,6 +2570,7 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
+	LinphoneProxyConfig *found_reg_cfg=NULL;
 	LinphoneProxyConfig *found_noreg_cfg=NULL;
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
 
@@ -2582,21 +2583,25 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 		}
 	}
 
-	/*otherwise return first registering matching, otherwise first matching */
+	/*otherwise return first registered, then first registering matching, otherwise first matching */
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		const char *domain=linphone_proxy_config_get_domain(cfg);
 		if (domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
-			if (linphone_proxy_config_register_enabled(cfg)) {
+			if (linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk ){
 				found_cfg=cfg;
-				goto end;
+				break;
+			} else if (!found_reg_cfg && linphone_proxy_config_register_enabled(cfg)) {
+				found_reg_cfg=cfg;
 			} else if (!found_noreg_cfg){
 				found_noreg_cfg=cfg;
 			}
 		}
 	}
 end:
-	if (!found_cfg && found_noreg_cfg) found_cfg = found_noreg_cfg;
+	if     ( !found_cfg && found_reg_cfg)    found_cfg = found_reg_cfg;
+	else if( !found_cfg && found_noreg_cfg ) found_cfg = found_noreg_cfg;
+
 	if (found_cfg && found_cfg!=default_cfg){
 		ms_debug("Overriding default proxy setting for this call/message/subscribe operation.");
 	}else if (!found_cfg) found_cfg=default_cfg; /*when no matching proxy config is found, use the default proxy config*/
