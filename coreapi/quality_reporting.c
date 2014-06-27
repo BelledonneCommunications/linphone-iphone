@@ -497,8 +497,10 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
 
 		if (stream->qi != NULL){
-			report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(stream->qi);
-			report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(stream->qi);
+			report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(stream->qi) >= 0 ?
+				MAX(1, ms_quality_indicator_get_average_lq_rating(stream->qi)) : -1;
+			report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(stream->qi) >= 0 ?
+				MAX(1, ms_quality_indicator_get_average_rating(stream->qi)) : -1;
 		}
 	}
 
