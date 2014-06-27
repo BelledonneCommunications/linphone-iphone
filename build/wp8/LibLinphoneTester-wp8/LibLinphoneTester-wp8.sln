@@ -87,7 +87,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmswp8vid", "..\..\..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmswebrtc", "..\..\..\..\mswebrtc\build\wp8\mswebrtc\mswebrtc.vcxproj", "{B16B81A9-BEF2-44C9-B603-1065183AE844}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webrtcisac", "..\..\..\..\mswebrtc\webrtc\build\wp8\webrtcisac\webrtcisac.vcxproj", "{A5A719E5-FDD6-4DFD-AAF6-68C9534B5562}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webrtc", "..\..\..\..\mswebrtc\webrtc\build\wp8\webrtc\webrtc.vcxproj", "{A5A719E5-FDD6-4DFD-AAF6-68C9534B5562}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmsbcg729", "..\..\..\..\bcg729\build\wp8\bcg729\bcg729.vcxproj", "{1DB09AFE-FC9B-472E-A746-0E33F8EF8883}"
 EndProject

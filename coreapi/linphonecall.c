@@ -3099,7 +3099,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 	} else {
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){
-			/*otherwise use supllied localip*/
+			/*otherwise use supplied localip*/
 			linphone_address_set_domain(ctt,localip);
 			linphone_address_set_port(ctt,linphone_core_get_sip_port(lc));
 			ms_message("Contact has been fixed using local ip"/* to %s",ret*/);
