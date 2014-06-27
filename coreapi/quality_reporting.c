@@ -405,19 +405,51 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 	}
 }
 
-static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** data){
-	reporting_session_report_t *report = (reporting_session_report_t*) user_data;
+typedef struct on_action_suggested_struct{
+	LinphoneCall *call;
+	int stats_type;
+}on_action_suggested_struct_t;
+
+static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** datav){
+	on_action_suggested_struct_t * oass = (on_action_suggested_struct_t *)user_data;
+	LinphoneCall *call = oass->call;
+	reporting_session_report_t *report = call->log->reporting.reports[oass->stats_type];
 	char * appendbuf;
+	int i;
+	int ptime = -1;
+	int bitrate[2] = {-1, -1};
+	int up_bw[2] = {-1, -1};
+	int down_bw[2] = {-1, -1};
+	MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
+	for (i=0;i<2;i++){
+		if (streams[i]!=NULL){
+			if (streams[i]->encoder!=NULL){
+				if (ms_filter_has_method(streams[i]->encoder,MS_FILTER_GET_BITRATE)){
+					ms_filter_call_method(streams[i]->encoder,MS_FILTER_GET_BITRATE,&bitrate[i]);
+					bitrate[i] /= 1000.f;
+				}
+			}
+			up_bw[i] = media_stream_get_up_bw(streams[i])/1000.f;
+			down_bw[i] = media_stream_get_down_bw(streams[i])/1000.f;
+		}
+	}
+	if (call->audiostream!=NULL){
+		if (call->audiostream->ms.encoder!=NULL){
+			if(ms_filter_has_method(call->audiostream->ms.encoder,MS_AUDIO_ENCODER_GET_PTIME)){
+				ms_filter_call_method(call->audiostream->ms.encoder,MS_AUDIO_ENCODER_GET_PTIME,&ptime);
+			}
+		}
+	}
 
 	appendbuf=ms_strdup_printf("%s%d;", report->qos_analyzer.timestamp?report->qos_analyzer.timestamp:"", ms_time(0));
 	STR_REASSIGN(report->qos_analyzer.timestamp,appendbuf);
 
-	STR_REASSIGN(report->qos_analyzer.input_leg, ms_strdup(data[0]));
-	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.input?report->qos_analyzer.input:"", data[1]);
+	STR_REASSIGN(report->qos_analyzer.input_leg, ms_strdup_printf("%s aenc_ptime aenc_br a_dbw a_ubw venc_br v_dbw v_ubw", datav[0]));
+	appendbuf=ms_strdup_printf("%s%s %d %d %d %d %d %d %d;", report->qos_analyzer.input?report->qos_analyzer.input:"", datav[1],
+		ptime, bitrate[0], down_bw[0], up_bw[0], bitrate[1], down_bw[1], up_bw[1] );
 	STR_REASSIGN(report->qos_analyzer.input,appendbuf);
-
-	STR_REASSIGN(report->qos_analyzer.output_leg, ms_strdup(data[2]));
-	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.output?report->qos_analyzer.output:"", data[3]);
+	STR_REASSIGN(report->qos_analyzer.output_leg, ms_strdup(datav[2]));
+	appendbuf=ms_strdup_printf("%s%s;", report->qos_analyzer.output?report->qos_analyzer.output:"", datav[3]);
 	STR_REASSIGN(report->qos_analyzer.output, appendbuf);
 }
 
@@ -632,6 +664,7 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
 			MSQosAnalyzer *analyzer;
 			for (i=0;i<2;i++){
+
 				if (streams[i]==NULL||streams[i]->rc==NULL){
 					ms_message("QualityReporting[%p] Cannot set on_action_suggested"
 					" callback for %s stream because something is null", call, i?"video":"audio");
@@ -640,10 +673,16 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 
 				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
 				if (analyzer){
+					on_action_suggested_struct_t * oass = ms_new0(on_action_suggested_struct_t, 1);
+					oass->call = call;
+					oass->stats_type = i;
 					STR_REASSIGN(call->log->reporting.reports[i]->qos_analyzer.name, ms_strdup(ms_qos_analyzer_get_name(analyzer)));
+
+					// /!\ only us use this callback so we can free user_data from here
+					ms_free(analyzer->on_action_suggested_user_pointer);
 					ms_qos_analyzer_set_on_action_suggested(analyzer,
 						qos_analyzer_on_action_suggested,
-						call->log->reporting.reports[i]);
+						oass);
 				}
 			}
 			linphone_reporting_update_ip(call);
