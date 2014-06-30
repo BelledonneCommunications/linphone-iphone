@@ -678,8 +678,6 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 					oass->stats_type = i;
 					STR_REASSIGN(call->log->reporting.reports[i]->qos_analyzer.name, ms_strdup(ms_qos_analyzer_get_name(analyzer)));
 
-					// /!\ only us use this callback so we can free user_data from here
-					ms_free(analyzer->on_action_suggested_user_pointer);
 					ms_qos_analyzer_set_on_action_suggested(analyzer,
 						qos_analyzer_on_action_suggested,
 						oass);
