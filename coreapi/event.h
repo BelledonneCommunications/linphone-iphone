@@ -37,9 +37,9 @@ typedef struct _LinphoneEvent LinphoneEvent;
  * Enum for subscription direction (incoming or outgoing).
 **/
 enum _LinphoneSubscriptionDir{
-	LinphoneSubscriptionIncoming,
-	LinphoneSubscriptionOutgoing,
-	LinphoneSubscriptionInvalidDir
+	LinphoneSubscriptionIncoming, /**< Incoming subscription. */
+	LinphoneSubscriptionOutgoing, /**< Outgoing subscription. */
+	LinphoneSubscriptionInvalidDir /**< Invalid subscription direction. */
 };
 
 /**
@@ -210,7 +210,7 @@ LINPHONE_PUBLIC LinphoneReason linphone_event_get_reason(const LinphoneEvent *le
 /**
  * Get full details about an error occured.
 **/
-const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev);
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev);
 
 /**
  * Get subscription state. If the event object was not created by a subscription mechanism, #LinphoneSubscriptionNone is returned.

@@ -61,7 +61,7 @@ static void linphone_stun_test_encode()
 
 	len = test_stun_encode(bigBuff, bigLen, TRUE);
 	CU_ASSERT(len > 0);
-	ms_message("STUN message encoded in %zu bytes", len);
+	ms_message("STUN message encoded in %i bytes", (int)len);
 }
 
 

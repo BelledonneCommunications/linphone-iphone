@@ -79,12 +79,15 @@ static LinphoneEvent *linphone_event_new_with_op_base(LinphoneCore *lc, SalOp *o
 	lev->is_out_of_dialog_op=is_out_of_dialog;
 	return lev;
 }
+
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
 	return linphone_event_new_with_op_base(lc,op,dir,name,FALSE);
 }
+
 LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
 	return linphone_event_new_with_op_base(lc,op,dir,name,TRUE);
 }
+
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state){
 	LinphoneCore *lc=lev->lc;
 	if (lev->subscription_state!=state){
@@ -107,9 +110,22 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		if (lc->vtable.publish_state_changed){
 			lc->vtable.publish_state_changed(lev->lc,lev,state);
 		}
-		if (state==LinphonePublishCleared){
-			linphone_event_unref(lev);
+		switch(state){
+			case LinphonePublishCleared:
+				linphone_event_unref(lev);
+				break;
+			case LinphonePublishOk:
+			case LinphonePublishError:
+				if (lev->expires==-1)
+					linphone_event_unref(lev);
+				break;
+			case LinphonePublishNone:
+			case LinphonePublishProgress:
+			case LinphonePublishExpiring:
+				/*nothing special to do*/
+				break;
 		}
+		
 	}
 }
 

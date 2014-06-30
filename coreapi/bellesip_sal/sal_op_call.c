@@ -27,15 +27,10 @@ static void call_set_released(SalOp* op){
 		op->state=SalOpStateTerminated;
 		op->base.root->callbacks.call_released(op);
 		op->call_released=TRUE;
+		/*be aware that the following line may destroy the op*/
+		set_or_update_dialog(op,NULL);
 	}
 }
-
-/*used when the SalOp was ref'd by the dialog, in which case we rely only on the dialog terminated notification*/
-static void call_set_released_and_unref(SalOp* op) {
-	call_set_released(op);
-	sal_op_unref(op);
-}
-
 
 static void call_set_error(SalOp* op,belle_sip_response_t* response){
 	sal_op_set_error_info_from_response(op,response);
@@ -62,7 +57,7 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<h->result->n_active_streams;++i){
+		for(i=0;i<sal_media_description_get_nb_active_streams(h->result);++i){
 			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
 			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
@@ -142,7 +137,7 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 			break;
 		}
 		belle_sip_main_loop_do_later(belle_sip_stack_get_main_loop(op->base.root->stack)
-							,(belle_sip_callback_t) call_set_released_and_unref
+							,(belle_sip_callback_t) call_set_released
 							, op);
 	} else {
 		ms_error("dialog unknown for op ");
@@ -172,6 +167,7 @@ static void cancelling_invite(SalOp* op ){
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
+
 static int vfu_retry (void *user_data, unsigned int events) {
 	SalOp *op=(SalOp *)user_data;
 	sal_call_send_vfu_request(op);
@@ -373,7 +369,7 @@ static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_descriptio
 }
 
 static int is_media_description_acceptable(SalMediaDescription *md){
-	if (md->n_total_streams==0){
+	if (md->nb_streams==0){
 		ms_warning("Media description does not define any stream.");
 		return FALSE;
 	}

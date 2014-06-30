@@ -307,6 +307,19 @@ void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int val){
 void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 	obj->publish=val;
 }
+
+/**
+ * Prevent a proxy config from refreshing its registration.
+ * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when 
+ * refreshes are sent.
+ * However, linphone_core_set_network_reachable(lc,TRUE) will always request the proxy configs to refresh their registrations.
+ * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
+ * @param obj the proxy config
+**/
+void linphone_proxy_config_pause_register(LinphoneProxyConfig *obj){
+	if (obj->op) sal_op_stop_refreshing(obj->op);
+}
+
 /**
  * Starts editing a proxy configuration.
  *
@@ -327,7 +340,7 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	linphone_proxy_config_store_server_config(obj);
 
 	/*stop refresher in any case*/
-	if (obj->op) sal_op_stop_refreshing(obj->op);
+	linphone_proxy_config_pause_register(obj);
 }
 
 void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc){
@@ -502,13 +515,15 @@ void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *
 	if (collector!=NULL && strlen(collector)>0){
 		LinphoneAddress *addr=linphone_address_new(collector);
 		if (!addr || linphone_address_get_username(addr)==NULL){
-			ms_warning("Invalid sip collector identity: %s",collector);
-			if (addr)
-				linphone_address_destroy(addr);
+			ms_error("Invalid SIP collector URI: %s. Quality reporting will be DISABLED.",collector);
 		} else {
-			if (cfg->quality_reporting_collector != NULL)
+			if (cfg->quality_reporting_collector != NULL){
 				ms_free(cfg->quality_reporting_collector);
+			}
 			cfg->quality_reporting_collector = ms_strdup(collector);
+		}
+
+		if (addr){
 			linphone_address_destroy(addr);
 		}
 	}
@@ -1088,7 +1103,7 @@ int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	/* check this proxy config is in the list before doing more*/
 	if (ms_list_find(lc->sip_conf.proxies,cfg)==NULL){
-		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig %p is not known by LinphoneCore (programming error?)",cfg);
+		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig [%p] is not known by LinphoneCore (programming error?)",cfg);
 		return;
 	}
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,cfg);
@@ -1100,6 +1115,7 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
+		linphone_proxy_config_update(cfg); /*so that it has an effect*/
 	}
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
@@ -1209,7 +1225,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 
 
 
-LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config, int index)
+LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {
 	const char *tmp;
 	const char *identity;
@@ -1217,6 +1233,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	LinphoneProxyConfig *cfg;
 	char key[50];
 	int interval;
+	LpConfig *config=lc->config;
 
 	sprintf(key,"proxy_%i",index);
 
@@ -1224,7 +1241,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 		return NULL;
 	}
 
-	cfg=linphone_proxy_config_new();
+	cfg=linphone_core_create_proxy_config(lc);
 
 	identity=lp_config_get_string(config,key,"reg_identity",NULL);
 	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);

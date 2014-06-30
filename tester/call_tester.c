@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -239,15 +239,176 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
 	return call_with_params(caller_mgr,callee_mgr,NULL,NULL);
 }
 
-static void simple_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+static void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
+	linphone_core_terminate_all_calls(m1->lc);
+	CU_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallEnd,1));
+}
 
+static void simple_call(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
 	CU_ASSERT_TRUE(call(pauline,marie));
 	liblinphone_tester_check_rtcp(marie,pauline);
-
+	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
+static void call_outbound_with_multiple_proxy() {
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_rc", FALSE);
+	LinphoneCoreManager* marie   = linphone_core_manager_new2( "marie_rc", FALSE);
+
+	LinphoneProxyConfig* lpc = NULL;
+	LinphoneProxyConfig* registered_lpc = linphone_proxy_config_new();
+
+	linphone_core_get_default_proxy(marie->lc, &lpc);
+	linphone_core_set_default_proxy(marie->lc,NULL);
+
+	CU_ASSERT_FATAL(lpc != NULL);
+	CU_ASSERT_FATAL(registered_lpc != NULL);
+
+	// create new LPC that will successfully register
+	linphone_proxy_config_set_identity(registered_lpc, linphone_proxy_config_get_identity(lpc));
+	linphone_proxy_config_set_server_addr(registered_lpc, linphone_proxy_config_get_addr(lpc));
+	linphone_proxy_config_set_route(registered_lpc, linphone_proxy_config_get_route(lpc));
+	linphone_proxy_config_enable_register(registered_lpc, TRUE);
+
+	linphone_core_add_proxy_config(marie->lc, registered_lpc);
+
+	// set first LPC to unreacheable proxy addr
+	linphone_proxy_config_edit(lpc);
+	linphone_proxy_config_set_server_addr(lpc,"12.13.14.15:5223;transport=udp");
+	linphone_proxy_config_set_route(lpc, "12.13.14.15:5223;transport=udp;lr");
+	linphone_proxy_config_done(lpc);
+
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationProgress, 2, 200));
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	// calling marie should go through the second proxy config
+	CU_ASSERT_TRUE(call(marie, pauline));
+
+}
+
+#if 0 /* TODO: activate test when the implementation is ready */
+static void multiple_answers_call() {
+	/* Scenario is this: pauline calls marie, which is registered 2 times.
+	   Both linphones answer at the same time, and only one should get the
+	   call running, the other should be terminated */
+	char ringbackpath[256];
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
+	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
+	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
+
+	LinphoneCall* call1, *call2;
+
+	MSList* lcs = ms_list_append(NULL,pauline->lc);
+	lcs = ms_list_append(lcs,marie1->lc);
+	lcs = ms_list_append(lcs,marie2->lc);
+
+	linphone_core_use_files(pauline->lc, TRUE);
+	linphone_core_use_files(marie1->lc, TRUE);
+	linphone_core_use_files(marie2->lc, TRUE);
+
+	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
+
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	CU_ASSERT_PTR_NOT_NULL( linphone_core_invite_address(pauline->lc, marie1->identity ) );
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 2000));
+
+	// marie 1 and 2 answer at the same time
+	call1 = linphone_core_get_current_call(marie1->lc);
+	call2 = linphone_core_get_current_call(marie2->lc);
+
+	CU_ASSERT_PTR_NOT_NULL_FATAL(call1);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(call2);
+
+	CU_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0);
+	CU_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0);
+
+	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
+
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+}
+#endif
+
+static void multiple_answers_call_with_media_relay() {
+
+	/* Scenario is this: pauline calls marie, which is registered 2 times.
+	 *   Both linphones answer at the same time, and only one should get the
+	 *   call running, the other should be terminated */
+	char ringbackpath[256];
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
+	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
+	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
+
+	LinphoneCall* call1, *call2;
+
+	MSList* lcs = ms_list_append(NULL,pauline->lc);
+	lcs = ms_list_append(lcs,marie1->lc);
+	lcs = ms_list_append(lcs,marie2->lc);
+
+	linphone_core_use_files(pauline->lc, TRUE);
+	linphone_core_use_files(marie1->lc, TRUE);
+	linphone_core_use_files(marie2->lc, TRUE);
+
+	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
+	linphone_core_set_user_agent(marie1->lc, "Natted Linphone", NULL);
+	linphone_core_set_user_agent(marie2->lc, "Natted Linphone", NULL);
+
+	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
+
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+
+	CU_ASSERT_PTR_NOT_NULL( linphone_core_invite_address(pauline->lc, marie1->identity ) );
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingProgress, 1, 2000));
+
+	// marie 1 and 2 answer at the same time
+	call1 = linphone_core_get_current_call(marie1->lc);
+	call2 = linphone_core_get_current_call(marie2->lc);
+
+	CU_ASSERT_PTR_NOT_NULL_FATAL(call1);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(call2);
+
+	CU_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0);
+	CU_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0);
+
+	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
+
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
 }
 
 static void call_with_specified_codec_bitrate(void) {
@@ -695,11 +856,11 @@ static void call_with_custom_headers(void) {
 				*pauline_remote_contact,
 				*marie_remote_contact,
 				*marie_remote_contact_header;
-
+	LinphoneAddress* marie_identity;
 	char* tmp=linphone_address_as_string_uri_only(marie->identity);
 	char tmp2[256];
 	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
-	LinphoneAddress* marie_identity=linphone_address_new(tmp2);
+	marie_identity=linphone_address_new(tmp2);
 	ms_free(tmp);
 	linphone_address_destroy(marie->identity);
 	marie->identity=marie_identity;
@@ -1051,6 +1212,32 @@ static void call_with_ice_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void video_call_with_ice_no_matching_audio_codecs(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCall *out_call;
+
+	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
+	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
+	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc, "stun.linphone.org");
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc, "stun.linphone.org");
+
+	out_call = linphone_core_invite(marie->lc, "pauline");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingInit, 1));
+
+	/* flexisip will retain the 488 until the "urgent reply" timeout arrives. */
+	CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1, 6000));
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingReceived, 0);
+
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 #endif /*VIDEO_ENABLED*/
 
 static void _call_with_media_relay(bool_t random_ports) {
@@ -1211,6 +1398,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	char hellopath[256];
 	MSList *iterator;
+	MSList* lcs;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
 	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
@@ -1219,7 +1407,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(marie_params,LinphonePrivacyId);
 
-	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 
@@ -2139,120 +2327,6 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb()
 	call_rejected_because_wrong_credentials_with_params("tester-no-403",FALSE);
 }
 
-void create_call_for_quality_reporting_tests(
-		LinphoneCoreManager* marie,
-		LinphoneCoreManager* pauline,
-		LinphoneCall** call_marie,
-		LinphoneCall** call_pauline) {
-	CU_ASSERT_TRUE(call(pauline,marie));
-	*call_marie = linphone_core_get_current_call(marie->lc);
-	*call_pauline = linphone_core_get_current_call(pauline->lc);
-	CU_ASSERT_PTR_NOT_NULL(*call_marie);
-	CU_ASSERT_PTR_NOT_NULL(*call_pauline);
-}
-
-static void quality_reporting_not_used_without_config() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* call_marie = NULL;
-	LinphoneCall* call_pauline = NULL;
-
-	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
-
-	// marie has stats collection enabled since pauline has not
-	CU_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(call_marie->dest_proxy));
-	CU_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(call_pauline->dest_proxy));
-
-	CU_ASSERT_EQUAL(strcmp("sip:collector@sip.example.org",
-		linphone_proxy_config_get_quality_reporting_collector(call_marie->dest_proxy)), 0);
-
-	// this field should be already filled
-	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->info.local_addr.ip);
-	CU_ASSERT_PTR_NULL(call_pauline->log->reports[0]->info.local_addr.ip);
-
-	// but not this one since it is updated at the end of call
-	CU_ASSERT_PTR_NULL(call_marie->log->reports[0]->dialog_id);
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-static void quality_reporting_not_sent_if_call_not_started() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCallLog* out_call_log;
-	LinphoneCall* out_call;
-
-	linphone_core_set_max_calls(pauline->lc,0);
-	out_call = linphone_core_invite(marie->lc,"pauline");
-	linphone_call_ref(out_call);
-
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1, 10000));
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
-
-	if (ms_list_size(linphone_core_get_call_logs(marie->lc))>0) {
-		CU_ASSERT_PTR_NOT_NULL(out_call_log=(LinphoneCallLog*)(linphone_core_get_call_logs(marie->lc)->data));
-		CU_ASSERT_EQUAL(linphone_call_log_get_status(out_call_log),LinphoneCallAborted);
-	}
-	linphone_call_unref(out_call);
-
-	// wait a few time...
-	wait_for(marie->lc,NULL,NULL,0);
-	// since the callee was busy, there should be no publish to do
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0);
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-static void quality_reporting_at_call_termination() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* call_marie = NULL;
-	LinphoneCall* call_pauline = NULL;
-
-	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
-
-	linphone_core_terminate_all_calls(marie->lc);
-
-	// now dialog id should be filled
-	CU_ASSERT_PTR_NOT_NULL(call_marie->log->reports[0]->dialog_id);
-
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
-	CU_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
-
-	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc));
-
-
-	// PUBLISH submission to the collector should be ok
-	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void quality_reporting_interval_report() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* call_marie = NULL;
-	LinphoneCall* call_pauline = NULL;
-
-	create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline);
-	linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
-
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
-
-	// PUBLISH submission to the collector should be ok
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,25000));
-	CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,25000));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-
 #ifdef VIDEO_ENABLED
 /*this is call forking with early media managed at client side (not by flexisip server)*/
 static void multiple_early_media(void) {
@@ -2330,7 +2404,7 @@ static void multiple_early_media(void) {
 	info=linphone_core_create_info_message(marie1->lc);
 	linphone_call_send_info_message(marie1_call,info);
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_inforeceived,1,2000));
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,2000));
@@ -2342,6 +2416,115 @@ static void multiple_early_media(void) {
 }
 #endif
 
+static void profile_call(bool_t avpf1, bool_t srtp1, bool_t avpf2, bool_t srtp2, const char *expected_profile) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneProxyConfig *lpc;
+	const LinphoneCallParams *params;
+
+	if (avpf1) {
+		linphone_core_get_default_proxy(marie->lc, &lpc);
+		linphone_proxy_config_enable_avpf(lpc, TRUE);
+		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
+	}
+	if (avpf2) {
+		linphone_core_get_default_proxy(pauline->lc, &lpc);
+		linphone_proxy_config_enable_avpf(lpc, TRUE);
+		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
+	}
+	if (srtp1) {
+		if (linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP)) {
+			linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
+		}
+	}
+	if (srtp2) {
+		if (linphone_core_media_encryption_supported(pauline->lc, LinphoneMediaEncryptionSRTP)) {
+			linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionSRTP);
+		}
+	}
+
+	CU_ASSERT_TRUE(call(marie, pauline));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+	params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
+	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected, 1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected, 1);
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
+static void avp_to_avp_call(void) {
+	profile_call(FALSE, FALSE, FALSE, FALSE, "RTP/AVP");
+}
+
+static void avp_to_avpf_call(void) {
+	profile_call(FALSE, FALSE, TRUE, FALSE, "RTP/AVP");
+}
+
+static void avp_to_savp_call(void) {
+	profile_call(FALSE, FALSE, FALSE, TRUE, "RTP/AVP");
+}
+
+static void avp_to_savpf_call(void) {
+	profile_call(FALSE, FALSE, TRUE, TRUE, "RTP/AVP");
+}
+
+static void avpf_to_avp_call(void) {
+	profile_call(TRUE, FALSE, FALSE, FALSE, "RTP/AVPF");
+}
+
+static void avpf_to_avpf_call(void) {
+	profile_call(TRUE, FALSE, TRUE, FALSE, "RTP/AVPF");
+}
+
+static void avpf_to_savp_call(void) {
+	profile_call(TRUE, FALSE, FALSE, TRUE, "RTP/AVPF");
+}
+
+static void avpf_to_savpf_call(void) {
+	profile_call(TRUE, FALSE, TRUE, TRUE, "RTP/AVPF");
+}
+
+static void savp_to_avp_call(void) {
+	profile_call(FALSE, TRUE, FALSE, FALSE, "RTP/SAVP");
+}
+
+static void savp_to_avpf_call(void) {
+	profile_call(FALSE, TRUE, TRUE, FALSE, "RTP/SAVP");
+}
+
+static void savp_to_savp_call(void) {
+	profile_call(FALSE, TRUE, FALSE, TRUE, "RTP/SAVP");
+}
+
+static void savp_to_savpf_call(void) {
+	profile_call(FALSE, TRUE, TRUE, TRUE, "RTP/SAVP");
+}
+
+static void savpf_to_avp_call(void) {
+	profile_call(TRUE, TRUE, FALSE, FALSE, "RTP/SAVPF");
+}
+
+static void savpf_to_avpf_call(void) {
+	profile_call(TRUE, TRUE, TRUE, FALSE, "RTP/SAVPF");
+}
+
+static void savpf_to_savp_call(void) {
+	profile_call(TRUE, TRUE, FALSE, TRUE, "RTP/SAVPF");
+}
+
+static void savpf_to_savpf_call(void) {
+	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -2351,6 +2534,11 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
+	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
+#if 0 /* not yet activated because not implemented */
+	{ "Multiple answers to a call", multiple_answers_call },
+#endif
+	{ "Multiple answers to a call with media relay", multiple_answers_call_with_media_relay },
 	{ "Call with media relay", call_with_media_relay},
 	{ "Call with media relay (random ports)", call_with_media_relay_random_ports},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
@@ -2377,6 +2565,7 @@ test_t call_tests[] = {
 	{ "Call with multiple early media", multiple_early_media },
 	{ "Call with ICE from video to non-video", call_with_ice_video_to_novideo},
 	{ "Call with ICE and video added", call_with_ice_video_added },
+	{ "Video call with ICE no matching audio codecs", video_call_with_ice_no_matching_audio_codecs },
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
@@ -2405,11 +2594,23 @@ test_t call_tests[] = {
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
 	{ "Call redirected by callee", call_redirect},
-	{ "Quality reporting not used if no config", quality_reporting_not_used_without_config},
-	{ "Quality reporting session report not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
-	{ "Quality reporting session report sent if call ended normally", quality_reporting_at_call_termination},
-	{ "Quality reporting interval report if interval is configured", quality_reporting_interval_report},
-	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate}
+	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate},
+	{ "AVP to AVP call", avp_to_avp_call },
+	{ "AVP to AVPF call", avp_to_avpf_call },
+	{ "AVP to SAVP call", avp_to_savp_call },
+	{ "AVP to SAVPF call", avp_to_savpf_call },
+	{ "AVPF to AVP call", avpf_to_avp_call },
+	{ "AVPF to AVPF call", avpf_to_avpf_call },
+	{ "AVPF to SAVP call", avpf_to_savp_call },
+	{ "AVPF to SAVPF call", avpf_to_savpf_call },
+	{ "SAVP to AVP call", savp_to_avp_call },
+	{ "SAVP to AVPF call", savp_to_avpf_call },
+	{ "SAVP to SAVP call", savp_to_savp_call },
+	{ "SAVP to SAVPF call", savp_to_savpf_call },
+	{ "SAVPF to AVP call", savpf_to_avp_call },
+	{ "SAVPF to AVPF call", savpf_to_avpf_call },
+	{ "SAVPF to SAVP call", savpf_to_savp_call },
+	{ "SAVPF to SAVPF call", savpf_to_savpf_call }
 };
 
 test_suite_t call_test_suite = {

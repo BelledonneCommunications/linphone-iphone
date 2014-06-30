@@ -97,14 +97,13 @@ void sal_disable_logs() {
 
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
-		sal->pending_auths=ms_list_append(sal->pending_auths,sal_op_ref(op));
+		sal->pending_auths=ms_list_append(sal->pending_auths,op);
 	}
 }
 
 void sal_remove_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)){
 		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
-		sal_op_unref(op);
 	}
 }
 
@@ -157,7 +156,10 @@ void sal_process_authentication(SalOp *op) {
 		}
 	}
 	/*always store auth info, for case of wrong credential*/
-	if (op->auth_info) sal_auth_info_delete(op->auth_info);
+	if (op->auth_info) {
+		sal_auth_info_delete(op->auth_info);
+		op->auth_info=NULL;
+	}
 	if (auth_list){
 		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
 		op->auth_info=sal_auth_info_create(auth_event);
@@ -321,9 +323,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
 			return;
 		}
-		if (!op->base.remote_ua) {
-			sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
-		}
+		/*do it all the time, since we can receive provisional responses from a different instance than the final one*/
+		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
 
 		if(remote_contact) {
 			__sal_op_set_remote_contact(op, belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(remote_contact)));
@@ -375,8 +376,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			ms_error("Unhandled event response [%p]",event);
 		}
 	}
-
 }
+
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
@@ -386,6 +387,7 @@ static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *eve
 		ms_error("Unhandled event timeout [%p]",event);
 	}
 }
+
 static void process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_transaction_terminated_event_get_server_transaction(event);
@@ -404,7 +406,6 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
 	if (op) sal_op_unref(op); /*because every transaction ref op*/
-
 }
 
 
@@ -422,21 +423,21 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
-	
+
 	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
-	
+
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
-	
+
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
-	
+
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
 	sal_nat_helper_enable(sal,TRUE);
 	memset(&listener_callbacks,0,sizeof(listener_callbacks));
@@ -613,6 +614,12 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	belle_sip_header_user_agent_set_products(ctx->user_agent,NULL);
 	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);
 	return ;
+}
+
+const char* sal_get_user_agent(Sal *ctx){
+	static char user_agent[255];
+	belle_sip_header_user_agent_get_products_as_string(ctx->user_agent, user_agent, 254);
+	return user_agent;
 }
 
 void sal_append_stack_string_to_user_agent(Sal *ctx) {

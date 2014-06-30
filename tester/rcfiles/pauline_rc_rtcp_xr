@@ -1,16 +1,17 @@
 [sip]
-sip_port=5072
-sip_tcp_port=5072
-sip_tls_port=5073
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
 register_only_when_network_is_up=0
+composing_idle_timeout=1
 
 [auth_info_0]
 username=pauline
 userid=pauline
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 
 [proxy_0]
@@ -29,7 +30,12 @@ dial_escape_plus=0
 
 [rtp]
 audio_rtp_port=8090
-video_rtp_port=8092
+video_rtp_port=9092
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 
 [video]
 display=0

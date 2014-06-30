@@ -52,8 +52,8 @@ extern "C" void libmssilk_init();
 #ifdef HAVE_G729
 extern "C" void libmsbcg729_init();
 #endif
-#ifdef HAVE_ISAC
-extern "C" void libmsisac_init();
+#ifdef HAVE_WEBRTC
+extern "C" void libmswebrtc_init();
 #endif
 #endif /*ANDROID*/
 
@@ -787,8 +787,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #ifdef HAVE_G729
 	libmsbcg729_init();
 #endif
-#ifdef HAVE_ISAC
-	libmsisac_init();
+#ifdef HAVE_WEBRTC
+	libmswebrtc_init();
 #endif
 
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable

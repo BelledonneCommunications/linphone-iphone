@@ -29,6 +29,9 @@
 #include "lime.h"
 #include "ortp/b64.h"
 
+#include <libxml/parser.h>
+#include <libxml/xmlwriter.h>
+
 #define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
 #define COMPOSING_DEFAULT_REFRESH_TIMEOUT 60
 #define COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT 120
@@ -36,20 +39,19 @@
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg);
 #define MULTIPART_BOUNDARY "---------------------------14737809831466499882746641449"
-#define MULTIPART_HEADER_1 "--" MULTIPART_BOUNDARY "\r\n" \
-			"Content-Disposition: form-data; name=\"File\"; filename=\""
-#define MULTIPART_HEADER_2 "\"\r\n" \
+#define FILEPART_HEADER_1 "Content-Disposition: form-data; name=\"File\"; filename=\""
+#define FILEPART_HEADER_2 "\"\r\n" \
 			"Content-Type: "
-#define MULTIPART_HEADER_3 "\r\n\r\n"
-#define MULTIPART_END "\r\n--" MULTIPART_BOUNDARY "--\r\n"
+#define FILEPART_HEADER_3 "\r\n\r\n"
 const char *multipart_boundary=MULTIPART_BOUNDARY;
 
 #define FILE_TRANSFER_KEY_SIZE 32
-static size_t linphone_chat_message_compute_multipart_header_size(const char *filename, const char *content_type) {
-	return strlen(MULTIPART_HEADER_1)+strlen(filename)+strlen(MULTIPART_HEADER_2)+strlen(content_type)+strlen(MULTIPART_HEADER_3);
+static size_t linphone_chat_message_compute_filepart_header_size(const char *filename, const char *content_type) {
+	return strlen(FILEPART_HEADER_1)+strlen(filename)+strlen(FILEPART_HEADER_2)+strlen(content_type)+strlen(FILEPART_HEADER_3);
 }
 static void process_io_error(void *data, const belle_sip_io_error_event_t *event){
-	printf("We have a response io error!\n");
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
 }
 static void process_auth_requested(void *data, belle_sip_auth_event_t *event){
 	printf("We have a auth requested!\n");
@@ -80,24 +82,25 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
  * @param	size	size in byte of the data requested, as output it will contain the effective copied size
  *
  */
-static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, void *buffer, size_t *size){
+static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size){
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
+	char *buf = (char *)buffer;
 
 	char *content_type=belle_sip_strdup_printf("%s/%s", chatMsg->file_transfer_information->type, chatMsg->file_transfer_information->subtype);
-	size_t end_of_file=linphone_chat_message_compute_multipart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
-	
+	size_t end_of_file=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
+
 	if (offset==0){
-		int partlen=linphone_chat_message_compute_multipart_header_size(chatMsg->file_transfer_information->name, content_type);
-		memcpy(buffer,MULTIPART_HEADER_1,strlen(MULTIPART_HEADER_1));
-		buffer += strlen(MULTIPART_HEADER_1);
-		memcpy(buffer,chatMsg->file_transfer_information->name,strlen(chatMsg->file_transfer_information->name));
-		buffer += strlen(chatMsg->file_transfer_information->name);
-		memcpy(buffer,MULTIPART_HEADER_2,strlen(MULTIPART_HEADER_2));
-		buffer += strlen(MULTIPART_HEADER_2);
-		memcpy(buffer,content_type,strlen(content_type));
-		buffer += strlen(content_type);
-		memcpy(buffer,MULTIPART_HEADER_3,strlen(MULTIPART_HEADER_3));
+		int partlen=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type);
+		memcpy(buf,FILEPART_HEADER_1,strlen(FILEPART_HEADER_1));
+		buf += strlen(FILEPART_HEADER_1);
+		memcpy(buf,chatMsg->file_transfer_information->name,strlen(chatMsg->file_transfer_information->name));
+		buf += strlen(chatMsg->file_transfer_information->name);
+		memcpy(buf,FILEPART_HEADER_2,strlen(FILEPART_HEADER_2));
+		buf += strlen(FILEPART_HEADER_2);
+		memcpy(buf,content_type,strlen(content_type));
+		buf += strlen(content_type);
+		memcpy(buf,FILEPART_HEADER_3,strlen(FILEPART_HEADER_3));
 
 		*size=partlen;
 	}else if (offset<end_of_file){
@@ -109,11 +112,11 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 			}
 			char *plainBuffer = (char *)malloc(*size);
 			lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
-			lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), chatMsg->file_transfer_information->key, *size, plainBuffer, buffer); 
+			lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), chatMsg->file_transfer_information->key, *size, plainBuffer, (char*)buffer); 
 			free(plainBuffer);
 		} else {
 			/* get data from call back directly to the output buffer */
-			lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buffer, size);
+			lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, (char*)buffer, size);
 		}
 		/* DEBUG DEBUG : THIS SHALL NEVER HAPPEND */
 		if (*size == 0) {
@@ -124,9 +127,6 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 		if (chatMsg->file_transfer_information->key != NULL) { 
 			lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), NULL, 0, NULL, NULL); 
 		}
-
-		*size=strlen(MULTIPART_END);
-		strncpy(buffer,MULTIPART_END,*size);
 	}
 
 	belle_sip_free(content_type);
@@ -160,17 +160,25 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_generic_uri_t *uri;
 			belle_http_request_t *req;
 			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
-			belle_sip_user_body_handler_t *bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size+linphone_chat_message_compute_multipart_header_size(msg->file_transfer_information->name, content_type)+strlen(MULTIPART_END), linphone_chat_message_file_transfer_on_progress, NULL, linphone_chat_message_file_transfer_on_send_body, msg);
+
+			/* create a user body handler to take care of the file */
+			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type), NULL, NULL, linphone_chat_message_file_transfer_on_send_body, msg);
+			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
+			belle_sip_multipart_body_handler_t *bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
+
+			char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+
 			belle_sip_free(content_type);
 			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);
-	
+
 			uri=belle_generic_uri_parse(msg->chat_room->lc->file_transfer_server);
-	
+
 			req=belle_http_request_create("POST",
-					uri,
-					belle_sip_header_create("User-Agent","belle-sip/" PACKAGE_VERSION),
-					belle_sip_header_create("Content-type",content_type),
-					NULL);
+										  uri,
+										  belle_sip_header_create("User-Agent",ua),
+										  belle_sip_header_create("Content-type",content_type),
+										  NULL);
+			ms_free(ua);
 			belle_sip_free(content_type);
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req),BELLE_SIP_BODY_HANDLER(bh));
 			cbs.process_response=linphone_chat_message_process_response_from_post_file;
@@ -228,7 +236,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			_linphone_chat_room_send_message(msg->chat_room, msg);
 		}
 	}
-	
+
 }
 
 
@@ -385,9 +393,9 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		belle_http_request_listener_t *l;
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
-	
+
 		uri=belle_generic_uri_parse(cr->lc->file_transfer_server);
-	
+
 		req=belle_http_request_create("POST",
 				uri,
 				NULL,
@@ -521,16 +529,19 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	}
 
 	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer bu twe shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
+		xmlChar *file_url = NULL;
+		xmlDocPtr xmlMessageBody;
+		xmlNodePtr cur;
+
 		msg = linphone_chat_room_create_message(cr, NULL); /* create a message with empty body */
 		msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
 		msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 		memset(msg->file_transfer_information, 0, sizeof(*(msg->file_transfer_information)));
-		
-		xmlChar *file_url = NULL;
+
 		/* parse the message body to get all informations from it */
-		xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
-	
-		xmlNodePtr cur = xmlDocGetRootElement(xmlMessageBody);
+		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
+
+		cur = xmlDocGetRootElement(xmlMessageBody);
 		if (cur != NULL) {
 			cur = cur->xmlChildrenNode;
 			while (cur!=NULL) {
@@ -539,26 +550,26 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 					if(!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
 						cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
 						while (cur!=NULL) {
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) { 
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
 								xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								msg->file_transfer_information->size = strtol((const char*)fileSizeString, NULL, 10);
 								xmlFree(fileSizeString);
 							}
 
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) { 
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 								msg->file_transfer_information->name = (char *)xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							}
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) { 
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
 								xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								int contentTypeIndex = 0;
 								while (contentType[contentTypeIndex]!='/' && contentType[contentTypeIndex]!='\0') {
 									contentTypeIndex++;
 								}
-								msg->file_transfer_information->type = strndup((char *)contentType, contentTypeIndex);
-								msg->file_transfer_information->subtype = strdup(((char *)contentType+contentTypeIndex+1));
+								msg->file_transfer_information->type = ms_strndup((char *)contentType, contentTypeIndex);
+								msg->file_transfer_information->subtype = ms_strdup(((char *)contentType+contentTypeIndex+1));
 								xmlFree(contentType);
 							}
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) { 
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
 								file_url = 	xmlGetProp(cur, (const xmlChar *)"url");
 							}
 
@@ -1027,7 +1038,7 @@ const LinphoneContent *linphone_chat_message_get_file_transfer_information(const
 	return message->file_transfer_information;
 }
 
-static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const void *buffer, size_t size){
+static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
 	/* first call may be with a zero size, ignore it */
 	if (size == 0) {
 		return;
@@ -1047,7 +1058,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	} else { /* regular file, no deciphering */
 		/* call back given by application level */
 		if (lc->vtable.file_transfer_received != NULL) {
-			lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, buffer, size);
+			lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
 		}
 	}
 	return;
@@ -1061,7 +1072,7 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 	if (event->response){
 		/*we are receiving a response, set a specific body handler to acquire the response.
 		 * if not done, belle-sip will create a memory body handler, the default*/
-		LinphoneChatMessage *message=belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
+		LinphoneChatMessage *message=(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
 		belle_sip_message_set_body_handler(
 			(belle_sip_message_t*)event->response,
 			(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(message->file_transfer_information->size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
@@ -1101,13 +1112,16 @@ void linphone_chat_message_start_file_download(const LinphoneChatMessage *messag
 	belle_generic_uri_t *uri;
 	belle_http_request_t *req;
 	const char *url=message->external_body_url;
+	char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 
 	uri=belle_generic_uri_parse(url);
-	
+
 	req=belle_http_request_create("GET",
 				uri,
-				belle_sip_header_create("User-Agent","belle-sip/" PACKAGE_VERSION),
+				belle_sip_header_create("User-Agent",ua),
 				NULL);
+
+	ms_free(ua);
 
 	cbs.process_response_headers=linphone_chat_process_response_headers_from_get_file;
 	cbs.process_response=linphone_chat_process_response_from_get_file;

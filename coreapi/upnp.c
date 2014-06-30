@@ -731,7 +731,7 @@ int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, 
 	int i;
 	const SalStreamDescription *stream;
 
-	for (i = 0; i < md->n_total_streams; i++) {
+	for (i = 0; i < md->nb_streams; i++) {
 		stream = &md->streams[i];
 		if(stream->type == SalAudio) {
 			audio = TRUE;
@@ -1058,8 +1058,9 @@ int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *
 	SalStreamDescription *stream;
 	UpnpStream *upnpStream;
 
-	for (i = 0; i < desc->n_active_streams; i++) {
+	for (i = 0; i < desc->nb_streams; i++) {
 		stream = &desc->streams[i];
+		if (!sal_stream_description_active(stream)) continue;
 		upnpStream = NULL;
 		if(stream->type == SalAudio) {
 			upnpStream = session->audio;

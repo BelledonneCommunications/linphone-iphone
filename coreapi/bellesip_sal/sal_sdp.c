@@ -68,7 +68,7 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
-static bool_t is_rtcp_fb_trr_int_the_same_for_all_payloads(const SalStreamDescription *stream, uint8_t *trr_int) {
+static bool_t is_rtcp_fb_trr_int_the_same_for_all_payloads(const SalStreamDescription *stream, uint16_t *trr_int) {
 	MSList *pt_it;
 	bool_t first = TRUE;
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
@@ -85,7 +85,7 @@ static bool_t is_rtcp_fb_trr_int_the_same_for_all_payloads(const SalStreamDescri
 	return TRUE;
 }
 
-static void add_rtcp_fb_trr_int_attribute(belle_sdp_media_description_t *media_desc, int8_t id, uint8_t trr_int) {
+static void add_rtcp_fb_trr_int_attribute(belle_sdp_media_description_t *media_desc, int8_t id, uint16_t trr_int) {
 	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
 	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
 	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_TRR_INT);
@@ -101,12 +101,20 @@ static void add_rtcp_fb_nack_attribute(belle_sdp_media_description_t *media_desc
 	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
 }
 
+static void add_rtcp_fb_ccm_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_CCM);
+	belle_sdp_rtcp_fb_attribute_set_param(attribute, param);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+}
+
 static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, const SalMediaDescription *md, const SalStreamDescription *stream) {
 	MSList *pt_it;
 	PayloadType *pt;
 	PayloadTypeAvpfParams avpf_params;
 	bool_t general_trr_int;
-	uint8_t trr_int = 0;
+	uint16_t trr_int = 0;
 
 	general_trr_int = is_rtcp_fb_trr_int_the_same_for_all_payloads(stream, &trr_int);
 	if (general_trr_int == TRUE) {
@@ -129,6 +137,9 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		}
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_RPSI) {
 			add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+		}
+		if (avpf_params.features & PAYLOAD_TYPE_AVPF_FIR) {
+			add_rtcp_fb_ccm_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_FIR);
 		}
 	}
 }
@@ -344,7 +355,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
 	}
 
-	for ( i=0; i<desc->n_total_streams; i++ ) {
+	for ( i=0; i<desc->nb_streams; i++ ) {
 		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;
@@ -475,18 +486,9 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 
 static void enable_avpf_for_stream(SalStreamDescription *stream) {
 	MSList *pt_it;
-	PayloadType *pt;
-	PayloadTypeAvpfParams avpf_params;
-
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
-		pt = (PayloadType *)pt_it->data;
-		avpf_params = payload_type_get_avpf_params(pt);
+		PayloadType *pt = (PayloadType *)pt_it->data;
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-		if (stream->type == SalVideo) {
-			avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
-		}
-		avpf_params.trr_interval = 0;
-		payload_type_set_avpf_params(pt, avpf_params);
 	}
 }
 
@@ -495,6 +497,9 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 	switch (belle_sdp_rtcp_fb_attribute_get_type(fb_attribute)) {
 		case BELLE_SDP_RTCP_FB_NACK:
 			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
+				case BELLE_SDP_RTCP_FB_NONE:
+					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI | PAYLOAD_TYPE_AVPF_SLI | PAYLOAD_TYPE_AVPF_RPSI;
+					break;
 				case BELLE_SDP_RTCP_FB_PLI:
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI;
 					break;
@@ -509,7 +514,16 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 			}
 			break;
 		case BELLE_SDP_RTCP_FB_TRR_INT:
-			avpf_params.trr_interval = (unsigned char)belle_sdp_rtcp_fb_attribute_get_trr_int(fb_attribute);
+			avpf_params.trr_interval = belle_sdp_rtcp_fb_attribute_get_trr_int(fb_attribute);
+			break;
+		case BELLE_SDP_RTCP_FB_CCM:
+			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
+				case BELLE_SDP_RTCP_FB_FIR:
+					avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+					break;
+				default:
+					break;
+			}
 			break;
 		case BELLE_SDP_RTCP_FB_ACK:
 		default:
@@ -616,7 +630,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	const char* value;
 	const char *mtype,*proto;
 
-	stream=&md->streams[md->n_total_streams];
+	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
 
 	memset ( stream,0,sizeof ( *stream ) );
@@ -641,9 +655,6 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 
 	stream->rtp_port=belle_sdp_media_get_media_port ( media );
-
-	if ( stream->rtp_port > 0 )
-		md->n_active_streams++;
 
 	mtype = belle_sdp_media_get_media_type ( media );
 	if ( strcasecmp ( "audio", mtype ) == 0 ) {
@@ -708,7 +719,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined
 	sdp_parse_media_rtcp_xr_parameters(media_desc, &stream->rtcp_xr);
 
-	md->n_total_streams++;
+	md->nb_streams++;
 	return stream;
 }
 
@@ -720,8 +731,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	belle_sdp_session_name_t *sname;
 	const char* value;
 	
-	desc->n_active_streams = 0;
-	desc->n_total_streams = 0;
+	desc->nb_streams = 0;
 	desc->dir = SalStreamSendRecv;
 
 	if ( ( cnx=belle_sdp_session_description_get_connection ( session_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
@@ -762,8 +772,8 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	for ( media_desc_it=belle_sdp_session_description_get_media_descriptions ( session_desc )
 						; media_desc_it!=NULL
 			; media_desc_it=media_desc_it->next ) {
-		if (desc->n_total_streams==SAL_MEDIA_DESCRIPTION_MAX_STREAMS){
-			ms_warning("Cannot convert mline at position [%i] from SDP to SalMediaDescription",desc->n_total_streams);
+		if (desc->nb_streams==SAL_MEDIA_DESCRIPTION_MAX_STREAMS){
+			ms_warning("Cannot convert mline at position [%i] from SDP to SalMediaDescription",desc->nb_streams);
 			break;
 		}
 		media_desc=BELLE_SDP_MEDIA_DESCRIPTION ( media_desc_it->data );

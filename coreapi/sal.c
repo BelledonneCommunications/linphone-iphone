@@ -84,8 +84,9 @@ void sal_media_description_unref(SalMediaDescription *md){
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 	SalMediaProto proto, SalStreamType type){
 	int i;
-	for(i=0;i<md->n_active_streams;++i){
+	for(i=0;i<md->nb_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
+		if (!sal_stream_description_active(ss)) continue;
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
 	return NULL;
@@ -94,7 +95,8 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription *md, SalStreamType type) {
 	unsigned int i;
 	unsigned int nb = 0;
-	for (i = 0; i < md->n_active_streams; ++i) {
+	for (i = 0; i < md->nb_streams; ++i) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (md->streams[i].type == type) nb++;
 	}
 	return nb;
@@ -102,7 +104,8 @@ unsigned int sal_media_description_nb_active_streams_of_type(SalMediaDescription
 
 SalStreamDescription * sal_media_description_get_active_stream_of_type(SalMediaDescription *md, SalStreamType type, unsigned int idx) {
 	unsigned int i;
-	for (i = 0; i < md->n_active_streams; ++i) {
+	for (i = 0; i < md->nb_streams; ++i) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (md->streams[i].type == type) {
 			if (idx-- == 0) return &md->streams[i];
 		}
@@ -125,16 +128,26 @@ SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescriptio
 }
 
 bool_t sal_media_description_empty(const SalMediaDescription *md){
-	if (md->n_active_streams > 0) return FALSE;
+	if (sal_media_description_get_nb_active_streams(md) > 0) return FALSE;
 	return TRUE;
 }
 
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	for(i=0;i<md->n_active_streams;++i){
+	for(i=0;i<md->nb_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
+		if (!sal_stream_description_active(ss)) continue;
 		ss->dir=stream_dir;
 	}
+}
+
+int sal_media_description_get_nb_active_streams(const SalMediaDescription *md) {
+	int i;
+	int nb = 0;
+	for (i = 0; i < md->nb_streams; i++) {
+		if (sal_stream_description_active(&md->streams[i])) nb++;
+	}
+	return nb;
 }
 
 
@@ -147,8 +160,9 @@ static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
 
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
-	for(i=0;i<md->n_active_streams;++i){
+	for(i=0;i<md->nb_streams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
+		if (!sal_stream_description_active(ss)) continue;
 		if (ss->dir==stream_dir) return TRUE;
 		/*compatibility check for phones that only used the null address and no attributes */
 		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->rtp_addr)))
@@ -173,6 +187,38 @@ bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir
 		else return TRUE;
 	}
 	return FALSE;
+}
+
+bool_t sal_stream_description_active(const SalStreamDescription *sd) {
+	return (sd->rtp_port > 0);
+}
+
+bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf));
+}
+
+bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
+}
+
+bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < md->nb_streams; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (sal_stream_description_has_avpf(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_srtp(const SalMediaDescription *md) {
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < md->nb_streams; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (sal_stream_description_has_srtp(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
 }
 
 /*
@@ -261,9 +307,9 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
-	if (md1->n_total_streams != md2->n_total_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
-	for(i = 0; i < md1->n_total_streams; ++i){
+	for(i = 0; i < md1->nb_streams; ++i){
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
 	}
 	return result;

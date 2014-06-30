@@ -711,11 +711,11 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < desc->n_active_streams; i++) {
+	for (i = 0; i < desc->nb_streams; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
-		if (cl == NULL) continue;
+		if (!sal_stream_description_active(stream) || (cl == NULL)) continue;
 		if (ice_check_list_state(cl) == ICL_Completed) {
 			stream->ice_completed = TRUE;
 			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
@@ -822,7 +822,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
-			for (i = 0; i < md->n_total_streams; i++) {
+			for (i = 0; i < md->nb_streams; i++) {
 				const SalStreamDescription *stream = &md->streams[i];
 				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
@@ -841,7 +841,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
-		for (i = 0; i < md->n_total_streams; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
@@ -857,7 +857,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < md->n_total_streams; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			/*
@@ -918,10 +918,12 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 			}
 		}
-		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
-			IceCheckList *removed=ice_session_check_list(call->ice_session, i - 1);
-			ice_session_remove_check_list(call->ice_session, removed);
-			clear_ice_check_list(call,removed);
+		for (i = 0; i < md->nb_streams; i++) {
+			IceCheckList * cl = ice_session_check_list(call->ice_session, i);
+			if (!sal_stream_description_active(&md->streams[i]) && (cl != NULL)) {
+				ice_session_remove_check_list_from_idx(call->ice_session, i);
+				clear_ice_check_list(call, cl);
+			}
 		}
 		ice_session_check_mismatch(call->ice_session);
 	} else {
@@ -937,7 +939,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
-	for (i = 0; i < md->n_total_streams; i++) {
+	for (i = 0; i < md->nb_streams; i++) {
 		if (md->streams[i].type == SalVideo && md->streams[i].rtp_port!=0)
 			return TRUE;
 	}
@@ -1519,34 +1521,4 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	}
 	lc->rtp_conf.srtp_suites=result;
 	return result;
-}
-
-bool_t is_video_active(const SalStreamDescription *sd) {
-	return (sd->rtp_port != 0) && (sd->dir != SalStreamInactive);
-}
-
-bool_t stream_description_has_avpf(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf));
-}
-
-bool_t stream_description_has_srtp(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
-}
-
-bool_t media_description_has_avpf(const SalMediaDescription *md) {
-	int i;
-	if (md->n_active_streams == 0) return FALSE;
-	for (i = 0; i < md->n_active_streams; i++) {
-		if (stream_description_has_avpf(&md->streams[i]) != TRUE) return FALSE;
-	}
-	return TRUE;
-}
-
-bool_t media_description_has_srtp(const SalMediaDescription *md) {
-	int i;
-	if (md->n_active_streams == 0) return FALSE;
-	for (i = 0; i < md->n_active_streams; i++) {
-		if (stream_description_has_srtp(&md->streams[i]) != TRUE) return FALSE;
-	}
-	return TRUE;
 }
