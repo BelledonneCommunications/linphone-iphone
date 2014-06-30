@@ -1198,6 +1198,7 @@ static BOOL libStarted = FALSE;
 
     // create linphone core
     [self createLinphoneCore];
+    linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
     //init audio session
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
