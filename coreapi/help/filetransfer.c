@@ -73,9 +73,7 @@ static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *messag
 		/*next chunk*/
 		file = (FILE*)linphone_chat_message_get_user_data(message);
 
-	/*next chunk*/
-	file = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
-
+		if (size) {
 			printf("File transfert completed\n");
 			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
 			linphone_chat_message_destroy(message);
