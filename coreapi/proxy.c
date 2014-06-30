@@ -1005,7 +1005,7 @@ bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj){
 /**
  * Returns the proxy's SIP address.
 **/
-const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj){
+const char *linphone_proxy_config_get_server_addr(const LinphoneProxyConfig *obj){
 	return obj->reg_proxy;
 }
 
@@ -1224,15 +1224,20 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 }
 
 
+#define CONFIGURE_STRING_VALUE(obj,config,key,param,param_name) \
+	linphone_proxy_config_set_##param(obj,lp_config_get_string(config,key,param_name,linphone_proxy_config_get_##param(obj)));
+
+#define CONFIGURE_BOOL_VALUE(obj,config,key,param,param_name) \
+	linphone_proxy_config_enable_##param(obj,lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(obj)));
+
+#define CONFIGURE_INT_VALUE(obj,config,key,param,param_name) \
+		linphone_proxy_config_set_##param(obj,lp_config_get_int(config,key,param_name,linphone_proxy_config_get_##param(obj)));
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {
 	const char *tmp;
-	const char *identity;
-	const char *proxy;
 	LinphoneProxyConfig *cfg;
 	char key[50];
-	int interval;
 	LpConfig *config=lc->config;
 
 	sprintf(key,"proxy_%i",index);
@@ -1243,42 +1248,31 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	cfg=linphone_core_create_proxy_config(lc);
 
-	identity=lp_config_get_string(config,key,"reg_identity",NULL);
-	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);
+	CONFIGURE_STRING_VALUE(cfg,config,key,identity,"reg_identity")
+	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
+	CONFIGURE_STRING_VALUE(cfg,config,key,route,"reg_route")
 
-	linphone_proxy_config_set_identity(cfg,identity);
-	linphone_proxy_config_set_server_addr(cfg,proxy);
+	CONFIGURE_BOOL_VALUE(cfg,config,key,quality_reporting,"quality_reporting_enabled")
 
-	tmp=lp_config_get_string(config,key,"reg_route",NULL);
-	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
+	CONFIGURE_STRING_VALUE(cfg,config,key,quality_reporting_collector,"quality_reporting_collector")
 
-	linphone_proxy_config_enable_quality_reporting(cfg,lp_config_get_int(config,key,"quality_reporting_enabled",0));
-	tmp=lp_config_get_string(config,key,"quality_reporting_collector",NULL);
-	if (tmp!=NULL) linphone_proxy_config_set_quality_reporting_collector(cfg,tmp);
-	interval=lp_config_get_int(config, key, "quality_reporting_interval", 0);
-	linphone_proxy_config_set_quality_reporting_interval(cfg, interval? MAX(interval, 120) : 0);
+	CONFIGURE_INT_VALUE(cfg,config,key,quality_reporting_interval,"quality_reporting_interval")
 
-	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
+	CONFIGURE_STRING_VALUE(cfg,config,key,contact_parameters,"contact_parameters")
+	CONFIGURE_STRING_VALUE(cfg,config,key,contact_uri_parameters,"contact_uri_parameters")
 
-	linphone_proxy_config_set_contact_uri_parameters(cfg,lp_config_get_string(config,key,"contact_uri_parameters",NULL));
-
-	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",lp_config_get_default_int(config,"proxy","reg_expires",600)));
-	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
-
-	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
-
-	linphone_proxy_config_enable_avpf(cfg, lp_config_get_int(config, key, "avpf", 0));
-	linphone_proxy_config_set_avpf_rr_interval(cfg, lp_config_get_int(config, key, "avpf_rr_interval", 5));
-
-	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",lp_config_get_default_int(config,"proxy","dial_escape_plus",0)));
-	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",lp_config_get_default_string(config,"proxy","dial_prefix",NULL)));
+	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,avpf,"avpf")
+	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval")
+	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus")
+	CONFIGURE_STRING_VALUE(cfg,config,key,dial_prefix,"dial_prefix")
 
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0)
 		linphone_proxy_config_set_sip_setup(cfg,tmp);
-
-	linphone_proxy_config_set_privacy(cfg,lp_config_get_int(config,key,"privacy",lp_config_get_default_int(config,"proxy","privacy",LinphonePrivacyDefault)));
-
+	CONFIGURE_INT_VALUE(cfg,config,key,privacy,"privacy")
 	return cfg;
 }
 
