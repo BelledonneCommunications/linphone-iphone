@@ -1381,18 +1381,11 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	
 	//handle proxy config if any
 	if (proxyCfg) {
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]
-			||
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"] ||
 			[[LinphoneManager instance] lpConfigBoolForKey:@"pushnotification_preference"]) {
 			
 			//For registration register
 			[self refreshRegisters];
-			//wait for registration answer
-			int i=0;
-			while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
-				linphone_core_iterate(theLinphoneCore);
-				usleep(100000);
-			}
 		}
 		
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]) {
