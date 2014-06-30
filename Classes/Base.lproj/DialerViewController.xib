@@ -44,7 +44,7 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </imageView>
                         <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number..." adjustsFontSizeToFit="NO" minimumFontSize="15" id="4" userLabel="addressField" customClass="UIAddressTextField">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+                            <rect key="frame" x="5" y="0.0" width="310" height="60"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <accessibility key="accessibilityConfiguration" label="Enter a address"/>

@@ -299,7 +299,7 @@
 "© 2010-2012 Belledonne Communications " = "© 2010-2012 Belledonne Communications ";
 
 /* Placeholder for the address in DialerView */
-"Enter an address" = "Enter SIP address or phone number...";
+"Enter an address" = "Phone number or Address";
 "%@ is composing..." = "%@ is composing...";
 "Resend" = "Resend";
 
