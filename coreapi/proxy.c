@@ -1225,7 +1225,11 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 
 
 #define CONFIGURE_STRING_VALUE(obj,config,key,param,param_name) \
-	linphone_proxy_config_set_##param(obj,lp_config_get_string(config,key,param_name,linphone_proxy_config_get_##param(obj)));
+	{\
+	char* default_value = linphone_proxy_config_get_##param(obj)?ms_strdup(linphone_proxy_config_get_##param(obj)):NULL;\
+	linphone_proxy_config_set_##param(obj,lp_config_get_string(config,key,param_name,default_value)); \
+	if ( default_value) ms_free(default_value); \
+	}
 
 #define CONFIGURE_BOOL_VALUE(obj,config,key,param,param_name) \
 	linphone_proxy_config_enable_##param(obj,lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(obj)));
