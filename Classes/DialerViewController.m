@@ -135,6 +135,13 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
                                                object:nil];
+
+    // technically not needed, but older versions of linphone had this button
+    // disabled by default. In this case, updating by pushing a new version with
+    // xcode would result in the callbutton being disabled all the time.
+    // We force it enabled anyway now.
+    [callButton setEnabled:TRUE];
+
     // Update on show
     if([LinphoneManager isLcReady]) {
 		LinphoneManager *mgr=[LinphoneManager instance];
