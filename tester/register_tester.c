@@ -804,6 +804,17 @@ static void tls_wildcard_register(){
 	linphone_core_destroy(mgr->lc);
 }
 
+static void redirect(){
+	char route[256];
+	LinphoneCoreManager* lcm;
+	LCSipTransports transport = {-1,0,0,0};
+	sprintf(route,"sip:%s:5064",test_route);
+	lcm = create_lcm();
+	linphone_core_set_user_agent(lcm->lc,"redirect",NULL);
+	register_with_refresh_base_2(lcm->lc,FALSE,test_domain,route,FALSE,transport);
+	linphone_core_manager_destroy(lcm);
+}
+
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "Simple register unregister", simple_unregister },
@@ -835,7 +846,8 @@ test_t register_tests[] = {
 	{ "Io recv error", io_recv_error },
 	{ "Io recv error with recovery", io_recv_error_retry_immediatly},
 	{ "Io recv error with late recovery", io_recv_error_late_recovery},
-	{ "Io recv error without active registration", io_recv_error_without_active_register}
+	{ "Io recv error without active registration", io_recv_error_without_active_register},
+	{ "Simple redirect", redirect}
 };
 
 test_suite_t register_test_suite = {

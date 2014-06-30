@@ -1087,23 +1087,36 @@ static void call_with_video_added_random_ports(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_declined_video(void) {
+static void call_with_declined_video_base(bool_t using_policy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCallParams* callee_params;
 	LinphoneCallParams* caller_params;
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
-
+	LinphoneVideoPolicy marie_policy, pauline_policy;
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
 
-	caller_params=linphone_core_create_default_call_parameters(marie->lc);
-	linphone_call_params_enable_video(caller_params,TRUE);
-	callee_params=linphone_core_create_default_call_parameters(pauline->lc);
-	linphone_call_params_enable_video(callee_params,FALSE);
+	if (using_policy) {
+		pauline_policy.automatically_initiate=TRUE;
+		pauline_policy.automatically_accept=FALSE;
+		marie_policy.automatically_initiate=FALSE;
+		marie_policy.automatically_accept=FALSE;
+
+		linphone_core_set_video_policy(marie->lc,&marie_policy);
+		linphone_core_set_video_policy(pauline->lc,&pauline_policy);
+	}
+
+	caller_params=linphone_core_create_default_call_parameters(pauline->lc);
+	if (!using_policy)
+		linphone_call_params_enable_video(caller_params,TRUE);
+	callee_params=linphone_core_create_default_call_parameters(marie->lc);
+	if (!using_policy)
+		linphone_call_params_enable_video(callee_params,FALSE);
+
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
@@ -1119,22 +1132,41 @@ static void call_with_declined_video(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void call_with_declined_video(void) {
+	call_with_declined_video_base(FALSE);
+}
+static void call_with_declined_video_using_policy(void) {
+	call_with_declined_video_base(TRUE);
+}
 
-static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie) {
+static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy) {
 	LinphoneCallParams* callee_params;
 	LinphoneCallParams* caller_params;
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
-
+	LinphoneVideoPolicy marie_policy, pauline_policy;
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
 
-	caller_params=linphone_core_create_default_call_parameters(marie->lc);
-	linphone_call_params_enable_video(caller_params,TRUE);
-	callee_params=linphone_core_create_default_call_parameters(pauline->lc);
-	linphone_call_params_enable_video(callee_params,TRUE);
+	if (using_policy) {
+		marie_policy.automatically_initiate=FALSE;
+		marie_policy.automatically_accept=TRUE;
+		pauline_policy.automatically_initiate=TRUE;
+		pauline_policy.automatically_accept=FALSE;
+
+		linphone_core_set_video_policy(marie->lc,&marie_policy);
+		linphone_core_set_video_policy(pauline->lc,&pauline_policy);
+	}
+
+	caller_params=linphone_core_create_default_call_parameters(pauline->lc);
+	if (!using_policy)
+		linphone_call_params_enable_video(caller_params,TRUE);
+	callee_params=linphone_core_create_default_call_parameters(marie->lc);
+	if (!using_policy)
+		linphone_call_params_enable_video(callee_params,TRUE);
+
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
@@ -1162,15 +1194,24 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 static void video_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	video_call_base(marie,pauline);
+	video_call_base(marie,pauline,FALSE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void video_call_using_policy(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	video_call_base(marie,pauline,TRUE);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void video_call_no_sdp(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	linphone_core_enable_sdp_200_ack(pauline->lc,TRUE);
-	video_call_base(pauline,marie);
+	video_call_base(pauline,marie,FALSE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -2566,12 +2607,14 @@ test_t call_tests[] = {
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
 #ifdef VIDEO_ENABLED
 	{ "Simple video call",video_call},
+	{ "Simple video call using policy",video_call_using_policy},
 	{ "Video call without SDP",video_call_no_sdp},
 	{ "SRTP ice video call", srtp_video_ice_call },
 	{ "ZRTP ice video call", zrtp_video_ice_call },
 	{ "Call with video added", call_with_video_added },
 	{ "Call with video added (random ports)", call_with_video_added_random_ports },
-	{ "Call with video declined",call_with_declined_video},
+	{ "Call with video declined", call_with_declined_video},
+	{ "Call with video declined using policy", call_with_declined_video_using_policy},
 	{ "Call with multiple early media", multiple_early_media },
 	{ "Call with ICE from video to non-video", call_with_ice_video_to_novideo},
 	{ "Call with ICE and video added", call_with_ice_video_added },
