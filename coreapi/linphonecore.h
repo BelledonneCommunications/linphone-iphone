@@ -906,7 +906,8 @@ LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxy
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
-LINPHONE_PUBLIC	const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_server_addr(const LinphoneProxyConfig *obj);
+#define linphone_proxy_config_get_addr linphone_proxy_config_get_server_addr
 LINPHONE_PUBLIC	int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
