@@ -6,10 +6,10 @@
 "5.normalTitle" = "Chat";
 
 /* Class = "IBUIButton"; accessibilityLabel = "Historique"; ObjectID = "6"; */
-"6.accessibilityLabel" = "Historique";
+"6.accessibilityLabel" = "Appels";
 
 /* Class = "IBUIButton"; normalTitle = "Historique"; ObjectID = "6"; */
-"6.normalTitle" = "Historique";
+"6.normalTitle" = "Appels";
 
 /* Class = "IBUIButton"; accessibilityLabel = "Clavier"; ObjectID = "7"; */
 "7.accessibilityLabel" = "Clavier";
