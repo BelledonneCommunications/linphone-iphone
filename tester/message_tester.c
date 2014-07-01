@@ -40,20 +40,22 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	stats* counters;
 	const char *text=linphone_chat_message_get_text(message);
 	const char *external_body_url=linphone_chat_message_get_external_body_url(message);
-	const LinphoneContent *file_transfer_info=linphone_chat_message_get_file_transfer_information(message);
-
 	ms_message("Message from [%s]  is [%s] , external URL [%s]",from?from:""
 																,text?text:""
 																,external_body_url?external_body_url:"");
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
-	if (file_transfer_info) { /* if we have a file transfer in RCS mode, start the download */
-		linphone_chat_message_start_file_download(message);
-	} else if (linphone_chat_message_get_external_body_url(message)) {
+	if (linphone_chat_message_get_file_transfer_information(message))
+		counters->number_of_LinphoneMessageReceivedWithFile++;
+	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
+	linphone_chat_message_ref(counters->last_received_chat_message=message);
+	if (linphone_chat_message_get_external_body_url(message)) {
 		counters->number_of_LinphoneMessageExtBodyReceived++;
-		if (message_external_body_url)
+		if (message_external_body_url) {
 			CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
+			message_external_body_url=NULL;
+		}
 	}
 }
 
@@ -349,6 +351,8 @@ static void file_transfer_message(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
 
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
 		memcpy(big_file+i, big_file_content, strlen(big_file_content));
@@ -362,7 +366,7 @@ static void file_transfer_message(void) {
 	/* create a chatroom on pauline's side */
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
-
+	ms_free(to);
 	/* create a file transfer message */
 	memset(&content,0,sizeof(content));
 	content.type="text";
@@ -372,7 +376,10 @@ static void file_transfer_message(void) {
 	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
 
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	if (marie->stat.last_received_info_message ) {
+		linphone_chat_message_start_file_download((const LinphoneChatMessage*)marie->stat.last_received_info_message);
+	}
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
@@ -391,6 +398,8 @@ static void file_transfer_message_io_error(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
 
 	/* setting dummy file content to something */
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
@@ -436,6 +445,9 @@ static void text_message_with_send_error(void) {
 	char* to = linphone_address_as_string(pauline->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
 	/*simultate a network error*/
 	sal_set_send_error(marie->lc->sal, -1);
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,marie->lc);
@@ -463,6 +475,8 @@ static void text_message_denied(void) {
 	char* to = linphone_address_as_string(pauline->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
 
 	/*pauline doesn't want to be disturbed*/
 	linphone_core_disable_chat(pauline->lc,LinphoneReasonDoNotDisturb);

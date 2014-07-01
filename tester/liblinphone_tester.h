@@ -124,6 +124,7 @@ typedef struct _stats {
 	int number_of_LinphoneTransferCallError;
 
 	int number_of_LinphoneMessageReceived;
+	int number_of_LinphoneMessageReceivedWithFile;
 	int number_of_LinphoneMessageReceivedLegacy;
 	int number_of_LinphoneMessageExtBodyReceived;
 	int number_of_LinphoneMessageInProgress;
@@ -191,6 +192,7 @@ typedef struct _stats {
 
 	int number_of_LinphoneCallEncryptedOn;
 	int number_of_LinphoneCallEncryptedOff;
+	LinphoneChatMessage* last_received_chat_message;
 }stats;
 
 typedef struct _LinphoneCoreManager {

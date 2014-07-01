@@ -84,9 +84,14 @@ static void remote_provisioning_default_values(void) {
 	lpc = linphone_core_create_proxy_config(marie->lc);
 	CU_ASSERT_TRUE(lpc->reg_sendregister == TRUE);
 	CU_ASSERT_TRUE(lpc->expires == 604800);
-	CU_ASSERT_TRUE(strcmp(lpc->reg_proxy, "<sip:sip.linphone.org:5223;transport=tls>") == 0);
-	CU_ASSERT_TRUE(strcmp(lpc->reg_route, "<sip:sip.linphone.org:5223;transport=tls>") == 0);
-	CU_ASSERT_TRUE(strcmp(lpc->reg_identity, "sip:?@sip.linphone.org") == 0);
+	CU_ASSERT_STRING_EQUAL(lpc->reg_proxy, "<sip:sip.linphone.org:5223;transport=tls>");
+	CU_ASSERT_STRING_EQUAL(lpc->reg_route, "<sip:sip.linphone.org:5223;transport=tls>");
+	CU_ASSERT_STRING_EQUAL(lpc->reg_identity, "sip:?@sip.linphone.org");
+	{
+		LpConfig* lp = linphone_core_get_config(marie->lc);
+		CU_ASSERT_STRING_EQUAL(lp_config_get_string(lp,"app","toto","empty"),"titi");
+	}
+
 	linphone_core_manager_destroy(marie);
 }
 
