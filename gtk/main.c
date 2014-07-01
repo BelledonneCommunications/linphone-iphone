@@ -2319,6 +2319,8 @@ core_start:
 
 	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
 
+	if (config_file) free(config_file);
+
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
