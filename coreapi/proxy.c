@@ -411,7 +411,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
 		char* proxy_string;
 		LinphoneAddress *contact;
-
+		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",obj,linphone_core_get_version());
 		proxy_string=linphone_address_as_string_uri_only(proxy);
 		linphone_address_destroy(proxy);
 		if (obj->op)

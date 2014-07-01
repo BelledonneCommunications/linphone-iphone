@@ -561,7 +561,7 @@ static void port_config_set(LinphoneCall *call, int stream_index, int min_port, 
 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int min_port, max_port;
-
+	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
 	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
