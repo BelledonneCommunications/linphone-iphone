@@ -220,6 +220,7 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (call->state==LinphoneCallIncomingReceived
+		    || call->state==LinphoneCallIncomingEarlyMedia
 		    || call->state==LinphoneCallOutgoingInit
 		    || call->state==LinphoneCallOutgoingProgress
 		    || call->state==LinphoneCallOutgoingEarlyMedia
