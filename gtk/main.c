@@ -2319,8 +2319,6 @@ core_start:
 
 	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
 
-	if (config_file) free(config_file);
-
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
@@ -2333,6 +2331,7 @@ core_start:
 		restart=FALSE;
 		goto core_start;
 	}
+	if (config_file) free(config_file);
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	if (icon) gtk_status_icon_set_visible(icon,FALSE);
