@@ -1404,7 +1404,7 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 /**
  * Returns true if the call is part of the locally managed conference.
 **/
-bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp){
+bool_t linphone_call_params_get_local_conference_mode(const LinphoneCallParams *cp){
 	return cp->in_conference;
 }
 

@@ -2438,7 +2438,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 		for(;elem!=NULL;elem=elem->next){
 			const char *flag;
 			call=(LinphoneCall*)elem->data;
-			bool_t in_conference=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
+			bool_t in_conference=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;

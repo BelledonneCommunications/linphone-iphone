@@ -389,7 +389,8 @@ LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_call_params_get_media_encryptio
 LINPHONE_PUBLIC	void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption e);
 LINPHONE_PUBLIC	void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
-LINPHONE_PUBLIC	bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
+#define linphone_call_params_local_conference_mode linphone_call_params_get_local_conference_mode	/* Deprecated */
+LINPHONE_PUBLIC	bool_t linphone_call_params_get_local_conference_mode(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 LINPHONE_PUBLIC	void linphone_call_params_destroy(LinphoneCallParams *cp);
 LINPHONE_PUBLIC	bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
