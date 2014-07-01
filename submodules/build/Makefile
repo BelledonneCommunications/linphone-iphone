@@ -25,7 +25,7 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel)
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null)
 
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
@@ -83,6 +83,17 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
                  enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
+
+armv7-%: 
+	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
+
+armv7s-%: 
+	make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+
+simu-%: 
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
+
+
 build-% clean-% veryclean-%: 
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
@@ -111,4 +122,29 @@ veryclean: broadcast_veryclean
 zipres:
 	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
 	@echo Archive 'ios_assets.tar.gz' placed in root directory
+
+help:
+	@echo "(please read the README file first)"
+	@echo "Available architectures: armv7, armv7s, simu"
+	@echo "Available targets:"
+	@echo ""
+	@echo "   * all       : builds all architectures and creates the liblinphone sdk"
+	@echo "   * ipa       : builds all, creates the SDK, then builds an IPA of the Linphone-iphone application"
+	@echo "   * clean     : clean all packages for all architectures"
+	@echo "   * veryclean : completely clean all packages for all architectures"
+	@echo ""
+	@echo "=== Advanced usage ==="
+	@echo ""
+	@echo "   *            build-[package] : builds the package for all architectures"
+	@echo "   *            clean-[package] : clean the package for all architectures"
+	@echo "   *        veryclean-[package] : completely clean the package for all architectures"
+	@echo ""
+	@echo "   *      armv7-build-[package] : builds a package for the armv7 architecture"
+	@echo "   *     armv7s-build-[package] : builds a package for the armv7s architecture"
+	@echo "   *       simu-build-[package] : builds a package for the simulator architecture"
+	@echo ""
+	@echo "   *     [arch]-clean-[package] : clean the package for the selected architecture"
+	@echo "   * [arch]-veryclean-[package] : completely clean the package for the selected architecture"
+	@echo ""
+	@echo "   * sdk : re-add all generated libraries to the SDK. Use this only after a full build."
 
