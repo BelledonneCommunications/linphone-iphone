@@ -97,11 +97,6 @@ static UIFont *CELL_FONT = nil;
     [super dealloc];
 }
 
-- (void)prepareForReuse {
-    
-}
-
-
 #pragma mark - 
 
 - (void)setChatMessage:(LinphoneChatMessage *)message {
@@ -156,8 +151,15 @@ static UIFont *CELL_FONT = nil;
     } else {
         // simple text message
         [messageText setHidden:FALSE];
-        [messageText setText:[NSString stringWithUTF8String:text]];
-        
+        /* We need to use an attributed string here so that data detector don't mess
+         * with the text style. See http://stackoverflow.com/a/20669356 */
+        NSAttributedString* attr_text = [[NSAttributedString alloc]
+                                         initWithString:[NSString stringWithUTF8String:text]
+                                         attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
+                                                      NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
+        messageText.attributedText = attr_text;
+        [attr_text release];
+
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
         
