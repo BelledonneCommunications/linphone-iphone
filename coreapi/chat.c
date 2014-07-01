@@ -443,8 +443,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	} else {
 		if (cr->lc->lime == 1) { /* shall we try to encrypt messages? */
 			linphone_chat_message_ref(msg); /* ref the message or it may be destroyed by callback if the encryption failed */
-			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
-			if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0 ) { /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
+			if ((msg->content_type != NULL) && (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0 )) { /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
 				sal_message_send(op, identity, cr->peer, "application/cipher.vnd.gsma.rcs-ft-http+xml", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
 			} else {
 				sal_message_send(op, identity, cr->peer, "xml/cipher", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
