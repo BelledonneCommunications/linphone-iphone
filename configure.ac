@@ -925,7 +925,7 @@ printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
-printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
+printf "* %-30s %s\n" "zRTP encryption"		$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 

@@ -610,13 +610,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void enableEchoLimiter(boolean val) {
 		enableEchoLimiter(nativePtr,val);
 	}
-	public void setVideoDevice(int id) {
+	public synchronized void setVideoDevice(int id) {
 		Log.i("Setting camera id :", id);
 		if (setVideoDevice(nativePtr, id) != 0) {
 			Log.e("Failed to set video device to id:", id);
 		}
 	}
-	public int getVideoDevice() {
+	public synchronized int getVideoDevice() {
 		return getVideoDevice(nativePtr);
 	}
 
@@ -847,7 +847,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void tunnelSetHttpProxy(long nativePtr, String proxy_host, int port,
 			String username, String password);
 	@Override
-	public void tunnelSetHttpProxy(String proxy_host, int port,
+	public synchronized void tunnelSetHttpProxy(String proxy_host, int port,
 			String username, String password) {
 		tunnelSetHttpProxy(nativePtr, proxy_host, port, username, password);
 	}
@@ -1185,17 +1185,17 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	
 	@Override
-	public void stopRinging() {
+	public synchronized void stopRinging() {
 		stopRinging(nativePtr);
 	}
 	private native void setPayloadTypeBitrate(long coreptr, long payload_ptr, int bitrate);
 	@Override
-	public void setPayloadTypeBitrate(PayloadType pt, int bitrate) {
+	public synchronized void setPayloadTypeBitrate(PayloadType pt, int bitrate) {
 		setPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr, bitrate);
 	}
 	private native int getPayloadTypeBitrate(long coreptr, long payload_ptr);
 	@Override
-	public int getPayloadTypeBitrate(PayloadType pt) {
+	public synchronized int getPayloadTypeBitrate(PayloadType pt) {
 		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
 	

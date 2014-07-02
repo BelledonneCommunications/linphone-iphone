@@ -37,9 +37,9 @@ typedef struct _LinphoneEvent LinphoneEvent;
  * Enum for subscription direction (incoming or outgoing).
 **/
 enum _LinphoneSubscriptionDir{
-	LinphoneSubscriptionIncoming,
-	LinphoneSubscriptionOutgoing,
-	LinphoneSubscriptionInvalidDir
+	LinphoneSubscriptionIncoming, /**< Incoming subscription. */
+	LinphoneSubscriptionOutgoing, /**< Outgoing subscription. */
+	LinphoneSubscriptionInvalidDir /**< Invalid subscription direction. */
 };
 
 /**
@@ -97,12 +97,12 @@ typedef void (*LinphoneCoreNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent *le
 
 /**
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
-**/ 
+**/
 typedef void (*LinphoneCoreSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 
 /**
  * Callback prototype for notifying the application about changes of publish states.
-**/ 
+**/
 typedef void (*LinphoneCorePublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 
 /**
@@ -125,7 +125,6 @@ LINPHONE_PUBLIC LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const L
  * @param resource the destination resource
  * @param event the event name
  * @param expires the whished duration of the subscription
- * @param body an optional body, may be NULL.
  * @return a LinphoneEvent holding the context of the created subcription.
 **/
 LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires);
@@ -211,7 +210,7 @@ LINPHONE_PUBLIC LinphoneReason linphone_event_get_reason(const LinphoneEvent *le
 /**
  * Get full details about an error occured.
 **/
-const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev);
+LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_event_get_error_info(const LinphoneEvent *lev);
 
 /**
  * Get subscription state. If the event object was not created by a subscription mechanism, #LinphoneSubscriptionNone is returned.
@@ -258,7 +257,7 @@ LINPHONE_PUBLIC const char *linphone_event_get_custom_header(LinphoneEvent *ev, 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
  * This function does not unref the object. The core will unref() if it does not need this object anymore.
- * 
+ *
  * For subscribed event, when the subscription is terminated normally or because of an error, the core will unref.
  * For published events, no unref is performed. This is because it is allowed to re-publish an expired publish, as well as retry it in case of error.
 **/
@@ -270,7 +269,7 @@ LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
  * By default LinphoneEvents created by the core are owned by the core only.
  * An application that wishes to retain a reference to it must call linphone_event_ref().
  * When this reference is no longer needed, linphone_event_unref() must be called.
- * 
+ *
 **/
 LINPHONE_PUBLIC LinphoneEvent *linphone_event_ref(LinphoneEvent *lev);
 

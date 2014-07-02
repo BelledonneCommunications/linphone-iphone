@@ -47,7 +47,8 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < new_md->n_active_streams; i++) {
+	for (i = 0; i < new_md->nb_streams; i++) {
+		if (!sal_stream_description_active(&new_md->streams[i])) continue;
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
 		} else if (new_md->streams[i].type == SalVideo) {
@@ -72,6 +73,32 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 #endif
 }
 
+static void _clear_early_media_destinations(LinphoneCall *call, MediaStream *ms){
+	RtpSession *session=ms->sessions.rtp_session;
+	rtp_session_clear_aux_remote_addr(session);
+	if (!call->ice_session) rtp_session_set_symmetric_rtp(session,TRUE);/*restore symmetric rtp if ICE is not used*/
+}
+
+static void clear_early_media_destinations(LinphoneCall *call){
+	if (call->audiostream){
+		_clear_early_media_destinations(call,(MediaStream*)call->audiostream);
+	}
+	if (call->videostream){
+		_clear_early_media_destinations(call,(MediaStream*)call->videostream);
+	}
+}
+
+static void prepare_early_media_forking(LinphoneCall *call){
+	/*we need to disable symmetric rtp otherwise our outgoing streams will be switching permanently between the multiple destinations*/
+	if (call->audiostream){
+		rtp_session_set_symmetric_rtp(call->audiostream->ms.sessions.rtp_session,FALSE);
+	}
+	if (call->videostream){
+		rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,FALSE);
+	}
+	
+}
+
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
 	SalMediaDescription *oldmd=call->resultdesc;
 	bool_t all_muted=FALSE;
@@ -82,7 +109,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		ms_error("linphone_core_update_streams() called with null media description");
 		return;
 	}
-	if (call->biggestdesc==NULL || new_md->n_total_streams>call->biggestdesc->n_total_streams){
+	if (call->biggestdesc==NULL || new_md->nb_streams>call->biggestdesc->nb_streams){
 		/*we have been offered and now are ready to proceed, or we added a new stream*/
 		/*store the media description to remember the mapping of calls*/
 		if (call->biggestdesc){
@@ -98,6 +125,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	call->expect_media_in_ack=FALSE;
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.state==MSStreamStarted) || (call->videostream && call->videostream->ms.state==MSStreamStarted)){
+		clear_early_media_destinations(call);
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			int md_changed = media_parameters_changed(call, oldmd, new_md);
@@ -146,6 +174,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if ((call->state==LinphoneCallIncomingEarlyMedia || call->state==LinphoneCallOutgoingEarlyMedia) && !call->params.real_early_media){
 		all_muted=TRUE;
 	}
+	if (call->params.real_early_media && call->state==LinphoneCallOutgoingEarlyMedia){
+		prepare_early_media_forking(call);
+	}
 	linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
@@ -189,6 +220,7 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (call->state==LinphoneCallIncomingReceived
+		    || call->state==LinphoneCallIncomingEarlyMedia
 		    || call->state==LinphoneCallOutgoingInit
 		    || call->state==LinphoneCallOutgoingProgress
 		    || call->state==LinphoneCallOutgoingEarlyMedia
@@ -276,6 +308,39 @@ static void call_received(SalOp *h){
 	linphone_core_notify_incoming_call(lc,call);
 }
 
+static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md){
+	SalMediaDescription *cur_md=call->resultdesc;
+	int i;
+	SalStreamDescription *ref_stream,*new_stream;
+	ms_message("Early media response received from another branch, checking if media can be forked to this new destination.");
+	
+	for (i=0;i<cur_md->nb_streams;++i){
+		if (!sal_stream_description_active(&cur_md->streams[i])) continue;
+		ref_stream=&cur_md->streams[i];
+		new_stream=&md->streams[i];
+		if (ref_stream->type==new_stream->type && ref_stream->payloads && new_stream->payloads){
+			PayloadType *refpt, *newpt;
+			refpt=(PayloadType*)ref_stream->payloads->data;
+			newpt=(PayloadType*)new_stream->payloads->data;
+			if (strcmp(refpt->mime_type,newpt->mime_type)==0 && refpt->clock_rate==newpt->clock_rate
+				&& payload_type_get_number(refpt)==payload_type_get_number(newpt)){
+				MediaStream *ms=NULL;
+				if (ref_stream->type==SalAudio){
+					ms=(MediaStream*)call->audiostream;
+				}else if (ref_stream->type==SalVideo){
+					ms=(MediaStream*)call->videostream;
+				}
+				if (ms){
+					RtpSession *session=ms->sessions.rtp_session;
+					const char *rtp_addr=new_stream->rtp_addr[0]!='\0' ? new_stream->rtp_addr : md->addr;
+					const char *rtcp_addr=new_stream->rtcp_addr[0]!='\0' ? new_stream->rtcp_addr : md->addr;
+					rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
+				}
+			}
+		}
+	}
+}
+
 static void call_ringing(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(h);
@@ -309,7 +374,7 @@ static void call_ringing(SalOp *h){
 		/*accept early media */
 		if (call->audiostream && audio_stream_started(call->audiostream)){
 			/*streams already started */
-			ms_message("Early media already started.");
+			try_early_media_forking(call,md);
 			return;
 		}
 		if (lc->vtable.show) lc->vtable.show(lc);
@@ -460,6 +525,8 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
+	/*when we are resumed, increment session id, because sdp is changed (a=recvonly disapears)*/
+	linphone_call_increment_local_media_description(call);
 	call_accept_update(lc,call);
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
@@ -467,6 +534,8 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	/*when we are resumed, increment session id, because sdp is changed (a=recvonly appears)*/
+	linphone_call_increment_local_media_description(call);
 	call_accept_update(lc,call);
 	/* we are being paused */
 	if(lc->vtable.display_status)
@@ -666,24 +735,33 @@ static void call_failure(SalOp *op){
 		break;
 		case SalReasonUnsupportedContent: /*<this is for compatibility: linphone sent 415 because of SDP offer answer failure*/
 		case SalReasonNotAcceptable:
-		//media_encryption_mandatory
-			if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
-				!linphone_core_is_media_encryption_mandatory(lc)) {
+			ms_message("Outgoing call [%p] failed with SRTP and/or AVPF enabled", call);
+			if ((call->state == LinphoneCallOutgoingInit)
+				|| (call->state == LinphoneCallOutgoingProgress)
+				|| (call->state == LinphoneCallOutgoingRinging) /* Push notification case */
+				|| (call->state == LinphoneCallOutgoingEarlyMedia)) {
 				int i;
-				ms_message("Outgoing call [%p] failed with SRTP (SAVP) enabled",call);
-				if (call->state==LinphoneCallOutgoingInit
-						|| call->state==LinphoneCallOutgoingProgress
-						|| call->state==LinphoneCallOutgoingRinging /*push case*/
-						|| call->state==LinphoneCallOutgoingEarlyMedia){
-					ms_message("Retrying call [%p] with AVP",call);
-					/* clear SRTP local params */
-					call->params.media_encryption = LinphoneMediaEncryptionNone;
-					for(i=0; i<call->localdesc->n_active_streams; i++) {
-						call->localdesc->streams[i].proto = SalProtoRtpAvp;
-						memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+				for (i = 0; i < call->localdesc->nb_streams; i++) {
+					if (!sal_stream_description_active(&call->localdesc->streams[i])) continue;
+					if (call->params.media_encryption == LinphoneMediaEncryptionSRTP) {
+						if (call->params.avpf_enabled == TRUE) {
+							if (i == 0) ms_message("Retrying call [%p] with SAVP", call);
+							call->params.avpf_enabled = FALSE;
+							linphone_core_restart_invite(lc, call);
+							return;
+						} else if (!linphone_core_is_media_encryption_mandatory(lc)) {
+							if (i == 0) ms_message("Retrying call [%p] with AVP", call);
+							call->params.media_encryption = LinphoneMediaEncryptionNone;
+							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
+							linphone_core_restart_invite(lc, call);
+							return;
+						}
+					} else if (call->params.avpf_enabled == TRUE) {
+						if (i == 0) ms_message("Retrying call [%p] with AVP", call);
+						call->params.avpf_enabled = FALSE;
+						linphone_core_restart_invite(lc, call);
+						return;
 					}
-					linphone_core_restart_invite(lc, call);
-					return;
 				}
 			}
 			msg=_("Incompatible media parameters.");
@@ -740,7 +818,11 @@ static void call_released(SalOp *op){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call!=NULL){
 		linphone_call_set_state(call,LinphoneCallReleased,"Call released");
-	}else ms_error("call_released() for already destroyed call ?");
+	}else{
+		/*we can arrive here when the core manages call at Sal level without creating a LinphoneCall object. Typicially:
+		 * - when declining an incoming call with busy because maximum number of calls is reached.
+		 */
+	}
 }
 
 static void auth_failure(SalOp *op, SalAuthInfo* info) {

@@ -38,9 +38,10 @@ const char *liblinphone_tester_get_notify_content(void){
 }
 
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
+	LinphoneCoreManager *mgr;
 	CU_ASSERT_PTR_NOT_NULL_FATAL(content);
 	CU_ASSERT_TRUE(strcmp(notify_content,(const char*)content->data)==0);
-	LinphoneCoreManager *mgr=get_manager(lc);
+	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }
 

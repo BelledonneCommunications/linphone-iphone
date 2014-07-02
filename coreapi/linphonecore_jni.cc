@@ -52,8 +52,8 @@ extern "C" void libmssilk_init();
 #ifdef HAVE_G729
 extern "C" void libmsbcg729_init();
 #endif
-#ifdef HAVE_ISAC
-extern "C" void libmsisac_init();
+#ifdef HAVE_WEBRTC
+extern "C" void libmswebrtc_init();
 #endif
 #endif /*ANDROID*/
 
@@ -121,7 +121,13 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 	}
 	if (handler_obj){
 		JNIEnv *env=ms_get_jni_env();
-		env->CallVoidMethod(handler_obj,loghandler_id,env->NewStringUTF(LogDomain),(jint)lev,env->NewStringUTF(levname),env->NewStringUTF(str),NULL);
+		jstring jdomain=env->NewStringUTF(LogDomain);
+		jstring jlevname=env->NewStringUTF(levname);
+		jstring jstr=env->NewStringUTF(str);
+		env->CallVoidMethod(handler_obj,loghandler_id,jdomain,(jint)lev,jlevname,jstr,NULL);
+		if (jdomain) env->DeleteLocalRef(jdomain);
+		if (jlevname) env->DeleteLocalRef(jlevname);
+		if (jstr) env->DeleteLocalRef(jstr);
 	}else
 		linphone_android_log_handler(prio, str);
 }
@@ -781,8 +787,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #ifdef HAVE_G729
 	libmsbcg729_init();
 #endif
-#ifdef HAVE_ISAC
-	libmsisac_init();
+#ifdef HAVE_WEBRTC
+	libmswebrtc_init();
 #endif
 
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
@@ -2624,6 +2630,15 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 		linphone_chat_message_set_user_data(msg,NULL);
 	}
 }
+
+extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong chatroom_ptr){
+	LinphoneCore *lc=linphone_chat_room_get_core((LinphoneChatRoom*)chatroom_ptr);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	return lcd->core;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong chatroom_ptr
@@ -2774,7 +2789,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnable
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_localConferenceMode(JNIEnv *env, jobject thiz, jlong lcp){
-	return (jboolean)linphone_call_params_local_conference_mode((LinphoneCallParams*)lcp);
+	return (jboolean)linphone_call_params_get_local_conference_mode((LinphoneCallParams*)lcp);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name){
@@ -2936,6 +2951,22 @@ extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setPrivacy(JNIEnv
 
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getPrivacy(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return linphone_proxy_config_get_privacy((LinphoneProxyConfig *) ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_enableAvpf(JNIEnv *env, jobject thiz, jlong ptr, jboolean enable) {
+	linphone_proxy_config_enable_avpf((LinphoneProxyConfig *)ptr, (bool)enable);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_avpfEnabled(JNIEnv *env, jobject thiz, jlong ptr) {
+	return linphone_proxy_config_avpf_enabled((LinphoneProxyConfig *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setAvpfRRInterval(JNIEnv *env, jobject thiz, jlong ptr, jint interval) {
+	linphone_proxy_config_set_avpf_rr_interval((LinphoneProxyConfig *)ptr, (uint8_t)interval);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getAvpfRRInterval(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jint)linphone_proxy_config_get_avpf_rr_interval((LinphoneProxyConfig *)ptr);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
@@ -3645,6 +3676,12 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHa
 	if (jhandler){
 		handler_obj=env->NewGlobalRef(jhandler);
 	}
+}
+
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneEventImpl_getCore(JNIEnv *env, jobject jobj, jlong evptr){
+	LinphoneCore *lc=linphone_event_get_core((LinphoneEvent*)evptr);
+	LinphoneCoreData *lcd=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	return lcd->core;
 }
 
 /*

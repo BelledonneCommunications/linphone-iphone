@@ -426,7 +426,7 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_persons(LinphonePresenceModel 
  *
  * The created presence service has the basic status 'closed'.
  */
-LINPHONE_PUBLIC LinphonePresenceService * linphone_presence_service_new(const char *id, LinphonePresenceBasicStatus, const char *contact);
+LINPHONE_PUBLIC LinphonePresenceService * linphone_presence_service_new(const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
 
 /**
  * Gets the id of a presence service.

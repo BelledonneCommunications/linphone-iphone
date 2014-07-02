@@ -122,9 +122,9 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 SalOp *sal_call_get_replaces(SalOp *op){
 	if (op && op->replaces){
 		belle_sip_dialog_t* dialog=belle_sip_provider_find_dialog(op->base.root->prov
-												,belle_sip_header_replaces_get_call_id(op->replaces)
-												,belle_sip_header_replaces_get_from_tag(op->replaces)
-												,belle_sip_header_replaces_get_to_tag(op->replaces));
+								,belle_sip_header_replaces_get_call_id(op->replaces)
+								,belle_sip_header_replaces_get_from_tag(op->replaces)
+								,belle_sip_header_replaces_get_to_tag(op->replaces));
 
 		if (dialog) {
 			return (SalOp*)belle_sip_dialog_get_application_data(dialog);
@@ -208,7 +208,7 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event, bel
 		belle_sip_free(refer_to_uri_str);
 	} else {
 		ms_warning("cannot do anything with the refer without destination\n");
-		resp = sal_op_create_response_from_request(op,req,501);
+		resp = sal_op_create_response_from_request(op,req,400);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 
@@ -233,9 +233,9 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 		if (sipfrag){
 			int code=belle_sip_response_get_status_code(sipfrag);
 			SalReferStatus status=SalReferFailed;
-			if (code==100){
+			if (code<200){
 				status=SalReferTrying;
-			}else if (code==200){
+			}else if (code<300){
 				status=SalReferSuccess;
 			}else if (code>=400){
 				status=SalReferFailed;

@@ -95,10 +95,18 @@ struct _LinphoneCallParams{
 	char *session_name;
 	SalCustomHeader *custom_headers;
 	bool_t has_video;
+	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
 	LinphonePrivacyMask privacy;
+	uint16_t avpf_rr_interval;
+};
+
+struct _LinphoneQualityReporting{
+	reporting_session_report_t * reports[2]; /**Store information on audio and video media streams (RFC 6035) */
+	bool_t was_video_running; /*Keep video state since last check in order to detect its (de)activation*/
+	LinphoneQualityReportingReportSendCb on_report_sent;
 };
 
 struct _LinphoneCallLog{
@@ -117,9 +125,11 @@ struct _LinphoneCallLog{
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 
-	reporting_session_report_t * reports[2]; /**<Quality statistics of the call (rfc6035) */
+	struct _LinphoneQualityReporting reporting;
+
 	bool_t video_enabled;
 };
+
 
 typedef struct _CallCallbackObj
 {
@@ -142,6 +152,7 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageStateChangedCb cb;
 	void* cb_ud;
 	void* message_userdata;
+	char* appdata;
 	char* external_body_url;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
@@ -151,6 +162,8 @@ struct _LinphoneChatMessage {
 	bool_t is_read;
 	unsigned int storage_id;
 	SalOp *op;
+	LinphoneContent *file_transfer_information;
+	char *content_type;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -242,6 +255,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
+void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
@@ -280,24 +294,24 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
-static inline int get_min_bandwidth(int dbw, int ubw){
+static MS2_INLINE int get_min_bandwidth(int dbw, int ubw){
 	if (dbw<=0) return ubw;
 	if (ubw<=0) return dbw;
 	return MIN(dbw,ubw);
 }
 
-static inline bool_t bandwidth_is_greater(int bw1, int bw2){
+static MS2_INLINE bool_t bandwidth_is_greater(int bw1, int bw2){
 	if (bw1<0) return TRUE;
 	else if (bw2<0) return FALSE;
 	else return bw1>=bw2;
 }
 
-static inline int get_remaining_bandwidth_for_video(int total, int audio){
+static MS2_INLINE int get_remaining_bandwidth_for_video(int total, int audio){
 	if (total<=0) return 0;
 	return total-audio-10;
 }
 
-static inline void set_string(char **dest, const char *src){
+static MS2_INLINE void set_string(char **dest, const char *src){
 	if (*dest){
 		ms_free(*dest);
 		*dest=NULL;
@@ -324,7 +338,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt, int maxbw);
 
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_resolve_stun_server(LinphoneCore *lc);
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc);
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
@@ -334,7 +348,6 @@ void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEve
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
-bool_t linphone_core_media_description_has_srtp(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -347,7 +360,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to);
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 
-LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);
+LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
@@ -362,14 +375,13 @@ void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
-void linphone_call_stop_audio_stream(LinphoneCall *call);
-void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
+
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 
@@ -386,6 +398,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
+bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 LinphoneCall * is_a_linphone_call(void *user_pointer);
 LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
@@ -393,6 +406,9 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
 static const int linphone_proxy_config_magic=0x7979;
+LINPHONE_PUBLIC bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
@@ -405,7 +421,7 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	char *reg_route;
-	char *statistics_collector;
+	char *quality_reporting_collector;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
@@ -423,11 +439,19 @@ struct _LinphoneProxyConfig
 	bool_t publish;
 	bool_t dial_escape_plus;
 	bool_t send_publish;
-	bool_t send_statistics;
-	bool_t pad[3];
+	bool_t quality_reporting_enabled;
+	bool_t avpf_enabled;
+	bool_t pad;
+	uint8_t avpf_rr_interval;
+	uint8_t quality_reporting_interval;
 	void* user_data;
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
+	/*use to check if server config has changed  between edit() and done()*/
+	LinphoneAddress *saved_proxy;
+	LinphoneAddress *saved_identity;
+	/*---*/
+
 };
 
 struct _LinphoneAuthInfo
@@ -511,6 +535,7 @@ typedef struct rtp_config
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
 	int disable_upnp;
+	MSCryptoSuite *srtp_suites;
 	bool_t rtp_no_xmit_on_audio_mute;
 							  /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
@@ -692,6 +717,7 @@ struct _LinphoneCore
 	char *chat_db_file;
 #ifdef MSG_STORAGE_ENABLED
 	sqlite3 *db;
+	bool_t debug_storage;
 #endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
@@ -700,6 +726,8 @@ struct _LinphoneCore
 	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
+	char *file_transfer_server;
+	const char **supported_formats;
 };
 
 
@@ -732,6 +760,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
@@ -804,8 +833,10 @@ sqlite3 * linphone_message_storage_init();
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
+void linphone_chat_message_store_appdata(LinphoneChatMessage* msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
+void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
@@ -815,6 +846,7 @@ void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
 void linphone_content_uninit(LinphoneContent * obj);
+void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref);
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
@@ -830,7 +862,6 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
-
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *
@@ -873,11 +904,12 @@ xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context
 char * linphone_timestamp_to_rfc3339_string(time_t timestamp);
 
 
-static inline const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
+static MS2_INLINE const LinphoneErrorInfo *linphone_error_info_from_sal_op(const SalOp *op){
 	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
 
+const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 
 /** Belle Sip-based objects need unique ids
   */

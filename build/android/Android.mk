@@ -160,10 +160,31 @@ LOCAL_CFLAGS += -DHAVE_SILK
 LOCAL_STATIC_LIBRARIES += libmssilk
 endif
 
-ifeq ($(BUILD_WEBRTC_ISAC),1)
-LOCAL_CFLAGS += -DHAVE_ISAC
-LOCAL_STATIC_LIBRARIES += libwebrtc_isacfix_neon
-LOCAL_STATIC_LIBRARIES += libwebrtc_spl libwebrtc_isacfix libmsisac
+ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC),00)
+LOCAL_CFLAGS += -DHAVE_WEBRTC
+LOCAL_STATIC_LIBRARIES += libmswebrtc
+endif
+ifneq ($(BUILD_WEBRTC_AECM),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_aecm \
+	libwebrtc_apm_utility \
+	libwebrtc_spl \
+	libwebrtc_system_wrappers
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_aecm_neon \
+	libwebrtc_spl_neon
+endif
+endif
+ifneq ($(BUILD_WEBRTC_ISAC),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix \
+	libwebrtc_spl
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix_neon \
+	libwebrtc_spl_neon
+endif
 endif
 
 ifeq ($(BUILD_G729),1)

@@ -12,21 +12,22 @@ common_SRC_FILES := \
 	stun_tester.c \
 	flexisip_tester.c \
 	tester.c \
-	remote_provisioning_tester.c
- 
+	remote_provisioning_tester.c \
+	quality_reporting_tester.c
+
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
         $(LOCAL_PATH)/../include \
         $(LOCAL_PATH)/../coreapi \
         $(LOCAL_PATH)/../oRTP/include \
-        $(LOCAL_PATH)/../mediastreamer2/include 
+        $(LOCAL_PATH)/../mediastreamer2/include
 
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := liblinphone_tester 
+LOCAL_MODULE := liblinphone_tester
 LOCAL_MODULE_FILENAME := liblinphone_tester-$(TARGET_ARCH_ABI)
-LOCAL_SRC_FILES += $(common_SRC_FILES) 
+LOCAL_SRC_FILES += $(common_SRC_FILES)
 LOCAL_C_INCLUDES = $(common_C_INCLUDES)
 LOCAL_CFLAGS = -DIN_LINPHONE
 LOCAL_LDLIBS := -llog

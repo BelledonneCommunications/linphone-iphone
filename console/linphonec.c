@@ -551,7 +551,7 @@ char *linphonec_readline(char *prompt){
 				 should. Maybe should we only have this on when the option -V
 				 or -D is on? */
 			MSG msg;
-	
+
 			if (PeekMessage(&msg, NULL, 0, 0,1)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -648,7 +648,7 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.refer_received=linphonec_display_refer;
 	linphonec_vtable.transfer_state_changed=linphonec_transfer_state_changed;
 	linphonec_vtable.call_encryption_changed=linphonec_call_encryption_changed;
-	
+
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
 	linphonec_main_loop (linphonec);
@@ -671,8 +671,8 @@ linphonec_init(int argc, char **argv)
 	 * Set initial values for global variables
 	 */
 	mylogfile = NULL;
-	
-	
+
+
 #ifndef _WIN32
 	snprintf(configfile_name, PATH_MAX, "%s/.linphonerc",
 			getenv("HOME"));
@@ -701,7 +701,6 @@ linphonec_init(int argc, char **argv)
 		default:
 			break;
 	}
-
 #ifdef ENABLE_NLS
 	if (NULL == bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR))
 		perror ("bindtextdomain failed");
@@ -741,10 +740,12 @@ linphonec_init(int argc, char **argv)
 	 * Initialize linphone core
 	 */
 	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
+
+	linphone_core_set_user_agent(linphonec,"Linphonec", LINPHONE_VERSION);
 	linphone_core_set_zrtp_secrets_file(linphonec,zrtpsecrets);
 	linphone_core_enable_video_capture(linphonec, vcap_enabled);
 	linphone_core_enable_video_display(linphonec, display_enabled);
-	if (display_enabled && window_id != 0) 
+	if (display_enabled && window_id != 0)
 	{
 		printf ("Setting window_id: 0x%x\n", window_id);
 		linphone_core_set_native_video_window_id(linphonec,window_id);
@@ -782,7 +783,7 @@ linphonec_finish(int exit_status)
 {
 	// Do not allow concurrent destroying to prevent glibc errors
 	static bool_t terminating=FALSE;
-	if (terminating) return; 
+	if (terminating) return;
 	terminating=TRUE;
 	linphonec_out("Terminating...\n");
 
@@ -829,9 +830,9 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 #endif
 
 	if (reentrancy!=0) return 0;
-	
+
 	reentrancy++;
-	
+
 	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
@@ -1159,7 +1160,6 @@ linphonec_main_loop (LinphoneCore * opm)
 			add_history(iptr);
 		}
 #endif
-
 		linphonec_parse_command_line(linphonec, iptr);
 		linphonec_command_finished();
 		free(input);

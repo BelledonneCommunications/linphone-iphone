@@ -49,6 +49,7 @@
 typedef struct _LpItem{
 	char *key;
 	char *value;
+	int is_comment;
 } LpItem;
 
 typedef struct _LpSectionParam{
@@ -78,6 +79,13 @@ LpItem * lp_item_new(const char *key, const char *value){
 	return item;
 }
 
+LpItem * lp_comment_new(const char *comment){
+	LpItem *item=lp_new0(LpItem,1);
+	item->value=ortp_strdup(comment);
+	item->is_comment=TRUE;
+	return item;
+}
+
 LpSectionParam *lp_section_param_new(const char *key, const char *value){
 	LpSectionParam *param = lp_new0(LpSectionParam, 1);
 	param->key = ortp_strdup(key);
@@ -93,7 +101,7 @@ LpSection *lp_section_new(const char *name){
 
 void lp_item_destroy(void *pitem){
 	LpItem *item=(LpItem*)pitem;
-	ortp_free(item->key);
+	if (item->key) ortp_free(item->key);
 	ortp_free(item->value);
 	free(item);
 }
@@ -138,6 +146,14 @@ static bool_t is_first_char(const char *start, const char *pos){
 	return TRUE;
 }
 
+static int is_a_comment(const char *str){
+	while (*str==' '){
+		str++;
+	}
+	if (*str=='#') return 1;
+	return 0;
+}
+
 LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 	LpSection *sec;
 	MSList *elem;
@@ -170,7 +186,7 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	/*printf("Looking for item %s\n",name);*/
 	for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
 		item=(LpItem*)elem->data;
-		if (strcmp(item->key,name)==0) {
+		if (!item->is_comment && strcmp(item->key,name)==0) {
 			/*printf("Item %s found\n",name);*/
 			return item;
 		}
@@ -182,9 +198,10 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
-	static char secname[MAX_LEN];
-	static char key[MAX_LEN];
-	static char value[MAX_LEN];
+	int size=strlen(line)+1;
+	char *secname=ms_malloc(size);
+	char *key=ms_malloc(size);
+	char *value=ms_malloc(size);
 	LpItem *item;
 
 	pos1=strchr(line,'[');
@@ -230,43 +247,53 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 			}
 		}
 	}else {
-		pos1=strchr(line,'=');
-		if (pos1!=NULL){
-			key[0]='\0';
+		if (is_a_comment(line)){
+			if (cur){
+				LpItem *comment=lp_comment_new(line);
+				lp_section_add_item(cur,comment);
+			}
+		}else{
+			pos1=strchr(line,'=');
+			if (pos1!=NULL){
+				key[0]='\0';
 
-			*pos1='\0';
-			if (sscanf(line,"%s",key)>0){
+				*pos1='\0';
+				if (sscanf(line,"%s",key)>0){
 
-				pos1++;
-				pos2=strchr(pos1,'\r');
-				if (pos2==NULL)
-					pos2=strchr(pos1,'\n');
-				if (pos2==NULL) pos2=pos1+strlen(pos1);
-				else {
-					*pos2='\0'; /*replace the '\n' */
-				}
-				/* remove ending white spaces */
-				for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
+					pos1++;
+					pos2=strchr(pos1,'\r');
+					if (pos2==NULL)
+						pos2=strchr(pos1,'\n');
+					if (pos2==NULL) pos2=pos1+strlen(pos1);
+					else {
+						*pos2='\0'; /*replace the '\n' */
+					}
+					/* remove ending white spaces */
+					for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
 
-				if (pos2-pos1>=0){
-					/* found a pair key,value */
+					if (pos2-pos1>=0){
+						/* found a pair key,value */
 
-					if (cur!=NULL){
-						item=lp_section_find_item(cur,key);
-						if (item==NULL){
-							lp_section_add_item(cur,lp_item_new(key,pos1));
+						if (cur!=NULL){
+							item=lp_section_find_item(cur,key);
+							if (item==NULL){
+								lp_section_add_item(cur,lp_item_new(key,pos1));
+							}else{
+								ortp_free(item->value);
+								item->value=ortp_strdup(pos1);
+							}
+							/*ms_message("Found %s=%s",key,pos1);*/
 						}else{
-							ortp_free(item->value);
-							item->value=ortp_strdup(pos1);
+							ms_warning("found key,item but no sections");
 						}
-						/*ms_message("Found %s=%s",key,pos1);*/
-					}else{
-						ms_warning("found key,item but no sections");
 					}
 				}
 			}
 		}
 	}
+	ms_free(key);
+	ms_free(value);
+	ms_free(secname);
 	return cur;
 }
 
@@ -425,13 +452,16 @@ bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const 
 	}
 }
 
+
 int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 		int ret=0;
+		
 		if (strstr(str,"0x")==str){
 			sscanf(str,"%x",&ret);
-		}else ret=atoi(str);
+		}else 
+			sscanf(str,"%i",&ret);
 		return ret;
 	}
 	else return default_value;
@@ -510,7 +540,10 @@ void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key
 }
 
 void lp_item_write(LpItem *item, FILE *file){
-	fprintf(file,"%s=%s\n",item->key,item->value);
+	if (item->is_comment)
+		fprintf(file,"%s",item->value);
+	else
+		fprintf(file,"%s=%s\n",item->key,item->value);
 }
 
 void lp_section_param_write(LpSectionParam *param, FILE *file){
@@ -566,7 +599,8 @@ void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, voi
 	if (sec!=NULL){
 		for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
 			item=(LpItem*)elem->data;
-			callback(item->key, ctx);
+			if (!item->is_comment)
+				callback(item->key, ctx);
 		}
 	}
 }

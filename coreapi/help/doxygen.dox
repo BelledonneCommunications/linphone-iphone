@@ -61,7 +61,7 @@
  *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, and so on. 
  *<br> A created proxy config using linphone_proxy_config_new(), once configured, must be added to #LinphoneCore using function linphone_core_add_proxy_config().
  *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.  
- *<br> Registration status is reported by #LinphoneRegistrationStateCb.
+ *<br> Registration status is reported by LinphoneCoreRegistrationStateChangedCb.
  *<br>
  *<br> This pseudo code demonstrates basic registration operations:
  *<br> \code
@@ -96,7 +96,7 @@
 }
  \endcode
  *<br><b>Authentication:</b>
- *<br>Most of the time, registration requires \ref authentication "authentication" to succed. #LinphoneAuthInfo info must be either added to #LinphoneCore  using function linphone_core_add_auth_info() before #LinphoneProxyConfig is added to Linphone core, or on demand from call back #AuthInfoRequested .    
+ *<br>Most of the time, registration requires \ref authentication "authentication" to succeed. #LinphoneAuthInfo info must be either added to #LinphoneCore  using function linphone_core_add_auth_info() before #LinphoneProxyConfig is added to Linphone core, or on demand from call back #LinphoneCoreAuthInfoRequestedCb.
  *<br>
  *<br><b>Unregistration:</b>
  *<br> Unregistration or any changes to #LinphoneProxyConfig must be first started by a call to function linphone_proxy_config_edit() and validated by  function linphone_proxy_config_done()
@@ -203,7 +203,7 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
  * While initiating the second call, the first one is automatically paused.
  * Then, once the second call is established, the application has the possibility to merge the two calls to form a conference where each participant
  * (the local participant, the remote destination of the first call, the remote destination of the second call) can talk together.
- * This must be done by adding the two calls to the conference using \link linphone_call_add_to_conference() \endlink
+ * This must be done by adding the two calls to the conference using \link linphone_core_add_to_conference() \endlink
  *
  * Once merged into a conference the LinphoneCall objects representing the calls that were established remain unchanged, except that 
  * they are tagged as part of the conference (see \link linphone_call_is_in_conference() \endlink ). The calls in a conference are in the LinphoneCallStreamsRunning state.
@@ -270,7 +270,7 @@ and register a keep-alive handler for periodically refreshing the registration. 
                                                                  }];
 \endcode
 <li><b>Incoming call notification while in background mode</b>
-<br>Assuming application using liblinphone is well configured for multitasking, incoming calls arriving while liblinphone is in background mode will simply wakeup liblinphone thread but not resume GUI. To wakeup GUI, it is recommended to send a Local Notification to the user from the #LinphoneCallStateCb. Here under a speudo code for this operation:
+<br>Assuming application using liblinphone is well configured for multitasking, incoming calls arriving while liblinphone is in background mode will simply wakeup liblinphone thread but not resume GUI. To wakeup GUI, it is recommended to send a Local Notification to the user from the #LinphoneCoreCallStateChangedCb. Here under a speudo code for this operation:
 \code
 	if ([UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 		// Create a new notification

@@ -1,16 +1,17 @@
 [sip]
-sip_port=5082
-sip_tcp_port=5082
-sip_tls_port=5083
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
 register_only_when_network_is_up=0
+composing_idle_timeout=1
 
 [auth_info_0]
 username=marie
 userid=marie
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 
 [proxy_0]
@@ -21,6 +22,8 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
+quality_reporting_collector=sip:collector@sip.example.org
+quality_reporting_enabled=1
 
 [friend_0]
 url="Paupoche" <sip:pauline@sip.example.org>
@@ -30,7 +33,12 @@ subscribe=0
 
 [rtp]
 audio_rtp_port=8070
-video_rtp_port=8072
+video_rtp_port=9072
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 
 [video]
 display=0

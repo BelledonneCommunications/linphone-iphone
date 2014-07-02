@@ -1772,7 +1772,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="model">model4</property>
                                         <property name="active">0</property>
-                                        <signal name="changed" handler="linphone_gtk_internet_kind_changed" swapped="no"/>
+                                        <!-- <signal name="changed" handler="linphone_gtk_internet_kind_changed" swapped="no"/> -->
                                         <child>
                                           <object class="GtkCellRendererText" id="renderer4"/>
                                           <attributes>

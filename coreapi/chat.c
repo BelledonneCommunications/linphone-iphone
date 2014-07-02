@@ -25,12 +25,151 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
+#include "belle-sip/belle-sip.h"
 
+#include <libxml/parser.h>
 #include <libxml/xmlwriter.h>
 
 #define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
 #define COMPOSING_DEFAULT_REFRESH_TIMEOUT 60
 #define COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT 120
+
+
+static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg);
+#define MULTIPART_BOUNDARY "---------------------------14737809831466499882746641449"
+#define FILEPART_HEADER_1 "Content-Disposition: form-data; name=\"File\"; filename=\""
+#define FILEPART_HEADER_2 "\"\r\n" \
+			"Content-Type: "
+#define FILEPART_HEADER_3 "\r\n\r\n"
+const char *multipart_boundary=MULTIPART_BOUNDARY;
+
+static size_t linphone_chat_message_compute_filepart_header_size(const char *filename, const char *content_type) {
+	return strlen(FILEPART_HEADER_1)+strlen(filename)+strlen(FILEPART_HEADER_2)+strlen(content_type)+strlen(FILEPART_HEADER_3);
+}
+static void process_io_error(void *data, const belle_sip_io_error_event_t *event){
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+}
+static void process_auth_requested(void *data, belle_sip_auth_event_t *event){
+	printf("We have a auth requested!\n");
+}
+
+/**
+ * Callback called during upload or download of a file from server
+ * It is just forwarding the call and some parameters to the vtable defined callback
+ */
+static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total){
+	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+	LinphoneCore *lc = chatMsg->chat_room->lc;
+	/* call back given by application level */
+	if (lc->vtable.file_transfer_progress_indication != NULL) {
+		lc->vtable.file_transfer_progress_indication(lc, chatMsg, chatMsg->file_transfer_information, (size_t)(((double)offset/(double)total)*100.0));
+	}
+	return;
+}
+
+/**
+ * Callback called when posting a file to server (following rcs5.1 recommendation)
+ *
+ * @param	bh		the body handler
+ * @param	msg		the belle sip message
+ * @param	data	the user data associated to the handler, contains the linphoneChatMessage we're working on
+ * @param	offset	current position in the input buffer
+ * @param	buffer	the ouput buffer we to copy the data to be uploaded
+ * @param	size	size in byte of the data requested, as output it will contain the effective copied size
+ *
+ */
+static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size){
+	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+	LinphoneCore *lc = chatMsg->chat_room->lc;
+	char *buf = (char *)buffer;
+
+	char *content_type=belle_sip_strdup_printf("%s/%s", chatMsg->file_transfer_information->type, chatMsg->file_transfer_information->subtype);
+	size_t end_of_file=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
+
+	if (offset==0){
+		int partlen=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type);
+		memcpy(buf,FILEPART_HEADER_1,strlen(FILEPART_HEADER_1));
+		buf += strlen(FILEPART_HEADER_1);
+		memcpy(buf,chatMsg->file_transfer_information->name,strlen(chatMsg->file_transfer_information->name));
+		buf += strlen(chatMsg->file_transfer_information->name);
+		memcpy(buf,FILEPART_HEADER_2,strlen(FILEPART_HEADER_2));
+		buf += strlen(FILEPART_HEADER_2);
+		memcpy(buf,content_type,strlen(content_type));
+		buf += strlen(content_type);
+		memcpy(buf,FILEPART_HEADER_3,strlen(FILEPART_HEADER_3));
+
+		*size=partlen;
+	}else if (offset<end_of_file){
+		/* get data from call back */
+		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
+	}
+
+	belle_sip_free(content_type);
+	return BELLE_SIP_CONTINUE;
+}
+
+/**
+ * Callback function called when we have a response from server during a file upload to server (rcs5.1 recommandation)
+ * Note: The first post is empty and the server shall reply a 204 (No content) message, this will trigger a new post request to the server
+ * to upoad the file. The server response to this second post is processed by this same function
+ *
+ * @param	data	the user define pointer associated with the request, it contains the linphoneChatMessage we're trying to send
+ * @param	event	the response from server
+ */
+static void linphone_chat_message_process_response_from_post_file(void *data, const belle_http_response_event_t *event){
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+
+	/* check the answer code */
+	if (event->response){
+		int code=belle_http_response_get_status_code(event->response);
+		if (code == 204) { /* this is the reply to the first post to the server - an empty message */
+			/* start uploading the file */
+			belle_http_request_listener_callbacks_t cbs={0};
+			belle_http_request_listener_t *l;
+			belle_generic_uri_t *uri;
+			belle_http_request_t *req;
+			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
+
+			/* create a user body handler to take care of the file */
+			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type), NULL, NULL, linphone_chat_message_file_transfer_on_send_body, msg);
+			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
+			belle_sip_multipart_body_handler_t *bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
+
+			char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+
+			belle_sip_free(content_type);
+			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);
+
+			uri=belle_generic_uri_parse(msg->chat_room->lc->file_transfer_server);
+
+			req=belle_http_request_create("POST",
+										  uri,
+										  belle_sip_header_create("User-Agent",ua),
+										  belle_sip_header_create("Content-type",content_type),
+										  NULL);
+			ms_free(ua);
+			belle_sip_free(content_type);
+			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req),BELLE_SIP_BODY_HANDLER(bh));
+			cbs.process_response=linphone_chat_message_process_response_from_post_file;
+			cbs.process_io_error=process_io_error;
+			cbs.process_auth_requested=process_auth_requested;
+			l=belle_http_request_listener_create_from_callbacks(&cbs,msg);
+			belle_http_provider_send_request(msg->chat_room->lc->http_provider,req,l);
+		}
+		if (code == 200 ) { /* file has been uplaoded correctly, get server reply and send it */
+			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
+			msg->message = ms_strdup(body);
+			linphone_content_uninit(msg->file_transfer_information);
+			ms_free(msg->file_transfer_information);
+			msg->file_transfer_information = NULL;
+			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+			_linphone_chat_room_send_message(msg->chat_room, msg);
+		}
+	}
+
+}
+
 
 static void _linphone_chat_message_destroy(LinphoneChatMessage* msg);
 
@@ -75,9 +214,9 @@ bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
 }
 
 /**
- * Returns an array of chat rooms
+ * Returns an list of chat rooms
  * @param lc #LinphoneCore object
- * @return An array of #LinpĥoneChatRoom
+ * @return A list of #LinphoneChatRoom
 **/
 MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
@@ -177,6 +316,30 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	char* content_type;
 	const char *identity=NULL;
 	time_t t=time(NULL);
+	linphone_chat_message_ref(msg);
+	/* Check if we shall upload a file to a server */
+	if (msg->file_transfer_information != NULL) {
+		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
+		belle_http_request_listener_callbacks_t cbs={0};
+		belle_http_request_listener_t *l;
+		belle_generic_uri_t *uri;
+		belle_http_request_t *req;
+
+		uri=belle_generic_uri_parse(cr->lc->file_transfer_server);
+
+		req=belle_http_request_create("POST",
+				uri,
+				NULL,
+				NULL,
+				NULL);
+		cbs.process_response=linphone_chat_message_process_response_from_post_file;
+		cbs.process_io_error=process_io_error;
+		cbs.process_auth_requested=process_auth_requested;
+		l=belle_http_request_listener_create_from_callbacks(&cbs,msg); /* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
+		belle_http_provider_send_request(cr->lc->http_provider,req,l);
+		linphone_chat_message_unref(msg);
+		return;
+	}
 
 	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
 		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
@@ -207,7 +370,11 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		sal_message_send(op,identity,cr->peer,content_type, NULL);
 		ms_free(content_type);
 	} else {
-		sal_text_send(op, identity, cr->peer,msg->message);
+		if (msg->content_type == NULL) {
+			sal_text_send(op, identity, cr->peer,msg->message);
+		} else {
+			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message);
+		}
 	}
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
@@ -221,6 +388,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	}
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
+	linphone_chat_message_unref(msg);
 }
 
 /**
@@ -247,7 +415,7 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 /**
  * Retrieve an existing chat room whose peer is the supplied address, if exists.
  * @param lc the linphone core
- * @param add a linphone address.
+ * @param addr a linphone address.
  * @returns the matching chatroom, or NULL if no such chatroom exists.
 **/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
@@ -280,7 +448,68 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
-	msg = linphone_chat_room_create_message(cr, sal_msg->text);
+	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer bu twe shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
+		xmlChar *file_url = NULL;
+		xmlDocPtr xmlMessageBody;
+		xmlNodePtr cur;
+
+		msg = linphone_chat_room_create_message(cr, NULL); /* create a message with empty body */
+		msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
+		msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+		memset(msg->file_transfer_information, 0, sizeof(*(msg->file_transfer_information)));
+
+		/* parse the message body to get all informations from it */
+		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
+
+		cur = xmlDocGetRootElement(xmlMessageBody);
+		if (cur != NULL) {
+			cur = cur->xmlChildrenNode;
+			while (cur!=NULL) {
+				if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a type="file" attribute */
+					xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+					if(!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
+						cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
+						while (cur!=NULL) {
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
+								xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+								msg->file_transfer_information->size = strtol((const char*)fileSizeString, NULL, 10);
+								xmlFree(fileSizeString);
+							}
+
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
+								msg->file_transfer_information->name = (char *)xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							}
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
+								xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+								int contentTypeIndex = 0;
+								while (contentType[contentTypeIndex]!='/' && contentType[contentTypeIndex]!='\0') {
+									contentTypeIndex++;
+								}
+								msg->file_transfer_information->type = ms_strndup((char *)contentType, contentTypeIndex);
+								msg->file_transfer_information->subtype = ms_strdup(((char *)contentType+contentTypeIndex+1));
+								xmlFree(contentType);
+							}
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
+								file_url = 	xmlGetProp(cur, (const xmlChar *)"url");
+							}
+
+							cur=cur->next;
+						}
+						xmlFree(typeAttribute);
+						break;
+					}
+					xmlFree(typeAttribute);
+				}
+				cur = cur->next;
+			}
+		}
+		xmlFreeDoc(xmlMessageBody);
+
+		linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
+		xmlFree(file_url);
+	} else { /* message is not rcs file transfer, create it with provided sal_msg->text as ->message */
+		msg = linphone_chat_room_create_message(cr, sal_msg->text);
+	}
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
 	{
@@ -299,6 +528,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	if (sal_msg->url) {
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
+
 	linphone_address_destroy(addr);
 	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
@@ -387,8 +617,16 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 
 /**
  * Returns back pointer to LinphoneCore object.
+ * @deprecated use linphone_chat_room_get_core()
 **/
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
+	return cr->lc;
+}
+
+/**
+ * Returns back pointer to LinphoneCore object.
+**/
+LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr){
 	return cr->lc;
 }
 
@@ -426,6 +664,8 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message=message?ms_strdup(message):NULL;
 	msg->is_read=TRUE;
+	msg->content_type = NULL; /* this property is used only when transfering file */
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	return msg;
 }
 
@@ -452,6 +692,8 @@ LinphoneChatMessage* linphone_chat_room_create_message_2(
 	msg->time=time;
 	msg->state=state;
 	msg->is_read=is_read;
+	msg->content_type = NULL; /* this property is used only when transfering file */
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	if (is_incoming) {
 		msg->dir=LinphoneChatMessageIncoming;
 		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
@@ -668,6 +910,120 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,co
 	message->external_body_url=url?ms_strdup(url):NULL;
 }
 
+
+/**
+ * Linphone message has an app-specific field that can store a text. The application might want
+ * to use it for keeping data over restarts, like thumbnail image path.
+ * @param message #LinphoneChatMessage
+ * @return the application-specific data or NULL if none has been stored.
+ */
+const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message){
+	return message->appdata;
+}
+
+/**
+ * Linphone message has an app-specific field that can store a text. The application might want
+ * to use it for keeping data over restarts, like thumbnail image path.
+ *
+ * Invoking this function will attempt to update the message storage to reflect the changeif it is
+ * enabled.
+ *
+ * @param message #LinphoneChatMessage
+ * @param data the data to store into the message
+ */
+void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data){
+	if( message->appdata ){
+		ms_free(message->appdata);
+	}
+	message->appdata = data? ms_strdup(data) : NULL;
+	linphone_chat_message_store_appdata(message);
+}
+
+
+/**
+ * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
+ *
+ * @param message #LinphoneChatMessage
+ * @return a pointer to the LinphoneContent structure or NULL if not present.
+ */
+const LinphoneContent *linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage*message) {
+	return message->file_transfer_information;
+}
+
+static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
+	//printf("Receive %ld bytes\n\n%s\n\n", size, (char *)buffer);
+	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+	LinphoneCore *lc = chatMsg->chat_room->lc;
+	/* call back given by application level */
+	if (lc->vtable.file_transfer_received != NULL) {
+		lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
+	}
+	return;
+
+	/* feed the callback with the received data */
+
+
+}
+
+static void linphone_chat_process_response_headers_from_get_file(void *data, const belle_http_response_event_t *event){
+	if (event->response){
+		/*we are receiving a response, set a specific body handler to acquire the response.
+		 * if not done, belle-sip will create a memory body handler, the default*/
+		LinphoneChatMessage *message=(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
+		belle_sip_message_set_body_handler(
+			(belle_sip_message_t*)event->response,
+			(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(message->file_transfer_information->size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
+		);
+	}
+}
+
+static void linphone_chat_process_response_from_get_file(void *data, const belle_http_response_event_t *event){
+	//LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+
+	/* check the answer code */
+	if (event->response){
+		int code=belle_http_response_get_status_code(event->response);
+		if (code==200) {
+			LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+			LinphoneCore *lc = chatMsg->chat_room->lc;
+			/* file downloaded succesfully, call again the callback with size at zero */
+			if (lc->vtable.file_transfer_received != NULL) {
+				lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
+			}
+		}
+	}
+}
+
+/**
+ * Start the download of the file from remote server
+ *
+ * @param message #LinphoneChatMessage
+ */
+void linphone_chat_message_start_file_download(const LinphoneChatMessage *message) {
+	belle_http_request_listener_callbacks_t cbs={0};
+	belle_http_request_listener_t *l;
+	belle_generic_uri_t *uri;
+	belle_http_request_t *req;
+	const char *url=message->external_body_url;
+	char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+
+	uri=belle_generic_uri_parse(url);
+
+	req=belle_http_request_create("GET",
+				uri,
+				belle_sip_header_create("User-Agent",ua),
+				NULL);
+
+	ms_free(ua);
+
+	cbs.process_response_headers=linphone_chat_process_response_headers_from_get_file;
+	cbs.process_response=linphone_chat_process_response_from_get_file;
+	cbs.process_io_error=process_io_error;
+	cbs.process_auth_requested=process_auth_requested;
+	l=belle_http_request_listener_create_from_callbacks(&cbs, (void *)message);
+	belle_sip_object_data_set(BELLE_SIP_OBJECT(req),"message",(void *)message,NULL);
+	belle_http_provider_send_request(message->chat_room->lc->http_provider,req,l);
+}
 /**
  * Set origin of the message
  *@param message #LinphoneChatMessage obj
@@ -805,6 +1161,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	 };*/
 	LinphoneChatMessage* new_message = linphone_chat_room_create_message(msg->chat_room,msg->message);
 	if (msg->external_body_url) new_message->external_body_url=ms_strdup(msg->external_body_url);
+	if (msg->appdata) new_message->appdata = ms_strdup(msg->appdata);
 	new_message->cb=msg->cb;
 	new_message->cb_ud=msg->cb_ud;
 	new_message->message_userdata=msg->message_userdata;
@@ -831,9 +1188,15 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->op) sal_op_release(msg->op);
 	if (msg->message) ms_free(msg->message);
 	if (msg->external_body_url) ms_free(msg->external_body_url);
+	if (msg->appdata) ms_free(msg->appdata);
 	if (msg->from) linphone_address_destroy(msg->from);
 	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
+	if (msg->content_type) ms_free(msg->content_type);
+	if (msg->file_transfer_information) {
+		linphone_content_uninit(msg->file_transfer_information);
+		ms_free(msg->file_transfer_information);
+	}
 }
 
 
@@ -868,6 +1231,29 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
 	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
 }
 
+
+
+/**
+ * Create a message attached to a dedicated chat room with a particular content. Use #linphone_chat_room_send_message2 to initiate the transfer
+ * @param cr the chat room.
+ * @param a #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if #LinphoneContent.data is NULL.
+ * @return a new #LinphoneChatMessage
+ */
+
+LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content) {
+	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->chat_room=(LinphoneChatRoom*)cr;
+	msg->message = NULL;
+	msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+	memset(msg->file_transfer_information, 0, sizeof(LinphoneContent));
+	linphone_content_copy(msg->file_transfer_information, initial_content);
+	msg->dir=LinphoneChatMessageOutgoing;
+	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
+	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
+	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
+
+	return msg;
+}
 /**
  * @}
  */
