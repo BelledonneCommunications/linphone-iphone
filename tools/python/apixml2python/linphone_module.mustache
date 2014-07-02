@@ -1,0 +1,161 @@
+#include <Python.h>
+#include <linphone/linphonecore.h>
+
+{{#classes}}
+
+typedef struct {
+	PyObject_HEAD
+	{{class_name}} *native_ptr;
+} pylinphone_{{class_name}}Object;
+
+static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
+	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);
+	return (PyObject *)self;
+}
+
+static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
+	self->ob_type->tp_free(self);
+}
+
+{{#class_type_methods}}
+
+static PyObject * pylinphone_{{class_name}}_type_method_{{method_name}}(PyObject *self, PyObject *args) {
+	// TODO: Fill implementation
+	Py_RETURN_NONE;
+}
+
+{{/class_type_methods}}
+
+static PyMethodDef pylinphone_{{class_name}}_type_methods[] = {
+	// TODO: Handle doc
+{{#class_type_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_type_method_{{method_name}}, METH_VARARGS, "" },
+{{/class_type_methods}}
+	{ NULL, NULL, 0, NULL }	/* Sentinel */
+};
+
+{{#class_instance_methods}}
+
+static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyObject *self, PyObject *args) {
+	// TODO: Fill implementation
+	Py_RETURN_NONE;
+}
+
+{{/class_instance_methods}}
+
+static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
+	// TODO: Handle doc
+{{#class_instance_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "" },
+{{/class_instance_methods}}
+	{ NULL, NULL, 0, NULL }	/* Sentinel */
+};
+
+{{#class_properties}}
+
+static PyObject * pylinphone_{{class_name}}_{{getter_name}}(pylinphone_{{class_name}}Object *self, void *closure) {
+	// TODO: Fill implementation
+	Py_RETURN_NONE;
+}
+
+static int pylinphone_{{class_name}}_{{setter_name}}(pylinphone_{{class_name}}Object *self, PyObject *value, void *closure) {
+	// TODO: Fill implementation
+	return 0;
+}
+
+{{/class_properties}}
+
+static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
+	// TODO: Handle doc
+{{#class_properties}}
+	{ "{{property_name}}", (getter)pylinphone_{{class_name}}_{{getter_name}}, (setter)pylinphone_{{class_name}}_{{setter_name}}, "" },
+{{/class_properties}}
+	{ NULL, NULL, NULL, NULL, NULL }	/* Sentinel */
+};
+
+static PyTypeObject pylinphone_{{class_name}}Type = {
+	PyObject_HEAD_INIT(NULL)
+	0,	/* ob_size */
+	"linphone.{{name}}",	/* tp_name */
+	sizeof(pylinphone_{{class_name}}Object),	/* tp_basicsize */
+	0,	/* tp_itemsize */
+	pylinphone_{{class_name}}_dealloc,	/* tp_dealloc */
+	0,	/* tp_print */
+	0,	/* tp_getattr */
+	0,	/* tp_setattr */
+	0,	/* tp_compare */
+	0,	/* tp_repr */
+	0,	/* tp_as_number */
+	0,	/* tp_as_sequence */
+	0,	/* tp_as_mapping */
+	0,	/* tp_hash */
+	0,	/* tp_call */
+	0,	/* tp_str */
+	0,	/* tp_getattro */
+	0,	/* tp_setattro */
+	0,	/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,	/* tp_flags */
+	{{{class_doc}}},	/* tp_doc */
+	0,	/* tp_traverse */
+	0,	/* tp_clear */
+	0,	/* tp_richcompare */
+	0,	/* tp_weaklistoffset */
+	0,	/* tp_iter */
+	0,	/* tp_iternext */
+	pylinphone_{{class_name}}_instance_methods,	/* tp_methods */
+	0,	/* tp_members */
+	pylinphone_{{class_name}}_getseters,	/* tp_getset */
+	0,	/* tp_base */
+	0,	/* tp_dict */
+	0,	/* tp_descr_get */
+	0,	/* tp_descr_set */
+	0,	/* tp_dictoffset */
+	0,	/* tp_init */
+	0,	/* tp_alloc */
+	pylinphone_{{class_name}}_new,	/* tp_new */
+	0,	/* tp_free */
+};
+
+{{/classes}}
+
+static PyMethodDef pylinphone_ModuleMethods[] = {
+	{ NULL, NULL, 0, NULL }	/* Sentinel */
+};
+
+static PyMethodDef pylinphone_NoMethods[] = {
+	{ NULL, NULL, 0, NULL }	/* Sentinel */
+};
+
+PyMODINIT_FUNC initlinphone(void) {
+	PyObject *m;
+	PyObject *menum;
+	PyMethodDef *def;
+
+{{#classes}}
+	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;
+{{/classes}}
+
+	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
+	if (m == NULL) return;
+
+{{#enums}}
+	menum = Py_InitModule3("{{enum_name}}", pylinphone_NoMethods, {{{enum_doc}}});
+	if (menum == NULL) return;
+	if (PyModule_AddObject(m, "{{enum_name}}", menum) < 0) return;
+{{#enum_values}}
+	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_name}}) < 0) return;
+{{/enum_values}}
+{{/enums}}
+
+{{#classes}}
+	Py_INCREF(&pylinphone_{{class_name}}Type);
+	PyModule_AddObject(m, "{{class_name}}", (PyObject *)&pylinphone_{{class_name}}Type);
+	for (def = pylinphone_{{class_name}}_type_methods; def->ml_name != NULL; def++) {
+		PyObject *func = PyCFunction_New(def, NULL);
+		PyObject *method = PyMethod_New(func, NULL, (PyObject *)&pylinphone_{{class_name}}Type);
+		PyDict_SetItemString(pylinphone_{{class_name}}Type.tp_dict, def->ml_name, method);
+		Py_DECREF(method);
+		Py_DECREF(func);
+	}
+{{/classes}}
+}
