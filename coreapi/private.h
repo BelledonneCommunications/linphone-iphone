@@ -591,6 +591,7 @@ typedef struct video_config{
 	struct _MSWebCam *device;
 	const char **cams;
 	MSVideoSize vsize;
+	MSVideoSize preview_vsize; /*is 0,0 if no forced preview size is set, in which case vsize field above is used.*/
 	bool_t capture;
 	bool_t show_local;
 	bool_t display;

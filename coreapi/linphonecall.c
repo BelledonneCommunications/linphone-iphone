@@ -1287,6 +1287,10 @@ void linphone_call_send_vfu_request(LinphoneCall *call)
 
 /**
  * Take a photo of currently received video and write it into a jpeg file.
+ * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
+ * @param call a LinphoneCall
+ * @param file a path where to write the jpeg content.
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 #ifdef VIDEO_ENABLED
@@ -1294,6 +1298,24 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
 	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
+	return -1;
+#endif
+	return -1;
+}
+
+/**
+ * Take a photo of currently captured video and write it into a jpeg file.
+ * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
+ * @param call a LinphoneCall
+ * @param file a path where to write the jpeg content.
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported). 
+**/
+int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file){
+#ifdef VIDEO_ENABLED
+	if (call->videostream!=NULL && call->videostream->local_jpegwriter!=NULL){
+		return ms_filter_call_method(call->videostream->local_jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
+	}
+	ms_warning("Cannot take local snapshot: no currently running video stream on this call.");
 	return -1;
 #endif
 	return -1;
@@ -2147,6 +2169,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			video_stream_enable_adaptive_bitrate_control(call->videostream,
 													  linphone_core_adaptive_rate_control_enabled(lc));
 			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
+			if (lc->video_conf.preview_vsize.width!=0)
+				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (lc->video_window_id!=0)
