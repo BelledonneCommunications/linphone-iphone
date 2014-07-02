@@ -983,6 +983,9 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	char date[64]={0};
 	time_t curtime=time(NULL);
 	struct tm loctime;
+	const char **fmts=linphone_core_get_supported_file_formats(linphone_gtk_get_core());
+	int i;
+	const char *ext="wav";
 
 #ifdef WIN32
 	loctime=*localtime(&curtime);
@@ -991,19 +994,26 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 #endif
 	snprintf(date,sizeof(date)-1,"%i%02i%02i-%02i%02i",loctime.tm_year+1900,loctime.tm_mon+1,loctime.tm_mday, loctime.tm_hour, loctime.tm_min);
 
+	for (i=0;fmts[i]!=NULL;++i){
+		if (strcmp(fmts[i],"mkv")==0){
+			ext="mkv";
+			break;
+		}
+	}
+	
 	if (address){
 		id=linphone_address_get_username(address);
 		if (id==NULL) id=linphone_address_get_domain(address);
 	}
 	if (is_conference){
-		snprintf(filename,sizeof(filename)-1,"%s-conference-%s.wav",
+		snprintf(filename,sizeof(filename)-1,"%s-conference-%s.%s",
 			linphone_gtk_get_ui_config("title","Linphone"),
-			date);
+			date,ext);
 	}else{
-		snprintf(filename,sizeof(filename)-1,"%s-call-%s-%s.wav",
+		snprintf(filename,sizeof(filename)-1,"%s-call-%s-%s.%s",
 			linphone_gtk_get_ui_config("title","Linphone"),
 			date,
-			id);
+			id,ext);
 	}
 	if (!dir) {
 		ms_message ("No directory for music, using [%s] instead",dir=getenv("HOME"));

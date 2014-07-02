@@ -1885,6 +1885,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 	const LinphoneCallParams *params=&call->params;
 
 	*used_pt=-1;
+
 	if (desc->type==SalAudio)
 		bw=get_ideal_audio_bw(call,md,desc);
 	else if (desc->type==SalVideo)
@@ -1911,6 +1912,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 			first=FALSE;
 		}
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
+			ms_message("Payload type [%s/%i] has explicit bitrate [%i] kbit/s", pt->mime_type, pt->clock_rate, pt->normal_bitrate/1000);
 			pt->normal_bitrate=get_min_bandwidth(pt->normal_bitrate,bw*1000);
 		} else pt->normal_bitrate=bw*1000;
 		if (desc->ptime>0){
@@ -2227,11 +2229,15 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		use_arc=FALSE;
 	}
 #endif
+	ms_message("linphone_call_start_media_streams() call=[%p] local upload_bandwidth=[%i] kbit/s; local download_bandwidth=[%i] kbit/s",
+		   call, linphone_core_get_upload_bandwidth(lc),linphone_core_get_download_bandwidth(lc));
+
 	if (call->audiostream!=NULL) {
 		linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
 	}
 	call->current_params.has_video=FALSE;
 	if (call->videostream!=NULL) {
+		if (call->audiostream) audio_stream_link_video(call->audiostream,call->videostream);
 		linphone_call_start_video_stream(call,cname,all_inputs_muted);
 	}
 
@@ -2352,7 +2358,7 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
 	}
 }
 
-void linphone_call_stop_audio_stream(LinphoneCall *call) {
+static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[0]);
@@ -2380,7 +2386,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	}
 }
 
-void linphone_call_stop_video_stream(LinphoneCall *call) {
+static void linphone_call_stop_video_stream(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_VIDEO);
@@ -2404,6 +2410,8 @@ static void unset_rtp_profile(LinphoneCall *call, int i){
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audiostream || call->videostream) {
+		if (call->audiostream && call->videostream)
+			audio_stream_unlink_video(call->audiostream, call->videostream);
 		linphone_call_stop_audio_stream(call);
 		linphone_call_stop_video_stream(call);
 
