@@ -39,6 +39,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/quit.cc \
 			commands/version.cc \
 			commands/contact.cc \
+			commands/config.cc commands/configcommand.h \
 			daemon.h \
 			commands/adaptive-jitter-compensation.h \
 			commands/answer.h \

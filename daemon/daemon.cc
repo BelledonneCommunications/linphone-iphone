@@ -48,6 +48,7 @@
 #include "commands/terminate.h"
 #include "commands/unregister.h"
 #include "commands/quit.h"
+#include "commands/configcommand.h"
 #include "commands/version.h"
 
 #include "private.h"
@@ -447,6 +448,8 @@ void Daemon::initCommands() {
 	mCommands.push_back(new VersionCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
+	mCommands.push_back(new ConfigGetCommand());
+	mCommands.push_back(new ConfigSetCommand());
 }
 
 void Daemon::uninitCommands() {
