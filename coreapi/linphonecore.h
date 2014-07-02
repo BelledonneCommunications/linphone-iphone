@@ -120,7 +120,6 @@ typedef enum _LinphoneTransportType LinphoneTransportType;
  * return NULL.
  *
  * @ingroup linphone_address
- * @var LinphoneAddress
  */
 typedef struct SalAddress LinphoneAddress;
 
@@ -2508,7 +2507,12 @@ LINPHONE_PUBLIC	void linphone_core_init_default_params(LinphoneCore*lc, Linphone
  */
 LINPHONE_PUBLIC	bool_t linphone_core_tunnel_available(void);
 
+/**
+ * Linphone tunnel object.
+ * @ingroup tunnel
+ */
 typedef struct _LinphoneTunnel LinphoneTunnel;
+
 /**
 * get tunnel instance if available
 */
