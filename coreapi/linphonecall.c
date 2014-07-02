@@ -1632,6 +1632,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if (call->audiostream != NULL) return;
 	if (call->sessions[0].rtp_session==NULL){
 		call->audiostream=audiostream=audio_stream_new(call->media_ports[0].rtp_port,call->media_ports[0].rtcp_port,call->af==AF_INET6);
+		rtp_session_set_symmetric_rtp(audiostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 	}else{
 		call->audiostream=audio_stream_new_with_sessions(&call->sessions[0]);
 	}
@@ -1692,6 +1693,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 		if (call->sessions[1].rtp_session==NULL){
 			call->videostream=video_stream_new(call->media_ports[1].rtp_port,call->media_ports[1].rtcp_port, call->af==AF_INET6);
+			rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 		}else{
 			call->videostream=video_stream_new_with_sessions(&call->sessions[1]);
 		}

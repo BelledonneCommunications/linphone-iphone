@@ -1537,3 +1537,8 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	}
 	return core->supported_formats;
 }
+
+bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
+	return lp_config_get_int(lc->config,"rtp","symmetric",1);
+}
+
