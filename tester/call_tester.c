@@ -920,6 +920,7 @@ static void call_paused_resumed(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_obj;
+	const rtp_stats_t * stats;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 	call_obj = linphone_core_get_current_call(pauline->lc);
@@ -928,15 +929,24 @@ static void call_paused_resumed(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+	/*stay in pause a little while in order to generate traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
 	linphone_core_resume_call(pauline->lc,call_obj);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	/*same here: wait a while for a bit of a traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	/*there should be no loss on this call, hence cumulative loss should be 0*/
+	stats = rtp_session_get_stats(call_obj->sessions->rtp_session);
+	CU_ASSERT_EQUAL(stats->cum_packet_loss, 0);
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
