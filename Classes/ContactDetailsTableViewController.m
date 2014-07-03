@@ -533,7 +533,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
     
     NSString *value = @"";
-    NSString *label = @"";
+    // default label is our app name
+    NSString *label = [ContactDetailsTableViewController localizeLabel:[labelArray objectAtIndex:0]];
     
     if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
