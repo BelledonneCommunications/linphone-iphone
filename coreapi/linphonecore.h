@@ -431,6 +431,21 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
  */
 LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
 
+
+/**
+ * Gets the framerate of the video that is sent.
+ * @param[in] cp The call parameters.
+ * @return the actual sent framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp);
+
+/**
+ * Gets the framerate of the video that is received.
+ * @param[in] cp The call paramaters for which to get the received framerate.
+ * @return the actual received framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp);
+
 /**
  * Gets the RTP profile being used.
  * @param[in] cp #LinphoneCallParams object
@@ -2232,7 +2247,8 @@ LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVi
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
-
+LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);
+LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 

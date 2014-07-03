@@ -1035,6 +1035,8 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	if (vstream != NULL) {
 		call->current_params.sent_vsize = video_stream_get_sent_video_size(vstream);
 		call->current_params.recv_vsize = video_stream_get_received_video_size(vstream);
+		call->current_params.sent_fps = video_stream_get_sent_framerate(vstream);
+		call->current_params.received_fps = video_stream_get_received_framerate(vstream);
 	}
 #endif
 
@@ -1356,6 +1358,24 @@ MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *c
 
 MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp) {
 	return cp->recv_vsize;
+}
+
+/**
+ * Gets the framerate of the video that is sent.
+ * @param[in] cp The call parameters.
+ * @return the actual sent framerate in frames per seconds, 0 if not available.
+ */
+float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp){
+	return cp->sent_fps;
+}
+
+/**
+ * Gets the framerate of the video that is received.
+ * @param[in] cp The call paramaters for which to get the received framerate.
+ * @return the actual received framerate in frames per seconds, 0 if not available.
+ */
+float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp){
+	return cp->received_fps;
 }
 
 const char * linphone_call_params_get_rtp_profile(const LinphoneCallParams *cp) {
@@ -2171,6 +2191,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
+			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (lc->video_window_id!=0)

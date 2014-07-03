@@ -1000,6 +1000,8 @@ static void video_config_read(LinphoneCore *lc){
 	
 	linphone_core_set_preview_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","preview_size",NULL));
+	
+	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
 #ifdef VIDEO_ENABLED
 #if defined(ANDROID) || defined(__ios)
@@ -4802,6 +4804,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);
 			if (lc->preview_window_id!=0)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
+			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
 		}
 	}else{
@@ -5404,6 +5407,30 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){
 	return lc->video_conf.vsize;
 }
+
+/**
+ * Set the preferred frame rate for video.
+ * Based on the available bandwidth constraints and network conditions, the video encoder
+ * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
+ * used during a call. Default value is 0, which means "use encoder's default fps value".
+ * @ingroup media_parameters
+ * @param lc the LinphoneCore
+ * @param fps the target frame rate in number of frames per seconds.
+**/
+void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
+	lc->video_conf.fps=fps;
+	if (linphone_core_ready(lc))
+		lp_config_set_float(lc->config,"video","framerate",fps);
+}
+/**
+ * Returns the preferred video framerate, previously set by linphone_core_set_preferred_framerate().
+ * @param lc the linphone core
+ * @return frame rate in number of frames per seconds.
+**/
+float linphone_core_get_preferred_framerate(LinphoneCore *lc){
+	return lc->video_conf.fps;
+}
+
 
 /**
  * Ask the core to stream audio from and to files, instead of using the soundcard.
