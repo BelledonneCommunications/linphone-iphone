@@ -859,7 +859,29 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
     [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
 }
 
-#pragma mark - Message composition start 
+#pragma mark - FileTransfer functions
+
+static void linphone_iphone_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
+    id <LinphoneChatContentTransferDelegate> delegate = (id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Transfer of %s, incoming data (%d bytes)", content->name, size];
+    [delegate onDataReceived:message forContent:content buffer:buff withSize:size];
+}
+
+static void linphone_iphone_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
+    id <LinphoneChatContentTransferDelegate> delegate = (id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Transfer of %s, requesting data (%d bytes)", content->name, *size];
+    [delegate onDataRequested:message forContent:content buffer:buff withSize:size];
+}
+
+static void linphone_iphone_file_transfer_progress(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress){
+    id <LinphoneChatContentTransferDelegate> delegate = (id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Progress of transfer %s: %d%%", content->name, progress];
+    [delegate onProgressReport:message forContent:content percent:progress];
+}
+
+
+
+#pragma mark - Message composition start
 
 - (void)onMessageComposeReceived:(LinphoneCore*)core forRoom:(LinphoneChatRoom*)room {
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextComposeEvent
@@ -1022,7 +1044,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 
-#pragma mark - 
+#pragma mark - VTable
 
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
@@ -1041,8 +1063,14 @@ static LinphoneCoreVTable linphonec_vtable = {
     .transfer_state_changed=linphone_iphone_transfer_state_changed,
     .is_composing_received = linphone_iphone_is_composing_received,
     .configuring_status = linphone_iphone_configuring_status_changed,
-    .global_state_changed = linphone_iphone_global_state_changed
+    .global_state_changed = linphone_iphone_global_state_changed,
+    .file_transfer_received = linphone_iphone_file_transfer_recv,
+    .file_transfer_send = linphone_iphone_file_transfer_send,
+    .file_transfer_progress_indication = linphone_iphone_file_transfer_progress
+
 };
+
+#pragma mark -
 
 //scheduling loop
 - (void)iterate {
@@ -1110,6 +1138,12 @@ static LinphoneCoreVTable linphonec_vtable = {
     }
 
     [self setupNetworkReachabilityCallback];
+
+    NSString *urlString = [self lpConfigStringForKey:@"sharing_server_preference"];
+    if( urlString ){
+        linphone_core_set_file_transfer_server(theLinphoneCore, [urlString UTF8String]);
+    }
+
 
     NSString* path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
     if (path) {

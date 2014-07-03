@@ -92,7 +92,7 @@
 
 
 - (void)uploadImageTo:(NSURL*)url image:(UIImage*)image {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"downloading [%@]", [url absoluteString]];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"uploading to [%@]", [url absoluteString]];
 	
 	// setting up the request object now
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];

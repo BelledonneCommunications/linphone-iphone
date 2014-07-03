@@ -26,7 +26,12 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "Utils.h"
 
-@implementation ChatRoomViewController
+@implementation ChatRoomViewController {
+    /* Message transfer transient storage */
+    /* TODO: use this for data retrieval */
+    NSData* image;
+    size_t offset_sent;
+}
 
 @synthesize tableController;
 @synthesize sendButton;
@@ -62,6 +67,9 @@
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
                                 [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
         self->composingVisible = TRUE;
+
+        self->image = nil;
+        self->offset_sent = 0;
     }
     return self;
 }
@@ -625,8 +633,26 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url{
     if(imageSharing == nil) {
-        NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"];
-        imageSharing = [ImageSharing newImageSharingUpload:[NSURL URLWithString:urlString] image:image delegate:self userInfo:url];
+        NSData* jpegData = UIImageJPEGRepresentation(image, 1.0);
+        LinphoneContent content = {};
+        content.type = "image";
+        content.subtype = "jpeg";
+        content.name = ms_strdup([[NSString stringWithFormat:@"%i-%f.jpg", [image hash],[NSDate timeIntervalSinceReferenceDate]] UTF8String]);
+        content.data = (void*)[jpegData bytes];
+        content.size = [jpegData length];
+
+        LinphoneChatMessage* message = linphone_chat_room_create_file_transfer_message(chatRoom, &content);
+        linphone_chat_message_set_user_data(message, self);
+
+        if ( url ) {
+            // internal url is saved in the appdata for display and later save
+            [LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:message];
+        }
+
+        linphone_chat_room_send_message2(chatRoom, message, message_status, self);
+
+        [tableController addChatEntry:linphone_chat_message_ref(message)];
+        [tableController scrollToBottom:true];
         [messageView setHidden:TRUE];
         [transferView setHidden:FALSE];
         return TRUE;
@@ -729,6 +755,19 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [self chooseImageQuality:image url:url];
 }
 
+#pragma mark - LinphoneChatContentTransferDelegate
+
+- (void)onProgressReport:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content percent:(int)percent {
+    [imageTransferProgressBar setProgress:percent];
+}
+
+- (void)onDataRequested:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(char *)buffer withSize:(size_t *)size {
+    // TODO
+}
+
+- (void)onDataReceived:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(const char *)buffer withSize:(size_t)size {
+    // TODO
+}
 
 #pragma mark - Keyboard Event Functions
 

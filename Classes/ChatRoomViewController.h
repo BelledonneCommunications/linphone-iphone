@@ -29,7 +29,7 @@
 
 #include "linphone/linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate, LinphoneChatContentTransferDelegate> {
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
