@@ -387,6 +387,11 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		run_test_suite(test_suite[i]);
 	}
 
+#if !HAVE_CU_GET_SUITE
+	if( suite_name ){
+		ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
+	}
+#else
 	if (suite_name){
 		CU_pSuite suite;
 		CU_basic_set_mode(CU_BRM_VERBOSE);
@@ -409,7 +414,9 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		} else {
 			CU_basic_run_suite(suite);
 		}
-	} else
+	}
+	else
+#endif
 	{
 #if HAVE_CU_CURSES
 		if (curses) {
