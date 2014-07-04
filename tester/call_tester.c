@@ -125,7 +125,8 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	CU_ASSERT_PTR_NOT_NULL(c2);
 
 	if (!c1 || !c2) return;
-
+	linphone_call_ref(c1);
+	linphone_call_ref(c2);
 	for (i=0; i<24 /*=12s need at least one exchange of SR to maybe 10s*/; i++) {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
 				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
@@ -145,7 +146,8 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
 		CU_ASSERT_TRUE(linphone_call_get_video_stats(c2)->round_trip_delay>0.0);
 	}
-
+	linphone_call_unref(c1);
+	linphone_call_unref(c2);
 }
 
 bool_t call_with_params(LinphoneCoreManager* caller_mgr
@@ -723,6 +725,10 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 
 	CU_ASSERT_PTR_NOT_NULL(c1);
 	CU_ASSERT_PTR_NOT_NULL(c2);
+	if (!c1 || !c2) return FALSE;
+	linphone_call_ref(c1);
+	linphone_call_ref(c2);
+
 	CU_ASSERT_EQUAL(linphone_call_params_video_enabled(linphone_call_get_current_params(c1)),linphone_call_params_video_enabled(linphone_call_get_current_params(c2)));
 	video_enabled=linphone_call_params_video_enabled(linphone_call_get_current_params(c1));
 	for (i=0;i<200;i++){
@@ -762,7 +768,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 		const LinphoneCallParams* call_param = linphone_call_get_current_params(c2);
 		CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee->lc));
 	}
-
+	linphone_call_unref(c1);
+	linphone_call_unref(c2);
 	return video_enabled ? audio_success && video_success : audio_success;
 }
 
@@ -999,8 +1006,8 @@ static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee)
 	stats initial_caller_stat=caller->stat;
 	stats initial_callee_stat=callee->stat;
 
-	if (linphone_call_get_state(linphone_core_get_current_call(callee->lc)) != LinphoneCallStreamsRunning
-			|| linphone_call_get_state(linphone_core_get_current_call(caller->lc)) != LinphoneCallStreamsRunning ) {
+	if (!linphone_core_get_current_call(callee->lc) || linphone_call_get_state(linphone_core_get_current_call(callee->lc)) != LinphoneCallStreamsRunning
+			|| !linphone_core_get_current_call(caller->lc) || linphone_call_get_state(linphone_core_get_current_call(caller->lc)) != LinphoneCallStreamsRunning ) {
 		ms_warning("bad state for adding video");
 		return FALSE;
 	}
