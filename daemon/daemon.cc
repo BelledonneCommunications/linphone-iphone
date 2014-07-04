@@ -720,11 +720,15 @@ void Daemon::startThread() {
 	ms_thread_create(&this->mThread, NULL, Daemon::iterateThread, this);
 }
 
-char *Daemon::readLine(const char *prompt) {
+char *Daemon::readLine(const char *prompt, bool *eof) {
+	*eof=false;
 #ifdef HAVE_READLINE
 	return readline(prompt);
 #else
-	if (cin.eof()) return NULL;
+	if (cin.eof()) {
+		*eof=true;
+		return NULL;
+	}
 	cout << prompt;
 	char *buff = (char *) malloc(sLineSize);
 	cin.getline(buff, sLineSize);
@@ -738,8 +742,9 @@ int Daemon::run() {
 	mRunning = true;
 	startThread();
 	while (mRunning) {
+		bool eof=false;
 		if (mServerFd == -1) {
-			ret = readLine(line);
+			ret = readLine(line,&eof);
 			if (ret && ret[0] != '\0') {
 #ifdef HAVE_READLINE
 				add_history(ret);
@@ -754,7 +759,7 @@ int Daemon::run() {
 		if (mServerFd == -1 && ret != NULL) {
 			free(ret);
 		}
-		if (!ret && mRunning) {
+		if (eof && mRunning) {
 			mRunning = false; // ctrl+d
 			cout << "Quitting..." << endl;
 		}
@@ -838,27 +843,27 @@ int main(int argc, char *argv[]) {
 			return 0;
 		} else if (strcmp(argv[i], "--pipe") == 0) {
 			if (i + 1 >= argc) {
-				fprintf(stderr, "no pipe name specify after --pipe");
+				fprintf(stderr, "no pipe name specify after --pipe\n");
 				return -1;
 			}
 			pipe_name = argv[++i];
 		} else if (strcmp(argv[i], "--factory-config") == 0) {
 			if (i + 1 >= argc) {
-				fprintf(stderr, "no file specify after --factory-config");
+				fprintf(stderr, "no file specify after --factory-config\n");
 				return -1;
 			}
 			factory_config_path = argv[i + 1];
 			i++;
 		} else if (strcmp(argv[i], "--config") == 0) {
 			if (i + 1 >= argc) {
-				fprintf(stderr, "no file specify after  --config");
+				fprintf(stderr, "no file specify after --config\n");
 				return -1;
 			}
 			config_path = argv[i + 1];
 			i++;
 		} else if (strcmp(argv[i], "--log") == 0) {
 			if (i + 1 >= argc) {
-				fprintf(stderr, "no file specify after --log");
+				fprintf(stderr, "no file specify after --log\n");
 				return -1;
 			}
 			log_file = argv[i + 1];

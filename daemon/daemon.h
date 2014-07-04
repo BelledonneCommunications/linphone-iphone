@@ -223,7 +223,7 @@ private:
 	void callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats);
 	void dtmfReceived(LinphoneCall *call, int dtmf);
 	void execCommand(const char *cl);
-	char *readLine(const char *);
+	char *readLine(const char *, bool*);
 	char *readPipe(char *buffer, int buflen);
 	void iterate();
 	void iterateStreamStats();
