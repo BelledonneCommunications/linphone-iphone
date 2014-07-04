@@ -87,6 +87,7 @@ struct _LinphoneCallParams{
 	PayloadType *video_codec; /*video codec currently in use */
 	MSVideoSize sent_vsize; /* Size of the video currently being sent */
 	MSVideoSize recv_vsize; /* Size of the video currently being received */
+	float received_fps,sent_fps;
 	int down_bw;
 	int up_bw;
 	int down_ptime;
@@ -591,6 +592,8 @@ typedef struct video_config{
 	struct _MSWebCam *device;
 	const char **cams;
 	MSVideoSize vsize;
+	MSVideoSize preview_vsize; /*is 0,0 if no forced preview size is set, in which case vsize field above is used.*/
+	float fps;
 	bool_t capture;
 	bool_t show_local;
 	bool_t display;

@@ -997,6 +997,11 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","size","cif"));
+	
+	linphone_core_set_preview_video_size_by_name(lc,
+		lp_config_get_string(lc->config,"video","preview_size",NULL));
+	
+	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
 #ifdef VIDEO_ENABLED
 #if defined(ANDROID) || defined(__ios)
@@ -4792,12 +4797,14 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 	if (val){
 		if (lc->previewstream==NULL){
 			const char *display_filter=linphone_core_get_video_display_filter(lc);
+			MSVideoSize vsize=lc->video_conf.preview_vsize.width!=0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
 			lc->previewstream=video_preview_new();
-			video_preview_set_size(lc->previewstream,lc->video_conf.vsize);
+			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);
 			if (lc->preview_window_id!=0)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
+			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
 		}
 	}else{
@@ -5284,6 +5291,7 @@ const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
 static MSVideoSize video_size_get_by_name(const char *name){
 	MSVideoSizeDef *pdef=supported_resolutions;
 	MSVideoSize null_vsize={0,0};
+	if (!name) return null_vsize;
 	for(;pdef->name!=NULL;pdef++){
 		if (strcasecmp(name,pdef->name)==0){
 			return pdef->vsize;
@@ -5309,6 +5317,13 @@ static bool_t video_size_supported(MSVideoSize vsize){
 	return FALSE;
 }
 
+static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoSize vsize){
+	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
+		toggle_video_preview(lc,FALSE);
+		toggle_video_preview(lc,TRUE);
+	}
+}
+
 /**
  * Sets the preferred video size.
  *
@@ -5318,15 +5333,55 @@ static bool_t video_size_supported(MSVideoSize vsize){
 **/
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
-		MSVideoSize oldvsize=lc->video_conf.vsize;
+		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
+		if (oldvsize.width==0){
+			oldvsize=lc->video_conf.vsize;
+			update_preview_size(lc,oldvsize,vsize);
+		}
 		lc->video_conf.vsize=vsize;
+		if (linphone_core_ready(lc))
+			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
+	}
+}
+
+/**
+ * Sets the video size for the captured (preview) video.
+ * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
+ * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
+ * Using this feature increases the CPU consumption, since a rescaling will be done internally.
+ * @ingroup media_parameters
+ * @param lc the linphone core
+ * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
+**/
+void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
+	if (vsize.width==0 && vsize.height==0){
+		/*special case to reset the forced preview size mode*/
+		lc->video_conf.preview_vsize=vsize;
+		if (linphone_core_ready(lc))
+			lp_config_set_string(lc->config,"video","preview_size",NULL);
+		return;
+	}
+	if (video_size_supported(vsize)){
+		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
+		lc->video_conf.preview_vsize=vsize;
 		if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
 			toggle_video_preview(lc,FALSE);
 			toggle_video_preview(lc,TRUE);
 		}
-		if ( linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
+		if (linphone_core_ready(lc))
+			lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
 	}
+}
+
+/**
+ * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
+ *
+ * @ingroup media_parameters
+ * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
+**/
+void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name){
+	MSVideoSize vsize=video_size_get_by_name(name);
+	linphone_core_set_preview_video_size(lc,vsize);
 }
 
 /**
@@ -5352,6 +5407,30 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){
 	return lc->video_conf.vsize;
 }
+
+/**
+ * Set the preferred frame rate for video.
+ * Based on the available bandwidth constraints and network conditions, the video encoder
+ * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
+ * used during a call. Default value is 0, which means "use encoder's default fps value".
+ * @ingroup media_parameters
+ * @param lc the LinphoneCore
+ * @param fps the target frame rate in number of frames per seconds.
+**/
+void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
+	lc->video_conf.fps=fps;
+	if (linphone_core_ready(lc))
+		lp_config_set_float(lc->config,"video","framerate",fps);
+}
+/**
+ * Returns the preferred video framerate, previously set by linphone_core_set_preferred_framerate().
+ * @param lc the linphone core
+ * @return frame rate in number of frames per seconds.
+**/
+float linphone_core_get_preferred_framerate(LinphoneCore *lc){
+	return lc->video_conf.fps;
+}
+
 
 /**
  * Ask the core to stream audio from and to files, instead of using the soundcard.

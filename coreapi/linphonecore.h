@@ -431,6 +431,21 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
  */
 LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
 
+
+/**
+ * Gets the framerate of the video that is sent.
+ * @param[in] cp The call parameters.
+ * @return the actual sent framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp);
+
+/**
+ * Gets the framerate of the video that is received.
+ * @param[in] cp The call paramaters for which to get the received framerate.
+ * @return the actual received framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp);
+
 /**
  * Gets the RTP profile being used.
  * @param[in] cp #LinphoneCallParams object
@@ -689,6 +704,7 @@ LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_remote_params(Linph
 LINPHONE_PUBLIC void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
+LINPHONE_PUBLIC int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
@@ -2227,9 +2243,12 @@ typedef struct MSVideoSizeDef{
 /* returns a zero terminated table of MSVideoSizeDef*/
 LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
-
+LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);
+LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 
