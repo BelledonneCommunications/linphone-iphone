@@ -343,6 +343,7 @@
 #pragma mark - Animation Functions
 
 - (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {
+    if( [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]){
     CABasicAnimation *blink = [CABasicAnimation animationWithKeyPath:@"opacity"];
     blink.duration = 1.0;
     blink.fromValue = [NSNumber numberWithDouble:0.0f];
@@ -351,6 +352,9 @@
     blink.autoreverses = TRUE;
     blink.repeatCount = HUGE_VALF;
     [target.layer addAnimation:blink forKey:animationID];
+    } else {
+        [target setAlpha:1.0f];
+    }
 }
 
 - (BOOL)isBlinkAnimationRunning:(NSString *)animationID target:(UIView *)target {
@@ -358,7 +362,9 @@
 }
 
 - (void)stopBlinkAnimation:(NSString *)animationID target:(UIView *)target {
+    if( [self isBlinkAnimationRunning:animationID target:target] ){
     [target.layer removeAnimationForKey:animationID];
+    }
     [target setAlpha:0.0f];
 }
 
