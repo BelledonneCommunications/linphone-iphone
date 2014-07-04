@@ -110,9 +110,9 @@ static UIFont *CELL_FONT = nil;
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
         return;
     }
-    const char*url       = linphone_chat_message_get_external_body_url(chat);
-    const char*text      = linphone_chat_message_get_text(chat);
-    BOOL is_external     = url && (strstr(url, "http") == url);
+    const char*      url = linphone_chat_message_get_external_body_url(chat);
+    const char*     text = linphone_chat_message_get_text(chat);
+    BOOL     is_external = url && (strstr(url, "http") == url);
     NSString* localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
 
 
@@ -151,14 +151,18 @@ static UIFont *CELL_FONT = nil;
     } else {
         // simple text message
         [messageText setHidden:FALSE];
-        /* We need to use an attributed string here so that data detector don't mess
-         * with the text style. See http://stackoverflow.com/a/20669356 */
-        NSAttributedString* attr_text = [[NSAttributedString alloc]
-                                         initWithString:[NSString stringWithUTF8String:text]
-                                         attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
-                                                      NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
-        messageText.attributedText = attr_text;
-        [attr_text release];
+        if (text ){
+            /* We need to use an attributed string here so that data detector don't mess
+             * with the text style. See http://stackoverflow.com/a/20669356 */
+            NSAttributedString* attr_text = [[NSAttributedString alloc]
+                                             initWithString:[NSString stringWithUTF8String:text]
+                                             attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
+                                                          NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
+            messageText.attributedText = attr_text;
+            [attr_text release];
+        } else {
+            messageText.text = @"";
+        }
 
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
