@@ -926,28 +926,38 @@ static void call_with_custom_headers(void) {
 static void call_paused_resumed(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* call_obj;
+	LinphoneCall* call_pauline;
 	const rtp_stats_t * stats;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
-	call_obj = linphone_core_get_current_call(pauline->lc);
+	call_pauline = linphone_core_get_current_call(pauline->lc);
 
-	linphone_core_pause_call(pauline->lc,call_obj);
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+
+	int exp_cum = - rtp_session_get_rcv_ext_seq_number(call_pauline->audiostream->ms.sessions.rtp_session);
+
+	linphone_core_pause_call(pauline->lc,call_pauline);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+
+	exp_cum += rtp_session_get_seq_number(linphone_core_get_current_call(marie->lc)->audiostream->ms.sessions.rtp_session);
+
 	/*stay in pause a little while in order to generate traffic*/
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
-	linphone_core_resume_call(pauline->lc,call_obj);
+	linphone_core_resume_call(pauline->lc,call_pauline);
+
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-	/*same here: wait a while for a bit of a traffic*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
-	/*there should be no loss on this call, hence cumulative loss should be 0*/
-	stats = rtp_session_get_stats(call_obj->sessions->rtp_session);
-	CU_ASSERT_EQUAL(stats->cum_packet_loss, 0);
+	/*there should be a bit of packets loss for the ones sent by PAUSED (pauline) between the latest RTCP SR report received
+	by PAUSER (marie) because PAUSER will drop any packets received after the pause. Keep a tolerance of 1 more packet lost
+	in case of ...*/
+	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+	CU_ASSERT_TRUE(abs(stats->cum_packet_loss - exp_cum)<=1);
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
