@@ -218,7 +218,7 @@ LINPHONE_PUBLIC const char *linphone_error_info_get_details(const LinphoneErrorI
 LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
 
 /* linphone dictionary */
-LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new();
+LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new(void);
 LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
 LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
 void linphone_dictionary_unref(LinphoneDictionary* obj);
@@ -1980,7 +1980,7 @@ LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *l
  *
  * @return true if uPnP is available otherwise return false.
  */
-LINPHONE_PUBLIC bool_t linphone_core_upnp_available();
+LINPHONE_PUBLIC bool_t linphone_core_upnp_available(void);
 
 /**
  * @ingroup network_parameters
