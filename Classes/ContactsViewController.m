@@ -153,6 +153,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         CGRect subViewFrame= self.view.frame;
         // let the toolBar be visible
         subViewFrame.origin.y += self.toolBar.frame.size.height;
+        subViewFrame.size.height -= self.toolBar.frame.size.height;
 
         self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
         self.tableView = [[[UITableView alloc] init] autorelease];
