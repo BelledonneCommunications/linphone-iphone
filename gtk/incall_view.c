@@ -256,10 +256,11 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	const LinphoneCallStats *vs=linphone_call_get_video_stats(call);
 	const char *audio_media_connectivity = _("Direct or through server");
 	const char *video_media_connectivity = _("Direct or through server");
-	gboolean has_video=linphone_call_params_video_enabled(linphone_call_get_current_params(call));
-	MSVideoSize size_received = linphone_call_params_get_received_video_size(linphone_call_get_current_params(call));
-	MSVideoSize size_sent = linphone_call_params_get_sent_video_size(linphone_call_get_current_params(call));
-	const char *rtp_profile = linphone_call_params_get_rtp_profile(linphone_call_get_current_params(call));
+	const LinphoneCallParams *curparams=linphone_call_get_current_params(call);
+	gboolean has_video=linphone_call_params_video_enabled(curparams);
+	MSVideoSize size_received = linphone_call_params_get_received_video_size(curparams);
+	MSVideoSize size_sent = linphone_call_params_get_sent_video_size(curparams);
+	const char *rtp_profile = linphone_call_params_get_rtp_profile(curparams);
 	gchar *tmp = g_strdup_printf("%s", rtp_profile);
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"rtp_profile")),tmp);
 	g_free(tmp);
@@ -268,8 +269,10 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
 	g_free(tmp);
 	if (has_video){
-		gchar *size_r=g_strdup_printf(_("%ix%i"),size_received.width,size_received.height);
-		gchar *size_s=g_strdup_printf(_("%ix%i"),size_sent.width,size_sent.height);
+		gchar *size_r=g_strdup_printf(_("%ix%i @ %f fps"),size_received.width,size_received.height, 
+					      linphone_call_params_get_received_framerate(curparams));
+		gchar *size_s=g_strdup_printf(_("%ix%i @ %f fps"),size_sent.width,size_sent.height,
+			linphone_call_params_get_sent_framerate(curparams));
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_recv")),size_r);
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_size_sent")),size_s);
 

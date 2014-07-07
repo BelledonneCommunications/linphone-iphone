@@ -203,7 +203,7 @@ endif
 ifeq ($(BUILD_OPENH264),1)
 LOCAL_STATIC_LIBRARIES += \
 	libmsopenh264 \
-	libwels
+	libopenh264
 endif
 endif
 

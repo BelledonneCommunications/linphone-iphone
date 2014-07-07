@@ -170,12 +170,14 @@ make_gitversion_h:
 			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
 		elif test "$(GITREVISION)" != "" ; then \
 			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
+		else \
+			$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
 		fi ; \
 	else \
 		$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
 	fi
-	if test ! -f $(srcdir)/$(GITVERSION_FILE) ; then \
-		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
+	if ! test -f $(srcdir)/$(GITVERSION_FILE) ; then \
+		cp -f $(srcdir)/$(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
 	fi
 	if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
 		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
