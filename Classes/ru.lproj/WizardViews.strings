@@ -1,0 +1,186 @@
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Иконка помощника настройки"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Иконка помощника настройки";
+
+/* Class = "IBUILabel"; text = "Этот помощник поможет Вам настроить учётную запись SIP чтобы Вы могли совершать звонки."; ObjectID = "22"; */
+"22.text" = "Этот помощник поможет Вам настроить учётную запись SIP чтобы Вы могли совершать звонки.";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Создать учётную запись на linphone.org"; ObjectID = "36"; */
+"36.accessibilityLabel" = "Создать учётную запись на linphone.org";
+
+/* Class = "IBUIButton"; normalTitle = "Создать аккаунт на linphone.org"; ObjectID = "36"; */
+"36.normalTitle" = "Создать аккаунт на linphone.org";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Войти на linphone.org"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Войти на linphone.org";
+
+/* Class = "IBUIButton"; normalTitle = "Войти на linphone.org"; ObjectID = "38"; */
+"38.normalTitle" = "Войти на linphone.org";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Войти на SIP сервер"; ObjectID = "39"; */
+"39.accessibilityLabel" = "Войти на SIP сервер";
+
+/* Class = "IBUIButton"; normalTitle = "Войти на SIP сервер"; ObjectID = "39"; */
+"39.normalTitle" = "Войти на SIP сервер";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Введите имя пользователя, пароль и сервер SIP."; ObjectID = "58"; */
+"58.accessibilityLabel" = "Введите имя пользователя, пароль и сервер SIP.";
+
+/* Class = "IBUILabel"; text = "Введите имя пользователя, пароль и сервер SIP."; ObjectID = "58"; */
+"58.text" = "Введите имя пользователя, пароль и сервер SIP.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Имя пользователя"; ObjectID = "59"; */
+"59.accessibilityLabel" = "Имя пользователя";
+
+/* Class = "IBUITextField"; placeholder = "Имя пользователя"; ObjectID = "59"; */
+"59.placeholder" = "Имя пользователя";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Пароль"; ObjectID = "60"; */
+"60.accessibilityLabel" = "Пароль";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "60"; */
+"60.placeholder" = "Пароль";
+
+/* Class = "IBUITextField"; accessibilityLabel = "сервер SIP"; ObjectID = "61"; */
+"61.accessibilityLabel" = "сервер SIP";
+
+/* Class = "IBUITextField"; placeholder = "сервер SIP"; ObjectID = "61"; */
+"61.placeholder" = "сервер SIP";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Войти"; ObjectID = "62"; */
+"62.accessibilityLabel" = "Войти";
+
+/* Class = "IBUIButton"; normalTitle = "Войти"; ObjectID = "62"; */
+"62.normalTitle" = "Войти";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Войти"; ObjectID = "64"; */
+"64.accessibilityLabel" = "Войти";
+
+/* Class = "IBUIButton"; normalTitle = "Войти"; ObjectID = "64"; */
+"64.normalTitle" = "Войти";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Пароль"; ObjectID = "66"; */
+"66.accessibilityLabel" = "Пароль";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "66"; */
+"66.placeholder" = "Пароль";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Введите имя пользователя и пароль Вашей учётной записи на linphone.org."; ObjectID = "67"; */
+"67.accessibilityLabel" = "Введите имя пользователя и пароль Вашей учётной записи на linphone.org.";
+
+/* Class = "IBUILabel"; text = "Введите имя пользователя и пароль Вашей учётной записи на linphone.org."; ObjectID = "67"; */
+"67.text" = "Введите имя пользователя и пароль Вашей учётной записи на linphone.org.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Имя пользователя"; ObjectID = "68"; */
+"68.accessibilityLabel" = "Имя пользователя";
+
+/* Class = "IBUITextField"; placeholder = "Имя пользователя"; ObjectID = "68"; */
+"68.placeholder" = "Имя пользователя";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Введите имя пользователя пароль и адрес электронной почты."; ObjectID = "73"; */
+"73.accessibilityLabel" = "Введите имя пользователя пароль и адрес электронной почты.";
+
+/* Class = "IBUILabel"; text = "Введите имя пользователя пароль и адрес электронной почты."; ObjectID = "73"; */
+"73.text" = "Введите имя пользователя пароль и адрес электронной почты.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Имя пользователя"; ObjectID = "74"; */
+"74.accessibilityLabel" = "Имя пользователя";
+
+/* Class = "IBUITextField"; placeholder = "Имя пользователя"; ObjectID = "74"; */
+"74.placeholder" = "Имя пользователя";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Пароль"; ObjectID = "75"; */
+"75.accessibilityLabel" = "Пароль";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "75"; */
+"75.placeholder" = "Пароль";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Повторите пароль"; ObjectID = "76"; */
+"76.accessibilityLabel" = "Повторите пароль";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "76"; */
+"76.placeholder" = "Пароль";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Создать"; ObjectID = "77"; */
+"77.accessibilityLabel" = "Создать";
+
+/* Class = "IBUIButton"; normalTitle = "Создать"; ObjectID = "77"; */
+"77.normalTitle" = "Создать";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Электронная почта"; ObjectID = "79"; */
+"79.accessibilityLabel" = "Электронная почта";
+
+/* Class = "IBUITextField"; placeholder = "Электронная почта"; ObjectID = "79"; */
+"79.placeholder" = "Электронная почта";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Проверить валидацию"; ObjectID = "103"; */
+"103.accessibilityLabel" = "Проверить валидацию";
+
+/* Class = "IBUIButton"; normalTitle = "Проверить"; ObjectID = "103"; */
+"103.normalTitle" = "Проверить";
+
+/* Class = "IBUITextField"; placeholder = "Имя пользователя"; ObjectID = "104"; */
+"104.placeholder" = "Имя пользователя";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Ваша учётная запись создана. Пожалуйста проверьте Вашу почту чтобы подтвердить Ваши данные."; ObjectID = "105"; */
+"105.accessibilityLabel" = "Ваша учётная запись создана. Пожалуйста проверьте Вашу почту чтобы подтвердить Ваши данные.";
+
+/* Class = "IBUILabel"; text = "Ваша учётная запись создана. Пожалуйста проверьте Вашу почту чтобы подтвердить Ваши данные."; ObjectID = "105"; */
+"105.text" = "Ваша учётная запись создана. Пожалуйста проверьте Вашу почту чтобы подтвердить Ваши данные.";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "106"; */
+"106.placeholder" = "Пароль";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "117"; */
+"117.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "117"; */
+"117.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "122"; */
+"122.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "122"; */
+"122.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "123"; */
+"123.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "123"; */
+"123.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "124"; */
+"124.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "124"; */
+"124.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "126"; */
+"126.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "126"; */
+"126.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Помощник настройки учётной записи"; ObjectID = "127"; */
+"127.accessibilityLabel" = "Помощник настройки учётной записи";
+
+/* Class = "IBUILabel"; text = "Помощник настройки учётной записи"; ObjectID = "127"; */
+"127.text" = "Помощник настройки учётной записи";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Иконка помощника настройки"; ObjectID = "128"; */
+"128.accessibilityLabel" = "Иконка помощника настройки";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.accessibilityLabel" = "Sign in SIP account";
+
+/* Class = "IBUIButton"; normalTitle = "Remote Provisioning"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.normalTitle" = "Remote Provisioning";
+
+/* Class = "IBUILabel"; text = "remote provisioning details"; ObjectID = "W9Y-Z9-Rmz"; */
+"W9Y-Z9-Rmz.text" = "remote provisioning details";
+
+/* Class = "IBUILabel"; text = "These parameters were retrieve from the remote provisioning profile at this address: %@"; ObjectID = "bBb-47-pCq"; */
+"bBb-47-pCq.text" = "These parameters were retrieve from the remote provisioning profile at this address: %@";
+
+/* Class = "IBUILabel"; text = "Invalid character:"; ObjectID = "uHm-NE-GLV"; */
+"uHm-NE-GLV.text" = "Invalid character:";

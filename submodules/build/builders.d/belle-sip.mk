@@ -27,7 +27,7 @@ $(BUILDER_BUILD_DIR)/$(belle-sip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(belle-sip_d
 	mkdir -p $(BUILDER_BUILD_DIR)/$(belle-sip_dir)
 	cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure --prefix=$(prefix) --host=$(host) ${library_mode} --enable-tls --with-polarssl=$(prefix)
+	$(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure --prefix=$(prefix) --host=$(host) ${library_mode} --enable-tls --enable-tunnel --with-polarssl=$(prefix)
 
 build-belle-sip: $(BUILDER_BUILD_DIR)/$(belle-sip_dir)/Makefile
 	cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install

@@ -31,9 +31,9 @@
 [submodule "submodules/externals/libvpx"]
 	path = submodules/externals/libvpx
 	url = http://git.chromium.org/webm/libvpx.git
-[submodule "submodules/externals/zrtpcpp"]
-	path = submodules/externals/zrtpcpp
-	url = git://git.linphone.org/zrtpcpp.git
+[submodule "submodules/bzrtp"]
+	path = submodules/bzrtp
+	url =  git://git.linphone.org/bzrtp.git 
 [submodule "submodules/mssilk"]
 	path = submodules/mssilk
 	url = git://git.linphone.org/mssilk.git
@@ -54,7 +54,19 @@
 	url = git://git.linphone.org/polarssl.git
 [submodule "submodules/externals/opus"]
 	path = submodules/externals/opus
-	url = git://git.opus-codec.org/opus.git
+	url = http://git.opus-codec.org/opus.git
 [submodule "submodules/externals/libxml2"]
 	path = submodules/externals/libxml2
 	url = git://git.gnome.org/libxml2
+[submodule "submodules/cunit"]
+	path = submodules/cunit
+	url = git://git.linphone.org/cunit.git
+[submodule "submodules/externals/openh264"]
+	path = submodules/externals/openh264
+	url = https://github.com/cisco/openh264
+[submodule "submodules/msopenh264"]
+	path = submodules/msopenh264
+	url = git://git.linphone.org/msopenh264.git
+[submodule "submodules/mswebrtc"]
+	path = submodules/mswebrtc
+	url = git://git.linphone.org/mswebrtc.git

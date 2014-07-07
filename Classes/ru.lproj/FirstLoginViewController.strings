@@ -1,0 +1,18 @@
+
+/* Class = "IBUITextField"; accessibilityLabel = "Имя пользователя"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Имя пользователя";
+
+/* Class = "IBUITextField"; placeholder = "Имя пользователя"; ObjectID = "6"; */
+"6.placeholder" = "Имя пользователя";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Пароль"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Пароль";
+
+/* Class = "IBUITextField"; placeholder = "Пароль"; ObjectID = "8"; */
+"8.placeholder" = "Пароль";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Войти"; ObjectID = "64"; */
+"64.accessibilityLabel" = "Войти";
+
+/* Class = "IBUIButton"; normalTitle = "Войти"; ObjectID = "64"; */
+"64.normalTitle" = "Войти";

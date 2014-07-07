@@ -36,7 +36,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     addressBookMap  = [[OrderedDictionary alloc] init];
     avatarMap = [[NSMutableDictionary alloc] init];
     
-    addressBook = ABAddressBookCreate();
+    addressBook = ABAddressBookCreateWithOptions(nil, nil);
 	
     ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
@@ -111,12 +111,14 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     }
                     CFRelease(lDict);
                 }
+                CFRelease(lMap);
             }
             if ((add == false) && [ContactSelection getEmailFilter]) {
                 ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonEmailProperty);
                 if (ABMultiValueGetCount(lMap) > 0) {
                     add = true;
                 }
+                CFRelease(lMap);
             }
             if(add) {
                 CFStringRef lFirstName = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonFirstNameProperty);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
+
+	<section name="proxy_default_values">
+		<entry name="reg_proxy" overwrite="true"></entry>
+		<entry name="reg_route" overwrite="true"></entry>
+		<entry name="reg_identity" overwrite="true"></entry>
+		<entry name="reg_expires" overwrite="true">3600</entry>
+		<entry name="reg_sendregister" overwrite="true">1</entry>
+		<entry name="publish" overwrite="true">0</entry>
+		<entry name="dial_escape_plus" overwrite="true">0</entry>
+	</section>
+
+	<section name="wizard">
+		<entry name="service_url" overwrite="true"></entry>
+	</section>
+
+	<section name="app">
+		<entry name="pushnotification_preference" overwrite="true">0</entry>
+		<entry name="sharing_server_preference" overwrite="true"></entry>
+		<entry name="ice_preference" overwrite="true">1</entry>
+		<entry name="stun_preference" overwrite="true">stun.linphone.org</entry>
+		<entry name="random_port_preference" overwrite="true">1</entry>
+	</section>
+
+	<section name="net">
+		<entry name="firewall_policy" overwrite="true">none</entry>
+		<entry name="stun_server" overwrite="true"></entry>
+	</section>
+
+	<section name="sip">
+		<entry name="sip_port" overwrite="true">-1</entry>
+		<entry name="sip_tcp_port" overwrite="true">-1</entry>
+		<entry name="sip_tls_port" overwrite="true">-1</entry>
+	</section>
+
+</config>

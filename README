@@ -12,7 +12,7 @@ Make sure that /opt/local/bin (macport tools) arrives first in your PATH env var
 
 Once xcode and macports are installed, open a terminal and install the required build-time tools with:
 
-	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen ImageMagick optipng antlr3
+	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm nasm grep doxygen ImageMagick optipng antlr3
 
 
 Install gas-preprosessor.pl version above Jully 2013  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
@@ -27,9 +27,6 @@ Link macport libtoolize to glibtoolize
 
 Link host's strings to simulator SDK 
 
-	For Xcode prior to 4.3:
-	$ sudo ln -s  /usr/bin/strings /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
-	For newer XCode:
 	$ sudo ln -s  /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
 
 
@@ -54,11 +51,11 @@ BUILDING THE SDK
 
 xcode prior to 4.5:
 	$ make -f Makefile.xcode4.4
+
  * ZRTP support
 
- You can enable ZRTP support in GPL mode only, by adding "enable_zrtp=yes" to the make command, for example:
- 	$ make all enable_gpl_third_parties=yes enable_zrtp=yes
-	
+ You can disable adding "enable_zrtp=no" to the make command, for example:
+ 	$ make all enable_zrtp=no
 
 The resulting sdk is in liblinphone-sdk/ directory.
 
@@ -74,16 +71,9 @@ After the SDK is built, just open the linphone xcode project with Xcode, and pre
 
  * Note regarding third party components subject to license
  
-The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and  X264 codecs.
-Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_X264 positioned in xcode project.
+The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
+Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in xcode project.
 Before embeding these 4 codecs in the final application, make sure to have the right to do so.
-
-TRANSLATER THE APPLICATION
-**************************
-
-You have to download the application Localization Suite(http://www.loc-suite.org/)
-Each modification in a xib have to be scanned and synchronized
-
 
 LIMITATIONS, KNOWN BUGS
 ***********************

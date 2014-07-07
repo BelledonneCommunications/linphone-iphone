@@ -21,11 +21,12 @@
 
 #import "UICallCell.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @interface InCallTableViewController : UITableViewController {
     @private
     NSTimer *updateTime;
+    BOOL minimized;
 }
 
 - (void)minimizeAll;

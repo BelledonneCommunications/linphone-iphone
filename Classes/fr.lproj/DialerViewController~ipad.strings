@@ -1,0 +1,63 @@
+
+/* Class = "IBUITextField"; accessibilityLabel = "Entrez une addresse"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Entrez une addresse";
+
+/* Class = "IBUITextField"; placeholder = "Entrez une addresse SIP ou un numéro de téléphone..."; ObjectID = "6"; */
+"6.placeholder" = "Entrez une addresse SIP ou un numéro de téléphone...";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Étoile"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Étoile";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "9"; */
+"9.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "10"; */
+"10.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Dièse"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Dièse";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "12"; */
+"12.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "13"; */
+"13.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "14"; */
+"14.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "15"; */
+"15.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "16"; */
+"16.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "17"; */
+"17.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "18"; */
+"18.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "19"; */
+"19.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Transférer l'appel"; ObjectID = "20"; */
+"20.accessibilityLabel" = "Transférer l'appel";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Appeler"; ObjectID = "21"; */
+"21.accessibilityLabel" = "Appeler";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Retour"; ObjectID = "22"; */
+"22.accessibilityLabel" = "Retour";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Ajouter un appel"; ObjectID = "23"; */
+"23.accessibilityLabel" = "Ajouter un appel";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Ajouter au contact"; ObjectID = "24"; */
+"24.accessibilityLabel" = "Ajouter au contact";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Effacer"; ObjectID = "25"; */
+"25.accessibilityLabel" = "Effacer";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Changer de camera"; ObjectID = "71"; */
+"71.accessibilityLabel" = "Changer de camera";

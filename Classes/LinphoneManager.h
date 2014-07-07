@@ -32,13 +32,15 @@
 #import "FastAddressBook.h"
 #import "Utils.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
+#include "linphone/linphone_tunnel.h"
 
 extern const char *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneTextComposeEvent;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
@@ -46,6 +48,8 @@ extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
+extern NSString *const kLinphoneConfiguringStateUpdate;
+extern NSString *const kLinphoneGlobalStateUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -56,11 +60,20 @@ typedef enum _NetworkType {
     network_wifi
 } NetworkType;
 
+typedef enum _TunnelMode {
+    tunnel_off = 0,
+    tunnel_on,
+    tunnel_wwan,
+    tunnel_auto
+} TunnelMode;
+
 typedef enum _Connectivity {
 	wifi,
 	wwan,
     none
 } Connectivity;
+
+extern const int kLinphoneAudioVbrCodecDefaultBitrate;
 
 /* Application specific call context */
 typedef struct _CallContext {
@@ -79,15 +92,17 @@ struct NetworkReachabilityContext {
     UILocalNotification *notification;
     NSMutableDictionary *userInfos;
 	bool_t videoRequested; /*set when user has requested for video*/
+    NSTimer* timer;
 };
 @end
 
 typedef struct _LinphoneManagerSounds {
     SystemSoundID call;
     SystemSoundID message;
+    SystemSoundID vibrate;
 } LinphoneManagerSounds;
 
-@interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
+@interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
     
@@ -95,11 +110,10 @@ typedef struct _LinphoneManagerSounds {
 	NSTimer* mIterateTimer;
     NSMutableArray*  pendindCallIdFromRemoteNotif;
 	Connectivity connectivity;
-    BOOL stopWaitingRegisters;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
 	CTCallCenter* mCallCenter;
-    
+    NSDate *mLastKeepAliveDate;
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -115,8 +129,10 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)isCodecSupported: (const char*)codecName;
 + (NSSet *)unsupportedCodecs;
 + (NSString *)getUserAgent;
++ (int)unreadMessageCount;
 
 
+- (void)resetLinphoneCore;
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
 - (BOOL)resignActive;
@@ -126,7 +142,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
-- (void)waitForRegisterToArrive;
+- (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
+
 
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
@@ -135,12 +152,18 @@ typedef struct _LinphoneManagerSounds {
 
 - (bool)allowSpeaker;
 
+- (void)configureVbrCodecs;
+
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
 
 - (void)acceptCall:(LinphoneCall *)call;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
+
+
++(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
++(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
 - (NSString*)lpConfigStringForKey:(NSString*)key;
@@ -155,7 +178,7 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)lpConfigBoolForKey:(NSString*)key;
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
-
+- (void)silentPushFailed:(NSTimer*)timer;
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
@@ -170,8 +193,12 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
+@property (nonatomic, assign) TunnelMode tunnelMode;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
+@property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
+@property (readonly) BOOL wasRemoteProvisioned;
+@property (readonly) LpConfig *configDb;
 
 @end
 

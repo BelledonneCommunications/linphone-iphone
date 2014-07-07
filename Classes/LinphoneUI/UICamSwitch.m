@@ -28,17 +28,6 @@
 
 - (id)initUICamSwitch {
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-	currentCamId = (char*)linphone_core_get_video_device([LinphoneManager getLc]);
-	if ([LinphoneManager instance].frontCamId !=nil ) {
-		//ok, we have 2 cameras
-		if (strcmp(currentCamId,[LinphoneManager instance].frontCamId)==0) {
-			nextCamId = [LinphoneManager instance].backCamId;
-		} else {
-			nextCamId = [LinphoneManager instance].frontCamId;
-		}
-	} else {
-		nextCamId=currentCamId;
-	}
 	return self;
 }
 
@@ -81,15 +70,26 @@
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot tigger camswitch button: Linphone core not ready"];
         return;
     }
-	if (nextCamId != currentCamId) {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Switching from [%s] to [%s]", currentCamId, nextCamId];
-		linphone_core_set_video_device([LinphoneManager getLc], nextCamId);
-		nextCamId = currentCamId;
-		currentCamId = linphone_core_get_video_device([LinphoneManager getLc]);
-        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	const char *currentCamId = (char*)linphone_core_get_video_device([LinphoneManager getLc]);
+	const char **cameras=linphone_core_get_video_devices([LinphoneManager getLc]);
+	const char *newCamId=NULL;
+	int i;
+	
+	for (i=0;cameras[i]!=NULL;++i){
+		if (strcmp(cameras[i],"StaticImage: Static picture")==0) continue;
+		if (strcmp(cameras[i],currentCamId)!=0){
+			newCamId=cameras[i];
+			break;
+		}
+	}
+	if (newCamId){
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Switching from [%s] to [%s]", currentCamId, newCamId];
+		linphone_core_set_video_device([LinphoneManager getLc], newCamId);
+		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
         if(call != NULL) {
             linphone_core_update_call([LinphoneManager getLc], call, NULL);
         }
+		
 	}
 }
 

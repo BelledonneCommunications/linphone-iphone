@@ -21,7 +21,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "Utils.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation UIBluetoothButton
 #define check_auresult(au,method) \

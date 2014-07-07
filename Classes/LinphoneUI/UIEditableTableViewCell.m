@@ -31,10 +31,11 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.detailTextField = [[UITextField alloc] init];
-        [self.detailTextField setHidden:TRUE];
-        [self.detailTextField setClearButtonMode: UITextFieldViewModeWhileEditing];
-        [self.detailTextField setContentVerticalAlignment: UIControlContentVerticalAlignmentCenter];
+        UITextField* tf = [[UITextField alloc] init];
+        [tf setHidden:TRUE];
+        [tf setClearButtonMode: UITextFieldViewModeWhileEditing];
+        [tf setContentVerticalAlignment: UIControlContentVerticalAlignmentCenter];
+        self.detailTextField = tf;
 
         UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:[UIFont systemFontSize]];
         [self.detailTextLabel setFont:font];
@@ -42,16 +43,22 @@
         [self.contentView addSubview:detailTextField];
 
         // a vertical separator that will come between the text and detailed text
-        self.verticalSep = [[UIView alloc] initWithFrame:CGRectMake(80, 5, 1, 34)];
-        verticalSep.backgroundColor = [UIColor lightGrayColor];
-        [self.verticalSep setHidden:TRUE];
+        UIView* v = [[UIView alloc] initWithFrame:CGRectMake(80, 5, 1, 34)];
+        [v setBackgroundColor:[UIColor lightGrayColor]];
+        [v setHidden:TRUE];
+
+        self.verticalSep = v;
+
         [self.contentView addSubview:verticalSep];
+        
+        [tf release];
+        [v release];
     }
     return self;
 }
 
 - (void)dealloc {
-    [self.detailTextField release];
+    self.detailTextField = nil;
     [super dealloc];
 }
 

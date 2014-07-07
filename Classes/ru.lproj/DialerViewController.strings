@@ -1,0 +1,60 @@
+
+/* Class = "IBUITextField"; accessibilityLabel = "Введите адрес"; ObjectID = "4"; */
+"4.accessibilityLabel" = "Введите адрес";
+
+/* Class = "IBUITextField"; placeholder = "Введите адрес SIP или номер телефона ..."; ObjectID = "4"; */
+"4.placeholder" = "Введите адрес SIP или номер телефона ...";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "29"; */
+"29.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "30"; */
+"30.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "31"; */
+"31.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "33"; */
+"33.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "34"; */
+"34.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "35"; */
+"35.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "36"; */
+"36.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "37"; */
+"37.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "38"; */
+"38.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Звёздочка"; ObjectID = "39"; */
+"39.accessibilityLabel" = "Звёздочка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "40"; */
+"40.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Решётка"; ObjectID = "41"; */
+"41.accessibilityLabel" = "Решётка";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Назад"; ObjectID = "183"; */
+"183.accessibilityLabel" = "Назад";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить звонок"; ObjectID = "184"; */
+"184.accessibilityLabel" = "Добавить звонок";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Стереть"; ObjectID = "185"; */
+"185.accessibilityLabel" = "Стереть";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Добавить контакт"; ObjectID = "222"; */
+"222.accessibilityLabel" = "Добавить контакт";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Позвонить"; ObjectID = "224"; */
+"224.accessibilityLabel" = "Позвонить";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Перевести звонок"; ObjectID = "236"; */
+"236.accessibilityLabel" = "Перевести звонок";

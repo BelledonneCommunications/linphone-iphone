@@ -135,7 +135,6 @@
 - (void)dealloc {
     [scrollView release];
     [backButton release];
-    [image release];
     
     [super dealloc];
 }

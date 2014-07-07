@@ -29,10 +29,10 @@
 @synthesize address;
 @synthesize image;
 
-- (id)init:(LinphoneCall*) acall {
+- (id)init:(LinphoneCall*)acall minimized:(BOOL)minimized{
     self = [super init];
     if(self != nil) {
-        self->minimize = false;
+        self->minimize = minimized;
         self->view = UICallCellOtherView_Avatar;
         self->call = acall;
         image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
@@ -121,14 +121,13 @@
 
 @synthesize videoStatsView;
 
-@synthesize videoCodecLabel;
-@synthesize videoCodecHeaderLabel;
-@synthesize videoUploadBandwidthLabel;
-@synthesize videoUploadBandwidthHeaderLabel;
-@synthesize videoDownloadBandwidthLabel;
-@synthesize videoDownloadBandwidthHeaderLabel;
-@synthesize videoIceConnectivityLabel;
-@synthesize videoIceConnectivityHeaderLabel;
+@synthesize videoCodecLabel, videoCodecHeaderLabel;
+@synthesize videoUploadBandwidthLabel, videoUploadBandwidthHeaderLabel;
+@synthesize videoDownloadBandwidthLabel, videoDownloadBandwidthHeaderLabel;
+@synthesize videoIceConnectivityLabel, videoIceConnectivityHeaderLabel;
+
+@synthesize videoRecvSizeHeaderLabel, videoRecvSizeLabel;
+@synthesize videoSentSizeHeaderLabel, videoSentSizeLabel;
 
 @synthesize otherView;
 
@@ -148,7 +147,7 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            [self addSubview:[arrayOfViews objectAtIndex:0]];
         }
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
@@ -233,7 +232,11 @@
     
     [detailsLeftSwipeGestureRecognizer release];
     [detailsRightSwipeGestureRecognizer release];
-    
+
+    [videoSentSizeHeaderLabel release];
+    [videoSentSizeLabel release];
+    [videoRecvSizeHeaderLabel release];
+    [videoRecvSizeLabel release];
     [super dealloc];
 }
 
@@ -340,6 +343,7 @@
 #pragma mark - Animation Functions
 
 - (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {
+    if( [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]){
     CABasicAnimation *blink = [CABasicAnimation animationWithKeyPath:@"opacity"];
     blink.duration = 1.0;
     blink.fromValue = [NSNumber numberWithDouble:0.0f];
@@ -348,6 +352,9 @@
     blink.autoreverses = TRUE;
     blink.repeatCount = HUGE_VALF;
     [target.layer addAnimation:blink forKey:animationID];
+    } else {
+        [target setAlpha:1.0f];
+    }
 }
 
 - (BOOL)isBlinkAnimationRunning:(NSString *)animationID target:(UIView *)target {
@@ -355,7 +362,9 @@
 }
 
 - (void)stopBlinkAnimation:(NSString *)animationID target:(UIView *)target {
+    if( [self isBlinkAnimationRunning:animationID target:target] ){
     [target.layer removeAnimationForKey:animationID];
+    }
     [target setAlpha:0.0f];
 }
 
@@ -460,14 +469,23 @@
         }
         
         const LinphoneCallStats *stats = linphone_call_get_video_stats(call);
+
+        MSVideoSize sentSize = linphone_call_params_get_sent_video_size(params);
+        MSVideoSize recvSize = linphone_call_params_get_received_video_size(params);
+
         if(stats != NULL) {
             [videoUploadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->upload_bandwidth]];
             [videoDownloadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->download_bandwidth]];
             [videoIceConnectivityLabel setText:[UICallCell iceToString:stats->ice_state]];
+            [videoSentSizeLabel setText:[NSString stringWithFormat:@"%dx%d",sentSize.width, sentSize.height]];
+            [videoRecvSizeLabel setText:[NSString stringWithFormat:@"%dx%d",recvSize.width, recvSize.height]];
         } else {
             [videoUploadBandwidthLabel setText:@""];
             [videoDownloadBandwidthLabel setText:@""];
             [videoIceConnectivityLabel setText:@""];
+            [videoSentSizeLabel setText:@"0x0"];
+            [videoRecvSizeLabel setText:@"0x0"];
+
         }
     }
 }
@@ -501,7 +519,7 @@
     if(parentTable != nil) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
-            [parentTable reloadRowsAtIndexPaths:[[NSArray alloc] initWithObjects:index, nil] withRowAnimation:false];
+            [parentTable reloadRowsAtIndexPaths:[[[NSArray alloc] initWithObjects:index, nil] autorelease] withRowAnimation:false];
         }
     }
 }

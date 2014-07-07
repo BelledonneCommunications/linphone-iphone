@@ -1,5 +1,4 @@
 [sip]
-sip_random_port=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 keepalive_period=30000
 default_proxy=0
@@ -26,6 +25,10 @@ upload_bw=512
 rotation_preference=auto
 animations_preference=1
 edge_opt_preference=0
+use_system_contacts=0
+start_at_boot_preference=1
+backgroundmode_preference=1
+autoanswer_notif_preference=1
 
 [default_values]
 reg_expires=600

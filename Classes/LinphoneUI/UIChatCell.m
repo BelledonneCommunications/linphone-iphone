@@ -31,7 +31,6 @@
 @synthesize unreadMessageLabel;
 @synthesize unreadMessageView;
 
-@synthesize chat;
 
 #pragma mark - Lifecycle Functions
 
@@ -42,7 +41,8 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            
+            [self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
         }
         [chatContentLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     }
@@ -56,24 +56,15 @@
     [deleteButton release];
     [unreadMessageLabel release];
     [unreadMessageView release];
-    
-    [chat release];
-    
+
     [super dealloc];
 }
 
 
 #pragma mark - Property Funcitons
 
-- (void)setChat:(ChatModel *)achat {
-    if(chat == achat)
-        return;
-    if(chat != nil) {
-        [chat release];
-    }
-    if(achat) {
-        chat = [achat retain];
-    }
+- (void)setChatRoom:(LinphoneChatRoom *)achat {
+    self->chatRoom = achat;
     [self update];
 }
 
@@ -83,11 +74,12 @@
 - (void)update {
 	NSString *displayName = nil;
     UIImage *image = nil;
-    if(chat == nil) {
+    if(chatRoom == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat cell: null chat"];
         return;
     }
-    LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [[chat remoteContact] UTF8String]);
+    const LinphoneAddress* linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
+
 	if (linphoneAddress == NULL)
 		return;
 	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
@@ -111,28 +103,39 @@
         image = [UIImage imageNamed:@"avatar_unknown_small.png"];
     }
     [avatarImage setImage:image];
-    
-    // Message
-    if([chat isExternalImage] || [chat isInternalImage]) {
-        [chatContentLabel setText:@""];
+
+    MSList* last_message_list         = linphone_chat_room_get_history(chatRoom, 1);
+    LinphoneChatMessage* last_message = last_message_list? last_message_list->data : NULL;
+
+    if( last_message ){
+
+        const char* text                  = linphone_chat_message_get_text(last_message);
+        const char*  url                  = linphone_chat_message_get_external_body_url(last_message);
+        // Message
+        if(url) {
+            [chatContentLabel setText:@""];
+        } else if (text) {
+            NSString *message = [NSString stringWithUTF8String:text];
+            // shorten long messages
+            if([message length] > 50)
+                message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
+
+            [chatContentLabel setText:message];
+        }
+
+        int count = linphone_chat_room_get_unread_messages_count(chatRoom);
+        if(count > 0) {
+            [unreadMessageView setHidden:FALSE];
+            [unreadMessageLabel setText:[NSString stringWithFormat:@"%i", count]];
+        } else {
+            [unreadMessageView setHidden:TRUE];
+        }
     } else {
-        NSString *message = [chat message];
-        // shorten long messages
-        if([message length] > 50)
-            message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
-        
-        [chatContentLabel setText:message];
-    }
-    
-    int count = [ChatModel unreadMessages:[chat remoteContact]];
-    if(count > 0) {
-        [unreadMessageView setHidden:FALSE];
-        [unreadMessageLabel setText:[NSString stringWithFormat:@"%i", count]];
-    } else {
+        chatContentLabel.text = nil;
         [unreadMessageView setHidden:TRUE];
     }
-    
-    linphone_address_destroy(linphoneAddress);
+
+    ms_list_free(last_message_list);
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -158,7 +161,7 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDeleteClick: (id) event {
-    if(chat != NULL) {
+    if(chatRoom != NULL) {
         UIView *view = [self superview]; 
         // Find TableViewCell
         while( view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];

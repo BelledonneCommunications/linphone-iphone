@@ -30,7 +30,7 @@
 
 #pragma mark - Lifecycle Functions
 
-+ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
++ (id)newImageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
         imgs.userInfo = auserInfo;
@@ -45,7 +45,7 @@
     return imgs;
 }
 
-+ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
++ (id)newImageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
         imgs.userInfo = auserInfo;
@@ -155,7 +155,7 @@
 	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer status code [%i]", statusCode];
     
     if (statusCode == 200 && !upload) {
-        totalBytesExpectedToRead = [response expectedContentLength];
+        totalBytesExpectedToRead = (int)[response expectedContentLength];
     }
 }
 
@@ -173,6 +173,7 @@
         if(delegate) {
             [delegate imageSharingUploadDone:self url:[NSURL URLWithString:imageRemoteUrl]];
         }
+        [imageRemoteUrl release];
 	} else {
 		UIImage* image = [UIImage imageWithData:data];
         [LinphoneLogger log:LinphoneLoggerLog format:@"File downloaded"];

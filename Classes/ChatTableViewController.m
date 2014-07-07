@@ -20,20 +20,21 @@
 #import "ChatTableViewController.h"
 #import "UIChatCell.h"
 
-#import "linphonecore.h"
+#import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
 #import "Utils.h"
 
-@implementation ChatTableViewController
+@implementation ChatTableViewController {
+    @private
+    MSList* data;
+}
 
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-    if(data != nil)
-        [data release];
     [super dealloc];
 }
 
@@ -48,10 +49,35 @@
 
 #pragma mark - 
 
+static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem){
+    MSList*                   new_history  = linphone_chat_room_get_history(to_insert, 1);
+    LinphoneChatMessage* last_new_message  = new_history? new_history->data : NULL;
+    MSList*                  elem_history  = linphone_chat_room_get_history(elem, 1);
+    LinphoneChatMessage* last_elem_message = elem_history?elem_history->data:NULL;
+
+    if( last_new_message && last_elem_message ){
+        time_t new = linphone_chat_message_get_time(last_new_message);
+        time_t old = linphone_chat_message_get_time(last_elem_message);
+        if ( new < old ) return 1;
+        else if ( new > old) return -1;
+    }
+    return 0;
+}
+
+- (MSList*)sortChatRooms {
+    MSList* sorted   = nil;
+    MSList* unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    MSList* iter     = unsorted;
+
+    while (iter) {
+        sorted = ms_list_insert_sorted(sorted, iter->data, (MSCompareFunc)sorted_history_comparison);
+        iter = iter->next;
+    }
+    return sorted;
+}
+
 - (void)loadData {
-    if(data != nil)
-        [data release];
-    data = [[ChatModel listConversations] retain];
+    data = [self sortChatRooms];
     [[self tableView] reloadData];
 }
 
@@ -62,7 +88,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [data count];
+    return ms_list_size(data);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -78,7 +104,7 @@
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
-    [cell setChat:[data objectAtIndex:[indexPath row]]];
+    [cell setChatRoom:(LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row])];
     
     return cell;
 }
@@ -88,12 +114,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    ChatModel *chat = [data objectAtIndex:[indexPath row]];
+    LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
     
     // Go to ChatRoom view
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
     if(controller != nil) {
-        [controller setRemoteAddress:[chat remoteContact]];
+        [controller setChatRoom:chatRoom];
     }
 }
 
@@ -108,9 +134,12 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
-        ChatModel *chat = [data objectAtIndex:[indexPath row]];
-        [ChatModel removeConversation:[chat remoteContact]];
-        [data removeObjectAtIndex:[indexPath row]];
+
+        LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
+        linphone_chat_room_delete_history(chatRoom);
+        linphone_chat_room_destroy(chatRoom);
+        data = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];

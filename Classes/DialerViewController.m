@@ -26,7 +26,7 @@
 #import "PhoneMainView.h"
 #import "Utils.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 
 @implementation DialerViewController
@@ -135,32 +135,45 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
                                                object:nil];
+
+    // technically not needed, but older versions of linphone had this button
+    // disabled by default. In this case, updating by pushing a new version with
+    // xcode would result in the callbutton being disabled all the time.
+    // We force it enabled anyway now.
+    [callButton setEnabled:TRUE];
+
     // Update on show
     if([LinphoneManager isLcReady]) {
+		LinphoneManager *mgr=[LinphoneManager instance];
         LinphoneCore* lc = [LinphoneManager getLc];
         LinphoneCall* call = linphone_core_get_current_call(lc);
         LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
         [self callUpdate:call state:state];
-        
+
         if([LinphoneManager runningOnIpad]) {
-            if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
+            if(linphone_core_video_enabled(lc) && [mgr lpConfigBoolForKey:@"preview_preference"]) {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
                 [backgroundView setHidden:FALSE];
                 [videoCameraSwitch setHidden:FALSE];
             } else {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+				linphone_core_enable_video_preview(lc, FALSE);
                 [backgroundView setHidden:TRUE];
                 [videoCameraSwitch setHidden:TRUE];
             }
         }
 
+        [addressField setText:@""];
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 // attributed string only available since iOS6
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
             // fix placeholder bar color in iOS7
             UIColor *color = [UIColor grayColor];
-            addressField.attributedPlaceholder = [[NSAttributedString alloc]
-                                                  initWithString:addressField.placeholder
-                                                  attributes:@{NSForegroundColorAttributeName: color}];
+            NSAttributedString* placeHolderString = [[NSAttributedString alloc]
+                                                     initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
+                                                     attributes:@{NSForegroundColorAttributeName: color}];
+            addressField.attributedPlaceholder = placeHolderString;
+            [placeHolderString release];
         }
 #endif
 
@@ -178,7 +191,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
                                                   object:nil];
-    
 }
 
 - (void)viewDidLoad {
@@ -344,13 +356,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([[addressField text] length] > 0) {
         [addContactButton setEnabled:TRUE];
         [eraseButton setEnabled:TRUE];
-        [callButton setEnabled:TRUE];
         [addCallButton setEnabled:TRUE];
         [transferButton setEnabled:TRUE];
     } else {
         [addContactButton setEnabled:FALSE];
         [eraseButton setEnabled:FALSE];
-        [callButton setEnabled:FALSE];
         [addCallButton setEnabled:FALSE];
         [transferButton setEnabled:FALSE];
     }

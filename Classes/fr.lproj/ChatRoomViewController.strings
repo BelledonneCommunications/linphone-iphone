@@ -1,0 +1,39 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Retour"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Retour";
+
+/* Class = "IBUIButton"; normalTitle = "Retour"; ObjectID = "9"; */
+"9.normalTitle" = "Retour";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Éditer"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Éditer";
+
+/* Class = "IBUIButton"; normalTitle = "Éditer"; ObjectID = "10"; */
+"10.normalTitle" = "Éditer";
+
+/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "10"; */
+"10.selectedTitle" = "Ok";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Envoyer"; ObjectID = "15"; */
+"15.accessibilityLabel" = "Envoyer";
+
+/* Class = "IBUIButton"; normalTitle = "Envoyer"; ObjectID = "15"; */
+"15.normalTitle" = "Envoyer";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Nom du contact"; ObjectID = "40"; */
+"40.accessibilityLabel" = "Nom du contact";
+
+/* Class = "IBUILabel"; text = "Contact1"; ObjectID = "40"; */
+"40.text" = "Contact1";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Avatar du contact"; ObjectID = "41"; */
+"41.accessibilityLabel" = "Avatar du contact";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Envoyer l'image"; ObjectID = "73"; */
+"73.accessibilityLabel" = "Envoyer l'image";
+
+/* Class = "IBUIProgressView"; accessibilityLabel = "Progression du téléversement/téléchargement"; ObjectID = "74"; */
+"74.accessibilityLabel" = "Progression du téléversement/téléchargement";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Annuler"; ObjectID = "75"; */
+"75.accessibilityLabel" = "Annuler";

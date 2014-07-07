@@ -30,7 +30,7 @@
 #import "IASKPSTitleValueSpecifierViewCell.h"
 #import "IASKSpecifier.h"
 #import "IASKTextField.h"
-#include "lpconfig.h"
+#include "linphone/lpconfig.h"
 
 #ifdef DEBUG
 @interface UIDevice (debug)
@@ -141,8 +141,8 @@
 		[((IASKSwitchEx*)cell.accessoryView) addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
         [((IASKSwitchEx*)cell.accessoryView) setOnTintColor:LINPHONE_MAIN_COLOR];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
-        cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
+        cell.textLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont systemFontSize];
+        cell.detailTextLabel.minimumScaleFactor = kIASKMinimumFontSize/[UIFont systemFontSize];
 	} else {
         cell = [super newCellForIdentifier:identifier];
     }
@@ -361,10 +361,11 @@
     labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     labelTitleView.font = [UIFont boldSystemFontOfSize:20];
     labelTitleView.shadowOffset = CGSizeMake(0,1);
-    labelTitleView.textAlignment = UITextAlignmentCenter;
+    labelTitleView.textAlignment = NSTextAlignmentCenter;
     labelTitleView.text = viewController.title;
     [labelTitleView sizeToFit];
     viewController.navigationItem.titleView = labelTitleView;
+    [labelTitleView release];
     [super pushViewController:viewController animated:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [self.topViewController viewDidAppear:animated];
@@ -666,8 +667,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
-    
-    if(lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"sip","sip_random_port",0)==1) {
+
+    BOOL random_port = [[LinphoneManager instance] lpConfigBoolForKey:@"random_port_preference"];
+    if(random_port) {
         [hiddenKeys addObject:@"port_preference"];
     }
 
@@ -686,6 +688,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"wizard_button"];
 	}
 	
+	if (!linphone_core_tunnel_available()){
+		[hiddenKeys addObject:@"tunnel_menu"];
+	}
+	
     return hiddenKeys;
 }
 
@@ -698,7 +704,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
 #ifdef DEBUG
     if([key isEqual:@"release_button"]) {
-        [[UIApplication sharedApplication].keyWindow.rootViewController  release];
+        [UIApplication sharedApplication].keyWindow.rootViewController = nil;
         [[UIApplication sharedApplication].keyWindow setRootViewController:nil];
         [[LinphoneManager instance]	destroyLibLinphone];
         [LinphoneManager instanceRelease];
@@ -713,13 +719,28 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([key isEqual:@"console_button"]) {
         [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
     } else if([key isEqual:@"wizard_button"]) {
-        WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
-        if(controller != nil) {
-            [controller reset];
-        }
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning",nil)
+                                                        message:NSLocalizedString(@"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?",nil)
+                                                       delegate:self
+                                              cancelButtonTitle:NSLocalizedString(@"Cancel",nil)
+                                              otherButtonTitles:NSLocalizedString(@"Launch Wizard",nil), nil];
+        [alert show];
+        [alert release];
     } else if([key isEqual:@"about_button"]) {
         [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
     }
 }
+
+#pragma mark - UIAlertView delegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if( buttonIndex != 1 ) return;
+
+    WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+    if(controller != nil) {
+        [controller reset];
+    }
+}
+
 
 @end

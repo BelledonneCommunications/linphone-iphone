@@ -20,19 +20,25 @@
 #
 ############################################################################
 enable_gpl_third_parties=yes
-enable_zrtp=no
+enable_zrtp=yes
 enable_ffmpeg=no
 enable_opus=yes
 enable_debug=no
+
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null)
+
+ifneq ($(TUNNEL_AVAILABLE),)
+	enable_tunnel=yes
+	enable_gpl_third_parties=no
+else
+	enable_tunnel=no
+endif
+
 
 .NOTPARALLEL all: check_options build warning
 
 # check that the selected options are correct
 CHECKOPT_MSG := ""
-
-ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
-	CHECKOPT_MSG += "ZRTP is not available in non-gpl build.\n"
-endif
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 # ffmpeg is not compatible with no GPL.
@@ -42,7 +48,6 @@ endif
 ifneq ($(CHECKOPT_MSG),"")
 check_options:
 	@echo $(CHECKOPT_MSG)
-	@exit -1
 else
 check_options:
 endif
@@ -76,31 +81,70 @@ endif
 
 LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
-                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg)
+                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
-build:
-	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  host=armv7s-apple-darwin $(LINPHONE_OPTIONS) all  \
-	&& make -f builder-iphone-os.mk delivery-sdk 
 
-ipa: build
-	make -f  builder-iphone-simulator.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin ipa \
+armv7-%: 
+	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
-clean:
-	make -f  builder-iphone-simulator.mk  clean \
-	&&  make -f  builder-iphone-os.mk  clean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean \
+armv7s-%: 
+	make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
 
-clean-makefile:
-	make -f  builder-iphone-simulator.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean-makefile \
+simu-%: 
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
 
-veryclean:
-	make -f  builder-iphone-simulator.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin veryclean
+
+build-% clean-% veryclean-%: 
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $@
+
+# sends the target after 'broadcast_' to all sub-architectures (armv7, armv7s, simulator)
+broadcast_%:
+	@echo "Broadcasting target '$*' to all sub-architectures"
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
+	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+
+sdk: 
+	make -f builder-iphone-os.mk delivery-sdk 
+
+build: broadcast_all sdk
+	make -f builder-iphone-os.mk delivery-sdk 
+
+ipa: build broadcast_ipa
+
+clean: broadcast_clean
+
+veryclean: broadcast_veryclean
+
+
+zipres:
+	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
+	@echo Archive 'ios_assets.tar.gz' placed in root directory
+
+help:
+	@echo "(please read the README file first)"
+	@echo "Available architectures: armv7, armv7s, simu"
+	@echo "Available targets:"
+	@echo ""
+	@echo "   * all       : builds all architectures and creates the liblinphone sdk"
+	@echo "   * ipa       : builds all, creates the SDK, then builds an IPA of the Linphone-iphone application"
+	@echo "   * clean     : clean all packages for all architectures"
+	@echo "   * veryclean : completely clean all packages for all architectures"
+	@echo ""
+	@echo "=== Advanced usage ==="
+	@echo ""
+	@echo "   *            build-[package] : builds the package for all architectures"
+	@echo "   *            clean-[package] : clean the package for all architectures"
+	@echo "   *        veryclean-[package] : completely clean the package for all architectures"
+	@echo ""
+	@echo "   *      armv7-build-[package] : builds a package for the armv7 architecture"
+	@echo "   *     armv7s-build-[package] : builds a package for the armv7s architecture"
+	@echo "   *       simu-build-[package] : builds a package for the simulator architecture"
+	@echo ""
+	@echo "   *     [arch]-clean-[package] : clean the package for the selected architecture"
+	@echo "   * [arch]-veryclean-[package] : completely clean the package for the selected architecture"
+	@echo ""
+	@echo "   * sdk : re-add all generated libraries to the SDK. Use this only after a full build."
 

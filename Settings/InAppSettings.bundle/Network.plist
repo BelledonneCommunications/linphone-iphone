@@ -5,12 +5,12 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
+			<key>Title</key>
+			<string>Edge optimization</string>
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>edge_opt_preference</string>
-			<key>Title</key>
-			<string>Edge optimization</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -103,26 +103,14 @@
 			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
-			<key>DefaultValue</key>
-			<string>udp</string>
-			<key>Key</key>
-			<string>transport_preference</string>
 			<key>Title</key>
-			<string>Transport</string>
-			<key>Titles</key>
-			<array>
-				<string>UDP</string>
-				<string>TCP</string>
-				<string>TLS</string>
-			</array>
+			<string>Use IPv6</string>
+			<key>Key</key>
+			<string>use_ipv6</string>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Values</key>
-			<array>
-				<string>udp</string>
-				<string>tcp</string>
-				<string>tls</string>
-			</array>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>

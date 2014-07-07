@@ -1,0 +1,17 @@
+Notes:
+
+This directory is here because some of our dependencies compile incorrecly
+(or not at all) with the compilers that Apple ships with its newer Xcode versions.
+
+You'll find here the reasons why certain libs are furnished pre-compiled.
+
+Additionaly, the libdummy.a is an empty library created to stub the tunnel extension.
+
+= Libvpx =
+
+Binary version compiled with XCode 5.0, with the patch suggested here for 
+garbage video fix: https://code.google.com/p/webm/issues/detail?id=603#c45
+
+Compiles OK on XCode 5.1 but results in a crash in-app.
+Bug is here: https://code.google.com/p/webm/issues/detail?id=737
+

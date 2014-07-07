@@ -21,10 +21,17 @@
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
 
-@interface WizardViewController : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate, UIGestureRecognizerDelegate> {
+@interface WizardViewController : TPMultiLayoutViewController
+<UITextFieldDelegate,
+    UICompositeViewDelegate,
+    XMLRPCConnectionDelegate,
+    UIGestureRecognizerDelegate,
+    UIAlertViewDelegate>
+{
     @private
     UITextField *activeTextField;
     UIView *currentView;
+    UIView *nextView;
     NSMutableArray *historyViews;
 }
 
@@ -36,6 +43,7 @@
 @property (nonatomic, retain) IBOutlet UIView *connectAccountView;
 @property (nonatomic, retain) IBOutlet UIView *externalAccountView;
 @property (nonatomic, retain) IBOutlet UIView *validateAccountView;
+@property (retain, nonatomic) IBOutlet UIView *provisionedAccountView;
 
 @property (nonatomic, retain) IBOutlet UIView *waitView;
 
@@ -44,12 +52,18 @@
 @property (nonatomic, retain) IBOutlet UIButton *createAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
+@property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
+
+@property (retain, nonatomic) IBOutlet UITextField *provisionedUsername;
+@property (retain, nonatomic) IBOutlet UITextField *provisionedPassword;
+@property (retain, nonatomic) IBOutlet UITextField *provisionedDomain;
 
 @property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
 
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
 - (void)reset;
+- (void)fillDefaultValues;
 
 - (IBAction)onStartClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
@@ -59,9 +73,11 @@
 - (IBAction)onConnectAccountClick:(id)sender;
 - (IBAction)onExternalAccountClick:(id)sender;
 - (IBAction)onCheckValidationClick:(id)sender;
+- (IBAction)onRemoteProvisioningClick:(id)sender;
 
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;
 - (IBAction)onRegisterClick:(id)sender;
+- (IBAction)onProvisionedLoginClick:(id)sender;
 
 @end

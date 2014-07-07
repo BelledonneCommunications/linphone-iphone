@@ -18,7 +18,7 @@
  */              
 
 #import "UIDigitButton.h"
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 #import "LinphoneManager.h"
 
 @implementation UIDigitButton

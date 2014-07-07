@@ -32,6 +32,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 @synthesize mainViewController;
 @synthesize currentView;
 @synthesize statusBarBG;
+@synthesize volumeView;
 
 
 #pragma mark - Lifecycle Functions
@@ -67,7 +68,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		[self initPhoneMainView];
 	}
     return self;
-}	
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -88,6 +89,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
         return;
     
     [super viewDidLoad];
+
+    volumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(-100,-100,16,16)];
+    volumeView.showsRouteButton = false;
+    volumeView.userInteractionEnabled = false;
 
     [self.view addSubview: mainViewController.view];
 }
@@ -112,7 +117,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                              selector:@selector(textReceived:) 
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onGlobalStateChanged:)
+                                                 name:kLinphoneGlobalStateUpdate
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
@@ -135,10 +144,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:kLinphoneRegistrationUpdate
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneConfiguringStateUpdate
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
@@ -165,6 +177,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     // Avoid IOS 4 bug
     loadCount--;
+}
+
+- (void)setVolumeHidden:(BOOL)hidden {
+    // sometimes when placing a call, the volume view will appear. Inserting a
+    // carefully hidden MPVolumeView into the view hierarchy will hide it
+    if( hidden ){
+        if ( !(volumeView.superview == self.view) ){
+            [self.view addSubview:volumeView];
+        }
+    } else {
+        if( volumeView.superview == self.view ){
+            [volumeView removeFromSuperview];
+        }
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -205,9 +231,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - Event Functions
 
 - (void)textReceived:(NSNotification*)notif { 
-    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
-    if(chat != nil) {
-        [self displayMessage:chat];
+    LinphoneAddress*from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
+    if(from != nil) {
+        [self playMessageSound];
     }
     [self updateApplicationBadgeNumber];
 }
@@ -227,6 +253,22 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		[error show];
 		[error release];
 	}
+}
+
+- (void)onGlobalStateChanged:(NSNotification*)notif {
+    LinphoneGlobalState state = [[[notif userInfo] valueForKey:@"state"] integerValue];
+    static BOOL already_shown = FALSE;
+    if( state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned ){
+        LinphoneProxyConfig* conf = NULL;
+        linphone_core_get_default_proxy([LinphoneManager getLc], &conf);
+        if( [[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL){
+            already_shown = TRUE;
+            WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+            if(controller != nil) {
+                [controller fillDefaultValues];
+            }
+        }
+    }
 }
 
 - (void)callUpdate:(NSNotification*)notif {
@@ -321,8 +363,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
-- (void)startUp {   
-    if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
+- (void)startUp {
+
+    if( linphone_core_get_global_state([LinphoneManager getLc]) != LinphoneGlobalOn ){
+        [self changeCurrentView: [DialerViewController compositeViewDescription]];
+    } else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
         // Change to fist login view
         [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
     } else {
@@ -344,7 +389,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)updateApplicationBadgeNumber {
     int count = 0;
     count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
-    count += [ChatModel unreadMessages];
+    count += [LinphoneManager unreadMessageCount];
     count += linphone_core_get_calls_nb([LinphoneManager getLc]);
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
@@ -427,26 +472,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
     // In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
     // status bar style for each transition to/from these views
     BOOL toLightStatus   = (to_view != NULL) && ![PhoneMainView isDarkBackgroundView:to_view];
-    BOOL fromLightStatus = ![PhoneMainView isDarkBackgroundView:currentView];
-
     if( !toLightStatus ) {
         // black bg: white text on black background
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-        if(statusBarBG.hidden == YES){
-            statusBarBG.alpha = 0;
-            statusBarBG.hidden = NO;
-            [UIView animateWithDuration:0.3f
-                             animations:^{statusBarBG.alpha = 1;} ];
-        }
-    } else if(!fromLightStatus && toLightStatus) {
+
+        [UIView animateWithDuration:0.3f
+                         animations:^{statusBarBG.backgroundColor = [UIColor blackColor];} ];
+
+    } else  {
         // light bg: black text on white bg
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-        if( statusBarBG.hidden == NO ){
-            [UIView animateWithDuration:0.3f
-                             animations:^{ statusBarBG.alpha = 0; }
-                             completion:^(BOOL finished) {statusBarBG.hidden = YES;}];
-        }
+        [UIView animateWithDuration:0.3f
+                         animations:^{ statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1]; }];
+
     }
 #endif
 }
@@ -507,7 +546,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
     return view;
 }
-         
+
 - (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
     if([viewStack count] > 1) {
@@ -565,11 +604,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 #pragma mark - ActionSheet Functions
 
-- (void)displayMessage:(ChatModel*)chat {
+- (void)playMessageSound {
     if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
         }
     }
 }
@@ -584,6 +624,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [[LinphoneManager instance] acceptCall:call];
 		}else{
 			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 			if(controller != nil) {
 				[controller setCall:call];
 				[controller setDelegate:self];

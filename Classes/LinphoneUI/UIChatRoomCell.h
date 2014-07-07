@@ -19,34 +19,38 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ChatModel.h"
 #import "ChatRoomTableViewController.h"
 #import "UILoadingImageView.h"
 #import "UITransparentTVCell.h"
+#import "UITextViewNoDefine.h"
+#include "linphone/linphonecore.h"
 
 
 @interface UIChatRoomCell : UITransparentTVCell {
+    LinphoneChatMessage* chat;
 }
 
-@property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIView *innerView;
 @property (nonatomic, retain) IBOutlet UIView *bubbleView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
-@property (nonatomic, retain) IBOutlet UITextView *messageText;
+@property (nonatomic, retain) IBOutlet UITextViewNoDefine *messageText;
 @property (nonatomic, retain) IBOutlet UILoadingImageView *messageImageView;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;
 @property (nonatomic, retain) IBOutlet UIButton* downloadButton;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer* imageTapGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer* resendTapGestureRecognizer;
 
 - (id)initWithIdentifier:(NSString*)identifier;
-+ (CGFloat)height:(ChatModel*)chat width:(int)width;
++ (CGFloat)height:(LinphoneChatMessage*)chatMessage width:(int)width;
 
 @property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
 
 - (IBAction)onDeleteClick:(id)event;
 - (IBAction)onDownloadClick:(id)event;
 - (IBAction)onImageClick:(id)event;
+
+- (void)setChatMessage:(LinphoneChatMessage*)message;
 
 @end

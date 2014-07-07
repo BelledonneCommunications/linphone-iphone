@@ -31,12 +31,14 @@
 #import "UILinphone.h"
 #import "DTActionSheet.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
-@implementation InCallViewController
+@implementation InCallViewController {
+    BOOL hiddenVolume;
+}
 
 @synthesize callTableController;
 @synthesize callTableView;
@@ -116,6 +118,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
+
+    [[PhoneMainView instance] setVolumeHidden:TRUE];
+    hiddenVolume = TRUE;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -128,6 +133,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callTableController viewWillDisappear:animated];
     }
     
+    if( hiddenVolume ) {
+        [[PhoneMainView instance] setVolumeHidden:FALSE];
+        hiddenVolume = FALSE;
+    }
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self 
@@ -175,6 +184,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callTableController viewDidDisappear:animated];
     }
     
+    [[PhoneMainView instance] fullScreen:false];
     // Disable tap
     [singleFingerTap setEnabled:FALSE];
 }
@@ -210,6 +220,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
 	LinphoneCore *lc = [LinphoneManager getLc];
+
+    if( hiddenVolume ){
+        [[PhoneMainView instance] setVolumeHidden:FALSE];
+        hiddenVolume = FALSE;
+    }
+
     // Update table
     [callTableView reloadData];  
     
@@ -278,7 +294,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         case LinphoneCallEnd:
         case LinphoneCallError:
         {
-            if(linphone_core_get_calls_nb(lc) <= 2) {
+            if(linphone_core_get_calls_nb(lc) <= 2 && !videoShown) {
                 [callTableController maximizeAll];
             }
             break;
@@ -301,6 +317,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView setAnimationDuration:0.3];
         [[PhoneMainView instance] showTabBar: true];
         [[PhoneMainView instance] showStateBar: true];
+        [callTableView setAlpha:1.0];
         [videoCameraSwitch setAlpha:1.0];
         [UIView commitAnimations];
         
@@ -323,6 +340,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
         [videoCameraSwitch setAlpha:0.0];
+        [callTableView setAlpha:0.0];
         [UIView commitAnimations];
         
         
@@ -360,6 +378,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoGroup setAlpha:1.0];
     [callTableView setAlpha:0.0];
     
+    UIEdgeInsets insets = {33, 0, 25, 0};
+    [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
+    [callTableController minimizeAll];
+
     if(animation) {
         [UIView commitAnimations];
     }
@@ -407,6 +430,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
+
+    UIEdgeInsets insets = {10, 0, 25, 0};
+    [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
+    [callTableView setAlpha:1.0];
+    if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 2) {
+        [callTableController maximizeAll];
+    }
+
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setHidden:TRUE];
     

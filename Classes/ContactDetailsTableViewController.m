@@ -276,13 +276,17 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
 		ABMultiValueAddValueAndLabel(lMap, lDict, label, &index);
 	}
+
 	if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
 		[LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+        CFRelease(lMap);
 	} else {
 		if (entry == nil) {
-			entry = [[Entry alloc] initWithData:index];
+			entry = [[[Entry alloc] initWithData:index] autorelease];
 		}
 		CFRelease(lDict);
+        CFRelease(lMap);
+
 		/*check if message type is kept or not*/
 		lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
 		lMap = ABMultiValueCreateMutableCopy(lcMap);
@@ -294,24 +298,27 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 			NSString* username = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
 			LinphoneAddress* address = linphone_core_interpret_url([LinphoneManager getLc]
 																   ,[username UTF8String]);
-			char* uri = linphone_address_as_string_uri_only(address);
-			CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-			CFTypeRef values[] = { [NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]], [LinphoneManager instance].contactSipField };
-			CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
-			ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
-			if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
-				[LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
-			}
-			CFRelease(lDict2);
-			linphone_address_destroy(address);
-			ms_free(uri);
+            if(address){
+                char* uri = linphone_address_as_string_uri_only(address);
+                CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
+                CFTypeRef values[] = { [NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]], [LinphoneManager instance].contactSipField };
+                CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
+                ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
+                if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+                }
+                CFRelease(lDict2);
+                linphone_address_destroy(address);
+                ms_free(uri);
+            }
 		}
-		CFRelease(lMap);
+        CFRelease(lMap);
 	}
 	CFRelease(lDict);
 	
 	return entry;
 }
+
 -(void) setSipContactEntry:(Entry *)entry withValue:(NSString*)value {
 	[self setOrCreateSipContactEntry:entry withValue:value];
 }
@@ -335,7 +342,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, [value copy], label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
         
@@ -352,7 +359,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         Entry *entry = [self setOrCreateSipContactEntry:nil withValue:value];
         if (entry) {
 			[sectionArray addObject:entry];
-			[entry release];
 			added=true;
 		} else {
 			added=false;
@@ -369,7 +375,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, [value copy], label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
         
@@ -527,7 +533,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
     
     NSString *value = @"";
-    NSString *label = @"";
+    // default label is our app name
+    NSString *label = [ContactDetailsTableViewController localizeLabel:[labelArray objectAtIndex:0]];
     
     if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
@@ -645,7 +652,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
                 [[PhoneMainView instance] popToView:[ChatViewController compositeViewDescription]]; // Got to Chat and push ChatRoom
                 ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
                 if(controller != nil) {
-                   [controller setRemoteAddress:dest];
+                    LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [dest UTF8String]);
+                   [controller setChatRoom:room];
                 }
             }
         }

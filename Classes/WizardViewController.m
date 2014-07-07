@@ -27,14 +27,14 @@
 #import <XMLRPCRequest.h>
 
 typedef enum _ViewElement {
-    ViewElement_Username = 100,
-    ViewElement_Password = 101,
-    ViewElement_Password2 = 102,
-    ViewElement_Email = 103,
-    ViewElement_Domain = 104,
-    ViewElement_Label = 200,
-    ViewElement_Error = 201,
-    ViewElement_Username_Error = 404
+    ViewElement_Username            = 100,
+    ViewElement_Password            = 101,
+    ViewElement_Password2           = 102,
+    ViewElement_Email               = 103,
+    ViewElement_Domain              = 104,
+    ViewElement_Label               = 200,
+    ViewElement_Error               = 201,
+    ViewElement_Username_Error      = 404
 } ViewElement;
 
 @implementation WizardViewController
@@ -47,7 +47,7 @@ typedef enum _ViewElement {
 @synthesize connectAccountView;
 @synthesize externalAccountView;
 @synthesize validateAccountView;
-
+@synthesize provisionedAccountView;
 @synthesize waitView;
 
 @synthesize backButton;
@@ -55,6 +55,9 @@ typedef enum _ViewElement {
 @synthesize createAccountButton;
 @synthesize connectAccountButton;
 @synthesize externalAccountButton;
+@synthesize remoteProvisioningButton;
+
+@synthesize provisionedDomain, provisionedPassword, provisionedUsername;
 
 @synthesize choiceViewLogoImageView;
 
@@ -102,6 +105,11 @@ typedef enum _ViewElement {
     
     [viewTapGestureRecognizer release];
     
+    [remoteProvisioningButton release];
+    [provisionedAccountView release];
+    [provisionedUsername release];
+    [provisionedPassword release];
+    [provisionedDomain release];
     [super dealloc];
 }
 
@@ -135,7 +143,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(registrationUpdateEvent:)
                                                  name:kLinphoneRegistrationUpdate
                                                object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(configuringUpdate:)
+                                                 name:kLinphoneConfiguringStateUpdate
+                                               object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -149,16 +161,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                 name:kLinphoneRegistrationUpdate
-                                               object:nil];
-    
-    
+                                                    name:kLinphoneRegistrationUpdate
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneConfiguringStateUpdate
+                                                  object:nil];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+
 }
 
 - (void)viewDidLoad {
@@ -175,6 +190,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils adjustFontSize:connectAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:externalAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:validateAccountView mult:2.22f];
+        [LinphoneUtils adjustFontSize:provisionedAccountView mult:2.22f];
     }
 }
 
@@ -191,16 +207,70 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+- (void)fillDefaultValues {
+
+    LinphoneCore* lc = [LinphoneManager getLc];
+    [self resetTextFields];
+
+    LinphoneProxyConfig* current_conf = NULL;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &current_conf);
+    if( current_conf != NULL ){
+        const char* proxy_addr = linphone_proxy_config_get_identity(current_conf);
+        if( proxy_addr ){
+            LinphoneAddress *addr = linphone_address_new( proxy_addr );
+            if( addr ){
+                const LinphoneAuthInfo *auth = linphone_core_find_auth_info(lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
+                linphone_address_destroy(addr);
+                if( auth ){
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"A proxy config was set up with the remote provisioning, skip wizard"];
+                    [self onCancelClick:nil];
+                }
+            }
+        }
+    }
+
+    LinphoneProxyConfig* default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
+    const char* identity = linphone_proxy_config_get_identity(default_conf);
+    if( identity ){
+        LinphoneAddress* default_addr = linphone_address_new(identity);
+        if( default_addr ){
+            const char* domain = linphone_address_get_domain(default_addr);
+            const char* username = linphone_address_get_username(default_addr);
+            if( domain && strlen(domain) > 0){
+                //UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain view:externalAccountView];
+                [provisionedDomain setText:[NSString stringWithUTF8String:domain]];
+            }
+
+            if( username && strlen(username) > 0 && username[0] != '?' ){
+                //UITextField* userField = [WizardViewController findTextField:ViewElement_Username view:externalAccountView];
+                [provisionedUsername setText:[NSString stringWithUTF8String:username]];
+            }
+        }
+    }
+
+    [self changeView:provisionedAccountView back:FALSE animation:TRUE];
+
+    linphone_proxy_config_destroy(default_conf);
+
+}
+
+- (void)resetTextFields {
+    [WizardViewController cleanTextField:welcomeView];
+    [WizardViewController cleanTextField:choiceView];
+    [WizardViewController cleanTextField:createAccountView];
+    [WizardViewController cleanTextField:connectAccountView];
+    [WizardViewController cleanTextField:externalAccountView];
+    [WizardViewController cleanTextField:validateAccountView];
+    [WizardViewController cleanTextField:provisionedAccountView];
+}
+
 - (void)reset {
     [self clearProxyConfig];
     [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
     
     LinphoneCore *lc = [LinphoneManager getLc];
-    LCSipTransports transportValue={0};
-    transportValue.udp_port=5060;
-    transportValue.tls_port=0;
-    transportValue.tcp_port=0;
-    
+    LCSipTransports transportValue={5060,5060,-1,-1};
+
     if (linphone_core_set_sip_transports(lc, &transportValue)) {
         [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
     }
@@ -210,12 +280,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
     linphone_core_set_stun_server(lc, NULL);
     linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
-    [WizardViewController cleanTextField:welcomeView];
-    [WizardViewController cleanTextField:choiceView];
-    [WizardViewController cleanTextField:createAccountView];
-    [WizardViewController cleanTextField:connectAccountView];
-    [WizardViewController cleanTextField:externalAccountView];
-    [WizardViewController cleanTextField:validateAccountView];
+    [self resetTextFields];
     if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
         [self changeView:choiceView back:FALSE animation:FALSE];
     } else {
@@ -286,6 +351,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         // [ Create Btn   ]
         // [ Connect Btn  ]
         // [ External Btn ]
+        // [ Remote Prov  ]
 
         BOOL show_logo   =  [[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"];
         BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account"];
@@ -310,7 +376,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             placement_done = YES;
         }
         if (!show_extern && !show_logo) {
-            // no option to create or specify a custom account: go to
+            // no option to create or specify a custom account: go to connect view directly
             view = connectAccountView;
         }
     }
@@ -349,97 +415,81 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setDefaultSettings:(LinphoneProxyConfig*)proxyCfg {
-    BOOL pushnotification = [[LinphoneManager instance] lpConfigBoolForKey:@"push_notification" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetBool:pushnotification forKey:@"pushnotification_preference"];
+    LinphoneManager* lm = [LinphoneManager instance];
+
+    BOOL pushnotification = [lm lpConfigBoolForKey:@"pushnotification_preference"];
     if(pushnotification) {
-        [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
-    }
-    int expires = [[LinphoneManager instance] lpConfigIntForKey:@"expires" forSection:@"wizard"];
-    linphone_proxy_config_expires(proxyCfg, expires);
-    
-    NSString* transport = [[LinphoneManager instance] lpConfigStringForKey:@"transport" forSection:@"wizard"];
-    LinphoneCore *lc = [LinphoneManager getLc];
-    LCSipTransports transportValue={0};
-	if (transport!=nil) {
-		if (linphone_core_get_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
-		}
-		// Only one port can be set at one time, the others's value is 0
-		if ([transport isEqualToString:@"tcp"]) {
-			transportValue.tcp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.udp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"udp"]){
-			transportValue.udp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.tcp_port=0;
-            transportValue.tls_port=0;
-		} else if ([transport isEqualToString:@"tls"]){
-			transportValue.tls_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-			transportValue.tcp_port=0;
-            transportValue.udp_port=0;
-		} else {
-			[LinphoneLogger logc:LinphoneLoggerError format:"unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-		}
-		if (linphone_core_set_sip_transports(lc, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
-		}
-	}
-    
-    NSString* sharing_server = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
-    
-    BOOL ice = [[LinphoneManager instance] lpConfigBoolForKey:@"ice" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetBool:ice forKey:@"ice_preference"];
-    
-    NSString* stun = [[LinphoneManager instance] lpConfigStringForKey:@"stun" forSection:@"wizard"];
-    [[LinphoneManager instance] lpConfigSetString:stun forKey:@"stun_preference"];
-    
-    if ([stun length] > 0){
-        linphone_core_set_stun_server(lc, [stun UTF8String]);
-        if(ice) {
-            linphone_core_set_firewall_policy(lc, LinphonePolicyUseIce);
-        } else {
-            linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
-        }
-    } else {
-        linphone_core_set_stun_server(lc, NULL);
-        linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
+        [lm addPushTokenToProxyConfig:proxyCfg];
     }
 }
 
-- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {
-    [self clearProxyConfig];
-    if(server == nil) {
-        server = domain;
-    }
-	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {
+    LinphoneCore* lc = [LinphoneManager getLc];
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config(lc);
+
     char normalizedUserName[256];
-    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
     linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+
+    const char* identity = linphone_proxy_config_get_identity(proxyCfg);
+    if( !identity || !*identity ) identity = "sip:user@example.com";
+
+    LinphoneAddress* linphoneAddress = linphone_address_new(identity);
     linphone_address_set_username(linphoneAddress, normalizedUserName);
-    linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
-    const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
-	linphone_proxy_config_set_identity(proxyCfg, identity);
-	linphone_proxy_config_set_server_addr(proxyCfg, [server UTF8String]);
+
+    if( domain && [domain length] != 0) {
+        // when the domain is specified (for external login), take it as the server address
+        linphone_proxy_config_set_server_addr(proxyCfg, [domain UTF8String]);
+        linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
+    }
+
+    identity = linphone_address_as_string_uri_only(linphoneAddress);
+
+    linphone_proxy_config_set_identity(proxyCfg, identity);
+
+
+
     LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String]
 													, NULL, [password UTF8String]
 													, NULL
 													, NULL
 													,linphone_proxy_config_get_domain(proxyCfg));
-	
-	if([server compare:domain options:NSCaseInsensitiveSearch] != NSOrderedSame) {
-        linphone_proxy_config_set_route(proxyCfg, [server UTF8String]);
-    }
-    int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
-    if (defaultExpire >= 0)
-        linphone_proxy_config_expires(proxyCfg, defaultExpire);
-    if([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0) {
-        [self setDefaultSettings:proxyCfg];
-    }
+
+    [self setDefaultSettings:proxyCfg];
+
+    [self clearProxyConfig];
+
     linphone_proxy_config_enable_register(proxyCfg, true);
+	linphone_core_add_auth_info(lc, info);
+    linphone_core_add_proxy_config(lc, proxyCfg);
+	linphone_core_set_default_proxy(lc, proxyCfg);
+}
+
+- (void)addProvisionedProxy:(NSString*)username withPassword:(NSString*)password withDomain:(NSString*)domain {
+    [self clearProxyConfig];
+
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+
+    const char *addr= linphone_proxy_config_get_domain(proxyCfg);
+    char normalizedUsername[256];
+    LinphoneAddress* linphoneAddress = linphone_address_new(addr);
+
+    linphone_proxy_config_normalize_number(proxyCfg,
+                                           [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                           normalizedUsername,
+                                           sizeof(normalizedUsername));
+
+    linphone_address_set_username(linphoneAddress, normalizedUsername);
+    linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
+
+    const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
+	linphone_proxy_config_set_identity(proxyCfg, identity);
+
+    LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL, [domain UTF8String]);
+
+    linphone_proxy_config_enable_register(proxyCfg, true);
+	linphone_core_add_auth_info([LinphoneManager getLc], info);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
-	linphone_core_add_auth_info([LinphoneManager getLc], info);
 }
 
 - (NSString*)identityFromUsername:(NSString*)username {
@@ -496,7 +546,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [waitView setHidden:false];
 }
 
-- (void)registrationUpdate:(LinphoneRegistrationState)state {
+- (void)registrationUpdate:(LinphoneRegistrationState)state message:(NSString*)message{
     switch (state) {
         case LinphoneRegistrationOk: {
             [waitView setHidden:true];
@@ -510,6 +560,13 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         case LinphoneRegistrationFailed: {
             [waitView setHidden:true];
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+                                                            message:message
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
             break;
         }
         case LinphoneRegistrationProgress: {
@@ -521,6 +578,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+- (void)loadWizardConfig:(NSString*)rcFilename {
+    NSString* fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
+    linphone_core_set_provisioning_uri([LinphoneManager getLc], [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    [[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
+    [[LinphoneManager instance] resetLinphoneCore];
+}
 
 #pragma mark - UITextFieldDelegate Functions
 
@@ -562,7 +625,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     return YES;
 }
-
 - (void)hideError:(NSTimer*)timer {
     UILabel* error_label =[WizardViewController findLabel:ViewElement_Username_Error view:contentView];
     if( error_label ) {
@@ -596,22 +658,41 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-    [self changeView:createAccountView back:FALSE animation:TRUE];
-
+    nextView = createAccountView;
+    [self loadWizardConfig:@"wizard_linphone_create.rc"];
 }
 
 - (IBAction)onConnectAccountClick:(id)sender {
-    [self changeView:connectAccountView back:FALSE animation:TRUE];
+    nextView = connectAccountView;
+    [self loadWizardConfig:@"wizard_linphone_existing.rc"];
 }
 
 - (IBAction)onExternalAccountClick:(id)sender {
-    [self changeView:externalAccountView back:FALSE animation:TRUE];
+    nextView = externalAccountView;
+    [self loadWizardConfig:@"wizard_external_sip.rc"];
 }
 
 - (IBAction)onCheckValidationClick:(id)sender {
     NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
     NSString *identity = [self identityFromUsername:username];
     [self checkAccountValidation:identity];
+}
+
+- (IBAction)onRemoteProvisioningClick:(id)sender {
+    UIAlertView* remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
+                                                          message:@""
+                                                         delegate:self
+                                                cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
+                                                otherButtonTitles:NSLocalizedString(@"Fetch", @""), nil];
+    remoteInput.alertViewStyle = UIAlertViewStylePlainTextInput;
+
+    UITextField* prov_url = [remoteInput textFieldAtIndex:0];
+    prov_url.keyboardType = UIKeyboardTypeURL;
+    prov_url.text = [[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
+    prov_url.placeholder  = @"URL";
+
+    [remoteInput show];
+    [remoteInput release];
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
@@ -640,7 +721,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView release];
     } else {
         [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password domain:domain server:nil];
+        [self addProxyConfig:username password:password domain:domain];
     }
 }
 
@@ -664,9 +745,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView release];
     } else {
         [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password
-                      domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-                      server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+        // domain and server will be configured from the default proxy values
+        [self addProxyConfig:username password:password domain:nil];
     }
 }
 
@@ -715,15 +795,94 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+- (IBAction)onProvisionedLoginClick:(id)sender {
+    NSString *username = provisionedUsername.text;
+    NSString *password = provisionedPassword.text;
+
+    NSMutableString *errors = [NSMutableString string];
+    if ([username length] == 0) {
+
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+    }
+
+    if([errors length]) {
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                  otherButtonTitles:nil,nil];
+        [errorView show];
+        [errorView release];
+    } else {
+        [self.waitView setHidden:false];
+        [self addProvisionedProxy:username withPassword:password withDomain:provisionedDomain.text];
+    }
+}
+
 - (IBAction)onViewTap:(id)sender {
     [LinphoneUtils findAndResignFirstResponder:currentView];
+}
+
+#pragma mark - UIAlertViewDelegate
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 1) { /* fetch */
+        NSString* url = [alertView textFieldAtIndex:0].text;
+        if( [url length] > 0 ){
+            // missing prefix will result in http:// being used
+            if( [url rangeOfString:@"://"].location == NSNotFound )
+                url = [NSString stringWithFormat:@"http://%@", url];
+
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Should use remote provisioning URL %@", url];
+            linphone_core_set_provisioning_uri([LinphoneManager getLc], [url UTF8String]);
+
+            [waitView setHidden:false];
+            [[LinphoneManager instance] resetLinphoneCore];
+        }
+    } else {
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Canceled remote provisioning"];
+    }
+}
+
+- (void)configuringUpdate:(NSNotification *)notif {
+    LinphoneConfiguringState status = (LinphoneConfiguringState)[[notif.userInfo valueForKey:@"state"] integerValue];
+
+    [waitView setHidden:true];
+
+    switch (status) {
+        case LinphoneConfiguringSuccessful:
+            if( nextView == nil ){
+            [self fillDefaultValues];
+            } else {
+                [self changeView:nextView back:false animation:TRUE];
+                nextView = nil;
+            }
+            break;
+        case LinphoneConfiguringFailed:
+        {
+            NSString* error_message = [notif.userInfo valueForKey:@"message"];
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
+                                                            message:error_message
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles: nil];
+            [alert show];
+            [alert release];
+            break;
+        }
+
+        case LinphoneConfiguringSkipped:
+        default:
+            break;
+    }
 }
 
 
 #pragma mark - Event Functions
 
 - (void)registrationUpdateEvent:(NSNotification*)notif {
-    [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue]];
+    NSString* message = [notif.userInfo objectForKey:@"message"];
+    [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue] message:message];
 }
 
 
@@ -836,9 +995,7 @@ static UICompositeViewDescription *compositeDescription = nil;
              if([response object] == [NSNumber numberWithInt:1]) {
                  NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                  NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
-                [self addProxyConfig:username password:password
-                              domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-                              server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+                [self addProxyConfig:username password:password domain:nil];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
                                                                      message:NSLocalizedString(@"Your account is not validate yet.", nil)
@@ -875,7 +1032,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
 }
-
 
 #pragma mark - TPMultiLayoutViewController Functions
 

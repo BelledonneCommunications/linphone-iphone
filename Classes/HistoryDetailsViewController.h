@@ -18,7 +18,7 @@
  */              
 
 #import <UIKit/UIKit.h>
-#import "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 #import <AddressBook/AddressBook.h>
 #import "UICompositeViewController.h"

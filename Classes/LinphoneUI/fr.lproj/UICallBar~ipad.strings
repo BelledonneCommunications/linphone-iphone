@@ -1,0 +1,108 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Retour"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Retour";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Raccrocher"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Raccrocher";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Démarrer une conférence"; ObjectID = "12"; */
+"12.accessibilityLabel" = "Démarrer une conférence";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Pause"; ObjectID = "13"; */
+"13.accessibilityLabel" = "Pause";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Options"; ObjectID = "14"; */
+"14.accessibilityLabel" = "Options";
+
+/* Class = "IBUIButton"; normalTitle = "Options"; ObjectID = "14"; */
+"14.normalTitle" = "Options";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Haut parleur"; ObjectID = "15"; */
+"15.accessibilityLabel" = "Haut parleur";
+
+/* Class = "IBUIButton"; disabledTitle = "Haut parleur"; ObjectID = "15"; */
+"15.disabledTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; normalTitle = "Haut parleur"; ObjectID = "15"; */
+"15.normalTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Micro"; ObjectID = "16"; */
+"16.accessibilityLabel" = "Micro";
+
+/* Class = "IBUIButton"; normalTitle = "Micro"; ObjectID = "16"; */
+"16.normalTitle" = "Micro";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Vidéo"; ObjectID = "17"; */
+"17.accessibilityLabel" = "Vidéo";
+
+/* Class = "IBUIButton"; normalTitle = "Vidéo"; ObjectID = "17"; */
+"17.normalTitle" = "Vidéo";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "19"; */
+"19.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "20"; */
+"20.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "21"; */
+"21.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "22"; */
+"22.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "23"; */
+"23.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "24"; */
+"24.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "25"; */
+"25.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "26"; */
+"26.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "27"; */
+"27.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Étoile"; ObjectID = "28"; */
+"28.accessibilityLabel" = "Étoile";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "29"; */
+"29.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Dièse"; ObjectID = "30"; */
+"30.accessibilityLabel" = "Dièse";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Ajouter un appel"; ObjectID = "31"; */
+"31.accessibilityLabel" = "Ajouter un appel";
+
+/* Class = "IBUIButton"; normalTitle = "Ajouter appel"; ObjectID = "31"; */
+"31.normalTitle" = "Ajouter appel";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Transferer l'appel"; ObjectID = "32"; */
+"32.accessibilityLabel" = "Transferer l'appel";
+
+/* Class = "IBUIButton"; normalTitle = "Transfert"; ObjectID = "32"; */
+"32.normalTitle" = "Transfert";
+
+/* Class = "IBUIButton"; normalTitle = "Options"; ObjectID = "39"; */
+"39.normalTitle" = "Options";
+
+/* Class = "IBUIButton"; normalTitle = "Vidéo"; ObjectID = "40"; */
+"40.normalTitle" = "Vidéo";
+
+/* Class = "IBUIButton"; normalTitle = "Micro"; ObjectID = "41"; */
+"41.normalTitle" = "Micro";
+
+/* Class = "IBUIButton"; disabledTitle = "Haut parleur"; ObjectID = "42"; */
+"42.disabledTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; normalTitle = "Haut parleur"; ObjectID = "42"; */
+"42.normalTitle" = "Haut parleur";
+
+/* Class = "IBUIButton"; normalTitle = "Ajouter appel"; ObjectID = "60"; */
+"60.normalTitle" = "Ajouter appel";
+
+/* Class = "IBUIButton"; normalTitle = "Transfert"; ObjectID = "61"; */
+"61.normalTitle" = "Transfert";

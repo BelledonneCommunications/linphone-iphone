@@ -23,31 +23,23 @@
 host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
-linphone_configure_controls=  \
-			      --disable-strict \
-			      --disable-nls \
-                              --with-readline=none  \
-                              --enable-gtk_ui=no \
-                              --enable-console_ui=no \
-                              --enable-ssl-hmac=no \
-                              --enable-ssl=no \
-			      --disable-theora \
-			      --disable-sdl \
-			      --disable-x11 \
-			      --enable-bellesip \
-                              --with-gsm=$(prefix) \
-			      --disable-tests \
-			      --disable-tutorials \
-                              --with-srtp=$(prefix) \
-                              --with-antlr=$(prefix) \
-                              --disable-msg-storage 
+linphone_configure_controls = \
+				--with-readline=none  \
+				--enable-gtk_ui=no \
+				--enable-console_ui=no \
+				--enable-bellesip \
+				--with-gsm=$(prefix) \
+				--with-srtp=$(prefix) \
+				--with-antlr=$(prefix) \
+				--disable-strict \
+				--disable-nls \
+				--disable-theora \
+				--disable-sdl \
+				--disable-x11 \
+				--disable-tutorials \
+				--disable-tools \
+				--enable-msg-storage=yes
 
-
-ifeq ($(enable_zrtp),yes)
-	linphone_configure_controls+= --enable-zrtp
-else
-	linphone_configure_controls+= --disable-zrtp
-endif
                               
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
@@ -63,14 +55,31 @@ endif
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
+all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-mswebrtc build-msopenh264
 
 # setup the switches that might trigger a linphone reconfiguration
 
 enable_gpl_third_parties?=yes
 enable_ffmpeg?=yes
+enable_zrtp?=yes
 
 SWITCHES:=
+
+ifeq ($(enable_zrtp), yes)
+                linphone_configure_controls+= --enable-zrtp
+                SWITCHES += enable_zrtp
+else
+                linphone_configure_controls+= --disable-zrtp
+                SWITCHES += disable_zrtp
+endif
+
+ifeq ($(enable_tunnel), yes)
+                linphone_configure_controls+= --enable-tunnel
+                SWITCHES += enable_tunnel
+else
+                linphone_configure_controls+= --disable-tunnel
+                SWITCHES += disable_tunnel
+endif
 
 ifeq ($(enable_gpl_third_parties),yes) 
 	SWITCHES+= enable_gpl_third_parties
@@ -92,6 +101,7 @@ SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
 
 mode_switch_check: $(SWITCHES)
 
+#generic rule to force recompilation of linphone if some options require it
 $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
 	cd $(LINPHONE_BUILD_DIR) && rm -f *able_$*
@@ -130,9 +140,15 @@ init:
 veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
-# list of the submodules to build
-MS_MODULES      := msilbc libilbc msamr mssilk msx264
-SUBMODULES_LIST := polarssl libantlr belle-sip srtp zrtpcpp speex libgsm libvpx libxml2 ffmpeg opus
+# list of the submodules to build, the order is important
+MS_MODULES      := msilbc libilbc msamr mssilk msx264 mswebrtc msopenh264
+SUBMODULES_LIST := polarssl 
+
+ifeq ($(enable_tunnel),yes)
+SUBMODULES_LIST += tunnel
+endif
+
+SUBMODULES_LIST += libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
 
 .NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
@@ -297,6 +313,9 @@ multi-arch:
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \
 	done
+	if ! test -f $(prefix)/../apple-darwin/lib/libtunnel.a ; then \
+		cp -f $(BUILDER_SRC_DIR)/../submodules/binaries/libdummy.a $(prefix)/../apple-darwin/lib/libtunnel.a ; \
+	fi
 
 
 delivery-sdk: multi-arch

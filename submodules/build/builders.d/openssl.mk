@@ -23,7 +23,7 @@ $(OPENSSL_BUILD_DIR)/Makefile: $(OPENSSL_BUILD_DIR)/Configure
 
 build-openssl: $(OPENSSL_BUILD_DIR)/Makefile
 	cd $(OPENSSL_BUILD_DIR) &&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make CC="$$CC" build_crypto build_ssl libcrypto.pc libssl.pc\
+	&& make CC="$$CC" AR="$$AR r" RANLIB="$$RANLIB" build_crypto build_ssl libcrypto.pc libssl.pc\
 	&& cp -r include  $(prefix)/ \
 	&& cp lib*.a  $(prefix)/lib \
 	&& cp libcrypto.pc $(prefix)/lib/pkgconfig/. \

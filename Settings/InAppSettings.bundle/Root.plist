@@ -92,11 +92,43 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<string>udp</string>
+			<key>Key</key>
+			<string>transport_preference</string>
+			<key>Title</key>
+			<string>Transport</string>
+			<key>Titles</key>
+			<array>
+				<string>UDP</string>
+				<string>TCP</string>
+				<string>TLS</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+				<string>tls</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Outbound proxy</string>
+			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>outbound_proxy_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
 			<key>Title</key>
-			<string>Outbound proxy</string>
+			<string>AVPF</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>avpf_preference</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -158,7 +190,15 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>advanced_menu</string>
+			<string>tunnel_menu</string>
+			<key>File</key>
+			<string>Tunnel</string>
+			<key>Title</key>
+			<string>Tunnel</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
 			<key>File</key>
 			<string>Advanced</string>
 			<key>Title</key>

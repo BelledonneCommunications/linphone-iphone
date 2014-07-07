@@ -29,7 +29,7 @@
 "Expire" = "Expire";
 
 /* Primary account */
-"Primary account" = "Primary account";
+"Primary account" = "Standalone calls (no proxy)";
 
 /* Display name */
 "Display name" = "Display name";
@@ -52,3 +52,4 @@
 /* Landscape */
 "Landscape" = "Landscape";
 
+"Auto-answer after notification" = "Auto-answer after notification";

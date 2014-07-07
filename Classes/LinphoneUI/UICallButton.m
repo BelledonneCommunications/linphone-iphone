@@ -69,11 +69,47 @@
 - (void)touchUp:(id) sender {
     NSString *address = [addressField text];
     NSString *displayName = nil;
-    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-    if(contact) {
-        displayName = [FastAddressBook getContactDisplayName:contact];
+
+    if( [address length] == 0){
+        const MSList* logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+        while( logs ){
+            LinphoneCallLog* log = logs->data;
+            if( linphone_call_log_get_dir(log) == LinphoneCallOutgoing ){
+                LinphoneProxyConfig* def_proxy = NULL;
+                LinphoneAddress* to = linphone_call_log_get_to(log);
+                const char*  domain = linphone_address_get_domain(to);
+                char*   bis_address = NULL;
+
+                linphone_core_get_default_proxy([LinphoneManager getLc], &def_proxy);
+
+                // if the 'to' address is on the default proxy, only present the username
+                if( def_proxy ){
+                    const char* def_domain = linphone_proxy_config_get_domain(def_proxy);
+                    if( def_domain && domain && !strcmp(domain, def_domain) ){
+                        bis_address = ms_strdup(linphone_address_get_username(to));
+                    }
+                }
+
+                if( bis_address == NULL ) {
+                    bis_address = linphone_address_as_string_uri_only(to);
+                }
+
+                [addressField setText:[NSString stringWithUTF8String:bis_address]];
+                ms_free(bis_address);
+                // return after filling the address, let the user confirm the call by pressing again
+                return;
+            }
+            logs = ms_list_next(logs);
+        }
     }
-    [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
+
+    if( [address length] > 0){
+        ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+        if(contact) {
+            displayName = [FastAddressBook getContactDisplayName:contact];
+        }
+        [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
+    }
 }
 
 @end

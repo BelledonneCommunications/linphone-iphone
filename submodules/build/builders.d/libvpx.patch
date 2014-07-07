@@ -1,34 +1,61 @@
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index c99a01c..7fdf10d 100755
+index a65d395..579e0d6 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -889,13 +889,13 @@ process_common_toolchain() {
-                 SDK_PATH=${sdk_path}
-             fi
-             TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
--            CXX=${TOOLCHAIN_PATH}/g++
--            CC=${TOOLCHAIN_PATH}/gcc
--            AR=${TOOLCHAIN_PATH}/ar
--            LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
--            AS=${TOOLCHAIN_PATH}/as
--            STRIP=${TOOLCHAIN_PATH}/strip
--            NM=${TOOLCHAIN_PATH}/nm
-+            CXX=`xcrun --find clang++`
-+            CC=`xcrun --find clang`
-+            AR=`xcrun --find ar`
-+            LD=`xcrun --find clang`
-+            AS=`xcrun --find as`
-+            STRIP=`xcrun --find strip`
-+            NM=`xcrun --find nm`
-             AS_SFX=.s
+@@ -172,6 +172,7 @@ add_cflags() {
  
-             # ASFLAGS is written here instead of using check_add_asflags
-@@ -904,7 +904,7 @@ process_common_toolchain() {
-             ASFLAGS="-version -arch ${tgt_isa} -g"
  
-             add_cflags -arch ${tgt_isa}
--            add_ldflags -arch_only ${tgt_isa}
-+            add_ldflags -arch ${tgt_isa}
+ add_cflags_only() {
++    log_echo "Adding $@ to CFLAGS"
+     CFLAGS="${CFLAGS} $@"
+ }
  
-             if [ -z "${alt_libc}" ]; then
-                 alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.1.sdk
+@@ -792,7 +793,7 @@ process_common_toolchain() {
+     arm*)
+         # on arm, isa versions are supersets
+         case ${tgt_isa} in
+-        armv7)
++        armv7*)
+             soft_enable neon
+             soft_enable media
+             soft_enable edsp
+@@ -820,7 +821,9 @@ process_common_toolchain() {
+             arch_int=${arch_int%%te}
+             check_add_asflags --defsym ARCHITECTURE=${arch_int}
+             tune_cflags="-mtune="
+-            if [ ${tgt_isa} = "armv7" ]; then
++
++            case ${tgt_isa} in
++            armv7*)
+                 if [ -z "${float_abi}" ]; then
+                     check_cpp <<EOF && float_abi=hard || float_abi=softfp
+ #ifndef __ARM_PCS_VFP
+@@ -840,10 +843,12 @@ EOF
+                 if [ -z "${tune_cpu}" ]; then
+                     tune_cpu=cortex-a8
+                 fi
+-            else
++                ;;
++            *)
+                 check_add_cflags -march=${tgt_isa}
+                 check_add_asflags -march=${tgt_isa}
+-            fi
++                ;;
++            esac
+ 
+             enabled debug && add_asflags -g
+             asm_conversion_cmd="${source_path}/build/make/ads2gas.pl"
+diff --git a/build/make/rtcd.pl b/build/make/rtcd.pl
+index 18ee80d..a3dc890 100755
+--- a/build/make/rtcd.pl
++++ b/build/make/rtcd.pl
+@@ -383,6 +383,9 @@ if ($opts{arch} eq 'x86') {
+ } elsif ($opts{arch} eq 'armv7') {
+   @ALL_ARCHS = filter(qw/edsp media neon/);
+   arm;
++} elsif ($opts{arch} eq 'armv7s') {
++  @ALL_ARCHS = filter(qw/edsp media neon/);
++  arm;
+ } else {
+   unoptimized;
+ }

@@ -21,7 +21,7 @@
 
 #import "UICompositeViewController.h"
 #import "TPMultiLayoutViewController.h"
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @protocol IncomingCallViewDelegate <NSObject>
 

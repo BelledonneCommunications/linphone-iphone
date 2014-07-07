@@ -16802,7 +16802,7 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
 					<string>1637ea0ccdf086dbddb51c854d6310db
 </string>
@@ -17910,7 +17910,7 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
 					<string>a03adeb7710ae8986354684bdcd69764
 </string>
@@ -18365,7 +18365,7 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
 					<string>6ae28fd473b2900cce974380a72d5447
 </string>
@@ -18803,10 +18803,7 @@ Raison: %2$s</string>
 							<key>key</key>
 							<string>mpeg4</string>
 							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>mpeg4</string>
-							</dict>
+							<dict/>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
@@ -18826,10 +18823,7 @@ Raison: %2$s</string>
 							<key>key</key>
 							<string>h264</string>
 							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>h264</string>
-							</dict>
+							<dict/>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
@@ -18849,10 +18843,7 @@ Raison: %2$s</string>
 							<key>key</key>
 							<string>VP8</string>
 							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>VP8</string>
-							</dict>
+							<dict/>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
@@ -18949,7 +18940,7 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
 					<string>61504fb6dc1719749e72de751676a9cf
 </string>
@@ -19618,6 +19609,351 @@ Raison: %2$s</string>
 								<string>Video Port</string>
 								<key>fr</key>
 								<string>Port Vidéo</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
+					<key>plist file</key>
+					<false/>
+					<key>snapshots</key>
+					<dict/>
+					<key>versions</key>
+					<dict>
+						<key>en</key>
+						<string>1</string>
+					</dict>
+				</dict>
+				<dict>
+					<key>attachments</key>
+					<dict>
+						<key>backup</key>
+						<dict>
+							<key>1</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>InAppSettings.bundle/Tunnel/1/Tunnel.strings</string>
+							</dict>
+						</dict>
+					</dict>
+					<key>change date</key>
+					<date>2013-01-14T11:24:15Z</date>
+					<key>changed values</key>
+					<array/>
+					<key>class</key>
+					<string>BLStringsFileObject</string>
+					<key>errors</key>
+					<array/>
+					<key>flags</key>
+					<integer>0</integer>
+					<key>hash</key>
+					<string>64c1fe986e14ff9e0f2d716de9d17226
+</string>
+					<key>name</key>
+					<string>Tunnel.strings</string>
+					<key>objects</key>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Auto</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Auto</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Auto</string>
+								<key>fr</key>
+								<string>Auto</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Address</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Address</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Address</string>
+								<key>fr</key>
+								<string>Adresse</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Mode</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Mode</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Mode</string>
+								<key>fr</key>
+								<string>Mode</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Off</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Off</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Off</string>
+								<key>fr</key>
+								<string>Désactivé</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>On</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>On</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>On</string>
+								<key>fr</key>
+								<string>Activé</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Port</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Port</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Port</string>
+								<key>fr</key>
+								<string>Port</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>WWAN</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>WWAN</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>WWAN</string>
+								<key>fr</key>
+								<string>WWAN</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
+					<key>old objects</key>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Enable</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Enable</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Enable</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>auto</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>auto</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>auto</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>off</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>off</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>off</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>on</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>on</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>on</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>wwan</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>wwan</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>wwan</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

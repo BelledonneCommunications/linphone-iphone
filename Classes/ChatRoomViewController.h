@@ -23,18 +23,18 @@
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
 #import "HPGrowingTextView.h"
-#import "ChatModel.h"
 #import "ImagePickerViewController.h"
 #import "ImageSharing.h"
 #import "OrderedDictionary.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
     BOOL scrollOnGrowingEnabled;
+    BOOL composingVisible;
 }
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
@@ -49,8 +49,9 @@
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *transferBackgroundImage;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+@property (retain, nonatomic) IBOutlet UILabel *composeLabel;
+@property (retain, nonatomic) IBOutlet UIView *composeIndicatorView;
 
-@property (nonatomic, copy) NSString *remoteAddress;
 @property (nonatomic, retain) IBOutlet UIButton* pictureButton;
 @property (nonatomic, retain) IBOutlet UIButton* cancelTransferButton;
 @property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
@@ -64,5 +65,7 @@
 - (IBAction)onPictureClick:(id)event;
 - (IBAction)onTransferCancelClick:(id)event;
 - (IBAction)onListTap:(id)sender;
+
+- (void)setChatRoom:(LinphoneChatRoom*)room;
 
 @end

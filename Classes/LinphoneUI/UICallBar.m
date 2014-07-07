@@ -23,7 +23,7 @@
 #import "Utils.h"
 #import "CAAnimation+Blocks.h"
 
-#include "linphonecore.h"
+#include "linphone/linphonecore.h"
 
 @implementation UICallBar
 
