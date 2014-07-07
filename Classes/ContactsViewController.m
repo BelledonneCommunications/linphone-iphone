@@ -162,7 +162,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         self.tableView.frame = subViewFrame;
 
         self.tableView.dataSource = self.tableController;
-        self.tableView.delegate = self.tableController;
+        self.tableView.delegate   = self.tableController;
+
+        self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth |
+                                       UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleBottomMargin |
+                                      UIViewAutoresizingFlexibleLeftMargin |
+                                     UIViewAutoresizingFlexibleRightMargin;
 
         [self.view addSubview:tableView];
         [self update];
@@ -319,7 +326,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 - (void)viewDidUnload {
-[self setToolBar:nil];
-[super viewDidUnload];
+    [self setToolBar:nil];
+    [super viewDidUnload];
 }
 @end
