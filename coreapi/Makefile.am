@@ -130,7 +130,7 @@ test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 endif
 
 AM_CPPFLAGS=\
-	-I$(top_srcdir) -I$(top_srcdir)/include
+	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir)
 
 AM_CFLAGS=\
 	$(STRICT_OPTIONS)  -DIN_LINPHONE \
@@ -167,21 +167,21 @@ make_gitversion_h:
 				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
 				exit 1; \
 			fi ; \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
+			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		elif test "$(GITREVISION)" != "" ; then \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
+			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		else \
-			$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
+			$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		fi ; \
 	else \
-		$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
+		$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 	fi
-	if ! test -f $(srcdir)/$(GITVERSION_FILE) ; then \
-		cp -f $(srcdir)/$(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
+	if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
+		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
 	fi
-	if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
-		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
+	if test "`cat $(builddir)/$(GITVERSION_FILE_TMP)`" != "`cat $(builddir)/$(GITVERSION_FILE)`" ; then \
+		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
 	fi
-	rm -f $(GITVERSION_FILE_TMP) ;
+	rm -f $(builddir)/$(GITVERSION_FILE_TMP) ;
 
 $(GITVERSION_FILE): make_gitversion_h
