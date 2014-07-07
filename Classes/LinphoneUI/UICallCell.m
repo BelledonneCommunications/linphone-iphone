@@ -147,7 +147,7 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
+            [self addSubview:[arrayOfViews objectAtIndex:0]];
         }
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
