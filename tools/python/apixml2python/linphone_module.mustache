@@ -1,6 +1,43 @@
 #include <Python.h>
 #include <linphone/linphonecore.h>
 
+
+static PyObject *logging_module = NULL;
+
+
+static void init_logging(void) {
+	logging_module = PyImport_ImportModule("logging");
+	if (logging_module != NULL) {
+		PyObject *constant;
+		PyObject *func;
+		PyObject *kws;
+		long level = 0;
+
+		constant = PyObject_GetAttrString(logging_module, "DEBUG");
+		if (PyInt_Check(constant)) {
+			level = PyInt_AsLong(constant);
+		}
+		Py_DECREF(constant);
+		func = PyObject_GetAttrString(logging_module, "basicConfig");
+		kws = Py_BuildValue("{s:i,s:s}", "level", level, "format", "%(levelname)s: %(message)s");
+		PyEval_CallObjectWithKeywords(func, NULL, kws);
+		Py_DECREF(kws);
+		Py_DECREF(func);
+	}
+}
+
+static void pylinphone_log(const char *level, const char *fmt) {
+	if (logging_module != NULL) {
+		PyEval_CallMethod(logging_module, level, "(s)", fmt);
+	}
+}
+
+#define pylinphone_debug(fmt) pylinphone_log("debug", fmt)
+#define pylinphone_info(fmt) pylinphone_log("info", fmt)
+#define pylinphone_warning(fmt) pylinphone_log("warning", fmt)
+#define pylinphone_trace pylinphone_debug
+
+
 {{#classes}}
 
 typedef struct {
@@ -10,10 +47,12 @@ typedef struct {
 
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
 	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);
+	pylinphone_trace(__FUNCTION__);
 	return (PyObject *)self;
 }
 
 static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
+	pylinphone_trace(__FUNCTION__);
 	self->ob_type->tp_free(self);
 }
 
@@ -130,6 +169,8 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyObject *m;
 	PyObject *menum;
 	PyMethodDef *def;
+
+	init_logging();
 
 {{#classes}}
 	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;
