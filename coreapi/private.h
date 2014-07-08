@@ -524,6 +524,7 @@ typedef struct sip_config
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
 	bool_t tcp_tls_keepalive;
+	bool_t vfu_with_info; /*use to enable vfu request using sip info*/
 } sip_config_t;
 
 typedef struct rtp_config

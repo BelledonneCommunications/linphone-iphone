@@ -1278,11 +1278,14 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 /**
  * Request remote side to send us a Video Fast Update.
 **/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
+void linphone_call_send_vfu_request(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
+	if (call->core->sip_conf.vfu_with_info) {
+		if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+			sal_call_send_vfu_request(call->op);
+	} else {
+		ms_message("vfu request using sip disabled from config [sip,vfu_with_info]");
+	}
 #endif
 }
 
