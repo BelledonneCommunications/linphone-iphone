@@ -59,8 +59,7 @@ static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
 {{#class_type_methods}}
 
 static PyObject * pylinphone_{{class_name}}_type_method_{{method_name}}(PyObject *self, PyObject *args) {
-	// TODO: Fill implementation
-	Py_RETURN_NONE;
+{{{method_body}}}
 }
 
 {{/class_type_methods}}
