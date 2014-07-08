@@ -77,6 +77,23 @@ extern "C" void libmswebrtc_init();
 	}
 
 
+#define RETURN_PROXY_CONFIG_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
+	{ \
+		jclass jUserDataObjectClass; \
+		jmethodID jUserDataObjectCtor; \
+		jobject jUserDataObj; \
+		jUserDataObj = (jobject)funcprefix ## _get_user_data(cobj); \
+		if (jUserDataObj == NULL) { \
+			jUserDataObjectClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/" javaclass)); \
+			jUserDataObjectCtor = env->GetMethodID(jUserDataObjectClass,"<init>", "(J)V"); \
+			jUserDataObj = env->NewObject(jUserDataObjectClass, jUserDataObjectCtor,(jlong) cobj); \
+			jUserDataObj = env->NewGlobalRef(jUserDataObj); \
+			funcprefix ## _set_user_data(cobj, jUserDataObj); \
+			env->DeleteGlobalRef(jUserDataObjectClass); \
+		} \
+		return jUserDataObj; \
+	}
+
 
 static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
@@ -880,24 +897,32 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultProxyConfig(	J
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
+
 	LinphoneProxyConfig *config=0;
 	linphone_core_get_default_proxy((LinphoneCore*)lc,&config);
 	return (jlong)config;
 }
 
-extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
+static jobject getOrCreateProxy(JNIEnv* env,LinphoneProxyConfig* proxy){
+	RETURN_PROXY_CONFIG_USER_DATA_OBJECT("LinphoneProxyConfigImpl", linphone_proxy_config, proxy);
+}
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
 	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
-	jlongArray jProxies = env->NewLongArray(proxyCount);
-	jlong *jInternalArray = env->GetLongArrayElements(jProxies, NULL);
+	jclass cls = env->FindClass("java/lang/Object");
+	jobjectArray jProxies = env->NewObjectArray(proxyCount,cls,NULL);
 
 	for (int i = 0; i < proxyCount; i++ ) {
-		jInternalArray[i] = (unsigned long) (proxies->data);
+		LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
+		jobject jproxy = getOrCreateProxy(env,proxy);
+		if(jproxy != NULL){
+			env->SetObjectArrayElement(jProxies, i, jproxy);
+		} else {
+			return NULL;
+		}
 		proxies = proxies->next;
 	}
-
-	env->ReleaseLongArrayElements(jProxies, jInternalArray, 0);
-
 	return jProxies;
 }
 

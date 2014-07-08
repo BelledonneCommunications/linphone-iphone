@@ -25,6 +25,9 @@ package org.linphone.core;
  */
 public interface LinphoneProxyConfig {
 	
+	public void setIsDeleted(boolean b);
+	public boolean getIsDeleted();
+	
 	/**
 	 *Starts editing a proxy configuration.
 	 *Because proxy configuration must be consistent, applications MUST call {@link #edit()} before doing any attempts to modify proxy configuration (such as identity, proxy address and so on). 
