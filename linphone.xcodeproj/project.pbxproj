@@ -5497,7 +5497,6 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_OPENH264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
@@ -5728,7 +5727,6 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
@@ -5797,7 +5795,6 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
