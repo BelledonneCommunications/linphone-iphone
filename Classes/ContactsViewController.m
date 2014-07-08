@@ -153,6 +153,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         CGRect subViewFrame= self.view.frame;
         // let the toolBar be visible
         subViewFrame.origin.y += self.toolBar.frame.size.height;
+        subViewFrame.size.height -= self.toolBar.frame.size.height;
 
         self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
         self.tableView = [[[UITableView alloc] init] autorelease];
@@ -161,7 +162,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         self.tableView.frame = subViewFrame;
 
         self.tableView.dataSource = self.tableController;
-        self.tableView.delegate = self.tableController;
+        self.tableView.delegate   = self.tableController;
+
+        self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth |
+                                       UIViewAutoresizingFlexibleTopMargin |
+                                    UIViewAutoresizingFlexibleBottomMargin |
+                                      UIViewAutoresizingFlexibleLeftMargin |
+                                     UIViewAutoresizingFlexibleRightMargin;
 
         [self.view addSubview:tableView];
         [self update];
@@ -318,7 +326,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 - (void)viewDidUnload {
-[self setToolBar:nil];
-[super viewDidUnload];
+    [self setToolBar:nil];
+    [super viewDidUnload];
 }
 @end

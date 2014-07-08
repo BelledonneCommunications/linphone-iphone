@@ -327,14 +327,12 @@ delivery-sdk: multi-arch
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3 
 
-delivery:
-	cd $(BUILDER_SRC_DIR)/../ \
+.PHONY delivery:
+	cd $(BUILDER_SRC_DIR)/../../ \
 	&& zip  -r   $(BUILDER_SRC_DIR)/linphone-iphone.zip \
-	liblinphone-sdk linphone-iphone linphone/pixmaps/red.png \
-	linphone/pixmaps/green.png linphone/share/ringback.wav \
-	linphone/share/rings/oldphone-mono.wav \
+	linphone-iphone  \
 	-x linphone-iphone/build\* \
-	-x \*.git\*
+	--exclude linphone-iphone/.git\* --exclude \*.[od] --exclude \*.so.\* --exclude \*.a  --exclude linphone-iphone/liblinphone-sdk/apple-darwin/\* --exclude \*.lo 
 
 ipa:
 	cd $(BUILDER_SRC_DIR)/../ \

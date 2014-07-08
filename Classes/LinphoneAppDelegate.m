@@ -230,6 +230,7 @@
 			if (linphone_core_get_calls(lc)==NULL){ //if there are calls, obviously our TCP socket shall be working
 				linphone_core_set_network_reachable(lc, FALSE);
 				[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
+                [[LinphoneManager instance] refreshRegisters];
 				if(loc_key != nil) {
 					if([loc_key isEqualToString:@"IM_MSG"]) {
 						[[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
