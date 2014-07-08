@@ -643,8 +643,13 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}
 	}
 
+    // we keep the speaker auto-enabled state in this static so that we don't
+    // force-enable it on ICE re-invite if the user disabled it.
+    static BOOL speaker_already_enabled = FALSE;
+
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+        speaker_already_enabled = FALSE;
         if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
             [self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
@@ -695,8 +700,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
        state == LinphoneCallOutgoingInit ||
        state == LinphoneCallConnected ||
        state == LinphoneCallStreamsRunning) {
-        if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+        if (linphone_call_params_video_enabled(linphone_call_get_current_params(call)) && !speaker_already_enabled) {
             [self setSpeakerEnabled:TRUE];
+            speaker_already_enabled = TRUE;
         }
     }
     if (state == LinphoneCallConnected && !mCallCenter) {

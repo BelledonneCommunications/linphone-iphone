@@ -10,7 +10,6 @@
 		045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		15017E701773578400784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
 		15017E71177357C500784ACB /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15017E6F1773578400784ACB /* libxml2.a */; };
-		1560821D18EEF23F00765332 /* libwels.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821C18EEF23F00765332 /* libwels.a */; };
 		1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; };
 		1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
 		1599105416F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
@@ -116,6 +115,8 @@
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* AboutViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
+		22509042196BD902007863F6 /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22509041196BD902007863F6 /* libopenh264.a */; };
+		22509043196BD902007863F6 /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22509041196BD902007863F6 /* libopenh264.a */; };
 		225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		226183AD1472527D0037138E /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		226183AE1472527D0037138E /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
@@ -1503,7 +1504,6 @@
 /* Begin PBXFileReference section */
 		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
 		15017E6F1773578400784ACB /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
-		1560821C18EEF23F00765332 /* libwels.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwels.a; path = "liblinphone-sdk/apple-darwin/lib/libwels.a"; sourceTree = "<group>"; };
 		1560821E18EEF26100765332 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
 		1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default_landscape.png; path = Resources/route_bluetooth_off_default_landscape.png; sourceTree = "<group>"; };
 		1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_disabled_landscape.png; path = Resources/route_bluetooth_off_disabled_landscape.png; sourceTree = "<group>"; };
@@ -1579,6 +1579,7 @@
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
 		2248E90D12F7E4CF00220D9C /* UIDigitButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButton.m; sourceTree = "<group>"; };
+		22509041196BD902007863F6 /* libopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/libopenh264.a"; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		225CB2F911ABB76400628906 /* linphone-banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-banner.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-banner.png"; sourceTree = "<group>"; };
 		226183AA1472527D0037138E /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
@@ -2392,7 +2393,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
-				1560821D18EEF23F00765332 /* libwels.a in Frameworks */,
+				22509042196BD902007863F6 /* libopenh264.a in Frameworks */,
 				15017E701773578400784ACB /* libxml2.a in Frameworks */,
 				22AF73C21754C0D100BE8398 /* libopus.a in Frameworks */,
 				57B0E360173C010400A476B8 /* libpolarssl.a in Frameworks */,
@@ -2495,6 +2496,7 @@
 				22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */,
 				22C39D5E192354250008E1B6 /* libbzrtp.a in Frameworks */,
 				22D8F16E147548E2008C97DB /* libspeex.a in Frameworks */,
+				22509043196BD902007863F6 /* libopenh264.a in Frameworks */,
 				22D8F16F147548E2008C97DB /* libspeexdsp.a in Frameworks */,
 				D30BF33316A427BC00AF0026 /* libtunnel.a in Frameworks */,
 				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
@@ -2799,6 +2801,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				22509041196BD902007863F6 /* libopenh264.a */,
 				223CA7E416D9255800EF1BEC /* libantlr3c.a */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -2830,7 +2833,6 @@
 				22276E8213C73D3100210156 /* libswscale.a */,
 				D30BF33216A427BC00AF0026 /* libtunnel.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
-				1560821C18EEF23F00765332 /* libwels.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
 				15017E6F1773578400784ACB /* libxml2.a */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
@@ -5432,9 +5434,9 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
-					Classes/Utils/NinePatch/,
-					Classes/Utils/XMLRPC/,
+					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -5442,6 +5444,7 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5494,15 +5497,14 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_OPENH264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
-					Classes/Utils/NinePatch/,
-					Classes/Utils/XMLRPC/,
+					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -5510,6 +5512,7 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5526,6 +5529,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5550,11 +5554,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 			};
 			name = Debug;
@@ -5564,6 +5570,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5587,11 +5594,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 			};
 			name = Release;
@@ -5602,6 +5611,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5625,11 +5635,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 			};
 			name = Distribution;
@@ -5640,6 +5652,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5663,11 +5676,13 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 			};
 			name = DistributionAdhoc;
@@ -5712,15 +5727,14 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
-					Classes/Utils/NinePatch/,
-					Classes/Utils/XMLRPC/,
+					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -5728,6 +5742,7 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5780,15 +5795,14 @@
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
-					Classes/Utils/NinePatch/,
-					Classes/Utils/XMLRPC/,
+					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -5796,6 +5810,7 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";

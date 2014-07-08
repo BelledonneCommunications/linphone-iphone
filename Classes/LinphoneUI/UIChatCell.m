@@ -114,7 +114,7 @@
         // Message
         if(url) {
             [chatContentLabel setText:@""];
-        } else {
+        } else if (text) {
             NSString *message = [NSString stringWithUTF8String:text];
             // shorten long messages
             if([message length] > 50)

@@ -278,11 +278,23 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	return [[changedDict valueForKey:key] boolValue];
 }
 
+- (void)alertAccountError:(NSString*)error {
+    UIAlertView* alertview = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                                        message:error
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                              otherButtonTitles: nil];
+    [alertview show];
+    [alertview release];
+}
+
 - (void)synchronizeAccount {
 	LinphoneCore *lc = [LinphoneManager getLc];
     LpConfig*   conf = linphone_core_get_config(lc);
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	LinphoneProxyConfig* proxyCfg = NULL;
+    NSString* error = nil;
+
 	/* unregister before modifying any settings */
     {
         linphone_core_get_default_proxy(lc, &proxyCfg);
@@ -340,13 +352,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     bool      isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
     BOOL             use_avpf = [self boolForKey:@"avpf_preference"];
 
-	//clear auth info list
-	linphone_core_clear_all_auth_info(lc);
-    //clear existing proxy config
-    linphone_core_clear_proxy_config(lc);
-
 	if (username && [username length] >0 && domain && [domain length]>0) {
-		NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
+        LinphoneAuthInfo *info = NULL;
+
+        NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
@@ -378,18 +387,17 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		const char*      ha1 = [accountHa1 cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
 		// configure proxy entries
-		linphone_proxy_config_set_identity(proxyCfg, identity);
-		linphone_proxy_config_set_server_addr(proxyCfg, proxy);
-		linphone_proxy_config_enable_register(proxyCfg, true);
+		if( linphone_proxy_config_set_identity(proxyCfg, identity) == -1 ) { error = NSLocalizedString(@"Invalid username or domain",nil); goto bad_proxy; }
+        if( linphone_proxy_config_set_server_addr(proxyCfg, proxy) == -1 ) { error = NSLocalizedString(@"Invalid proxy address", nil); goto bad_proxy; }
+
+        linphone_proxy_config_enable_register(proxyCfg, true);
 
         linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
 		
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
-		LinphoneAuthInfo *info;
 		if (from != 0){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,ha1,NULL,linphone_proxy_config_get_domain(proxyCfg));
-			linphone_core_add_auth_info(lc,info);
             linphone_address_destroy(from);
 		}
 
@@ -422,13 +430,27 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
         
         [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
-        
+
+        // We reached here: the new settings are correct, so replace the previous ones.
+        linphone_core_clear_proxy_config(lc);
+        linphone_core_clear_all_auth_info(lc);
+
+        // add proxy and auth info
 		linphone_core_add_proxy_config(lc,proxyCfg);
-		//set to default proxy
 		linphone_core_set_default_proxy(lc,proxyCfg);
-		
-		linphone_address_destroy(linphoneAddress);
-        ms_free(proxy);
+        if( info )
+            linphone_core_add_auth_info(lc,info);
+
+    bad_proxy:
+		if( linphoneAddress)
+            linphone_address_destroy(linphoneAddress);
+        if( proxy)
+            ms_free(proxy);
+        if( info )
+            linphone_auth_info_destroy(info);
+        if( error != nil ){
+            [self alertAccountError:error];
+        }
 	}
     [[[LinphoneManager instance] fastAddressBook] reload];
 }
