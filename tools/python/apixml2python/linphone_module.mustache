@@ -51,6 +51,10 @@ typedef struct {
 	{{class_name}} *native_ptr;
 } pylinphone_{{class_name}}Object;
 
+static {{class_name}} * pylinphone_{{class_name}}_get_native_ptr(pylinphone_{{class_name}}Object *self) {
+	return self->native_ptr;
+}
+
 static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, {{class_name}} *native_ptr) {
 	pylinphone_{{class_name}}Object *self;
 	pylinphone_trace(__FUNCTION__);
@@ -64,6 +68,7 @@ static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *ty
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
 	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);
 	pylinphone_trace(__FUNCTION__);
+	self->native_ptr = NULL;
 	return (PyObject *)self;
 }
 
@@ -105,12 +110,11 @@ static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
 {{#class_properties}}
 
 static PyObject * pylinphone_{{class_name}}_{{getter_name}}(pylinphone_{{class_name}}Object *self, void *closure) {
-	// TODO: Fill implementation
-	Py_RETURN_NONE;
+{{{getter_body}}}
 }
 
 static int pylinphone_{{class_name}}_{{setter_name}}(pylinphone_{{class_name}}Object *self, PyObject *value, void *closure) {
-	// TODO: Fill implementation
+{{{setter_body}}}
 	return 0;
 }
 
