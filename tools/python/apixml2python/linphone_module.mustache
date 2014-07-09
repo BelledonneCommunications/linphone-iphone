@@ -66,14 +66,14 @@ static PyTypeObject pylinphone_{{class_name}}Type;
 
 typedef struct {
 	PyObject_HEAD
-	{{class_name}} *native_ptr;
+	{{class_cname}} *native_ptr;
 } pylinphone_{{class_name}}Object;
 
-static {{class_name}} * pylinphone_{{class_name}}_get_native_ptr(pylinphone_{{class_name}}Object *self) {
+static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(pylinphone_{{class_name}}Object *self) {
 	return self->native_ptr;
 }
 
-static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, {{class_name}} *native_ptr) {
+static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, {{class_cname}} *native_ptr) {
 	pylinphone_{{class_name}}Object *self;
 	pylinphone_trace(__FUNCTION__);
 	if (native_ptr == NULL) Py_RETURN_NONE;
@@ -217,7 +217,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	if (menum == NULL) return;
 	if (PyModule_AddObject(m, "{{enum_name}}", menum) < 0) return;
 {{#enum_values}}
-	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_name}}) < 0) return;
+	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
 {{/enum_values}}
 {{/enums}}
 

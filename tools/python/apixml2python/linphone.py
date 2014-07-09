@@ -199,20 +199,22 @@ class LinphoneModule(object):
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
 			e = {}
-			e['enum_name'] = xml_enum.get('name')
+			e['enum_name'] = self.__strip_leading_linphone(xml_enum.get('name'))
 			e['enum_doc'] = self.__format_doc(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
 			e['enum_values'] = []
 			xml_enum_values = xml_enum.findall("./values/value")
 			for xml_enum_value in xml_enum_values:
 				v = {}
-				v['enum_value_name'] = xml_enum_value.get('name')
+				v['enum_value_cname'] = xml_enum_value.get('name')
+				v['enum_value_name'] = self.__strip_leading_linphone(v['enum_value_cname'])
 				e['enum_values'].append(v)
 			self.enums.append(e)
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
 			c = {}
-			c['class_name'] = xml_class.get('name')
+			c['class_cname'] = xml_class.get('name')
+			c['class_name'] = self.__strip_leading_linphone(c['class_cname'])
 			c['class_c_function_prefix'] = xml_class.get('cfunctionprefix')
 			c['class_doc'] = self.__format_doc(xml_class.find('briefdescription'), xml_class.find('detaileddescription'))
 			c['class_type_methods'] = []
@@ -243,6 +245,12 @@ class LinphoneModule(object):
 					p['setter_body'] = self.__format_setter_body(xml_property_setter, c)
 				c['class_properties'].append(p)
 			self.classes.append(c)
+
+	def __strip_leading_linphone(self, s):
+		if s.lower().startswith('linphone'):
+			return s[8:]
+		else:
+			return s
 
 	def __format_method_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_)
