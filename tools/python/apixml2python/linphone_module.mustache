@@ -40,10 +40,26 @@ static void pylinphone_log(const char *level, const char *fmt) {
 
 {{#classes}}
 
+static PyTypeObject pylinphone_{{class_name}}Type;
+
+{{/classes}}
+
+{{#classes}}
+
 typedef struct {
 	PyObject_HEAD
 	{{class_name}} *native_ptr;
 } pylinphone_{{class_name}}Object;
+
+static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, {{class_name}} *native_ptr) {
+	pylinphone_{{class_name}}Object *self;
+	pylinphone_trace(__FUNCTION__);
+	if (native_ptr == NULL) Py_RETURN_NONE;
+	self = (pylinphone_{{class_name}}Object *)PyObject_New(pylinphone_{{class_name}}Object, type);
+	if (self == NULL) Py_RETURN_NONE;
+	self->native_ptr = native_ptr;
+	return (PyObject *)self;
+}
 
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
 	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);

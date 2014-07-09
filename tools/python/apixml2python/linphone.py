@@ -25,7 +25,7 @@ class LinphoneModule(object):
 			for xml_type_method in xml_type_methods:
 				m = {}
 				m['method_name'] = xml_type_method.get('name').replace(c['class_c_function_prefix'], '')
-				m['method_body'] = self.__format_method_body(xml_type_method)
+				m['method_body'] = self.__format_method_body(xml_type_method, c['class_name'])
 				c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
@@ -47,7 +47,7 @@ class LinphoneModule(object):
 				c['class_properties'].append(p)
 			self.classes.append(c)
 
-	def __ctype_to_parse_tuple_format(self, ctype):
+	def __ctype_to_python_format(self, ctype):
 		keywords = ['const', 'struct', 'enum', 'signed', 'unsigned', 'short', 'long', '*']
 		splitted_type = ctype.split(' ')
 		for s in splitted_type:
@@ -87,21 +87,42 @@ class LinphoneModule(object):
 		else:
 			return 'O'
 
-	def __format_method_body(self, method_node):
+	def __format_method_body(self, method_node, class_name):
 		body = ''
 		parse_tuple_format = ''
+		xml_method_return = method_node.find('./return')
+		return_type = xml_method_return.get('type')
+		if return_type != 'void':
+			body += "\t" + return_type + " cresult;\n"
+			build_value_format = self.__ctype_to_python_format(return_type)
+			if build_value_format == 'O':
+				body += "\tPyObject * pyresult;\n"
+				body += "\tPyObject * pyret;\n"
 		xml_method_args = method_node.findall('./arguments/argument')
 		arg_names = []
 		for xml_method_arg in xml_method_args:
-			parse_tuple_format += self.__ctype_to_parse_tuple_format(xml_method_arg.get('type'))
+			parse_tuple_format += self.__ctype_to_python_format(xml_method_arg.get('type'))
 			body += "\t" + xml_method_arg.get('type') + " " + xml_method_arg.get('name') + ";\n"
 			arg_names.append(xml_method_arg.get('name'))
-		body += "\tpylinphone_trace(__FUNCTION__);\n"
 		if len(xml_method_args) > 0:
 			body += "\n\tif (!PyArg_ParseTuple(args, \"" + parse_tuple_format + "\""
 			body += ', ' + ', '.join(map(lambda a: '&' + a, arg_names))
 			body += ")) {\n\t\treturn NULL;\n\t}\n\n"
-		body += "\tPy_RETURN_NONE;"
+		body += "\tpylinphone_trace(__FUNCTION__);\n\n"
+		body += "\t"
+		if return_type != 'void':
+			body += "cresult = "
+		body += method_node.get('name') + "(" + ', '.join(arg_names) + ");\n"
+		if return_type != 'void':
+			if build_value_format == 'O':
+				body += "\tpyresult = pylinphone_" + class_name + "_new_from_native_ptr(&pylinphone_" + class_name + "Type, cresult);\n"
+				body += "\tpyret = Py_BuildValue(\"" + build_value_format + "\", pyresult);\n"
+				body += "\tPy_DECREF(pyresult);\n"
+				body += "\treturn pyret;"
+			else:
+				body += "\treturn Py_BuildValue(\"" + build_value_format + "\", cresult);"
+		else:
+			body += "\tPy_RETURN_NONE;"
 		return body
 
 	def __format_doc_node(self, node):
