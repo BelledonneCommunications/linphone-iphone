@@ -58,19 +58,11 @@ static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
 
 {{#class_type_methods}}
 
-static PyObject * pylinphone_{{class_name}}_type_method_{{method_name}}(PyObject *self, PyObject *args) {
+static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args) {
 {{{method_body}}}
 }
 
 {{/class_type_methods}}
-
-static PyMethodDef pylinphone_{{class_name}}_type_methods[] = {
-	// TODO: Handle doc
-{{#class_type_methods}}
-	{ "{{method_name}}", pylinphone_{{class_name}}_type_method_{{method_name}}, METH_VARARGS, "" },
-{{/class_type_methods}}
-	{ NULL, NULL, 0, NULL }	/* Sentinel */
-};
 
 {{#class_instance_methods}}
 
@@ -83,6 +75,11 @@ static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyOb
 
 static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
 	// TODO: Handle doc
+	/* Class methods */
+{{#class_type_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "" },
+{{/class_type_methods}}
+	/* Instance methods */
 {{#class_instance_methods}}
 	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "" },
 {{/class_instance_methods}}
@@ -167,7 +164,6 @@ static PyMethodDef pylinphone_NoMethods[] = {
 PyMODINIT_FUNC initlinphone(void) {
 	PyObject *m;
 	PyObject *menum;
-	PyMethodDef *def;
 
 	init_logging();
 
@@ -190,12 +186,5 @@ PyMODINIT_FUNC initlinphone(void) {
 {{#classes}}
 	Py_INCREF(&pylinphone_{{class_name}}Type);
 	PyModule_AddObject(m, "{{class_name}}", (PyObject *)&pylinphone_{{class_name}}Type);
-	for (def = pylinphone_{{class_name}}_type_methods; def->ml_name != NULL; def++) {
-		PyObject *func = PyCFunction_New(def, NULL);
-		PyObject *method = PyMethod_New(func, NULL, (PyObject *)&pylinphone_{{class_name}}Type);
-		PyDict_SetItemString(pylinphone_{{class_name}}Type.tp_dict, def->ml_name, method);
-		Py_DECREF(method);
-		Py_DECREF(func);
-	}
 {{/classes}}
 }
