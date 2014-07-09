@@ -26,10 +26,19 @@ sys.path.append(os.path.realpath(__file__))
 from apixml2python.linphone import LinphoneModule
 
 
+blacklisted_functions = [
+	'linphone_auth_info_write_config',
+	'lp_config_for_each_entry',
+	'lp_config_for_each_section',
+	'lp_config_get_range',
+	'lp_config_load_dict_to_section',
+	'lp_config_section_to_dict'
+]
+
 def generate(apixmlfile):
 	tree = ET.parse(apixmlfile)
 	renderer = pystache.Renderer()
-	m = LinphoneModule(tree)
+	m = LinphoneModule(tree, blacklisted_functions)
 	f = open("linphone.c", "w")
 	f.write(renderer.render(m))
 

@@ -98,8 +98,8 @@ class MethodDefinition:
 		if self.return_type != 'void':
 			self.body += "cresult = "
 		self.body += self.method_node.get('name') + "("
-		if self.method_type != 'classmethod':
-			self.body += "pylinphone_" + self.class_['class_name'] + "_get_native_ptr(self)"
+		if self.self_arg is not None:
+			self.body += "native_ptr"
 			if len(self.arg_names) > 0:
 				self.body += ', '
 		self.body += ', '.join(self.arg_names) + ");\n"
@@ -194,7 +194,7 @@ class MethodDefinition:
 
 
 class LinphoneModule(object):
-	def __init__(self, tree):
+	def __init__(self, tree, blacklisted_functions):
 		self.enums = []
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
@@ -220,15 +220,22 @@ class LinphoneModule(object):
 			c['class_type_methods'] = []
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
+				method_name = xml_type_method.get('name')
+				if method_name in blacklisted_functions:
+					continue
 				m = {}
-				m['method_name'] = xml_type_method.get('name').replace(c['class_c_function_prefix'], '')
+				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
 				m['method_body'] = self.__format_method_body(xml_type_method, c)
 				c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
 			for xml_instance_method in xml_instance_methods:
+				method_name = xml_instance_method.get('name')
+				if method_name in blacklisted_functions:
+					continue
 				m = {}
-				m['method_name'] = xml_instance_method.get('name').replace(c['class_c_function_prefix'], '')
+				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
+				m['method_body'] = self.__format_method_body(xml_instance_method, c)
 				c['class_instance_methods'].append(m)
 			c['class_properties'] = []
 			xml_properties = xml_class.findall("./properties/property")
