@@ -329,6 +329,14 @@ delivery-sdk: multi-arch
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3 
 
+download-sdk:
+	cd $(BUILDER_SRC_DIR)/../
+	rm -fr liblinphone-iphone-sdk-latest* 
+	wget http://linphone.org/snapshots/ios/liblinphone-iphone-sdk-latest.zip 
+	unzip -o -q liblinphone-iphone-sdk-latest.zip 
+	rm -fr ../../liblinphone-sdk/
+	mv liblinphone-sdk ../..
+
 .PHONY delivery:
 	cd $(BUILDER_SRC_DIR)/../../ \
 	&& zip  -r   $(BUILDER_SRC_DIR)/linphone-iphone.zip \

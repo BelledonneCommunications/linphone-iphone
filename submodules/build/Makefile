@@ -109,6 +109,9 @@ broadcast_%:
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
 
+download-sdk:
+	make -f builder-iphone-os.mk download-sdk
+
 build: broadcast_all sdk
 
 ipa: build broadcast_ipa
