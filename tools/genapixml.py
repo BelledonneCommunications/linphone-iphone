@@ -503,6 +503,8 @@ class Project:
 			f.deprecated = True
 		f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 		f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
+		if f.briefDescription == '' and ''.join(f.detailedDescription.itertext()).strip() == '':
+			return None
 		locationNode = node.find('./location')
 		if locationNode is not None:
 			f.location = locationNode.get('file')
