@@ -68,22 +68,17 @@ class MethodDefinition:
 			self.body += ")) {\n\t\treturn NULL;\n\t}\n"
 
 	def format_setter_value_checking_and_c_function_call(self):
-		# Check the native pointer
+		attribute_name = self.method_node.get('property_name')
 		self.format_native_pointer_checking(True)
-		self.body += "\tnative_ptr = pylinphone_" + self.class_['class_name'] + "_get_native_ptr(self);\n"
-		self.body += "\tif(native_ptr == NULL) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid " + self.class_['class_name'] + " instance\");\n"
-		self.body += "\t\treturn -1;\n"
-		self.body += "\t}\n"
 		# Check that the value exists
 		self.body += "\tif (value == NULL) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Cannot delete this attribute\");\n"
+		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Cannot delete the " + attribute_name + " attribute\");\n"
 		self.body += "\t\treturn -1;\n"
 		self.body += "\t}\n"
 		# Check the value
 		basic_type, checkfunc, convertfunc = self.__ctype_to_python_type(self.xml_method_args[0].get('type'))
 		self.body += "\tif (!" + checkfunc + "(value)) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"This attribute value must be a " + basic_type + "\");\n"
+		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + basic_type + "\");\n"
 		self.body += "\t\treturn -1;\n"
 		self.body += "\t}\n"
 		# Call the C function
@@ -210,6 +205,7 @@ class MethodDefinition:
 class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_functions):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
+		self.internal_property_names = ['user_data']
 		self.enums = []
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
@@ -270,14 +266,19 @@ class LinphoneModule(object):
 			c['class_properties'] = []
 			xml_properties = xml_class.findall("./properties/property")
 			for xml_property in xml_properties:
+				property_name = xml_property.get('name')
+				if property_name in self.internal_property_names:
+					continue
 				p = {}
-				p['property_name'] = xml_property.get('name')
+				p['property_name'] = property_name
 				xml_property_getter = xml_property.find("./getter")
 				xml_property_setter = xml_property.find("./setter")
 				if xml_property_getter is not None:
+					xml_property_getter.set('property_name', property_name)
 					p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
 					p['getter_body'] = self.__format_getter_body(xml_property_getter, c)
 				if xml_property_setter is not None:
+					xml_property_setter.set('property_name', property_name)
 					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
 					p['setter_body'] = self.__format_setter_body(xml_property_setter, c)
 				c['class_properties'].append(p)
