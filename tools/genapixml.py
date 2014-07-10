@@ -593,7 +593,30 @@ class Generator:
 		functionNode.append(f.detailedDescription)
 
 	def __generateClass(self, cclass, classesNode):
-		classNodeAttributes = { 'name' : cclass.name, 'cfunctionprefix' : cclass.cFunctionPrefix, 'deprecated' : str(cclass.deprecated).lower() }
+		has_ref_method = False
+		has_unref_method = False
+		has_destroy_method = False
+		for methodname in cclass.instanceMethods:
+			methodname_without_prefix = methodname.replace(cclass.cFunctionPrefix, '')
+			if methodname_without_prefix == 'ref':
+				has_ref_method = True
+			elif methodname_without_prefix == 'unref':
+				has_unref_method = True
+			elif methodname_without_prefix == 'destroy':
+				has_destroy_method = True
+		refcountable = False
+		destroyable = False
+		if has_ref_method and has_unref_method:
+			refcountable = True
+		if has_destroy_method:
+			destroyable = True
+		classNodeAttributes = {
+			'name' : cclass.name,
+			'cfunctionprefix' : cclass.cFunctionPrefix,
+			'deprecated' : str(cclass.deprecated).lower(),
+			'refcountable' : str(refcountable).lower(),
+			'destroyable' : str(destroyable).lower()
+		}
 		classNode = ET.SubElement(classesNode, 'class', classNodeAttributes)
 		if len(cclass.events) > 0:
 			eventsNode = ET.SubElement(classNode, 'events')
