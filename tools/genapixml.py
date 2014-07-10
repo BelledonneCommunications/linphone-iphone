@@ -593,6 +593,11 @@ class Generator:
 		functionNode.append(f.detailedDescription)
 
 	def __generateClass(self, cclass, classesNode):
+		# Do not include classes that contain nothing
+		if len(cclass.events) == 0 and len(cclass.classMethods) == 0 and \
+			len(cclass.instanceMethods) == 0 and len(cclass.properties) == 0:
+			return
+		# Check the capabilities of the class
 		has_ref_method = False
 		has_unref_method = False
 		has_destroy_method = False
@@ -617,6 +622,7 @@ class Generator:
 			'refcountable' : str(refcountable).lower(),
 			'destroyable' : str(destroyable).lower()
 		}
+		# Generate the XML node for the class
 		classNode = ET.SubElement(classesNode, 'class', classNodeAttributes)
 		if len(cclass.events) > 0:
 			eventsNode = ET.SubElement(classNode, 'events')
