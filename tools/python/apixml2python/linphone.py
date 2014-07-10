@@ -14,8 +14,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+def strip_leading_linphone(s):
+	if s.lower().startswith('linphone'):
+		return s[8:]
+	else:
+		return s
+
 class MethodDefinition:
-	def __init__(self, method_node, class_):
+	def __init__(self, method_node, class_, enum_names):
 		self.body = ''
 		self.arg_names = []
 		self.parse_tuple_format = ''
@@ -23,6 +29,7 @@ class MethodDefinition:
 		self.return_type = 'void'
 		self.method_node = method_node
 		self.class_ = class_
+		self.enum_names = enum_names
 		self.self_arg = None
 		self.xml_method_return = self.method_node.find('./return')
 		self.xml_method_args = self.method_node.findall('./arguments/argument')
@@ -42,8 +49,16 @@ class MethodDefinition:
 		if self.self_arg is not None:
 			self.body += "\t" + self.self_arg.get('type') + "native_ptr;\n"
 		for xml_method_arg in self.xml_method_args:
-			self.parse_tuple_format += self.__ctype_to_python_format(xml_method_arg.get('type'))
-			self.body += "\t" + xml_method_arg.get('type') + " " + xml_method_arg.get('name') + ";\n"
+			method_type = xml_method_arg.get('type')
+			fmt = self.__ctype_to_python_format(method_type)
+			self.parse_tuple_format += fmt
+			if fmt == 'O':
+				# TODO
+				pass
+			elif strip_leading_linphone(method_type) in self.enum_names:
+				self.body += "\tint " + xml_method_arg.get('name') + ";\n"
+			else:
+				self.body += "\t" + xml_method_arg.get('type') + " " + xml_method_arg.get('name') + ";\n"
 			self.arg_names.append(xml_method_arg.get('name'))
 
 	def format_native_pointer_get(self):
@@ -171,7 +186,10 @@ class MethodDefinition:
 		elif basic_type == 'bool_t':
 			return 'i'
 		else:
-			return 'O'
+			if strip_leading_linphone(basic_type) in self.enum_names:
+				return 'i'
+			else:
+				return 'O'
 
 	def __ctype_to_python_type(self, ctype):
 		basic_type, splitted_type = self.__get_basic_type_from_c_type(ctype)
@@ -200,7 +218,10 @@ class MethodDefinition:
 		elif basic_type == 'bool_t':
 			return ('bool', 'PyBool_Check', 'PyInt_AsLong')
 		else:
-			return ('class instance', 'PyInstance_Check', None)
+			if strip_leading_linphone(basic_type) in self.enum_names:
+				return ('int', 'PyInt_Check', 'PyInt_AsLong')
+			else:
+				return ('class instance', 'PyInstance_Check', None)
 
 
 class LinphoneModule(object):
@@ -208,12 +229,13 @@ class LinphoneModule(object):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.enums = []
+		self.enum_names = []
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
 			if xml_enum.get('deprecated') == 'true':
 				continue
 			e = {}
-			e['enum_name'] = self.__strip_leading_linphone(xml_enum.get('name'))
+			e['enum_name'] = strip_leading_linphone(xml_enum.get('name'))
 			e['enum_doc'] = self.__format_doc(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
 			e['enum_values'] = []
 			xml_enum_values = xml_enum.findall("./values/value")
@@ -222,9 +244,10 @@ class LinphoneModule(object):
 					continue
 				v = {}
 				v['enum_value_cname'] = xml_enum_value.get('name')
-				v['enum_value_name'] = self.__strip_leading_linphone(v['enum_value_cname'])
+				v['enum_value_name'] = strip_leading_linphone(v['enum_value_cname'])
 				e['enum_values'].append(v)
 			self.enums.append(e)
+			self.enum_names.append(e['enum_name'])
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
@@ -232,7 +255,7 @@ class LinphoneModule(object):
 				continue
 			c = {}
 			c['class_cname'] = xml_class.get('name')
-			c['class_name'] = self.__strip_leading_linphone(c['class_cname'])
+			c['class_name'] = strip_leading_linphone(c['class_cname'])
 			c['class_c_function_prefix'] = xml_class.get('cfunctionprefix')
 			c['class_doc'] = self.__format_doc(xml_class.find('briefdescription'), xml_class.find('detaileddescription'))
 			c['class_refcountable'] = (xml_class.get('refcountable') == 'true')
@@ -305,14 +328,8 @@ class LinphoneModule(object):
 				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 			self.classes.append(c)
 
-	def __strip_leading_linphone(self, s):
-		if s.lower().startswith('linphone'):
-			return s[8:]
-		else:
-			return s
-
 	def __format_method_body(self, method_node, class_):
-		method = MethodDefinition(method_node, class_)
+		method = MethodDefinition(method_node, class_, self.enum_names)
 		method.format_local_variables_definition()
 		method.format_arguments_parsing()
 		method.format_tracing()
@@ -321,7 +338,7 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_getter_body(self, getter_node, class_):
-		method = MethodDefinition(getter_node, class_)
+		method = MethodDefinition(getter_node, class_, self.enum_names)
 		method.format_local_variables_definition()
 		method.format_arguments_parsing()
 		method.format_tracing()
@@ -330,7 +347,7 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_setter_body(self, setter_node, class_):
-		method = MethodDefinition(setter_node, class_)
+		method = MethodDefinition(setter_node, class_, self.enum_names)
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		# TODO: Investigate. Maybe we should decide that setters must always return an int value.
 		method.xml_method_return.set('type', 'void')
@@ -340,7 +357,7 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_dealloc_body(self, method_node, class_):
-		method = MethodDefinition(method_node, class_)
+		method = MethodDefinition(method_node, class_, self.enum_names)
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		method.xml_method_return.set('type', 'void')
 		method.format_local_variables_definition()
