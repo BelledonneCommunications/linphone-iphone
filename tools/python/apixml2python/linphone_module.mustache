@@ -89,8 +89,7 @@ static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *ar
 }
 
 static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
-	pylinphone_trace(__FUNCTION__);
-	self->ob_type->tp_free(self);
+{{{dealloc_body}}}
 }
 
 {{#class_type_methods}}
@@ -119,7 +118,8 @@ static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
 {{#class_instance_methods}}
 	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "" },
 {{/class_instance_methods}}
-	{ NULL, NULL, 0, NULL }	/* Sentinel */
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
 };
 
 {{#class_properties}}
@@ -140,7 +140,8 @@ static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
 {{#class_properties}}
 	{ "{{property_name}}", (getter)pylinphone_{{class_name}}_{{getter_name}}, (setter)pylinphone_{{class_name}}_{{setter_name}}, "" },
 {{/class_properties}}
-	{ NULL, NULL, NULL, NULL, NULL }	/* Sentinel */
+	/* Sentinel */
+	{ NULL, NULL, NULL, NULL, NULL }
 };
 
 static PyTypeObject pylinphone_{{class_name}}Type = {
@@ -189,11 +190,13 @@ static PyTypeObject pylinphone_{{class_name}}Type = {
 {{/classes}}
 
 static PyMethodDef pylinphone_ModuleMethods[] = {
-	{ NULL, NULL, 0, NULL }	/* Sentinel */
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
 };
 
 static PyMethodDef pylinphone_NoMethods[] = {
-	{ NULL, NULL, 0, NULL }	/* Sentinel */
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
 };
 
 PyMODINIT_FUNC initlinphone(void) {

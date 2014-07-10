@@ -27,7 +27,7 @@ class MethodDefinition:
 		self.xml_method_return = self.method_node.find('./return')
 		self.xml_method_args = self.method_node.findall('./arguments/argument')
 		self.method_type = self.method_node.tag
-		if self.method_type != 'classmethod':
+		if self.method_type != 'classmethod' and len(self.xml_method_args) > 0:
 			self.self_arg = self.xml_method_args[0]
 			self.xml_method_args = self.xml_method_args[1:]
 
@@ -46,8 +46,11 @@ class MethodDefinition:
 			self.body += "\t" + xml_method_arg.get('type') + " " + xml_method_arg.get('name') + ";\n"
 			self.arg_names.append(xml_method_arg.get('name'))
 
-	def format_native_pointer_checking(self, return_int):
+	def format_native_pointer_get(self):
 		self.body += "\tnative_ptr = pylinphone_" + self.class_['class_name'] + "_get_native_ptr(self);\n"
+
+	def format_native_pointer_checking(self, return_int):
+		self.format_native_pointer_get()
 		self.body += "\tif(native_ptr == NULL) {\n"
 		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid " + self.class_['class_name'] + " instance\");\n"
 		if return_int:
@@ -115,6 +118,17 @@ class MethodDefinition:
 				self.body += "\treturn Py_BuildValue(\"" + self.build_value_format + "\", cresult);"
 		else:
 			self.body += "\tPy_RETURN_NONE;"
+
+	def format_dealloc_c_function_call(self):
+		if self.class_['class_refcountable']:
+			self.body += "\tif (native_ptr != NULL) {\n"
+			self.body += "\t\t" + self.class_['class_c_function_prefix'] + "unref(native_ptr);\n"
+			self.body += "\t}\n"
+		elif self.class_['class_destroyable']:
+			self.body += "\tif (native_ptr != NULL) {\n"
+			self.body += "\t\t" + self.class_['class_c_function_prefix'] + "destroy(native_ptr);\n"
+			self.body += "\t}\n"
+		self.body += "\tself->ob_type->tp_free(self);"
 
 	def __get_basic_type_from_c_type(self, ctype):
 		basic_type = 'int'
@@ -224,6 +238,8 @@ class LinphoneModule(object):
 			c['class_name'] = self.__strip_leading_linphone(c['class_cname'])
 			c['class_c_function_prefix'] = xml_class.get('cfunctionprefix')
 			c['class_doc'] = self.__format_doc(xml_class.find('briefdescription'), xml_class.find('detaileddescription'))
+			c['class_refcountable'] = (xml_class.get('refcountable') == 'true')
+			c['class_destroyable'] = (xml_class.get('destroyable') == 'true')
 			c['class_type_methods'] = []
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
@@ -265,6 +281,12 @@ class LinphoneModule(object):
 					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
 					p['setter_body'] = self.__format_setter_body(xml_property_setter, c)
 				c['class_properties'].append(p)
+			if c['class_refcountable']:
+				xml_instance_method = xml_class.find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
+				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
+			elif c['class_destroyable']:
+				xml_instance_method = xml_class.find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
+				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 			self.classes.append(c)
 
 	def __strip_leading_linphone(self, s):
@@ -296,6 +318,14 @@ class LinphoneModule(object):
 		method.format_local_variables_definition()
 		method.format_tracing()
 		method.format_setter_value_checking_and_c_function_call()
+		return method.body
+
+	def __format_dealloc_body(self, method_node, class_):
+		method = MethodDefinition(method_node, class_)
+		method.format_local_variables_definition()
+		method.format_native_pointer_get()
+		method.format_tracing()
+		method.format_dealloc_c_function_call()
 		return method.body
 
 	def __format_doc_node(self, node):
