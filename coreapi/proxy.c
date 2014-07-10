@@ -1116,6 +1116,9 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
 		linphone_proxy_config_update(cfg); /*so that it has an effect*/
+
+		/*as cfg no longer in proxies, unregister will never be issued*/
+		_linphone_proxy_config_unregister(cfg);
 	}
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
