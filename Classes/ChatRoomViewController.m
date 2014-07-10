@@ -21,6 +21,7 @@
 #import "PhoneMainView.h"
 #import "DTActionSheet.h"
 #import "UILinphone.h"
+#import "UIAlertView+Blocks.h"
 
 #import <NinePatch.h>
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -28,9 +29,10 @@
 
 @implementation ChatRoomViewController {
     /* Message transfer transient storage */
-    /* TODO: use this for data retrieval */
-    NSData* image;
-    size_t offset_sent;
+    NSData* upload_data;
+    size_t  upload_bytes_sent;
+
+    NSMutableData* download_data;
 }
 
 @synthesize tableController;
@@ -68,8 +70,9 @@
                                 [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
         self->composingVisible = TRUE;
 
-        self->image = nil;
-        self->offset_sent = 0;
+        self->upload_data       = nil;
+        self->upload_bytes_sent = 0;
+        self->download_data     = nil;
     }
     return self;
 }
@@ -199,8 +202,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    if(imageSharing) {
-        [imageSharing cancel];
+    if(upload_data || download_data ) {
+        // TODO: when the API permits it, we should cancel the transfer.
     }
     
     [messageField resignFirstResponder];
@@ -269,7 +272,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)update {
     if(chatRoom == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
+        Linphone_warn(@"Cannot update chat room header: null contact");
         return;
     }
     
@@ -314,18 +317,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
     const char*text = linphone_chat_message_get_text(msg);
-	[LinphoneLogger log:LinphoneLoggerLog 
-				 format:@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state)];
+	Linphone_log(@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state));
 	[thiz.tableController updateChatEntry:msg];
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl withInternalURL:(NSURL*)internalUrl {
     if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Linphone core not ready"];
+        Linphone_warn(@"Cannot send message: Linphone core not ready");
         return FALSE;
     }
     if(chatRoom == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: No chatroom"];
+        Linphone_warn(@"Cannot send message: No chatroom");
         return FALSE;
     }
 
@@ -347,35 +349,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)saveAndSend:(UIImage*)image url:(NSURL*)url {
-    if(url == nil) {
-        [waitView setHidden:FALSE];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[LinphoneManager instance].photoLibrary
-             writeImageToSavedPhotosAlbum:image.CGImage
-             orientation:(ALAssetOrientation)[image imageOrientation]
-             completionBlock:^(NSURL *assetURL, NSError *error){
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     [waitView setHidden:TRUE];
-                     if (error) {
-                         [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
-
-                         UIAlertView* errorAlert = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                                              message:NSLocalizedString(@"Cannot write image to photo library", nil)
-                                                                             delegate:nil
-                                                                    cancelButtonTitle:NSLocalizedString(@"Ok",nil)
-                                                                    otherButtonTitles:nil ,nil];
-                         [errorAlert show];
-                         [errorAlert release];
-                         return;
-                     }
-                     [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
-                     [self chatRoomStartImageUpload:image url:assetURL];
-                 });
-             }];
-        });
-    } else {
-        [self chatRoomStartImageUpload:image url:url];
-    }
+    [self chatRoomStartImageUpload:image url:url];
 }
 
 - (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
@@ -536,8 +510,19 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-    [self.tableController setChatRoom:NULL];
-    [[PhoneMainView instance] popCurrentView];
+    if( upload_data != nil || download_data != nil ){
+        
+        [UIAlertView showWithTitle:NSLocalizedString(@"Cancel transfer?", nil)
+                           message:NSLocalizedString(@"You have a transfer in progress, leaving this view will cancel it. Are you sure?", nil)
+                 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                 otherButtonTitles:@[NSLocalizedString(@"Yes", nil)]
+                          tapBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
+                              if( buttonIndex == 1 ){
+                                  [self.tableController setChatRoom:NULL];
+                                  [[PhoneMainView instance] popCurrentView];
+                              }
+                          }];
+    }
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -621,9 +606,18 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 #pragma mark ChatRoomDelegate
 
-- (BOOL)chatRoomStartImageDownload:(NSURL*)url userInfo:(id)userInfo {
-    if(imageSharing == nil) {
-        imageSharing = [ImageSharing newImageSharingDownload:url delegate:self userInfo:userInfo];
+- (BOOL)chatRoomStartImageDownload:(LinphoneChatMessage*)msg {
+    if(self->download_data == nil) {
+        const char* url = linphone_chat_message_get_external_body_url(msg);
+        Linphone_log(@"Content to download: %s", url);
+
+        if( url == nil ) return FALSE;
+        
+        download_data = [[NSMutableData alloc] init];
+
+        linphone_chat_message_set_user_data(msg, self);
+        linphone_chat_message_start_file_download(msg);
+
         [messageView setHidden:TRUE];
         [transferView setHidden:FALSE];
         return TRUE;
@@ -632,14 +626,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url{
-    if(imageSharing == nil) {
-        NSData* jpegData = UIImageJPEGRepresentation(image, 1.0);
+    if( self->upload_data == nil) {
         LinphoneContent content = {};
-        content.type = "image";
-        content.subtype = "jpeg";
-        content.name = ms_strdup([[NSString stringWithFormat:@"%i-%f.jpg", [image hash],[NSDate timeIntervalSinceReferenceDate]] UTF8String]);
-        content.data = (void*)[jpegData bytes];
-        content.size = [jpegData length];
+        self->upload_data = [UIImageJPEGRepresentation(image, 1.0) retain];
+        content.type      = "image";
+        content.subtype   = "jpeg";
+        content.name      = ms_strdup([[NSString stringWithFormat:@"%i-%f.jpg", [image hash],[NSDate timeIntervalSinceReferenceDate]] UTF8String]);
+        content.size      = [self->upload_data length];
 
         LinphoneChatMessage* message = linphone_chat_room_create_file_transfer_message(chatRoom, &content);
         linphone_chat_message_set_user_data(message, self);
@@ -649,7 +642,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             [LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:message];
         }
 
+        // TODO: in the user data, we should maybe put a standalone delegate alloced and retained, instead of self.
+        // This will make sure that when receiving a memory alert or go to another view, we still send the message
         linphone_chat_room_send_message2(chatRoom, message, message_status, self);
+
+        if( content.name ){
+            ms_free(content.name);
+        }
 
         [tableController addChatEntry:linphone_chat_message_ref(message)];
         [tableController scrollToBottom:true];
@@ -666,78 +665,12 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 #pragma mark ImageSharingDelegate
 
-- (void)imageSharingProgress:(ImageSharing*)aimageSharing progress:(float)progress {
-    [imageTransferProgressBar setProgress:progress];
-}
-
 - (void)imageSharingAborted:(ImageSharing*)aimageSharing {
     [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     [imageSharing release];
     imageSharing = nil;
 }
-
-- (void)imageSharingError:(ImageSharing*)aimageSharing error:(NSError *)error {
-    [messageView setHidden:FALSE];
-	[transferView setHidden:TRUE];
-    NSString *url = [aimageSharing.connection.currentRequest.URL absoluteString];
-    if (aimageSharing.upload) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot upload file to server [%@] because [%@]", url, [error localizedDescription]];
-        UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                             message:NSLocalizedString(@"Cannot transfer file to remote contact", nil)
-                                                            delegate:nil
-                                                   cancelButtonTitle:NSLocalizedString(@"Ok",nil)
-                                                   otherButtonTitles:nil ,nil];
-		[errorAlert show];
-        [errorAlert release];
-	} else {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot download file from [%@] because [%@]", url, [error localizedDescription]];
-        UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                             message:NSLocalizedString(@"Cannot transfer file from remote contact", nil)
-                                                            delegate:nil
-                                                   cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-                                                   otherButtonTitles:nil, nil];
-		[errorAlert show];
-        [errorAlert release];
-	}
-    imageSharing = nil;
-}
-
-- (void)imageSharingUploadDone:(ImageSharing*)aimageSharing url:(NSURL*)url{
-    [self sendMessage:nil withExterlBodyUrl:url withInternalURL:[aimageSharing userInfo] ];
-    
-    [messageView setHidden:FALSE];
-	[transferView setHidden:TRUE];
-    imageSharing = nil;
-}
-
-- (void)imageSharingDownloadDone:(ImageSharing*)aimageSharing image:(UIImage *)image {
-    [messageView setHidden:FALSE];
-	[transferView setHidden:TRUE];
-    
-    __block LinphoneChatMessage *chat = (LinphoneChatMessage *)[(NSValue*)[imageSharing userInfo] pointerValue];
-    [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
-                                                              orientation:(ALAssetOrientation)[image imageOrientation]
-                                                          completionBlock:^(NSURL *assetURL, NSError *error){
-                                                              if (error) {
-                                                                  [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
-
-                                                                  UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                                                                                       message:NSLocalizedString(@"Cannot write image to photo library", nil)
-                                                                                                                      delegate:nil
-                                                                                                             cancelButtonTitle:NSLocalizedString(@"Ok",nil)
-                                                                                                             otherButtonTitles:nil ,nil];
-                                                                  [errorAlert show];
-                                                                  [errorAlert release];
-                                                                  return;
-                                                              }
-                                                              [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
-                                                              [LinphoneManager setValueInMessageAppData:[assetURL absoluteString] forKey:@"localimage" inMessage:chat];
-                                                              [tableController updateChatEntry:chat];
-                                                          }];
-    imageSharing = nil;
-}
-
 
 #pragma mark ImagePickerDelegate
 
@@ -758,15 +691,92 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark - LinphoneChatContentTransferDelegate
 
 - (void)onProgressReport:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content percent:(int)percent {
-    [imageTransferProgressBar setProgress:percent];
+    [imageTransferProgressBar setProgress:percent/100.0f];
 }
 
 - (void)onDataRequested:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(char *)buffer withSize:(size_t *)size {
-    // TODO
+    if( self->upload_data ){
+        size_t to_send   = *size;
+        size_t remaining = [upload_data length] - self->upload_bytes_sent;
+
+        Linphone_log(@"Asking %ld bytes, sent %ld of %d, %ld remaining", to_send, self->upload_bytes_sent, [upload_data length], remaining);
+
+        if( remaining < to_send ) to_send = remaining;
+
+        @try {
+            [upload_data getBytes:(void*)buffer range:NSMakeRange(upload_bytes_sent, to_send)];
+            upload_bytes_sent += to_send;
+            *size              = to_send;
+        }
+        @catch (NSException *exception) {
+            Linphone_err(@"Exception: %@", exception);
+        }
+
+
+        if( to_send == 0 || upload_bytes_sent == [upload_data length] ){
+            Linphone_log(@"Upload finished, cleanup..");
+            [upload_data release];
+            upload_data = nil;
+            upload_bytes_sent = 0;
+
+            // update UI
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [messageView setHidden:FALSE];
+                [transferView setHidden:TRUE];
+            });
+         }
+
+    } else {
+        Linphone_err(@"Error: no upload data in progress!");
+    }
 }
 
 - (void)onDataReceived:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(const char *)buffer withSize:(size_t)size {
-    // TODO
+    if( download_data ){
+        Linphone_log(@"Receiving data for %s : %zu bytes, already got %d of %zu",content->name, size, [download_data length], content->size);
+
+        if( size != 0 ){
+            [download_data appendBytes:buffer length:size];
+        }
+
+        if( size == 0 && [download_data length] == content->size ){
+
+            Linphone_log(@"Transfer is finished, save image and update chat");
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //we're finished, save the image and update the message
+                [messageView setHidden:FALSE];
+                [transferView setHidden:TRUE];
+
+                UIImage* image = [UIImage imageWithData:download_data];
+
+                [download_data release];
+                download_data = nil;
+
+                [[LinphoneManager instance].photoLibrary
+                 writeImageToSavedPhotosAlbum:image.CGImage
+                 orientation:(ALAssetOrientation)[image imageOrientation]
+                 completionBlock:^(NSURL *assetURL, NSError *error){
+                     if (error) {
+                         Linphone_err(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+
+                         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
+                                                                              message:NSLocalizedString(@"Cannot write image to photo library", nil)
+                                                                             delegate:nil
+                                                                    cancelButtonTitle:NSLocalizedString(@"Ok",nil)
+                                                                    otherButtonTitles:nil ,nil];
+                         [errorAlert show];
+                         [errorAlert release];
+                         return;
+                     }
+                     Linphone_log(@"Image saved to [%@]", [assetURL absoluteString]);
+                     [LinphoneManager setValueInMessageAppData:[assetURL absoluteString] forKey:@"localimage" inMessage:msg];
+                     [tableController updateChatEntry:msg];
+                 }];
+                
+            });
+        }
+    }
 }
 
 #pragma mark - Keyboard Event Functions
@@ -781,7 +791,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
-    
+
     // Resize chat view
     {
         CGRect chatFrame = [[self chatView] frame];
