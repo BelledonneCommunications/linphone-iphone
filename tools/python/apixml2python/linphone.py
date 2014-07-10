@@ -139,7 +139,7 @@ class MethodDefinition:
 		basic_type, splitted_type = self.__get_basic_type_from_c_type(ctype)
 		if basic_type == 'char':
 			if '*' in splitted_type:
-				return 's'
+				return 'z'
 			elif 'unsigned' in splitted_type:
 				return 'b'
 		elif basic_type == 'int':
