@@ -195,6 +195,7 @@ class MethodDefinition:
 
 class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_functions):
+		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.enums = []
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
@@ -243,8 +244,11 @@ class LinphoneModule(object):
 				method_name = xml_instance_method.get('name')
 				if method_name in blacklisted_functions:
 					continue
+				method_name = method_name.replace(c['class_c_function_prefix'], '')
+				if method_name in self.internal_instance_method_names:
+					continue
 				m = {}
-				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
+				m['method_name'] = method_name
 				m['method_body'] = self.__format_method_body(xml_instance_method, c)
 				c['class_instance_methods'].append(m)
 			c['class_properties'] = []
