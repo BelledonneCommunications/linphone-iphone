@@ -51,7 +51,7 @@ class MethodDefinition:
 
 	def format_native_pointer_checking(self, return_int):
 		self.format_native_pointer_get()
-		self.body += "\tif(native_ptr == NULL) {\n"
+		self.body += "\tif (native_ptr == NULL) {\n"
 		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid " + self.class_['class_name'] + " instance\");\n"
 		if return_int:
 			self.body += "\t\treturn -1;\n"
@@ -86,7 +86,8 @@ class MethodDefinition:
 			pass # TODO
 		else:
 			self.body += "\t" + self.arg_names[0] + " = (" + self.xml_method_args[0].get('type') + ")" + convertfunc + "(value);\n"
-		self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + self.arg_names[0] + ");"
+		self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + self.arg_names[0] + ");\n"
+		self.body += "\treturn 0;"
 
 	def format_tracing(self):
 		self.body += "\tpylinphone_trace(__FUNCTION__);\n"
@@ -273,14 +274,28 @@ class LinphoneModule(object):
 				p['property_name'] = property_name
 				xml_property_getter = xml_property.find("./getter")
 				xml_property_setter = xml_property.find("./setter")
+				if xml_property_getter is not None and xml_property_getter.get('name') in blacklisted_functions:
+					continue
+				if xml_property_setter is not None and xml_property_setter.get('name') in blacklisted_functions:
+					continue
 				if xml_property_getter is not None:
 					xml_property_getter.set('property_name', property_name)
 					p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
 					p['getter_body'] = self.__format_getter_body(xml_property_getter, c)
+					p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
+					p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
+					p['getter_definition_end'] = "}"
+				else:
+					p['getter_reference'] = "NULL"
 				if xml_property_setter is not None:
 					xml_property_setter.set('property_name', property_name)
 					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
 					p['setter_body'] = self.__format_setter_body(xml_property_setter, c)
+					p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
+					p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
+					p['setter_definition_end'] = "}"
+				else:
+					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
 			if c['class_refcountable']:
 				xml_instance_method = xml_class.find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")

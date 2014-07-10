@@ -124,21 +124,20 @@ static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
 
 {{#class_properties}}
 
-static PyObject * pylinphone_{{class_name}}_{{getter_name}}(PyObject *self, void *closure) {
+{{{getter_definition_begin}}}
 {{{getter_body}}}
-}
+{{{getter_definition_end}}}
 
-static int pylinphone_{{class_name}}_{{setter_name}}(PyObject *self, PyObject *value, void *closure) {
+{{{setter_definition_begin}}}
 {{{setter_body}}}
-	return 0;
-}
+{{{setter_definition_end}}}
 
 {{/class_properties}}
 
 static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
 	// TODO: Handle doc
 {{#class_properties}}
-	{ "{{property_name}}", (getter)pylinphone_{{class_name}}_{{getter_name}}, (setter)pylinphone_{{class_name}}_{{setter_name}}, "" },
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "" },
 {{/class_properties}}
 	/* Sentinel */
 	{ NULL, NULL, NULL, NULL, NULL }
