@@ -1165,50 +1165,50 @@ LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const ch
 /**
  * Gets the username.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The username.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *info);
 
 /**
  * Gets the password.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The password.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *info);
 
 /**
  * Gets the userid.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The userid.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *info);
 
 /**
  * Gets the realm.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The realm.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *info);
 
 /**
  * Gets the domain.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The domain.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *info);
 
 /**
  * Gets the ha1.
  *
- * @params[in] i The #LinphoneAuthInfo object
+ * @param[in] info The #LinphoneAuthInfo object
  * @return The ha1.
  */
-LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *info);
 
 /* you don't need those function*/
 LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
