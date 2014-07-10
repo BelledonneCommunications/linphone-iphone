@@ -132,7 +132,9 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
 
 			/* create a user body handler to take care of the file */
-			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type), NULL, NULL, linphone_chat_message_file_transfer_on_send_body, msg);
+			size_t body_size = msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type);
+
+			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(body_size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
 			belle_sip_multipart_body_handler_t *bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
 
