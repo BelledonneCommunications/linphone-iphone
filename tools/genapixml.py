@@ -71,7 +71,7 @@ class CArgument(CObject):
 	def __init__(self, t, name = '', enums = [], structs = []):
 		CObject.__init__(self, name)
 		self.description = None
-		keywords = [ 'const', 'struct', 'enum', 'signed', 'unsigned', '*' ]
+		keywords = [ 'const', 'struct', 'enum', 'signed', 'unsigned', 'short', 'long', '*' ]
 		fullySplittedType = []
 		splittedType = t.strip().split(' ')
 		for s in splittedType:
@@ -84,9 +84,9 @@ class CArgument(CObject):
 				fullySplittedType.append('*')
 			else:
 				fullySplittedType.append(s)
-		self.completeType = ' '.join(fullySplittedType)
 		isStruct = False
 		isEnum = False
+		self.ctype = 'int' # Default to int so that the result is correct eg. for 'unsigned short'
 		for s in fullySplittedType:
 			if not s in keywords:
 				self.ctype = s
@@ -102,6 +102,12 @@ class CArgument(CObject):
 			for e in enums:
 				if e.associatedTypedef is not None:
 					self.ctype = e.associatedTypedef.name
+		if self.ctype == 'int' and 'int' not in fullySplittedType:
+			if fullySplittedType[-1] == '*':
+				fullySplittedType.insert(-1, 'int')
+			else:
+				fullySplittedType.append('int')
+		self.completeType = ' '.join(fullySplittedType)
 
 	def __str__(self):
 		return self.completeType + " " + self.name
