@@ -315,6 +315,9 @@ class LinphoneModule(object):
 
 	def __format_setter_body(self, setter_node, class_):
 		method = MethodDefinition(setter_node, class_)
+		# Force return value type of dealloc function to prevent declaring useless local variables
+		# TODO: Investigate. Maybe we should decide that setters must always return an int value.
+		method.xml_method_return.set('type', 'void')
 		method.format_local_variables_definition()
 		method.format_tracing()
 		method.format_setter_value_checking_and_c_function_call()
@@ -322,6 +325,8 @@ class LinphoneModule(object):
 
 	def __format_dealloc_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_)
+		# Force return value type of dealloc function to prevent declaring useless local variables
+		method.xml_method_return.set('type', 'void')
 		method.format_local_variables_definition()
 		method.format_native_pointer_get()
 		method.format_tracing()
