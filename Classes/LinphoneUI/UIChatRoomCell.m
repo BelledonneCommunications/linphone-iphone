@@ -140,6 +140,8 @@ static UIFont *CELL_FONT = nil;
                         [messageImageView stopLoading];
                         [image release];
                     });
+                } else {
+                    [image release];
                 }
             });
         } failureBlock:^(NSError *error) {

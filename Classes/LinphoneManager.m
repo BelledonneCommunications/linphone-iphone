@@ -1890,6 +1890,7 @@ static void audioRouteChangeListenerCallback (
     NSData* data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
     NSString* appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String] );
+    [appdataJSON release];
 }
 
 #pragma mark - LPConfig Functions

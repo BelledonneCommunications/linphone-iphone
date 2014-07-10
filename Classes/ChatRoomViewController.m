@@ -240,10 +240,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-
 }
 
 -(void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
     [TUNinePatchCache flushCache]; // will remove any images cache (freeing any cached but unused images)
 }
 

@@ -385,18 +385,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(lAddress == NULL)
         return;
     
-    NSString *displayName = nil;
-    if(contact != nil) {
-        displayName = [FastAddressBook getContactDisplayName:contact];
-    } else {
-        const char* lDisplayName = linphone_address_get_display_name(addr);
-        const char* lUserName = linphone_address_get_username(addr);
-        if (lDisplayName)
-            displayName = [NSString stringWithUTF8String:lDisplayName];
-        else if(lUserName)
-            displayName = [NSString stringWithUTF8String:lUserName];
-    }
-    
     // Go to ChatRoom view
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
