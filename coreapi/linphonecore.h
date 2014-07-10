@@ -1067,7 +1067,8 @@ void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 struct _LinphoneAuthInfo;
 
 /**
- * @ingroup authentication
+ * @addtogroup authentication
+ * @{
  * Object holding authentication information.
  *
  * @note The object's fields should not be accessed directly. Prefer using
@@ -1092,32 +1093,130 @@ struct _LinphoneAuthInfo;
 **/
 typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
+/**
+ * Creates a #LinphoneAuthInfo object with supplied information.
+ * The object can be created empty, that is with all arguments set to NULL.
+ * Username, userid, password, realm and domain can be set later using specific methods.
+ * At the end, username and passwd (or ha1) are required.
+ * @param username The username that needs to be authenticated
+ * @param userid The userid used for authenticating (use NULL if you don't know what it is)
+ * @param passwd The password in clear text
+ * @param ha1 The ha1-encrypted password if password is not given in clear text.
+ * @param realm The authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
+ * @param domain The SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
+ * @return A #LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
+ * passed through linphone_core_add_auth_info().
+**/
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
-		const char *passwd, const char *ha1,const char *realm, const char *domain);
+	const char *passwd, const char *ha1,const char *realm, const char *domain);
+
 /**
  * @addtogroup authentication
- * Instanciate a new auth info with values from source
- * @param source auth info object to be cloned
- * @return newly created auth info
+ * Instantiates a new auth info with values from source.
+ * @param[in] source The #LinphoneAuthInfo object to be cloned
+ * @return The newly created #LinphoneAuthInfo object.
  */
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo* source);
+
+/**
+ * Sets the password.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] passwd The password.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
+
+/**
+ * Sets the username.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] username The username.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
+
+/**
+ * Sets the userid.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] userid The userid.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
+
+/**
+ * Sets the realm.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] realm The realm.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
+
+/**
+ * Sets the domain for which this authentication is valid.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] domain The domain.
+ * This should not be necessary because realm is supposed to be unique and sufficient.
+ * However, many SIP servers don't set realm correctly, then domain has to be used to distinguish between several SIP account bearing the same username.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const char *domain);
+
+/**
+ * Sets the ha1.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The ha1.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
-LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
+/**
+ * Gets the username.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The username.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the password.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The password.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the userid.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The userid.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the realm.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The realm.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the domain.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The domain.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the ha1.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The ha1.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *info);
 
 /* you don't need those function*/
 LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
+
+/**
+ * @}
+ */
 
 
 struct _LinphoneChatRoom;
