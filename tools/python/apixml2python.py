@@ -27,7 +27,6 @@ from apixml2python.linphone import LinphoneModule
 
 
 blacklisted_functions = [
-	'linphone_auth_info_write_config',
 	'lp_config_for_each_entry',
 	'lp_config_for_each_section',
 	'lp_config_get_range',
