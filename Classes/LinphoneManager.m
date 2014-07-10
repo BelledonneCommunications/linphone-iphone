@@ -629,11 +629,19 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 					[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
 					
 					if (!incallBgTask){
-						incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-							[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
-							[[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
-							incallBgTask=0;
-						}];
+                        UIApplication* app = [UIApplication sharedApplication];
+
+                        void (^expirationHandler)() = ^{
+                            [LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
+                            [[UIApplication sharedApplication] endBackgroundTask:incallBgTask];
+                            incallBgTask=0;
+                        };
+
+                        if( [app respondsToSelector:@selector(beginBackgroundTaskWithName:expirationHandler:)] ){
+                            incallBgTask = [app beginBackgroundTaskWithName:@"Linphone in-call bg task" expirationHandler:expirationHandler];
+                        } else {
+                            incallBgTask = [app beginBackgroundTaskWithExpirationHandler:expirationHandler];
+                        }
 
                         [[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
 					}
