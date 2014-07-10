@@ -198,12 +198,16 @@ class LinphoneModule(object):
 		self.enums = []
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
+			if xml_enum.get('deprecated') == 'true':
+				continue
 			e = {}
 			e['enum_name'] = self.__strip_leading_linphone(xml_enum.get('name'))
 			e['enum_doc'] = self.__format_doc(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
 			e['enum_values'] = []
 			xml_enum_values = xml_enum.findall("./values/value")
 			for xml_enum_value in xml_enum_values:
+				if xml_enum_value.get('deprecated') == 'true':
+					continue
 				v = {}
 				v['enum_value_cname'] = xml_enum_value.get('name')
 				v['enum_value_name'] = self.__strip_leading_linphone(v['enum_value_cname'])
@@ -212,6 +216,8 @@ class LinphoneModule(object):
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
+			if xml_class.get('deprecated') == 'true':
+				continue
 			c = {}
 			c['class_cname'] = xml_class.get('name')
 			c['class_name'] = self.__strip_leading_linphone(c['class_cname'])
@@ -220,6 +226,8 @@ class LinphoneModule(object):
 			c['class_type_methods'] = []
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
+				if xml_type_method.get('deprecated') == 'true':
+					continue
 				method_name = xml_type_method.get('name')
 				if method_name in blacklisted_functions:
 					continue
@@ -230,6 +238,8 @@ class LinphoneModule(object):
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
 			for xml_instance_method in xml_instance_methods:
+				if xml_instance_method.get('deprecated') == 'true':
+					continue
 				method_name = xml_instance_method.get('name')
 				if method_name in blacklisted_functions:
 					continue
