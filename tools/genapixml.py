@@ -554,11 +554,9 @@ class Generator:
 		self.__outputfile = outputfile
 
 	def __generateEnum(self, cenum, enumsNode):
-		enumNodeAttributes = { 'name' : cenum.name }
+		enumNodeAttributes = { 'name' : cenum.name, 'deprecated' : str(cenum.deprecated).lower() }
 		if cenum.associatedTypedef is not None:
 			enumNodeAttributes['name'] = cenum.associatedTypedef.name
-		if cenum.deprecated:
-			enumNodeAttributes['deprecated'] = 'true'
 		enumNode = ET.SubElement(enumsNode, 'enum', enumNodeAttributes)
 		if cenum.briefDescription != '':
 			enumBriefDescriptionNode = ET.SubElement(enumNode, 'briefdescription')
@@ -567,9 +565,7 @@ class Generator:
 		if len(cenum.values) > 0:
 			enumValuesNode = ET.SubElement(enumNode, 'values')
 			for value in cenum.values:
-				enumValuesNodeAttributes = { 'name' : value.name }
-				if value.deprecated:
-					enumValuesNodeAttributes['deprecated'] = 'true'
+				enumValuesNodeAttributes = { 'name' : value.name, 'deprecated' : str(value.deprecated).lower() }
 				valueNode = ET.SubElement(enumValuesNode, 'value', enumValuesNodeAttributes)
 				if value.briefDescription != '':
 					valueBriefDescriptionNode = ET.SubElement(valueNode, 'briefdescription')
@@ -577,11 +573,9 @@ class Generator:
 				valueNode.append(value.detailedDescription)
 
 	def __generateFunction(self, parentNode, nodeName, f):
-		functionAttributes = { 'name' : f.name }
+		functionAttributes = { 'name' : f.name, 'deprecated' : str(f.deprecated).lower() }
 		if f.location is not None:
 			functionAttributes['location'] = f.location
-		if f.deprecated:
-			functionAttributes['deprecated'] = 'true'
 		functionNode = ET.SubElement(parentNode, nodeName, functionAttributes)
 		returnValueAttributes = { 'type' : f.returnArgument.completeType }
 		returnValueNode = ET.SubElement(functionNode, 'return', returnValueAttributes)
@@ -599,9 +593,7 @@ class Generator:
 		functionNode.append(f.detailedDescription)
 
 	def __generateClass(self, cclass, classesNode):
-		classNodeAttributes = { 'name' : cclass.name, 'cfunctionprefix' : cclass.cFunctionPrefix }
-		if cclass.deprecated:
-			classNodeAttributes['deprecated'] = 'true'
+		classNodeAttributes = { 'name' : cclass.name, 'cfunctionprefix' : cclass.cFunctionPrefix, 'deprecated' : str(cclass.deprecated).lower() }
 		classNode = ET.SubElement(classesNode, 'class', classNodeAttributes)
 		if len(cclass.events) > 0:
 			eventsNode = ET.SubElement(classNode, 'events')
