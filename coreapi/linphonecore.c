@@ -756,6 +756,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
 	sal_enable_sip_update_method(lc->sal,lp_config_get_int(lc->config,"sip","sip_update",1));
 	lc->sip_conf.vfu_with_info=lp_config_get_int(lc->config,"sip","vfu_with_info",1);
+	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -1113,6 +1114,16 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
 	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","upload_bw",bw);
+}
+
+void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms) {
+	sal_set_transport_timeout(lc->sal, timeout_ms);
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config, "sip", "transport_timeout", timeout_ms);
+}
+
+int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
+	return sal_get_transport_timeout(lc->sal);
 }
 
 void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
