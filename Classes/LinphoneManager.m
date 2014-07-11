@@ -371,6 +371,14 @@ static int check_should_migrate_images(void* data ,int argc,char** argv,char** c
             goto exit_dbmigration;
         }
 
+        // invert direction of old messages, because iOS was storing the direction flag incorrectly
+        const char* invert_direction = "UPDATE history SET direction = NOT direction";
+        if( sqlite3_exec(newDb, invert_direction, NULL, NULL, &errMsg) != SQLITE_OK){
+            [LinphoneLogger log: LinphoneLoggerError format:@"Inverting direction failed, error[%s]", errMsg];
+            sqlite3_free(errMsg);
+            goto exit_dbmigration;
+        }
+
         // replace empty from: or to: by the current identity.
         if( default_proxy ){
             identity = linphone_proxy_config_get_identity(default_proxy);
