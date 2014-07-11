@@ -77,6 +77,23 @@ extern "C" void libmswebrtc_init();
 	}
 
 
+#define RETURN_PROXY_CONFIG_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
+	{ \
+		jclass jUserDataObjectClass; \
+		jmethodID jUserDataObjectCtor; \
+		jobject jUserDataObj; \
+		jUserDataObj = (jobject)funcprefix ## _get_user_data(cobj); \
+		if (jUserDataObj == NULL) { \
+			jUserDataObjectClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/" javaclass)); \
+			jUserDataObjectCtor = env->GetMethodID(jUserDataObjectClass,"<init>", "(J)V"); \
+			jUserDataObj = env->NewObject(jUserDataObjectClass, jUserDataObjectCtor,(jlong) cobj); \
+			jUserDataObj = env->NewGlobalRef(jUserDataObj); \
+			funcprefix ## _set_user_data(cobj, jUserDataObj); \
+			env->DeleteGlobalRef(jUserDataObjectClass); \
+		} \
+		return jUserDataObj; \
+	}
+
 
 static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
@@ -880,24 +897,32 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultProxyConfig(	J
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
+
 	LinphoneProxyConfig *config=0;
 	linphone_core_get_default_proxy((LinphoneCore*)lc,&config);
 	return (jlong)config;
 }
 
-extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
+static jobject getOrCreateProxy(JNIEnv* env,LinphoneProxyConfig* proxy){
+	RETURN_PROXY_CONFIG_USER_DATA_OBJECT("LinphoneProxyConfigImpl", linphone_proxy_config, proxy);
+}
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
 	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
-	jlongArray jProxies = env->NewLongArray(proxyCount);
-	jlong *jInternalArray = env->GetLongArrayElements(jProxies, NULL);
+	jclass cls = env->FindClass("java/lang/Object");
+	jobjectArray jProxies = env->NewObjectArray(proxyCount,cls,NULL);
 
 	for (int i = 0; i < proxyCount; i++ ) {
-		jInternalArray[i] = (unsigned long) (proxies->data);
+		LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
+		jobject jproxy = getOrCreateProxy(env,proxy);
+		if(jproxy != NULL){
+			env->SetObjectArrayElement(jProxies, i, jproxy);
+		} else {
+			return NULL;
+		}
 		proxies = proxies->next;
 	}
-
-	env->ReleaseLongArrayElements(jProxies, jInternalArray, 0);
-
 	return jProxies;
 }
 
@@ -1457,12 +1482,11 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	const char *card=linphone_core_get_capture_device((LinphoneCore*)lc);
 	sndcard=ms_snd_card_manager_get_card(m,card);
 	if (sndcard == NULL){
-		ms_error("Could not get soundcard.");
+		ms_error("Could not get soundcard %s", card);
 		return TRUE;
 	}
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
-	if (ms_snd_card_get_minimal_latency(sndcard)==0) return TRUE;
-	return FALSE;
+	return TRUE;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryption(JNIEnv*  env
@@ -2789,7 +2813,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnable
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_localConferenceMode(JNIEnv *env, jobject thiz, jlong lcp){
-	return (jboolean)linphone_call_params_local_conference_mode((LinphoneCallParams*)lcp);
+	return (jboolean)linphone_call_params_get_local_conference_mode((LinphoneCallParams*)lcp);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name){
@@ -2967,6 +2991,37 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setAvpfRRI
 
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getAvpfRRInterval(JNIEnv *env, jobject thiz, jlong ptr) {
 	return (jint)linphone_proxy_config_get_avpf_rr_interval((LinphoneProxyConfig *)ptr);
+}
+
+
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_enableQualityReporting(JNIEnv *env, jobject thiz, jlong ptr, jboolean enable) {
+	linphone_proxy_config_enable_quality_reporting((LinphoneProxyConfig *)ptr, (bool)enable);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_quality_reportingEnabled(JNIEnv *env, jobject thiz, jlong ptr) {
+	return linphone_proxy_config_quality_reporting_enabled((LinphoneProxyConfig *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setQualityReportingInterval(JNIEnv *env, jobject thiz, jlong ptr, jint interval) {
+	linphone_proxy_config_set_quality_reporting_interval((LinphoneProxyConfig *)ptr, (uint8_t)interval);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getQualityReportingInterval(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jint)linphone_proxy_config_get_quality_reporting_interval((LinphoneProxyConfig *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setQualityReportingCollector(JNIEnv *env, jobject thiz, jlong ptr, jstring jcollector) {
+	if (jcollector){
+		const char *collector=env->GetStringUTFChars(jcollector, NULL);
+		linphone_proxy_config_set_quality_reporting_collector((LinphoneProxyConfig *)ptr, collector);
+		env->ReleaseStringUTFChars(jcollector,collector);
+	}
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getQualityReportingCollector(JNIEnv *env, jobject thiz, jlong ptr) {
+	jstring jvalue = env->NewStringUTF(linphone_proxy_config_get_quality_reporting_collector((LinphoneProxyConfig *)ptr));
+	return jvalue;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {

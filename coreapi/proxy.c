@@ -275,13 +275,13 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
 	if (obj->reg_proxy==NULL){
-		if (lc->vtable.display_warning)
+		if (lc && lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
 						" followed by a hostname."));
 		return FALSE;
 	}
 	if (obj->reg_identity==NULL){
-		if (lc->vtable.display_warning)
+		if (lc && lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
 					"sip:username@proxydomain, such as sip:alice@example.net"));
 		return FALSE;
@@ -411,7 +411,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
 		char* proxy_string;
 		LinphoneAddress *contact;
-
+		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",obj,linphone_core_get_version());
 		proxy_string=linphone_address_as_string_uri_only(proxy);
 		linphone_address_destroy(proxy);
 		if (obj->op)
@@ -1116,6 +1116,9 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
 		linphone_proxy_config_update(cfg); /*so that it has an effect*/
+
+		/*as cfg no longer in proxies, unregister will never be issued*/
+		_linphone_proxy_config_unregister(cfg);
 	}
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;

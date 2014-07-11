@@ -97,6 +97,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args);
 static int lpc_cmd_video_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_preview_window(LinphoneCore *lc, char *args);
 static int lpc_cmd_snapshot(LinphoneCore *lc, char *args);
+static int lpc_cmd_preview_snapshot(LinphoneCore *lc, char *args);
 static int lpc_cmd_vfureq(LinphoneCore *lc, char *arg);
 #endif
 static int lpc_cmd_states(LinphoneCore *lc, char *args);
@@ -311,6 +312,9 @@ static LPC_COMMAND advanced_commands[] = {
 	},
 	{ "snapshot", lpc_cmd_snapshot, "Take a snapshot of currently received video stream",
 		"'snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
+	},
+	{ "preview-snapshot", lpc_cmd_preview_snapshot, "Take a snapshot of currently captured video stream",
+		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
 	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"},
 #endif
@@ -2438,7 +2442,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 		for(;elem!=NULL;elem=elem->next){
 			const char *flag;
 			call=(LinphoneCall*)elem->data;
-			bool_t in_conference=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
+			bool_t in_conference=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;
@@ -2544,6 +2548,17 @@ static int lpc_cmd_snapshot(LinphoneCore *lc, char *args){
 	if (call!=NULL){
 		linphone_call_take_video_snapshot(call,args);
 		linphonec_out("Taking video snapshot in file %s\n", args);
+	}else linphonec_out("There is no active call.\n");
+	return 1;
+}
+
+static int lpc_cmd_preview_snapshot(LinphoneCore *lc, char *args){
+	LinphoneCall *call;
+	if (!args) return 0;
+	call=linphone_core_get_current_call(lc);
+	if (call!=NULL){
+		linphone_call_take_preview_snapshot(call,args);
+		linphonec_out("Taking video preview snapshot in file %s\n", args);
 	}else linphonec_out("There is no active call.\n");
 	return 1;
 }

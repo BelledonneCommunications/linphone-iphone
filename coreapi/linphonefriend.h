@@ -119,7 +119,7 @@ typedef struct _LinphoneFriend LinphoneFriend;
  * Contructor
  * @return a new empty #LinphoneFriend
  */
-LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new();
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new(void);
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()

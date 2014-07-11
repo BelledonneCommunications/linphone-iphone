@@ -87,6 +87,7 @@ struct _LinphoneCallParams{
 	PayloadType *video_codec; /*video codec currently in use */
 	MSVideoSize sent_vsize; /* Size of the video currently being sent */
 	MSVideoSize recv_vsize; /* Size of the video currently being received */
+	float received_fps,sent_fps;
 	int down_bw;
 	int up_bw;
 	int down_ptime;
@@ -375,14 +376,13 @@ void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
-void linphone_call_stop_audio_stream(LinphoneCall *call);
-void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
+
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 
@@ -399,6 +399,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
+bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 LinphoneCall * is_a_linphone_call(void *user_pointer);
 LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
@@ -523,6 +524,7 @@ typedef struct sip_config
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
 	bool_t tcp_tls_keepalive;
+	bool_t vfu_with_info; /*use to enable vfu request using sip info*/
 } sip_config_t;
 
 typedef struct rtp_config
@@ -591,6 +593,8 @@ typedef struct video_config{
 	struct _MSWebCam *device;
 	const char **cams;
 	MSVideoSize vsize;
+	MSVideoSize preview_vsize; /*is 0,0 if no forced preview size is set, in which case vsize field above is used.*/
+	float fps;
 	bool_t capture;
 	bool_t show_local;
 	bool_t display;
@@ -728,6 +732,7 @@ struct _LinphoneCore
 	LinphoneReason chat_deny_code;
 	bool_t lime;
 	char *file_transfer_server;
+	const char **supported_formats;
 };
 
 

@@ -162,7 +162,9 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
 
 			/* create a user body handler to take care of the file */
-			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type), NULL, NULL, linphone_chat_message_file_transfer_on_send_body, msg);
+			size_t body_size = msg->file_transfer_information->size+linphone_chat_message_compute_filepart_header_size(msg->file_transfer_information->name, content_type);
+
+			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(body_size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
 			belle_sip_multipart_body_handler_t *bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
 
@@ -283,9 +285,9 @@ bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
 }
 
 /**
- * Returns an array of chat rooms
+ * Returns an list of chat rooms
  * @param lc #LinphoneCore object
- * @return An array of #LinpĥoneChatRoom
+ * @return A list of #LinphoneChatRoom
 **/
 MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
@@ -1062,10 +1064,33 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		}
 	}
 	return;
+}
 
-	/* feed the callback with the received data */
+
+static LinphoneContent* linphone_chat_create_file_transfer_information_from_headers(const belle_sip_message_t* message ){
+	LinphoneContent *content = ms_malloc0(sizeof(LinphoneContent));
+
+	belle_sip_header_content_length_t* content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(message, "Content-Length"));
+	belle_sip_header_content_type_t* content_type_hdr = BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(message, "Content-Type"));
+	const char* type = NULL,*subtype = NULL;
+
+	content->name = ms_strdup("");
+
+	if( content_type_hdr ){
+		type = belle_sip_header_content_type_get_type(content_type_hdr);
+		subtype = belle_sip_header_content_type_get_subtype(content_type_hdr);
+		ms_message("Extracted content type %s / %s from header", type?type:"", subtype?subtype:"");
+		if( type ) content->type = ms_strdup(type);
+		if( subtype ) content->type = ms_strdup(subtype);
+	}
+
+	if( content_length_hdr ){
+		content->size = belle_sip_header_content_length_get_content_length(content_length_hdr);
+		ms_message("Extracted content length %i from header", (int)content->size);
+	}
 
 
+	return content;
 }
 
 static void linphone_chat_process_response_headers_from_get_file(void *data, const belle_http_response_event_t *event){
@@ -1073,9 +1098,21 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 		/*we are receiving a response, set a specific body handler to acquire the response.
 		 * if not done, belle-sip will create a memory body handler, the default*/
 		LinphoneChatMessage *message=(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
+		belle_sip_message_t* response = BELLE_SIP_MESSAGE(event->response);
+		size_t body_size = 0;
+
+		if( message->file_transfer_information == NULL ){
+			ms_warning("No file transfer information for message %p: creating...", message);
+			message->file_transfer_information = linphone_chat_create_file_transfer_information_from_headers(response);
+		}
+
+		if( message->file_transfer_information ){
+			body_size = message->file_transfer_information->size;
+		}
+
 		belle_sip_message_set_body_handler(
 			(belle_sip_message_t*)event->response,
-			(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(message->file_transfer_information->size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
+			(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
 		);
 	}
 }

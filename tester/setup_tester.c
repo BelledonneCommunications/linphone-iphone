@@ -127,6 +127,8 @@ void linphone_proxy_config_address_equal_test() {
 void linphone_proxy_config_is_server_config_changed_test() {
 	LinphoneProxyConfig* proxy_config = linphone_proxy_config_new();
 
+	linphone_proxy_config_done(proxy_config); /*test done without edit*/
+
 	linphone_proxy_config_set_identity(proxy_config,"sip:toto@titi");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_identity(proxy_config,"sips:toto@titi");

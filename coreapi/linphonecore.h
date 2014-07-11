@@ -120,7 +120,6 @@ typedef enum _LinphoneTransportType LinphoneTransportType;
  * return NULL.
  *
  * @ingroup linphone_address
- * @var LinphoneAddress
  */
 typedef struct SalAddress LinphoneAddress;
 
@@ -221,7 +220,7 @@ LINPHONE_PUBLIC const char *linphone_error_info_get_details(const LinphoneErrorI
 LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
 
 /* linphone dictionary */
-LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new();
+LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new(void);
 LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
 LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
 void linphone_dictionary_unref(LinphoneDictionary* obj);
@@ -391,7 +390,8 @@ LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_call_params_get_media_encryptio
 LINPHONE_PUBLIC	void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption e);
 LINPHONE_PUBLIC	void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
-LINPHONE_PUBLIC	bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
+#define linphone_call_params_local_conference_mode linphone_call_params_get_local_conference_mode	/* Deprecated */
+LINPHONE_PUBLIC	bool_t linphone_call_params_get_local_conference_mode(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 LINPHONE_PUBLIC	void linphone_call_params_destroy(LinphoneCallParams *cp);
 LINPHONE_PUBLIC	bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
@@ -432,6 +432,21 @@ LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_sent_video_size(const Linph
  * @return The received video size or MS_VIDEO_SIZE_UNKNOWN if not available.
  */
 LINPHONE_PUBLIC MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp);
+
+
+/**
+ * Gets the framerate of the video that is sent.
+ * @param[in] cp The call parameters.
+ * @return the actual sent framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_sent_framerate(const LinphoneCallParams *cp);
+
+/**
+ * Gets the framerate of the video that is received.
+ * @param[in] cp The call paramaters for which to get the received framerate.
+ * @return the actual received framerate in frames per seconds, 0 if not available.
+ */
+LINPHONE_PUBLIC float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp);
 
 /**
  * Gets the RTP profile being used.
@@ -691,6 +706,7 @@ LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_remote_params(Linph
 LINPHONE_PUBLIC void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
+LINPHONE_PUBLIC int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
@@ -1053,7 +1069,8 @@ void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 struct _LinphoneAuthInfo;
 
 /**
- * @ingroup authentication
+ * @addtogroup authentication
+ * @{
  * Object holding authentication information.
  *
  * @note The object's fields should not be accessed directly. Prefer using
@@ -1078,32 +1095,130 @@ struct _LinphoneAuthInfo;
 **/
 typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
+/**
+ * Creates a #LinphoneAuthInfo object with supplied information.
+ * The object can be created empty, that is with all arguments set to NULL.
+ * Username, userid, password, realm and domain can be set later using specific methods.
+ * At the end, username and passwd (or ha1) are required.
+ * @param username The username that needs to be authenticated
+ * @param userid The userid used for authenticating (use NULL if you don't know what it is)
+ * @param passwd The password in clear text
+ * @param ha1 The ha1-encrypted password if password is not given in clear text.
+ * @param realm The authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
+ * @param domain The SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
+ * @return A #LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
+ * passed through linphone_core_add_auth_info().
+**/
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
-		const char *passwd, const char *ha1,const char *realm, const char *domain);
+	const char *passwd, const char *ha1,const char *realm, const char *domain);
+
 /**
  * @addtogroup authentication
- * Instanciate a new auth info with values from source
- * @param source auth info object to be cloned
- * @return newly created auth info
+ * Instantiates a new auth info with values from source.
+ * @param[in] source The #LinphoneAuthInfo object to be cloned
+ * @return The newly created #LinphoneAuthInfo object.
  */
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo* source);
+
+/**
+ * Sets the password.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] passwd The password.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
+
+/**
+ * Sets the username.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] username The username.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
+
+/**
+ * Sets the userid.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] userid The userid.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
+
+/**
+ * Sets the realm.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] realm The realm.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
+
+/**
+ * Sets the domain for which this authentication is valid.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] domain The domain.
+ * This should not be necessary because realm is supposed to be unique and sufficient.
+ * However, many SIP servers don't set realm correctly, then domain has to be used to distinguish between several SIP account bearing the same username.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const char *domain);
+
+/**
+ * Sets the ha1.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] ha1 The ha1.
+**/
 LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
-LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *i);
-LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
+/**
+ * Gets the username.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The username.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the password.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The password.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the userid.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The userid.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the realm.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The realm.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the domain.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The domain.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the ha1.
+ *
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The ha1.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *info);
 
 /* you don't need those function*/
 LINPHONE_PUBLIC void linphone_auth_info_destroy(LinphoneAuthInfo *info);
 LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
+
+/**
+ * @}
+ */
 
 
 struct _LinphoneChatRoom;
@@ -1701,6 +1816,22 @@ LINPHONE_PUBLIC	void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime)
 LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
 /**
+ * Set the SIP transport timeout.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] timeout_ms The SIP transport timeout in milliseconds.
+ * @ingroup media_parameters
+ */
+void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
+
+/**
+ * Get the SIP transport timeout.
+ * @param[in] lc #LinphoneCore object.
+ * @return The SIP transport timeout in milliseconds.
+ * @ingroup media_parameters
+ */
+int linphone_core_get_sip_transport_timeout(LinphoneCore *lc);
+
+/**
  * Enable or disable DNS SRV resolution.
  * @param[in] lc #LinphoneCore object.
  * @param[in] enable TRUE to enable DNS SRV resolution, FALSE to disable it.
@@ -1968,7 +2099,7 @@ LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *l
  *
  * @return true if uPnP is available otherwise return false.
  */
-LINPHONE_PUBLIC bool_t linphone_core_upnp_available();
+LINPHONE_PUBLIC bool_t linphone_core_upnp_available(void);
 
 /**
  * @ingroup network_parameters
@@ -2231,9 +2362,12 @@ typedef struct MSVideoSizeDef{
 /* returns a zero terminated table of MSVideoSizeDef*/
 LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
-
+LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);
+LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
 
@@ -2511,7 +2645,12 @@ LINPHONE_PUBLIC	void linphone_core_init_default_params(LinphoneCore*lc, Linphone
  */
 LINPHONE_PUBLIC	bool_t linphone_core_tunnel_available(void);
 
+/**
+ * Linphone tunnel object.
+ * @ingroup tunnel
+ */
 typedef struct _LinphoneTunnel LinphoneTunnel;
+
 /**
 * get tunnel instance if available
 */
@@ -2614,6 +2753,14 @@ LINPHONE_PUBLIC void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id,
  * @param[in] server_url URL of the file server like https://file.linphone.org/upload.php
  * */
 LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url);
+
+/**
+ * Returns a null terminated table of strings containing the file format extension supported for call recording.
+ * @param core the core
+ * @return the supported formats, typically 'wav' and 'mkv'
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
 
 #ifdef __cplusplus
 }
