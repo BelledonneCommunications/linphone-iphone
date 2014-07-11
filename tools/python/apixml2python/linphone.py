@@ -155,7 +155,7 @@ class MethodDefinition:
 				stripped_return_type = strip_leading_linphone(self.return_type)
 				if self.class_['class_has_user_data']:
 					get_user_data_function = self.__find_class_definition(self.return_type)['class_c_function_prefix'] + "get_user_data"
-					self.body += "\tif (" + get_user_data_function + "(cresult) != NULL) {\n"
+					self.body += "\tif ((cresult != NULL) && (" + get_user_data_function + "(cresult) != NULL)) {\n"
 					self.body += "\t\treturn (PyObject *)" + get_user_data_function + "(cresult);\n"
 					self.body += "\t}\n"
 				self.body += "\tpyresult = pylinphone_" + stripped_return_type + "_new_from_native_ptr(&pylinphone_" + stripped_return_type + "Type, cresult);\n"
