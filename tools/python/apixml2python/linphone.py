@@ -346,9 +346,11 @@ class LinphoneModule(object):
 				p['property_name'] = property_name
 				xml_property_getter = xml_property.find("./getter")
 				xml_property_setter = xml_property.find("./setter")
-				if xml_property_getter is not None and xml_property_getter.get('name') in blacklisted_functions:
+				if xml_property_getter is not None and (
+					xml_property_getter.get('name') in blacklisted_functions or xml_property_getter.get('deprecated') == 'true'):
 					continue
-				if xml_property_setter is not None and xml_property_setter.get('name') in blacklisted_functions:
+				if xml_property_setter is not None and (
+					xml_property_setter.get('name') in blacklisted_functions or xml_property_setter.get('deprecated') == 'true'):
 					continue
 				if xml_property_getter is not None:
 					xml_property_getter.set('property_name', property_name)
