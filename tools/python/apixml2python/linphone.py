@@ -21,7 +21,7 @@ def strip_leading_linphone(s):
 		return s
 
 class MethodDefinition:
-	def __init__(self, method_node, class_, enum_names):
+	def __init__(self, method_node, class_, linphone_module):
 		self.body = ''
 		self.arg_names = []
 		self.parse_tuple_format = ''
@@ -29,7 +29,7 @@ class MethodDefinition:
 		self.return_type = 'void'
 		self.method_node = method_node
 		self.class_ = class_
-		self.enum_names = enum_names
+		self.linphone_module = linphone_module
 		self.self_arg = None
 		self.xml_method_return = self.method_node.find('./return')
 		self.xml_method_args = self.method_node.findall('./arguments/argument')
@@ -58,7 +58,7 @@ class MethodDefinition:
 			if fmt == 'O':
 				self.body += "\tPyObject * " + arg_name + ";\n"
 				self.body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr;\n"
-			elif strip_leading_linphone(arg_complete_type) in self.enum_names:
+			elif strip_leading_linphone(arg_complete_type) in self.linphone_module.enum_names:
 				self.body += "\tint " + arg_name + ";\n"
 			else:
 				self.body += "\t" + arg_complete_type + " " + arg_name + ";\n"
@@ -150,9 +150,15 @@ class MethodDefinition:
 		self.body += ', '.join(arg_names) + ");\n"
 
 	def format_method_result(self):
-		if self.return_type != 'void':
+		if self.return_complete_type != 'void':
 			if self.build_value_format == 'O':
-				self.body += "\tpyresult = pylinphone_" + self.class_['class_name'] + "_new_from_native_ptr(&pylinphone_" + self.class_['class_name'] + "Type, cresult);\n"
+				stripped_return_type = strip_leading_linphone(self.return_type)
+				if self.class_['class_has_user_data']:
+					get_user_data_function = self.__find_class_definition(self.return_type)['class_c_function_prefix'] + "get_user_data"
+					self.body += "\tif (" + get_user_data_function + "(cresult) != NULL) {\n"
+					self.body += "\t\treturn (PyObject *)" + get_user_data_function + "(cresult);\n"
+					self.body += "\t}\n"
+				self.body += "\tpyresult = pylinphone_" + stripped_return_type + "_new_from_native_ptr(&pylinphone_" + stripped_return_type + "Type, cresult);\n"
 				self.body += "\tpyret = Py_BuildValue(\"" + self.build_value_format + "\", pyresult);\n"
 				self.body += "\tPy_DECREF(pyresult);\n"
 				self.body += "\treturn pyret;"
@@ -160,6 +166,17 @@ class MethodDefinition:
 				self.body += "\treturn Py_BuildValue(\"" + self.build_value_format + "\", cresult);"
 		else:
 			self.body += "\tPy_RETURN_NONE;"
+
+	def format_new_from_native_pointer_body(self):
+		self.body += "\tpylinphone_" + self.class_['class_name'] + "Object *self;\n"
+		self.format_tracing()
+		self.body += "\tif (native_ptr == NULL) Py_RETURN_NONE;\n"
+		self.body += "\tself = (pylinphone_" + self.class_['class_name'] + "Object *)PyObject_New(pylinphone_" + self.class_['class_name'] + "Object, type);\n"
+		self.body += "\tif (self == NULL) Py_RETURN_NONE;\n"
+		self.body += "\tself->native_ptr = native_ptr;\n"
+		if self.class_['class_has_user_data']:
+			self.body += "\t" + self.class_['class_c_function_prefix'] + "set_user_data(native_ptr, self);\n"
+		self.body += "\treturn (PyObject *)self;"
 
 	def format_dealloc_c_function_call(self):
 		if self.class_['class_refcountable']:
@@ -207,7 +224,7 @@ class MethodDefinition:
 		elif basic_type == 'bool_t':
 			return 'i'
 		else:
-			if strip_leading_linphone(basic_type) in self.enum_names:
+			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
 				return 'i'
 			else:
 				return 'O'
@@ -239,10 +256,17 @@ class MethodDefinition:
 		elif basic_type == 'bool_t':
 			return ('bool', 'PyBool_Check', 'PyInt_AsLong')
 		else:
-			if strip_leading_linphone(basic_type) in self.enum_names:
+			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
 				return ('int', 'PyInt_Check', 'PyInt_AsLong')
 			else:
 				return ('class instance', 'PyInstance_Check', None)
+
+	def __find_class_definition(self, basic_type):
+		basic_type = strip_leading_linphone(basic_type)
+		for c in self.linphone_module.classes:
+			if c['class_name'] == basic_type:
+				return c
+		return None
 
 
 class LinphoneModule(object):
@@ -275,12 +299,14 @@ class LinphoneModule(object):
 			if xml_class.get('deprecated') == 'true':
 				continue
 			c = {}
+			c['class_xml_node'] = xml_class
 			c['class_cname'] = xml_class.get('name')
 			c['class_name'] = strip_leading_linphone(c['class_cname'])
 			c['class_c_function_prefix'] = xml_class.get('cfunctionprefix')
 			c['class_doc'] = self.__format_doc(xml_class.find('briefdescription'), xml_class.find('detaileddescription'))
 			c['class_refcountable'] = (xml_class.get('refcountable') == 'true')
 			c['class_destroyable'] = (xml_class.get('destroyable') == 'true')
+			c['class_has_user_data'] = False
 			c['class_type_methods'] = []
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
@@ -291,7 +317,7 @@ class LinphoneModule(object):
 					continue
 				m = {}
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
-				m['method_body'] = self.__format_method_body(xml_type_method, c)
+				m['method_xml_node'] = xml_type_method
 				c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
@@ -306,12 +332,14 @@ class LinphoneModule(object):
 					continue
 				m = {}
 				m['method_name'] = method_name
-				m['method_body'] = self.__format_method_body(xml_instance_method, c)
+				m['method_xml_node'] = xml_instance_method
 				c['class_instance_methods'].append(m)
 			c['class_properties'] = []
 			xml_properties = xml_class.findall("./properties/property")
 			for xml_property in xml_properties:
 				property_name = xml_property.get('name')
+				if property_name == 'user_data':
+					c['class_has_user_data'] = True
 				if property_name in self.internal_property_names:
 					continue
 				p = {}
@@ -325,7 +353,7 @@ class LinphoneModule(object):
 				if xml_property_getter is not None:
 					xml_property_getter.set('property_name', property_name)
 					p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
-					p['getter_body'] = self.__format_getter_body(xml_property_getter, c)
+					p['getter_xml_node'] = xml_property_getter
 					p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
 					p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
 					p['getter_definition_end'] = "}"
@@ -334,23 +362,36 @@ class LinphoneModule(object):
 				if xml_property_setter is not None:
 					xml_property_setter.set('property_name', property_name)
 					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
-					p['setter_body'] = self.__format_setter_body(xml_property_setter, c)
+					p['setter_xml_node'] = xml_property_setter
 					p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
 					p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
 					p['setter_definition_end'] = "}"
 				else:
 					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
-			if c['class_refcountable']:
-				xml_instance_method = xml_class.find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
-				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
-			elif c['class_destroyable']:
-				xml_instance_method = xml_class.find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
-				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 			self.classes.append(c)
+			# Format methods' bodies
+			for c in self.classes:
+				for m in c['class_type_methods']:
+					m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
+				for m in c['class_instance_methods']:
+					m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
+				for p in c['class_properties']:
+					if p.has_key('getter_xml_node'):
+						p['getter_body'] = self.__format_getter_body(p['getter_xml_node'], c)
+					if p.has_key('setter_xml_node'):
+						p['setter_body'] = self.__format_setter_body(p['setter_xml_node'], c)
+				if c['class_refcountable']:
+					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
+					c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
+					c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
+				elif c['class_destroyable']:
+					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
+					c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
+					c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 
 	def __format_method_body(self, method_node, class_):
-		method = MethodDefinition(method_node, class_, self.enum_names)
+		method = MethodDefinition(method_node, class_, self)
 		method.format_local_variables_definition()
 		method.format_arguments_parsing()
 		method.format_tracing()
@@ -359,7 +400,7 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_getter_body(self, getter_node, class_):
-		method = MethodDefinition(getter_node, class_, self.enum_names)
+		method = MethodDefinition(getter_node, class_, self)
 		method.format_local_variables_definition()
 		method.format_arguments_parsing()
 		method.format_tracing()
@@ -368,7 +409,7 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_setter_body(self, setter_node, class_):
-		method = MethodDefinition(setter_node, class_, self.enum_names)
+		method = MethodDefinition(setter_node, class_, self)
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		# TODO: Investigate. Maybe we should decide that setters must always return an int value.
 		method.xml_method_return.set('type', 'void')
@@ -378,8 +419,16 @@ class LinphoneModule(object):
 		method.format_setter_value_checking_and_c_function_call()
 		return method.body
 
+	def __format_new_from_native_pointer_body(self, method_node, class_):
+		method = MethodDefinition(method_node, class_, self)
+		# Force return value type of dealloc function to prevent declaring useless local variables
+		method.xml_method_return.set('type', 'void')
+		method.xml_method_return.set('completetype', 'void')
+		method.format_new_from_native_pointer_body()
+		return method.body
+
 	def __format_dealloc_body(self, method_node, class_):
-		method = MethodDefinition(method_node, class_, self.enum_names)
+		method = MethodDefinition(method_node, class_, self)
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		method.xml_method_return.set('type', 'void')
 		method.xml_method_return.set('completetype', 'void')
