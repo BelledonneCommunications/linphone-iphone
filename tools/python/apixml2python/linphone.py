@@ -370,25 +370,25 @@ class LinphoneModule(object):
 					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
 			self.classes.append(c)
-			# Format methods' bodies
-			for c in self.classes:
-				for m in c['class_type_methods']:
-					m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
-				for m in c['class_instance_methods']:
-					m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
-				for p in c['class_properties']:
-					if p.has_key('getter_xml_node'):
-						p['getter_body'] = self.__format_getter_body(p['getter_xml_node'], c)
-					if p.has_key('setter_xml_node'):
-						p['setter_body'] = self.__format_setter_body(p['setter_xml_node'], c)
-				if c['class_refcountable']:
-					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
-					c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
-					c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
-				elif c['class_destroyable']:
-					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
-					c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
-					c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
+		# Format methods' bodies
+		for c in self.classes:
+			for m in c['class_type_methods']:
+				m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
+			for m in c['class_instance_methods']:
+				m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
+			for p in c['class_properties']:
+				if p.has_key('getter_xml_node'):
+					p['getter_body'] = self.__format_getter_body(p['getter_xml_node'], c)
+				if p.has_key('setter_xml_node'):
+					p['setter_body'] = self.__format_setter_body(p['setter_xml_node'], c)
+			if c['class_refcountable']:
+				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
+				c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
+				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
+			elif c['class_destroyable']:
+				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
+				c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
+				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 
 	def __format_method_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_, self)
