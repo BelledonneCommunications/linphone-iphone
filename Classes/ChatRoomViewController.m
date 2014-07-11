@@ -522,6 +522,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                   [[PhoneMainView instance] popCurrentView];
                               }
                           }];
+    } else {
+        [self.tableController setChatRoom:NULL];
+        [[PhoneMainView instance] popCurrentView];
     }
 }
 
