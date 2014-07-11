@@ -40,26 +40,29 @@ class MethodDefinition:
 
 	def format_local_variables_definition(self):
 		self.return_type = self.xml_method_return.get('type')
-		if self.return_type != 'void':
-			self.body += "\t" + self.return_type + " cresult;\n"
-			self.build_value_format = self.__ctype_to_python_format(self.return_type)
+		self.return_complete_type = self.xml_method_return.get('completetype')
+		if self.return_complete_type != 'void':
+			self.body += "\t" + self.return_complete_type + " cresult;\n"
+			self.build_value_format = self.__ctype_to_python_format(self.return_type, self.return_complete_type)
 			if self.build_value_format == 'O':
 				self.body += "\tPyObject * pyresult;\n"
 				self.body += "\tPyObject * pyret;\n"
 		if self.self_arg is not None:
-			self.body += "\t" + self.self_arg.get('type') + "native_ptr;\n"
+			self.body += "\t" + self.self_arg.get('completetype') + "native_ptr;\n"
 		for xml_method_arg in self.xml_method_args:
-			method_type = xml_method_arg.get('type')
-			fmt = self.__ctype_to_python_format(method_type)
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			fmt = self.__ctype_to_python_format(arg_type, arg_complete_type)
 			self.parse_tuple_format += fmt
 			if fmt == 'O':
-				# TODO
-				pass
-			elif strip_leading_linphone(method_type) in self.enum_names:
-				self.body += "\tint " + xml_method_arg.get('name') + ";\n"
+				self.body += "\tPyObject * " + arg_name + ";\n"
+				self.body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr;\n"
+			elif strip_leading_linphone(arg_complete_type) in self.enum_names:
+				self.body += "\tint " + arg_name + ";\n"
 			else:
-				self.body += "\t" + xml_method_arg.get('type') + " " + xml_method_arg.get('name') + ";\n"
-			self.arg_names.append(xml_method_arg.get('name'))
+				self.body += "\t" + arg_complete_type + " " + arg_name + ";\n"
+			self.arg_names.append(arg_name)
 
 	def format_native_pointer_get(self):
 		self.body += "\tnative_ptr = pylinphone_" + self.class_['class_name'] + "_get_native_ptr(self);\n"
@@ -74,6 +77,17 @@ class MethodDefinition:
 			self.body += "\t\treturn NULL;\n"
 		self.body += "\t}\n"
 
+	def format_object_args_native_pointers_checking(self):
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			fmt = self.__ctype_to_python_format(arg_type, arg_complete_type)
+			if fmt == 'O':
+				self.body += "\tif ((" + arg_name + "_native_ptr = pylinphone_" + strip_leading_linphone(arg_type) + "_get_native_ptr(" + arg_name + ")) == NULL) {\n"
+				self.body += "\t\treturn NULL;\n"
+				self.body += "\t}\n"
+
 	def format_arguments_parsing(self):
 		if self.self_arg is not None:
 			self.format_native_pointer_checking(False)
@@ -81,9 +95,13 @@ class MethodDefinition:
 			self.body += "\tif (!PyArg_ParseTuple(args, \"" + self.parse_tuple_format + "\""
 			self.body += ', ' + ', '.join(map(lambda a: '&' + a, self.arg_names))
 			self.body += ")) {\n\t\treturn NULL;\n\t}\n"
+		self.format_object_args_native_pointers_checking()
 
 	def format_setter_value_checking_and_c_function_call(self):
 		attribute_name = self.method_node.get('property_name')
+		first_arg_type = self.xml_method_args[0].get('type')
+		first_arg_complete_type = self.xml_method_args[0].get('completetype')
+		first_arg_name = self.xml_method_args[0].get('name')
 		self.format_native_pointer_checking(True)
 		# Check that the value exists
 		self.body += "\tif (value == NULL) {\n"
@@ -91,32 +109,45 @@ class MethodDefinition:
 		self.body += "\t\treturn -1;\n"
 		self.body += "\t}\n"
 		# Check the value
-		basic_type, checkfunc, convertfunc = self.__ctype_to_python_type(self.xml_method_args[0].get('type'))
+		type_str, checkfunc, convertfunc = self.__ctype_to_python_type(first_arg_type, first_arg_complete_type)
 		self.body += "\tif (!" + checkfunc + "(value)) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + basic_type + "\");\n"
+		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + type_str + "\");\n"
 		self.body += "\t\treturn -1;\n"
 		self.body += "\t}\n"
 		# Call the C function
 		if convertfunc is None:
 			pass # TODO
 		else:
-			self.body += "\t" + self.arg_names[0] + " = (" + self.xml_method_args[0].get('type') + ")" + convertfunc + "(value);\n"
-		self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + self.arg_names[0] + ");\n"
+			self.body += "\t" + first_arg_name + " = (" + first_arg_complete_type + ")" + convertfunc + "(value);\n"
+		if self.__ctype_to_python_format(first_arg_type, first_arg_complete_type) == 'O':
+			pass # TODO
+		else:
+			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + self.arg_names[0] + ");\n"
 		self.body += "\treturn 0;"
 
 	def format_tracing(self):
 		self.body += "\tpylinphone_trace(__FUNCTION__);\n"
 
 	def format_c_function_call(self):
+		arg_names = []
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			type_str, checkfunc, convertfunc = self.__ctype_to_python_type(arg_type, arg_complete_type)
+			if convertfunc is None:
+				arg_names.append(arg_name + "_native_ptr")
+			else:
+				arg_names.append(arg_name)
 		self.body += "\t"
 		if self.return_type != 'void':
 			self.body += "cresult = "
 		self.body += self.method_node.get('name') + "("
 		if self.self_arg is not None:
 			self.body += "native_ptr"
-			if len(self.arg_names) > 0:
+			if len(arg_names) > 0:
 				self.body += ', '
-		self.body += ', '.join(self.arg_names) + ");\n"
+		self.body += ', '.join(arg_names) + ");\n"
 
 	def format_method_result(self):
 		if self.return_type != 'void':
@@ -141,18 +172,8 @@ class MethodDefinition:
 			self.body += "\t}\n"
 		self.body += "\tself->ob_type->tp_free(self);"
 
-	def __get_basic_type_from_c_type(self, ctype):
-		basic_type = 'int'
-		keywords = ['const', 'struct', 'enum', 'signed', 'unsigned', 'short', 'long', '*']
-		splitted_type = ctype.split(' ')
-		for s in splitted_type:
-			if s not in keywords:
-				basic_type = s
-				break
-		return (basic_type, splitted_type)
-
-	def __ctype_to_python_format(self, ctype):
-		basic_type, splitted_type = self.__get_basic_type_from_c_type(ctype)
+	def __ctype_to_python_format(self, basic_type, complete_type):
+		splitted_type = complete_type.split(' ')
 		if basic_type == 'char':
 			if '*' in splitted_type:
 				return 'z'
@@ -191,8 +212,8 @@ class MethodDefinition:
 			else:
 				return 'O'
 
-	def __ctype_to_python_type(self, ctype):
-		basic_type, splitted_type = self.__get_basic_type_from_c_type(ctype)
+	def __ctype_to_python_type(self, basic_type, complete_type):
+		splitted_type = complete_type.split(' ')
 		if basic_type == 'char':
 			if '*' in splitted_type:
 				return ('string', 'PyString_Check', 'PyString_AsString')
@@ -351,6 +372,7 @@ class LinphoneModule(object):
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		# TODO: Investigate. Maybe we should decide that setters must always return an int value.
 		method.xml_method_return.set('type', 'void')
+		method.xml_method_return.set('completetype', 'void')
 		method.format_local_variables_definition()
 		method.format_tracing()
 		method.format_setter_value_checking_and_c_function_call()
@@ -360,6 +382,7 @@ class LinphoneModule(object):
 		method = MethodDefinition(method_node, class_, self.enum_names)
 		# Force return value type of dealloc function to prevent declaring useless local variables
 		method.xml_method_return.set('type', 'void')
+		method.xml_method_return.set('completetype', 'void')
 		method.format_local_variables_definition()
 		method.format_native_pointer_get()
 		method.format_tracing()

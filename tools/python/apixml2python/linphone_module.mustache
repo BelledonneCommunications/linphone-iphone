@@ -67,6 +67,10 @@ typedef struct {
 	{{class_cname}} *native_ptr;
 } pylinphone_{{class_name}}Object;
 
+{{/classes}}
+
+{{#classes}}
+
 static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self) {
 	return ((pylinphone_{{class_name}}Object *)self)->native_ptr;
 }
