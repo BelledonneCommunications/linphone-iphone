@@ -995,7 +995,7 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 		/*we are receiving a response, set a specific body handler to acquire the response.
 		 * if not done, belle-sip will create a memory body handler, the default*/
 		LinphoneChatMessage *message=(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
-		belle_sip_message_t* response = event->response;
+		belle_sip_message_t* response = BELLE_SIP_MESSAGE(event->response);
 		size_t body_size = 0;
 
 		if( message->file_transfer_information == NULL ){
