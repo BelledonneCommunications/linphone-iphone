@@ -583,13 +583,13 @@ class Generator:
 		if f.location is not None:
 			functionAttributes['location'] = f.location
 		functionNode = ET.SubElement(parentNode, nodeName, functionAttributes)
-		returnValueAttributes = { 'type' : f.returnArgument.completeType }
+		returnValueAttributes = { 'type' : f.returnArgument.ctype, 'completetype' : f.returnArgument.completeType }
 		returnValueNode = ET.SubElement(functionNode, 'return', returnValueAttributes)
 		if f.returnArgument.description is not None:
 			returnValueNode.append(f.returnArgument.description)
 		argumentsNode = ET.SubElement(functionNode, 'arguments')
 		for arg in f.arguments:
-			argumentNodeAttributes = { 'name' : arg.name, 'type' : arg.completeType }
+			argumentNodeAttributes = { 'name' : arg.name, 'type' : arg.ctype, 'completetype' : arg.completeType }
 			argumentNode = ET.SubElement(argumentsNode, 'argument', argumentNodeAttributes)
 			if arg.description is not None:
 				argumentNode.append(arg.description)
