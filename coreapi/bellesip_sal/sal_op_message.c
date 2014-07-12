@@ -129,7 +129,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			free(cacheString);
 			int retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
 			if (retval != 0) {
-				ms_warning("Unable to decrypt message, reason %x", retval);
+				ms_warning("Unable to decrypt message, reason : %s - op [%p]", lime_error_code_to_string(retval), op);
 				free(decryptedMessage);
 				xmlFreeDoc(cacheXml);
 				resp = belle_sip_response_create_from_request(req,488);
@@ -266,7 +266,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			free(cacheString);
 			int retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
 			if (retval != 0) {
-				ms_warning("Unable to encrypt message for %s error %x", peer_uri, retval);
+				ms_warning("Unable to encrypt message for %s : %s - op [%p]", peer_uri, lime_error_code_to_string(retval), op);
 				xmlFreeDoc(cacheXml);
 				free(multipartEncryptedMessage);
 				sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);

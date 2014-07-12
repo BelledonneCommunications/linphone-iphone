@@ -755,3 +755,16 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 
 	return 0;
 }
+
+char *lime_error_code_to_string(int errorCode) {
+	switch (errorCode) {
+		case LIME_INVALID_CACHE: return "Invalid ZRTP cache";
+		case LIME_UNABLE_TO_DERIVE_KEY: return "Unable to derive Key";
+		case LIME_UNABLE_TO_ENCRYPT_MESSAGE: return "Unable to encrypt message";
+		case LIME_UNABLE_TO_DECRYPT_MESSAGE: return "Unable to decrypt message";
+		case LIME_NO_VALID_KEY_FOUND_FOR_PEER: return "No valid key found";
+		case LIME_INVALID_ENCRYPTED_MESSAGE: return "Invalid encrypted message";
+	}
+	return "Unknow error";
+
+}
