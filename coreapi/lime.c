@@ -159,10 +159,11 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 			if (matchingURIFlag == 1) { /* we found a match for the URI in this peer node, extract the keys, session Id and index values */
 				/* allocate a new limeKey_t structure to hold the retreived keys */
 				limeKey_t *currentPeerKeys = (limeKey_t *)malloc(sizeof(limeKey_t));
-				uint8_t itemFound = 0; /* count the item found, we must get all of the requested infos: 4 nodes*/
+				uint8_t itemFound = 0; /* count the item found, we must get all of the requested infos: 5 nodes*/
+				uint8_t pvs = 0;
 				
 				peerNodeChildren = cur->xmlChildrenNode; /* reset peerNodeChildren to the first child of node */
-				while (peerNodeChildren!=NULL && itemFound<4) {
+				while (peerNodeChildren!=NULL && itemFound<5) {
 					xmlChar *nodeContent = NULL;
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"ZID")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
@@ -188,13 +189,18 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 						currentPeerKeys->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
 						itemFound++;
 					}
+					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
+						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
+						lime_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
+						itemFound++;
+					}
 
 					xmlFree(nodeContent);
 					peerNodeChildren = peerNodeChildren->next;
 				}
 
-				/* check if we have all the requested information */
-				if (itemFound == 4) {
+				/* check if we have all the requested information and the PVS flag is set to 1 */
+				if (itemFound == 5 && pvs == 1) {
 					associatedKeys->associatedZIDNumber +=1;
 					/* extend array of pointer to limeKey_t structures to add the one we found */
 					associatedKeys->peerKeys = (limeKey_t **)realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
@@ -229,13 +235,17 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 		cur = cur->xmlChildrenNode;
 
 	}
+
+	/* to check we collect all the information needed from the cache and that pvs(boolean for previously verified Sas) is set in cache */
 	uint8_t itemFound = 0;
-	while (cur!=NULL && itemFound<3) { /* loop on all peer nodes */
+	uint8_t pvs = 0;
+
+	while (cur!=NULL) { /* loop on all peer nodes */
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
 			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode->xmlChildrenNode, 1); /* ZID is the first element of peer */
 			if (!xmlStrcmp(currentZidHex, (const xmlChar *)peerZidHex)) { /* we found the peer element we are looking for */
 				xmlNodePtr peerNodeChildren = cur->xmlChildrenNode->next;
-				while (peerNodeChildren != NULL && itemFound<3) { /* look for the tag we want to read */
+				while (peerNodeChildren != NULL && itemFound<4) { /* look for the tag we want to read : rcvKey, rcvSId, rcvIndex and pvs*/
 					xmlChar *nodeContent = NULL;
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvKey")) {
 						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
@@ -255,17 +265,29 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 						associatedKey->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
 						itemFound++;
 					}
+					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"pvs")) {
+						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
+						lime_strToUint8(&pvs, nodeContent, 2); /* pvs is retrieved as a 2 characters hexa string, convert it to an int8 */
+						itemFound++;
+					}
 					xmlFree(nodeContent);
 					peerNodeChildren = peerNodeChildren->next;
 				}
+				xmlFree(currentZidHex);
+				break; /* we parsed the peer node we were looking for, get out of the main while */
 			}
 			xmlFree(currentZidHex);
 		}
 		cur = cur->next;
 	}
 
-	
-	return 0;
+	/* if we manage to find the correct key information and that pvs is set to 1, return 0 (success) */
+	if ((pvs == 1) && (itemFound == 4)) {
+		return 0;
+	}
+
+	/* otherwise, key wasn't found or is invalid */
+	return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
 }
 
 int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role) {
@@ -536,7 +558,7 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 
 	if (associatedKeys.associatedZIDNumber == 0) {
 		lime_freeKeys(associatedKeys);
-		return LIME_NO_KEY_FOUND_FOR_PEER;
+		return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
 	}
 
 	/* create an xml doc to hold the multipart message */
@@ -652,38 +674,42 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 		/* get from cache the matching key */
 		retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
 
-		if (retval == 0) {
-			/* retrieve the portion of message which is encrypted with our key */
-			while (cur != NULL) { /* loop on all "msg" node in the message */
-				xmlNodePtr msgChildrenNode = cur->xmlChildrenNode;
-				xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1); /* pZID is the first element of msg */
-				if (!xmlStrcmp(currentZidHex, (const xmlChar *)selfZidHex)) { /* we found the msg node we are looking for */
-					/* get the index (second node in the msg one) */
-					msgChildrenNode = msgChildrenNode->next;
-					xmlChar *sessionIndexHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
-					usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[3]))<<16)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[4]))<<12)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[5]))<<8)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[6]))<<4)
-						| (((uint32_t)lime_charToByte(sessionIndexHex[7])));
-					xmlFree(sessionIndexHex);
-					/* get the encrypted message */
-					msgChildrenNode = msgChildrenNode->next;
-					/* convert the cipherText from base 64 */
-					xmlChar *encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
-					encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), NULL, 0);
-					encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
-					encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), encryptedMessage, encryptedMessageLength);
-					xmlFree(encryptedMessageb64);
-				}
-
-				cur = cur->next;
-				xmlFree(currentZidHex);
-			}
+		if (retval != 0) {
+			xmlFree(peerZidHex);
+			xmlFreeDoc(xmlEncryptedMessage);
+			return retval;
 		}
+
+		/* retrieve the portion of message which is encrypted with our key */
+		while (cur != NULL) { /* loop on all "msg" node in the message */
+			xmlNodePtr msgChildrenNode = cur->xmlChildrenNode;
+			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1); /* pZID is the first element of msg */
+			if (!xmlStrcmp(currentZidHex, (const xmlChar *)selfZidHex)) { /* we found the msg node we are looking for */
+				/* get the index (second node in the msg one) */
+				msgChildrenNode = msgChildrenNode->next;
+				xmlChar *sessionIndexHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
+				usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[3]))<<16)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[4]))<<12)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[5]))<<8)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[6]))<<4)
+					| (((uint32_t)lime_charToByte(sessionIndexHex[7])));
+				xmlFree(sessionIndexHex);
+				/* get the encrypted message */
+				msgChildrenNode = msgChildrenNode->next;
+				/* convert the cipherText from base 64 */
+				xmlChar *encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
+				encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), NULL, 0);
+				encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
+				encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), encryptedMessage, encryptedMessageLength);
+				xmlFree(encryptedMessageb64);
+			}
+
+			cur = cur->next;
+			xmlFree(currentZidHex);
+			}
 	}
 
 	xmlFree(peerZidHex);
