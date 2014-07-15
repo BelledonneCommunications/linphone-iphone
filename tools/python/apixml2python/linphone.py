@@ -65,17 +65,21 @@ class MethodDefinition:
 			self.arg_names.append(arg_name)
 
 	def format_native_pointer_get(self):
-		self.body += "\tnative_ptr = pylinphone_" + self.class_['class_name'] + "_get_native_ptr(self);\n"
+		self.body += \
+"""	native_ptr = pylinphone_{class_name}_get_native_ptr(self);
+""".format(class_name=self.class_['class_name'])
 
 	def format_native_pointer_checking(self, return_int):
 		self.format_native_pointer_get()
-		self.body += "\tif (native_ptr == NULL) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid linphone." + self.class_['class_name'] + " instance\");\n"
+		return_value = "NULL"
 		if return_int:
-			self.body += "\t\treturn -1;\n"
-		else:
-			self.body += "\t\treturn NULL;\n"
-		self.body += "\t}\n"
+			return_value = "-1"
+		self.body += \
+"""	if (native_ptr == NULL) {{
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.{class_name} instance");
+		return {return_value};
+	}}
+""".format(class_name=self.class_['class_name'], return_value=return_value)
 
 	def format_object_args_native_pointers_checking(self):
 		for xml_method_arg in self.xml_method_args:
@@ -84,17 +88,21 @@ class MethodDefinition:
 			arg_complete_type = xml_method_arg.get('completetype')
 			fmt = self.__ctype_to_python_format(arg_type, arg_complete_type)
 			if fmt == 'O':
-				self.body += "\tif ((" + arg_name + "_native_ptr = pylinphone_" + strip_leading_linphone(arg_type) + "_get_native_ptr(" + arg_name + ")) == NULL) {\n"
-				self.body += "\t\treturn NULL;\n"
-				self.body += "\t}\n"
+				self.body += \
+"""	if (({arg_name}_native_ptr = pylinphone_{arg_type}_get_native_ptr({arg_name})) == NULL) {{
+		return NULL;
+	}}
+""".format(arg_name=arg_name, arg_type=strip_leading_linphone(arg_type))
 
 	def format_arguments_parsing(self):
 		if self.self_arg is not None:
 			self.format_native_pointer_checking(False)
 		if len(self.arg_names) > 0:
-			self.body += "\tif (!PyArg_ParseTuple(args, \"" + self.parse_tuple_format + "\""
-			self.body += ', ' + ', '.join(map(lambda a: '&' + a, self.arg_names))
-			self.body += ")) {\n\t\treturn NULL;\n\t}\n"
+			self.body += \
+"""	if (!PyArg_ParseTuple(args, "{fmt}", {args})) {{
+		return NULL;
+	}}
+""".format(fmt=self.parse_tuple_format, args=', '.join(map(lambda a: '&' + a, self.arg_names)))
 		self.format_object_args_native_pointers_checking()
 
 	def format_setter_value_checking_and_c_function_call(self):
@@ -104,41 +112,58 @@ class MethodDefinition:
 		first_arg_name = self.xml_method_args[0].get('name')
 		self.format_native_pointer_checking(True)
 		# Check that the value exists
-		self.body += "\tif (value == NULL) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Cannot delete the " + attribute_name + " attribute\");\n"
-		self.body += "\t\treturn -1;\n"
-		self.body += "\t}\n"
+		self.body += \
+"""	if (value == NULL) {{
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the {attribute_name} attribute");
+		return -1;
+	}}
+""".format(attribute_name=attribute_name)
 		# Check the value
 		type_str, checkfunc, convertfunc = self.__ctype_to_python_type(first_arg_type, first_arg_complete_type)
 		first_arg_class = strip_leading_linphone(first_arg_type)
 		if checkfunc is None:
-			self.body += "\tif (!PyObject_IsInstance(value, (PyObject *)&pylinphone_" + first_arg_class + "Type)) {\n"
-			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a linphone." + first_arg_class + " instance\");\n"
-			self.body += "\t\treturn -1;\n"
-			self.body += "\t}\n"
+			self.body += \
+"""	if (!PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
+		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a linphone.{class_name} instance");
+		return -1;
+	}}
+""".format(class_name=first_arg_class, attribute_name=attribute_name)
 		else:
-			self.body += "\tif (!" + checkfunc + "(value)) {\n"
-			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + type_str + "\");\n"
-			self.body += "\t\treturn -1;\n"
-			self.body += "\t}\n"
+			self.body += \
+"""	if (!{checkfunc}(value)) {{
+		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a {type_str}");
+		return -1;
+	}}
+""".format(checkfunc=checkfunc, attribute_name=attribute_name, type_str=type_str)
 		# Call the C function
 		if convertfunc is None:
-			self.body += "\t" + first_arg_name + " = value;\n"
+			self.body += \
+"""	{arg_name} = value;
+""".format(arg_name=first_arg_name)
 		else:
-			self.body += "\t" + first_arg_name + " = (" + first_arg_complete_type + ")" + convertfunc + "(value);\n"
+			self.body += \
+"""	{arg_name} = ({arg_type}){convertfunc}(value);
+""".format(arg_name=first_arg_name, arg_type=first_arg_complete_type, convertfunc=convertfunc)
 		if self.__ctype_to_python_format(first_arg_type, first_arg_complete_type) == 'O':
-			self.body += "\t" + first_arg_name + "_native_ptr = pylinphone_" + first_arg_class + "_get_native_ptr(" + first_arg_name + ");\n"
-			self.body += "\tif (%s_native_ptr == NULL) {\n" % (first_arg_name)
-			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid linphone." + first_arg_class + " instance\");\n"
-			self.body += "\t\treturn -1;\n"
-			self.body += "\t}\n"
-			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + first_arg_name + "_native_ptr);\n"
+			self.body += \
+"""	{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
+	if ({arg_name}_native_ptr == NULL) {{
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.{arg_class} instance");
+		return -1;
+	}}
+	{method_name}(native_ptr, {arg_name}_native_ptr);
+""".format(arg_name=first_arg_name, arg_class=first_arg_class, method_name=self.method_node.get('name'))
 		else:
-			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + first_arg_name + ");\n"
-		self.body += "\treturn 0;"
+			self.body += \
+"""	{method_name}(native_ptr, {arg_name});
+""".format(method_name=self.method_node.get('name'), arg_name=first_arg_name)
+		self.body += \
+"""	return 0;"""
 
 	def format_tracing(self):
-		self.body += "\tpylinphone_trace(__FUNCTION__);\n"
+		self.body += \
+"""	pylinphone_trace(__FUNCTION__);
+"""
 
 	def format_c_function_call(self):
 		arg_names = []
@@ -168,39 +193,57 @@ class MethodDefinition:
 				return_type_class = self.__find_class_definition(self.return_type)
 				if return_type_class['class_has_user_data']:
 					get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
-					self.body += "\tif ((cresult != NULL) && (" + get_user_data_function + "(cresult) != NULL)) {\n"
-					self.body += "\t\treturn (PyObject *)" + get_user_data_function + "(cresult);\n"
-					self.body += "\t}\n"
-				self.body += "\tpyresult = pylinphone_" + stripped_return_type + "_new_from_native_ptr(&pylinphone_" + stripped_return_type + "Type, cresult);\n"
-				self.body += "\tpyret = Py_BuildValue(\"" + self.build_value_format + "\", pyresult);\n"
-				self.body += "\tPy_DECREF(pyresult);\n"
-				self.body += "\treturn pyret;"
+					self.body += \
+"""	if ((cresult != NULL) && ({func}(cresult) != NULL)) {{
+		return (PyObject *){func}(cresult);
+	}}
+""".format(func=get_user_data_function)
+				self.body += \
+"""	pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);
+	pyret = Py_BuildValue("{fmt}", pyresult);
+	Py_DECREF(pyresult);
+	return pyret;
+""".format(return_type=stripped_return_type, fmt=self.build_value_format)
 			else:
-				self.body += "\treturn Py_BuildValue(\"" + self.build_value_format + "\", cresult);"
+				self.body += \
+"""	return Py_BuildValue("{fmt}", cresult);""".format(fmt=self.build_value_format)
 		else:
-			self.body += "\tPy_RETURN_NONE;"
+			self.body += \
+"""	Py_RETURN_NONE;"""
 
 	def format_new_from_native_pointer_body(self):
-		self.body += "\tpylinphone_" + self.class_['class_name'] + "Object *self;\n"
+		self.body += \
+"""	pylinphone_{class_name}Object *self;
+""".format(class_name=self.class_['class_name'])
 		self.format_tracing()
-		self.body += "\tif (native_ptr == NULL) Py_RETURN_NONE;\n"
-		self.body += "\tself = (pylinphone_" + self.class_['class_name'] + "Object *)PyObject_New(pylinphone_" + self.class_['class_name'] + "Object, type);\n"
-		self.body += "\tif (self == NULL) Py_RETURN_NONE;\n"
-		self.body += "\tself->native_ptr = (" + self.class_['class_cname'] + " *)native_ptr;\n"
+		self.body += \
+"""	if (native_ptr == NULL) Py_RETURN_NONE;
+	self = (pylinphone_{class_name}Object *)PyObject_New(pylinphone_{class_name}Object, type);
+	if (self == NULL) Py_RETURN_NONE;
+	self->native_ptr = ({class_cname} *)native_ptr;
+""".format(class_name=self.class_['class_name'], class_cname=self.class_['class_cname'])
 		if self.class_['class_has_user_data']:
-			self.body += "\t" + self.class_['class_c_function_prefix'] + "set_user_data(self->native_ptr, self);\n"
-		self.body += "\treturn (PyObject *)self;"
+			self.body += \
+"""	{function_prefix}set_user_data(self->native_ptr, self);
+""".format(function_prefix=self.class_['class_c_function_prefix'])
+		self.body += \
+"""	return (PyObject *)self;"""
 
 	def format_dealloc_c_function_call(self):
 		if self.class_['class_refcountable']:
-			self.body += "\tif (native_ptr != NULL) {\n"
-			self.body += "\t\t" + self.class_['class_c_function_prefix'] + "unref(native_ptr);\n"
-			self.body += "\t}\n"
+			self.body += \
+"""	if (native_ptr != NULL) {{
+		{function_prefix}unref(native_ptr);
+	}}
+""".format(function_prefix=self.class_['class_c_function_prefix'])
 		elif self.class_['class_destroyable']:
-			self.body += "\tif (native_ptr != NULL) {\n"
-			self.body += "\t\t" + self.class_['class_c_function_prefix'] + "destroy(native_ptr);\n"
-			self.body += "\t}\n"
-		self.body += "\tself->ob_type->tp_free(self);"
+			self.body += \
+"""	if (native_ptr != NULL) {{
+		{function_prefix}destroy(native_ptr);
+	}}
+""".format(function_prefix=self.class_['class_c_function_prefix'])
+		self.body += \
+"""	self->ob_type->tp_free(self);"""
 
 	def __ctype_to_python_format(self, basic_type, complete_type):
 		splitted_type = complete_type.split(' ')
