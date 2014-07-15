@@ -153,8 +153,9 @@ class MethodDefinition:
 		if self.return_complete_type != 'void':
 			if self.build_value_format == 'O':
 				stripped_return_type = strip_leading_linphone(self.return_type)
-				if self.class_['class_has_user_data']:
-					get_user_data_function = self.__find_class_definition(self.return_type)['class_c_function_prefix'] + "get_user_data"
+				return_type_class = self.__find_class_definition(self.return_type)
+				if return_type_class['class_has_user_data']:
+					get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
 					self.body += "\tif ((cresult != NULL) && (" + get_user_data_function + "(cresult) != NULL)) {\n"
 					self.body += "\t\treturn (PyObject *)" + get_user_data_function + "(cresult);\n"
 					self.body += "\t}\n"
