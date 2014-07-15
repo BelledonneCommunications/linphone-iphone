@@ -173,9 +173,9 @@ class MethodDefinition:
 		self.body += "\tif (native_ptr == NULL) Py_RETURN_NONE;\n"
 		self.body += "\tself = (pylinphone_" + self.class_['class_name'] + "Object *)PyObject_New(pylinphone_" + self.class_['class_name'] + "Object, type);\n"
 		self.body += "\tif (self == NULL) Py_RETURN_NONE;\n"
-		self.body += "\tself->native_ptr = native_ptr;\n"
+		self.body += "\tself->native_ptr = (" + self.class_['class_cname'] + " *)native_ptr;\n"
 		if self.class_['class_has_user_data']:
-			self.body += "\t" + self.class_['class_c_function_prefix'] + "set_user_data(native_ptr, self);\n"
+			self.body += "\t" + self.class_['class_c_function_prefix'] + "set_user_data(self->native_ptr, self);\n"
 		self.body += "\treturn (PyObject *)self;"
 
 	def format_dealloc_c_function_call(self):
