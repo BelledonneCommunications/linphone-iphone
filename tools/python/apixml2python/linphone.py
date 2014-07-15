@@ -162,7 +162,7 @@ class MethodDefinition:
 
 	def format_tracing(self):
 		self.body += \
-"""	pylinphone_trace(__FUNCTION__);
+"""	pylinphone_debug("[PYLINPHONE] %s", __FUNCTION__);
 """
 
 	def format_c_function_call(self):

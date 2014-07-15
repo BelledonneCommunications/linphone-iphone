@@ -18,6 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <Python.h>
 #include <linphone/linphonecore.h>
+#include <stdarg.h>
+
+
+#ifdef _MSC_VER
+#define PYLINPHONE_INLINE __inline
+#else
+#define PYLINPHONE_INLINE inline
+#endif
 
 
 static PyObject *logging_module = NULL;
@@ -44,16 +52,33 @@ static void init_logging(void) {
 	}
 }
 
-static void pylinphone_log(const char *level, const char *fmt) {
+static void pylinphone_log(const char *level, const char *fmt, va_list args) {
 	if (logging_module != NULL) {
-		PyEval_CallMethod(logging_module, level, "(s)", fmt);
+		char logstr[4096];
+		if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
+			PyEval_CallMethod(logging_module, level, "(s)", logstr);
+		}
 	}
 }
 
-#define pylinphone_debug(fmt) pylinphone_log("debug", fmt)
-#define pylinphone_info(fmt) pylinphone_log("info", fmt)
-#define pylinphone_warning(fmt) pylinphone_log("warning", fmt)
-#define pylinphone_trace pylinphone_debug
+static PYLINPHONE_INLINE void pylinphone_debug(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("debug", fmt, args);
+	va_end(args);
+}
+static PYLINPHONE_INLINE void pylinphone_info(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("info", fmt, args);
+	va_end(args);
+}
+static PYLINPHONE_INLINE void pylinphone_warning(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("warning", fmt, args);
+	va_end(args);
+}
 
 
 {{#classes}}
@@ -86,7 +111,7 @@ static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *ty
 
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
 	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);
-	pylinphone_trace(__FUNCTION__);
+	pylinphone_debug("[PYLINPHONE] %s", __FUNCTION__);
 	self->native_ptr = NULL;
 	return (PyObject *)self;
 }
