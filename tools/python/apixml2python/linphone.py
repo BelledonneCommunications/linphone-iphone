@@ -70,7 +70,7 @@ class MethodDefinition:
 	def format_native_pointer_checking(self, return_int):
 		self.format_native_pointer_get()
 		self.body += "\tif (native_ptr == NULL) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid " + self.class_['class_name'] + " instance\");\n"
+		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid linphone." + self.class_['class_name'] + " instance\");\n"
 		if return_int:
 			self.body += "\t\treturn -1;\n"
 		else:
@@ -110,19 +110,31 @@ class MethodDefinition:
 		self.body += "\t}\n"
 		# Check the value
 		type_str, checkfunc, convertfunc = self.__ctype_to_python_type(first_arg_type, first_arg_complete_type)
-		self.body += "\tif (!" + checkfunc + "(value)) {\n"
-		self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + type_str + "\");\n"
-		self.body += "\t\treturn -1;\n"
-		self.body += "\t}\n"
+		first_arg_class = strip_leading_linphone(first_arg_type)
+		if checkfunc is None:
+			self.body += "\tif (!PyObject_IsInstance(value, (PyObject *)&pylinphone_" + first_arg_class + "Type)) {\n"
+			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a linphone." + first_arg_class + " instance\");\n"
+			self.body += "\t\treturn -1;\n"
+			self.body += "\t}\n"
+		else:
+			self.body += "\tif (!" + checkfunc + "(value)) {\n"
+			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"The " + attribute_name + " attribute value must be a " + type_str + "\");\n"
+			self.body += "\t\treturn -1;\n"
+			self.body += "\t}\n"
 		# Call the C function
 		if convertfunc is None:
-			pass # TODO
+			self.body += "\t" + first_arg_name + " = value;\n"
 		else:
 			self.body += "\t" + first_arg_name + " = (" + first_arg_complete_type + ")" + convertfunc + "(value);\n"
 		if self.__ctype_to_python_format(first_arg_type, first_arg_complete_type) == 'O':
-			pass # TODO
+			self.body += "\t" + first_arg_name + "_native_ptr = pylinphone_" + first_arg_class + "_get_native_ptr(" + first_arg_name + ");\n"
+			self.body += "\tif (%s_native_ptr == NULL) {\n" % (first_arg_name)
+			self.body += "\t\tPyErr_SetString(PyExc_TypeError, \"Invalid linphone." + first_arg_class + " instance\");\n"
+			self.body += "\t\treturn -1;\n"
+			self.body += "\t}\n"
+			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + first_arg_name + "_native_ptr);\n"
 		else:
-			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + self.arg_names[0] + ");\n"
+			self.body += "\t" + self.method_node.get('name') + "(native_ptr, " + first_arg_name + ");\n"
 		self.body += "\treturn 0;"
 
 	def format_tracing(self):
@@ -260,7 +272,7 @@ class MethodDefinition:
 			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
 				return ('int', 'PyInt_Check', 'PyInt_AsLong')
 			else:
-				return ('class instance', 'PyInstance_Check', None)
+				return (None, None, None)
 
 	def __find_class_definition(self, basic_type):
 		basic_type = strip_leading_linphone(basic_type)
