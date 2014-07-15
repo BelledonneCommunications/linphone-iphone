@@ -1043,7 +1043,7 @@ void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *u
 	model->user_data = user_data;
 }
 
-void * linphone_presence_model_get_user_data(LinphonePresenceModel *model) {
+void * linphone_presence_model_get_user_data(const LinphonePresenceModel *model) {
 	return model->user_data;
 }
 
@@ -1065,7 +1065,7 @@ void linphone_presence_service_set_user_data(LinphonePresenceService *service, v
 	service->user_data = user_data;
 }
 
-void * linphone_presence_service_get_user_data(LinphonePresenceService *service) {
+void * linphone_presence_service_get_user_data(const LinphonePresenceService *service) {
 	return service->user_data;
 }
 
@@ -1087,7 +1087,7 @@ void linphone_presence_person_set_user_data(LinphonePresencePerson *person, void
 	person->user_data = user_data;
 }
 
-void * linphone_presence_person_get_user_data(LinphonePresencePerson *person) {
+void * linphone_presence_person_get_user_data(const LinphonePresencePerson *person) {
 	return person->user_data;
 }
 
@@ -1109,7 +1109,7 @@ void linphone_presence_activity_set_user_data(LinphonePresenceActivity *activity
 	activity->user_data = user_data;
 }
 
-void * linphone_presence_activity_get_user_data(LinphonePresenceActivity *activity) {
+void * linphone_presence_activity_get_user_data(const LinphonePresenceActivity *activity) {
 	return activity->user_data;
 }
 
@@ -1131,7 +1131,7 @@ void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user
 	note->user_data = user_data;
 }
 
-void * linphone_presence_note_get_user_data(LinphonePresenceNote *note) {
+void * linphone_presence_note_get_user_data(const LinphonePresenceNote *note) {
 	return note->user_data;
 }
 

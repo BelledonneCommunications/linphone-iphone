@@ -304,4 +304,44 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
+	
+	private native void enableQualityReporting(long nativePtr, boolean enable);
+	@Override
+	public void enableQualityReporting(boolean enable) {
+		isValid();
+		enableQualityReporting(nativePtr, enable);
+	}
+	
+	private native boolean qualityReportingEnabled(long nativePtr);
+	@Override
+	public boolean qualityReportingEnabled() {
+		isValid();
+		return avpfEnabled(nativePtr);
+	}
+	
+	private native void setQualityReportingInterval(long nativePtr, int interval);
+	@Override
+	public void setQualityReportingInterval(int interval) {
+		isValid();
+		setQualityReportingInterval(nativePtr, interval);
+	}
+	private native int getQualityReportingInterval(long nativePtr);
+	@Override
+	public int getQualityReportingInterval() {
+		isValid();
+		return getQualityReportingInterval(nativePtr);
+	}
+	private native void setQualityReportingCollector(long nativePtr, String collector);
+	@Override
+	public void setQualityReportingCollector(String collector) {
+		isValid();
+		setQualityReportingCollector(nativePtr, collector);
+	}
+	private native String getQualityReportingCollector(long nativePtr);
+	@Override
+	public String getQualityReportingCollector() {
+
+		isValid();
+		return getQualityReportingCollector(nativePtr);
+	}
 }

@@ -173,6 +173,12 @@ public interface LinphoneProxyConfig {
 	void enableAvpf(boolean enable);
 	
 	/**
+	 * Whether AVPF is used for calls through this proxy.
+	 * @return 
+	 */
+	boolean avpfEnabled();
+	
+	/**
 	 * Set the interval between regular RTCP reports when using AVPF/SAVPF.
 	 * @param interval The interval in seconds (between 0 and 5 seconds).
 	 */
@@ -185,14 +191,45 @@ public interface LinphoneProxyConfig {
 	int getAvpfRRInterval();
 	
 	/**
-	 * Whether AVPF is used for calls through this proxy.
+	 * Indicates whether quality reporting must be used for calls using this proxy config.
+	 * @param enable True to enable quality reporting, false to disable it.
+	 */
+	void enableQualityReporting(boolean enable);
+	
+
+	/**
+	 * Whether quality reporting is used for calls through this proxy.
 	 * @return 
 	 */
-	boolean avpfEnabled();
+	boolean qualityReportingEnabled();
+	
+	/**
+	 * Set the interval between quality interval reports during a call when using quality reporting.
+	 * @param interval The interval in seconds (should be greater than 120 seconds to avoid too much).
+	 */
+	void setQualityReportingInterval(int interval);
+	
+	/**
+	 * Get the interval between quality interval reports during a call when using quality reporting.
+	 * @return The interval in seconds.
+	 */
+	int getQualityReportingInterval();
+	
+	/**
+	 * Set the collector SIP URI to collect reports when using quality reporting.
+	 * @param collector The collector SIP URI which should be configured server side too.
+	 */
+	void setQualityReportingCollector(String collector);
+	
+	/**
+	 * Get the collector SIP URI collecting reports when using quality reporting.
+	 * @return The SIP URI collector address.
+	 */
+	String getQualityReportingCollector();
 	
 	/**
 	 * Set optional contact parameters that will be added to the contact information sent in the registration.
-	 * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+	 * @param contact_params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
 	 *
 	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or android push id.
 	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421>;android-push-id=43143-DFE23F-2323-FA2232.
@@ -207,7 +244,7 @@ public interface LinphoneProxyConfig {
 	
 	/**
 	 * Set optional contact parameters that will be added to the contact information sent in the registration, inside the URI.
-	 * @param params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+	 * @param params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
 	 *
 	 * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
 	 * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
@@ -215,7 +252,7 @@ public interface LinphoneProxyConfig {
 	public void setContactUriParameters(String params);
 	
 	/**
-	 * Get the contact's uri parameters.
+	 * Get the contact's URI parameters.
 	 * @return
 	 */
 	public String getContactUriParameters();

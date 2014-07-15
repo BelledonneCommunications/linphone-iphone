@@ -275,13 +275,13 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
 	if (obj->reg_proxy==NULL){
-		if (lc->vtable.display_warning)
+		if (lc && lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
 						" followed by a hostname."));
 		return FALSE;
 	}
 	if (obj->reg_identity==NULL){
-		if (lc->vtable.display_warning)
+		if (lc && lc->vtable.display_warning)
 			lc->vtable.display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
 					"sip:username@proxydomain, such as sip:alice@example.net"));
 		return FALSE;

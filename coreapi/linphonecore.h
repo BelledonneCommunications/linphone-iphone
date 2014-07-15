@@ -1812,6 +1812,22 @@ LINPHONE_PUBLIC	void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime)
 LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
 /**
+ * Set the SIP transport timeout.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] timeout_ms The SIP transport timeout in milliseconds.
+ * @ingroup media_parameters
+ */
+void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
+
+/**
+ * Get the SIP transport timeout.
+ * @param[in] lc #LinphoneCore object.
+ * @return The SIP transport timeout in milliseconds.
+ * @ingroup media_parameters
+ */
+int linphone_core_get_sip_transport_timeout(LinphoneCore *lc);
+
+/**
  * Enable or disable DNS SRV resolution.
  * @param[in] lc #LinphoneCore object.
  * @param[in] enable TRUE to enable DNS SRV resolution, FALSE to disable it.
