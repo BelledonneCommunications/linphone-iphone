@@ -110,10 +110,7 @@ static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *ty
 }
 
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
-	pylinphone_{{class_name}}Object *self = (pylinphone_{{class_name}}Object *)type->tp_alloc(type, 0);
-	pylinphone_debug("[PYLINPHONE] %s", __FUNCTION__);
-	self->native_ptr = NULL;
-	return (PyObject *)self;
+{{{new_body}}}
 }
 
 static void pylinphone_{{class_name}}_dealloc(PyObject *self) {

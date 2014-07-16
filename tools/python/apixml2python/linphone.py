@@ -211,6 +211,16 @@ class MethodDefinition:
 			self.body += \
 """	Py_RETURN_NONE;"""
 
+	def format_new_body(self):
+		self.body += \
+"""	pylinphone_{class_name}Object *self = (pylinphone_{class_name}Object *)type->tp_alloc(type, 0);
+""".format(class_name=self.class_['class_name'])
+		self.format_tracing()
+		self.body += \
+"""	self->native_ptr = NULL;
+	return (PyObject *)self;
+"""
+
 	def format_new_from_native_pointer_body(self):
 		self.body += \
 """	pylinphone_{class_name}Object *self;
@@ -430,6 +440,8 @@ class LinphoneModule(object):
 			self.classes.append(c)
 		# Format methods' bodies
 		for c in self.classes:
+			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
+			c['new_body'] = self.__format_new_body(xml_new_method, c)
 			for m in c['class_type_methods']:
 				m['method_body'] = self.__format_method_body(m['method_xml_node'], c)
 			for m in c['class_instance_methods']:
@@ -475,6 +487,11 @@ class LinphoneModule(object):
 		method.format_local_variables_definition()
 		method.format_tracing()
 		method.format_setter_value_checking_and_c_function_call()
+		return method.body
+
+	def __format_new_body(self, method_node, class_):
+		method = MethodDefinition(method_node, class_, self)
+		method.format_new_body()
 		return method.body
 
 	def __format_new_from_native_pointer_body(self, method_node, class_):
