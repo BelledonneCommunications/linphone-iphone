@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 static PyObject *logging_module = NULL;
+static int current_indent = 1;
 
 
 static void init_logging(void) {
@@ -52,10 +53,19 @@ static void init_logging(void) {
 	}
 }
 
-static void pylinphone_log(const char *level, const char *fmt, va_list args) {
+static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
 	if (logging_module != NULL) {
 		char logstr[4096];
-		if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
+		int i = 0;
+		if (indent == -1) current_indent--;
+		if (current_indent < 1) current_indent = 1;
+		if ((indent >= -1) && (indent <= 1)) {
+			for (i = 0; i < current_indent; i++) {
+				logstr[i] = '\t';
+			}
+		}
+		if (indent == 1) current_indent++;
+		if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
 			PyEval_CallMethod(logging_module, level, "(s)", logstr);
 		}
 	}
@@ -64,19 +74,28 @@ static void pylinphone_log(const char *level, const char *fmt, va_list args) {
 static PYLINPHONE_INLINE void pylinphone_debug(const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	pylinphone_log("debug", fmt, args);
+	pylinphone_log("debug", 0xff, fmt, args);
 	va_end(args);
 }
+
 static PYLINPHONE_INLINE void pylinphone_info(const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	pylinphone_log("info", fmt, args);
+	pylinphone_log("info", 0xff, fmt, args);
 	va_end(args);
 }
+
 static PYLINPHONE_INLINE void pylinphone_warning(const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	pylinphone_log("warning", fmt, args);
+	pylinphone_log("warning", 0xff, fmt, args);
+	va_end(args);
+}
+
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("debug", indent, fmt, args);
 	va_end(args);
 }
 
