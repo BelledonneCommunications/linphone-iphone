@@ -161,6 +161,7 @@ class MethodDefinition:
 			self.body += \
 """	{method_name}(native_ptr, {arg_name});
 """.format(method_name=self.method_node.get('name'), arg_name=first_arg_name)
+		self.format_return_setter_trace()
 		self.body += \
 """	return 0;"""
 
@@ -216,6 +217,16 @@ class MethodDefinition:
 """	pylinphone_trace(-1, "[PYLINPHONE] %s -> %p", __FUNCTION__, pyret);
 """
 
+	def format_return_setter_trace(self):
+		self.body += \
+"""	pylinphone_trace(-1, "[PYLINPHONE] %s -> 0", __FUNCTION__);
+"""
+
+	def format_return_none_trace(self):
+		self.body += \
+"""	pylinphone_trace(-1, "[PYLINPHONE] %s -> None", __FUNCTION__);
+"""
+
 	def format_c_function_call(self):
 		arg_names = []
 		for xml_method_arg in self.xml_method_args:
@@ -251,8 +262,15 @@ class MethodDefinition:
 """.format(func=get_user_data_function)
 				self.body += \
 """	pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);
-	pyret = Py_BuildValue("{fmt}", pyresult);
-""".format(return_type=stripped_return_type, fmt=self.build_value_format)
+""".format(return_type=stripped_return_type)
+				if self.self_arg is not None and return_type_class['class_refcountable']:
+					ref_function = return_type_class['class_c_function_prefix'] + "ref"
+					self.body += \
+"""	{func}(cresult);
+""".format(func=ref_function)
+				self.body += \
+"""	pyret = Py_BuildValue("{fmt}", pyresult);
+""".format(fmt=self.build_value_format)
 				self.format_return_function_trace()
 				self.body += \
 """	Py_DECREF(pyresult);
@@ -286,11 +304,21 @@ class MethodDefinition:
 """.format(class_name=self.class_['class_name'])
 		self.format_enter_constructor_from_native_ptr_trace()
 		self.body += \
-"""	if (native_ptr == NULL) Py_RETURN_NONE;
+"""	if (native_ptr == NULL) {
+	"""
+		self.format_return_none_trace()
+		self.body += \
+"""		Py_RETURN_NONE;
+	}}
 	self = (pylinphone_{class_name}Object *)PyObject_New(pylinphone_{class_name}Object, type);
-	if (self == NULL) Py_RETURN_NONE;
+	if (self == NULL) {{
+	""".format(class_name=self.class_['class_name'])
+		self.format_return_none_trace()
+		self.body += \
+"""		Py_RETURN_NONE;
+	}}
 	self->native_ptr = ({class_cname} *)native_ptr;
-""".format(class_name=self.class_['class_name'], class_cname=self.class_['class_cname'])
+""".format(class_cname=self.class_['class_cname'])
 		if self.class_['class_has_user_data']:
 			self.body += \
 """	{function_prefix}set_user_data(self->native_ptr, self);
@@ -598,9 +626,11 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_new_body(self, method_node, class_):
-		method = MethodDefinition(method_node, class_, self)
-		method.format_new_body()
-		return method.body
+		if method_node is not None:
+			method = MethodDefinition(method_node, class_, self)
+			method.format_new_body()
+			return method.body
+		return ''
 
 	def __format_new_from_native_pointer_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_, self)
