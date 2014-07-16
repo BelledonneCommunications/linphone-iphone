@@ -266,8 +266,8 @@ class MethodDefinition:
 				if self.self_arg is not None and return_type_class['class_refcountable']:
 					ref_function = return_type_class['class_c_function_prefix'] + "ref"
 					self.body += \
-"""	{func}(cresult);
-""".format(func=ref_function)
+"""	{func}(({cast_type})cresult);
+""".format(func=ref_function, cast_type=self.__remove_const_from_complete_type(self.return_complete_type))
 				self.body += \
 """	pyret = Py_BuildValue("{fmt}", pyresult);
 """.format(fmt=self.build_value_format)
@@ -342,6 +342,12 @@ class MethodDefinition:
 """.format(function_prefix=self.class_['class_c_function_prefix'])
 		self.body += \
 """	self->ob_type->tp_free(self);"""
+
+	def __remove_const_from_complete_type(self, complete_type):
+		splitted_type = complete_type.split(' ')
+		while 'const' in splitted_type:
+			splitted_type.remove('const')
+		return ' '.join(splitted_type)
 
 	def __ctype_to_str_format(self, name, basic_type, complete_type):
 		splitted_type = complete_type.split(' ')
