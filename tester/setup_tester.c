@@ -166,6 +166,16 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_destroy(proxy_config);
 }
 
+static void chat_root_test(void) {
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	memset (&v_table,0,sizeof(v_table));
+	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	linphone_core_create_chat_room(lc,"sip:toto@titi.com");
+	linphone_core_destroy(lc);
+}
+
 test_t setup_tests[] = {
 	{ "Linphone Address", linphone_address_test },
 	{ "Linphone proxy config address equal (internal api)", linphone_proxy_config_address_equal_test},
@@ -173,7 +183,8 @@ test_t setup_tests[] = {
 	{ "Linphone core init/uninit", core_init_test },
 	{ "Linphone random transport port",core_sip_transport_test},
 	{ "Linphone interpret url", linphone_interpret_url_test },
-	{ "LPConfig from buffer", linphone_lpconfig_from_buffer }
+	{ "LPConfig from buffer", linphone_lpconfig_from_buffer },
+	{ "Chat room", chat_root_test }
 };
 
 test_suite_t setup_test_suite = {
