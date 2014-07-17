@@ -31,9 +31,14 @@ class MethodDefinition:
 		self.class_ = class_
 		self.linphone_module = linphone_module
 		self.self_arg = None
-		self.xml_method_return = self.method_node.find('./return')
-		self.xml_method_args = self.method_node.findall('./arguments/argument')
-		self.method_type = self.method_node.tag
+		if self.method_node is None:
+			self.xml_method_return = None
+			self.xml_method_args = []
+			self.method_type = 'instancemethod'
+		else:
+			self.xml_method_return = self.method_node.find('./return')
+			self.xml_method_args = self.method_node.findall('./arguments/argument')
+			self.method_type = self.method_node.tag
 		if self.method_type != 'classmethod' and len(self.xml_method_args) > 0:
 			self.self_arg = self.xml_method_args[0]
 			self.xml_method_args = self.xml_method_args[1:]
@@ -63,6 +68,11 @@ class MethodDefinition:
 			else:
 				self.body += "\t" + arg_complete_type + " " + arg_name + ";\n"
 			self.arg_names.append(arg_name)
+
+	def format_dealloc_local_variables_definition(self):
+		self.body += \
+"""	{arg_type} * native_ptr;
+""".format(arg_type=self.class_['class_cname'])
 
 	def format_native_pointer_get(self):
 		self.body += \
@@ -295,8 +305,7 @@ class MethodDefinition:
 """
 		self.format_return_constructor_trace()
 		self.body += \
-"""	return (PyObject *)self;
-"""
+"""	return (PyObject *)self;"""
 
 	def format_new_from_native_pointer_body(self):
 		self.body += \
@@ -576,6 +585,7 @@ class LinphoneModule(object):
 		for c in self.classes:
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
 			c['new_body'] = self.__format_new_body(xml_new_method, c)
+			c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(None, c)
 			for m in c['class_type_methods']:
 				m['method_body'] = self.__format_class_method_body(m['method_xml_node'], c)
 			for m in c['class_instance_methods']:
@@ -587,12 +597,12 @@ class LinphoneModule(object):
 					p['setter_body'] = self.__format_setter_body(p['setter_xml_node'], c)
 			if c['class_refcountable']:
 				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
-				c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
 				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
 			elif c['class_destroyable']:
 				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
-				c['new_from_native_pointer_body'] = self.__format_new_from_native_pointer_body(xml_instance_method, c)
 				c['dealloc_body'] = self.__format_dealloc_body(xml_instance_method, c)
+			else:
+				c['dealloc_body'] = self.__format_dealloc_body(None, c)
 
 	def __format_class_method_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_, self)
@@ -632,26 +642,21 @@ class LinphoneModule(object):
 		return method.body
 
 	def __format_new_body(self, method_node, class_):
-		if method_node is not None:
-			method = MethodDefinition(method_node, class_, self)
-			method.format_new_body()
-			return method.body
-		return ''
+		method = MethodDefinition(method_node, class_, self)
+		method.format_new_body()
+		return method.body
 
 	def __format_new_from_native_pointer_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_, self)
-		# Force return value type of dealloc function to prevent declaring useless local variables
-		method.xml_method_return.set('type', 'void')
-		method.xml_method_return.set('completetype', 'void')
 		method.format_new_from_native_pointer_body()
 		return method.body
 
 	def __format_dealloc_body(self, method_node, class_):
 		method = MethodDefinition(method_node, class_, self)
 		# Force return value type of dealloc function to prevent declaring useless local variables
-		method.xml_method_return.set('type', 'void')
-		method.xml_method_return.set('completetype', 'void')
-		method.format_local_variables_definition()
+		#method.xml_method_return.set('type', 'void')
+		#method.xml_method_return.set('completetype', 'void')
+		method.format_dealloc_local_variables_definition()
 		method.format_native_pointer_get()
 		method.format_dealloc_trace()
 		method.format_dealloc_c_function_call()
