@@ -1729,6 +1729,15 @@ extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_getErrorInfo(JNI
 	return (jlong)linphone_proxy_config_get_error_info((LinphoneProxyConfig *) ptr);
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getPublishExpires(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return (jint)linphone_proxy_config_get_publish_expires((LinphoneProxyConfig *) ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setPublishExpires(JNIEnv*  env
+																					,jobject thiz
+																					,jlong ptr
+																					,jint jval) {
+	linphone_proxy_config_set_publish_expires((LinphoneProxyConfig *) ptr, jval);
+}
 //Auth Info
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env

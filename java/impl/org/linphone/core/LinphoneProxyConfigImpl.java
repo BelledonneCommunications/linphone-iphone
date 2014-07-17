@@ -212,7 +212,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	}
 	public boolean publishEnabled() {
 		isValid();
-		return publishEnabled(nativePtr); 
+		return publishEnabled(nativePtr);
 	}
 	@Override
 	public void setContactParameters(String params) {
@@ -304,21 +304,21 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
-	
+
 	private native void enableQualityReporting(long nativePtr, boolean enable);
 	@Override
 	public void enableQualityReporting(boolean enable) {
 		isValid();
 		enableQualityReporting(nativePtr, enable);
 	}
-	
+
 	private native boolean qualityReportingEnabled(long nativePtr);
 	@Override
 	public boolean qualityReportingEnabled() {
 		isValid();
 		return avpfEnabled(nativePtr);
 	}
-	
+
 	private native void setQualityReportingInterval(long nativePtr, int interval);
 	@Override
 	public void setQualityReportingInterval(int interval) {
@@ -343,5 +343,18 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 		isValid();
 		return getQualityReportingCollector(nativePtr);
+	}
+	private native void setPublishExpires(long nativePtr, int expires);
+	@Override
+	public void setPublishExpires(int expires) {
+		isValid();
+		setPublishExpires(nativePtr, expires);
+	}
+	private native int getPublishExpires(long nativePtr);
+	@Override
+	public int getPublishExpires() {
+
+		isValid();
+		return getPublishExpires(nativePtr);
 	}
 }
