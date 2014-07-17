@@ -14,6 +14,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+
+import sys
+
+
 def strip_leading_linphone(s):
 	if s.lower().startswith('linphone'):
 		return s[8:]
@@ -638,25 +642,45 @@ class LinphoneModule(object):
 		# Format methods' bodies
 		for c in self.classes:
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
-			c['new_body'] = NewMethodDefinition(self, c, xml_new_method).format()
-			c['new_from_native_pointer_body'] = NewFromNativePointerMethodDefinition(self, c).format()
-			for m in c['class_type_methods']:
-				m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
-			for m in c['class_instance_methods']:
-				m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
-			for p in c['class_properties']:
-				if p.has_key('getter_xml_node'):
-					p['getter_body'] = GetterMethodDefinition(self, c, p['getter_xml_node']).format()
-				if p.has_key('setter_xml_node'):
-					p['setter_body'] = SetterMethodDefinition(self, c, p['setter_xml_node']).format()
-			if c['class_refcountable']:
-				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
-				c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
-			elif c['class_destroyable']:
-				xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
-				c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
-			else:
-				c['dealloc_body'] = DeallocMethodDefinition(self, c).format()
+			try:
+				c['new_body'] = NewMethodDefinition(self, c, xml_new_method).format()
+			except Exception, e:
+				e.args += (c['class_name'], 'new_body')
+				raise
+			try:
+				c['new_from_native_pointer_body'] = NewFromNativePointerMethodDefinition(self, c).format()
+			except Exception, e:
+				e.args += (c['class_name'], 'new_from_native_pointer_body')
+				raise
+			try:
+				for m in c['class_type_methods']:
+					m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
+				for m in c['class_instance_methods']:
+					m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
+			except Exception, e:
+				e.args += (c['class_name'], m['method_name'])
+				raise
+			try:
+				for p in c['class_properties']:
+					if p.has_key('getter_xml_node'):
+						p['getter_body'] = GetterMethodDefinition(self, c, p['getter_xml_node']).format()
+					if p.has_key('setter_xml_node'):
+						p['setter_body'] = SetterMethodDefinition(self, c, p['setter_xml_node']).format()
+			except Exception, e:
+				e.args += (c['class_name'], p['property_name'])
+				raise
+			try:
+				if c['class_refcountable']:
+					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
+					c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
+				elif c['class_destroyable']:
+					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
+					c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
+				else:
+					c['dealloc_body'] = DeallocMethodDefinition(self, c).format()
+			except Exception, e:
+				e.args += (c['class_name'], 'dealloc_body')
+				raise
 
 	def __format_doc_node(self, node):
 		desc = ''
