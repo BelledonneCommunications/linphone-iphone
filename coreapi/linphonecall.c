@@ -1578,10 +1578,16 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 	LinphoneCall* call = (LinphoneCall*) user_pointer;
 	switch (event_id) {
 		case MS_VIDEO_DECODER_DECODING_ERRORS:
-			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
+			ms_warning("MS_VIDEO_DECODER_DECODING_ERRORS");
 			if (call->videostream && (video_stream_is_decoding_error_to_be_reported(call->videostream, 5000) == TRUE)) {
 				video_stream_decoding_error_reported(call->videostream);
 				linphone_call_send_vfu_request(call);
+			}
+			break;
+		case MS_VIDEO_DECODER_RECOVERED_FROM_ERRORS:
+			ms_message("MS_VIDEO_DECODER_RECOVERED_FROM_ERRORS");
+			if (call->videostream) {
+				video_stream_decoding_error_recovered(call->videostream);
 			}
 			break;
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
