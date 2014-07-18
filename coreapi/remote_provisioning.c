@@ -36,20 +36,28 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml) {
 	xml2lpc_context *context = xml2lpc_context_new(xml2lpc_callback, lc);
 	int result = xml2lpc_set_xml_string(context, xml);
+	char * error_msg = NULL;
 	if (result == 0) {
-		result = xml2lpc_convert(context, linphone_core_get_config(lc));
+		LpConfig * lpc = linphone_core_get_config(lc);
+		result = xml2lpc_convert(context, lpc);
 		if (result == 0) {
-			lp_config_sync(linphone_core_get_config(lc));
-			xml2lpc_context_destroy(context);
-			linphone_configuring_terminated(lc, LinphoneConfiguringSuccessful, NULL);
+			// if the remote provisioning added a proxy config and none was set before, set it
+			if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
+				lp_config_set_int(lpc, "sip", "default_proxy", 0);
+			}
+			lp_config_sync(lpc);
+
 		} else {
-			xml2lpc_context_destroy(context);
-			linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "xml to lpc failed");
+			error_msg = "xml to lpc failed";
 		}
 	} else {
-		xml2lpc_context_destroy(context);
-		linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "invalid xml");
+		error_msg = "invalid xml";
 	}
+
+	xml2lpc_context_destroy(context);
+	linphone_configuring_terminated(lc
+									,error_msg ? LinphoneConfiguringFailed : LinphoneConfiguringSuccessful
+									, error_msg);
 }
 
 static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
