@@ -26,6 +26,10 @@ sys.path.append(os.path.realpath(__file__))
 from apixml2python.linphone import LinphoneModule
 
 
+blacklisted_classes = [
+	'LinphoneTunnel',
+	'LinphoneTunnelConfig'
+]
 blacklisted_functions = [
 	'linphone_call_get_user_pointer',
 	'linphone_call_set_user_pointer',
@@ -107,7 +111,7 @@ blacklisted_functions = [
 def generate(apixmlfile):
 	tree = ET.parse(apixmlfile)
 	renderer = pystache.Renderer()
-	m = LinphoneModule(tree, blacklisted_functions)
+	m = LinphoneModule(tree, blacklisted_classes, blacklisted_functions)
 	f = open("linphone.c", "w")
 	f.write(renderer.render(m))
 

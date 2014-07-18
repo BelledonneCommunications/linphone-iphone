@@ -537,7 +537,7 @@ class SetterMethodDefinition(MethodDefinition):
 
 
 class LinphoneModule(object):
-	def __init__(self, tree, blacklisted_functions):
+	def __init__(self, tree, blacklisted_classes, blacklisted_functions):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.enums = []
@@ -564,6 +564,8 @@ class LinphoneModule(object):
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
 			if xml_class.get('deprecated') == 'true':
+				continue
+			if xml_class.get('name') in blacklisted_classes:
 				continue
 			c = {}
 			c['class_xml_node'] = xml_class
