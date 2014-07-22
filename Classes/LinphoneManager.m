@@ -273,6 +273,8 @@ struct codec_name_pref_table codec_pref_table[]={
 		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
 		configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]] , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		
+        [self migrateFromUserPrefs];
+		
 		//set default values for first boot
 		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
 #ifdef DEBUG
@@ -437,6 +439,45 @@ exit_dbmigration:
 
     [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? @"TRUE":@"FALSE"];
     return migrated;
+}
+
+- (void)migrateFromUserPrefs {
+    static const char* migration_flag = "userpref_migration_done";
+
+    if( configDb == nil ) return;
+
+    if( lp_config_get_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 0) ){
+        Linphone_log(@"UserPrefs migration already performed, skip");
+        return;
+    }
+
+    NSDictionary* defaults = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSArray* defaults_keys = [defaults allKeys];
+    NSDictionary* values   = @{@"backgroundmode_preference" :@YES,
+                               @"debugenable_preference"    :@NO,
+                               @"start_at_boot_preference"  :@YES};
+    BOOL shouldSync        = FALSE;
+
+    Linphone_log(@"%d user prefs", [defaults_keys count]);
+
+    for( NSString* userpref in values ){
+        if( [defaults_keys containsObject:userpref] ){
+            Linphone_log(@"Migrating %@ from user preferences: %d", userpref, [[defaults objectForKey:userpref] boolValue]);
+            lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[defaults objectForKey:userpref] boolValue]);
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:userpref];
+            shouldSync = TRUE;
+        } else if ( lp_config_get_string(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], NULL) == NULL ){
+            // no default value found in our linphonerc, we need to add them
+            lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[values objectForKey:userpref] boolValue]);
+        }
+    }
+
+    if( shouldSync ){
+        Linphone_log(@"Synchronizing...");
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    // don't get back here in the future
+    lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 1);
 }
 
 
