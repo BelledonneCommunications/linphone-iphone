@@ -24,8 +24,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 	protected long nativePtr;
 	protected LinphoneCoreImpl mCore;
-	protected boolean isDeleting;
-
+	Object userData;
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
 	private native int getExpires(long nativePtr);
@@ -36,7 +35,6 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		setIdentity(identity);
 		setProxy(proxy);
 		setRoute(route);
-		setIsDeleted(false);
 		enableRegister(enableRegister);
 		ownPtr=true;
 	}
@@ -50,14 +48,6 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	protected LinphoneProxyConfigImpl(long aNativePtr) {
 		nativePtr = aNativePtr;
 		ownPtr=false;
-	}
-
-	public boolean getIsDeleted() {
-		return isDeleting;
-	}
-
-	public void setIsDeleted(boolean b) {
-		isDeleting = b;
 	}
 
 	private void isValid() {
@@ -356,5 +346,14 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 		isValid();
 		return getPublishExpires(nativePtr);
+	}
+
+	@Override
+	public void setUserData(Object obj) {
+		userData = obj;
+	}
+	@Override
+	public Object getUserData() {
+		return userData;
 	}
 }

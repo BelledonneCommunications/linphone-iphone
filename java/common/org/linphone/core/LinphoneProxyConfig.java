@@ -25,9 +25,6 @@ package org.linphone.core;
  */
 public interface LinphoneProxyConfig {
 
-	public void setIsDeleted(boolean b);
-	public boolean getIsDeleted();
-
 	/**
 	 *Starts editing a proxy configuration.
 	 *Because proxy configuration must be consistent, applications MUST call {@link #edit()} before doing any attempts to modify proxy configuration (such as identity, proxy address and so on).
@@ -290,4 +287,15 @@ public interface LinphoneProxyConfig {
 	 * @return the publish expiration time in second. Default value is the registration expiration value.
 	 */
 	public int getPublishExpires();
+	
+	/**
+	 *  attached a user data to a proxy config
+	 **/
+	void setUserData(Object obj);
+	
+	/**
+	 * Returns user data from a proxy config. return null if any
+	 * @return an Object.
+	 */
+	Object getUserData();
 }

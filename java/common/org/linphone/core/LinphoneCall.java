@@ -323,4 +323,14 @@ public interface LinphoneCall {
 	 */
 	ErrorInfo getErrorInfo();
 	
+	/**
+	 *  attached a user data to a call
+	 **/
+	void setUserData(Object obj);
+	
+	/**
+	 * Returns user data from a call. return null if any
+	 * @return an Object.
+	 */
+	Object getUserData();
 }
