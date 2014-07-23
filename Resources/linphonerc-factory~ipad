@@ -14,6 +14,11 @@ auto_net_state_mon=0
 keepalive_period=30000
 ping_with_options=0
 sip_random_port=0
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 
 [rtp]
 audio_jitt_comp=60

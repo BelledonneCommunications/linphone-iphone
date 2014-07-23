@@ -1157,11 +1157,29 @@ static LinphoneCoreVTable linphonec_vtable = {
             const char* addr = linphone_proxy_config_get_addr(proxy);
             // we want to enable AVPF for the proxies
             if( addr && strstr(addr, "sip.linphone.org") != 0 ){
+                Linphone_log(@"Migrating proxy config to use AVPF");
                 linphone_proxy_config_enable_avpf(proxy, TRUE);
             }
             proxies = proxies->next;
         }
         [self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
+    }
+    /* Quality Reporting migration */
+    if( [self lpConfigBoolForKey:@"quality_report_migration_done" forSection:@"app"] == FALSE ){
+        const MSList* proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+        while(proxies){
+            LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
+            const char* addr = linphone_proxy_config_get_addr(proxy);
+            // we want to enable quality reporting for the proxies that are on linphone.org
+            if( addr && strstr(addr, "sip.linphone.org") != 0 ){
+                Linphone_log(@"Migrating proxy config to send quality report");
+                linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
+                linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
+                linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
+            }
+            proxies = proxies->next;
+        }
+        [self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
     }
 
     [self setupNetworkReachabilityCallback];
