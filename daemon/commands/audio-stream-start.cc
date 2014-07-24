@@ -36,6 +36,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 				rtp_profile_set_payload(default_profile,payload_type,pt);
 			}
 		}
+		audio_stream_enable_adaptive_jittcomp(stream, linphone_core_audio_adaptive_jittcomp_enabled(app->getCore()));
 		int err=audio_stream_start_now(stream, default_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller);
 		if (oldpt) rtp_profile_set_payload(default_profile,payload_type,oldpt);
 		if (err != 0) {
