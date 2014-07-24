@@ -724,6 +724,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			from_str=linphone_address_as_string_uri_only(from);
 			sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
 			sal_op_set_user_pointer(call->ping_op,call);
+			sal_op_set_realm(call->ping_op,linphone_proxy_config_get_realm(linphone_core_lookup_known_proxy(call->core, to)));
 			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from),from_str);
 			ms_free(from_str);
 		}
@@ -1313,7 +1314,7 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
  * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
  * @param call a LinphoneCall
  * @param file a path where to write the jpeg content.
- * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported). 
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
 int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file){
 #ifdef VIDEO_ENABLED

@@ -423,6 +423,7 @@ struct _LinphoneProxyConfig
 	char *reg_identity;
 	char *reg_route;
 	char *quality_reporting_collector;
+	char *domain;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;

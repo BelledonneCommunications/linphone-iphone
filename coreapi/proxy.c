@@ -94,6 +94,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	const char *identity = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_identity", NULL) : NULL;
 	const char *proxy = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_proxy", NULL) : NULL;
 	const char *route = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_route", NULL) : NULL;
+	const char *realm = lc ? lp_config_get_default_string(lc->config, "proxy", "realm", NULL) : NULL;
 	const char *quality_reporting_collector = lc ? lp_config_get_default_string(lc->config, "proxy", "quality_reporting_collector", NULL) : NULL;
 	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
 	const char *contact_uri_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_uri_parameters", NULL) : NULL;
@@ -108,6 +109,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->reg_identity = identity ? ms_strdup(identity) : NULL;
 	obj->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
 	obj->reg_route = route ? ms_strdup(route) : NULL;
+	obj->realm = realm ? ms_strdup(realm) : NULL;
 	obj->quality_reporting_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
 	obj->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
 	obj->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
@@ -150,6 +152,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
 	if (obj->quality_reporting_collector!=NULL) ms_free(obj->quality_reporting_collector);
 	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
+	if (obj->domain!=NULL) ms_free(obj->domain);
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
@@ -228,10 +231,10 @@ int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *ide
 				obj->reg_identity=NULL;
 			}
 			obj->reg_identity=ms_strdup(identity);
-			if (obj->realm){
-				ms_free(obj->realm);
+			if (obj->domain){
+				ms_free(obj->domain);
 			}
-			obj->realm=ms_strdup(linphone_address_get_domain(addr));
+			obj->domain=ms_strdup(linphone_address_get_domain(addr));
 			linphone_address_destroy(addr);
 			return 0;
 		}
@@ -240,7 +243,7 @@ int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *ide
 }
 
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
-	return cfg->realm;
+	return cfg->domain;
 }
 
 /**
@@ -310,7 +313,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
 
 /**
  * Prevent a proxy config from refreshing its registration.
- * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when 
+ * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when
  * refreshes are sent.
  * However, linphone_core_set_network_reachable(lc,TRUE) will always request the proxy configs to refresh their registrations.
  * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
@@ -422,6 +425,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			linphone_address_destroy(contact);
 		}
 		sal_op_set_user_pointer(obj->op,obj);
+		sal_op_set_realm(obj->op, obj->realm);
 		if (sal_register(obj->op,proxy_string,obj->reg_identity,obj->expires)==0) {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
@@ -946,13 +950,16 @@ int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 	return 0;
 }
 
+const char* linphone_proxy_config_get_realm(const LinphoneProxyConfig *cfg)
+{
+	return cfg?cfg->realm:NULL;
+}
 void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm)
 {
 	if (cfg->realm!=NULL) {
 		ms_free(cfg->realm);
-		cfg->realm=NULL;
 	}
-	if (realm!=NULL) cfg->realm=ms_strdup(realm);
+	cfg->realm=ms_strdup(realm);
 }
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
@@ -964,6 +971,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			sal_op_set_route(proxy->publish_op,proxy->reg_proxy);
 			sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 			sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
+			sal_op_set_realm(proxy->publish_op,linphone_proxy_config_get_realm(proxy));
 			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
 				SalAddress *addr=sal_address_new(linphone_proxy_config_get_identity(proxy));
 				sal_op_set_contact_address(proxy->publish_op,addr);
@@ -1205,6 +1213,9 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
+	if (obj->realm!=NULL){
+		lp_config_set_string(config,key,"realm",obj->realm);
+	}
 	if (obj->contact_params!=NULL){
 		lp_config_set_string(config,key,"contact_parameters",obj->contact_params);
 	}
@@ -1259,10 +1270,10 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
 	CONFIGURE_STRING_VALUE(cfg,config,key,route,"reg_route")
 
+	CONFIGURE_STRING_VALUE(cfg,config,key,realm,"realm")
+
 	CONFIGURE_BOOL_VALUE(cfg,config,key,quality_reporting,"quality_reporting_enabled")
-
 	CONFIGURE_STRING_VALUE(cfg,config,key,quality_reporting_collector,"quality_reporting_collector")
-
 	CONFIGURE_INT_VALUE(cfg,config,key,quality_reporting_interval,"quality_reporting_interval")
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,contact_parameters,"contact_parameters")
