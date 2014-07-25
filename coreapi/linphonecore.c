@@ -2351,7 +2351,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 #endif //BUILD_UPNP
 			linphone_core_start_invite(lc,call, NULL);
 		}
-		if (call->state==LinphoneCallIncomingReceived){
+		if (call->state==LinphoneCallIncomingReceived || call->state==LinphoneCallIncomingEarlyMedia){
 			if (one_second_elapsed) ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				LinphoneReason decline_reason;
