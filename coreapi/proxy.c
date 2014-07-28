@@ -412,6 +412,7 @@ void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
 		LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
+		LinphoneAddress* to=linphone_address_new(obj->reg_identity);
 		char* proxy_string;
 		LinphoneAddress *contact;
 		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",obj,linphone_core_get_version());
@@ -420,12 +421,18 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
+
+		linphone_configure_op(obj->lc, obj->op, to, NULL, FALSE);
+		linphone_address_destroy(to);
+
 		if ((contact=guess_contact_for_register(obj))) {
 			sal_op_set_contact_address(obj->op,contact);
 			linphone_address_destroy(contact);
 		}
+
 		sal_op_set_user_pointer(obj->op,obj);
-		sal_op_set_realm(obj->op, obj->realm);
+
+
 		if (sal_register(obj->op,proxy_string,obj->reg_identity,obj->expires)==0) {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
@@ -967,11 +974,15 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 
 	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
 		if (proxy->publish_op==NULL){
+			LinphoneAddress *to=linphone_address_new(linphone_proxy_config_get_identity(proxy));
 			proxy->publish_op=sal_op_new(proxy->lc->sal);
-			sal_op_set_route(proxy->publish_op,proxy->reg_proxy);
-			sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
-			sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
-			sal_op_set_realm(proxy->publish_op,linphone_proxy_config_get_realm(proxy));
+
+			linphone_configure_op(proxy->lc, proxy->publish_op,
+				to, NULL, FALSE);
+
+			if (to!=NULL){
+				linphone_address_destroy(to);
+			}
 			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
 				SalAddress *addr=sal_address_new(linphone_proxy_config_get_identity(proxy));
 				sal_op_set_contact_address(proxy->publish_op,addr);
