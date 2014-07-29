@@ -321,6 +321,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		isValid();
 		return getQualityReportingInterval(nativePtr);
 	}
+
 	private native void setQualityReportingCollector(long nativePtr, String collector);
 	@Override
 	public void setQualityReportingCollector(String collector) {
@@ -334,6 +335,21 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		isValid();
 		return getQualityReportingCollector(nativePtr);
 	}
+
+	private native void setRealm(long nativePtr, String realm);
+	@Override
+	public void setRealm(String realm) {
+		isValid();
+		setRealm(nativePtr, realm);
+	}
+	private native String getRealm(long nativePtr);
+	@Override
+	public String getRealm() {
+
+		isValid();
+		return getRealm(nativePtr);
+	}
+
 	private native void setPublishExpires(long nativePtr, int expires);
 	@Override
 	public void setPublishExpires(int expires) {
