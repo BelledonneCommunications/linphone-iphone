@@ -83,7 +83,7 @@
 		2200C2DC174BBB24002E9A70 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 226EF06B15FA256B005865C7 /* MobileCoreServices.framework */; };
 		22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
 		220784DF19509EF3001C3BDF /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; };
-		220784E019509EF3001C3BDF /* libwels.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821C18EEF23F00765332 /* libwels.a */; };
+		220784E019509EF3001C3BDF /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		220FAD3210765B400068D98F /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
@@ -2479,7 +2479,7 @@
 				22D8F174147548E2008C97DB /* libilbc.a in Frameworks */,
 				22D8F16B147548E2008C97DB /* libgsm.a in Frameworks */,
 				220784DF19509EF3001C3BDF /* libmsopenh264.a in Frameworks */,
-				220784E019509EF3001C3BDF /* libwels.a in Frameworks */,
+				220784E019509EF3001C3BDF /* (null) in Frameworks */,
 				D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */,
 				D37EE10B16032DC2003608A6 /* libmediastreamer_base.a in Frameworks */,
 				D37EE10C16032DC2003608A6 /* libmediastreamer_voip.a in Frameworks */,
