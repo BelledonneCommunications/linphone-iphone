@@ -30,76 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 
-static PyObject *logging_module = NULL;
-static int current_indent = 1;
-
-
-static void init_logging(void) {
-	logging_module = PyImport_ImportModule("logging");
-	if (logging_module != NULL) {
-		PyObject *constant;
-		PyObject *func;
-		PyObject *kws;
-		long level = 0;
-
-		constant = PyObject_GetAttrString(logging_module, "DEBUG");
-		if (PyInt_Check(constant)) {
-			level = PyInt_AsLong(constant);
-		}
-		Py_DECREF(constant);
-		func = PyObject_GetAttrString(logging_module, "basicConfig");
-		kws = Py_BuildValue("{s:i,s:s}", "level", level, "format", "%(levelname)s: %(message)s");
-		PyEval_CallObjectWithKeywords(func, NULL, kws);
-		Py_DECREF(kws);
-		Py_DECREF(func);
-	}
-}
-
-static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
-	if (logging_module != NULL) {
-		char logstr[4096];
-		int i = 0;
-		if (indent == -1) current_indent--;
-		if (current_indent < 1) current_indent = 1;
-		if ((indent >= -1) && (indent <= 1)) {
-			for (i = 0; i < current_indent; i++) {
-				logstr[i] = '\t';
-			}
-		}
-		if (indent == 1) current_indent++;
-		if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
-			PyEval_CallMethod(logging_module, level, "(s)", logstr);
-		}
-	}
-}
-
-static PYLINPHONE_INLINE void pylinphone_debug(const char *fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	pylinphone_log("debug", 0xff, fmt, args);
-	va_end(args);
-}
-
-static PYLINPHONE_INLINE void pylinphone_info(const char *fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	pylinphone_log("info", 0xff, fmt, args);
-	va_end(args);
-}
-
-static PYLINPHONE_INLINE void pylinphone_warning(const char *fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	pylinphone_log("warning", 0xff, fmt, args);
-	va_end(args);
-}
-
-static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	pylinphone_log("debug", indent, fmt, args);
-	va_end(args);
-}
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...);
 
 
 {{#classes}}
@@ -118,6 +49,9 @@ typedef struct {
 {{#classes}}
 static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self);
 static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr);
+{{#class_type_hand_written_methods}}
+static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args);
+{{/class_type_hand_written_methods}}
 {{/classes}}
 
 {{#classes}}
@@ -157,6 +91,9 @@ static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyOb
 static PyMethodDef pylinphone_{{class_name}}_instance_methods[] = {
 	// TODO: Handle doc
 	/* Class methods */
+{{#class_type_hand_written_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "" },
+{{/class_type_hand_written_methods}}
 {{#class_type_methods}}
 	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "" },
 {{/class_type_methods}}
@@ -234,8 +171,13 @@ static PyTypeObject pylinphone_{{class_name}}Type = {
 
 {{/classes}}
 
+
+{{> handwritten}}
+
+
 static PyMethodDef pylinphone_ModuleMethods[] = {
 	/* Sentinel */
+	{ "set_log_handler", pylinphone_module_method_set_log_handler, METH_VARARGS, "" },
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -248,7 +190,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyObject *m;
 	PyObject *menum;
 
-	init_logging();
+	pylinphone_init_logging();
 
 {{#classes}}
 	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;

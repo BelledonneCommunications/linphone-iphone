@@ -1,0 +1,108 @@
+static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
+	static int current_indent = 1;
+	PyObject *linphone_module = PyImport_ImportModule("linphone");
+	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
+		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
+			char logstr[4096];
+			int i = 0;
+			if (indent == -1) current_indent--;
+			if (current_indent < 1) current_indent = 1;
+			if ((indent >= -1) && (indent <= 1)) {
+				for (i = 0; i < current_indent; i++) {
+					logstr[i] = '\t';
+				}
+			}
+			if (indent == 1) current_indent++;
+			if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
+				PyEval_CallFunction(log_handler, "ss", level, logstr);
+			}
+		}
+	}
+}
+
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("debug", indent, fmt, args);
+	va_end(args);
+}
+
+static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
+	switch (lev) {
+		default:
+		case ORTP_DEBUG:
+			return "debug";
+		case ORTP_MESSAGE:
+			return "info";
+		case ORTP_WARNING:
+			return "warning";
+		case ORTP_ERROR:
+			return "error";
+		case ORTP_FATAL:
+			return "critical";
+		case ORTP_TRACE:
+			return "debug";
+	}
+}
+
+static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	PyObject *linphone_module = PyImport_ImportModule("linphone");
+	const char *level = pylinphone_ortp_log_level_to_string(lev);
+	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
+		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
+			char logstr[4096];
+			if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
+				PyEval_CallFunction(log_handler, "ss", level, logstr);
+			}
+		}
+	}
+}
+
+static void pylinphone_init_logging(void) {
+	linphone_core_set_log_handler(pylinphone_module_log_handler);
+	linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+}
+
+
+static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObject *args) {
+	PyObject *linphone_module = PyImport_ImportModule("linphone");
+	PyObject *callback;
+	if (!PyArg_ParseTuple(args, "O", &callback)) {
+		return NULL;
+	}
+	if (linphone_module != NULL) {
+		Py_INCREF(callback);
+		PyObject_SetAttrString(linphone_module, "__log_handler", callback);
+	}
+	Py_RETURN_NONE;
+}
+
+static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	const char * _config_path;
+	const char * _factory_config_path;
+
+	if (!PyArg_ParseTuple(args, "zz", &_config_path, &_factory_config_path)) {
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_New(pylinphone_CoreObject, &pylinphone_CoreType);
+	if (self == NULL) {
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(\"%s\", \"%s\")", __FUNCTION__, _config_path, _factory_config_path);
+	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}

@@ -537,7 +537,7 @@ class SetterMethodDefinition(MethodDefinition):
 
 
 class LinphoneModule(object):
-	def __init__(self, tree, blacklisted_classes, blacklisted_functions):
+	def __init__(self, tree, blacklisted_classes, blacklisted_functions, hand_written_functions):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.enums = []
@@ -577,6 +577,7 @@ class LinphoneModule(object):
 			c['class_destroyable'] = (xml_class.get('destroyable') == 'true')
 			c['class_has_user_data'] = False
 			c['class_type_methods'] = []
+			c['class_type_hand_written_methods'] = []
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
 				if xml_type_method.get('deprecated') == 'true':
@@ -586,8 +587,11 @@ class LinphoneModule(object):
 					continue
 				m = {}
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
-				m['method_xml_node'] = xml_type_method
-				c['class_type_methods'].append(m)
+				if method_name in hand_written_functions:
+					c['class_type_hand_written_methods'].append(m)
+				else:
+					m['method_xml_node'] = xml_type_method
+					c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
 			for xml_instance_method in xml_instance_methods:

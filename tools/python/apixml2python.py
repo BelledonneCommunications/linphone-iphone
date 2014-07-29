@@ -72,13 +72,12 @@ blacklisted_functions = [
 	'linphone_core_get_supported_video_sizes',
 	'linphone_core_get_video_codecs',
 	'linphone_core_get_video_policy',
-	'linphone_core_new',
 	'linphone_core_new_with_config',
 	'linphone_core_payload_type_enabled',
 	'linphone_core_payload_type_is_vbr',
 	'linphone_core_publish',
 	'linphone_core_set_log_file',
-	'linphone_core_set_log_handler',
+	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',
 	'linphone_core_set_payload_type_bitrate',
 	'linphone_core_set_preferred_video_size',
@@ -107,12 +106,16 @@ blacklisted_functions = [
 	'lp_config_load_dict_to_section',
 	'lp_config_section_to_dict'
 ]
+hand_written_functions = [
+	'linphone_core_new'
+]
 
 def generate(apixmlfile):
 	tree = ET.parse(apixmlfile)
 	renderer = pystache.Renderer()
-	m = LinphoneModule(tree, blacklisted_classes, blacklisted_functions)
+	m = LinphoneModule(tree, blacklisted_classes, blacklisted_functions, hand_written_functions)
 	f = open("linphone.c", "w")
+	os.chdir('apixml2python')
 	f.write(renderer.render(m))
 
 
