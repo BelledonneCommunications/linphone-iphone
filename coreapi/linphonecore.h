@@ -1258,7 +1258,8 @@ typedef enum _LinphoneChatMessageState {
 	LinphoneChatMessageStateIdle, /**< Initial state */
 	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
 	LinphoneChatMessageStateDelivered, /**< Message succesffully delivered an acknoleged by remote end point */
-	LinphoneChatMessageStateNotDelivered /**< Message was not delivered */
+	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
+	LinphoneChatMessageStateFileTransferError /**< Message was received(and acknowledged) but cannot get file from server */
 } LinphoneChatMessageState;
 
 /**
@@ -1331,7 +1332,7 @@ LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to(const Linpho
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
-LINPHONE_PUBLIC void linphone_chat_message_start_file_download(LinphoneChatMessage* message);
+LINPHONE_PUBLIC void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb);
 LINPHONE_PUBLIC void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage* msg);
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);

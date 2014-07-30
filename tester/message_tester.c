@@ -124,7 +124,7 @@ void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *me
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
 	stats* counters = get_stats(lc);
-	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)progress
+	ms_message(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)progress
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
 																	, content->type
 																	, content->subtype
@@ -156,6 +156,9 @@ void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,Linph
 		break;
 	case LinphoneChatMessageStateInProgress:
 		counters->number_of_LinphoneMessageInProgress++;
+		break;
+	case LinphoneChatMessageStateFileTransferError:
+		counters->number_of_LinphoneMessageNotDelivered++;
 		break;
 	default:
 		ms_error("Unexpected state [%s] for message [%p]",linphone_chat_message_state_to_string(state),msg);
@@ -378,18 +381,19 @@ static void file_transfer_message(void) {
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 	if (marie->stat.last_received_chat_message ) {
-		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message);
+		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message, liblinphone_tester_chat_message_state_change);
 	}
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
-static void file_transfer_message_io_error(void) {
+static void file_transfer_message_io_error_upload(void) {
 	int i;
 	char* to;
 	LinphoneChatRoom* chat_room;
@@ -438,6 +442,67 @@ static void file_transfer_message_io_error(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+
+#ifdef TEST_IS_BUGGED_NO_CALL_TO_IO_ERROR_CALLBACK
+static void file_transfer_message_io_error_download(void) {
+	int i;
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+	LinphoneContent content;
+	const char* big_file_content="big file"; /* setting dummy file content to something */
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
+	/* setting dummy file content to something */
+	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
+		memcpy(big_file+i, big_file_content, strlen(big_file_content));
+
+	big_file[0]=*"S";
+	big_file[sizeof(big_file)-1]=*"E";
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
+
+	/* create a chatroom on pauline's side */
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+
+	/* create a file transfer message */
+	memset(&content,0,sizeof(content));
+	content.type="text";
+	content.subtype="plain";
+	content.size=sizeof(big_file); /*total size to be transfered*/
+	content.name = "bigfile.txt";
+	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+
+	/* wait for marie to receive pauline's message */
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+
+
+	if (marie->stat.last_received_chat_message ) { /* get last message and use it to download file */
+		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message, liblinphone_tester_chat_message_state_change);
+		/* wait for file to be 50% downloaded */
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
+		/* and simulate network error */
+		sal_set_recv_error(marie->lc->sal, -1);
+	}
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageNotDelivered,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+
+	sal_set_recv_error(marie->lc->sal, 0);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+#endif
 
 static void file_transfer_message_upload_cancelled(void) {
 	int i;
@@ -529,16 +594,17 @@ static void file_transfer_message_download_cancelled(void) {
 
 
 	if (marie->stat.last_received_chat_message ) { /* get last message and use it to download file */
-		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message);
+		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message, liblinphone_tester_chat_message_state_change);
 		/* wait for file to be 50% downloaded */
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 		/* and cancel the transfer */
 		linphone_chat_room_cancel_file_transfer(marie->stat.last_received_chat_message);
 	}
-	//CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageNotDelivered,1);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -776,7 +842,8 @@ test_t message_tests[] = {
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body },
 	{ "File transfer message", file_transfer_message },
-	{ "File transfer message with io error", file_transfer_message_io_error },
+	{ "File transfer message with io error at upload", file_transfer_message_io_error_upload },
+/*	{ "File transfer message with io error at download", file_transfer_message_io_error_download },*/
 	{ "File transfer message upload cancelled", file_transfer_message_upload_cancelled },
 	{ "File transfer message download cancelled", file_transfer_message_download_cancelled },
 	{ "Text message denied", text_message_denied },
