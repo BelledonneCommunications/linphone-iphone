@@ -432,15 +432,16 @@ class DeallocMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s(%p [%p])\", __FUNCTION__, self, native_ptr);\n"
 
 	def format_c_function_call(self):
-		native_ptr_dealloc_code = ''
+		# Increment the refcount on self to prevent reentrancy in the dealloc method.
+		native_ptr_dealloc_code = "\tPy_INCREF(self);\n"
 		if self.class_['class_refcountable']:
-			native_ptr_dealloc_code = \
+			native_ptr_dealloc_code += \
 """	if (native_ptr != NULL) {{
 		{function_prefix}unref(native_ptr);
 	}}
 """.format(function_prefix=self.class_['class_c_function_prefix'])
 		elif self.class_['class_destroyable']:
-			native_ptr_dealloc_code = \
+			native_ptr_dealloc_code += \
 """	if (native_ptr != NULL) {{
 		{function_prefix}destroy(native_ptr);
 	}}
