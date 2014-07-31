@@ -300,7 +300,8 @@ LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const 
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
 		belle_sip_object_unref(cr->composing_idle_timer);
 		cr->composing_idle_timer = NULL;
 	}
@@ -308,7 +309,8 @@ static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr)
 
 static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_refresh_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
 		belle_sip_object_unref(cr->composing_refresh_timer);
 		cr->composing_refresh_timer = NULL;
 	}
@@ -316,7 +318,8 @@ static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *
 
 static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->remote_composing_refresh_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
 		belle_sip_object_unref(cr->remote_composing_refresh_timer);
 		cr->remote_composing_refresh_timer = NULL;
 	}
