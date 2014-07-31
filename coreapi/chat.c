@@ -46,12 +46,35 @@ const char *multipart_boundary=MULTIPART_BOUNDARY;
 static size_t linphone_chat_message_compute_filepart_header_size(const char *filename, const char *content_type) {
 	return strlen(FILEPART_HEADER_1)+strlen(filename)+strlen(FILEPART_HEADER_2)+strlen(content_type)+strlen(FILEPART_HEADER_3);
 }
-static void process_io_error(void *data, const belle_sip_io_error_event_t *event){
+
+static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", msg->chat_room->lc->file_transfer_server, msg, msg->chat_room);
+	if (msg->cb) {
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+	}
 }
-static void process_auth_requested(void *data, belle_sip_auth_event_t *event){
-	printf("We have a auth requested!\n");
+static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", msg->chat_room->lc->file_transfer_server, msg, msg->chat_room);
+	if (msg->cb) {
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+	}
+}
+
+static void process_io_error_download(void *data, const belle_sip_io_error_event_t *event){
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	ms_error("I/O Error during file download %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
+	if (msg->cb) {
+		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->chat_room->lc);
+	}
+}
+static void process_auth_requested_download(void *data, belle_sip_auth_event_t *event){
+	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	ms_error("Error during file download : auth requested to get %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
+	if (msg->cb) {
+		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->chat_room->lc);
+	}
 }
 
 /**
@@ -154,12 +177,17 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_sip_free(content_type);
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req),BELLE_SIP_BODY_HANDLER(bh));
 			cbs.process_response=linphone_chat_message_process_response_from_post_file;
-			cbs.process_io_error=process_io_error;
-			cbs.process_auth_requested=process_auth_requested;
+			cbs.process_io_error=process_io_error_upload;
+			cbs.process_auth_requested=process_auth_requested_upload;
 			l=belle_http_request_listener_create_from_callbacks(&cbs,msg);
+			msg->http_request=req; /* update the reference to the http request to be able to cancel it during upload */
 			belle_http_provider_send_request(msg->chat_room->lc->http_provider,req,l);
 		}
-		if (code == 200 ) { /* file has been uplaoded correctly, get server reply and send it */
+		if (code == 200 ) { /* file has been uploaded correctly, get server reply and send it */
+			/* TODO Check that the transfer has not been cancelled, note this shall be removed once the belle sip API will provide a cancel request as we shall never reach this part if the transfer is actually cancelled */
+			if (msg->http_request == NULL) {
+				return;
+			}
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			msg->message = ms_strdup(body);
 			linphone_content_uninit(msg->file_transfer_information);
@@ -272,7 +300,8 @@ LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const 
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
 		belle_sip_object_unref(cr->composing_idle_timer);
 		cr->composing_idle_timer = NULL;
 	}
@@ -280,7 +309,8 @@ static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr)
 
 static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_refresh_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
 		belle_sip_object_unref(cr->composing_refresh_timer);
 		cr->composing_refresh_timer = NULL;
 	}
@@ -288,7 +318,8 @@ static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *
 
 static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->remote_composing_refresh_timer) {
-		sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
+		if(cr->lc->sal)
+			sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
 		belle_sip_object_unref(cr->remote_composing_refresh_timer);
 		cr->remote_composing_refresh_timer = NULL;
 	}
@@ -335,9 +366,10 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 				NULL,
 				NULL);
 		cbs.process_response=linphone_chat_message_process_response_from_post_file;
-		cbs.process_io_error=process_io_error;
-		cbs.process_auth_requested=process_auth_requested;
+		cbs.process_io_error=process_io_error_upload;
+		cbs.process_auth_requested=process_auth_requested_upload;
 		l=belle_http_request_listener_create_from_callbacks(&cbs,msg); /* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
+		msg->http_request = req; /* keep a reference on the request to be able to cancel it */
 		belle_http_provider_send_request(cr->lc->http_provider,req,l);
 		linphone_chat_message_unref(msg);
 		return;
@@ -371,8 +403,8 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
 		sal_message_send(op,identity,cr->peer,content_type, NULL);
 		ms_free(content_type);
-	} else {
-		if (msg->content_type == NULL) {
+	} else { /* the message is either text or have a file transfer using RCS recommendation */
+		if (msg->content_type == NULL) { /* if no content type is specified, it is a text message */
 			sal_text_send(op, identity, cr->peer,msg->message);
 		} else {
 			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message);
@@ -450,7 +482,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
-	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer bu twe shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
+	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
 		xmlChar *file_url = NULL;
 		xmlDocPtr xmlMessageBody;
 		xmlNodePtr cur;
@@ -668,6 +700,7 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->is_read=TRUE;
 	msg->content_type = NULL; /* this property is used only when transfering file */
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
+	msg->http_request = NULL;
 	return msg;
 }
 
@@ -857,6 +890,7 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
 		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
 		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
+		case LinphoneChatMessageStateFileTransferError:return "LinphoneChatMessageStateFileTransferError";
 		default: return "Unknown state";
 	}
 
@@ -953,9 +987,12 @@ const LinphoneContent *linphone_chat_message_get_file_transfer_information(const
 }
 
 static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
-	//printf("Receive %ld bytes\n\n%s\n\n", size, (char *)buffer);
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
+	/* TODO: while belle sip doesn't implement the cancel http request method, test if a request is still linked to the message before forwarding the data to callback */
+	if (chatMsg->http_request == NULL) {
+		return;
+	}
 	/* call back given by application level */
 	if (lc->vtable.file_transfer_received != NULL) {
 		lc->vtable.file_transfer_received(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
@@ -1035,8 +1072,9 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
  * Start the download of the file from remote server
  *
  * @param message #LinphoneChatMessage
+ * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
  */
-void linphone_chat_message_start_file_download(const LinphoneChatMessage *message) {
+void linphone_chat_message_start_file_download(LinphoneChatMessage *message, LinphoneChatMessageStateChangedCb status_cb) {
 	belle_http_request_listener_callbacks_t cbs={0};
 	belle_http_request_listener_t *l;
 	belle_generic_uri_t *uri;
@@ -1055,12 +1093,31 @@ void linphone_chat_message_start_file_download(const LinphoneChatMessage *messag
 
 	cbs.process_response_headers=linphone_chat_process_response_headers_from_get_file;
 	cbs.process_response=linphone_chat_process_response_from_get_file;
-	cbs.process_io_error=process_io_error;
-	cbs.process_auth_requested=process_auth_requested;
+	cbs.process_io_error=process_io_error_download;
+	cbs.process_auth_requested=process_auth_requested_download;
 	l=belle_http_request_listener_create_from_callbacks(&cbs, (void *)message);
 	belle_sip_object_data_set(BELLE_SIP_OBJECT(req),"message",(void *)message,NULL);
+	message->http_request = req; /* keep a reference on the request to be able to cancel the download */
+	message->cb = status_cb;
+	message->state = LinphoneChatMessageStateInProgress; /* start the download, status is In Progress */
 	belle_http_provider_send_request(message->chat_room->lc->http_provider,req,l);
 }
+
+/**
+ * Cancel an ongoing file transfer attached to this message.(upload or download)
+ * @param msg	#LinphoneChatMessage
+ */
+void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
+	ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?msg->chat_room->lc->file_transfer_server:msg->external_body_url, msg, msg->chat_room);
+	/* TODO: here we shall call the cancel http request from bellesip API when it is available passing msg->http_request */
+	/* waiting for this API, just set to NULL the reference to the request in the message and any request */
+	msg->http_request = NULL;
+	if (msg->cb) {
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+	}
+}
+
+
 /**
  * Set origin of the message
  *@param message #LinphoneChatMessage obj
@@ -1288,11 +1345,11 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
 	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
+	msg->http_request=NULL; /* this will store the http request during file upload to the server */
 
 	return msg;
 }
+
 /**
  * @}
  */
-
-

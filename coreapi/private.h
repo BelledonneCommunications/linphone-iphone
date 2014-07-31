@@ -163,8 +163,9 @@ struct _LinphoneChatMessage {
 	bool_t is_read;
 	unsigned int storage_id;
 	SalOp *op;
-	LinphoneContent *file_transfer_information;
-	char *content_type;
+	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
+	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
+	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);

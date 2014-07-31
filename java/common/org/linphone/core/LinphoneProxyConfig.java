@@ -225,6 +225,19 @@ public interface LinphoneProxyConfig {
 	String getQualityReportingCollector();
 
 	/**
+	 * Set the outbound proxy realm. It is used in digest authentication to avoid
+	 * re-authentication if a previous token has already been provided.
+	 * @param The new outbound proxy realm.
+	 */
+	void setRealm(String realm);
+
+	/**
+	 * Get the outbound proxy realm.
+	 * @return The outbound proxy realm.
+	 */
+	String getRealm();
+
+	/**
 	 * Set optional contact parameters that will be added to the contact information sent in the registration.
 	 * @param contact_params a string containing the additional parameters in text form, like "myparam=something;myparam2=something_else"
 	 *
@@ -287,12 +300,12 @@ public interface LinphoneProxyConfig {
 	 * @return the publish expiration time in second. Default value is the registration expiration value.
 	 */
 	public int getPublishExpires();
-	
+
 	/**
 	 *  attached a user data to a proxy config
 	 **/
 	void setUserData(Object obj);
-	
+
 	/**
 	 * Returns user data from a proxy config. return null if any
 	 * @return an Object.

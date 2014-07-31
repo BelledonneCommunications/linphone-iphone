@@ -116,16 +116,6 @@ static void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  
 }
 
 /*
- * Call back called when a message is received
- */
-static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
-	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
-
-	linphone_chat_message_start_file_download(msg);
-
-}
-/*
  * Call back to get delivery status of a message
  * */
 static void linphone_file_transfer_state_changed(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
@@ -136,6 +126,16 @@ static void linphone_file_transfer_state_changed(LinphoneChatMessage* msg,Linpho
 	free(to);
 }
 
+/*
+ * Call back called when a message is received
+ */
+static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
+	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
+
+	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed);
+
+}
 
 LinphoneCore *lc;
 int main(int argc, char *argv[]){
