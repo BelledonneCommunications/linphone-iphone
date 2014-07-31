@@ -578,6 +578,9 @@ class LinphoneModule(object):
 			c['class_has_user_data'] = False
 			c['class_type_methods'] = []
 			c['class_type_hand_written_methods'] = []
+			c['class_object_members'] = ''
+			if c['class_name'] == 'Core':
+				c['class_object_members'] = "\tPyObject *vtable_dict;"
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
 				if xml_type_method.get('deprecated') == 'true':

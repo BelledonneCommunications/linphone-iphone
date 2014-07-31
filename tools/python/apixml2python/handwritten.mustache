@@ -79,15 +79,30 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 	Py_RETURN_NONE;
 }
 
+static void pylinphone_Core_callback_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
+	pylinphone_CoreObject *pylc = (pylinphone_CoreObject *)linphone_core_get_user_data(lc);
+	PyObject *func = PyDict_GetItemString(pylc->vtable_dict, "global_state_changed");
+	if ((func != NULL) && PyFunction_Check(func)) {
+		if (PyEval_CallFunction(func, "Ois", pylc, gstate, message) == NULL) {
+			PyErr_Print();
+		}
+	}
+}
+
 static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
 	LinphoneCore * cresult;
 	pylinphone_CoreObject *self;
 	PyObject * pyret;
 	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
 	const char * _config_path;
 	const char * _factory_config_path;
 
-	if (!PyArg_ParseTuple(args, "zz", &_config_path, &_factory_config_path)) {
+	if (!PyArg_ParseTuple(args, "Ozz", &_vtable_dict, &_config_path, &_factory_config_path)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
 		return NULL;
 	}
 
@@ -95,6 +110,9 @@ static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args
 	if (self == NULL) {
 		return NULL;
 	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+	_vtable.global_state_changed = pylinphone_Core_callback_global_state_changed;
 
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(\"%s\", \"%s\")", __FUNCTION__, _config_path, _factory_config_path);
 	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
