@@ -1,6 +1,10 @@
 static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
 	static int current_indent = 1;
-	PyObject *linphone_module = PyImport_ImportModule("linphone");
+	PyObject *linphone_module;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	linphone_module = PyImport_ImportModule("linphone");
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
 		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
 		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
@@ -17,8 +21,11 @@ static void pylinphone_log(const char *level, int indent, const char *fmt, va_li
 			if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
 				PyEval_CallFunction(log_handler, "ss", level, logstr);
 			}
+			Py_DECREF(log_handler);
 		}
+		Py_DECREF(linphone_module);
 	}
+	PyGILState_Release(gstate);
 }
 
 static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
@@ -47,17 +54,27 @@ static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
 }
 
 static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
-	PyObject *linphone_module = PyImport_ImportModule("linphone");
-	const char *level = pylinphone_ortp_log_level_to_string(lev);
+	PyGILState_STATE gstate;
+	PyObject *linphone_module;
+	const char *level;
+
+	gstate = PyGILState_Ensure();
+	linphone_module = PyImport_ImportModule("linphone");
+	level = pylinphone_ortp_log_level_to_string(lev);
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
 		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
 		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
 			char logstr[4096];
 			if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
-				PyEval_CallFunction(log_handler, "ss", level, logstr);
+				if (PyEval_CallFunction(log_handler, "ss", level, logstr) == NULL) {
+					PyErr_Print();
+				}
 			}
+			Py_DECREF(log_handler);
 		}
+		Py_DECREF(linphone_module);
 	}
+	PyGILState_Release(gstate);
 }
 
 static void pylinphone_init_logging(void) {

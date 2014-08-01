@@ -556,7 +556,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 	def format_local_variables_definition(self):
 		common = \
 """	pylinphone_CoreObject *pylc = (pylinphone_CoreObject *)linphone_core_get_user_data(lc);
-	PyObject *func = PyDict_GetItemString(pylc->vtable_dict, "{name}");""".format(name=self.class_['event_name'])
+	PyObject *func = PyDict_GetItemString(pylc->vtable_dict, "{name}");
+	PyGILState_STATE pygil_state;""".format(name=self.class_['event_name'])
 		specific = ''
 		for xml_method_arg in self.xml_method_args:
 			arg_name = 'py' + xml_method_arg.get('name')
@@ -568,7 +569,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "{common}\n{specific}".format(common=common, specific=specific)
 
 	def format_arguments_parsing(self):
-		body = ''
+		body = "\tpygil_state = PyGILState_Ensure();\n"
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -629,10 +630,10 @@ class EventCallbackMethodDefinition(MethodDefinition):
 """.format(fmt=fmt, args=args)
 
 	def format_return_trace(self):
-		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);"
+		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);\n"
 
 	def format_return_result(self):
-		return ''
+		return '\tPyGILState_Release(pygil_state);'
 
 	def format(self):
 		body = MethodDefinition.format(self)
