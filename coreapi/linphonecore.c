@@ -999,10 +999,10 @@ static void video_config_read(LinphoneCore *lc){
 
 	linphone_core_set_preferred_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","size","cif"));
-	
+
 	linphone_core_set_preview_video_size_by_name(lc,
 		lp_config_get_string(lc->config,"video","preview_size",NULL));
-	
+
 	linphone_core_set_preferred_framerate(lc,lp_config_get_float(lc->config,"video","framerate",0));
 
 #ifdef VIDEO_ENABLED
@@ -1417,7 +1417,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
-	} // else linphone_core_start will be called after the remote provisioining (see linphone_core_iterate)
+	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
 }
 
 /**
@@ -2351,7 +2351,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 #endif //BUILD_UPNP
 			linphone_core_start_invite(lc,call, NULL);
 		}
-		if (call->state==LinphoneCallIncomingReceived){
+		if (call->state==LinphoneCallIncomingReceived || call->state==LinphoneCallIncomingEarlyMedia){
 			if (one_second_elapsed) ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				LinphoneReason decline_reason;
@@ -2824,6 +2824,7 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_set_to_address(op,dest);
 	sal_op_set_from(op,identity);
 	sal_op_set_sent_custom_header(op,headers);
+	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
 	if (with_contact && proxy && proxy->op){
 		const SalAddress *contact;
 		if ((contact=sal_op_get_contact_address(proxy->op))){

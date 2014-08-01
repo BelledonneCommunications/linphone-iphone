@@ -917,6 +917,20 @@ LINPHONE_PUBLIC	bool_t linphone_proxy_config_is_registered(const LinphoneProxyCo
 **/
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
+/**
+ * Get the realm of the given proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @returns The realm of the proxy config.
+**/
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_realm(const LinphoneProxyConfig *cfg);
+/**
+ * Set the realm of the given proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param[in] realm New realm value.
+ * @returns The realm of the proxy config.
+**/
+LINPHONE_PUBLIC	void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char * realm);
+
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
@@ -1244,7 +1258,8 @@ typedef enum _LinphoneChatMessageState {
 	LinphoneChatMessageStateIdle, /**< Initial state */
 	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
 	LinphoneChatMessageStateDelivered, /**< Message succesffully delivered an acknoleged by remote end point */
-	LinphoneChatMessageStateNotDelivered /**< Message was not delivered */
+	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
+	LinphoneChatMessageStateFileTransferError /**< Message was received(and acknowledged) but cannot get file from server */
 } LinphoneChatMessageState;
 
 /**
@@ -1317,7 +1332,8 @@ LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_to(const Linpho
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage* message);
-LINPHONE_PUBLIC void linphone_chat_message_start_file_download(const LinphoneChatMessage*message);
+LINPHONE_PUBLIC void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb);
+LINPHONE_PUBLIC void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage* msg);
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data);
 LINPHONE_PUBLIC	const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
@@ -1588,7 +1604,7 @@ typedef struct _LinphoneCoreVTable{
 	DisplayUrlCb display_url; /**< @deprecated */
 	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
 	LinphoneCoreTextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
-	LinphoneCoreFileTransferRecvCb file_transfer_received; /** Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneCoreFileTransferRecvCb file_transfer_recv; /** Callback to store file received attached to a #LinphoneChatMessage */
 	LinphoneCoreFileTransferSendCb file_transfer_send; /** Callback to collect file chunk to be sent for a #LinphoneChatMessage */
 	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**Callback to indicate file transfer progress*/
 } LinphoneCoreVTable;

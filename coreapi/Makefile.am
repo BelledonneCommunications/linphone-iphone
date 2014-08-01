@@ -5,6 +5,13 @@ GITDESCRIBE=`cd $(top_srcdir) && git describe --always`
 GIT_TAG=`cd $(top_srcdir) && git describe --abbrev=0`
 GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 
+## This command is used to check if the sources are cloned in a git repo.
+## We can't only depend on the presence of the .git/ directory anymore, 
+## because of gits submodule handling.
+## We now simply issue a git status and if there's an error, the $(GITSTATUS)
+## variable won't contain "GITOK"
+GITSTATUS=`cd $(top_srcdir) && git status > /dev/null && echo GITOK`
+
 ECHO=/bin/echo
 
 SUBDIRS=. help
@@ -161,7 +168,7 @@ AM_CXXFLAGS=$(AM_CFLAGS)
 #the PACKAGE_VERSION given in configure.ac
 
 make_gitversion_h:
-	if test -d $(top_srcdir)/.git ; then  \
+	if test "$(GITSTATUS)" == "GITOK" ; then  \
 		if test "$(GITDESCRIBE)" != "" ; then \
 			if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
 				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \

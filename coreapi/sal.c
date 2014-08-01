@@ -386,6 +386,13 @@ void sal_op_add_route_address(SalOp *op, const SalAddress *address){
 		sal_op_set_route_address(op,address);
 	}
 }
+void sal_op_set_realm(SalOp *op, const char *realm){
+	SalOpBase* op_base = (SalOpBase*)op;
+	if (op_base->realm != NULL){
+		ms_free(op_base->realm);
+	}
+	op_base->realm = ms_strdup(realm);
+}
 void sal_op_set_from(SalOp *op, const char *from){
 	SET_PARAM(op,from);
 }
@@ -510,6 +517,10 @@ void __sal_op_free(SalOp *op){
 	if (b->route) {
 		ms_free(b->route);
 		b->route=NULL;
+	}
+	if (b->realm) {
+		ms_free(b->realm);
+		b->realm=NULL;
 	}
 	if (b->contact_address) {
 		sal_address_destroy(b->contact_address);

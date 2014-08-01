@@ -3033,6 +3033,19 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getQual
 	return jvalue;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_setRealm(JNIEnv *env, jobject thiz, jlong ptr, jstring jrealm) {
+	if (jrealm){
+		const char *realm=env->GetStringUTFChars(jrealm, NULL);
+		linphone_proxy_config_set_realm((LinphoneProxyConfig *)ptr, realm);
+		env->ReleaseStringUTFChars(jrealm,realm);
+	}
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getRealm(JNIEnv *env, jobject thiz, jlong ptr) {
+	jstring jvalue = env->NewStringUTF(linphone_proxy_config_get_realm((LinphoneProxyConfig *)ptr));
+	return jvalue;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (jint)linphone_call_get_duration((LinphoneCall *) ptr);
 }

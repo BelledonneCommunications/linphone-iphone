@@ -701,7 +701,6 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	char *from_str;
 	const SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
 
@@ -721,11 +720,13 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			/*the following sends an option request back to the caller so that
 			 we get a chance to discover our nat'd address before answering.*/
 			call->ping_op=sal_op_new(lc->sal);
-			from_str=linphone_address_as_string_uri_only(from);
+
+			linphone_configure_op(lc, call->ping_op, from, NULL, FALSE);
+
 			sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
 			sal_op_set_user_pointer(call->ping_op,call);
-			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from),from_str);
-			ms_free(from_str);
+
+			sal_ping(call->ping_op,sal_op_get_from(call->ping_op), sal_op_get_to(call->ping_op));
 		}
 	}
 
@@ -1313,7 +1314,7 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
  * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
  * @param call a LinphoneCall
  * @param file a path where to write the jpeg content.
- * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported). 
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
 int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file){
 #ifdef VIDEO_ENABLED

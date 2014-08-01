@@ -199,7 +199,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
-	mgr->v_table.file_transfer_received=file_transfer_received;
+	mgr->v_table.file_transfer_recv=file_transfer_received;
 	mgr->v_table.file_transfer_send=file_transfer_send;
 	mgr->v_table.file_transfer_progress_indication=file_transfer_progress_indication;
 	mgr->v_table.is_composing_received=is_composing_received;
