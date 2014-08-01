@@ -1604,7 +1604,7 @@ typedef struct _LinphoneCoreVTable{
 	DisplayUrlCb display_url; /**< @deprecated */
 	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
 	LinphoneCoreTextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
-	LinphoneCoreFileTransferRecvCb file_transfer_received; /** Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneCoreFileTransferRecvCb file_transfer_recv; /** Callback to store file received attached to a #LinphoneChatMessage */
 	LinphoneCoreFileTransferSendCb file_transfer_send; /** Callback to collect file chunk to be sent for a #LinphoneChatMessage */
 	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**Callback to indicate file transfer progress*/
 } LinphoneCoreVTable;

@@ -162,7 +162,7 @@ int main(int argc, char *argv[]){
 	 in order to get notifications about incoming file receive, file_transfer_send to feed file to be transfered
 	 and file_transfer_progress_indication to print progress.
 	 */
-	vtable.file_transfer_received=file_transfer_received;
+	vtable.file_transfer_recv=file_transfer_received;
 	vtable.file_transfer_send=file_transfer_send;
 	vtable.file_transfer_progress_indication=file_transfer_progress_indication;
 	vtable.message_received=message_received;
