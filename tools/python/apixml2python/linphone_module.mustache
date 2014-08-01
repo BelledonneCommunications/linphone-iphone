@@ -55,6 +55,10 @@ static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObjec
 {{/class_type_hand_written_methods}}
 {{/classes}}
 
+{{#events}}
+{{{event_callback_definition}}}
+{{/events}}
+
 {{#classes}}
 
 static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self) {

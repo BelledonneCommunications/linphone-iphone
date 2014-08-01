@@ -30,6 +30,13 @@ blacklisted_classes = [
 	'LinphoneTunnel',
 	'LinphoneTunnelConfig'
 ]
+blacklisted_events = [
+	'LinphoneCoreInfoReceivedCb',
+	'LinphoneCoreNotifyReceivedCb',
+	'LinphoneCoreFileTransferProgressIndicationCb',
+	'LinphoneCoreFileTransferRecvCb',
+	'LinphoneCoreFileTransferSendCb'
+]
 blacklisted_functions = [
 	'linphone_call_get_user_pointer',
 	'linphone_call_set_user_pointer',
@@ -50,6 +57,7 @@ blacklisted_functions = [
 	'linphone_chat_message_get_chat_room',
 	'linphone_chat_message_get_file_transfer_information',
 	'linphone_chat_message_get_time',
+	'linphone_chat_message_start_file_download',
 	'linphone_chat_message_state_to_string',
 	'linphone_chat_room_create_file_transfer_message',
 	'linphone_chat_room_create_message_2',
@@ -113,7 +121,7 @@ hand_written_functions = [
 def generate(apixmlfile):
 	tree = ET.parse(apixmlfile)
 	renderer = pystache.Renderer()
-	m = LinphoneModule(tree, blacklisted_classes, blacklisted_functions, hand_written_functions)
+	m = LinphoneModule(tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions)
 	f = open("linphone.c", "w")
 	os.chdir('apixml2python')
 	f.write(renderer.render(m))

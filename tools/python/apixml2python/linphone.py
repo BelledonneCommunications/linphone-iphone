@@ -24,6 +24,18 @@ def strip_leading_linphone(s):
 	else:
 		return s
 
+def compute_event_name(s):
+	s = strip_leading_linphone(s)
+	s = s[4:-2] # Remove leading 'Core' and tailing 'Cb'
+	event_name = ''
+	first = True
+	for l in s:
+		if l.isupper() and not first:
+			event_name += '_'
+		event_name += l.lower()
+		first = False
+	return event_name
+
 
 class MethodDefinition:
 	def __init__(self, linphone_module, class_, method_node = None):
@@ -226,7 +238,7 @@ class MethodDefinition:
 			splitted_type.remove('const')
 		return ' '.join(splitted_type)
 
-	def ctype_to_str_format(self, name, basic_type, complete_type):
+	def ctype_to_str_format(self, name, basic_type, complete_type, with_native_ptr=True):
 		splitted_type = complete_type.split(' ')
 		if basic_type == 'char':
 			if '*' in splitted_type:
@@ -263,8 +275,10 @@ class MethodDefinition:
 		else:
 			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
 				return ('%d', [name])
-			else:
+			elif with_native_ptr:
 				return ('%p [%p]', [name, name + "_native_ptr"])
+			else:
+				return ('%p', [name])
 
 	def ctype_to_python_format(self, basic_type, complete_type):
 		splitted_type = complete_type.split(' ')
@@ -535,10 +549,109 @@ class SetterMethodDefinition(MethodDefinition):
 		self.first_arg_class = strip_leading_linphone(self.first_arg_type)
 		self.python_fmt = self.ctype_to_python_format(self.first_arg_type, self.first_arg_complete_type)
 
+class EventCallbackMethodDefinition(MethodDefinition):
+	def __init__(self, linphone_module, class_, method_node = None):
+		MethodDefinition.__init__(self, linphone_module, class_, method_node)
+
+	def format_local_variables_definition(self):
+		common = \
+"""	pylinphone_CoreObject *pylc = (pylinphone_CoreObject *)linphone_core_get_user_data(lc);
+	PyObject *func = PyDict_GetItemString(pylc->vtable_dict, "{name}");""".format(name=self.class_['event_name'])
+		specific = ''
+		for xml_method_arg in self.xml_method_args:
+			arg_name = 'py' + xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
+			if fmt == 'O':
+				specific += "\tPyObject * " + arg_name + " = NULL;\n"
+		return "{common}\n{specific}".format(common=common, specific=specific)
+
+	def format_arguments_parsing(self):
+		body = ''
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
+			if fmt == 'O':
+				type_class = self.find_class_definition(arg_type)
+				get_user_data_code = ''
+				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
+				if type_class is not None and type_class['class_has_user_data']:
+					get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
+					get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
+				body += \
+"""	{get_user_data_code}
+	if (py{name} == NULL) {{
+		{new_from_native_pointer_code}
+	}}
+""".format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
+		return body
+
+	def format_enter_trace(self):
+		fmt = '%p'
+		args = ['lc']
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			if fmt != '':
+				fmt += ', '
+			f, a = self.ctype_to_str_format(arg_name, arg_type, arg_complete_type, with_native_ptr=False)
+			fmt += f
+			args += a
+		args=', '.join(args)
+		if args != '':
+			args = ', ' + args
+		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s({fmt})\", __FUNCTION__{args});\n".format(fmt=fmt, args=args)
+
+	def format_c_function_call(self):
+		fmt = 'O'
+		args = ['pylc']
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			f = self.ctype_to_python_format(arg_type, arg_complete_type)
+			fmt += f
+			if f == 'O':
+				args.append('py' + arg_name)
+			else:
+				args.append(arg_name)
+		args=', '.join(args)
+		return \
+"""	if ((func != NULL) && PyFunction_Check(func)) {{
+		if (PyEval_CallFunction(func, "{fmt}", {args}) == NULL) {{
+			PyErr_Print();
+		}}
+	}}
+""".format(fmt=fmt, args=args)
+
+	def format_return_trace(self):
+		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);"
+
+	def format_return_result(self):
+		return ''
+
+	def format(self):
+		body = MethodDefinition.format(self)
+		arguments = ['LinphoneCore * lc']
+		for xml_method_arg in self.xml_method_args:
+			arg_name = xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			arguments.append(arg_complete_type + ' ' + arg_name)
+		definition = \
+"""static void pylinphone_Core_callback_{event_name}({arguments}) {{
+{body}
+}}
+""".format(event_name=self.class_['event_name'], arguments=', '.join(arguments), body=body)
+		return definition
 
 
 class LinphoneModule(object):
-	def __init__(self, tree, blacklisted_classes, blacklisted_functions, hand_written_functions):
+	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.enums = []
@@ -561,6 +674,7 @@ class LinphoneModule(object):
 				e['enum_values'].append(v)
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
+		self.events = []
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
@@ -582,6 +696,18 @@ class LinphoneModule(object):
 			c['class_object_members'] = ''
 			if c['class_name'] == 'Core':
 				c['class_object_members'] = "\tPyObject *vtable_dict;"
+				xml_events = xml_class.findall("./events/event")
+				for xml_event in xml_events:
+					if xml_event.get('deprecated') == 'true':
+						continue
+					if xml_event.get('name') in blacklisted_events:
+						  continue
+					ev = {}
+					ev['event_xml_node'] = xml_event
+					ev['event_cname'] = xml_event.get('name')
+					ev['event_name'] = compute_event_name(ev['event_cname'])
+					ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
+					self.events.append(ev)
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
 				if xml_type_method.get('deprecated') == 'true':
@@ -649,6 +775,10 @@ class LinphoneModule(object):
 					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
 			self.classes.append(c)
+		# Format events definitions
+		for ev in self.events:
+			ev['event_callback_definition'] = EventCallbackMethodDefinition(self, ev, ev['event_xml_node']).format()
+			ev['event_vtable_reference'] = "_vtable.{name} = pylinphone_Core_callback_{name};".format(name=ev['event_name'])
 		# Format methods' bodies
 		for c in self.classes:
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
@@ -695,15 +825,18 @@ class LinphoneModule(object):
 	def __format_doc_node(self, node):
 		desc = ''
 		if node.tag == 'para':
-			desc += node.text.strip()
+			if node.text is not None:
+				desc += node.text.strip()
 			for n in list(node):
 				desc += self.__format_doc_node(n)
 		elif node.tag == 'note':
-			desc += node.text.strip()
+			if node.text is not None:
+				desc += node.text.strip()
 			for n in list(node):
 				desc += self.__format_doc_node(n)
 		elif node.tag == 'ref':
-			desc += ' ' + node.text.strip() + ' '
+			if node.text is not None:
+				desc += ' ' + node.text.strip() + ' '
 		tail = node.tail.strip()
 		if tail != '':
 			if node.tag != 'ref':
