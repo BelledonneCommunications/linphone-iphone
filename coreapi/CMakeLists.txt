@@ -1,12 +1,29 @@
+############################################################################
+# CMakeLists.txt
+# Copyright (C) 2014  Belledonne Communications, Grenoble France
+#
+############################################################################
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+############################################################################
+
 if(MSVC)
 	find_library(LIBGCC NAMES gcc)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
-find_library(LIBORTP NAMES ortp)
-find_library(LIBMEDIASTREAMER_BASE NAMES mediastreamer_base)
-find_library(LIBMEDIASTREAMER_VOIP NAMES mediastreamer_voip)
-find_library(LIBBELLESIP NAMES bellesip)
-find_library(LIBXML2 NAMES xml2)
 
 find_program(GIT git)
 
@@ -111,19 +128,23 @@ add_definitions(
 	-DLINPHONE_PLUGINS_DIR=""
 )
 
-if(LINPHONE_ENABLE_VIDEO)
+if(ENABLE_VIDEO)
 	add_definitions(-DVIDEO_ENABLED)
-endif(LINPHONE_ENABLE_VIDEO)
+endif()
 
+set(LIBS
+	${LIBGCC}
+	${LIBMINGWEX}
+	${BELLESIP_LIBRARIES}
+	${MS2_LIBRARIES}
+	${XML2_LIBRARIES}
+)
 if(WIN32)
 add_definitions(
 	-DWINDOW_NATIVE
 	/FIliblinphone_gitversion.h
 )
-
-set(LIBS ws2_32)
-endif(WIN32)
-set(LIBS ${LIBS} ${LIBGCC} ${LIBMINGWEX} ${LIBORTP} ${LIBMEDIASTREAMER_BASE} ${LIBMEDIASTREAMER_VOIP} ${LIBBELLESIP} ${LIBXML2})
+endif()
 
 add_library(linphone SHARED ${SOURCE_FILES})
 set_target_properties(linphone PROPERTIES VERSION 3.7.0 SOVERSION 5)
@@ -150,4 +171,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/linphone.pdb
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 endif()
-endif(WIN32)
+endif()
