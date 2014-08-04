@@ -708,6 +708,18 @@ public interface LinphoneCore {
 	int getPayloadTypeBitrate(PayloadType pt);
 	
 	/**
+	 * Enable adaptive rate control.
+	 * @param enable
+	 */
+	void enableAdaptiveRateControl(boolean enable);
+	
+	/**
+	 * Enables or disable adaptive rate control.
+	 * @return true if adaptive rate control is enabled.
+	*/
+	boolean isAdaptiveRateControlEnabled();
+	
+	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
 	 */

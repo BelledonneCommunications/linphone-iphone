@@ -73,6 +73,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long findPayloadType(long nativePtr, String mime, int clockRate, int channels);
 	private native int enablePayloadType(long nativePtr, long payloadType,	boolean enable);
 	private native boolean isPayloadTypeEnabled(long nativePtr, long payloadType);
+	private native void enableAdaptiveRateControl(long nativePtr,boolean enable);
+	private native boolean isAdaptiveRateControlEnabled(long nativePtr);
 	private native void enableEchoCancellation(long nativePtr,boolean enable);
 	private native boolean isEchoCancellationEnabled(long nativePtr);
 	private native Object getCurrentCall(long nativePtr) ;
@@ -1189,6 +1191,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized int getPayloadTypeBitrate(PayloadType pt) {
 		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
+	@Override
+	public void enableAdaptiveRateControl(boolean enable) {
+		enableAdaptiveRateControl(nativePtr,enable);
+		
+	}
+	@Override
+	public boolean isAdaptiveRateControlEnabled() {
+		return isAdaptiveRateControlEnabled(nativePtr);
 	}
 	
 }
