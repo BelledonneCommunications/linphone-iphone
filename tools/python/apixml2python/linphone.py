@@ -160,7 +160,11 @@ class MethodDefinition:
 				new_from_native_pointer_code = "\tpyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
 				if self.self_arg is not None and return_type_class['class_refcountable']:
 					ref_function = return_type_class['class_c_function_prefix'] + "ref"
-					ref_native_pointer_code = "\t{func}(({cast_type})cresult);\n".format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
+					ref_native_pointer_code = \
+"""	if (cresult != NULL) {{
+		{func}(({cast_type})cresult);
+	}}
+""".format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
 				result_variable = 'pyresult'
 			else:
 				result_variable = 'cresult'
