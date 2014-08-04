@@ -63,7 +63,7 @@ class RegisterStatusResponse(Response):
 		self.body += \
 """Id: {id}
 State: {state}
-""".format(id=id, state=str(proxy_cfg.state))
+""".format(id=id, state=str(linphone.RegistrationState.string(proxy_cfg.state)))
 
 class CommandExample:
 	def __init__(self, command, output):
