@@ -248,5 +248,7 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
 
+int  liblinphone_tester_fprintf(FILE * restrict stream, const char * restrict format, ...);
+
 #endif /* LIBLINPHONE_TESTER_H_ */
 

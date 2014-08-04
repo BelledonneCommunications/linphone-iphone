@@ -515,7 +515,7 @@ lpc_cmd_help(LinphoneCore *lc, char *arg)
 		i=0;
 		while (advanced_commands[i].help)
 		{
-			linphonec_out("%10.10s\t%s\n", advanced_commands[i].name,
+			linphonec_out("%20.20s\t%s\n", advanced_commands[i].name,
 				advanced_commands[i].help);
 			i++;
 		}
