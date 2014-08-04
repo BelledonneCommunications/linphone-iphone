@@ -92,6 +92,7 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 	if (linphone_module != NULL) {
 		Py_INCREF(callback);
 		PyObject_SetAttrString(linphone_module, "__log_handler", callback);
+		Py_DECREF(linphone_module);
 	}
 	Py_RETURN_NONE;
 }
