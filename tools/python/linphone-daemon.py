@@ -55,26 +55,67 @@ class Response:
 """Status: {status}
 {body}""".format(status=status_str, body=body)
 
+class RegisterStatusResponse(Response):
+	def __init__(self):
+		Response.__init__(self, Response.Ok)
+
+	def append(self, id, proxy_cfg):
+		self.body += \
+"""Id: {id}
+State: {state}
+""".format(id=id, state=str(proxy_cfg.state))
+
+class CommandExample:
+	def __init__(self, command, output):
+		self.command = command
+		self.output = output
+
+	def __str__(self):
+		return \
+"""> {command}
+{output}""".format(command=self.command, output=self.output)
+
 class Command:
 	def __init__(self, name, proto):
 		self.name = name
 		self.proto = proto
+		self.examples = []
 
 	def exec_command(self, app, args):
 		pass
 
+	def add_example(self, example):
+		self.examples.append(example)
+
 	def help(self):
-		return \
+		body = \
 """{proto}
 
 Description:
 {description}
 """.format(proto=self.proto, description=self.__doc__)
+		idx = 0
+		for example in self.examples:
+			idx += 1
+			body += \
+"""
+Example {idx}:
+{example}
+""".format(idx=idx, example=str(example))
+		return body
 
 class CallCommand(Command):
 	"""Place a call."""
 	def __init__(self):
 		Command.__init__(self, "call", "call <sip address>")
+		self.add_example(CommandExample(
+			"call daemon-test@sip.linphone.org",
+			"Status: Ok\n\nId: 1"
+		))
+		self.add_example(CommandExample(
+			"call daemon-test@sip.linphone.org",
+			"Status: Error\nReason: Call creation failed."
+		))
 
 	def exec_command(self, app, args):
 		if len(args) >= 1:
@@ -119,6 +160,10 @@ class RegisterCommand(Command):
 	"""Register the daemon to a SIP proxy. If one of the parameters <password>, <userid> and <realm> is not needed, send the string "NULL"."""
 	def __init__(self):
 		Command.__init__(self, "register", "register <identity> <proxy-address> [password] [userid] [realm] [contact-parameters]")
+		self.add_example(CommandExample(
+			"register sip:daemon-test@sip.linphone.org sip.linphone.org password bob linphone.org",
+			"Status: Ok\n\nId: 1"
+		))
 
 	def exec_command(self, app, args):
 		if len(args) >= 2:
@@ -153,18 +198,53 @@ class RegisterCommand(Command):
 		else:
 			app.send_response(Response(Response.Error, "Missing/Incorrect parameter(s)."))
 
+class RegisterStatusCommand(Command):
+	"""Return status of a registration or of all registrations."""
+	def __init__(self):
+		Command.__init__(self, "register-status", "register-status <register_id|ALL>")
+		self.add_example(CommandExample(
+			"register-status 1",
+			"Status: Ok\n\nId: 1\nState: LinphoneRegistrationOk"
+		))
+		self.add_example(CommandExample(
+			"register-status ALL",
+			"Status: Ok\n\nId: 1\nState: LinphoneRegistrationOk\n\nId: 2\nState: LinphoneRegistrationFailed"
+		))
+		self.add_example(CommandExample(
+			"register-status 3",
+			"Status: Error\nReason: No register with such id."
+		))
+
+	def exec_command(self, app, args):
+		if len(args) == 0:
+			app.send_response(Response(Response.Error, "Missing parameter."))
+		else:
+			id = args[0]
+			if id == "ALL":
+				response = RegisterStatusResponse()
+				for id in app.proxy_ids_map:
+					response.append(id, app.proxy_ids_map[id])
+				app.send_response(response)
+			else:
+				proxy_cfg = app.find_proxy(id)
+				if proxy_cfg is None:
+					app.send_response(Response(Response.Error, "No register with such id."))
+				else:
+					app.send_response(RegisterStatusResponse().append(id, proxy_cfg))
+
 class Daemon:
 	def __init__(self):
 		self._quit = False
 		self._next_proxy_id = 1
-		self._proxy_ids_map = {}
+		self.proxy_ids_map = {}
 		self._next_call_id = 1
 		self._call_ids_map = {}
 		self.commands = [
 			CallCommand(),
 			HelpCommand(),
 			QuitCommand(),
-			RegisterCommand()
+			RegisterCommand(),
+			RegisterStatusCommand()
 		]
 
 	def send_response(self, response):
@@ -217,9 +297,14 @@ class Daemon:
 
 	def update_proxy_id(self, proxy):
 		id = self._next_proxy_id
-		self._proxy_ids_map[id] = proxy
+		self.proxy_ids_map[id] = proxy
 		self._next_proxy_id = self._next_proxy_id + 1
 		return id
+
+	def find_proxy(self, id):
+		if self.proxy_ids_map.has_key(id):
+			return self.proxy_ids_map[id]
+		return None
 
 	def update_call_id(self, call):
 		id = self._next_call_id
