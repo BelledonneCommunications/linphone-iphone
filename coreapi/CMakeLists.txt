@@ -25,40 +25,6 @@ if(MSVC)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
-find_program(GIT git)
-
-set(GIT_VERSION "unknown")
-if(GIT)
-	execute_process(
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${GIT} describe --always
-		OUTPUT_VARIABLE GIT_DESCRIBE
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	execute_process(
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${GIT} describe --abbrev=0
-		OUTPUT_VARIABLE GIT_TAG
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	execute_process(
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${GIT} rev-parse HEAD
-		OUTPUT_VARIABLE GIT_REVISION
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	if(GIT_DESCRIBE)
-		set(GIT_VERSION ${GIT_DESCRIBE})
-	else(GIT_DESCRIBE)
-		if(GIT_REVISION)
-			set(GIT_VERSION ${GIT_REVISION})
-		endif(GIT_REVISION)
-	endif(GIT_DESCRIBE)
-endif(GIT)
-execute_process(
-	COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"${GIT_VERSION}\""
-	OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-)
 
 set(SOURCE_FILES
 	address.c
@@ -85,7 +51,6 @@ set(SOURCE_FILES
 	info.c
 	linphonecall.c
 	linphonecore.c
-	#linphone_tunnel.cc
 	linphone_tunnel_stubs.c
 	linphone_tunnel_config.c
 	lpconfig.c
@@ -100,7 +65,6 @@ set(SOURCE_FILES
 	sal.c
 	siplogin.c
 	sipsetup.c
-	#TunnelManager.cc
 	xml.c
 	xml2lpc.c
 	bellesip_sal/sal_impl.h
@@ -116,16 +80,26 @@ set(SOURCE_FILES
 	sipsetup.h
 	xml2lpc.h
 )
+if(ENABLE_TUNNEL)
+	list(APPEND SOURCE_FILES
+		linphone_tunnel.cc
+		TunnelManager.cc
+	)
+	add_definitions(-DTUNNEL_ENABLED)
+endif()
+
+set(GENERATED_SOURCE_FILES
+	${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
+)
+set_source_files_properties(${GENERATED_SOURCE_FILES} PROPERTIES GENERATED TRUE)
+find_package(Git)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
+	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
 
 add_definitions(
-	-D_TRUE_TIME
 	-DIN_LINPHONE
 	-DUSE_BELLESIP
-	#-DTUNNEL_ENABLED
-	-DLINPHONE_PACKAGE_NAME="linphone"
-	-DLINPHONE_VERSION="Devel"
 	-DLIBLINPHONE_EXPORTS
-	-DLINPHONE_PLUGINS_DIR=""
 )
 
 if(ENABLE_VIDEO)
@@ -139,23 +113,30 @@ set(LIBS
 	${MS2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
-if(WIN32)
-add_definitions(
-	-DWINDOW_NATIVE
-	/FIliblinphone_gitversion.h
-)
+
+if(ENABLE_STATIC)
+	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	target_link_libraries(linphone ${LIBS})
+else()
+	add_library(linphone SHARED ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_VERSION} SOVERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
+	target_link_libraries(linphone ${LIBS})
+	if(MSVC)
+		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/linphone.pdb
+				DESTINATION bin
+				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+			)
+		endif()
+	endif()
 endif()
 
-add_library(linphone SHARED ${SOURCE_FILES})
-set_target_properties(linphone PROPERTIES VERSION 3.7.0 SOVERSION 5)
-
-target_link_libraries(linphone ${LIBS})
-
 install(TARGETS linphone
-    RUNTIME DESTINATION bin
+	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
 
 
 file(GLOB HEADER_FILES "*.h")
@@ -164,11 +145,3 @@ install(FILES ${HEADER_FILES}
 	DESTINATION include/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
-if(WIN32)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/linphone.pdb
-	DESTINATION bin
-	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
-endif()
-endif()
