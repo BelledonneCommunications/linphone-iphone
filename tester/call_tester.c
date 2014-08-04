@@ -18,6 +18,8 @@
 
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "lpconfig.h"
@@ -2647,6 +2649,48 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
+static void call_recording() {
+	LinphoneCoreManager *marie = NULL, *pauline = NULL;
+	LinphoneCallParams *params = NULL;
+	const MSList *calls = NULL;
+	LinphoneCall *callInst = NULL;
+	const char filename[] = "recording.mkv";
+	const char dirname[] = ".test";
+	char *filepath = NULL;
+
+	filepath = ms_new0(char, strlen(dirname) + strlen(filename) + 2);
+	strcpy(filepath, dirname);
+	strcat(filepath, "/");
+	strcat(filepath, filename);
+	if(access(dirname, F_OK) != 0) {
+		CU_ASSERT_EQUAL(mkdir(dirname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH), 0);
+	}
+	CU_ASSERT_EQUAL(access(dirname, W_OK), 0);
+	if(access(filepath, F_OK) == 0) {
+		CU_ASSERT_EQUAL(remove(filepath), 0);
+	}
+
+	marie = linphone_core_manager_new("marie_rc");
+	pauline = linphone_core_manager_new("pauline_rc");
+	params = linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_set_record_file(params, filepath);
+
+	CU_ASSERT_TRUE(call_with_caller_params(marie, pauline, params));
+	calls = linphone_core_get_calls(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL(calls);
+	callInst = (LinphoneCall *)calls->data;
+	linphone_call_start_recording(callInst);
+	sleep(2);
+	linphone_call_stop_recording(callInst);
+
+	CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
+	end_call(marie, pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(filepath);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -2735,7 +2779,8 @@ test_t call_tests[] = {
 	{ "SAVPF to AVP call", savpf_to_avp_call },
 	{ "SAVPF to AVPF call", savpf_to_avpf_call },
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
-	{ "SAVPF to SAVPF call", savpf_to_savpf_call }
+	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
+	{ "Call recording", call_recording }
 };
 
 test_suite_t call_test_suite = {
