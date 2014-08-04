@@ -443,12 +443,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	CU_cleanup_registry();
 	return ret;
 }
-#ifdef ANDROID
-/*implemented in cunit*/
-extern void AndroidPrintf(FILE *stream, const char *fmt, ...);
-#endif
-
-int  liblinphone_tester_fprintf(FILE * restrict stream, const char * restrict format, ...) {
+int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
 	va_list args;
 	va_start(args, format);
 	int result;
@@ -456,7 +451,8 @@ int  liblinphone_tester_fprintf(FILE * restrict stream, const char * restrict fo
 	result = vfprintf(stream,format,args);
 #else
 	/*used by liblinphone tester to retrieve suite list*/
-	result = AndroidPrintf(stream, format, args);
+	result = 0;
+	cunit_android_trace_handler(stream, format, args);
 #endif
 	va_end(args);
 	return result;
