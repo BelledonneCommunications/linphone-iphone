@@ -279,9 +279,13 @@ class Daemon:
 		def registration_state_changed(core, proxy_cfg, state, message):
 			logging.warning("[PYTHON] registration_state_changed: " + str(state) + ", " + message)
 
+		def call_state_changed(core, call, state, message):
+			logging.warning("[PYTHON] call_state_changed: " + str(state) + ", " + message)
+
 		callbacks = {
 			'global_state_changed':global_state_changed,
-			'registration_state_changed':registration_state_changed
+			'registration_state_changed':registration_state_changed,
+			'call_state_changed':call_state_changed
 		}
 
 		# Create a linphone core and iterate every 20 ms
