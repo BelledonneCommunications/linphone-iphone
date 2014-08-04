@@ -482,27 +482,30 @@ class SetterMethodDefinition(MethodDefinition):
 	def format_arguments_parsing(self):
 		if self.checkfunc is None:
 			attribute_type_check_code = \
-"""	if (!PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
+"""if (!PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
 		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a linphone.{class_name} instance");
 		return -1;
 	}}
 """.format(class_name=self.first_arg_class, attribute_name=self.attribute_name)
 		else:
+			checknotnone = ''
+			if self.type_str == 'string':
+				checknotnone = "(value != Py_None) && "
 			attribute_type_check_code = \
-"""	if (!{checkfunc}(value)) {{
+"""if ({checknotnone}!{checkfunc}(value)) {{
 		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a {type_str}");
 		return -1;
 	}}
-""".format(checkfunc=self.checkfunc, attribute_name=self.attribute_name, type_str=self.type_str)
+""".format(checknotnone=checknotnone, checkfunc=self.checkfunc, attribute_name=self.attribute_name, type_str=self.type_str)
 		if self.convertfunc is None:
-			attribute_conversion_code = "\t{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
+			attribute_conversion_code = "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
 		else:
-			attribute_conversion_code = "\t{arg_name} = ({arg_type}){convertfunc}(value);\n".format(
+			attribute_conversion_code = "{arg_name} = ({arg_type}){convertfunc}(value);\n".format(
 				arg_name="_" + self.first_arg_name, arg_type=self.first_arg_complete_type, convertfunc=self.convertfunc)
 		attribute_native_ptr_check_code = ''
 		if self.python_fmt == 'O':
 			attribute_native_ptr_check_code = \
-"""	{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
+"""{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
 	if ({arg_name}_native_ptr == NULL) {{
 		PyErr_SetString(PyExc_TypeError, "Invalid linphone.{arg_class} instance");
 		return -1;
