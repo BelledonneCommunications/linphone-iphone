@@ -2670,14 +2670,19 @@ static void recording_call() {
 	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneCall *callInst = NULL;
 	int dummy=0;
+	char *filepath = NULL;
+
+#ifdef ANDROID
+	const char dirname[] = "/data/data/org.linphone.tester/files/.test";
+#else
+	const char dirname[] = ".test";
+#endif
+
 #ifdef VIDEO_ENABLED
 	const char filename[] = "recording.mkv";
 #else
 	const char filename[] = "recording.wav";
 #endif
-
-	const char dirname[] = ".test";
-	char *filepath = NULL;
 
 	filepath = ms_new0(char, strlen(dirname) + strlen(filename) + 2);
 	strcpy(filepath, dirname);
