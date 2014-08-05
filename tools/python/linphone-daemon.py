@@ -446,8 +446,8 @@ class Daemon:
 
 		callbacks = {
 			'global_state_changed':global_state_changed,
-			'registration_state_changed':registration_state_changed#,
-			#'call_state_changed':call_state_changed
+			'registration_state_changed':registration_state_changed,
+			'call_state_changed':call_state_changed
 		}
 
 		# Create a linphone core and iterate every 20 ms
