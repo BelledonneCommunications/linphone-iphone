@@ -18,6 +18,8 @@
 
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "lpconfig.h"
@@ -25,7 +27,7 @@
 #include "liblinphone_tester.h"
 
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
-static void disable_all_codecs_except_one(LinphoneCore *lc, const char *mime);
+static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime);
 
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
@@ -425,8 +427,8 @@ static void call_with_specified_codec_bitrate(void) {
 		goto end;
 	}
 
-	disable_all_codecs_except_one(marie->lc,"opus");
-	disable_all_codecs_except_one(pauline->lc,"opus");
+	disable_all_audio_codecs_except_one(marie->lc,"opus");
+	disable_all_audio_codecs_except_one(pauline->lc,"opus");
 
 	linphone_core_set_payload_type_bitrate(marie->lc,
 		linphone_core_find_payload_type(marie->lc,"opus",48000,-1),
@@ -535,7 +537,7 @@ static void cancelled_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void disable_all_codecs_except_one(LinphoneCore *lc, const char *mime){
+static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime){
 	const MSList *elem=linphone_core_get_audio_codecs(lc);
 	PayloadType *pt;
 
@@ -548,13 +550,27 @@ static void disable_all_codecs_except_one(LinphoneCore *lc, const char *mime){
 	linphone_core_enable_payload_type(lc,pt,TRUE);
 }
 
+#ifdef VIDEO_ENABLED
+static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
+	const MSList *codecs = linphone_core_get_video_codecs(lc);
+	const MSList *it = NULL;
+	PayloadType *pt = NULL;
+
+	for(it = codecs; it != NULL; it = it->next) {
+		linphone_core_enable_payload_type(lc, (PayloadType *)it->data, FALSE);
+	}
+	CU_ASSERT_PTR_NOT_NULL_FATAL(pt = linphone_core_find_payload_type(lc, mime, -1, -1));
+	linphone_core_enable_payload_type(lc, pt, TRUE);
+}
+#endif
+
 static void call_failed_because_of_codecs(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* out_call;
 
-	disable_all_codecs_except_one(marie->lc,"pcmu");
-	disable_all_codecs_except_one(pauline->lc,"pcma");
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu");
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma");
 	out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
@@ -1911,8 +1927,8 @@ static void early_media_call_with_update_base(bool_t media_change){
 	lcs = ms_list_append(lcs,marie->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
 	if (media_change) {
-		disable_all_codecs_except_one(marie->lc,"pcmu");
-		disable_all_codecs_except_one(pauline->lc,"pcmu");
+		disable_all_audio_codecs_except_one(marie->lc,"pcmu");
+		disable_all_audio_codecs_except_one(pauline->lc,"pcmu");
 
 	}
 	/*
@@ -1937,8 +1953,8 @@ static void early_media_call_with_update_base(bool_t media_change){
 	pauline_params = linphone_call_params_copy(linphone_call_get_current_params(pauline_call));
 
 	if (media_change) {
-		disable_all_codecs_except_one(marie->lc,"pcma");
-		disable_all_codecs_except_one(pauline->lc,"pcma");
+		disable_all_audio_codecs_except_one(marie->lc,"pcma");
+		disable_all_audio_codecs_except_one(pauline->lc,"pcma");
 	}
 	#define UPDATED_SESSION_NAME "nouveau nom de session"
 
@@ -2647,6 +2663,68 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
+static void recording_call() {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCall *callInst = NULL;
+
+#ifdef VIDEO_ENABLED
+	const char filename[] = "recording.mkv";
+#else
+	const char filename[] = "recording.wav";
+#endif
+
+	const char dirname[] = ".test";
+	char *filepath = NULL;
+
+	filepath = ms_new0(char, strlen(dirname) + strlen(filename) + 2);
+	strcpy(filepath, dirname);
+	strcat(filepath, "/");
+	strcat(filepath, filename);
+	if(access(dirname, F_OK) != 0) {
+		CU_ASSERT_EQUAL(mkdir(dirname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH), 0);
+	}
+	CU_ASSERT_EQUAL(access(dirname, W_OK), 0);
+	if(access(filepath, F_OK) == 0) {
+		CU_ASSERT_EQUAL(remove(filepath), 0);
+	}
+
+	linphone_call_params_set_record_file(marieParams, filepath);
+
+#ifdef VIDEO_ENABLED
+	if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL) && (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
+		linphone_core_enable_video_display(marie->lc, TRUE);
+		linphone_core_enable_video_display(pauline->lc, FALSE);
+		linphone_core_enable_video_capture(marie->lc, TRUE);
+		linphone_core_enable_video_capture(pauline->lc, TRUE);
+
+		linphone_call_params_enable_video(marieParams, TRUE);
+		linphone_call_params_enable_video(paulineParams, TRUE);
+
+		disable_all_video_codecs_except_one(marie->lc, "H264");
+		disable_all_video_codecs_except_one(pauline->lc, "H264");
+	} else {
+		ms_warning("call_recording(): the H264 payload has not been found. Only sound will be recorded");
+	}
+#endif
+
+	CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams));
+	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
+
+	linphone_call_start_recording(callInst);
+	sleep(20);
+	linphone_call_stop_recording(callInst);
+
+	CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
+	end_call(marie, pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(filepath);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -2735,7 +2813,8 @@ test_t call_tests[] = {
 	{ "SAVPF to AVP call", savpf_to_avp_call },
 	{ "SAVPF to AVPF call", savpf_to_avpf_call },
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
-	{ "SAVPF to SAVPF call", savpf_to_savpf_call }
+	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
+	{ "Call recording", recording_call }
 };
 
 test_suite_t call_test_suite = {

@@ -20,13 +20,19 @@
 #
 ############################################################################
 
-install(FILES archived-rootca.pem
-		RENAME rootca.pem
-        DESTINATION share/linphone
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-
-install(FILES ringback.wav
-        DESTINATION share/sounds/linphone
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-
-add_subdirectory(rings)
+if(GIT_EXECUTABLE)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} describe --always
+		OUTPUT_VARIABLE GIT_REVISION
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E echo "#define GIT_VERSION \"${GIT_REVISION}\""
+		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
+	)
+else()
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E echo "#define GIT_VERSION \"unknown\""
+		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
+	)
+endif()

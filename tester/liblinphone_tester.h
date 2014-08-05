@@ -247,6 +247,10 @@ void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,Linph
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
 void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
+#ifdef ANDROID
+void cunit_android_trace_handler(int level, const char *fmt, va_list args) ;
+#endif
+int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...);
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

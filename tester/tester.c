@@ -294,7 +294,7 @@ int liblinphone_tester_test_suite_index(const char *suite_name) {
 void liblinphone_tester_list_suites() {
 	int j;
 	for(j=0;j<liblinphone_tester_nb_test_suites();j++) {
-		fprintf(stdout, "%s\n", liblinphone_tester_test_suite_name(j));
+		liblinphone_tester_fprintf(stdout, "%s\n", liblinphone_tester_test_suite_name(j));
 	}
 }
 
@@ -302,7 +302,7 @@ void liblinphone_tester_list_suite_tests(const char *suite_name) {
 	int j;
 	for( j = 0; j < liblinphone_tester_nb_tests(suite_name); j++) {
 		const char *test_name = liblinphone_tester_test_name(suite_name, j);
-		fprintf(stdout, "%s\n", test_name);
+		liblinphone_tester_fprintf(stdout, "%s\n", test_name);
 	}
 }
 
@@ -443,4 +443,17 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	CU_cleanup_registry();
 	return ret;
 }
-
+int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
+	va_list args;
+	va_start(args, format);
+	int result;
+#ifndef ANDROID
+	result = vfprintf(stream,format,args);
+#else
+	/*used by liblinphone tester to retrieve suite list*/
+	result = 0;
+	cunit_android_trace_handler(stream, format, args);
+#endif
+	va_end(args);
+	return result;
+}

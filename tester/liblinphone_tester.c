@@ -27,9 +27,6 @@
 
 #ifdef ANDROID
 
-extern void AndroidPrintf(FILE *stream, const char *fmt, ...);
-#define fprintf(file, fmt, ...) AndroidPrintf(file, fmt, ##__VA_ARGS__)
-
 #include <android/log.h>
 #include <jni.h>
 #include <CUnit/Util.h>
@@ -118,8 +115,9 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 #endif /* __QNX__ */
 
 
+
 void helper(const char *name) {
-	fprintf(stderr,"%s --help\n"
+	liblinphone_tester_fprintf(stderr,"%s --help\n"
 			"\t\t\t--verbose\n"
 			"\t\t\t--silent\n"
 			"\t\t\t--list-suites\n"
@@ -197,7 +195,7 @@ int main (int argc, char *argv[])
 			liblinphone_tester_list_suite_tests(suite_name);
 			return 0;
 		} else {
-			fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
+			liblinphone_tester_fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
 			helper(argv[0]);
 			return -1;
 		}
