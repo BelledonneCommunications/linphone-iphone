@@ -2694,16 +2694,20 @@ static void recording_call() {
 	linphone_call_params_set_record_file(marieParams, filepath);
 
 #ifdef VIDEO_ENABLED
-	linphone_core_enable_video_display(marie->lc, TRUE);
-	linphone_core_enable_video_display(pauline->lc, FALSE);
-	linphone_core_enable_video_capture(marie->lc, TRUE);
-	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL) && (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
+		linphone_core_enable_video_display(marie->lc, TRUE);
+		linphone_core_enable_video_display(pauline->lc, FALSE);
+		linphone_core_enable_video_capture(marie->lc, TRUE);
+		linphone_core_enable_video_capture(pauline->lc, TRUE);
 
-	linphone_call_params_enable_video(marieParams, TRUE);
-	linphone_call_params_enable_video(paulineParams, TRUE);
+		linphone_call_params_enable_video(marieParams, TRUE);
+		linphone_call_params_enable_video(paulineParams, TRUE);
 
-	disable_all_video_codecs_except_one(marie->lc, "H264");
-	disable_all_video_codecs_except_one(pauline->lc, "H264");
+		disable_all_video_codecs_except_one(marie->lc, "H264");
+		disable_all_video_codecs_except_one(pauline->lc, "H264");
+	} else {
+		ms_warning("call_recording(): the H264 payload has not been found. Only sound will be recorded");
+	}
 #endif
 
 	CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams));
