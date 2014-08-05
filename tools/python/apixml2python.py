@@ -80,7 +80,6 @@ blacklisted_functions = [
 	'linphone_core_get_supported_video_sizes',
 	'linphone_core_get_video_codecs',
 	'linphone_core_get_video_policy',
-	'linphone_core_new_with_config',
 	'linphone_core_payload_type_enabled',
 	'linphone_core_payload_type_is_vbr',
 	'linphone_core_publish',
@@ -115,7 +114,8 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'
 ]
 hand_written_functions = [
-	'linphone_core_new'
+	'linphone_core_new',
+	'linphone_core_new_with_config'
 ]
 
 def generate(apixmlfile):

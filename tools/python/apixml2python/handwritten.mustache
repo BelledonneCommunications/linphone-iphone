@@ -124,8 +124,50 @@ static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args
 	{{{event_vtable_reference}}}
 {{/events}}
 
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(\"%s\", \"%s\")", __FUNCTION__, _config_path, _factory_config_path);
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, \"%s\", \"%s\")", __FUNCTION__, _vtable_dict, _config_path, _factory_config_path);
 	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
+	PyObject * _config;
+	LpConfig * _config_native_ptr;
+
+	if (!PyArg_ParseTuple(args, "OO", &_vtable_dict, &_config)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+		return NULL;
+	}
+
+	if ((_config_native_ptr = pylinphone_LpConfig_get_native_ptr(_config)) == NULL) {
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_New(pylinphone_CoreObject, &pylinphone_CoreType);
+	if (self == NULL) {
+		return NULL;
+	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+{{#events}}
+	{{{event_vtable_reference}}}
+{{/events}}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, _config, _config_native_ptr);
+	cresult = linphone_core_new_with_config(&_vtable, _config_native_ptr, self);
 	self->native_ptr = cresult;
 
 	pyret = Py_BuildValue("O", self);
