@@ -1331,6 +1331,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
+	ortp_set_log_thread_id(ortp_thread_self());
 	lc->dyn_pt=96;
 	lc->default_profile=rtp_profile_new("default profile");
 	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
@@ -2395,6 +2396,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 			lp_config_sync(lc->config);
 		}
 	}
+
+	ortp_logv_flush();
 }
 
 /**
@@ -6035,6 +6038,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
+	ortp_set_log_thread_id(0);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
