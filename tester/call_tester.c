@@ -550,6 +550,7 @@ static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mi
 	linphone_core_enable_payload_type(lc,pt,TRUE);
 }
 
+#ifdef VIDEO_ENABLED
 static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
 	const MSList *codecs = linphone_core_get_video_codecs(lc);
 	const MSList *it = NULL;
@@ -561,6 +562,7 @@ static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mi
 	CU_ASSERT_PTR_NOT_NULL_FATAL(pt = linphone_core_find_payload_type(lc, mime, -1, -1));
 	linphone_core_enable_payload_type(lc, pt, TRUE);
 }
+#endif
 
 static void call_failed_because_of_codecs(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -2667,7 +2669,13 @@ static void recording_call() {
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
 	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneCall *callInst = NULL;
+
+#ifdef VIDEO_ENABLED
 	const char filename[] = "recording.mkv";
+#else
+	const char filename[] = "recording.wav";
+#endif
+
 	const char dirname[] = ".test";
 	char *filepath = NULL;
 
@@ -2683,17 +2691,20 @@ static void recording_call() {
 		CU_ASSERT_EQUAL(remove(filepath), 0);
 	}
 
+	linphone_call_params_set_record_file(marieParams, filepath);
+
+#ifdef VIDEO_ENABLED
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 
 	linphone_call_params_enable_video(marieParams, TRUE);
-	linphone_call_params_set_record_file(marieParams, filepath);
 	linphone_call_params_enable_video(paulineParams, TRUE);
 
 	disable_all_video_codecs_except_one(marie->lc, "H264");
 	disable_all_video_codecs_except_one(pauline->lc, "H264");
+#endif
 
 	CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams));
 	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
