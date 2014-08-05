@@ -107,7 +107,7 @@ Example {idx}:
 class CallCommand(Command):
 	"""Place a call."""
 	def __init__(self):
-		Command.__init__(self, "call", "call <sip address>")
+		Command.__init__(self, "call", "call <sip-address>")
 		self.add_example(CommandExample(
 			"call daemon-test@sip.linphone.org",
 			"Status: Ok\n\nId: 1"
@@ -127,6 +127,128 @@ class CallCommand(Command):
 				app.send_response(Response(Response.Ok, "Id: " + str(id)))
 		else:
 			app.send_response(Response(Response.Error, "Missing parameter."))
+
+class CallPauseCommand(Command):
+	"""Pause a call (pause current if no id is specified)."""
+	def __init__(self):
+		Command.__init__(self, "call-pause", "call-pause [call-id]")
+		self.add_example(CommandExample(
+			"call-pause 1",
+			"Status: Ok\n\nCall was paused"
+		))
+		self.add_example(CommandExample(
+			"call-pause 2",
+			"Status: Error\nReason: No call with such id."
+		))
+		self.add_example(CommandExample(
+			"call-pause",
+			"Status: Error\nReason: No current call available."
+		))
+
+	def exec_command(self, app, args):
+		current = False
+		if len(args) >= 1:
+			call = app.find_call(args[0])
+			if call is None:
+				app.send_response(Response(Response.Error, "No call with such id."))
+				return
+		else:
+			current = True
+			call = app.core.current_call
+			if call is None:
+				app.send_response(Response(Response.Error, "No current call available."))
+				return
+		if app.core.pause_call(call) == 0:
+			msg = "Call was paused."
+			if current:
+				msg = "Current call was paused."
+			app.send_response(Response(Response.Ok, msg))
+		else:
+			app.send_response(Response(Response.Error, "Error pausing call."))
+
+class CallResumeCommand(Command):
+	"""Resume a call (resume current if no id is specified)."""
+	def __init__(self):
+		Command.__init__(self, "call-resume", "call-resume [call-id]")
+		self.add_example(CommandExample(
+			"call-resume 1",
+			"Status: Ok\n\nCall was resumed"
+		))
+		self.add_example(CommandExample(
+			"call-resume 2",
+			"Status: Error\nReason: No call with such id."
+		))
+		self.add_example(CommandExample(
+			"call-resume",
+			"Status: Error\nReason: No current call available."
+		))
+
+	def exec_command(self, app, args):
+		current = False
+		if len(args) >= 1:
+			call = app.find_call(args[0])
+			if call is None:
+				app.send_response(Response(Response.Error, "No call with such id."))
+				return
+		else:
+			current = True
+			call = app.core.current_call
+			if call is None:
+				app.send_response(Response(Response.Error, "No current call available."))
+				return
+		if app.core.resume_call(call) == 0:
+			msg = "Call was resumed."
+			if current:
+				msg = "Current call was resumed."
+			app.send_response(Response(Response.Ok, msg))
+		else:
+			app.send_response(Response(Response.Error, "Error resuming call."))
+
+class CallStatusCommand(Command):
+	"""Return status of the specified call or of the current call if no id is given."""
+	def __init__(self):
+		Command.__init__(self, "call-status", "call-status [call-id]")
+		self.add_example(CommandExample(
+			"call-status 1",
+			"Status: Ok\n\nState: LinphoneCallStreamsRunning\nFrom: <sip:daemon-test@sip.linphone.org>\nDirection: out\nDuration: 6"
+		))
+		self.add_example(CommandExample(
+			"call-status 2",
+			"Status: Error\nReason: No call with such id."
+		))
+		self.add_example(CommandExample(
+			"call-status",
+			"Status: Error\nReason: No current call available."
+		))
+
+	def exec_command(self, app, args):
+		if len(args) >= 1:
+			call = app.find_call(args[0])
+			if call is None:
+				app.send_response(Response(Response.Error, "No call with such id."))
+				return
+		else:
+			call = app.core.current_call
+			if call is None:
+				app.send_response(Response(Response.Error, "No current call available."))
+				return
+		state = call.state
+		body = "State: {state}".format(state=linphone.CallState.string(state))
+		if state == linphone.CallState.CallOutgoingInit \
+			or state == linphone.CallState.CallOutgoingProgress \
+			or state == linphone.CallState.CallOutgoingRinging \
+			or state == linphone.CallState.CallPaused \
+			or state == linphone.CallState.CallStreamsRunning \
+			or state == linphone.CallState.CallConnected \
+			or state == linphone.CallState.CallIncomingReceived:
+			body += "\nFrom: {address}".format(address=call.remote_address.as_string())
+		if state == linphone.CallState.CallStreamsRunning \
+			or state == linphone.CallState.CallConnected:
+			direction_str = 'in'
+			if call.dir == linphone.CallDir.CallOutgoing:
+				direction_str = 'out'
+			body += "\nDirection: {direction}\nDuration: {duration}".format(direction=direction_str, duration=call.duration)
+		app.send_response(Response(Response.Ok, body))
 
 class HelpCommand(Command):
 	"""Show <command> help notice, if command is unspecified or inexistent show all commands."""
@@ -232,19 +354,59 @@ class RegisterStatusCommand(Command):
 				else:
 					app.send_response(RegisterStatusResponse().append(id, proxy_cfg))
 
+class TerminateCommand(Command):
+	"""Terminate the specified call or the current call if no id is given."""
+	def __init__(self):
+		Command.__init__(self, "terminate", "terminate [call id]")
+		self.add_example(CommandExample(
+			"terminate 2",
+			"Status: Error\nReason: No call with such id."
+		))
+		self.add_example(CommandExample(
+			"terminate 1",
+			"Status: Ok\n"
+		))
+		self.add_example(CommandExample(
+			"terminate",
+			"Status: Ok\n"
+		))
+		self.add_example(CommandExample(
+			"terminate",
+			"Status: Error\nReason: No active call."
+		))
+
+	def exec_command(self, app, args):
+		if len(args) >= 1:
+			call = app.find_call(args[0])
+			if call is None:
+				app.send_response(Response(Response.Error, "No call with such id."))
+				return
+		else:
+			call = app.core.current_call
+			if call is None:
+				app.send_response(Response(Response.Error, "No active call."))
+				return
+		app.core.terminate_call(call)
+		app.send_response(Response(Response.Ok))
+
+
 class Daemon:
 	def __init__(self):
 		self._quit = False
 		self._next_proxy_id = 1
 		self.proxy_ids_map = {}
 		self._next_call_id = 1
-		self._call_ids_map = {}
+		self.call_ids_map = {}
 		self.commands = [
 			CallCommand(),
+			CallPauseCommand(),
+			CallResumeCommand(),
+			CallStatusCommand(),
 			HelpCommand(),
 			QuitCommand(),
 			RegisterCommand(),
-			RegisterStatusCommand()
+			RegisterStatusCommand(),
+			TerminateCommand()
 		]
 
 	def send_response(self, response):
@@ -284,8 +446,8 @@ class Daemon:
 
 		callbacks = {
 			'global_state_changed':global_state_changed,
-			'registration_state_changed':registration_state_changed,
-			'call_state_changed':call_state_changed
+			'registration_state_changed':registration_state_changed#,
+			#'call_state_changed':call_state_changed
 		}
 
 		# Create a linphone core and iterate every 20 ms
@@ -301,8 +463,8 @@ class Daemon:
 
 	def update_proxy_id(self, proxy):
 		id = self._next_proxy_id
-		self.proxy_ids_map[id] = proxy
-		self._next_proxy_id = self._next_proxy_id + 1
+		self.proxy_ids_map[str(id)] = proxy
+		self._next_proxy_id += 1
 		return id
 
 	def find_proxy(self, id):
@@ -312,9 +474,14 @@ class Daemon:
 
 	def update_call_id(self, call):
 		id = self._next_call_id
-		self._call_ids_map[id] = call
-		self._next_call_id = self._next_call_id + 1
+		self.call_ids_map[str(id)] = call
+		self._next_call_id += 1
 		return id
+
+	def find_call(self, id):
+		if self.call_ids_map.has_key(id):
+			return self.call_ids_map[id]
+		return None
 
 def setup_log_colors():
 	logging.addLevelName(logging.DEBUG, "\033[1;37m%s\033[1;0m" % logging.getLevelName(logging.DEBUG))

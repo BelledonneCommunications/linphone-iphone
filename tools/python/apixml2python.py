@@ -83,9 +83,9 @@ blacklisted_functions = [
 	'linphone_core_payload_type_enabled',
 	'linphone_core_payload_type_is_vbr',
 	'linphone_core_publish',
-	'linphone_core_set_log_file',
+	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
-	'linphone_core_set_log_level',
+	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_payload_type_bitrate',
 	'linphone_core_set_preferred_video_size',
 	'linphone_core_set_video_policy',
