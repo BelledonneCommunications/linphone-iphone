@@ -2663,7 +2663,7 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
-static void recording_call() {
+static void call_recording() {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
@@ -2673,7 +2673,7 @@ static void recording_call() {
 	char *filepath = NULL;
 
 #ifdef ANDROID
-	const char dirname[] = "/data/data/org.linphone.tester/files/.test";
+	const char dirname[] = "/sdcard/Movies/liblinphone_tester";
 #else
 	const char dirname[] = ".test";
 #endif
@@ -2722,6 +2722,7 @@ static void recording_call() {
 	CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams));
 	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
 
+	ms_message("call_recording(): the call will be recorded into %s", filepath);
 	linphone_call_start_recording(callInst);
 	wait_for_until(marie->lc,pauline->lc,&dummy,1,10000);
 	linphone_call_stop_recording(callInst);
@@ -2823,7 +2824,7 @@ test_t call_tests[] = {
 	{ "SAVPF to AVPF call", savpf_to_avpf_call },
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
 	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
-	{ "Call recording", recording_call }
+	{ "Call recording", call_recording }
 };
 
 test_suite_t call_test_suite = {
