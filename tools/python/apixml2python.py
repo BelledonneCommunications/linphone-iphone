@@ -118,12 +118,20 @@ hand_written_functions = [
 	'linphone_core_new_with_config'
 ]
 
-def generate(apixmlfile, f):
+def generate(apixmlfile, outputfile):
 	tree = ET.parse(apixmlfile)
 	renderer = pystache.Renderer()
 	m = LinphoneModule(tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions)
 	os.chdir('apixml2python')
+	tmpfilename = outputfile.name + '.tmp'
+	f = open(tmpfilename, 'w')
 	f.write(renderer.render(m))
+	f.close()
+	f = open(tmpfilename, 'rU')
+	for line in f:
+		outputfile.write(line)
+	f.close()
+	os.unlink(tmpfilename)
 
 
 def main(argv = None):
