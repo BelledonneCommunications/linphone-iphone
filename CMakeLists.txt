@@ -90,3 +90,9 @@ add_definitions(-DHAVE_CONFIG_H)
 
 add_subdirectory(coreapi)
 add_subdirectory(share)
+
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/FindLinphone.cmake
+	DESTINATION share/cmake/Modules
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
