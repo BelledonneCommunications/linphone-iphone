@@ -1674,6 +1674,14 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
+
+/**
+ * Enable logs serialization (output logs from either the thread that creates the linphone core or the thread that calls linphone_core_iterate()).
+ * Must be called before creating the linphone core.
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_core_serialize_logs(void);
+
 LINPHONE_PUBLIC	const char *linphone_core_get_version(void);
 LINPHONE_PUBLIC	const char *linphone_core_get_user_agent(LinphoneCore *lc);
 /**
