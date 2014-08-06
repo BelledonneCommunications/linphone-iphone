@@ -64,6 +64,7 @@ static const char *liblinphone_version=
 	LIBLINPHONE_VERSION
 #endif
 ;
+static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
@@ -480,9 +481,13 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
  * @ingroup misc
  * @deprecated Use #linphone_core_set_log_level instead.
 **/
-void linphone_core_disable_logs(){
+void linphone_core_disable_logs(void){
 	ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
 	sal_disable_logs();
+}
+
+void linphone_core_serialize_logs(void) {
+	liblinphone_serialize_logs = TRUE;
 }
 
 
@@ -1331,7 +1336,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
-	ortp_set_log_thread_id(ortp_thread_self());
+	if (liblinphone_serialize_logs == TRUE) {
+		ortp_set_log_thread_id(ortp_thread_self());
+	}
 	lc->dyn_pt=96;
 	lc->default_profile=rtp_profile_new("default profile");
 	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
@@ -2397,7 +2404,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 		}
 	}
 
-	ortp_logv_flush();
+	if (liblinphone_serialize_logs == TRUE) {
+		ortp_logv_flush();
+	}
 }
 
 /**
@@ -6038,7 +6047,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
-	ortp_set_log_thread_id(0);
+	if (liblinphone_serialize_logs == TRUE) {
+		ortp_set_log_thread_id(0);
+	}
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){

@@ -8,9 +8,8 @@ GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 ## This command is used to check if the sources are cloned in a git repo.
 ## We can't only depend on the presence of the .git/ directory anymore, 
 ## because of gits submodule handling.
-## We now simply issue a git status and if there's an error, the $(GITSTATUS)
-## variable won't contain "GITOK"
-GITSTATUS=`cd $(top_srcdir) && git status > /dev/null && echo GITOK`
+## We now simply issue a git log on configure.ac and if the output is empty (error or file not tracked), then we are not in git.
+GITLOG=$(shell git log -1 $(top_srcdir)/configure.ac)
 
 ECHO=/bin/echo
 
@@ -168,7 +167,7 @@ AM_CXXFLAGS=$(AM_CFLAGS)
 #the PACKAGE_VERSION given in configure.ac
 
 make_gitversion_h:
-	if test "$(GITSTATUS)" == "GITOK" ; then  \
+	if test -n "$(GITLOG)" ; then  \
 		if test "$(GITDESCRIBE)" != "" ; then \
 			if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
 				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
