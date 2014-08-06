@@ -145,3 +145,5 @@ install(FILES ${HEADER_FILES}
 	DESTINATION include/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
+
+add_subdirectory(help)
