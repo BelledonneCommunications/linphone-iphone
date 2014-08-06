@@ -2664,8 +2664,8 @@ static void savpf_to_savpf_call(void) {
 }
 
 static void call_recording() {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_h264_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_h264_rc");
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
 	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneCall *callInst = NULL;
@@ -2704,14 +2704,8 @@ static void call_recording() {
 
 #ifdef VIDEO_ENABLED
 	if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL) && (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
-		linphone_core_enable_video_display(marie->lc, TRUE);
-		linphone_core_enable_video_display(pauline->lc, FALSE);
-		linphone_core_enable_video_capture(marie->lc, TRUE);
-		linphone_core_enable_video_capture(pauline->lc, TRUE);
-
 		linphone_call_params_enable_video(marieParams, TRUE);
 		linphone_call_params_enable_video(paulineParams, TRUE);
-
 		disable_all_video_codecs_except_one(marie->lc, "H264");
 		disable_all_video_codecs_except_one(pauline->lc, "H264");
 	} else {
