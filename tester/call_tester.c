@@ -2663,7 +2663,16 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
+#ifdef ANDROID
+#ifdef HAVE_OPENH264
+extern void libmsopenh264_init(void);
+#endif
+#endif
+
 static void call_recording() {
+#ifdef ANDROID
+	linphone_core_init_openh264();
+#endif
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_h264_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_h264_rc");
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);

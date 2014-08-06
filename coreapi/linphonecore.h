@@ -2782,6 +2782,8 @@ LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, 
 **/
 LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
 
+LINPHONE_PUBLIC void linphone_core_init_openh264(void);
+
 #ifdef __cplusplus
 }
 #endif
