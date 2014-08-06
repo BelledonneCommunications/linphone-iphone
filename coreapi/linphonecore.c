@@ -900,7 +900,7 @@ static int codec_compare(const PayloadType *a, const PayloadType *b){
 	rb=find_codec_rank(b->mime_type,b->clock_rate);
 	if (ra>rb) return 1;
 	if (ra<rb) return -1;
-	return 0;
+	return 1;
 }
 
 static MSList *add_missing_codecs(LinphoneCore *lc, SalStreamType mtype, MSList *l){
@@ -5359,11 +5359,13 @@ static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoS
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
 		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
+		
 		if (oldvsize.width==0){
 			oldvsize=lc->video_conf.vsize;
-			update_preview_size(lc,oldvsize,vsize);
 		}
 		lc->video_conf.vsize=vsize;
+		update_preview_size(lc,oldvsize,vsize);
+		
 		if (linphone_core_ready(lc))
 			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
 	}
