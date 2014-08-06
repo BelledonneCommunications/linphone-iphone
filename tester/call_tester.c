@@ -2669,7 +2669,7 @@ static void recording_call() {
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
 	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneCall *callInst = NULL;
-
+	int dummy=0;
 #ifdef VIDEO_ENABLED
 	const char filename[] = "recording.mkv";
 #else
@@ -2684,7 +2684,11 @@ static void recording_call() {
 	strcat(filepath, "/");
 	strcat(filepath, filename);
 	if(access(dirname, F_OK) != 0) {
+#ifdef WIN32
+		CU_ASSERT_EQUAL(mkdir(dirname),0);
+#else
 		CU_ASSERT_EQUAL(mkdir(dirname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH), 0);
+#endif
 	}
 	CU_ASSERT_EQUAL(access(dirname, W_OK), 0);
 	if(access(filepath, F_OK) == 0) {
@@ -2714,7 +2718,7 @@ static void recording_call() {
 	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
 
 	linphone_call_start_recording(callInst);
-	sleep(20);
+	wait_for_until(marie->lc,pauline->lc,&dummy,1,10000);
 	linphone_call_stop_recording(callInst);
 
 	CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
