@@ -747,7 +747,7 @@ linphonec_init(int argc, char **argv)
 	linphone_core_enable_video_display(linphonec, display_enabled);
 	if (display_enabled && window_id != 0)
 	{
-		printf ("Setting window_id: 0x%x\n", window_id);
+		printf("Setting window_id: 0x%x\n", window_id);
 		linphone_core_set_native_video_window_id(linphonec,window_id);
 	}
 
