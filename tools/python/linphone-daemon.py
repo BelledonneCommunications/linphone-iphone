@@ -1,9 +1,9 @@
 import argparse
-import linphone
 import logging
 import sys
 import threading
 import time
+from linphone import linphone
 
 
 class StoppableThread(threading.Thread):
