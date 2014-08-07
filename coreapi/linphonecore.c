@@ -76,10 +76,10 @@ static void linphone_core_free_hooks(LinphoneCore *lc);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
-#ifdef WINAPI_FAMILY_PHONE_APP
-#define SOUNDS_PREFIX "Assets/Sounds/"
-#else
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define SOUNDS_PREFIX
+#else
+#define SOUNDS_PREFIX "Assets/Sounds/"
 #endif
 /* relative path where is stored local ring*/
 #define LOCAL_RING SOUNDS_PREFIX "rings/oldphone.wav"
