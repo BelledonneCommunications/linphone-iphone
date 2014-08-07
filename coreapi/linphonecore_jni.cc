@@ -910,7 +910,7 @@ static jobject getOrCreateProxy(JNIEnv* env,LinphoneProxyConfig* proxy){
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
 	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
-	jclass cls = env->FindClass("java/lang/Object");
+	jclass cls = env->FindClass("org/linphone/core/LinphoneProxyConfigImpl");
 	jobjectArray jProxies = env->NewObjectArray(proxyCount,cls,NULL);
 
 	for (int i = 0; i < proxyCount; i++ ) {
