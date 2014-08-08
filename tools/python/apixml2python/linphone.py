@@ -701,6 +701,7 @@ class LinphoneModule(object):
 			c['class_has_user_data'] = False
 			c['class_type_methods'] = []
 			c['class_type_hand_written_methods'] = []
+			c['class_instance_hand_written_methods'] = []
 			c['class_object_members'] = ''
 			if c['class_name'] == 'Core':
 				c['class_object_members'] = "\tPyObject *vtable_dict;"
@@ -738,13 +739,15 @@ class LinphoneModule(object):
 				method_name = xml_instance_method.get('name')
 				if method_name in blacklisted_functions:
 					continue
-				method_name = method_name.replace(c['class_c_function_prefix'], '')
 				if method_name in self.internal_instance_method_names:
 					continue
 				m = {}
-				m['method_name'] = method_name
-				m['method_xml_node'] = xml_instance_method
-				c['class_instance_methods'].append(m)
+				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
+				if method_name in hand_written_functions:
+					c['class_instance_hand_written_methods'].append(m)
+				else:
+					m['method_xml_node'] = xml_instance_method
+					c['class_instance_methods'].append(m)
 			c['class_properties'] = []
 			xml_properties = xml_class.findall("./properties/property")
 			for xml_property in xml_properties:

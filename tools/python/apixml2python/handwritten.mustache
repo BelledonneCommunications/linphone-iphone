@@ -177,3 +177,26 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 	Py_DECREF(self);
 	return pyret;
 }
+
+static PyObject * pylinphone_Core_instance_method_iterate(PyObject *self, PyObject *args) {
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	linphone_core_iterate(native_ptr);
+#ifdef WIN32
+	{
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0, 0, 1)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+#endif
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
+	Py_RETURN_NONE;
+}
