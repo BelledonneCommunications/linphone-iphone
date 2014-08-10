@@ -31,88 +31,83 @@ blacklisted_classes = [
 	'LinphoneTunnelConfig'
 ]
 blacklisted_events = [
-	'LinphoneCoreInfoReceivedCb',
-	'LinphoneCoreNotifyReceivedCb',
-	'LinphoneCoreFileTransferProgressIndicationCb',
-	'LinphoneCoreFileTransferRecvCb',
-	'LinphoneCoreFileTransferSendCb'
+	'LinphoneCoreInfoReceivedCb',	# missing LinphoneInfoMessage
+	'LinphoneCoreNotifyReceivedCb',	# missing LinphoneContent
+	'LinphoneCoreFileTransferProgressIndicationCb',	# missing LinphoneContent
+	'LinphoneCoreFileTransferRecvCb',	# missing LinphoneContent
+	'LinphoneCoreFileTransferSendCb'	# missing LinphoneContent
 ]
 blacklisted_functions = [
-	'linphone_call_get_user_pointer',
-	'linphone_call_set_user_pointer',
-	'linphone_call_log_get_local_stats',
-	'linphone_call_log_get_remote_stats',
-	'linphone_call_log_get_start_date',
-	'linphone_call_log_get_user_pointer',
-	'linphone_call_log_set_user_pointer',
-	'linphone_call_params_get_received_video_size',
-	'linphone_call_params_get_privacy',
-	'linphone_call_params_get_sent_video_size',
-	'linphone_call_params_get_used_audio_codec',
-	'linphone_call_params_get_used_video_codec',
-	'linphone_call_params_set_privacy',
-	'linphone_call_stats_get_late_packets_cumulative_number',
-	'linphone_call_stats_get_receiver_interarrival_jitter',
-	'linphone_call_stats_get_sender_interarrival_jitter',
-	'linphone_chat_message_get_chat_room',
-	'linphone_chat_message_get_file_transfer_information',
-	'linphone_chat_message_get_time',
-	'linphone_chat_message_start_file_download',
-	'linphone_chat_message_state_to_string',
-	'linphone_chat_room_create_file_transfer_message',
-	'linphone_chat_room_create_message_2',
-	'linphone_chat_room_send_message2',
-	'linphone_core_can_we_add_call',
-	'linphone_core_enable_payload_type',
-	'linphone_core_find_payload_type',
-	'linphone_core_get_audio_codecs',
-	'linphone_core_get_auth_info_list',
-	'linphone_core_get_call_logs',
-	'linphone_core_get_calls',
-	'linphone_core_get_chat_rooms',
-	'linphone_core_get_default_proxy',
-	'linphone_core_get_payload_type_bitrate',
-	'linphone_core_get_preferred_video_size',
-	'linphone_core_get_friend_list',
-	'linphone_core_get_proxy_config_list',
-	'linphone_core_get_sip_transports',
-	'linphone_core_get_sip_transports_used',
-	'linphone_core_get_supported_video_sizes',
-	'linphone_core_get_video_codecs',
-	'linphone_core_get_video_policy',
-	'linphone_core_payload_type_enabled',
-	'linphone_core_payload_type_is_vbr',
-	'linphone_core_publish',
+	'linphone_call_get_user_pointer',	# rename to linphone_call_get_user_data
+	'linphone_call_set_user_pointer',	# rename to linphone_call_set_user_data
+	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
+	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
+	'linphone_call_log_get_start_date',	# missing time_t
+	'linphone_call_log_get_user_pointer',	# rename to linphone_call_log_get_user_data
+	'linphone_call_log_set_user_pointer',	# rename to linphone_call_log_set_user_data
+	'linphone_call_params_get_received_video_size',	# missing MSVideoSize
+	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
+	'linphone_call_params_get_sent_video_size',	# missing MSVideoSize
+	'linphone_call_params_get_used_audio_codec',	# missing PayloadType
+	'linphone_call_params_get_used_video_codec',	# missing PayloadType
+	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
+	'linphone_chat_message_get_file_transfer_information',	# missing LinphoneContent
+	'linphone_chat_message_get_time',	# missing time_t
+	'linphone_chat_message_start_file_download',	# to be handwritten because of callback
+	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
+	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
+	'linphone_chat_room_create_message_2',	# missing time_t
+	'linphone_chat_room_send_message2',	# to be handwritten because of callback
+	'linphone_core_can_we_add_call',	# private function
+	'linphone_core_enable_payload_type',	# missing PayloadType
+	'linphone_core_find_payload_type',	# missing PayloadType
+	'linphone_core_get_audio_codecs',	# missing PayloadType and MSList
+	'linphone_core_get_auth_info_list',	# missing MSList
+	'linphone_core_get_call_logs',	# missing MSList
+	'linphone_core_get_calls',	# missing MSList
+	'linphone_core_get_chat_rooms',	# missing MSList
+	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
+	'linphone_core_get_payload_type_bitrate',	# missing PayloadType
+	'linphone_core_get_preferred_video_size',	# missing MSVideoSize
+	'linphone_core_get_friend_list',	# missing MSList
+	'linphone_core_get_proxy_config_list',	# missing MSList
+	'linphone_core_get_sip_transports',	# missing LCSipTransports
+	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
+	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
+	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
+	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
+	'linphone_core_payload_type_enabled',	# missing PayloadType
+	'linphone_core_payload_type_is_vbr',	# missing PayloadType
+	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
-	'linphone_core_set_payload_type_bitrate',
-	'linphone_core_set_preferred_video_size',
-	'linphone_core_set_video_policy',
-	'linphone_core_play_dtmf',
-	'linphone_core_send_dtmf',
-	'linphone_core_set_audio_codecs',
-	'linphone_core_set_preview_video_size',
-	'linphone_core_set_sip_transports',
-	'linphone_core_subscribe',
-	'linphone_event_notify',
-	'linphone_event_send_publish',
-	'linphone_event_send_subscribe',
-	'linphone_event_update_publish',
-	'linphone_event_update_subscribe',
-	'linphone_presence_model_get_timestamp',
-	'linphone_presence_model_set_timestamp',
-	'linphone_proxy_config_get_privacy',
-	'linphone_proxy_config_normalize_number',
-	'linphone_proxy_config_set_file_transfer_server',
-	'linphone_proxy_config_set_privacy',
-	'linphone_tunnel_get_http_proxy',
-	'lp_config_for_each_entry',
-	'lp_config_for_each_section',
-	'lp_config_get_range',
-	'lp_config_load_dict_to_section',
-	'lp_config_section_to_dict'
+	'linphone_core_set_payload_type_bitrate',	# missing PayloadType
+	'linphone_core_set_preferred_video_size',	# missing MSVideoSize
+	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
+	'linphone_core_play_dtmf',	# handling of char
+	'linphone_core_send_dtmf',	# handling of char
+	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
+	'linphone_core_set_preview_video_size',	# missing MSVideoSize
+	'linphone_core_set_sip_transports',	# missing LCSipTransports
+	'linphone_core_subscribe',	# missing LinphoneContent
+	'linphone_event_notify',	# missing LinphoneContent
+	'linphone_event_send_publish',	# missing LinphoneContent
+	'linphone_event_send_subscribe',	# missing LinphoneContent
+	'linphone_event_update_publish',	# missing LinphoneContent
+	'linphone_event_update_subscribe',	# missing LinphoneContent
+	'linphone_presence_model_get_timestamp',	# missing time_t
+	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
+	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
+	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
+	'linphone_proxy_config_set_privacy',	# missing LinphonePrivacyMask
+	'linphone_tunnel_get_http_proxy',	# to be handwritten because of double pointer indirection
+	'lp_config_for_each_entry',	# to be handwritten because of callback
+	'lp_config_for_each_section',	# to be handwritten because of callback
+	'lp_config_get_range',	# to be handwritten because of result via arguments
+	'lp_config_load_dict_to_section',	# missing LinphoneDictionary
+	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
 	'linphone_core_iterate',
