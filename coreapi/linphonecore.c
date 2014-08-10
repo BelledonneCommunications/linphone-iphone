@@ -5451,6 +5451,7 @@ void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
 }
 /**
  * Returns the preferred video framerate, previously set by linphone_core_set_preferred_framerate().
+ * @ingroup media_parameters
  * @param lc the linphone core
  * @return frame rate in number of frames per seconds.
 **/
