@@ -754,6 +754,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             speaker_already_enabled = TRUE;
         }
     }
+
+    if(state == LinphoneCallStreamsRunning ){
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    }
+
     if (state == LinphoneCallConnected && !mCallCenter) {
 		/*only register CT call center CB for connected call*/
 		[self setupGSMInteraction];
