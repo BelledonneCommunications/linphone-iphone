@@ -29,6 +29,13 @@
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
 static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime);
 
+// prototype definition for call_recording()
+#ifdef ANDROID
+#ifdef HAVE_OPENH264
+extern void libmsopenh264_init(void);
+#endif
+#endif
+
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -2663,23 +2670,25 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
-#ifdef ANDROID
-#ifdef HAVE_OPENH264
-extern void libmsopenh264_init(void);
-#endif
-#endif
-
 static void call_recording() {
-#ifdef ANDROID
-	linphone_core_init_openh264();
-#endif
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_h264_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_h264_rc");
-	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
-	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCoreManager *marie = NULL;
+	LinphoneCoreManager *pauline = NULL;
+	LinphoneCallParams *marieParams = NULL;
+	LinphoneCallParams *paulineParams = NULL;
 	LinphoneCall *callInst = NULL;
 	int dummy=0;
 	char *filepath = NULL;
+
+#ifdef ANDROID
+#ifdef HAVE_OPENH264
+	libmsopenh264_init();
+#endif
+#endif
+
+	marie = linphone_core_manager_new("marie_h264_rc");
+	pauline = linphone_core_manager_new("pauline_h264_rc");
+	marieParams = linphone_core_create_default_call_parameters(marie->lc);
+	paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 
 #ifdef ANDROID
 	const char dirname[] = "/sdcard/Movies/liblinphone_tester";

@@ -6685,9 +6685,3 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
 	core->file_transfer_server=ms_strdup(server_url);
 }
-
-void linphone_core_init_openh264(void) {
-#ifdef HAVE_OPENH264
-	libmsopenh264_init();
-#endif
-}
