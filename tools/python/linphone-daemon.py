@@ -6,31 +6,6 @@ import time
 from linphone import linphone
 
 
-class StoppableThread(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
-		self.stop_event = threading.Event()
-
-	def stop(self):
-		if self.isAlive() == True:
-			# Set an event to signal the thread to terminate
-			self.stop_event.set()
-			# Block the calling thread until the thread really has terminated
-			self.join()
-
-class IntervalTimer(StoppableThread):
-	def __init__(self, interval, worker_func, kwargs={}):
-		StoppableThread.__init__(self)
-		self._interval = interval
-		self._worker_func = worker_func
-		self._kwargs = kwargs
-
-	def run(self):
-		while not self.stop_event.is_set():
-			self._worker_func(self._kwargs)
-			time.sleep(self._interval)
-
-
 class Response:
 	Ok = 0
 	Error = 1
@@ -392,11 +367,14 @@ class TerminateCommand(Command):
 
 class Daemon:
 	def __init__(self):
-		self._quit = False
+		self.quitting = False
 		self._next_proxy_id = 1
 		self.proxy_ids_map = {}
 		self._next_call_id = 1
 		self.call_ids_map = {}
+		self.command_mutex = threading.Lock()
+		self.command_executed_event = threading.Event()
+		self.command_to_execute = None
 		self.commands = [
 			CallCommand(),
 			CallPauseCommand(),
@@ -425,13 +403,16 @@ class Daemon:
 	def interact(self):
 		command_line = raw_input('> ').strip()
 		if command_line != '':
-			self.exec_command(command_line)
+			self.command_mutex.acquire()
+			self.command_to_execute = command_line
+			self.command_mutex.release()
+			self.command_executed_event.wait()
+			self.command_executed_event.clear()
 
 	def run(self, args):
-		# Define the iteration function
-		def iterate(kwargs):
-			core = kwargs['core']
-			core.iterate()
+		def command_read(daemon):
+			while not daemon.quitting:
+				daemon.interact()
 
 		def global_state_changed(core, state, message):
 			logging.warning("[PYTHON] global_state_changed: " + str(state) + ", " + message)
@@ -452,14 +433,22 @@ class Daemon:
 
 		# Create a linphone core and iterate every 20 ms
 		self.core = linphone.Core.new(callbacks, args.config, args.factory_config)
-		interval = IntervalTimer(0.02, iterate, kwargs={'core':self.core})
-		interval.start()
-		while not self._quit:
-			self.interact()
-		interval.stop()
+		t = threading.Thread(target=command_read, kwargs={'daemon':self})
+		t.start()
+		while not self.quitting:
+			self.command_mutex.acquire()
+			command_line = self.command_to_execute
+			if command_line is not None:
+				self.exec_command(command_line)
+				self.command_to_execute = None
+				self.command_executed_event.set()
+			self.command_mutex.release()
+			self.core.iterate()
+			time.sleep(0.02)
+		t.join()
 
 	def quit(self):
-		self._quit = True
+		self.quitting = True
 
 	def update_proxy_id(self, proxy):
 		id = self._next_proxy_id
