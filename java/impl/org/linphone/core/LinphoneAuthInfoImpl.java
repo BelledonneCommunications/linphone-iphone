@@ -37,7 +37,7 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 	
 	boolean ownPtr = false;
 	protected LinphoneAuthInfoImpl(String username,String password, String realm, String domain)  {
-		this(username, null, password, null, null, domain);
+		this(username, null, password, null, realm, domain);
 	}
 	protected LinphoneAuthInfoImpl(String username, String userid, String passwd, String ha1, String realm, String domain)  {
 		nativePtr = newLinphoneAuthInfo();
@@ -46,6 +46,7 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 		this.setPassword(passwd);
 		this.setHa1(ha1);
 		this.setDomain(domain);
+		this.setRealm(realm);
 		ownPtr = true;
 	}
 	protected LinphoneAuthInfoImpl(long aNativePtr)  {

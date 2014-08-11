@@ -93,7 +93,8 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
-	protected void finalize(){
+	protected void finalize() throws Throwable{
 		unref(nativePtr);
+		super.finalize();
 	}
 }
