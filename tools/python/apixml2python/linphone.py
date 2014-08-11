@@ -37,6 +37,110 @@ def compute_event_name(s):
 	return event_name
 
 
+class ArgumentType:
+	def __init__(self, basic_type, complete_type, linphone_module):
+		self.basic_type = basic_type
+		self.complete_type = complete_type
+		self.linphone_module = linphone_module
+		self.type_str = None
+		self.check_func = None
+		self.convert_func = None
+		self.fmt_str = 'O'
+		self.cfmt_str = '%p'
+		self.__compute()
+
+	def __compute(self):
+		splitted_type = self.complete_type.split(' ')
+		if self.basic_type == 'char':
+			if '*' in splitted_type:
+				self.type_str = 'string'
+				self.check_func = 'PyString_Check'
+				self.convert_func = 'PyString_AsString'
+				self.fmt_str = 'z'
+				self.cfmt_str = '\\"%s\\"'
+			else:
+				self.type_str = 'int'
+				self.check_func = 'PyInt_Check'
+				self.convert_func = 'PyInt_AsLong'
+				self.fmt_str = 'b'
+				self.cfmt_str = '%08x'
+		elif self.basic_type == 'int':
+			if 'unsigned' in splitted_type:
+				self.type_str = 'unsigned int'
+				self.check_func = 'PyLong_Check'
+				self.convert_func = 'PyLong_AsUnsignedLong'
+				self.fmt_str = 'I'
+				self.cfmt_str = '%u'
+			else:
+				self.type_str = 'int'
+				self.check_func = 'PyLong_Check'
+				self.convert_func = 'PyLong_AsLong'
+				self.fmt_str = 'i'
+				self.cfmt_str = '%d'
+		elif self.basic_type in ['int8_t', 'int16_t' 'int32_t']:
+			self.type_str = 'int'
+			self.check_func = 'PyLong_Check'
+			self.convert_func = 'PyLong_AsLong'
+			if self.basic_type == 'int8_t':
+					self.fmt_str = 'c'
+			elif self.basic_type == 'int16_t':
+					self.fmt_str = 'h'
+			elif self.basic_type == 'int32_t':
+					self.fmt_str = 'l'
+			self.cfmt_str = '%d'
+		elif self.basic_type in ['uint8_t', 'uint16_t', 'uint32_t']:
+			self.type_str = 'unsigned int'
+			self.check_func = 'PyLong_Check'
+			self.convert_func = 'PyLong_AsUnsignedLong'
+			if self.basic_type == 'uint8_t':
+				self.fmt_str = 'b'
+			elif self.basic_type == 'uint16_t':
+				self.fmt_str = 'H'
+			elif self.basic_type == 'uint32_t':
+				self.fmt_str = 'k'
+			self.cfmt_str = '%u'
+		elif self.basic_type == 'int64_t':
+			self.type_str = '64bits int'
+			self.check_func = 'PyLong_Check'
+			self.convert_func = 'PyLong_AsLongLong'
+			self.fmt_str = 'L'
+			self.cfmt_str = '%ld'
+		elif self.basic_type == 'uint64_t':
+			self.type_str = '64bits unsigned int'
+			self.check_func = 'PyLong_Check'
+			self.convert_func = 'PyLong_AsUnsignedLongLong'
+			self.fmt_str = 'K'
+			self.cfmt_str = '%lu'
+		elif self.basic_type == 'size_t':
+			self.type_str = 'size_t'
+			self.check_func = 'PyLong_Check'
+			self.convert_func = 'PyLong_AsSsize_t'
+			self.fmt_str = 'n'
+			self.cfmt_str = '%lu'
+		elif self.basic_type in ['float', 'double']:
+			self.type_str = 'float'
+			self.check_func = 'PyFloat_Check'
+			self.convert_func = 'PyFloat_AsDouble'
+			if self.basic_type == 'float':
+				self.fmt_str = 'f'
+			elif self.basic_type == 'double':
+				self.fmt_str = 'd'
+			self.cfmt_str = '%f'
+		elif self.basic_type == 'bool_t':
+			self.type_str = 'bool'
+			self.check_func = 'PyBool_Check'
+			self.convert_func = 'PyInt_AsLong'
+			self.fmt_str = 'i'
+			self.cfmt_str = '%d'
+		else:
+			if strip_leading_linphone(self.basic_type) in self.linphone_module.enum_names:
+				self.type_str = 'int'
+				self.check_func = 'PyInt_Check'
+				self.convert_func = 'PyInt_AsLong'
+				self.fmt_str = 'i'
+				self.cfmt_str = '%d'
+
+
 class MethodDefinition:
 	def __init__(self, linphone_module, class_, method_node = None):
 		self.body = ''
@@ -60,7 +164,8 @@ class MethodDefinition:
 			self.return_complete_type = self.xml_method_return.get('completetype')
 		if self.return_complete_type != 'void':
 			body += "\t" + self.return_complete_type + " cresult;\n"
-			self.build_value_format = self.ctype_to_python_format(self.return_type, self.return_complete_type)
+			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.linphone_module)
+			self.build_value_format = argument_type.fmt_str
 			if self.build_value_format == 'O':
 				body += "\tPyObject * pyresult;\n"
 			body += "\tPyObject * pyret;\n"
@@ -70,9 +175,9 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
-			self.parse_tuple_format += fmt
-			if fmt == 'O':
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			self.parse_tuple_format += argument_type.fmt_str
+			if argument_type.fmt_str == 'O':
 				body += "\tPyObject * " + arg_name + ";\n"
 				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr;\n"
 			elif strip_leading_linphone(arg_complete_type) in self.linphone_module.enum_names:
@@ -113,9 +218,12 @@ class MethodDefinition:
 			arg_complete_type = xml_method_arg.get('completetype')
 			if fmt != '':
 				fmt += ', '
-			f, a = self.ctype_to_str_format(arg_name, arg_type, arg_complete_type)
-			fmt += f
-			args += a
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			fmt += argument_type.cfmt_str
+			args.append(arg_name)
+			if argument_type.fmt_str == 'O':
+				fmt += ' [' + argument_type.cfmt_str + ']'
+				args.append(arg_name)
 		args=', '.join(args)
 		if args != '':
 			args = ', ' + args
@@ -128,8 +236,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			type_str, checkfunc, convertfunc = self.ctype_to_python_type(arg_type, arg_complete_type)
-			if convertfunc is None:
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			if argument_type.convert_func is None:
 				arg_names.append(arg_name + "_native_ptr")
 			else:
 				arg_names.append(arg_name)
@@ -221,8 +329,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
-			if fmt == 'O':
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			if argument_type.fmt_str == 'O':
 				body += \
 """	if (({arg_name}_native_ptr = pylinphone_{arg_type}_get_native_ptr({arg_name})) == NULL) {{
 		return NULL;
@@ -286,78 +394,6 @@ class MethodDefinition:
 				return ('%p [%p]', [name, name + "_native_ptr"])
 			else:
 				return ('%p', [name])
-
-	def ctype_to_python_format(self, basic_type, complete_type):
-		splitted_type = complete_type.split(' ')
-		if basic_type == 'char':
-			if '*' in splitted_type:
-				return 'z'
-			elif 'unsigned' in splitted_type:
-				return 'b'
-		elif basic_type == 'int':
-			# TODO:
-			return 'i'
-		elif basic_type == 'int8_t':
-			return 'c'
-		elif basic_type == 'uint8_t':
-			return 'b'
-		elif basic_type == 'int16_t':
-			return 'h'
-		elif basic_type == 'uint16_t':
-			return 'H'
-		elif basic_type == 'int32_t':
-			return 'l'
-		elif basic_type == 'uint32_t':
-			return 'k'
-		elif basic_type == 'int64_t':
-			return 'L'
-		elif basic_type == 'uint64_t':
-			return 'K'
-		elif basic_type == 'size_t':
-			return 'n'
-		elif basic_type == 'float':
-			return 'f'
-		elif basic_type == 'double':
-			return 'd'
-		elif basic_type == 'bool_t':
-			return 'i'
-		else:
-			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
-				return 'i'
-			else:
-				return 'O'
-
-	def ctype_to_python_type(self, basic_type, complete_type):
-		splitted_type = complete_type.split(' ')
-		if basic_type == 'char':
-			if '*' in splitted_type:
-				return ('string', 'PyString_Check', 'PyString_AsString')
-			else:
-				return ('int', 'PyInt_Check', 'PyInt_AsLong')
-		elif basic_type == 'int':
-			if 'unsigned' in splitted_type:
-				return ('unsigned int', 'PyLong_Check', 'PyLong_AsUnsignedLong')
-			else:
-				return ('int', 'PyLong_Check', 'PyLong_AsLong')
-		elif basic_type in ['int8_t', 'int16_t' 'int32_t']:
-			return ('int', 'PyLong_Check', 'PyLong_AsLong')
-		elif basic_type in ['uint8_t', 'uin16_t', 'uint32_t']:
-			return ('unsigned int', 'PyLong_Check', 'PyLong_AsUnsignedLong')
-		elif basic_type == 'int64_t':
-			return ('64bits int', 'PyLong_Check', 'PyLong_AsLongLong')
-		elif basic_type == 'uint64_t':
-			return ('64bits unsigned int', 'PyLong_Check', 'PyLong_AsUnsignedLongLong')
-		elif basic_type == 'size_t':
-			return ('size_t', 'PyLong_Check', 'PyLong_AsSsize_t')
-		elif basic_type in ['float', 'double']:
-			return ('float', 'PyFloat_Check', 'PyFloat_AsDouble')
-		elif basic_type == 'bool_t':
-			return ('bool', 'PyBool_Check', 'PyInt_AsLong')
-		else:
-			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
-				return ('int', 'PyInt_Check', 'PyInt_AsLong')
-			else:
-				return (None, None, None)
 
 	def find_class_definition(self, basic_type):
 		basic_type = strip_leading_linphone(basic_type)
@@ -488,7 +524,7 @@ class SetterMethodDefinition(MethodDefinition):
 		MethodDefinition.__init__(self, linphone_module, class_, method_node)
 
 	def format_arguments_parsing(self):
-		if self.checkfunc is None:
+		if self.first_argument_type.check_func is None:
 			attribute_type_check_code = \
 """if (!PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
 		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a linphone.{class_name} instance");
@@ -497,21 +533,21 @@ class SetterMethodDefinition(MethodDefinition):
 """.format(class_name=self.first_arg_class, attribute_name=self.attribute_name)
 		else:
 			checknotnone = ''
-			if self.type_str == 'string':
+			if self.first_argument_type.type_str == 'string':
 				checknotnone = "(value != Py_None) && "
 			attribute_type_check_code = \
 """if ({checknotnone}!{checkfunc}(value)) {{
 		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a {type_str}");
 		return -1;
 	}}
-""".format(checknotnone=checknotnone, checkfunc=self.checkfunc, attribute_name=self.attribute_name, type_str=self.type_str)
-		if self.convertfunc is None:
+""".format(checknotnone=checknotnone, checkfunc=self.first_argument_type.check_func, attribute_name=self.attribute_name, type_str=self.first_argument_type.type_str)
+		if self.first_argument_type.convert_func is None:
 			attribute_conversion_code = "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
 		else:
 			attribute_conversion_code = "{arg_name} = ({arg_type}){convertfunc}(value);\n".format(
-				arg_name="_" + self.first_arg_name, arg_type=self.first_arg_complete_type, convertfunc=self.convertfunc)
+				arg_name="_" + self.first_arg_name, arg_type=self.first_arg_complete_type, convertfunc=self.first_argument_type.convert_func)
 		attribute_native_ptr_check_code = ''
-		if self.python_fmt == 'O':
+		if self.first_argument_type.fmt_str == 'O':
 			attribute_native_ptr_check_code = \
 """{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
 	if ({arg_name}_native_ptr == NULL) {{
@@ -536,7 +572,7 @@ class SetterMethodDefinition(MethodDefinition):
 
 	def format_c_function_call(self):
 		use_native_ptr = ''
-		if self.python_fmt == 'O':
+		if self.first_argument_type.fmt_str == 'O':
 			use_native_ptr = '_native_ptr'
 		return \
 """	{method_name}(native_ptr, {arg_name}{use_native_ptr});
@@ -558,9 +594,8 @@ class SetterMethodDefinition(MethodDefinition):
 		self.first_arg_type = self.xml_method_args[0].get('type')
 		self.first_arg_complete_type = self.xml_method_args[0].get('completetype')
 		self.first_arg_name = self.xml_method_args[0].get('name')
-		self.type_str, self.checkfunc, self.convertfunc = self.ctype_to_python_type(self.first_arg_type, self.first_arg_complete_type)
+		self.first_argument_type = ArgumentType(self.first_arg_type, self.first_arg_complete_type, self.linphone_module)
 		self.first_arg_class = strip_leading_linphone(self.first_arg_type)
-		self.python_fmt = self.ctype_to_python_format(self.first_arg_type, self.first_arg_complete_type)
 
 class EventCallbackMethodDefinition(MethodDefinition):
 	def __init__(self, linphone_module, class_, method_node = None):
@@ -576,8 +611,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = 'py' + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
-			if fmt == 'O':
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			if argument_type.fmt_str == 'O':
 				specific += "\tPyObject * " + arg_name + " = NULL;\n"
 		return "{common}\n{specific}".format(common=common, specific=specific)
 
@@ -587,8 +622,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			fmt = self.ctype_to_python_format(arg_type, arg_complete_type)
-			if fmt == 'O':
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			if argument_type.fmt_str == 'O':
 				type_class = self.find_class_definition(arg_type)
 				get_user_data_code = ''
 				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
@@ -612,9 +647,9 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_complete_type = xml_method_arg.get('completetype')
 			if fmt != '':
 				fmt += ', '
-			f, a = self.ctype_to_str_format(arg_name, arg_type, arg_complete_type, with_native_ptr=False)
-			fmt += f
-			args += a
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			fmt += argument_type.cfmt_str
+			args.append(arg_name)
 		args=', '.join(args)
 		if args != '':
 			args = ', ' + args
@@ -627,9 +662,9 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			f = self.ctype_to_python_format(arg_type, arg_complete_type)
-			fmt += f
-			if f == 'O':
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			fmt += argument_type.fmt_str
+			if argument_type.fmt_str == 'O':
 				args.append('py' + arg_name)
 			else:
 				args.append(arg_name)
