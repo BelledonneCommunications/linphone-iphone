@@ -387,6 +387,17 @@ class Daemon:
 			TerminateCommand()
 		]
 
+	def global_state_changed(self, core, state, message):
+		logging.warning("[PYTHON] global_state_changed: " + str(state) + ", " + message)
+		if state == linphone.GlobalState.GlobalOn:
+			logging.warning("[PYTHON] core version: " + str(core.version))
+
+	def registration_state_changed(self, core, proxy_cfg, state, message):
+		logging.warning("[PYTHON] registration_state_changed: " + str(state) + ", " + message)
+
+	def call_state_changed(self, core, call, state, message):
+		logging.warning("[PYTHON] call_state_changed: " + str(state) + ", " + message)
+
 	def send_response(self, response):
 		print(response)
 
@@ -414,21 +425,10 @@ class Daemon:
 			while not daemon.quitting:
 				daemon.interact()
 
-		def global_state_changed(core, state, message):
-			logging.warning("[PYTHON] global_state_changed: " + str(state) + ", " + message)
-			if state == linphone.GlobalState.GlobalOn:
-				logging.warning("[PYTHON] core version: " + str(core.version))
-
-		def registration_state_changed(core, proxy_cfg, state, message):
-			logging.warning("[PYTHON] registration_state_changed: " + str(state) + ", " + message)
-
-		def call_state_changed(core, call, state, message):
-			logging.warning("[PYTHON] call_state_changed: " + str(state) + ", " + message)
-
 		callbacks = {
-			'global_state_changed':global_state_changed,
-			'registration_state_changed':registration_state_changed,
-			'call_state_changed':call_state_changed
+			'global_state_changed':self.global_state_changed,
+			'registration_state_changed':self.registration_state_changed,
+			'call_state_changed':self.call_state_changed
 		}
 
 		# Create a linphone core and iterate every 20 ms
