@@ -110,7 +110,6 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
-	'linphone_core_iterate',
 	'linphone_core_new',
 	'linphone_core_new_with_config'
 ]
