@@ -635,8 +635,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 				args.append(arg_name)
 		args=', '.join(args)
 		return \
-"""	if ((func != NULL) && PyFunction_Check(func)) {{
-		if (PyEval_CallFunction(func, "{fmt}", {args}) == NULL) {{
+"""	if ((func != NULL) && PyCallable_Check(func)) {{
+		if (PyEval_CallObject(func, Py_BuildValue("{fmt}", {args})) == NULL) {{
 			PyErr_Print();
 		}}
 	}}

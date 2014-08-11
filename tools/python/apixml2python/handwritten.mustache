@@ -17,7 +17,7 @@ static void pylinphone_log(const char *level, int indent, const char *fmt, va_li
 	linphone_module = PyImport_ImportModule("linphone");
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
 		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
-		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
+		if ((log_handler != NULL) && PyCallable_Check(log_handler)) {
 			char logstr[4096];
 			int i = 0;
 			if (indent == -1) current_indent--;
@@ -29,7 +29,9 @@ static void pylinphone_log(const char *level, int indent, const char *fmt, va_li
 			}
 			if (indent == 1) current_indent++;
 			if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
-				PyEval_CallFunction(log_handler, "ss", level, logstr);
+				if (PyEval_CallObject(log_handler, Py_BuildValue("ss", level, logstr)) == NULL) {
+					PyErr_Print();
+				}
 			}
 			Py_DECREF(log_handler);
 		}
@@ -73,10 +75,10 @@ static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_
 	level = pylinphone_ortp_log_level_to_string(lev);
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
 		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
-		if ((log_handler != NULL) && PyFunction_Check(log_handler)) {
+		if ((log_handler != NULL) && PyCallable_Check(log_handler)) {
 			char logstr[4096];
 			if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
-				if (PyEval_CallFunction(log_handler, "ss", level, logstr) == NULL) {
+				if (PyEval_CallObject(log_handler, Py_BuildValue("ss", level, logstr)) == NULL) {
 					PyErr_Print();
 				}
 			}
@@ -98,6 +100,10 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 	PyObject *linphone_module = PyImport_ImportModule("linphone");
 	PyObject *callback;
 	if (!PyArg_ParseTuple(args, "O", &callback)) {
+		return NULL;
+	}
+	if (!PyCallable_Check(callback)) {
+		PyErr_SetString(PyExc_TypeError, "The argument must be a callable");
 		return NULL;
 	}
 	if (linphone_module != NULL) {
