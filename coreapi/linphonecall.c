@@ -2771,7 +2771,9 @@ uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCa
  * The call recording can be started and paused after the call is established with
  * linphone_call_start_recording() and linphone_call_pause_recording().
  * @param cp the call parameters
- * @param path path and filename of the file where audio is written.
+ * @param path path and filename of the file where audio/video streams are written.
+ * The filename must have either .mkv or .wav extention. The video stream will be written
+ * only if a MKV file is given.
 **/
 void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path){
 	if (cp->record_file){
