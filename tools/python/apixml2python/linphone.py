@@ -123,6 +123,7 @@ class MethodDefinition:
 
 	def format_c_function_call(self):
 		arg_names = []
+		c_function_call_code = ''
 		for xml_method_arg in self.xml_method_args:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -132,15 +133,14 @@ class MethodDefinition:
 				arg_names.append(arg_name + "_native_ptr")
 			else:
 				arg_names.append(arg_name)
-		body = "\t"
 		if self.return_type != 'void':
-			body += "cresult = "
-		body += self.method_node.get('name') + "("
+			c_function_call_code += "cresult = "
+		c_function_call_code += self.method_node.get('name') + "("
 		if self.self_arg is not None:
-			body += "native_ptr"
+			c_function_call_code += "native_ptr"
 			if len(arg_names) > 0:
-				body += ', '
-		body += ', '.join(arg_names) + ");\n"
+				c_function_call_code += ', '
+		c_function_call_code += ', '.join(arg_names) + ");"
 		return_from_user_data_code = ''
 		new_from_native_pointer_code = ''
 		ref_native_pointer_code = ''
@@ -170,12 +170,15 @@ class MethodDefinition:
 				result_variable = 'cresult'
 		if result_variable != '':
 			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});\n".format(fmt=self.build_value_format, result_variable=result_variable)
-		body += \
-"""	{return_from_user_data_code}
+		body = \
+"""	{c_function_call_code}
+	pylinphone_dispatch_messages();
+	{return_from_user_data_code}
 	{new_from_native_pointer_code}
 	{ref_native_pointer_code}
 	{build_value_code}
-""".format(return_from_user_data_code=return_from_user_data_code,
+""".format(c_function_call_code=c_function_call_code,
+		return_from_user_data_code=return_from_user_data_code,
 		new_from_native_pointer_code=new_from_native_pointer_code,
 		ref_native_pointer_code=ref_native_pointer_code,
 		build_value_code=build_value_code)
@@ -466,6 +469,7 @@ class DeallocMethodDefinition(MethodDefinition):
 """.format(function_prefix=self.class_['class_c_function_prefix'])
 		return \
 """{native_ptr_dealloc_code}
+	pylinphone_dispatch_messages();
 	self->ob_type->tp_free(self);
 """.format(native_ptr_dealloc_code=native_ptr_dealloc_code)
 
@@ -534,8 +538,10 @@ class SetterMethodDefinition(MethodDefinition):
 		use_native_ptr = ''
 		if self.python_fmt == 'O':
 			use_native_ptr = '_native_ptr'
-		return "\t{method_name}(native_ptr, {arg_name}{use_native_ptr});\n".format(
-			arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), use_native_ptr=use_native_ptr)
+		return \
+"""	{method_name}(native_ptr, {arg_name}{use_native_ptr});
+	pylinphone_dispatch_messages();
+""".format(arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), use_native_ptr=use_native_ptr)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> 0\", __FUNCTION__);\n"

@@ -1,3 +1,13 @@
+static void pylinphone_dispatch_messages(void) {
+#ifdef WIN32
+	MSG msg;
+	while (PeekMessage(&msg, NULL, 0, 0, 1)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+#endif
+}
+
 static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
 	static int current_indent = 1;
 	PyObject *linphone_module;
@@ -187,15 +197,7 @@ static PyObject * pylinphone_Core_instance_method_iterate(PyObject *self, PyObje
 
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
 	linphone_core_iterate(native_ptr);
-#ifdef WIN32
-	{
-		MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, 1)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-#endif
+	pylinphone_dispatch_messages();
 
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
 	Py_RETURN_NONE;
