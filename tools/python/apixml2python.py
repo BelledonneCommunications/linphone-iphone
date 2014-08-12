@@ -82,8 +82,6 @@ blacklisted_functions = [
 	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_payload_type_bitrate',	# missing PayloadType
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_core_play_dtmf',	# handling of char
-	'linphone_core_send_dtmf',	# handling of char
 	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
 	'linphone_core_subscribe',	# missing LinphoneContent
