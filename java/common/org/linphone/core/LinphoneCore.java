@@ -689,9 +689,16 @@ public interface LinphoneCore {
 	void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
 	
 	/**
-	 * Returns whether or not the payload is enabled in linphonecore.
+	 * @param pt the payload type
+	 * @return whether or not the payload is enabled in linphonecore.
 	 */
 	boolean isPayloadTypeEnabled(PayloadType pt);
+	
+	/**
+	 * @param pt the payload type
+	 * @return whether or not the payload epresents a VBR codec
+	 */
+	boolean payloadTypeIsVbr(PayloadType pt);
 	
 	/**
 	 * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.

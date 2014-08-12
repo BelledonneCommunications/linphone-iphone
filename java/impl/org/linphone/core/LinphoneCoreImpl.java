@@ -73,6 +73,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long findPayloadType(long nativePtr, String mime, int clockRate, int channels);
 	private native int enablePayloadType(long nativePtr, long payloadType,	boolean enable);
 	private native boolean isPayloadTypeEnabled(long nativePtr, long payloadType);
+	private native boolean payloadTypeIsVbr(long nativePtr, long payloadType);
 	private native void enableAdaptiveRateControl(long nativePtr,boolean enable);
 	private native boolean isAdaptiveRateControlEnabled(long nativePtr);
 	private native void enableEchoCancellation(long nativePtr,boolean enable);
@@ -341,6 +342,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		isValid();
 		return isPayloadTypeEnabled(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
+	
+	public synchronized boolean payloadTypeIsVbr(PayloadType pt) {
+		isValid();
+		return payloadTypeIsVbr(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
+	
 	public synchronized void enableEchoCancellation(boolean enable) {
 		isValid();
 		enableEchoCancellation(nativePtr, enable);

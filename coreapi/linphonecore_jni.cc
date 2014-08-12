@@ -1272,6 +1272,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isPayloadTypeEnabled
 	return (jboolean) linphone_core_payload_type_enabled((LinphoneCore*)lc, (PayloadType*)pt);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_payloadTypeIsVbr(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt) {
+	return (jboolean) linphone_core_payload_type_is_vbr((LinphoneCore*)lc, (PayloadType*)pt);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPayloadTypeBitrate(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
