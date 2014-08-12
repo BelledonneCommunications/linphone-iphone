@@ -139,9 +139,8 @@ static PyMethodDef pylinphone_{{class_name}}_methods[] = {
 {{/class_properties}}
 
 static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
-	// TODO: Handle doc
 {{#class_properties}}
-	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "" },
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
 {{/class_properties}}
 	/* Sentinel */
 	{ NULL, NULL, NULL, NULL, NULL }

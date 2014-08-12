@@ -846,10 +846,14 @@ class LinphoneModule(object):
 				raise
 			try:
 				for p in c['class_properties']:
-					if p.has_key('getter_xml_node'):
-						p['getter_body'] = GetterMethodDefinition(self, c, p['getter_xml_node']).format()
+					p['property_doc'] = ''
 					if p.has_key('setter_xml_node'):
 						p['setter_body'] = SetterMethodDefinition(self, c, p['setter_xml_node']).format()
+						p['property_doc'] = self.__format_doc(p['setter_xml_node'].find('briefdescription'), p['setter_xml_node'].find('detaileddescription'))
+					if p.has_key('getter_xml_node'):
+						p['getter_body'] = GetterMethodDefinition(self, c, p['getter_xml_node']).format()
+						if p['property_doc'] == '':
+							p['property_doc'] = self.__format_doc(p['getter_xml_node'].find('briefdescription'), p['getter_xml_node'].find('detaileddescription'))
 			except Exception, e:
 				e.args += (c['class_name'], p['property_name'])
 				raise
