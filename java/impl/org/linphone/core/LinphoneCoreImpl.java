@@ -1200,13 +1200,24 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
 	@Override
-	public void enableAdaptiveRateControl(boolean enable) {
+	public synchronized void enableAdaptiveRateControl(boolean enable) {
 		enableAdaptiveRateControl(nativePtr,enable);
 		
 	}
 	@Override
-	public boolean isAdaptiveRateControlEnabled() {
+	public synchronized boolean isAdaptiveRateControlEnabled() {
 		return isAdaptiveRateControlEnabled(nativePtr);
+	}
+	
+	private native void setAudioJittcomp(long ptr, int value);
+	@Override
+	public synchronized void setAudioJittcomp(int value) {
+		setAudioJittcomp(nativePtr,value);
+	}
+	private native void setVideoJittcomp(long ptr, int value);
+	@Override
+	public synchronized void setVideoJittcomp(int value) {
+		setVideoJittcomp(nativePtr,value);
 	}
 	
 }

@@ -3412,6 +3412,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv
 	ms_set_cpu_count(count);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioJittcomp(JNIEnv *env, jobject thiz, jlong lc, jint value) {
+	linphone_core_set_audio_jittcomp((LinphoneCore *)lc, value);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoJittcomp(JNIEnv *env, jobject thiz, jlong lc, jint value) {
+	linphone_core_set_video_jittcomp((LinphoneCore *)lc, value);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioPort(JNIEnv *env, jobject thiz, jlong lc, jint port) {
 	linphone_core_set_audio_port((LinphoneCore *)lc, port);
 }

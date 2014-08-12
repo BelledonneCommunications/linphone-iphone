@@ -1623,4 +1623,21 @@ public interface LinphoneCore {
 	 * Typical use is to stop ringing when the user requests to ignore the call.
 	**/
 	public void stopRinging();
+	
+	/**
+	 * Set audio jitter buffer size in milliseconds.
+	 * A value of zero disables the jitter buffer.
+	 * The new value is taken into account immediately for all running or pending calls.
+	 * @param value the jitter buffer size in milliseconds.
+	 */
+	public void setAudioJittcomp(int value);
+	
+	/**
+	 * Set video jitter buffer size in milliseconds.
+	 * A value of zero disables the jitter buffer.
+	 * The new value is taken into account immediately for all running or pending calls.
+	 * @param value the jitter buffer size in milliseconds.
+	 */
+	public void setVideoJittcomp(int value);
+	
 }
