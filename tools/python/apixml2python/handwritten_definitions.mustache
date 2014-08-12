@@ -195,6 +195,64 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 }
 
 
+static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
+	PyGILState_STATE pygil_state;
+	PyObject * pycm = NULL;
+	PyObject * func = NULL;
+	pylinphone_ChatRoomObject *pycr = (pylinphone_ChatRoomObject *)ud;
+
+	pygil_state = PyGILState_Ensure();
+	pycm = linphone_chat_message_get_user_data(msg);
+	if (pycm == NULL) {
+		pycm = pylinphone_ChatMessage_new_from_native_ptr(&pylinphone_ChatMessageType, msg);
+	}
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, %p [%p], %d, %p)", __FUNCTION__, pycm, msg, state, ud);
+	if ((pycr->send_message_cb != NULL) && PyCallable_Check(pycr->send_message_cb)) {
+		if (PyEval_CallObject(pycr->send_message_cb, Py_BuildValue("OiO", pycm, state, pycr->send_message_ud)) == NULL) {
+			PyErr_Print();
+		}
+	}
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+	PyGILState_Release(pygil_state);
+}
+
+static PyObject * pylinphone_ChatRoom_instance_method_send_message2(PyObject *self, PyObject *args) {
+	PyObject *_chat_message;
+	PyObject *_cb;
+	PyObject *_ud;
+	LinphoneChatMessage * _chat_message_native_ptr;
+	LinphoneChatRoom *native_ptr = pylinphone_ChatRoom_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.ChatRoom instance");
+		return NULL;
+	}
+	if (!PyArg_ParseTuple(args, "OOO", &_chat_message, &_cb, &_ud)) {
+		return NULL;
+	}
+	if (!PyObject_IsInstance(_chat_message, (PyObject *)&pylinphone_ChatMessageType)) {
+		PyErr_SetString(PyExc_TypeError, "The msg argument must be a linphone.ChatMessage");
+		return NULL;
+	}
+	if (!PyCallable_Check(_cb)) {
+		PyErr_SetString(PyExc_TypeError, "The status_cb argument must be a callable");
+		return NULL;
+	}
+	if ((_chat_message_native_ptr = pylinphone_ChatMessage_get_native_ptr(_chat_message)) == NULL) {
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p], %p, %p)", __FUNCTION__, self, native_ptr, _chat_message, _chat_message_native_ptr, _cb, _ud);
+	((pylinphone_ChatRoomObject *)self)->send_message_cb = _cb;
+	((pylinphone_ChatRoomObject *)self)->send_message_ud = _ud;
+	linphone_chat_room_send_message2(native_ptr, _chat_message_native_ptr, pylinphone_ChatRoom_callback_chat_message_state_changed, self);
+	pylinphone_dispatch_messages();
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
+	Py_RETURN_NONE;
+}
+
+
 
 static void pylinphone_VideoSize_dealloc(PyObject *self) {
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, self);

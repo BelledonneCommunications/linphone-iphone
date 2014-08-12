@@ -55,7 +55,6 @@ blacklisted_functions = [
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
 	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
 	'linphone_chat_room_create_message_2',	# missing time_t
-	'linphone_chat_room_send_message2',	# to be handwritten because of callback
 	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_payload_type',	# missing PayloadType
 	'linphone_core_find_payload_type',	# missing PayloadType
@@ -103,6 +102,7 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
+	'linphone_chat_room_send_message2',
 	'linphone_core_new',
 	'linphone_core_new_with_config'
 ]
