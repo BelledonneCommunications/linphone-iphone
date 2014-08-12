@@ -23,16 +23,17 @@
 if(GIT_EXECUTABLE)
 	execute_process(
 		COMMAND ${GIT_EXECUTABLE} describe --always
+		WORKING_DIRECTORY ${WORK_DIR}
 		OUTPUT_VARIABLE GIT_REVISION
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define GIT_VERSION \"${GIT_REVISION}\""
+		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"${GIT_REVISION}\""
 		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
 	)
 else()
 	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define GIT_VERSION \"unknown\""
+		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"unknown\""
 		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
 	)
 endif()
