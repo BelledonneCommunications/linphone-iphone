@@ -2589,6 +2589,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getFrom(JNIEnv* 
 	return (jlong) linphone_chat_message_get_from((LinphoneChatMessage*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getTo(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong) linphone_chat_message_get_to((LinphoneChatMessage*)ptr);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
