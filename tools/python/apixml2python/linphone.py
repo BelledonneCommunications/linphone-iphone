@@ -784,7 +784,7 @@ class LinphoneModule(object):
 				method_name = xml_instance_method.get('name')
 				if method_name in blacklisted_functions:
 					continue
-				if method_name in self.internal_instance_method_names:
+				if method_name.replace(c['class_c_function_prefix'], '') in self.internal_instance_method_names:
 					continue
 				m = {}
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
