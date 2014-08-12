@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <linphone/linphonecore_utils.h>
 #include <stdarg.h>
 
+#include "gitversion.h"
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -246,6 +248,7 @@ PyMODINIT_FUNC initlinphone(void) {
 
 	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
 	if (m == NULL) return;
+	if (PyModule_AddStringConstant(m, "__version__", LINPHONE_GIT_REVISION) < 0) return;
 
 {{#enums}}
 	menum = Py_InitModule3("{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, "{{{enum_doc}}}");
