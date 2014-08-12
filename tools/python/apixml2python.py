@@ -45,9 +45,7 @@ blacklisted_functions = [
 	'linphone_call_log_get_start_date',	# missing time_t
 	'linphone_call_log_get_user_pointer',	# rename to linphone_call_log_get_user_data
 	'linphone_call_log_set_user_pointer',	# rename to linphone_call_log_set_user_data
-	'linphone_call_params_get_received_video_size',	# missing MSVideoSize
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
-	'linphone_call_params_get_sent_video_size',	# missing MSVideoSize
 	'linphone_call_params_get_used_audio_codec',	# missing PayloadType
 	'linphone_call_params_get_used_video_codec',	# missing PayloadType
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
@@ -68,7 +66,6 @@ blacklisted_functions = [
 	'linphone_core_get_chat_rooms',	# missing MSList
 	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
 	'linphone_core_get_payload_type_bitrate',	# missing PayloadType
-	'linphone_core_get_preferred_video_size',	# missing MSVideoSize
 	'linphone_core_get_friend_list',	# missing MSList
 	'linphone_core_get_proxy_config_list',	# missing MSList
 	'linphone_core_get_sip_transports',	# missing LCSipTransports
@@ -84,12 +81,10 @@ blacklisted_functions = [
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_payload_type_bitrate',	# missing PayloadType
-	'linphone_core_set_preferred_video_size',	# missing MSVideoSize
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_play_dtmf',	# handling of char
 	'linphone_core_send_dtmf',	# handling of char
 	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
-	'linphone_core_set_preview_video_size',	# missing MSVideoSize
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
 	'linphone_core_subscribe',	# missing LinphoneContent
 	'linphone_event_notify',	# missing LinphoneContent

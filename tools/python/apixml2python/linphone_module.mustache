@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include <Python.h>
+#include <structmember.h>
 #include <linphone/linphonecore.h>
 #include <linphone/linphone_tunnel.h>
 #include <linphone/linphonecore_utils.h>
@@ -35,6 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void pylinphone_dispatch_messages(void);
 static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...);
+
+
+{{> handwritten_declarations}}
+
 
 
 {{#classes}}
@@ -186,7 +191,7 @@ static PyTypeObject pylinphone_{{class_name}}Type = {
 {{/classes}}
 
 
-{{> handwritten}}
+{{> handwritten_definitions}}
 
 
 static PyMethodDef pylinphone_ModuleMethods[] = {
@@ -236,6 +241,9 @@ PyMODINIT_FUNC initlinphone(void) {
 	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;
 {{/classes}}
 
+	/* Hand-written classes. */
+	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return;
+
 	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
 	if (m == NULL) return;
 
@@ -252,4 +260,8 @@ PyMODINIT_FUNC initlinphone(void) {
 	Py_INCREF(&pylinphone_{{class_name}}Type);
 	PyModule_AddObject(m, "{{class_name}}", (PyObject *)&pylinphone_{{class_name}}Type);
 {{/classes}}
+
+	/* Hand-written classes. */
+	Py_INCREF(&pylinphone_VideoSizeType);
+	PyModule_AddObject(m, "VideoSize", (PyObject *)&pylinphone_VideoSizeType);
 }

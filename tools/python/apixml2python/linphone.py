@@ -45,8 +45,11 @@ class ArgumentType:
 		self.type_str = None
 		self.check_func = None
 		self.convert_func = None
+		self.convert_from_func = None
 		self.fmt_str = 'O'
 		self.cfmt_str = '%p'
+		self.use_native_pointer = False
+		self.cast_convert_func_result = True
 		self.__compute()
 
 	def __compute(self):
@@ -132,6 +135,14 @@ class ArgumentType:
 			self.convert_func = 'PyInt_AsLong'
 			self.fmt_str = 'i'
 			self.cfmt_str = '%d'
+		elif self.basic_type == 'MSVideoSize':
+			self.type_str = 'linphone.VideoSize'
+			self.check_func = 'PyLinphoneVideoSize_Check'
+			self.convert_func = 'PyLinphoneVideoSize_AsMSVideoSize'
+			self.convert_from_func = 'PyLinphoneVideoSize_FromMSVideoSize'
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
+			self.cast_convert_func_result = False
 		else:
 			if strip_leading_linphone(self.basic_type) in self.linphone_module.enum_names:
 				self.type_str = 'int'
@@ -139,6 +150,8 @@ class ArgumentType:
 				self.convert_func = 'PyInt_AsLong'
 				self.fmt_str = 'i'
 				self.cfmt_str = '%d'
+			elif '*' in splitted_type:
+				self.use_native_pointer = True
 
 
 class MethodDefinition:
@@ -177,7 +190,7 @@ class MethodDefinition:
 			arg_complete_type = xml_method_arg.get('completetype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
 			self.parse_tuple_format += argument_type.fmt_str
-			if argument_type.fmt_str == 'O':
+			if argument_type.use_native_pointer:
 				body += "\tPyObject * " + arg_name + ";\n"
 				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr;\n"
 			elif strip_leading_linphone(arg_complete_type) in self.linphone_module.enum_names:
@@ -194,7 +207,7 @@ class MethodDefinition:
 		parse_tuple_code = ''
 		if len(self.arg_names) > 0:
 			parse_tuple_code = \
-"""	if (!PyArg_ParseTuple(args, "{fmt}", {args})) {{
+"""if (!PyArg_ParseTuple(args, "{fmt}", {args})) {{
 		return NULL;
 	}}
 """.format(fmt=self.parse_tuple_format, args=', '.join(map(lambda a: '&' + a, self.arg_names)))
@@ -252,27 +265,35 @@ class MethodDefinition:
 		return_from_user_data_code = ''
 		new_from_native_pointer_code = ''
 		ref_native_pointer_code = ''
+		convert_from_code = ''
 		build_value_code = ''
 		result_variable = ''
 		if self.return_complete_type != 'void':
 			if self.build_value_format == 'O':
 				stripped_return_type = strip_leading_linphone(self.return_type)
 				return_type_class = self.find_class_definition(self.return_type)
-				if return_type_class['class_has_user_data']:
-					get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
-					return_from_user_data_code = \
-"""	if ((cresult != NULL) && ({func}(cresult) != NULL)) {{
+				if return_type_class is not None:
+					if return_type_class['class_has_user_data']:
+						get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
+						return_from_user_data_code = \
+"""if ((cresult != NULL) && ({func}(cresult) != NULL)) {{
 		return (PyObject *){func}(cresult);
 	}}
 """.format(func=get_user_data_function)
-				new_from_native_pointer_code = "\tpyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
-				if self.self_arg is not None and return_type_class['class_refcountable']:
-					ref_function = return_type_class['class_c_function_prefix'] + "ref"
-					ref_native_pointer_code = \
-"""	if (cresult != NULL) {{
+					new_from_native_pointer_code = "pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
+					if self.self_arg is not None and return_type_class['class_refcountable']:
+						ref_function = return_type_class['class_c_function_prefix'] + "ref"
+						ref_native_pointer_code = \
+"""if (cresult != NULL) {{
 		{func}(({cast_type})cresult);
 	}}
 """.format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
+				else:
+					return_argument_type = ArgumentType(self.return_type, self.return_complete_type, self.linphone_module)
+					if return_argument_type.convert_from_func is not None:
+						convert_from_code = \
+"""pyresult = {convert_func}(cresult);
+""".format(convert_func=return_argument_type.convert_from_func)
 				result_variable = 'pyresult'
 			else:
 				result_variable = 'cresult'
@@ -284,11 +305,13 @@ class MethodDefinition:
 	{return_from_user_data_code}
 	{new_from_native_pointer_code}
 	{ref_native_pointer_code}
+	{convert_from_code}
 	{build_value_code}
 """.format(c_function_call_code=c_function_call_code,
 		return_from_user_data_code=return_from_user_data_code,
 		new_from_native_pointer_code=new_from_native_pointer_code,
 		ref_native_pointer_code=ref_native_pointer_code,
+		convert_from_code=convert_from_code,
 		build_value_code=build_value_code)
 		return body
 
@@ -316,7 +339,7 @@ class MethodDefinition:
 		if return_int:
 			return_value = "-1"
 		return \
-"""	native_ptr = pylinphone_{class_name}_get_native_ptr(self);
+"""native_ptr = pylinphone_{class_name}_get_native_ptr(self);
 	if (native_ptr == NULL) {{
 		PyErr_SetString(PyExc_TypeError, "Invalid linphone.{class_name} instance");
 		return {return_value};
@@ -352,48 +375,6 @@ class MethodDefinition:
 		while 'const' in splitted_type:
 			splitted_type.remove('const')
 		return ' '.join(splitted_type)
-
-	def ctype_to_str_format(self, name, basic_type, complete_type, with_native_ptr=True):
-		splitted_type = complete_type.split(' ')
-		if basic_type == 'char':
-			if '*' in splitted_type:
-				return ('\\"%s\\"', [name])
-			elif 'unsigned' in splitted_type:
-				return ('%08x', [name])
-		elif basic_type == 'int':
-			# TODO:
-			return ('%d', [name])
-		elif basic_type == 'int8_t':
-			return ('%d', [name])
-		elif basic_type == 'uint8_t':
-			return ('%u', [name])
-		elif basic_type == 'int16_t':
-			return ('%d', [name])
-		elif basic_type == 'uint16_t':
-			return ('%u', [name])
-		elif basic_type == 'int32_t':
-			return ('%d', [name])
-		elif basic_type == 'uint32_t':
-			return ('%u', [name])
-		elif basic_type == 'int64_t':
-			return ('%ld', [name])
-		elif basic_type == 'uint64_t':
-			return ('%lu', [name])
-		elif basic_type == 'size_t':
-			return ('%lu', [name])
-		elif basic_type == 'float':
-			return ('%f', [name])
-		elif basic_type == 'double':
-			return ('%f', [name])
-		elif basic_type == 'bool_t':
-			return ('%d', [name])
-		else:
-			if strip_leading_linphone(basic_type) in self.linphone_module.enum_names:
-				return ('%d', [name])
-			elif with_native_ptr:
-				return ('%p [%p]', [name, name + "_native_ptr"])
-			else:
-				return ('%p', [name])
 
 	def find_class_definition(self, basic_type):
 		basic_type = strip_leading_linphone(basic_type)
@@ -544,10 +525,13 @@ class SetterMethodDefinition(MethodDefinition):
 		if self.first_argument_type.convert_func is None:
 			attribute_conversion_code = "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
 		else:
-			attribute_conversion_code = "{arg_name} = ({arg_type}){convertfunc}(value);\n".format(
-				arg_name="_" + self.first_arg_name, arg_type=self.first_arg_complete_type, convertfunc=self.first_argument_type.convert_func)
+			cast_code = ''
+			if self.first_argument_type.cast_convert_func_result:
+				cast_code = "({arg_type})".format(arg_type=self.first_arg_complete_type)
+			attribute_conversion_code = "{arg_name} = {cast_code}{convertfunc}(value);\n".format(
+				arg_name="_" + self.first_arg_name, cast_code=cast_code, convertfunc=self.first_argument_type.convert_func)
 		attribute_native_ptr_check_code = ''
-		if self.first_argument_type.fmt_str == 'O':
+		if self.first_argument_type.use_native_pointer:
 			attribute_native_ptr_check_code = \
 """{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
 	if ({arg_name}_native_ptr == NULL) {{
@@ -572,7 +556,7 @@ class SetterMethodDefinition(MethodDefinition):
 
 	def format_c_function_call(self):
 		use_native_ptr = ''
-		if self.first_argument_type.fmt_str == 'O':
+		if self.first_argument_type.use_native_pointer:
 			use_native_ptr = '_native_ptr'
 		return \
 """	{method_name}(native_ptr, {arg_name}{use_native_ptr});
