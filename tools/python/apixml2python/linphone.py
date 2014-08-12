@@ -224,7 +224,7 @@ class MethodDefinition:
 			if argument_type.fmt_str == 'O':
 				fmt += ' [' + argument_type.cfmt_str + ']'
 				args.append(arg_name)
-		args=', '.join(args)
+		args = ', '.join(args)
 		if args != '':
 			args = ', ' + args
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s({fmt})\", __FUNCTION__{args});\n".format(fmt=fmt, args=args)
@@ -711,7 +711,8 @@ class LinphoneModule(object):
 				continue
 			e = {}
 			e['enum_name'] = strip_leading_linphone(xml_enum.get('name'))
-			e['enum_doc'] = self.__format_doc(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
+			e['enum_doc'] = self.__format_doc_content(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
+			e['enum_doc'] += "\n\nValues:\n"
 			e['enum_values'] = []
 			xml_enum_values = xml_enum.findall("./values/value")
 			for xml_enum_value in xml_enum_values:
@@ -720,7 +721,10 @@ class LinphoneModule(object):
 				v = {}
 				v['enum_value_cname'] = xml_enum_value.get('name')
 				v['enum_value_name'] = strip_leading_linphone(v['enum_value_cname'])
+				v['enum_value_doc'] = self.__format_doc(xml_enum_value.find('briefdescription'), xml_enum_value.find('detaileddescription'))
+				e['enum_doc'] += '\t' + v['enum_value_name'] + ': ' + v['enum_value_doc'] + '\n'
 				e['enum_values'].append(v)
+			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
 		self.events = []
@@ -898,7 +902,7 @@ class LinphoneModule(object):
 			desc += '\n'
 		return desc
 
-	def __format_doc(self, brief_description, detailed_description):
+	def __format_doc_content(self, brief_description, detailed_description):
 		doc = ''
 		if brief_description is None:
 			brief_description = ''
@@ -908,12 +912,19 @@ class LinphoneModule(object):
 			desc = ''
 			for node in list(detailed_description):
 				desc += self.__format_doc_node(node) + '\n'
-			detailed_description = desc.strip().replace('\n', '\\n')
+			detailed_description = desc.strip()
 		brief_description = brief_description.strip()
 		doc += brief_description
 		if detailed_description != '':
 			if doc != '':
-				doc += '\\n\\n'
-			doc+= detailed_description
-		doc = '\"' + doc + '\"'
+				doc += '\n\n'
+			doc += detailed_description
+		return doc
+
+	def __replace_doc_special_chars(self, doc):
+		return doc.replace('"', '').encode('string-escape')
+
+	def __format_doc(self, brief_description, detailed_description):
+		doc = self.__format_doc_content(brief_description, detailed_description)
+		doc = self.__replace_doc_special_chars(doc)
 		return doc

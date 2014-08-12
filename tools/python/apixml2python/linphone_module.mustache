@@ -163,7 +163,7 @@ static PyTypeObject pylinphone_{{class_name}}Type = {
 	0,	/* tp_setattro */
 	0,	/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,	/* tp_flags */
-	{{{class_doc}}},	/* tp_doc */
+	"{{{class_doc}}}",	/* tp_doc */
 	0,	/* tp_traverse */
 	0,	/* tp_clear */
 	0,	/* tp_richcompare */
@@ -220,7 +220,7 @@ static PyObject * pylinphone_{{enum_name}}_module_method_string(PyObject *self, 
 }
 
 static PyMethodDef pylinphone_{{enum_name}}_ModuleMethods[] = {
-	{ "string", pylinphone_{{enum_name}}_module_method_string, METH_VARARGS, "" },
+	{ "string", pylinphone_{{enum_name}}_module_method_string, METH_VARARGS, "Get a string representation of a linphone.{{enum_name}} value." },
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -241,7 +241,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	if (m == NULL) return;
 
 {{#enums}}
-	menum = Py_InitModule3("{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, {{{enum_doc}}});
+	menum = Py_InitModule3("{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, "{{{enum_doc}}}");
 	if (menum == NULL) return;
 	if (PyModule_AddObject(m, "{{enum_name}}", menum) < 0) return;
 {{#enum_values}}
