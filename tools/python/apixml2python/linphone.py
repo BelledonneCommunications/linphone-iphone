@@ -851,8 +851,10 @@ class LinphoneModule(object):
 			try:
 				for m in c['class_type_methods']:
 					m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
+					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
 				for m in c['class_instance_methods']:
 					m['method_body'] = MethodDefinition(self, c, m['method_xml_node']).format()
+					m['method_doc'] = self.__format_method_doc(m['method_xml_node'])
 			except Exception, e:
 				e.args += (c['class_name'], m['method_name'])
 				raise
@@ -926,5 +928,28 @@ class LinphoneModule(object):
 
 	def __format_doc(self, brief_description, detailed_description):
 		doc = self.__format_doc_content(brief_description, detailed_description)
+		doc = self.__replace_doc_special_chars(doc)
+		return doc
+
+	def __format_method_doc(self, xml_node):
+		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
+		xml_method_return = xml_node.find('./return')
+		xml_method_args = xml_node.findall('./arguments/argument')
+		method_type = xml_node.tag
+		if method_type != 'classmethod' and len(xml_method_args) > 0:
+			xml_method_args = xml_method_args[1:]
+		if len(xml_method_args) > 0:
+			doc += "\n\nArguments:"
+			for xml_method_arg in xml_method_args:
+				arg_name = xml_method_arg.get('name')
+				arg_doc = self.__format_doc_content(None, xml_method_arg.find('description'))
+				doc += '\n\t' + arg_name
+				if arg_doc != '':
+					doc += ': ' + arg_doc
+		if xml_method_return is not None:
+			return_complete_type = xml_method_return.get('completetype')
+			if return_complete_type != 'void':
+				return_doc = self.__format_doc_content(None, xml_method_return.find('description'))
+				doc += '\n\nReturns:\n\t' + return_doc
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
