@@ -356,8 +356,12 @@ LINPHONE_PUBLIC	bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	int linphone_call_log_get_duration(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	float linphone_call_log_get_quality(LinphoneCallLog *cl);
-LINPHONE_PUBLIC	void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
-LINPHONE_PUBLIC	void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
+/** @deprecated Use linphone_call_log_set_user_data() instead. */
+#define linphone_call_log_set_user_pointer(cl, ud) linphone_call_log_set_user_data(cl, ud)
+LINPHONE_PUBLIC	void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *up);
+/** @deprecated Use linphone_call_log_get_user_data() instead. */
+#define linphone_call_log_get_user_pointer(cl) linphone_call_log_get_user_data(cl)
+LINPHONE_PUBLIC	void *linphone_call_log_get_user_data(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
 const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 LINPHONE_PUBLIC	const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
@@ -717,8 +721,12 @@ LINPHONE_PUBLIC	const char* linphone_call_get_authentication_token(LinphoneCall 
 LINPHONE_PUBLIC	bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified);
 LINPHONE_PUBLIC void linphone_call_send_vfu_request(LinphoneCall *call);
-LINPHONE_PUBLIC void *linphone_call_get_user_pointer(LinphoneCall *call);
-LINPHONE_PUBLIC	void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+/** @deprecated Use linphone_call_get_user_data() instead. */
+#define linphone_call_get_user_pointer(call) linphone_call_get_user_data(call)
+LINPHONE_PUBLIC void *linphone_call_get_user_data(LinphoneCall *call);
+/** @deprecated Use linphone_call_set_user_data() instead. */
+#define linphone_call_set_user_pointer(call, ud) linphone_call_set_user_data(call, ud)
+LINPHONE_PUBLIC	void linphone_call_set_user_data(LinphoneCall *call, void *user_data);
 LINPHONE_PUBLIC	void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);

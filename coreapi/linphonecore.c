@@ -288,14 +288,14 @@ const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
 /**
  * Assign a user pointer to the call log.
 **/
-void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
+void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
 
 /**
  * Returns the user pointer associated with the call log.
 **/
-void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
+void *linphone_call_log_get_user_data(const LinphoneCallLog *cl){
 	return cl->user_pointer;
 }
 

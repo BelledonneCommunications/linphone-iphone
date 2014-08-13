@@ -1146,7 +1146,7 @@ const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
  *
  * return user_pointer an opaque user pointer that can be retrieved at any time
 **/
-void *linphone_call_get_user_pointer(LinphoneCall *call)
+void *linphone_call_get_user_data(LinphoneCall *call)
 {
 	return call->user_pointer;
 }
@@ -1158,7 +1158,7 @@ void *linphone_call_get_user_pointer(LinphoneCall *call)
  *
  * the user_pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
 **/
-void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer)
+void linphone_call_set_user_data(LinphoneCall *call, void *user_pointer)
 {
 	call->user_pointer = user_pointer;
 }
