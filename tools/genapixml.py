@@ -335,6 +335,11 @@ class Project:
 					if st.associatedTypedef == td:
 						self.add(CClass(st))
 						break
+			elif ('Linphone' + td.definition) == td.name:
+				st = CStruct(td.name)
+				st.associatedTypedef = td
+				self.add(st)
+				self.add(CClass(st))
 		# Sort classes by length of name (longest first), so that methods are put in the right class
 		self.classes.sort(key = lambda c: len(c.name), reverse = True)
 		for e in self.__events:

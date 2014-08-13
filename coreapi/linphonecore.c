@@ -6260,8 +6260,8 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 }
 
 
-PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
-	PayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
+LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	LinphonePayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
 		return result;
 	} else {
@@ -6713,4 +6713,21 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 
 void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
 	core->file_transfer_server=ms_strdup(server_url);
+}
+
+
+int linphone_payload_type_get_type(const LinphonePayloadType *pt) {
+	return pt->type;
+}
+
+int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt) {
+	return pt->normal_bitrate;
+}
+
+char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
+	return pt->mime_type;
+}
+
+int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
+	return pt->channels;
 }

@@ -42,8 +42,6 @@ blacklisted_functions = [
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_log_get_start_date',	# missing time_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
-	'linphone_call_params_get_used_audio_codec',	# missing PayloadType
-	'linphone_call_params_get_used_video_codec',	# missing PayloadType
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_chat_message_get_file_transfer_information',	# missing LinphoneContent
 	'linphone_chat_message_get_time',	# missing time_t
@@ -52,8 +50,6 @@ blacklisted_functions = [
 	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
 	'linphone_chat_room_create_message_2',	# missing time_t
 	'linphone_core_can_we_add_call',	# private function
-	'linphone_core_enable_payload_type',	# missing PayloadType
-	'linphone_core_find_payload_type',	# missing PayloadType
 	'linphone_core_get_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_get_auth_info_list',	# missing MSList
@@ -61,7 +57,6 @@ blacklisted_functions = [
 	'linphone_core_get_calls',	# missing MSList
 	'linphone_core_get_chat_rooms',	# missing MSList
 	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
-	'linphone_core_get_payload_type_bitrate',	# missing PayloadType
 	'linphone_core_get_friend_list',	# missing MSList
 	'linphone_core_get_proxy_config_list',	# missing MSList
 	'linphone_core_get_sip_transports',	# missing LCSipTransports
@@ -71,14 +66,11 @@ blacklisted_functions = [
 	'linphone_core_get_video_devices',	# returns a list of strings
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_payload_type_enabled',	# missing PayloadType
-	'linphone_core_payload_type_is_vbr',	# missing PayloadType
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
-	'linphone_core_set_payload_type_bitrate',	# missing PayloadType
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_sip_transports',	# missing LCSipTransports

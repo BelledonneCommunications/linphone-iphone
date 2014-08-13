@@ -1342,17 +1342,17 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 }
 
 /**
- * Returns the audio codec used in the call, described as a PayloadType structure.
+ * Returns the audio codec used in the call, described as a LinphonePayloadType structure.
 **/
-const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
+const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
 	return cp->audio_codec;
 }
 
 
 /**
- * Returns the video codec used in the call, described as a PayloadType structure.
+ * Returns the video codec used in the call, described as a LinphonePayloadType structure.
 **/
-const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
+const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
 }
 

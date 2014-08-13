@@ -247,6 +247,48 @@ LinphoneDictionary* lp_config_section_to_dict( const LpConfig* lpconfig, const c
 void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, const LinphoneDictionary* dict);
 
 
+/**
+ * @addtogroup media_parameters
+ * @{
+**/
+
+/**
+ * Object representing an RTP payload type.
+ */
+typedef PayloadType LinphonePayloadType;
+
+/**
+ * Get the type of payload.
+ * @param[in] pt LinphonePayloadType object
+ * @return The type of payload.
+ */
+LINPHONE_PUBLIC int linphone_payload_type_get_type(const LinphonePayloadType *pt);
+
+/**
+ * Get the normal bitrate in bits/s.
+ * @param[in] pt LinphonePayloadType object
+ * @return The normal bitrate in bits/s.
+ */
+LINPHONE_PUBLIC int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt);
+
+/**
+ * Get the mime type.
+ * @param[in] pt LinphonePayloadType object
+ * @return The mime type.
+ */
+LINPHONE_PUBLIC char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt);
+
+/**
+ * Get the number of channels.
+ * @param[in] pt LinphonePayloadType object
+ * @return The number of channels.
+ */
+LINPHONE_PUBLIC int linphone_payload_type_get_channels(const LinphonePayloadType *pt);
+
+/**
+ * @}
+**/
+
 #ifdef IN_LINPHONE
 #include "linphonefriend.h"
 #include "event.h"
@@ -383,8 +425,8 @@ struct _LinphoneCallParams;
 **/
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
-LINPHONE_PUBLIC	const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
-LINPHONE_PUBLIC	const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
@@ -1887,48 +1929,48 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *cod
 /**
  * Tells whether the specified payload type is enabled.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #PayloadType we want to know is enabled or not.
+ * @param[in] pt The #LinphonePayloadType we want to know is enabled or not.
  * @returns TRUE if the payload type is enabled, FALSE if disabled.
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt);
 
 /**
  * Tells whether the specified payload type represents a variable bitrate codec.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #PayloadType we want to know
+ * @param[in] pt The #LinphonePayloadType we want to know
  * @returns TRUE if the payload type represents a VBR codec, FALSE if disabled.
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt);
 
 /**
  * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
  * @param[in] lc the #LinphoneCore object
- * @param[in] pt the #PayloadType to modify.
+ * @param[in] pt the #LinphonePayloadType to modify.
  * @param[in] bitrate the IP bitrate in kbit/s.
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate);
+LINPHONE_PUBLIC void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadType *pt, int bitrate);
 
 /**
  * Get the bitrate explicitely set with linphone_core_set_payload_type_bitrate().
  * @param[in] lc the #LinphoneCore object
- * @param[in] pt the #PayloadType to modify.
+ * @param[in] pt the #LinphonePayloadType to modify.
  * @return bitrate the IP bitrate in kbit/s, or -1 if an error occured.
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePayloadType *pt);
 
 /**
  * Enable or disable the use of the specified payload type.
  * @param[in] lc #LinphoneCore object.
- * @param[in] pt The #PayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
+ * @param[in] pt The #LinphonePayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
  * @param[in] enable TRUE to enable the payload type, FALSE to disable it.
  * @return 0 if successful, any other value otherwise.
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
+LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt, bool_t enable);
 
 /**
  * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algorithm
@@ -1950,7 +1992,7 @@ LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadT
  * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found.
  */
-LINPHONE_PUBLIC	PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
+LINPHONE_PUBLIC	LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
 
 LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
 
