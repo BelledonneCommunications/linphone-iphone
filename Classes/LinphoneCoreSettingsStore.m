@@ -173,12 +173,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (elem && (ai=(LinphoneAuthInfo*)elem->data)){
 			[self setString: linphone_auth_info_get_passwd(ai) forKey:@"password_preference"];
 			[self setString: linphone_auth_info_get_ha1(ai)    forKey:@"ha1_preference"]; // hidden but useful if provisioned
+            [self setString:linphone_auth_info_get_userid(ai)  forKey:@"userid_preference"];
 		}
 	}
 	{
 		[self setString: linphone_core_get_stun_server(lc) forKey:@"stun_preference"];
-        [self
-            setBool:linphone_core_get_firewall_policy(lc)==LinphonePolicyUseIce forKey:@"ice_preference"];
+        [self setBool:linphone_core_get_firewall_policy(lc)==LinphonePolicyUseIce forKey:@"ice_preference"];
 	}
 	
 	{
@@ -188,7 +188,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setInteger:lp_config_get_int(conf, "audio", "codec_bitrate_limit", kLinphoneAudioVbrCodecDefaultBitrate) forKey:@"audio_codec_bitrate_limit_preference"];
 
 	}
-	
+
+    [self setBool:lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "advanced_account_preference", 0) forKey:@"advanced_account_preference"];
+
 	{	
 		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		const char *val;
@@ -345,6 +347,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
 	//mandatory parameters
 	NSString*        username = [self stringForKey:@"username_preference"];
+    NSString*          userID = [self stringForKey:@"userid_preference"];
 	NSString*          domain = [self stringForKey:@"domain_preference"];
     NSString*       transport = [self stringForKey:@"transport_preference"];
     NSString*      accountHa1 = [self stringForKey:@"ha1_preference"];
@@ -397,7 +400,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
 		if (from != 0){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,ha1,NULL,linphone_proxy_config_get_domain(proxyCfg));
+            const char* userid_str = (userID != nil)? [userID UTF8String] : NULL;
+			info=linphone_auth_info_new(linphone_address_get_username(from),userid_str,password,ha1,NULL,linphone_proxy_config_get_domain(proxyCfg));
             linphone_address_destroy(from);
 		}
 
@@ -656,7 +660,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "backgroundmode_preference", isbackgroundModeEnabled);
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "start_at_boot_preference", [self boolForKey:@"start_at_boot_preference"]);
     lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "autoanswer_notif_preference", [self boolForKey:@"autoanswer_notif_preference"]);
-
+    lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "advanced_account_preference", [self boolForKey:@"advanced_account_preference"]);
 
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", firstloginview);

@@ -540,7 +540,23 @@ static UICompositeViewDescription *compositeDescription = nil;
             [hiddenKeys addObject:@"console_button"];
         }
         [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    }
+    } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
+        BOOL advanced = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+
+        if( advanced ){
+            [hiddenKeys removeObject:@"userid_preference"];
+            [hiddenKeys removeObject:@"proxy_preference"];
+            [hiddenKeys removeObject:@"outbound_proxy_preference"];
+            [hiddenKeys removeObject:@"avpf_preference"];
+        } else {
+            [hiddenKeys addObject:@"userid_preference"];
+            [hiddenKeys addObject:@"proxy_preference"];
+            [hiddenKeys addObject:@"outbound_proxy_preference"];
+            [hiddenKeys addObject:@"avpf_preference"];
+        }
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+  }
 }
 
 
@@ -616,6 +632,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(![LinphoneManager isLcReady]) {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't filter settings: Linphone core not read"];
     }
+    LinphoneManager* lm = [LinphoneManager instance];
     NSMutableSet *hiddenKeys = [NSMutableSet set];
     
 #ifndef DEBUG
@@ -650,7 +667,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"backgroundmode_preference"];
         [hiddenKeys addObject:@"start_at_boot_preference"];
     } else {
-         if(![[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]) {
+         if(![lm lpConfigBoolForKey:@"backgroundmode_preference"]) {
              [hiddenKeys addObject:@"start_at_boot_preference"];
          }
     }
@@ -668,7 +685,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
 
-    BOOL random_port = [[LinphoneManager instance] lpConfigBoolForKey:@"random_port_preference"];
+    BOOL random_port = [lm lpConfigBoolForKey:@"random_port_preference"];
     if(random_port) {
         [hiddenKeys addObject:@"port_preference"];
     }
@@ -677,21 +694,28 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"ice_preference"];
     }
 
-    if(![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
+    if(![lm lpConfigBoolForKey:@"debugenable_preference"]) {
         [hiddenKeys addObject:@"console_button"];
     }
     
     if(![LinphoneManager runningOnIpad]) {
         [hiddenKeys addObject:@"preview_preference"];
     }
-    if([[LinphoneManager instance] lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
+    if([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
 		[hiddenKeys addObject:@"wizard_button"];
 	}
 	
 	if (!linphone_core_tunnel_available()){
 		[hiddenKeys addObject:@"tunnel_menu"];
 	}
-	
+
+    if( ![lm lpConfigBoolForKey:@"advanced_account_preference"] ){
+        [hiddenKeys addObject:@"userid_preference"];
+        [hiddenKeys addObject:@"proxy_preference"];
+        [hiddenKeys addObject:@"outbound_proxy_preference"];
+        [hiddenKeys addObject:@"avpf_preference"];
+    }
+
     return hiddenKeys;
 }
 
