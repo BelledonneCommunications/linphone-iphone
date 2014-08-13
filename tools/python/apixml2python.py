@@ -59,6 +59,7 @@ blacklisted_functions = [
 	'linphone_core_enable_payload_type',	# missing PayloadType
 	'linphone_core_find_payload_type',	# missing PayloadType
 	'linphone_core_get_audio_codecs',	# missing PayloadType and MSList
+	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_get_auth_info_list',	# missing MSList
 	'linphone_core_get_call_logs',	# missing MSList
 	'linphone_core_get_calls',	# missing MSList
@@ -73,6 +74,7 @@ blacklisted_functions = [
 	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
 	'linphone_core_get_video_devices',	# returns a list of strings
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
+	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_payload_type_enabled',	# missing PayloadType
 	'linphone_core_payload_type_is_vbr',	# missing PayloadType
 	'linphone_core_publish',	# missing LinphoneContent
