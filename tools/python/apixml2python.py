@@ -71,6 +71,7 @@ blacklisted_functions = [
 	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
+	'linphone_core_get_video_devices',	# returns a list of strings
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_payload_type_enabled',	# missing PayloadType
 	'linphone_core_payload_type_is_vbr',	# missing PayloadType
