@@ -151,7 +151,10 @@ class ArgumentType:
 				self.fmt_str = 'i'
 				self.cfmt_str = '%d'
 			elif '*' in splitted_type:
+				self.type_str = 'linphone.' + strip_leading_linphone(self.basic_type)
 				self.use_native_pointer = True
+			else:
+				self.type_str = 'linphone.' + strip_leading_linphone(self.basic_type)
 
 
 class MethodDefinition:
@@ -849,11 +852,11 @@ class LinphoneModule(object):
 					p['property_doc'] = ''
 					if p.has_key('setter_xml_node'):
 						p['setter_body'] = SetterMethodDefinition(self, c, p['setter_xml_node']).format()
-						p['property_doc'] = self.__format_doc(p['setter_xml_node'].find('briefdescription'), p['setter_xml_node'].find('detaileddescription'))
+						p['property_doc'] = self.__format_setter_doc(p['setter_xml_node'])
 					if p.has_key('getter_xml_node'):
 						p['getter_body'] = GetterMethodDefinition(self, c, p['getter_xml_node']).format()
 						if p['property_doc'] == '':
-							p['property_doc'] = self.__format_doc(p['getter_xml_node'].find('briefdescription'), p['getter_xml_node'].find('detaileddescription'))
+							p['property_doc'] = self.__format_getter_doc(p['getter_xml_node'])
 			except Exception, e:
 				e.args += (c['class_name'], p['property_name'])
 				raise
@@ -932,14 +935,39 @@ class LinphoneModule(object):
 			doc += "\n\nArguments:"
 			for xml_method_arg in xml_method_args:
 				arg_name = xml_method_arg.get('name')
+				arg_type = xml_method_arg.get('type')
+				arg_complete_type = xml_method_arg.get('completetype')
+				argument_type = ArgumentType(arg_type, arg_complete_type, self)
 				arg_doc = self.__format_doc_content(None, xml_method_arg.find('description'))
-				doc += '\n\t' + arg_name
+				doc += '\n\t' + arg_name + ' [' + argument_type.type_str + ']'
 				if arg_doc != '':
 					doc += ': ' + arg_doc
 		if xml_method_return is not None:
+			return_type = xml_method_return.get('type')
 			return_complete_type = xml_method_return.get('completetype')
 			if return_complete_type != 'void':
 				return_doc = self.__format_doc_content(None, xml_method_return.find('description'))
-				doc += '\n\nReturns:\n\t' + return_doc
+				return_argument_type = ArgumentType(return_type, return_complete_type, self)
+				doc += '\n\nReturns:\n\t[' + return_argument_type.type_str + '] ' + return_doc
+		doc = self.__replace_doc_special_chars(doc)
+		return doc
+
+	def __format_setter_doc(self, xml_node):
+		xml_method_arg = xml_node.findall('./arguments/argument')[1]
+		arg_type = xml_method_arg.get('type')
+		arg_complete_type = xml_method_arg.get('completetype')
+		argument_type = ArgumentType(arg_type, arg_complete_type, self)
+		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
+		doc = '[' + argument_type.type_str + '] ' + doc
+		doc = self.__replace_doc_special_chars(doc)
+		return doc
+
+	def __format_getter_doc(self, xml_node):
+		xml_method_return = xml_node.find('./return')
+		return_type = xml_method_return.get('type')
+		return_complete_type = xml_method_return.get('completetype')
+		return_argument_type = ArgumentType(return_type, return_complete_type, self)
+		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
+		doc = '[' + return_argument_type.type_str + '] ' + doc
 		doc = self.__replace_doc_special_chars(doc)
 		return doc

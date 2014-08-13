@@ -284,8 +284,8 @@ static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *k
 }
 
 static PyMemberDef pylinphone_VideoSize_members[] = {
-	{ "width", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, width), 0, "The width of the video" },
-	{ "height", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, height), 0, "The height of the video" },
+	{ "width", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, width), 0, "[int] The width of the video" },
+	{ "height", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, height), 0, "[int] The height of the video" },
 	{ NULL }	/* Sentinel */
 };
 
