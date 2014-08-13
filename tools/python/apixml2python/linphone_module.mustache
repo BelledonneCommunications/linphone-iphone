@@ -139,6 +139,9 @@ static PyMethodDef pylinphone_{{class_name}}_methods[] = {
 {{/class_properties}}
 
 static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
+{{#class_hand_written_properties}}
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "" },
+{{/class_hand_written_properties}}
 {{#class_properties}}
 	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
 {{/class_properties}}

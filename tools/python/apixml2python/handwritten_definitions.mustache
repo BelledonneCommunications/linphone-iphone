@@ -114,6 +114,33 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 	Py_RETURN_NONE;
 }
 
+
+static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure) {
+	PyObject *_list;
+	char **_devices;
+	char *_device;
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_devices = linphone_core_get_video_devices(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_devices != NULL) {
+		PyObject *_item = PyString_FromString(*_devices);
+		PyList_Append(_list, _item);
+		_devices++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}
+
 static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
 	LinphoneCore * cresult;
 	pylinphone_CoreObject *self;

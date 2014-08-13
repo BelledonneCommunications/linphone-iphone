@@ -734,6 +734,7 @@ class LinphoneModule(object):
 			c['class_type_methods'] = []
 			c['class_type_hand_written_methods'] = []
 			c['class_instance_hand_written_methods'] = []
+			c['class_hand_written_properties'] = []
 			c['class_object_members'] = ''
 			if c['class_name'] == 'Core':
 				c['class_object_members'] = "\tPyObject *vtable_dict;"
@@ -792,31 +793,45 @@ class LinphoneModule(object):
 				p['property_name'] = property_name
 				xml_property_getter = xml_property.find("./getter")
 				xml_property_setter = xml_property.find("./setter")
-				if xml_property_getter is not None and (
-					xml_property_getter.get('name') in blacklisted_functions or xml_property_getter.get('deprecated') == 'true'):
-					continue
-				if xml_property_setter is not None and (
-					xml_property_setter.get('name') in blacklisted_functions or xml_property_setter.get('deprecated') == 'true'):
-					continue
+				handwritten_property = False
 				if xml_property_getter is not None:
-					xml_property_getter.set('property_name', property_name)
-					p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
-					p['getter_xml_node'] = xml_property_getter
-					p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
-					p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
-					p['getter_definition_end'] = "}"
-				else:
-					p['getter_reference'] = "NULL"
+					if xml_property_getter.get('name') in blacklisted_functions or xml_property_getter.get('deprecated') == 'true':
+						continue
+					elif xml_property_getter.get('name') in hand_written_functions:
+						handwritten_property = True
 				if xml_property_setter is not None:
-					xml_property_setter.set('property_name', property_name)
-					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
-					p['setter_xml_node'] = xml_property_setter
-					p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
-					p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
-					p['setter_definition_end'] = "}"
+					if xml_property_setter.get('name') in blacklisted_functions or xml_property_setter.get('deprecated') == 'true':
+						continue
+					elif xml_property_setter.get('name') in hand_written_functions:
+						handwritten_property = True
+				if handwritten_property:
+					p['getter_reference'] = 'NULL'
+					p['setter_reference'] = 'NULL'
+					if xml_property_getter is not None:
+						p['getter_reference'] = '(getter)pylinphone_' + c['class_name'] + '_get_' + p['property_name']
+					if xml_property_setter is not None:
+						p['setter_reference'] = '(setter)pylinphone_' + c['class_name'] + '_set_' + p['property_name']
+					c['class_hand_written_properties'].append(p)
 				else:
-					p['setter_reference'] = "NULL"
-				c['class_properties'].append(p)
+					if xml_property_getter is not None:
+						xml_property_getter.set('property_name', property_name)
+						p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
+						p['getter_xml_node'] = xml_property_getter
+						p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
+						p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
+						p['getter_definition_end'] = "}"
+					else:
+						p['getter_reference'] = "NULL"
+					if xml_property_setter is not None:
+						xml_property_setter.set('property_name', property_name)
+						p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
+						p['setter_xml_node'] = xml_property_setter
+						p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
+						p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
+						p['setter_definition_end'] = "}"
+					else:
+						p['setter_reference'] = "NULL"
+					c['class_properties'].append(p)
 			self.classes.append(c)
 		# Format events definitions
 		for ev in self.events:

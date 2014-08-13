@@ -63,7 +63,6 @@ blacklisted_functions = [
 	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
-	'linphone_core_get_video_devices',	# returns a list of strings
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_publish',	# missing LinphoneContent
@@ -94,6 +93,7 @@ blacklisted_functions = [
 ]
 hand_written_functions = [
 	'linphone_chat_room_send_message2',
+	'linphone_core_get_video_devices',
 	'linphone_core_new',
 	'linphone_core_new_with_config'
 ]
