@@ -258,6 +258,15 @@ PyMODINIT_FUNC initlinphone(void) {
 {{/enum_values}}
 {{/enums}}
 
+	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of linphone.PayloadType.");
+	if (menum == NULL) return;
+	if (PyModule_AddObject(m, "PayloadTypeType", menum) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_TEXT", PAYLOAD_TEXT) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_OTHER", PAYLOAD_OTHER) < 0) return;
+
 {{#classes}}
 	Py_INCREF(&pylinphone_{{class_name}}Type);
 	PyModule_AddObject(m, "{{class_name}}", (PyObject *)&pylinphone_{{class_name}}Type);

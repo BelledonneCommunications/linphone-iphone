@@ -365,3 +365,42 @@ PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
 	}
 	return pyret;
 }
+
+
+static PyObject * pylinphone_PayloadTypeType_module_method_string(PyObject *self, PyObject *args) {
+	const char *value_str = "[invalid]";
+	int value;
+	PyObject *pyret;
+	if (!PyArg_ParseTuple(args, "i", &value)) {
+		return NULL;
+	}
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%d)", __FUNCTION__, value);
+	switch (value) {
+		case PAYLOAD_AUDIO_CONTINUOUS:
+			value_str = "PAYLOAD_AUDIO_CONTINUOUS";
+			break;
+		case PAYLOAD_AUDIO_PACKETIZED:
+			value_str = "PAYLOAD_AUDIO_PACKETIZED";
+			break;
+		case PAYLOAD_VIDEO:
+			value_str = "PAYLOAD_VIDEO";
+			break;
+		case PAYLOAD_TEXT:
+			value_str = "PAYLOAD_TEXT";
+			break;
+		case PAYLOAD_OTHER:
+			value_str = "PAYLOAD_OTHER";
+			break;
+		default:
+			break;
+	}
+	pyret = Py_BuildValue("z", value_str);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static PyMethodDef pylinphone_PayloadTypeType_ModuleMethods[] = {
+	{ "string", pylinphone_PayloadTypeType_module_method_string, METH_VARARGS, "Get a string representation of a linphone.PayloadTypeType value." },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
