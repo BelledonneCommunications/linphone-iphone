@@ -749,8 +749,6 @@ class LinphoneModule(object):
 					ev['event_name'] = compute_event_name(ev['event_cname'])
 					ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
 					self.events.append(ev)
-			elif c['class_name'] == 'ChatRoom':
-				c['class_object_members'] = "\tPyObject *send_message_cb;\n\tPyObject *send_message_ud;"
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
 				if xml_type_method.get('deprecated') == 'true':
