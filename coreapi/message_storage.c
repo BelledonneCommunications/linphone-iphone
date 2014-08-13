@@ -54,6 +54,7 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
 static void create_chat_message(char **argv, void *data){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	LinphoneAddress *from;
+	LinphoneAddress *to;
 
 	unsigned int storage_id = atoi(argv[0]);
 
@@ -65,12 +66,18 @@ static void create_chat_message(char **argv, void *data){
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
 			from=linphone_address_new(argv[2]);
+			to=linphone_address_new(argv[1]);
 		} else {
 			new_message->dir=LinphoneChatMessageOutgoing;
 			from=linphone_address_new(argv[1]);
+			to=linphone_address_new(argv[2]);
 		}
 		linphone_chat_message_set_from(new_message,from);
 		linphone_address_destroy(from);
+		if (to){
+			linphone_chat_message_set_to(new_message,to);
+			linphone_address_destroy(to);
+		}
 
 		if( argv[9] != NULL ){
 			new_message->time = (time_t)atol(argv[9]);
