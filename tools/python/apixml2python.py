@@ -50,28 +50,18 @@ blacklisted_functions = [
 	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
 	'linphone_chat_room_create_message_2',	# missing time_t
 	'linphone_core_can_we_add_call',	# private function
-	'linphone_core_get_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_get_auth_info_list',	# missing MSList
-	'linphone_core_get_call_logs',	# missing MSList
-	'linphone_core_get_calls',	# missing MSList
-	'linphone_core_get_chat_rooms',	# missing MSList
 	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
-	'linphone_core_get_friend_list',	# missing MSList
-	'linphone_core_get_proxy_config_list',	# missing MSList
 	'linphone_core_get_sip_transports',	# missing LCSipTransports
 	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
-	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
-	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
-	'linphone_core_set_video_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
 	'linphone_core_subscribe',	# missing LinphoneContent
