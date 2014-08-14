@@ -117,8 +117,7 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 
 static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure) {
 	PyObject *_list;
-	char **_devices;
-	char *_device;
+	const char **_devices;
 	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
 
 	if (native_ptr == NULL) {
