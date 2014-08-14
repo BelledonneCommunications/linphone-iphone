@@ -70,20 +70,20 @@ class ArgumentType:
 		elif self.basic_type == 'int':
 			if 'unsigned' in splitted_type:
 				self.type_str = 'unsigned int'
-				self.check_func = 'PyLong_Check'
-				self.convert_func = 'PyLong_AsUnsignedLong'
+				self.check_func = 'PyInt_Check'
+				self.convert_func = 'PyInt_AsUnsignedLongMask'
 				self.fmt_str = 'I'
 				self.cfmt_str = '%u'
 			else:
 				self.type_str = 'int'
-				self.check_func = 'PyLong_Check'
-				self.convert_func = 'PyLong_AsLong'
+				self.check_func = 'PyInt_Check'
+				self.convert_func = 'PyInt_AS_LONG'
 				self.fmt_str = 'i'
 				self.cfmt_str = '%d'
 		elif self.basic_type in ['int8_t', 'int16_t' 'int32_t']:
 			self.type_str = 'int'
-			self.check_func = 'PyLong_Check'
-			self.convert_func = 'PyLong_AsLong'
+			self.check_func = 'PyInt_Check'
+			self.convert_func = 'PyInt_AS_LONG'
 			if self.basic_type == 'int8_t':
 					self.fmt_str = 'c'
 			elif self.basic_type == 'int16_t':
@@ -93,8 +93,8 @@ class ArgumentType:
 			self.cfmt_str = '%d'
 		elif self.basic_type in ['uint8_t', 'uint16_t', 'uint32_t']:
 			self.type_str = 'unsigned int'
-			self.check_func = 'PyLong_Check'
-			self.convert_func = 'PyLong_AsUnsignedLong'
+			self.check_func = 'PyInt_Check'
+			self.convert_func = 'PyInt_AsUnsignedLongMask'
 			if self.basic_type == 'uint8_t':
 				self.fmt_str = 'b'
 			elif self.basic_type == 'uint16_t':
@@ -116,8 +116,8 @@ class ArgumentType:
 			self.cfmt_str = '%lu'
 		elif self.basic_type == 'size_t':
 			self.type_str = 'size_t'
-			self.check_func = 'PyLong_Check'
-			self.convert_func = 'PyLong_AsSsize_t'
+			self.check_func = 'PyInt_Check'
+			self.convert_func = 'PyInt_AsSsize_t'
 			self.fmt_str = 'n'
 			self.cfmt_str = '%lu'
 		elif self.basic_type in ['float', 'double']:
