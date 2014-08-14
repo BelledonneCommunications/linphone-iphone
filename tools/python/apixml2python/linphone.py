@@ -15,6 +15,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
+from sets import Set
 import sys
 
 
@@ -38,9 +39,10 @@ def compute_event_name(s):
 
 
 class ArgumentType:
-	def __init__(self, basic_type, complete_type, linphone_module):
+	def __init__(self, basic_type, complete_type, contained_type, linphone_module):
 		self.basic_type = basic_type
 		self.complete_type = complete_type
+		self.contained_type = contained_type
 		self.linphone_module = linphone_module
 		self.type_str = None
 		self.check_func = None
@@ -51,6 +53,8 @@ class ArgumentType:
 		self.use_native_pointer = False
 		self.cast_convert_func_result = True
 		self.__compute()
+		if self.basic_type == 'MSList' and self.contained_type is not None:
+			self.linphone_module.mslist_types.add(self.contained_type)
 
 	def __compute(self):
 		splitted_type = self.complete_type.split(' ')
@@ -135,6 +139,13 @@ class ArgumentType:
 			self.convert_func = 'PyInt_AsLong'
 			self.fmt_str = 'i'
 			self.cfmt_str = '%d'
+		elif self.basic_type == 'MSList':
+			self.type_str = 'list of linphone.' + self.contained_type
+			self.check_func = 'PyList_Check'
+			self.convert_func = 'PyList_AsMSListOf' + self.contained_type
+			self.convert_from_func = 'PyList_FromMSListOf' + self.contained_type
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
 		elif self.basic_type == 'MSVideoSize':
 			self.type_str = 'linphone.VideoSize'
 			self.check_func = 'PyLinphoneVideoSize_Check'
@@ -165,6 +176,7 @@ class MethodDefinition:
 		self.build_value_format = ''
 		self.return_type = 'void'
 		self.return_complete_type = 'void'
+		self.return_contained_type = None
 		self.method_node = method_node
 		self.class_ = class_
 		self.linphone_module = linphone_module
@@ -178,9 +190,10 @@ class MethodDefinition:
 		if self.xml_method_return is not None:
 			self.return_type = self.xml_method_return.get('type')
 			self.return_complete_type = self.xml_method_return.get('completetype')
+			self.return_contained_type = self.xml_method_return.get('containedtype')
 		if self.return_complete_type != 'void':
 			body += "\t" + self.return_complete_type + " cresult;\n"
-			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.linphone_module)
+			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 			self.build_value_format = argument_type.fmt_str
 			if self.build_value_format == 'O':
 				body += "\tPyObject * pyresult;\n"
@@ -191,7 +204,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			self.parse_tuple_format += argument_type.fmt_str
 			if argument_type.use_native_pointer:
 				body += "\tPyObject * " + arg_name + ";\n"
@@ -234,9 +248,10 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
+			arg_contained_type = xml_method_arg.get('containedtype')
 			if fmt != '':
 				fmt += ', '
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			fmt += argument_type.cfmt_str
 			args.append(arg_name)
 			if argument_type.fmt_str == 'O':
@@ -254,7 +269,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.convert_func is None:
 				arg_names.append(arg_name + "_native_ptr")
 			else:
@@ -294,7 +310,7 @@ class MethodDefinition:
 	}}
 """.format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
 				else:
-					return_argument_type = ArgumentType(self.return_type, self.return_complete_type, self.linphone_module)
+					return_argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 					if return_argument_type.convert_from_func is not None:
 						convert_from_code = \
 """pyresult = {convert_func}(cresult);
@@ -357,7 +373,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				body += \
 """	if (({arg_name} != Py_None) && !PyObject_IsInstance({arg_name}, (PyObject *)&pylinphone_{arg_type}Type)) {{
@@ -374,7 +391,8 @@ class MethodDefinition:
 			arg_name = "_" + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				body += \
 """	if (({arg_name} != NULL) && ({arg_name} != Py_None)) {{
@@ -568,7 +586,7 @@ class SetterMethodDefinition(MethodDefinition):
 		return \
 """	{native_ptr_check_code}
 	if (value == NULL) {{
-		PyErr_SetString(PyExc_TypeError, "Cannot delete the {attribute_name} attribute.");
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the '{attribute_name}' attribute.");
 		return -1;
 	}}
 	{attribute_type_check_code}
@@ -603,8 +621,9 @@ class SetterMethodDefinition(MethodDefinition):
 		self.attribute_name = self.method_node.get('property_name')
 		self.first_arg_type = self.xml_method_args[0].get('type')
 		self.first_arg_complete_type = self.xml_method_args[0].get('completetype')
+		self.first_arg_contained_type = self.xml_method_args[0].get('containedtype')
 		self.first_arg_name = self.xml_method_args[0].get('name')
-		self.first_argument_type = ArgumentType(self.first_arg_type, self.first_arg_complete_type, self.linphone_module)
+		self.first_argument_type = ArgumentType(self.first_arg_type, self.first_arg_complete_type, self.first_arg_contained_type, self.linphone_module)
 		self.first_arg_class = strip_leading_linphone(self.first_arg_type)
 
 class EventCallbackMethodDefinition(MethodDefinition):
@@ -621,7 +640,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = 'py' + xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				specific += "\tPyObject * " + arg_name + " = NULL;\n"
 		return "{common}\n{specific}".format(common=common, specific=specific)
@@ -632,7 +652,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				type_class = self.find_class_definition(arg_type)
 				get_user_data_code = ''
@@ -655,9 +676,10 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
+			arg_contained_type = xml_method_arg.get('containedtype')
 			if fmt != '':
 				fmt += ', '
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			fmt += argument_type.cfmt_str
 			args.append(arg_name)
 		args=', '.join(args)
@@ -672,7 +694,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			fmt += argument_type.fmt_str
 			if argument_type.fmt_str == 'O':
 				args.append('py' + arg_name)
@@ -713,6 +736,7 @@ class LinphoneModule(object):
 	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
+		self.mslist_types = Set([])
 		self.enums = []
 		self.enum_names = []
 		xml_enums = tree.findall("./enums/enum")
@@ -908,6 +932,14 @@ class LinphoneModule(object):
 			except Exception, e:
 				e.args += (c['class_name'], 'dealloc_body')
 				raise
+		# Convert mslist_types to a list of dictionaries for the template
+		d = []
+		for mslist_type in self.mslist_types:
+			t = {}
+			t['c_contained_type'] = mslist_type
+			t['python_contained_type'] = strip_leading_linphone(mslist_type)
+			d.append(t)
+		self.mslist_types = d
 
 	def __format_doc_node(self, node):
 		desc = ''
@@ -973,7 +1005,8 @@ class LinphoneModule(object):
 				arg_name = xml_method_arg.get('name')
 				arg_type = xml_method_arg.get('type')
 				arg_complete_type = xml_method_arg.get('completetype')
-				argument_type = ArgumentType(arg_type, arg_complete_type, self)
+				arg_contained_type = xml_method_arg.get('containedtype')
+				argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self)
 				arg_doc = self.__format_doc_content(None, xml_method_arg.find('description'))
 				doc += '\n\t' + arg_name + ' [' + argument_type.type_str + ']'
 				if arg_doc != '':
@@ -981,9 +1014,10 @@ class LinphoneModule(object):
 		if xml_method_return is not None:
 			return_type = xml_method_return.get('type')
 			return_complete_type = xml_method_return.get('completetype')
+			return_contained_type = xml_method_return.get('containedtype')
 			if return_complete_type != 'void':
 				return_doc = self.__format_doc_content(None, xml_method_return.find('description'))
-				return_argument_type = ArgumentType(return_type, return_complete_type, self)
+				return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
 				doc += '\n\nReturns:\n\t[' + return_argument_type.type_str + '] ' + return_doc
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
@@ -992,7 +1026,8 @@ class LinphoneModule(object):
 		xml_method_arg = xml_node.findall('./arguments/argument')[1]
 		arg_type = xml_method_arg.get('type')
 		arg_complete_type = xml_method_arg.get('completetype')
-		argument_type = ArgumentType(arg_type, arg_complete_type, self)
+		arg_contained_type = xml_method_arg.get('containedtype')
+		argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self)
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + argument_type.type_str + '] ' + doc
 		doc = self.__replace_doc_special_chars(doc)
@@ -1002,7 +1037,8 @@ class LinphoneModule(object):
 		xml_method_return = xml_node.find('./return')
 		return_type = xml_method_return.get('type')
 		return_complete_type = xml_method_return.get('completetype')
-		return_argument_type = ArgumentType(return_type, return_complete_type, self)
+		return_contained_type = xml_method_return.get('containedtype')
+		return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + return_argument_type.type_str + '] ' + doc
 		doc = self.__replace_doc_special_chars(doc)
