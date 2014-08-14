@@ -10,3 +10,5 @@ typedef struct {
 int PyLinphoneVideoSize_Check(PyObject *p);
 MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj);
 PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs);
+time_t PyDateTime_As_time_t(PyObject *obj);
+PyObject * PyDateTime_From_time_t(time_t t);

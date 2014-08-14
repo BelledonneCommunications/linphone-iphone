@@ -139,6 +139,13 @@ class ArgumentType:
 			self.convert_func = 'PyInt_AsLong'
 			self.fmt_str = 'i'
 			self.cfmt_str = '%d'
+		elif self.basic_type == 'time_t':
+			self.type_str = 'DateTime'
+			self.check_func = 'PyDateTime_Check'
+			self.convert_func = 'PyDateTime_As_time_t'
+			self.convert_from_func = 'PyDateTime_From_time_t'
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
 		elif self.basic_type == 'MSList':
 			self.type_str = 'list of linphone.' + self.contained_type
 			self.check_func = 'PyList_Check'

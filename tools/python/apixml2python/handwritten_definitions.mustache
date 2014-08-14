@@ -393,6 +393,39 @@ PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
 }
 
 
+time_t PyDateTime_As_time_t(PyObject *obj) {
+}
+
+PyObject * PyDateTime_From_time_t(time_t t) {
+	PyObject *pyret = NULL;
+	PyObject *datetime_module;
+	PyObject *datetime_class;
+	if (t == -1) {
+		Py_RETURN_NONE;
+	}
+	datetime_module = PyImport_ImportModule("datetime");
+	if (datetime_module != NULL) {
+		PyObject *datetime_class = PyObject_GetAttrString(datetime_module, "datetime");
+		if (datetime_class != NULL) {
+			PyObject *utcfromtimestamp = PyObject_GetAttrString(datetime_class, "utcfromtimestamp");
+			if (utcfromtimestamp != NULL) {
+				pyret = PyEval_CallObject(utcfromtimestamp, Py_BuildValue("(f)", (float)t));
+				if (pyret == NULL) {
+					PyErr_Print();
+				}
+				Py_DECREF(utcfromtimestamp);
+			}
+			Py_DECREF(datetime_class);
+		}
+		Py_DECREF(datetime_module);
+	}
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
 static PyObject * pylinphone_PayloadTypeType_module_method_string(PyObject *self, PyObject *args) {
 	const char *value_str = "[invalid]";
 	int value;
