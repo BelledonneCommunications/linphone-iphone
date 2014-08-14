@@ -195,7 +195,7 @@ class MethodDefinition:
 			self.parse_tuple_format += argument_type.fmt_str
 			if argument_type.use_native_pointer:
 				body += "\tPyObject * " + arg_name + ";\n"
-				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr;\n"
+				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr = NULL;\n"
 			elif strip_leading_linphone(arg_complete_type) in self.linphone_module.enum_names:
 				body += "\tint " + arg_name + ";\n"
 			else:
@@ -217,9 +217,11 @@ class MethodDefinition:
 		return \
 """	{class_native_ptr_check_code}
 	{parse_tuple_code}
+	{args_type_check_code}
 	{args_native_ptr_check_code}
 """.format(class_native_ptr_check_code=class_native_ptr_check_code,
 		parse_tuple_code=parse_tuple_code,
+		args_type_check_code=self.format_args_type_check(),
 		args_native_ptr_check_code=self.format_args_native_pointer_check())
 
 	def format_enter_trace(self):
@@ -349,6 +351,23 @@ class MethodDefinition:
 	}}
 """.format(class_name=self.class_['class_name'], return_value=return_value)
 
+	def format_args_type_check(self):
+		body = ''
+		for xml_method_arg in self.xml_method_args:
+			arg_name = "_" + xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
+			if argument_type.fmt_str == 'O':
+				body += \
+"""	if (({arg_name} != Py_None) && !PyObject_IsInstance({arg_name}, (PyObject *)&pylinphone_{arg_type}Type)) {{
+		PyErr_SetString(PyExc_TypeError, "The '{arg_name}' arguments must be a {type_str} instance.");
+		return NULL;
+	}}
+""".format(arg_name=arg_name, arg_type=strip_leading_linphone(arg_type), type_str=argument_type.type_str)
+		body = body[1:] # Remove leading '\t'
+		return body
+
 	def format_args_native_pointer_check(self):
 		body = ''
 		for xml_method_arg in self.xml_method_args:
@@ -358,10 +377,13 @@ class MethodDefinition:
 			argument_type = ArgumentType(arg_type, arg_complete_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
 				body += \
-"""	if (({arg_name}_native_ptr = pylinphone_{arg_type}_get_native_ptr({arg_name})) == NULL) {{
-		return NULL;
+"""	if (({arg_name} != NULL) && ({arg_name} != Py_None)) {{
+		if (({arg_name}_native_ptr = pylinphone_{arg_type}_get_native_ptr({arg_name})) == NULL) {{
+			return NULL;
+		}}
 	}}
 """.format(arg_name=arg_name, arg_type=strip_leading_linphone(arg_type))
+		body = body[1:] # Remove leading '\t'
 		return body
 
 	def parse_method_node(self):
@@ -510,8 +532,8 @@ class SetterMethodDefinition(MethodDefinition):
 	def format_arguments_parsing(self):
 		if self.first_argument_type.check_func is None:
 			attribute_type_check_code = \
-"""if (!PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
-		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a linphone.{class_name} instance");
+"""if ((value != Py_None) && !PyObject_IsInstance(value, (PyObject *)&pylinphone_{class_name}Type)) {{
+		PyErr_SetString(PyExc_TypeError, "The '{attribute_name}' attribute value must be a linphone.{class_name} instance.");
 		return -1;
 	}}
 """.format(class_name=self.first_arg_class, attribute_name=self.attribute_name)
@@ -521,7 +543,7 @@ class SetterMethodDefinition(MethodDefinition):
 				checknotnone = "(value != Py_None) && "
 			attribute_type_check_code = \
 """if ({checknotnone}!{checkfunc}(value)) {{
-		PyErr_SetString(PyExc_TypeError, "The {attribute_name} attribute value must be a {type_str}");
+		PyErr_SetString(PyExc_TypeError, "The '{attribute_name}' attribute value must be a {type_str}.");
 		return -1;
 	}}
 """.format(checknotnone=checknotnone, checkfunc=self.first_argument_type.check_func, attribute_name=self.attribute_name, type_str=self.first_argument_type.type_str)
@@ -536,16 +558,17 @@ class SetterMethodDefinition(MethodDefinition):
 		attribute_native_ptr_check_code = ''
 		if self.first_argument_type.use_native_pointer:
 			attribute_native_ptr_check_code = \
-"""{arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name});
-	if ({arg_name}_native_ptr == NULL) {{
-		PyErr_SetString(PyExc_TypeError, "Invalid linphone.{arg_class} instance");
-		return -1;
+"""if ({arg_name} != Py_None) {{
+		if (({arg_name}_native_ptr = pylinphone_{arg_class}_get_native_ptr({arg_name})) == NULL) {{
+			PyErr_SetString(PyExc_TypeError, "Invalid linphone.{arg_class} instance.");
+			return -1;
+		}}
 	}}
 """.format(arg_name="_" + self.first_arg_name, arg_class=self.first_arg_class)
 		return \
 """	{native_ptr_check_code}
 	if (value == NULL) {{
-		PyErr_SetString(PyExc_TypeError, "Cannot delete the {attribute_name} attribute");
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the {attribute_name} attribute.");
 		return -1;
 	}}
 	{attribute_type_check_code}
