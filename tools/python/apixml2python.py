@@ -67,11 +67,12 @@ blacklisted_functions = [
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
+	'linphone_core_set_video_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
 	'linphone_core_subscribe',	# missing LinphoneContent
 	'linphone_event_notify',	# missing LinphoneContent

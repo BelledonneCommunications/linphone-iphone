@@ -1466,6 +1466,8 @@ LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, st
 
 /**
  * Returns the list of available audio codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the MSList points a PayloadType
  * structure holding the codec information.
@@ -1480,6 +1482,8 @@ const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc)
 
 /**
  * Returns the list of available video codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the MSList points a PayloadType
  * structure holding the codec information.
@@ -1631,6 +1635,9 @@ LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
 
 /**
  * Sets the list of audio codecs.
+ * @param[in] lc The LinphoneCore object
+ * @param[in] codecs \mslist{PayloadType}
+ * @return 0
  *
  * @ingroup media_parameters
  * The list is taken by the LinphoneCore thus the application should not free it.
@@ -1646,6 +1653,9 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 
 /**
  * Sets the list of video codecs.
+ * @param[in] lc The LinphoneCore object
+ * @param[in] codecs \mslist{PayloadType}
+ * @return 0
  *
  * @ingroup media_parameters
  * The list is taken by the LinphoneCore thus the application should not free it.
@@ -3672,6 +3682,8 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
 
 /**
  * Returns the current list of calls.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneCall}
  *
  * Note that this list is read-only and might be changed by the core after a function call to linphone_core_iterate().
  * Similarly the LinphoneCall objects inside it might be destroyed without prior notice.
@@ -4814,6 +4826,8 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 
 /**
  * Get the list of call logs (past calls).
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneCallLog}
  *
  * @ingroup call_logs
 **/

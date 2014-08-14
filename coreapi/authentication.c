@@ -378,6 +378,8 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 
 /**
  * Returns an unmodifiable list of currently entered LinphoneAuthInfo.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneAuthInfo}
 **/
 const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 	return lc->auth_info;

@@ -1198,6 +1198,8 @@ int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **conf
 
 /**
  * Returns an unmodifiable list of entered proxy configurations.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneProxyConfig}
 **/
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;

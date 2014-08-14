@@ -34,7 +34,7 @@ DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
 DISTRIBUTE_GROUP_DOC   = NO
 TAB_SIZE               = 8
-ALIASES                = 
+ALIASES                = mslist{1}="A list of \ref \1 objects. \xmlonly <mslist>\1</mslist> \endxmlonly"
 OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 SUBGROUPING            = YES
