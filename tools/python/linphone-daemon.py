@@ -3,7 +3,7 @@ import logging
 import sys
 import threading
 import time
-from linphone import linphone
+import linphone
 
 
 class Response:
