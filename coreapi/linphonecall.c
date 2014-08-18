@@ -236,6 +236,14 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
+			int sample_rate = payload_type_get_rate(pt);
+
+			if( strcasecmp("G722",pt->mime_type) == 0 ){
+				/* G722 spec says 8000 but the codec actually requires 16000 */
+				ms_debug("Correcting sample rate for G722");
+				sample_rate = 16000;
+			}
+
 			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
 				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
 					   pt->mime_type,pt->clock_rate,bandwidth_limit);
@@ -244,7 +252,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 			if (linphone_core_check_payload_type_usability(lc,pt)){
 				l=ms_list_append(l,payload_type_clone(pt));
 				nb++;
-				if (max_sample_rate && payload_type_get_rate(pt)>*max_sample_rate) *max_sample_rate=payload_type_get_rate(pt);
+				if (max_sample_rate && sample_rate>*max_sample_rate) *max_sample_rate=sample_rate;
 			}
 		}
 		if ((nb_codecs_limit > 0) && (nb >= nb_codecs_limit)) break;
