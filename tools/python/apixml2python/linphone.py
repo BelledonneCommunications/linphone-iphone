@@ -50,6 +50,7 @@ class ArgumentType:
 		self.convert_from_func = None
 		self.fmt_str = 'O'
 		self.cfmt_str = '%p'
+		self.cnativefmt_str = '%p'
 		self.use_native_pointer = False
 		self.cast_convert_func_result = True
 		self.__compute()
@@ -146,6 +147,7 @@ class ArgumentType:
 			self.convert_from_func = 'PyDateTime_From_time_t'
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
+			self.cnativefmt_str = "%ld"
 		elif self.basic_type == 'MSList':
 			self.type_str = 'list of linphone.' + self.contained_type
 			self.check_func = 'PyList_Check'
@@ -214,9 +216,12 @@ class MethodDefinition:
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			self.parse_tuple_format += argument_type.fmt_str
-			if argument_type.use_native_pointer:
+			if argument_type.fmt_str == 'O' and argument_type.use_native_pointer:
 				body += "\tPyObject * " + arg_name + ";\n"
 				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr = NULL;\n"
+			elif argument_type.fmt_str == 'O' and argument_type.convert_func is not None:
+				body += "\tPyObject * " + arg_name + ";\n"
+				body += "\t" + arg_complete_type + " " + arg_name + "_native_obj;\n"
 			elif strip_leading_linphone(arg_complete_type) in self.linphone_module.enum_names:
 				body += "\tint " + arg_name + ";\n"
 			else:
@@ -235,15 +240,28 @@ class MethodDefinition:
 		return NULL;
 	}}
 """.format(fmt=self.parse_tuple_format, args=', '.join(map(lambda a: '&' + a, self.arg_names)))
+		args_conversion_code = ''
+		for xml_method_arg in self.xml_method_args:
+			arg_name = "_" + xml_method_arg.get('name')
+			arg_type = xml_method_arg.get('type')
+			arg_complete_type = xml_method_arg.get('completetype')
+			arg_contained_type = xml_method_arg.get('containedtype')
+			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
+			if argument_type.fmt_str == 'O' and argument_type.convert_func is not None:
+				args_conversion_code += \
+"""	{arg_name}_native_obj = {convert_func}({arg_name});
+""".format(arg_name=arg_name, convert_func=argument_type.convert_func)
 		return \
 """	{class_native_ptr_check_code}
 	{parse_tuple_code}
 	{args_type_check_code}
 	{args_native_ptr_check_code}
+	{args_conversion_code}
 """.format(class_native_ptr_check_code=class_native_ptr_check_code,
 		parse_tuple_code=parse_tuple_code,
 		args_type_check_code=self.format_args_type_check(),
-		args_native_ptr_check_code=self.format_args_native_pointer_check())
+		args_native_ptr_check_code=self.format_args_native_pointer_check(),
+		args_conversion_code=args_conversion_code)
 
 	def format_enter_trace(self):
 		fmt = ''
@@ -262,8 +280,11 @@ class MethodDefinition:
 			fmt += argument_type.cfmt_str
 			args.append(arg_name)
 			if argument_type.fmt_str == 'O':
-				fmt += ' [' + argument_type.cfmt_str + ']'
-				args.append(arg_name)
+				fmt += ' [' + argument_type.cnativefmt_str + ']'
+				if argument_type.use_native_pointer:
+					args.append(arg_name + '_native_ptr')
+				else:
+					args.append(arg_name + '_native_obj')
 		args = ', '.join(args)
 		if args != '':
 			args = ', ' + args
@@ -278,8 +299,10 @@ class MethodDefinition:
 			arg_complete_type = xml_method_arg.get('completetype')
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
-			if argument_type.convert_func is None:
+			if argument_type.fmt_str == 'O' and argument_type.use_native_pointer:
 				arg_names.append(arg_name + "_native_ptr")
+			elif argument_type.fmt_str == 'O' and argument_type.convert_func is not None:
+				arg_names.append(arg_name + "_native_obj")
 			else:
 				arg_names.append(arg_name)
 		if self.return_type != 'void':
@@ -383,13 +406,22 @@ class MethodDefinition:
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
-				body += \
+				if argument_type.use_native_pointer:
+					body += \
 """	if (({arg_name} != Py_None) && !PyObject_IsInstance({arg_name}, (PyObject *)&pylinphone_{arg_type}Type)) {{
-		PyErr_SetString(PyExc_TypeError, "The '{arg_name}' arguments must be a {type_str} instance.");
+		PyErr_SetString(PyExc_TypeError, "The '{arg_name}' argument must be a {type_str} instance.");
 		return NULL;
 	}}
 """.format(arg_name=arg_name, arg_type=strip_leading_linphone(arg_type), type_str=argument_type.type_str)
-		body = body[1:] # Remove leading '\t'
+				else:
+					body += \
+"""	if (!{check_func}({arg_name})) {{
+		PyErr_SetString(PyExc_TypeError, "The '{arg_name}' argument must be a {type_str} instance.");
+		return NULL;
+	}}
+""".format(arg_name=arg_name, check_func=argument_type.check_func, type_str=argument_type.type_str)
+		if body != '':
+			body = body[1:] # Remove leading '\t'
 		return body
 
 	def format_args_native_pointer_check(self):
@@ -400,7 +432,7 @@ class MethodDefinition:
 			arg_complete_type = xml_method_arg.get('completetype')
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
-			if argument_type.fmt_str == 'O':
+			if argument_type.fmt_str == 'O' and argument_type.use_native_pointer:
 				body += \
 """	if (({arg_name} != NULL) && ({arg_name} != Py_None)) {{
 		if (({arg_name}_native_ptr = pylinphone_{arg_type}_get_native_ptr({arg_name})) == NULL) {{
@@ -408,7 +440,8 @@ class MethodDefinition:
 		}}
 	}}
 """.format(arg_name=arg_name, arg_type=strip_leading_linphone(arg_type))
-		body = body[1:] # Remove leading '\t'
+		if body != '':
+			body = body[1:] # Remove leading '\t'
 		return body
 
 	def parse_method_node(self):
@@ -572,14 +605,19 @@ class SetterMethodDefinition(MethodDefinition):
 		return -1;
 	}}
 """.format(checknotnone=checknotnone, checkfunc=self.first_argument_type.check_func, attribute_name=self.attribute_name, type_str=self.first_argument_type.type_str)
-		if self.first_argument_type.convert_func is None:
-			attribute_conversion_code = "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
-		else:
+		attribute_conversion_code = ''
+		if (self.first_argument_type.convert_func is None) or \
+			(self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_func is not None):
+			attribute_conversion_code += "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
+		if self.first_argument_type.convert_func is not None:
 			cast_code = ''
+			suffix = ''
 			if self.first_argument_type.cast_convert_func_result:
 				cast_code = "({arg_type})".format(arg_type=self.first_arg_complete_type)
-			attribute_conversion_code = "{arg_name} = {cast_code}{convertfunc}(value);\n".format(
-				arg_name="_" + self.first_arg_name, cast_code=cast_code, convertfunc=self.first_argument_type.convert_func)
+			if self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_func is not None:
+				suffix = '_native_obj'
+			attribute_conversion_code += "\t{arg_name}{suffix} = {cast_code}{convertfunc}(value);\n".format(
+				arg_name="_" + self.first_arg_name, suffix=suffix, cast_code=cast_code, convertfunc=self.first_argument_type.convert_func)
 		attribute_native_ptr_check_code = ''
 		if self.first_argument_type.use_native_pointer:
 			attribute_native_ptr_check_code = \
@@ -606,13 +644,15 @@ class SetterMethodDefinition(MethodDefinition):
 		attribute_native_ptr_check_code=attribute_native_ptr_check_code)
 
 	def format_c_function_call(self):
-		use_native_ptr = ''
-		if self.first_argument_type.use_native_pointer:
-			use_native_ptr = '_native_ptr'
+		suffix = ''
+		if self.first_argument_type.fmt_str == 'O' and self.first_argument_type.use_native_pointer:
+			suffix = '_native_ptr'
+		elif self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_func is not None:
+			suffix = '_native_obj'
 		return \
-"""	{method_name}(native_ptr, {arg_name}{use_native_ptr});
+"""	{method_name}(native_ptr, {arg_name}{suffix});
 	pylinphone_dispatch_messages();
-""".format(arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), use_native_ptr=use_native_ptr)
+""".format(arg_name="_" + self.first_arg_name, method_name=self.method_node.get('name'), suffix=suffix)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> 0\", __FUNCTION__);\n"

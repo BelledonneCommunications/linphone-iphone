@@ -394,12 +394,28 @@ PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
 
 
 time_t PyDateTime_As_time_t(PyObject *obj) {
+	time_t ret = -1;
+	PyObject *utctimetuple = PyObject_GetAttrString(obj, "utctimetuple");
+	if (utctimetuple != NULL) {
+		PyObject *calendar_module = PyImport_ImportModule("calendar");
+		if (calendar_module != NULL) {
+			PyObject *timegm = PyObject_GetAttrString(calendar_module, "timegm");
+			if (timegm != NULL) {
+				PyObject *tuple = PyEval_CallObject(utctimetuple, Py_BuildValue("()"));
+				PyObject *pyres = PyEval_CallObject(timegm, Py_BuildValue("(O)", tuple));
+				ret = (time_t)PyLong_AsLong(pyres);
+				Py_DECREF(timegm);
+			}
+			Py_DECREF(calendar_module);
+		}
+		Py_DECREF(utctimetuple);
+	}
+	return ret;
 }
 
 PyObject * PyDateTime_From_time_t(time_t t) {
 	PyObject *pyret = NULL;
 	PyObject *datetime_module;
-	PyObject *datetime_class;
 	if (t == -1) {
 		Py_RETURN_NONE;
 	}

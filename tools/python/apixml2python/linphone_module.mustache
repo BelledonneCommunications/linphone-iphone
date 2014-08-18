@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <Python.h>
 #include <structmember.h>
+#include <datetime.h>
 #include <linphone/linphonecore.h>
 #include <linphone/linphone_tunnel.h>
 #include <linphone/linphonecore_utils.h>
@@ -265,6 +266,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyObject *m;
 	PyObject *menum;
 
+	PyDateTime_IMPORT;
 	pylinphone_init_logging();
 
 {{#classes}}
