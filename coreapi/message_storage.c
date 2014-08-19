@@ -217,14 +217,14 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 	sqlite3_free(buf);
 }
 
-int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t unread_only){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	int numrows=0;
 
 	if (lc->db==NULL) return 0;
 
 	char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	char *buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q AND read = 0;",peer);
+	char *buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;",peer,unread_only?"AND read = 0":"");
 	sqlite3_stmt *selectStatement;
 	int returnValue = sqlite3_prepare_v2(lc->db,buf,-1,&selectStatement,NULL);
 	if (returnValue == SQLITE_OK){
@@ -236,6 +236,14 @@ int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
 	sqlite3_free(buf);
 	ms_free(peer);
 	return numrows;
+}
+
+int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+	return linphone_chat_room_get_messages_count(cr, TRUE);
+}
+
+int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
+	return linphone_chat_room_get_messages_count(cr, FALSE);
 }
 
 void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
@@ -260,30 +268,49 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	ms_free(peer);
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	MSList *ret;
 	char *buf;
 	char *peer;
 	uint64_t begin,end;
+	int buf_max_size = 512;
 
 	if (lc->db==NULL) return NULL;
-	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+
 	cr->messages_hist = NULL;
-	if (nb_message > 0)
-		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC LIMIT %i ;",peer,nb_message);
-	else
-		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC;",peer);
+
+	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
+	buf=ms_malloc(buf_max_size);
+	buf=sqlite3_snprintf(buf_max_size-1,buf,"SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC",peer);
+
+	if (endm>0&&endm>=startm){
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT %i ",buf,endm+1-startm);
+	}else if(startm>0){
+		ms_message("%s(): end is lower than start (%d < %d). No end assumed.",__FUNCTION__,endm,startm);
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT -1",buf);
+	}
+
+	if (startm>0){
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s OFFSET %i ",buf,startm);
+	}
+
 	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
 	end=ortp_get_cur_time_ms();
-	ms_message("linphone_chat_room_get_history(): completed in %i ms",(int)(end-begin));
-	sqlite3_free(buf);
+	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	ms_free(buf);
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;
 	ms_free(peer);
 	return ret;
 }
+
+MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+	return linphone_chat_room_get_history_range(cr, 0, nb_message);
+}
+
 
 void linphone_close_storage(sqlite3* db){
 	sqlite3_close(db);
@@ -484,6 +511,10 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
 }
 
+LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
+	return NULL;
+}
+
 void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 }
 
@@ -503,6 +534,10 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 }
 
 int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+	return 0;
+}
+
+int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
 	return 0;
 }
 

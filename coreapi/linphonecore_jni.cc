@@ -2425,12 +2425,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JNIE
 	env->ReleaseStringUTFChars(jaddress, address);
 	return (jlong) lf;
 }
-//LinphoneChatRoom
-extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNIEnv*  env
+
+extern "C" jlongArray _LinphoneChatRoomImpl_getHistory(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
-																		,jint limit) {
-	MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, limit);
+																		,MSList* history) {
 	int historySize = ms_list_size(history);
 	jlongArray jHistory = env->NewLongArray(historySize);
 	jlong *jInternalArray = env->GetLongArrayElements(jHistory, NULL);
@@ -2445,6 +2444,21 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNI
 	env->ReleaseLongArrayElements(jHistory, jInternalArray, 0);
 
 	return jHistory;
+}
+extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistoryRange(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jint start
+																		,jint end) {
+	MSList* history = linphone_chat_room_get_history_range((LinphoneChatRoom*)ptr, start, end);
+	return _LinphoneChatRoomImpl_getHistory(env, thiz, ptr, history);
+}
+extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jint limit) {
+	MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, limit);
+	return _LinphoneChatRoomImpl_getHistory(env, thiz, ptr, history);
 }
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_getPeerAddress(JNIEnv*  env
 																		,jobject  thiz
@@ -2483,6 +2497,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
 		env->ReleaseStringUTFChars(jurl, url);
 
 	return (jlong) chatMessage;
+}
+extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getHistorySize		(JNIEnv*  env
+																				  ,jobject  thiz
+																				  ,jlong ptr) {
+	return (jint) linphone_chat_room_get_history_size((LinphoneChatRoom*)ptr);
 }
 extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getUnreadMessagesCount(JNIEnv*  env
 																				  ,jobject  thiz

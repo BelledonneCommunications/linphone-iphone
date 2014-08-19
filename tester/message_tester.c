@@ -754,12 +754,11 @@ static void is_composing_notification(void) {
 /*
  * Copy file "from" to file "to".
  * Destination file is truncated if existing.
- * Return 1 on success, 0 on error (printing an error).
+ * Return 0 on success, positive value on error.
  */
 static int
 message_tester_copy_file(const char *from, const char *to)
 {
-	char message[256];
 	FILE *in, *out;
 	char buf[256];
 	size_t n;
@@ -768,21 +767,17 @@ message_tester_copy_file(const char *from, const char *to)
 	in=fopen(from, "r");
 	if ( in == NULL )
 	{
-		snprintf(message, 255, "Can't open %s for reading: %s\n",
-			from, strerror(errno));
-		fprintf(stderr, "%s", message);
-		return 0;
+		ms_error("Can't open %s for reading: %s\n",from,strerror(errno));
+		return 1;
 	}
 
 	/* Open "to" file for writing (will truncate existing files) */
 	out=fopen(to, "w");
 	if ( out == NULL )
 	{
-		snprintf(message, 255, "Can't open %s for writing: %s\n",
-			to, strerror(errno));
-		fprintf(stderr, "%s", message);
+		ms_error("Can't open %s for writing: %s\n",to,strerror(errno));
 		fclose(in);
-		return 0;
+		return 2;
 	}
 
 	/* Copy data from "in" to "out" */
@@ -790,16 +785,17 @@ message_tester_copy_file(const char *from, const char *to)
 	{
 		if ( ! fwrite(buf, 1, n, out) )
 		{
+			ms_error("Could not write in %s: %s\n",to,strerror(errno));
 			fclose(in);
 			fclose(out);
-			return 0;
+			return 3;
 		}
 	}
 
 	fclose(in);
 	fclose(out);
 
-	return 1;
+	return 0;
 }
 
 static int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
@@ -814,7 +810,7 @@ static void message_storage_migration() {
 	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
 	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_writable_dir_prefix);
 
-	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 1);
+	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
 
 	// enable to test the performances of the migration step
 	//linphone_core_message_storage_set_debug(marie->lc, TRUE);
@@ -829,6 +825,45 @@ static void message_storage_migration() {
 	// check that all messages have been migrated to the UTC time storage
 	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT * FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
 }
+
+static void history_messages_count() {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
+	LinphoneChatRoom *chatroom;
+	MSList *messages;
+	char src_db[256];
+	char tmp_db[256];
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_writable_dir_prefix);
+
+	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
+
+	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+
+	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
+	CU_ASSERT_PTR_NOT_NULL(chatroom);
+	if (chatroom){
+		MSList *history=linphone_chat_room_get_history(chatroom,0);
+		CU_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270);
+		CU_ASSERT_EQUAL(ms_list_size(history), linphone_chat_room_get_history_size(chatroom));
+		/*check the second most recent message*/
+		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)history->next->data), "Fore and aft follow each other.");
+
+		/*test offset+limit: retrieve the 42th latest message only and check its content*/
+		messages=linphone_chat_room_get_history_range(chatroom, 42, 42);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 1);
+		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->data), "If you open yourself to the Tao is intangible and evasive, yet prefers to keep us at the mercy of the kingdom, then all of the streams of hundreds of valleys because of its limitless possibilities.");
+
+		/*test offset without limit*/
+		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 1265, -1)), 1270-1265);
+
+		/*test limit without offset*/
+		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 0, 5)), 6);
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_address_destroy(jehan_addr);
+}
+
 
 #endif
 
@@ -852,6 +887,7 @@ test_t message_tests[] = {
 	{ "IsComposing notification", is_composing_notification }
 #ifdef MSG_STORAGE_ENABLED
 	,{ "Database migration", message_storage_migration }
+	,{ "History count", history_messages_count }
 #endif
 };
 

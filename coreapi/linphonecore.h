@@ -1347,9 +1347,24 @@ LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int 
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
+/**
+ * Gets the number of messages in a chat room.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which size has to be computed
+ * @return the number of messages.
+ */
+LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
 
 /**
- * Notify the destination of the chat message being composed that the user is typing a new message.
+ * Gets the partial list of messages in the given range, sorted from most recent to oldest.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
+ * @param[in] begin The first message of the range to be retrieved. History most recent message has index 0.
+ * @param[in] end The last message of the range to be retrieved. History oldest message has index of history size - 1 (use #linphone_chat_room_get_history_size to retrieve history size)
+ * @return the list of messages in the given range, or NULL if nothing has been found.
+ */
+LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
+
+/**
+ * Notifies the destination of the chat message being composed that the user is typing a new message.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which a new message is being typed.
  */
 LINPHONE_PUBLIC void linphone_chat_room_compose(LinphoneChatRoom *cr);
