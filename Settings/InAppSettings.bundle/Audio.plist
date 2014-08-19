@@ -246,6 +246,16 @@
 				<integer>128</integer>
 			</array>
 		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>disable_voiceproc</string>
+			<key>Title</key>
+			<string>Disable VoiceProc and Equalizer</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
 	</array>
 </dict>
 </plist>
