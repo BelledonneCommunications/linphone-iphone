@@ -313,7 +313,7 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	for(i=0; i<md->nb_streams; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_srtp(&md->streams[i]) == TRUE) {
-			if (keep_srtp_keys && old_md && sal_stream_description_has_srtp(&old_md->streams[i]) == TRUE){
+			if (keep_srtp_keys && old_md && (sal_stream_description_active(&old_md->streams[i]) == TRUE) && (sal_stream_description_has_srtp(&old_md->streams[i]) == TRUE)) {
 				int j;
 				ms_message("Keeping same crypto keys.");
 				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
