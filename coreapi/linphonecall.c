@@ -1687,6 +1687,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	AudioStream *audiostream;
+	const char *location;
 	int dscp;
 
 	if (call->audiostream != NULL) return;
@@ -1713,7 +1714,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 	/* equalizer location in the graph: 'mic' = in input graph, otherwise in output graph.
 		Any other value than mic will default to output graph for compatibility */
-	const char *location = lp_config_get_string(lc->config,"sound","eq_location","hp");
+	location = lp_config_get_string(lc->config,"sound","eq_location","hp");
 	audiostream->eq_loc = (strcasecmp(location,"mic") == 0) ? MSEqualizerMic : MSEqualizerHP;
 	ms_error("Equalizer location: %s", location);
 
