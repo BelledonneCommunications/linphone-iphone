@@ -824,6 +824,9 @@ static void message_storage_migration() {
 
 	// check that all messages have been migrated to the UTC time storage
 	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT * FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
+
+	linphone_core_manager_destroy(marie);
+	remove(tmp_db);
 }
 
 static void history_messages_count() {
@@ -859,9 +862,13 @@ static void history_messages_count() {
 
 		/*test limit without offset*/
 		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 0, 5)), 6);
+
+		/*test invalid start*/
+		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 1265, 1260)), 1270-1265);
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
+	remove(tmp_db);
 }
 
 

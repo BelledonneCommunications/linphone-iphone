@@ -1355,7 +1355,7 @@ LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
 
 /**
- * Gets the partial list of messages in the given range, sorted from most recent to oldest.
+ * Gets the partial list of messages in the given range, sorted from oldest to most recent.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
  * @param[in] begin The first message of the range to be retrieved. History most recent message has index 0.
  * @param[in] end The last message of the range to be retrieved. History oldest message has index of history size - 1 (use #linphone_chat_room_get_history_size to retrieve history size)

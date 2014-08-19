@@ -66,7 +66,7 @@ public interface LinphoneChatRoom {
 	LinphoneChatMessage[] getHistory(int limit);
 
 	/**
-	 * Returns the chat history associated with the peer address associated with this chat room for the given range
+	 * Returns the chat history associated with the peer address associated with this chat room for the given range, sorted from oldest to most recent
 	 * @param begin the first (most recent) message to retrieve. Newest message has index 0. If negative, use value 0 instead.
 	 * @param end the last (oldest) message to retrieve. Oldest message has value "history size" - 1 (equivalent to -1). If negative or lower than begin value,  value is given, use -1.
 	 * @return an array of LinphoneChatMessage, empty if nothing has been found

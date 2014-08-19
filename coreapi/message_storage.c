@@ -112,7 +112,7 @@ void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom 
 	int ret;
 	ret=sqlite3_exec(db,stmt,callback,cr,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("Error in creation: %s.\n", errmsg);
+		ms_error("Error in creation: %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -122,7 +122,7 @@ int linphone_sql_request(sqlite3* db,const char *stmt){
 	int ret;
 	ret=sqlite3_exec(db,stmt,NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("linphone_sql_request: error sqlite3_exec(): %s.\n", errmsg);
+		ms_error("linphone_sql_request: error sqlite3_exec(): %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 	return ret;
@@ -134,7 +134,7 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 	int ret;
 	ret=sqlite3_exec(db,stmt,callback_all,lc,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("linphone_sql_request_all: error sqlite3_exec(): %s.\n", errmsg);
+		ms_error("linphone_sql_request_all: error sqlite3_exec(): %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -284,6 +284,8 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
 	buf=ms_malloc(buf_max_size);
 	buf=sqlite3_snprintf(buf_max_size-1,buf,"SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC",peer);
+
+	if (startm<0) startm=0;
 
 	if (endm>0&&endm>=startm){
 		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT %i ",buf,endm+1-startm);
