@@ -349,7 +349,7 @@ class MethodDefinition:
 			else:
 				result_variable = 'cresult'
 		if result_variable != '':
-			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});\n".format(fmt=self.build_value_format, result_variable=result_variable)
+			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});\n".format(fmt=self.build_value_format.replace('O', 'N'), result_variable=result_variable)
 		body = \
 """	{c_function_call_code}
 	pylinphone_dispatch_messages();
@@ -374,12 +374,7 @@ class MethodDefinition:
 
 	def format_return_result(self):
 		if self.return_complete_type != 'void':
-			if self.build_value_format == 'O':
-				return \
-"""	Py_DECREF(pyresult);
-	return pyret;"""
-			else:
-				return "\treturn pyret;"
+			return "\treturn pyret;"
 		return "\tPy_RETURN_NONE;"
 
 	def format_return_none_trace(self):
@@ -755,7 +750,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			PyErr_Print();
 		}}
 	}}
-""".format(fmt=fmt, args=args)
+""".format(fmt=fmt.replace('O', 'N'), args=args)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);\n"
