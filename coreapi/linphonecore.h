@@ -1359,7 +1359,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
  * @param[in] begin The first message of the range to be retrieved. History most recent message has index 0.
  * @param[in] end The last message of the range to be retrieved. History oldest message has index of history size - 1 (use #linphone_chat_room_get_history_size to retrieve history size)
- * @return the list of messages in the given range, or NULL if nothing has been found.
+ * @return \mslist{LinphoneChatMessage}
  */
 LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
 
