@@ -80,6 +80,7 @@ blacklisted_functions = [
 ]
 hand_written_functions = [
 	'linphone_chat_room_send_message2',
+	'linphone_core_get_sound_devices',
 	'linphone_core_get_video_devices',
 	'linphone_core_new',
 	'linphone_core_new_with_config'
