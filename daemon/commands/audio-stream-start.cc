@@ -26,7 +26,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 		PayloadType *oldpt=rtp_profile_get_payload(default_profile,payload_type);
 		PayloadType *pt;
 		AudioStream *stream = audio_stream_new(local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
-		
+
 		if (oldpt){
 			if (ptime>0){
 				char fmtp[256];
@@ -37,6 +37,8 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 			}
 		}
 		audio_stream_enable_adaptive_jittcomp(stream, linphone_core_audio_adaptive_jittcomp_enabled(app->getCore()));
+		rtp_session_set_symmetric_rtp(stream->ms.sessions.rtp_session, linphone_core_symmetric_rtp_enabled(app->getCore()));
+
 		int err=audio_stream_start_now(stream, default_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller);
 		if (oldpt) rtp_profile_set_payload(default_profile,payload_type,oldpt);
 		if (err != 0) {
