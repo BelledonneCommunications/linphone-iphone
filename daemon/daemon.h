@@ -198,6 +198,7 @@ public:
 	const std::list<DaemonCommand*> &getCommandList() const;
 	LinphoneCall *findCall(int id);
 	LinphoneProxyConfig *findProxy(int id);
+	LinphoneAuthInfo *findAuthInfo(int id);
 	AudioStream *findAudioStream(int id);
 	AudioStreamAndOther *findAudioStreamAndOther(int id);
 	void removeAudioStream(int id);
@@ -205,6 +206,7 @@ public:
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	inline int maxProxyId() { return mProxyIds; }
+	inline int maxAuthInfoId()  { return ms_list_size(linphone_core_get_auth_info_list(mLc)); }
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();

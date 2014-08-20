@@ -12,6 +12,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/audio-stream-start.cc \
 			commands/audio-stream-stop.cc \
 			commands/audio-stream-stats.cc \
+			commands/auth-infos-clear.cc \
 			commands/call.cc \
 			commands/call-stats.cc \
 			commands/call-status.cc \
@@ -86,7 +87,7 @@ linphone_daemon_LDADD=$(top_builddir)/coreapi/liblinphone.la $(READLINE_LIBS)  \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) \
 		$(SPEEX_LIBS) \
-		$(LIBXML2_LIBS) 
+		$(LIBXML2_LIBS)
 
 AM_CFLAGS=$(READLINE_CFLAGS) -DIN_LINPHONE $(STRICT_OPTIONS)
 AM_CXXFLAGS=$(READLINE_CXXFLAGS) -DIN_LINPHONE $(STRICT_OPTIONS)

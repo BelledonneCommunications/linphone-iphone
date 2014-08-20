@@ -23,6 +23,7 @@
 #include "commands/audio-stream-start.h"
 #include "commands/audio-stream-stop.h"
 #include "commands/audio-stream-stats.h"
+#include "commands/auth-infos-clear.h"
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
@@ -374,6 +375,18 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 	return NULL;
 }
 
+LinphoneAuthInfo *Daemon::findAuthInfo(int id)  {
+	const MSList *elem = linphone_core_get_auth_info_list(mLc);
+	if (elem == NULL || id < 1 || id > ms_list_size(elem)) {
+		return NULL;
+	}
+	while (id > 1) {
+		elem = elem->next;
+		--id;
+	}
+	return (LinphoneAuthInfo *) elem->data;
+}
+
 int Daemon::updateAudioStreamId(AudioStream *audio_stream) {
 	for (std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
 		if (it->second->stream == audio_stream)
@@ -412,6 +425,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new ContactCommand());
 	mCommands.push_back(new RegisterStatusCommand());
 	mCommands.push_back(new UnregisterCommand());
+	mCommands.push_back(new AuthInfosClearCommand());
 	mCommands.push_back(new CallCommand());
 	mCommands.push_back(new TerminateCommand());
 	mCommands.push_back(new DtmfCommand());
