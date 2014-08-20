@@ -418,6 +418,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg, proxy);
+		else
+			linphone_proxy_config_set_route(proxyCfg, NULL);
 		
 		if ([self objectForKey:@"prefix_preference"]) {		
 			NSString* prefix = [self stringForKey:@"prefix_preference"];
