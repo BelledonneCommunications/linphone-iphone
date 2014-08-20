@@ -125,8 +125,8 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
 	LinphoneCall *c1,*c2;
-	int i;
 	int dummy=0;
+	MSTimeSpec ts;
 
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
@@ -137,7 +137,9 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	if (!c1 || !c2) return;
 	linphone_call_ref(c1);
 	linphone_call_ref(c2);
-	for (i=0; i<24 /*=12s need at least one exchange of SR to maybe 10s*/; i++) {
+	
+	liblinphone_tester_clock_start(&ts);
+	do {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
 				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
 				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
@@ -146,8 +148,7 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 
 		}
 		wait_for_until(caller->lc,callee->lc,&dummy,1,500); /*just to sleep while iterating*/
-
-	}
+	}while (!liblinphone_tester_clock_elapsed(&ts,12000));
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(c2)->round_trip_delay>0.0);
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
