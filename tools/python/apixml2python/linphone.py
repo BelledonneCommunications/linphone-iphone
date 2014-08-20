@@ -1041,8 +1041,8 @@ class LinphoneModule(object):
 		method_type = xml_node.tag
 		if method_type != 'classmethod' and len(xml_method_args) > 0:
 			xml_method_args = xml_method_args[1:]
+		doc += '\n'
 		if len(xml_method_args) > 0:
-			doc += "\n\nArguments:"
 			for xml_method_arg in xml_method_args:
 				arg_name = xml_method_arg.get('name')
 				arg_type = xml_method_arg.get('type')
@@ -1050,9 +1050,10 @@ class LinphoneModule(object):
 				arg_contained_type = xml_method_arg.get('containedtype')
 				argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self)
 				arg_doc = self.__format_doc_content(None, xml_method_arg.find('description'))
-				doc += '\n\t' + arg_name + ' [' + argument_type.type_str + ']'
+				doc += '\n:param ' + arg_name + ':'
 				if arg_doc != '':
-					doc += ': ' + arg_doc
+					doc += ' ' + arg_doc
+				doc += '\n:type ' + arg_name + ': ' + argument_type.type_str
 		if xml_method_return is not None:
 			return_type = xml_method_return.get('type')
 			return_complete_type = xml_method_return.get('completetype')
@@ -1060,7 +1061,8 @@ class LinphoneModule(object):
 			if return_complete_type != 'void':
 				return_doc = self.__format_doc_content(None, xml_method_return.find('description'))
 				return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
-				doc += '\n\nReturns:\n\t[' + return_argument_type.type_str + '] ' + return_doc
+				doc += '\n:returns: ' + return_doc
+				doc += '\n:rtype: ' + return_argument_type.type_str
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
