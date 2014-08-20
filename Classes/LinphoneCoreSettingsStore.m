@@ -293,14 +293,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 - (void)synchronizeAccount {
 	LinphoneCore *lc = [LinphoneManager getLc];
     LpConfig*   conf = linphone_core_get_config(lc);
-	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	LinphoneProxyConfig* proxyCfg = NULL;
-	LinphoneProxyConfig* defaultProxy = NULL;
+	BOOL isEditing = FALSE;
     NSString* error = nil;
-
-	/* unregister before modifying any settings: editing will force unregistration */
-	linphone_core_get_default_proxy(lc, &defaultProxy);
-	if (defaultProxy) linphone_proxy_config_edit(defaultProxy);
 
 	int port_preference = [self integerForKey:@"port_preference"];
     
@@ -342,9 +337,17 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     BOOL             use_avpf = [self boolForKey:@"avpf_preference"];
 
 	if (username && [username length] >0 && domain && [domain length]>0) {
-        LinphoneAuthInfo *info = NULL;
-
+        int             expire = [self integerForKey:@"expire_preference"];
+        BOOL        isWifiOnly = [self boolForKey:@"wifi_only_preference"];
+        BOOL  pushnotification = [self boolForKey:@"pushnotification_preference"];
+        NSString*       prefix = [self stringForKey:@"prefix_preference"];
         NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
+
+        LinphoneAuthInfo *info  = NULL;
+        const char* route       = NULL;
+
+		if( isWifiOnly && [LinphoneManager instance].connectivity == wwan ) expire = 0;
+
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
@@ -364,26 +367,50 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             proxy = linphone_address_as_string_uri_only(proxy_addr);
         }
 
-		//possible valid config detected
-		proxyCfg = linphone_core_create_proxy_config(lc);
+		// use proxy as route if outbound_proxy is enabled
+		route = isOutboundProxy? proxy : NULL;
+
+		//possible valid config detected, try to modify current proxy or create new one if none existing
+		linphone_core_get_default_proxy(lc, &proxyCfg);
+		if( proxyCfg == NULL ){
+			proxyCfg = linphone_core_create_proxy_config(lc);
+		} else {
+			isEditing = TRUE;
+			linphone_proxy_config_edit(proxyCfg);
+		}
+
 		char normalizedUserName[256];
 		LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
 		linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
 		linphone_address_set_username(linphoneAddress, normalizedUserName);
 		linphone_address_set_domain(linphoneAddress, [domain cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+
 		const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char*      ha1 = [accountHa1 cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-		// configure proxy entries
-		if( linphone_proxy_config_set_identity(proxyCfg, identity) == -1 ) { error = NSLocalizedString(@"Invalid username or domain",nil); goto bad_proxy; }
+
+		if( linphone_proxy_config_set_identity(proxyCfg, identity) == -1 ) { error = NSLocalizedString(@"Invalid username or domain",nil); goto bad_proxy;}
         if( linphone_proxy_config_set_server_addr(proxyCfg, proxy) == -1 ) { error = NSLocalizedString(@"Invalid proxy address", nil); goto bad_proxy; }
+		if( linphone_proxy_config_set_route(proxyCfg, route) == -1 )       { error = NSLocalizedString(@"Invalid route", nil); goto bad_proxy; }
+
+		if ([prefix length]>0) {
+			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		}
+
+		if ([self objectForKey:@"substitute_+_by_00_preference"]) {
+			bool substitute_plus_by_00 = [self boolForKey:@"substitute_+_by_00_preference"];
+			linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
+		}
+
+        lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
+        if( pushnotification ) [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
 
         linphone_proxy_config_enable_register(proxyCfg, true);
-
         linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
-		
-		// add username password
+		linphone_proxy_config_set_expires(proxyCfg, expire);
+
+		// setup auth info
 		LinphoneAddress *from = linphone_address_new(identity);
 		if (from != 0){
             const char* userid_str = (userID != nil)? [userID UTF8String] : NULL;
@@ -391,47 +418,20 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             linphone_address_destroy(from);
 		}
 
-		int expire = [self integerForKey:@"expire_preference"];
-		linphone_proxy_config_expires(proxyCfg,expire);
-		
-		BOOL isWifiOnly = [self boolForKey:@"wifi_only_preference"];
-		
-		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
-			linphone_proxy_config_expires(proxyCfg, 0);
+        // We reached here without hitting the goto: the new settings are correct, so replace the previous ones.
+
+		// add auth info
+		linphone_core_clear_all_auth_info(lc);
+        if( info ) { linphone_core_add_auth_info(lc,info); }
+
+		// setup new proxycfg
+		if( isEditing ){
+			linphone_proxy_config_done(proxyCfg);
 		} else {
-            linphone_proxy_config_expires(proxyCfg, expire);
+			// was a new proxy config, add it
+			linphone_core_add_proxy_config(lc, proxyCfg);
+			linphone_core_set_default_proxy(lc,proxyCfg);
 		}
-		
-		if (isOutboundProxy)
-			linphone_proxy_config_set_route(proxyCfg, proxy);
-		else
-			linphone_proxy_config_set_route(proxyCfg, NULL);
-		
-		if ([self objectForKey:@"prefix_preference"]) {		
-			NSString* prefix = [self stringForKey:@"prefix_preference"];
-			if ([prefix length]>0) {
-				linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-			}
-		}
-		if ([self objectForKey:@"substitute_+_by_00_preference"]) {
-			bool substitute_plus_by_00 = [self boolForKey:@"substitute_+_by_00_preference"];
-			linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
-		}
-		
-        BOOL pushnotification = [self boolForKey:@"pushnotification_preference"];
-        lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
-        
-        [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
-
-        // We reached here: the new settings are correct, so replace the previous ones.
-        linphone_core_clear_proxy_config(lc);
-        linphone_core_clear_all_auth_info(lc);
-
-        // add proxy and auth info
-		linphone_core_add_proxy_config(lc,proxyCfg);
-		linphone_core_set_default_proxy(lc,proxyCfg);
-        if( info )
-            linphone_core_add_auth_info(lc,info);
 
     bad_proxy:
 		if( linphoneAddress)
@@ -443,8 +443,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		// in case of error, show an alert to the user
         if( error != nil ){
-			// restart the registration on the old proxy
-			if( defaultProxy ) linphone_proxy_config_done(defaultProxy);
+			if( isEditing ) linphone_proxy_config_done(proxyCfg);
+			else            linphone_proxy_config_destroy(proxyCfg);
+
             [self alertAccountError:error];
         }
 	}
