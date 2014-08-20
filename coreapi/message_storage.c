@@ -122,7 +122,7 @@ int linphone_sql_request(sqlite3* db,const char *stmt){
 	int ret;
 	ret=sqlite3_exec(db,stmt,NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("linphone_sql_request: error sqlite3_exec(): %s.", errmsg);
+		ms_error("linphone_sql_request: statement %s -> error sqlite3_exec(): %s.", stmt, errmsg);
 		sqlite3_free(errmsg);
 	}
 	return ret;
