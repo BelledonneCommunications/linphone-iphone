@@ -36,20 +36,28 @@ static void xml2lpc_callback(void *ctx, xml2lpc_log_level level, const char *fmt
 static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml) {
 	xml2lpc_context *context = xml2lpc_context_new(xml2lpc_callback, lc);
 	int result = xml2lpc_set_xml_string(context, xml);
+	char * error_msg = NULL;
 	if (result == 0) {
-		result = xml2lpc_convert(context, linphone_core_get_config(lc));
+		LpConfig * lpc = linphone_core_get_config(lc);
+		result = xml2lpc_convert(context, lpc);
 		if (result == 0) {
-			lp_config_sync(linphone_core_get_config(lc));
-			xml2lpc_context_destroy(context);
-			linphone_configuring_terminated(lc, LinphoneConfiguringSuccessful, NULL);
+			// if the remote provisioning added a proxy config and none was set before, set it
+			if (lp_config_has_section(lpc, "proxy_0") && lp_config_get_int(lpc, "sip", "default_proxy", -1) == -1){
+				lp_config_set_int(lpc, "sip", "default_proxy", 0);
+			}
+			lp_config_sync(lpc);
+
 		} else {
-			xml2lpc_context_destroy(context);
-			linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "xml to lpc failed");
+			error_msg = "xml to lpc failed";
 		}
 	} else {
-		xml2lpc_context_destroy(context);
-		linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "invalid xml");
+		error_msg = "invalid xml";
 	}
+
+	xml2lpc_context_destroy(context);
+	linphone_configuring_terminated(lc
+									,error_msg ? LinphoneConfiguringFailed : LinphoneConfiguringSuccessful
+									, error_msg);
 }
 
 static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
@@ -110,33 +118,32 @@ static void belle_request_process_auth_requested(void *ctx, belle_sip_auth_event
 }
 
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri) {
-	const char* file_path = strstr(remote_provisioning_uri, "file://");
 
-	if( file_path == remote_provisioning_uri ){
-		// We allow for 'local remote-provisioning' in case the file is to be opened from the hard drive
-		file_path += strlen("file://");
+	belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
+	const char* scheme = uri ? belle_generic_uri_get_scheme(uri) : NULL;
+
+	if( scheme && (strcmp(scheme,"file") == 0) ){
+		// We allow for 'local remote-provisioning' in case the file is to be opened from the hard drive.
+		const char* file_path = remote_provisioning_uri + strlen("file://"); // skip scheme
 		return linphone_remote_provisioning_load_file(lc, file_path);
-	} else {
-		belle_generic_uri_t *uri=belle_generic_uri_parse(remote_provisioning_uri);
+
+	} else if( scheme && strncmp(scheme, "http", 4) == 0 ) {
 		belle_http_request_listener_callbacks_t belle_request_listener={0};
 		belle_http_request_listener_t *listener;
 		belle_http_request_t *request;
-		
+
 		belle_request_listener.process_response=belle_request_process_response_event;
 		belle_request_listener.process_auth_requested=belle_request_process_auth_requested;
 		belle_request_listener.process_io_error=belle_request_process_io_error;
 		belle_request_listener.process_timeout=belle_request_process_timeout;
-		
-		listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
-		
 
-		if (uri==NULL) {
-			belle_sip_error("Invalid provisioning URI [%s]",remote_provisioning_uri);
-			return -1;
-		}
+		listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+
 		request=belle_http_request_create("GET",uri, NULL);
-		belle_http_provider_send_request(lc->http_provider, request, listener);
-		return 0;
+		return belle_http_provider_send_request(lc->http_provider, request, listener);
+	} else {
+		ms_error("Invalid provisioning URI [%s] (missing scheme?)",remote_provisioning_uri);
+		return -1;
 	}
 }
 

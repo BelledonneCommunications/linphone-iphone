@@ -22,6 +22,7 @@ class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
 	boolean ownPtr = false;
+	Object userData;
 	private LinphoneCallStats audioStats;
 	private LinphoneCallStats videoStats;
 
@@ -235,5 +236,13 @@ class LinphoneCallImpl implements LinphoneCall {
 	@Override
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+	}
+	@Override
+	public void setUserData(Object obj) {
+		userData = obj;
+	}
+	@Override
+	public Object getUserData() {
+		return userData;
 	}
 }

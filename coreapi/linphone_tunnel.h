@@ -53,7 +53,7 @@ typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
 /**
  * Create a new tunnel configuration
  */
-LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_tunnel_config_new();
+LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_tunnel_config_new(void);
 
 /**
  * Set address of server.

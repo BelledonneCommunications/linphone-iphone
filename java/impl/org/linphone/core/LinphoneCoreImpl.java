@@ -73,6 +73,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long findPayloadType(long nativePtr, String mime, int clockRate, int channels);
 	private native int enablePayloadType(long nativePtr, long payloadType,	boolean enable);
 	private native boolean isPayloadTypeEnabled(long nativePtr, long payloadType);
+	private native boolean payloadTypeIsVbr(long nativePtr, long payloadType);
+	private native void enableAdaptiveRateControl(long nativePtr,boolean enable);
+	private native boolean isAdaptiveRateControlEnabled(long nativePtr);
 	private native void enableEchoCancellation(long nativePtr,boolean enable);
 	private native boolean isEchoCancellationEnabled(long nativePtr);
 	private native Object getCurrentCall(long nativePtr) ;
@@ -105,7 +108,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native String getRing(long nativePtr);
 	private native void setRootCA(long nativePtr, String path);
 	private native long[] listVideoPayloadTypes(long nativePtr);
-	private native long[] getProxyConfigList(long nativePtr);
+	private native LinphoneProxyConfig[] getProxyConfigList(long nativePtr);
 	private native long[] getAuthInfosList(long nativePtr);
 	private native long findAuthInfos(long nativePtr, String username, String realm, String domain);
 	private native long[] listAudioPayloadTypes(long nativePtr);
@@ -190,7 +193,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
 		isValid();
-		long lNativePtr = getDefaultProxyConfig(nativePtr);
+		long lNativePtr = getDefaultProxyConfig(nativePtr);	
 		if (lNativePtr!=0) {
 			return new LinphoneProxyConfigImpl(this,lNativePtr); 
 		} else {
@@ -224,6 +227,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		isValid();
 		removeProxyConfig(nativePtr, ((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
 		((LinphoneProxyConfigImpl)proxyCfg).mCore=null;
+		((LinphoneProxyConfigImpl)proxyCfg).deleteNativePtr();
 	}
 	public synchronized void clearAuthInfos() {
 		isValid();
@@ -338,6 +342,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		isValid();
 		return isPayloadTypeEnabled(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
+	
+	public synchronized boolean payloadTypeIsVbr(PayloadType pt) {
+		isValid();
+		return payloadTypeIsVbr(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
+	
 	public synchronized void enableEchoCancellation(boolean enable) {
 		isValid();
 		enableEchoCancellation(nativePtr, enable);
@@ -512,17 +522,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setRootCA(nativePtr, path);
 	}
 	
-	public synchronized LinphoneProxyConfig[] getProxyConfigList() {
-		long[] typesPtr = getProxyConfigList(nativePtr);
-		if (typesPtr == null) return null;
-		
-		LinphoneProxyConfig[] proxies = new LinphoneProxyConfig[typesPtr.length];
-
-		for (int i=0; i < proxies.length; i++) {
-			proxies[i] = new LinphoneProxyConfigImpl(this,typesPtr[i]);
-		}
-
-		return proxies;
+	public synchronized LinphoneProxyConfig[] getProxyConfigList() { 
+		return getProxyConfigList(nativePtr);
 	}
 	
 	public synchronized PayloadType[] getVideoCodecs() {
@@ -1197,6 +1198,26 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized int getPayloadTypeBitrate(PayloadType pt) {
 		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
+	@Override
+	public synchronized void enableAdaptiveRateControl(boolean enable) {
+		enableAdaptiveRateControl(nativePtr,enable);
+		
+	}
+	@Override
+	public synchronized boolean isAdaptiveRateControlEnabled() {
+		return isAdaptiveRateControlEnabled(nativePtr);
+	}
+	
+	private native void setAudioJittcomp(long ptr, int value);
+	@Override
+	public synchronized void setAudioJittcomp(int value) {
+		setAudioJittcomp(nativePtr,value);
+	}
+	private native void setVideoJittcomp(long ptr, int value);
+	@Override
+	public synchronized void setVideoJittcomp(int value) {
+		setVideoJittcomp(nativePtr,value);
 	}
 	
 }

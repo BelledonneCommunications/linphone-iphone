@@ -119,7 +119,7 @@ typedef struct _LinphoneFriend LinphoneFriend;
  * Contructor
  * @return a new empty #LinphoneFriend
  */
-LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new();
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new(void);
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()
@@ -356,7 +356,8 @@ LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneF
 
 /**
  * Get Buddy list of LinphoneFriend
- * @param lc #LinphoneCore object
+ * @param[in] lc #LinphoneCore object
+ * @return \mslist{LinphoneFriend}
  */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 

@@ -60,16 +60,19 @@ void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 
 static char *linphone_tunnel_config_to_string(const LinphoneTunnelConfig *tunnel_config) {
 	char *str = NULL;
-	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
-		str = ms_strdup_printf("%s:%d:%d:%d", 
-			linphone_tunnel_config_get_host(tunnel_config),
-			linphone_tunnel_config_get_port(tunnel_config),
-			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
-			linphone_tunnel_config_get_delay(tunnel_config));
-	} else {
-		str = ms_strdup_printf("%s:%d",
-			linphone_tunnel_config_get_host(tunnel_config),
-			linphone_tunnel_config_get_port(tunnel_config));
+	const char *host = linphone_tunnel_config_get_host(tunnel_config);
+	if(host != NULL) {
+		if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
+			str = ms_strdup_printf("%s:%d:%d:%d",
+								   linphone_tunnel_config_get_host(tunnel_config),
+								   linphone_tunnel_config_get_port(tunnel_config),
+								   linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+								   linphone_tunnel_config_get_delay(tunnel_config));
+		} else {
+			str = ms_strdup_printf("%s:%d",
+								   linphone_tunnel_config_get_host(tunnel_config),
+								   linphone_tunnel_config_get_port(tunnel_config));
+		}
 	}
 	return str;
 }
@@ -124,20 +127,21 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 
 
 static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
-	MSList *elem = tunnel->config_list;
+	MSList *elem = NULL;
 	char *tmp = NULL, *old_tmp = NULL, *tc_str = NULL;
-	while(elem != NULL) {
+	for(elem = tunnel->config_list; elem != NULL; elem = elem->next) {
 		LinphoneTunnelConfig *tunnel_config = (LinphoneTunnelConfig *)elem->data;
 		tc_str = linphone_tunnel_config_to_string(tunnel_config);
-		if(tmp != NULL) {
-			old_tmp = tmp;
-			tmp = ms_strdup_printf("%s %s", old_tmp, tc_str);
-			ms_free(old_tmp);
-			ms_free(tc_str);
-		} else {
-			tmp = tc_str;
+		if(tc_str != NULL) {
+			if(tmp != NULL) {
+				old_tmp = tmp;
+				tmp = ms_strdup_printf("%s %s", old_tmp, tc_str);
+				ms_free(old_tmp);
+				ms_free(tc_str);
+			} else {
+				tmp = tc_str;
+			}
 		}
-		elem = elem->next;
 	}
 	lp_config_set_string(config(tunnel), "tunnel", "server_addresses", tmp);
 	if(tmp != NULL) {

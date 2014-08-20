@@ -117,7 +117,7 @@ typedef struct _SipSetup SipSetup;
 extern "C"{
 #endif
 
-BuddyInfo *buddy_info_new();
+BuddyInfo *buddy_info_new(void);
 void buddy_info_free(BuddyInfo *info);
 
 void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key);

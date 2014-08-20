@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
@@ -31,20 +31,6 @@
  * @{
 **/
 
-/**
- * Create a LinphoneAuthInfo object with supplied information.
- * The object can be created empty, that is with all arguments set to NULL.
- * Username, userid, password, realm and domain can be set later using specific methods.
- * At the end, username and passwd (or ha1) are required.
- * @param username the username that needs to be authenticated
- * @param userid the userid used for authenticating (use NULL if you don't know what it is)
- * @param passwd the password in clear text
- * @param ha1 the ha1-encrypted password if password is not given in clear text.
- * @param realm the authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
- * @param domain the SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
- * @return a #LinphoneAuthInfo. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
- * passed through linphone_core_add_auth_info().
-**/
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
 	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
 	if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
@@ -67,16 +53,10 @@ LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
 	return obj;
 }
 
-/**
- * Returns username.
-**/
 const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i){
 	return i->username;
 }
 
-/**
- * Returns password.
-**/
 const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i){
 	return i->passwd;
 }
@@ -97,9 +77,6 @@ const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i){
 	return i->ha1;
 }
 
-/**
- * Sets the password.
-**/
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
 	if (info->passwd!=NULL) {
 		ms_free(info->passwd);
@@ -108,9 +85,6 @@ void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd){
 	if (passwd!=NULL && (strlen(passwd)>0)) info->passwd=ms_strdup(passwd);
 }
 
-/**
- * Sets the username.
-**/
 void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username){
 	if (info->username){
 		ms_free(info->username);
@@ -119,9 +93,6 @@ void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *usernam
 	if (username && strlen(username)>0) info->username=ms_strdup(username);
 }
 
-/**
- * Sets userid.
-**/
 void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
 	if (info->userid){
 		ms_free(info->userid);
@@ -130,9 +101,6 @@ void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
 	if (userid && strlen(userid)>0) info->userid=ms_strdup(userid);
 }
 
-/**
- * Set realm.
-**/
 void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm){
 	if (info->realm){
 		ms_free(info->realm);
@@ -141,10 +109,6 @@ void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm){
 	if (realm && strlen(realm)>0) info->realm=ms_strdup(realm);
 }
 
-/**
- * Set domain for which this authentication is valid. This should not be necessary because realm is supposed to be unique and sufficient.
- * However, many SIP servers don't set realm correctly, then domain has to be used to distinguish between several SIP account bearing the same username.
-**/
 void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const char *domain){
 	if (info->domain){
 		ms_free(info->domain);
@@ -153,9 +117,6 @@ void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const char *domain){
 	if (domain && strlen(domain)>0) info->domain=ms_strdup(domain);
 }
 
-/**
- * Sets ha1.
-**/
 void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1){
 	if (info->ha1){
 		ms_free(info->ha1);
@@ -182,7 +143,7 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	char key[50];
 	sprintf(key,"auth_info_%i",pos);
 	lp_config_clean_section(config,key);
-	
+
 	if (obj==NULL || lp_config_get_int(config, "sip", "store_auth_info", 1) == 0){
 		return;
 	}
@@ -215,12 +176,12 @@ LinphoneAuthInfo *linphone_auth_info_new_from_config_file(LpConfig * config, int
 	char key[50];
 	const char *username,*userid,*passwd,*ha1,*realm,*domain;
 	LinphoneAuthInfo *ret;
-	
+
 	sprintf(key,"auth_info_%i",pos);
 	if (!lp_config_has_section(config,key)){
 		return NULL;
 	}
-	
+
 	username=lp_config_get_string(config,key,"username",NULL);
 	userid=lp_config_get_string(config,key,"userid",NULL);
 	passwd=lp_config_get_string(config,key,"passwd",NULL);
@@ -260,7 +221,7 @@ static int realm_match(const char *realm1, const char *realm2){
 static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
 	MSList *elem;
 	const LinphoneAuthInfo *ret=NULL;
-	
+
 	for (elem=lc->auth_info;elem!=NULL;elem=elem->next) {
 		LinphoneAuthInfo *pinfo = (LinphoneAuthInfo*)elem->data;
 		if (username && pinfo->username && strcmp(username,pinfo->username)==0) {
@@ -279,7 +240,7 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 				}
 			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0) {
 				return pinfo;
-			} else if (!domain) { 
+			} else if (!domain) {
 				return pinfo;
 			}
 		}
@@ -288,7 +249,7 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 }
 
 /**
- * Find authentication info matching realm, username, domain criterias.
+ * Find authentication info matching realm, username, domain criteria.
  * First of all, (realm,username) pair are searched. If multiple results (which should not happen because realm are supposed to be unique), then domain is added to the search.
  * @param lc the LinphoneCore
  * @param realm the authentication 'realm' (optional)
@@ -303,7 +264,7 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 		if (ai==NULL && domain){
 			ai=find_auth_info(lc,username,realm,domain);
 		}
-	} 
+	}
 	if (ai == NULL && domain != NULL) {
 		ai=find_auth_info(lc,username,NULL,domain);
 	}
@@ -331,8 +292,8 @@ LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *
 
 /**
  * Adds authentication information to the LinphoneCore.
- * 
- * This information will be used during all SIP transacations that require authentication.
+ *
+ * This information will be used during all SIP transactions that require authentication.
 **/
 void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *ai;
@@ -340,7 +301,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	MSList *l;
 	int restarted_op_count=0;
 	bool_t updating=FALSE;
-	
+
 	if (info->ha1==NULL && info->passwd==NULL){
 		ms_error("linphone_core_add_auth_info(): info supplied with empty password or ha1.");
 		return;
@@ -410,7 +371,6 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 	r=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
 	if (r){
 		lc->auth_info=ms_list_remove(lc->auth_info,r);
-		/*printf("len=%i newlen=%i\n",len,newlen);*/
 		linphone_auth_info_destroy(r);
 		write_auth_infos(lc);
 	}
@@ -418,6 +378,8 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 
 /**
  * Returns an unmodifiable list of currently entered LinphoneAuthInfo.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneAuthInfo}
 **/
 const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc){
 	return lc->auth_info;

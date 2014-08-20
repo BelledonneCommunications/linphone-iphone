@@ -35,7 +35,7 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_TYPE);
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_LENGTH);
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),NULL,0);
-	
+
 	if (content){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","pidf+xml")));
@@ -95,7 +95,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	int code = belle_sip_response_get_status_code(response);
 	belle_sip_header_expires_t* expires;
-	
+
 	sal_op_set_error_info_from_response(op,response);
 
 	if (code>=300) {
@@ -127,6 +127,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 				if (expires>0){
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
 					belle_sip_refresher_set_listener(op->refresher,presence_refresher_listener,op);
+					belle_sip_refresher_set_realm(op->refresher,op->base.realm);
 				}
 			}
 			break;
@@ -164,7 +165,7 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 		return NULL;
 	if (belle_sip_header_content_length_get_content_length(content_length) == 0)
 		return NULL;
-	
+
 	if (body==NULL) return NULL;
 
 	op->base.root->callbacks.parse_presence_requested(op,
@@ -181,7 +182,7 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 	belle_sip_server_transaction_t* server_transaction=op->pending_server_trans;
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	SalSubscribeStatus sub_state;
-	
+
 	if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
 		SalPresenceModel *presence_model = NULL;
 		const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
@@ -194,7 +195,7 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 		presence_model = process_presence_notification(op, req);
 		if (presence_model != NULL || body==NULL) {
 			/* Presence notification body parsed successfully. */
-			
+
 			resp = sal_op_create_response_from_request(op, req, 200); /*create first because the op may be destroyed by notify_presence */
 			op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
 		} else if (body){
@@ -214,7 +215,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
 	belle_sip_response_t* resp;
 	const char *method=belle_sip_request_get_method(req);
-	
+
 	belle_sip_object_ref(server_transaction);
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
 	op->pending_server_trans=server_transaction;
@@ -256,7 +257,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 				}
 			}
 			break;
-		default: 
+		default:
 			ms_error("unexpected dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
 			break;
 	}

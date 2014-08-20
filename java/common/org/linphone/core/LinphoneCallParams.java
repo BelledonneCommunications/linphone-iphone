@@ -76,6 +76,9 @@ public interface LinphoneCallParams {
 	/**
 	 * Set a path to file where the call will be recorded.
 	 * Actual start of the recording is controlled by LinphoneCall.startRecording().
+	 * @param path Path to the file where the call will be recorded. If it is a WAV
+	 * file, only audio will be written whereas if it is a MKV file, audio and video
+	 * will be written. 
 	**/
 	void setRecordFile(String path);
 	

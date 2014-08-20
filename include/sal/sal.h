@@ -285,6 +285,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *remote_media;
 	void *user_pointer;
 	const char* call_id;
+	char* realm;
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
 	SalCustomHeader *sent_custom_headers;
 	SalCustomHeader *recv_custom_headers;
@@ -560,6 +561,7 @@ void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
 void sal_op_set_route(SalOp *op, const char *route);
 void sal_op_set_route_address(SalOp *op, const SalAddress* address);
 void sal_op_add_route_address(SalOp *op, const SalAddress* address);
+void sal_op_set_realm(SalOp *op, const char *realm);
 void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_from_address(SalOp *op, const SalAddress *from);
 void sal_op_set_to(SalOp *op, const char *to);

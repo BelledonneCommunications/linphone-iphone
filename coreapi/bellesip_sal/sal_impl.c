@@ -137,7 +137,7 @@ void sal_process_authentication(SalOp *op) {
 		return;
 	}
 
-	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list,op->base.realm)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,new_request);
 		} else {

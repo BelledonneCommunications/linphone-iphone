@@ -537,7 +537,7 @@ fi
 
 dnl conditionnal build of video support
 AC_ARG_ENABLE(video,
-	[AS_HELP_STRING([--enable-video], [Turn on video support compiling])],
+	[AS_HELP_STRING([--enable-video], [Turn on video support compiling (default=yes)])],
 	[case "${enableval}" in
 		yes)	video=true ;;
 		no)	video=false ;;

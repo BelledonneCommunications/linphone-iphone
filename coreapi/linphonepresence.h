@@ -752,7 +752,7 @@ LINPHONE_PUBLIC void linphone_presence_model_set_user_data(LinphonePresenceModel
  * @param[in] model The #LinphonePresenceModel object for which to get the user data.
  * @return A pointer to the user data.
  */
-LINPHONE_PUBLIC void * linphone_presence_model_get_user_data(LinphonePresenceModel *model);
+LINPHONE_PUBLIC void * linphone_presence_model_get_user_data(const LinphonePresenceModel *model);
 
 /**
  * Increase the reference count of the #LinphonePresenceService object.
@@ -780,7 +780,7 @@ LINPHONE_PUBLIC void linphone_presence_service_set_user_data(LinphonePresenceSer
  * @param[in] service The #LinphonePresenceService object for which to get the user data.
  * @return A pointer to the user data.
  */
-LINPHONE_PUBLIC void * linphone_presence_service_get_user_data(LinphonePresenceService *service);
+LINPHONE_PUBLIC void * linphone_presence_service_get_user_data(const LinphonePresenceService *service);
 
 /**
  * Increase the reference count of the #LinphonePresencePerson object.
@@ -808,7 +808,7 @@ LINPHONE_PUBLIC void linphone_presence_person_set_user_data(LinphonePresencePers
  * @param[in] person The #LinphonePresencePerson object for which to get the user data.
  * @return A pointer to the user data.
  */
-LINPHONE_PUBLIC void * linphone_presence_person_get_user_data(LinphonePresencePerson *person);
+LINPHONE_PUBLIC void * linphone_presence_person_get_user_data(const LinphonePresencePerson *person);
 
 /**
  * Increase the reference count of the #LinphonePresenceActivity object.
@@ -836,7 +836,7 @@ LINPHONE_PUBLIC void linphone_presence_activity_set_user_data(LinphonePresenceAc
  * @param[in] activity The #LinphonePresenceActivity object for which to get the user data.
  * @return A pointer to the user data.
  */
-LINPHONE_PUBLIC void * linphone_presence_activity_get_user_data(LinphonePresenceActivity *activity);
+LINPHONE_PUBLIC void * linphone_presence_activity_get_user_data(const LinphonePresenceActivity *activity);
 
 /**
  * Increase the reference count of the #LinphonePresenceNote object.
@@ -864,7 +864,7 @@ LINPHONE_PUBLIC void linphone_presence_note_set_user_data(LinphonePresenceNote *
  * @param[in] note The #LinphonePresenceNote object for which to get the user data.
  * @return A pointer to the user data.
  */
-LINPHONE_PUBLIC void * linphone_presence_note_get_user_data(LinphonePresenceNote *note);
+LINPHONE_PUBLIC void * linphone_presence_note_get_user_data(const LinphonePresenceNote *note);
 
 
 /*****************************************************************************

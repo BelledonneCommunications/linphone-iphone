@@ -184,6 +184,7 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 
 /**
  * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
+ * @deprecated Use linphone_address_unref() instead
 **/
 void linphone_address_destroy(LinphoneAddress *u){
 	sal_address_unref(u);

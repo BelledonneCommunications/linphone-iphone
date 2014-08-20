@@ -163,8 +163,9 @@ struct _LinphoneChatMessage {
 	bool_t is_read;
 	unsigned int storage_id;
 	SalOp *op;
-	LinphoneContent *file_transfer_information;
-	char *content_type;
+	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
+	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
+	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -423,6 +424,7 @@ struct _LinphoneProxyConfig
 	char *reg_identity;
 	char *reg_route;
 	char *quality_reporting_collector;
+	char *domain;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
@@ -524,6 +526,7 @@ typedef struct sip_config
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
 	bool_t tcp_tls_keepalive;
+	bool_t vfu_with_info; /*use to enable vfu request using sip info*/
 } sip_config_t;
 
 typedef struct rtp_config

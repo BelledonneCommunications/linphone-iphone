@@ -236,6 +236,14 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
+			int sample_rate = payload_type_get_rate(pt);
+
+			if( strcasecmp("G722",pt->mime_type) == 0 ){
+				/* G722 spec says 8000 but the codec actually requires 16000 */
+				ms_debug("Correcting sample rate for G722");
+				sample_rate = 16000;
+			}
+
 			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
 				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
 					   pt->mime_type,pt->clock_rate,bandwidth_limit);
@@ -244,7 +252,7 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 			if (linphone_core_check_payload_type_usability(lc,pt)){
 				l=ms_list_append(l,payload_type_clone(pt));
 				nb++;
-				if (max_sample_rate && payload_type_get_rate(pt)>*max_sample_rate) *max_sample_rate=payload_type_get_rate(pt);
+				if (max_sample_rate && sample_rate>*max_sample_rate) *max_sample_rate=sample_rate;
 			}
 		}
 		if ((nb_codecs_limit > 0) && (nb >= nb_codecs_limit)) break;
@@ -305,7 +313,7 @@ static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	for(i=0; i<md->nb_streams; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_srtp(&md->streams[i]) == TRUE) {
-			if (keep_srtp_keys && old_md && sal_stream_description_has_srtp(&old_md->streams[i]) == TRUE){
+			if (keep_srtp_keys && old_md && (sal_stream_description_active(&old_md->streams[i]) == TRUE) && (sal_stream_description_has_srtp(&old_md->streams[i]) == TRUE)) {
 				int j;
 				ms_message("Keeping same crypto keys.");
 				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
@@ -701,7 +709,6 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	char *from_str;
 	const SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
 
@@ -721,11 +728,13 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			/*the following sends an option request back to the caller so that
 			 we get a chance to discover our nat'd address before answering.*/
 			call->ping_op=sal_op_new(lc->sal);
-			from_str=linphone_address_as_string_uri_only(from);
+
+			linphone_configure_op(lc, call->ping_op, from, NULL, FALSE);
+
 			sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
 			sal_op_set_user_pointer(call->ping_op,call);
-			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from),from_str);
-			ms_free(from_str);
+
+			sal_ping(call->ping_op,sal_op_get_from(call->ping_op), sal_op_get_to(call->ping_op));
 		}
 	}
 
@@ -1145,7 +1154,7 @@ const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
  *
  * return user_pointer an opaque user pointer that can be retrieved at any time
 **/
-void *linphone_call_get_user_pointer(LinphoneCall *call)
+void *linphone_call_get_user_data(LinphoneCall *call)
 {
 	return call->user_pointer;
 }
@@ -1157,7 +1166,7 @@ void *linphone_call_get_user_pointer(LinphoneCall *call)
  *
  * the user_pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
 **/
-void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer)
+void linphone_call_set_user_data(LinphoneCall *call, void *user_pointer)
 {
 	call->user_pointer = user_pointer;
 }
@@ -1278,11 +1287,14 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 /**
  * Request remote side to send us a Video Fast Update.
 **/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
+void linphone_call_send_vfu_request(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
+	if (call->core->sip_conf.vfu_with_info) {
+		if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+			sal_call_send_vfu_request(call->op);
+	} else {
+		ms_message("vfu request using sip disabled from config [sip,vfu_with_info]");
+	}
 #endif
 }
 
@@ -1310,7 +1322,7 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
  * Note that the snapshot is asynchronous, an application shall not assume that the file is created when the function returns.
  * @param call a LinphoneCall
  * @param file a path where to write the jpeg content.
- * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported). 
+ * @return 0 if successfull, -1 otherwise (typically if jpeg format is not supported).
 **/
 int linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file){
 #ifdef VIDEO_ENABLED
@@ -1338,17 +1350,17 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 }
 
 /**
- * Returns the audio codec used in the call, described as a PayloadType structure.
+ * Returns the audio codec used in the call, described as a LinphonePayloadType structure.
 **/
-const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
+const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
 	return cp->audio_codec;
 }
 
 
 /**
- * Returns the video codec used in the call, described as a PayloadType structure.
+ * Returns the video codec used in the call, described as a LinphonePayloadType structure.
 **/
-const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
+const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
 }
 
@@ -1575,10 +1587,16 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 	LinphoneCall* call = (LinphoneCall*) user_pointer;
 	switch (event_id) {
 		case MS_VIDEO_DECODER_DECODING_ERRORS:
-			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
+			ms_warning("MS_VIDEO_DECODER_DECODING_ERRORS");
 			if (call->videostream && (video_stream_is_decoding_error_to_be_reported(call->videostream, 5000) == TRUE)) {
 				video_stream_decoding_error_reported(call->videostream);
 				linphone_call_send_vfu_request(call);
+			}
+			break;
+		case MS_VIDEO_DECODER_RECOVERED_FROM_ERRORS:
+			ms_message("MS_VIDEO_DECODER_RECOVERED_FROM_ERRORS");
+			if (call->videostream) {
+				video_stream_decoding_error_recovered(call->videostream);
 			}
 			break;
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
@@ -1669,6 +1687,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	AudioStream *audiostream;
+	const char *location;
 	int dscp;
 
 	if (call->audiostream != NULL) return;
@@ -1692,6 +1711,13 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		else if (strcasecmp(type,"full")==0)
 			audio_stream_enable_echo_limiter(audiostream,ELControlFull);
 	}
+
+	/* equalizer location in the graph: 'mic' = in input graph, otherwise in output graph.
+		Any other value than mic will default to output graph for compatibility */
+	location = lp_config_get_string(lc->config,"sound","eq_location","hp");
+	audiostream->eq_loc = (strcasecmp(location,"mic") == 0) ? MSEqualizerMic : MSEqualizerHP;
+	ms_error("Equalizer location: %s", location);
+
 	audio_stream_enable_gain_control(audiostream,TRUE);
 	if (linphone_core_echo_cancellation_enabled(lc)){
 		int len,delay,framesize;
@@ -2761,7 +2787,9 @@ uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCa
  * The call recording can be started and paused after the call is established with
  * linphone_call_start_recording() and linphone_call_pause_recording().
  * @param cp the call parameters
- * @param path path and filename of the file where audio is written.
+ * @param path path and filename of the file where audio/video streams are written.
+ * The filename must have either .mkv or .wav extention. The video stream will be written
+ * only if a MKV file is given.
 **/
 void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path){
 	if (cp->record_file){

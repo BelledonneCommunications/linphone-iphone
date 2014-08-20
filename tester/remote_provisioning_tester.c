@@ -77,6 +77,12 @@ static void remote_provisioning_invalid(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void remote_provisioning_invalid_uri(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_invalid_uri_rc", FALSE);
+	CU_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringFailed,1));
+	linphone_core_manager_destroy(marie);
+}
+
 static void remote_provisioning_default_values(void) {
 	LinphoneProxyConfig *lpc;
 	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_default_values_rc", FALSE);
@@ -120,7 +126,8 @@ test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning invalid", remote_provisioning_invalid },
 	{ "Remote provisioning transient successful", remote_provisioning_transient },
 	{ "Remote provisioning default values", remote_provisioning_default_values },
-	{ "Remote provisioning from file", remote_provisioning_file }
+	{ "Remote provisioning from file", remote_provisioning_file },
+	{ "Remote provisioning invalid URI", remote_provisioning_invalid_uri }
 };
 
 test_suite_t remote_provisioning_test_suite = {
