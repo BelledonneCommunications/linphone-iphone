@@ -295,27 +295,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     LpConfig*   conf = linphone_core_get_config(lc);
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	LinphoneProxyConfig* proxyCfg = NULL;
+	LinphoneProxyConfig* defaultProxy = NULL;
     NSString* error = nil;
 
-	/* unregister before modifying any settings */
-    {
-        linphone_core_get_default_proxy(lc, &proxyCfg);
-        
-        if (proxyCfg) {
-            // this will force unregister WITHOUT destorying the proxyCfg object
-            linphone_proxy_config_edit(proxyCfg);
-            
-            int i=0;
-            while (linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationNone &&
-                   linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationCleared && 
-				   linphone_proxy_config_get_state(proxyCfg)!=LinphoneRegistrationFailed && 
-                   i++<40 ) {
-                linphone_core_iterate(lc);
-                usleep(10000);
-            }
-        }
-    }
-    
+	/* unregister before modifying any settings: editing will force unregistration */
+	linphone_core_get_default_proxy(lc, &defaultProxy);
+	if (defaultProxy) linphone_proxy_config_edit(defaultProxy);
+
 	int port_preference = [self integerForKey:@"port_preference"];
     
     BOOL random_port_preference = [self boolForKey:@"random_port_preference"];
@@ -454,7 +440,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             ms_free(proxy);
         if( info )
             linphone_auth_info_destroy(info);
+
+		// in case of error, show an alert to the user
         if( error != nil ){
+			// restart the registration on the old proxy
+			if( defaultProxy ) linphone_proxy_config_done(defaultProxy);
             [self alertAccountError:error];
         }
 	}
