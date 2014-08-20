@@ -2273,7 +2273,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{
-		ms_warning("No valid video stream defined.");
+		ms_message("No valid video stream defined.");
 	}
 #endif
 }

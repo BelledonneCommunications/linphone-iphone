@@ -160,10 +160,10 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 	linphone_call_unref(c2);
 }
 
-bool_t call_with_params(LinphoneCoreManager* caller_mgr
+bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
 						, const LinphoneCallParams *caller_params
-						, const LinphoneCallParams *callee_params) {
+						, const LinphoneCallParams *callee_params, bool_t build_callee_params) {
 	int retry=0;
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
@@ -215,10 +215,16 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 		}
 		linphone_address_destroy(callee_from);
 	}
-	if (callee_params)
+	if (callee_params){
 		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),callee_params);
-	else
+	}else if (build_callee_params){
+		LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
+		ms_error("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
+		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),default_params);
+		linphone_call_params_destroy(default_params);
+	}else{
 		linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
+	}
 
 	CU_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	CU_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
@@ -243,6 +249,14 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 	}
 	return result;
 }
+
+bool_t call_with_params(LinphoneCoreManager* caller_mgr
+						,LinphoneCoreManager* callee_mgr
+						, const LinphoneCallParams *caller_params
+						, const LinphoneCallParams *callee_params){
+	return call_with_params2(caller_mgr,callee_mgr,caller_params,callee_params,FALSE);
+}
+
 bool_t call_with_caller_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr, const LinphoneCallParams *params) {
 	return call_with_params(caller_mgr,callee_mgr,params,NULL);
 }
@@ -1270,7 +1284,7 @@ static void srtp_call_with_several_video_switches(void) {
 static void call_with_declined_video_base(bool_t using_policy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCallParams* callee_params;
+	LinphoneCallParams* callee_params=NULL;
 	LinphoneCallParams* caller_params;
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
@@ -1293,11 +1307,16 @@ static void call_with_declined_video_base(bool_t using_policy) {
 	caller_params=linphone_core_create_default_call_parameters(pauline->lc);
 	if (!using_policy)
 		linphone_call_params_enable_video(caller_params,TRUE);
-	callee_params=linphone_core_create_default_call_parameters(marie->lc);
-	if (!using_policy)
+	
+	if (!using_policy){
+		callee_params=linphone_core_create_default_call_parameters(marie->lc);
 		linphone_call_params_enable_video(callee_params,FALSE);
+	}
 
-	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
+	CU_ASSERT_TRUE(call_with_params2(pauline,marie,caller_params,callee_params,using_policy));
+	
+	linphone_call_params_destroy(caller_params);
+	if (callee_params) linphone_call_params_destroy(callee_params);
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 
@@ -1320,7 +1339,7 @@ static void call_with_declined_video_using_policy(void) {
 }
 
 static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy) {
-	LinphoneCallParams* callee_params;
+	LinphoneCallParams* callee_params=NULL;
 	LinphoneCallParams* caller_params;
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
@@ -1343,16 +1362,18 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 	caller_params=linphone_core_create_default_call_parameters(pauline->lc);
 	if (!using_policy)
 		linphone_call_params_enable_video(caller_params,TRUE);
-	callee_params=linphone_core_create_default_call_parameters(marie->lc);
-	if (!using_policy)
+	
+	if (!using_policy){
+		callee_params=linphone_core_create_default_call_parameters(marie->lc);
 		linphone_call_params_enable_video(callee_params,TRUE);
+	}
 
-	CU_ASSERT_TRUE(call_with_params(pauline,marie,caller_params,callee_params));
+	CU_ASSERT_TRUE(call_with_params2(pauline,marie,caller_params,callee_params,using_policy));
 	marie_call=linphone_core_get_current_call(marie->lc);
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 
 	linphone_call_params_destroy(caller_params);
-	linphone_call_params_destroy(callee_params);
+	if (callee_params) linphone_call_params_destroy(callee_params);
 
 	if (marie_call && pauline_call ) {
 		CU_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));

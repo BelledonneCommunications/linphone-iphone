@@ -6319,6 +6319,19 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	return p;
 }
 
+/**
+ * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(), 
+ * linphone_core_accept_call_update().
+ * The parameters are initialized according to the current LinphoneCore configuration and the current state of the LinphoneCall.
+ * @param lc the LinphoneCore
+ * @param call the call for which the parameters are to be build, or NULL in the case where the parameters are to be used for a new outgoing call.
+ * @return a new LinphoneCallParams
+ */
+LinphoneCallParams *linphone_core_create_call_params(LinphoneCore *lc, LinphoneCall *call){
+	if (!call) return linphone_core_create_default_call_parameters(lc);
+	return linphone_call_params_copy(&call->params);
+}
+
 const char *linphone_reason_to_string(LinphoneReason err){
 	switch(err){
 		case LinphoneReasonNone:

@@ -63,6 +63,7 @@ cd /c/sources
 
 Building belle-sip
 ******************
+  * make sure that java version 1.6 is available in the PATH. java-1.7 will not work with antlr generator.
   * download the sources with msys-git shell using the following command:
     $ git clone git://git.linphone.org/belle-sip.git
   * compile and install 
