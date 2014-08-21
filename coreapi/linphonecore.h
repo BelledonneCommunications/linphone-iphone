@@ -729,6 +729,41 @@ typedef enum _LinphoneCallState{
 
 LINPHONE_PUBLIC	const char *linphone_call_state_to_string(LinphoneCallState cs);
 
+/**
+ * Acquire a reference to the call.
+ * An application that wishes to retain a pointer to call object
+ * must use this function to unsure the pointer remains
+ * valid. Once the application no more needs this pointer,
+ * it must call linphone_call_unref().
+ * @param[in] call The call.
+ * @return The same call.
+ * @ingroup call_control
+**/
+LINPHONE_PUBLIC LinphoneCall *linphone_call_ref(LinphoneCall *call);
+
+/**
+ * Release reference to the call.
+ * @param[in] call The call.
+ * @ingroup call_control
+**/
+LINPHONE_PUBLIC void linphone_call_unref(LinphoneCall *call);
+
+/**
+ * Retrieve the user pointer associated with the call.
+ * @param[in] call The call.
+ * @return The user pointer associated with the call.
+ * @ingroup call_control
+**/
+LINPHONE_PUBLIC void *linphone_call_get_user_data(const LinphoneCall *call);
+
+/**
+ * Assign a user pointer to the call.
+ * @param[in] cfg The call.
+ * @param[in] ud The user pointer to associate with the call.
+ * @ingroup call_control
+**/
+LINPHONE_PUBLIC void linphone_call_set_user_data(LinphoneCall *call, void *ud);
+
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
@@ -736,8 +771,6 @@ LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_ad
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 LINPHONE_PUBLIC	char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
-LINPHONE_PUBLIC	LinphoneCall * linphone_call_ref(LinphoneCall *call);
-LINPHONE_PUBLIC	void linphone_call_unref(LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 LINPHONE_PUBLIC const char *linphone_call_get_refer_to(const LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
@@ -765,10 +798,8 @@ LINPHONE_PUBLIC	void linphone_call_set_authentication_token_verified(LinphoneCal
 LINPHONE_PUBLIC void linphone_call_send_vfu_request(LinphoneCall *call);
 /** @deprecated Use linphone_call_get_user_data() instead. */
 #define linphone_call_get_user_pointer(call) linphone_call_get_user_data(call)
-LINPHONE_PUBLIC void *linphone_call_get_user_data(LinphoneCall *call);
 /** @deprecated Use linphone_call_set_user_data() instead. */
 #define linphone_call_set_user_pointer(call, ud) linphone_call_set_user_data(call, ud)
-LINPHONE_PUBLIC	void linphone_call_set_user_data(LinphoneCall *call, void *user_data);
 LINPHONE_PUBLIC	void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
@@ -860,6 +891,34 @@ typedef enum _LinphoneRegistrationState{
  */
 LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
 LINPHONE_PUBLIC	LinphoneProxyConfig *linphone_proxy_config_new(void);
+
+/**
+ * Acquire a reference to the proxy config.
+ * @param[in] cfg The proxy config.
+ * @return The same proxy config.
+**/
+LINPHONE_PUBLIC LinphoneProxyConfig *linphone_proxy_config_ref(LinphoneProxyConfig *cfg);
+
+/**
+ * Release reference to the proxy config.
+ * @param[in] cfg The proxy config.
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_unref(LinphoneProxyConfig *cfg);
+
+/**
+ * Retrieve the user pointer associated with the proxy config.
+ * @param[in] cfg The proxy config.
+ * @return The user pointer associated with the proxy config.
+**/
+LINPHONE_PUBLIC void *linphone_proxy_config_get_user_data(const LinphoneProxyConfig *cfg);
+
+/**
+ * Assign a user pointer to the proxy config.
+ * @param[in] cfg The proxy config.
+ * @param[in] ud The user pointer to associate with the proxy config.
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cfg, void *ud);
+
 LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
@@ -1036,14 +1095,6 @@ LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfi
  * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
  */
 LINPHONE_PUBLIC	int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
-/*
- *  attached a user data to a proxy config
- */
-LINPHONE_PUBLIC	void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud);
-/*
- *  get user data to a proxy config. return null if any
- */
-LINPHONE_PUBLIC	void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr);
 
 /**
  * Set default privacy policy for all calls routed through this proxy.

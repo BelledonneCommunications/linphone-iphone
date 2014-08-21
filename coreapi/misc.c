@@ -946,18 +946,6 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 	return FALSE;
 }
 
-LinphoneCall * is_a_linphone_call(void *user_pointer){
-	LinphoneCall *call=(LinphoneCall*)user_pointer;
-	if (call==NULL) return NULL;
-	return call->magic==linphone_call_magic ? call : NULL;
-}
-
-LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer){
-	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)user_pointer;
-	if (cfg==NULL) return NULL;
-	return cfg->magic==linphone_proxy_config_magic ? cfg : NULL;
-}
-
 unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 	unsigned int ret=0;
 	const char *features=lp_config_get_string(lc->config,"sound","features",NULL);

@@ -99,8 +99,6 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
 	const char *contact_uri_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_uri_parameters", NULL) : NULL;
 
-	memset(obj, 0, sizeof(LinphoneProxyConfig));
-	obj->magic = linphone_proxy_config_magic;
 	obj->expires = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_expires", 3600) : 3600;
 	obj->reg_sendregister = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 0) : 0;
 	obj->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
@@ -109,6 +107,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->reg_identity = identity ? ms_strdup(identity) : NULL;
 	obj->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
 	obj->reg_route = route ? ms_strdup(route) : NULL;
+	obj->domain = NULL;
 	obj->realm = realm ? ms_strdup(realm) : NULL;
 	obj->quality_reporting_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
 	obj->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
@@ -133,20 +132,24 @@ LinphoneProxyConfig *linphone_proxy_config_new() {
 	return linphone_core_create_proxy_config(NULL);
 }
 
+static void _linphone_proxy_config_destroy(LinphoneProxyConfig *obj);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneProxyConfig);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneProxyConfig, belle_sip_object_t,
+	(belle_sip_object_destroy_t)_linphone_proxy_config_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
 LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc) {
-	LinphoneProxyConfig *obj=NULL;
-	obj=ms_new(LinphoneProxyConfig,1);
+	LinphoneProxyConfig *obj = belle_sip_object_new(LinphoneProxyConfig);
 	linphone_proxy_config_init(lc,obj);
 	return obj;
 }
 
-/**
- * Destroys a proxy config.
- *
- * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
- * linphone_core_remove_proxy_config() must not be freed.
-**/
-void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
+void _linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
 	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
@@ -162,7 +165,26 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
 	if (obj->saved_identity!=NULL) linphone_address_destroy(obj->saved_identity);
-	ms_free(obj);
+}
+
+/**
+ * Destroys a proxy config.
+ * @deprecated
+ *
+ * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
+ * linphone_core_remove_proxy_config() must not be freed.
+**/
+void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg) {
+	belle_sip_object_unref(cfg);
+}
+
+LinphoneProxyConfig *linphone_proxy_config_ref(LinphoneProxyConfig *cfg) {
+	belle_sip_object_ref(cfg);
+	return cfg;
+}
+
+void linphone_proxy_config_unref(LinphoneProxyConfig *cfg) {
+	belle_sip_object_unref(cfg);
 }
 
 /**
@@ -1498,12 +1520,12 @@ void linphone_account_creator_destroy(LinphoneAccountCreator *obj){
 	}
 }
 
-void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud) {
-	cr->user_data=ud;
+void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cfg, void *ud) {
+	cfg->user_data = ud;
 }
 
-void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
-	return cr->user_data;
+void * linphone_proxy_config_get_user_data(const LinphoneProxyConfig *cfg) {
+	return cfg->user_data;
 }
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){

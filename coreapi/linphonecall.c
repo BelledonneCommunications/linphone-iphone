@@ -570,8 +570,6 @@ static void port_config_set(LinphoneCall *call, int stream_index, int min_port, 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int min_port, max_port;
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
-	call->magic=linphone_call_magic;
-	call->refcnt=1;
 	call->state=LinphoneCallIdle;
 	call->transfer_state = LinphoneCallIdle;
 	call->media_start_time=0;
@@ -647,8 +645,19 @@ static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, Linphon
 	}else call->af=AF_INET;
 }
 
+static void linphone_call_destroy(LinphoneCall *obj);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCall);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneCall, belle_sip_object_t,
+	(belle_sip_object_destroy_t)linphone_call_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
-	LinphoneCall *call=ms_new0(LinphoneCall,1);
+	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
@@ -708,7 +717,7 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 }
 
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
-	LinphoneCall *call=ms_new0(LinphoneCall,1);
+	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 	const SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
 
@@ -999,7 +1008,6 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	linphone_call_params_uninit(&obj->params);
 	linphone_call_params_uninit(&obj->current_params);
 	sal_error_info_reset(&obj->non_op_error);
-	ms_free(obj);
 }
 
 /**
@@ -1007,27 +1015,13 @@ static void linphone_call_destroy(LinphoneCall *obj)
  * @{
 **/
 
-/**
- * Increments the call 's reference count.
- * An application that wishes to retain a pointer to call object
- * must use this function to unsure the pointer remains
- * valid. Once the application no more needs this pointer,
- * it must call linphone_call_unref().
-**/
 LinphoneCall * linphone_call_ref(LinphoneCall *obj){
-	obj->refcnt++;
+	belle_sip_object_ref(obj);
 	return obj;
 }
 
-/**
- * Decrements the call object reference count.
- * See linphone_call_ref().
-**/
 void linphone_call_unref(LinphoneCall *obj){
-	obj->refcnt--;
-	if (obj->refcnt==0){
-		linphone_call_destroy(obj);
-	}
+	belle_sip_object_unref(obj);
 }
 
 /**
@@ -1154,7 +1148,7 @@ const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
  *
  * return user_pointer an opaque user pointer that can be retrieved at any time
 **/
-void *linphone_call_get_user_data(LinphoneCall *call)
+void *linphone_call_get_user_data(const LinphoneCall *call)
 {
 	return call->user_pointer;
 }
