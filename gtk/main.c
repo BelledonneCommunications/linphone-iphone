@@ -1540,7 +1540,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
 	if (!found) {
-		g_warning("Could not find proxy config in combo box of identities.");
+		/*ignored, this is a notification for a removed proxy config.*/
 		return;
 	}
 	switch (rs){

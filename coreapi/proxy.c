@@ -149,6 +149,17 @@ LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc) {
 	return obj;
 }
 
+void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj){
+	if (obj->op) {
+		sal_op_release(obj->op);
+		obj->op=NULL;
+	}
+	if (obj->publish_op){
+		sal_op_release(obj->publish_op);
+		obj->publish_op=NULL;
+	}
+}
+
 void _linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
 	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
@@ -159,12 +170,11 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->realm!=NULL) ms_free(obj->realm);
 	if (obj->type!=NULL) ms_free(obj->type);
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
-	if (obj->op) sal_op_release(obj->op);
-	if (obj->publish_op) sal_op_release(obj->publish_op);
 	if (obj->contact_params) ms_free(obj->contact_params);
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
 	if (obj->saved_identity!=NULL) linphone_address_destroy(obj->saved_identity);
+	_linphone_proxy_config_release_ops(obj);
 }
 
 /**
@@ -467,9 +477,6 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationCleared,"Registration cleared");
 		}
 		_linphone_proxy_config_unregister(obj);
-
-
-
 	}
 }
 
@@ -1156,10 +1163,7 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
-		linphone_proxy_config_update(cfg); /*so that it has an effect*/
-
-		/*as cfg no longer in proxies, unregister will never be issued*/
-		_linphone_proxy_config_unregister(cfg);
+		linphone_proxy_config_update(cfg);
 	}
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;

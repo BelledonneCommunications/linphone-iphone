@@ -2200,9 +2200,10 @@ static void proxy_update(LinphoneCore *lc){
 	for(elem=lc->sip_conf.deleted_proxies;elem!=NULL;elem=next){
 		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*)elem->data;
 		next=elem->next;
-		if (ms_time(NULL) - cfg->deletion_date > 5) {
+		if (ms_time(NULL) - cfg->deletion_date > 32) {
 			lc->sip_conf.deleted_proxies =ms_list_remove_link(lc->sip_conf.deleted_proxies,elem);
-			ms_message("clearing proxy config for [%s]",linphone_proxy_config_get_addr(cfg));
+			ms_message("Proxy config for [%s] is definitely removed from core.",linphone_proxy_config_get_addr(cfg));
+			_linphone_proxy_config_release_ops(cfg);
 			linphone_proxy_config_destroy(cfg);
 		}
 	}
