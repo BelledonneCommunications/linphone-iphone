@@ -1522,44 +1522,6 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 }
 
 
-/*Returns the local ip that routes to the internet, or guessed by other special means (upnp)*/
-/*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
-void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
-	const char *ip;
-	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
-		&& (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
-		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#ifdef BUILD_UPNP
-	else if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
-			linphone_upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
-		ip = linphone_upnp_context_get_external_ipaddress(lc->upnp);
-		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#endif //BUILD_UPNP
-	if (af==AF_UNSPEC){
-		if (linphone_core_ipv6_enabled(lc)){
-			bool_t has_ipv6;
-			has_ipv6=linphone_core_get_local_ip_for(AF_INET6,NULL,result)==0;
-			if (strcmp(result,"::1")!=0)
-				return; /*this machine has real ipv6 connectivity*/
-			if (linphone_core_get_local_ip_for(AF_INET,NULL,result)==0 && strcmp(result,"127.0.0.1")!=0)
-				return; /*this machine has only ipv4 connectivity*/
-			if (has_ipv6){
-				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
-				strncpy(result,"::1",LINPHONE_IPADDR_SIZE);
-				return;
-			}
-		}
-		/*in all other cases use IPv4*/
-		af=AF_INET;
-	}
-	if (linphone_core_get_local_ip_for(af,NULL,result)==0)
-		return;
-}
-
 static void update_primary_contact(LinphoneCore *lc){
 	char *guessed=NULL;
 	char tmp[LINPHONE_IPADDR_SIZE];
@@ -1574,7 +1536,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		ms_error("Could not parse identity contact !");
 		url=linphone_address_new("sip:unknown@unkwownhost");
 	}
-	linphone_core_get_local_ip(lc, AF_UNSPEC, tmp);
+	linphone_core_get_local_ip_for(AF_UNSPEC, NULL, tmp);
 	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 		ms_warning("Local loopback network only !");
 		lc->sip_conf.loopback_only=TRUE;
@@ -2170,7 +2132,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 	/* only do the network up checking every five seconds */
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
-		linphone_core_get_local_ip(lc,AF_UNSPEC,newip);
+		linphone_core_get_local_ip_for(AF_UNSPEC,NULL,newip);
 		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE; /*no network*/

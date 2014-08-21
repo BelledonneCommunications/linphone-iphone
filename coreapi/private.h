@@ -292,7 +292,6 @@ void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyC
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
-void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 

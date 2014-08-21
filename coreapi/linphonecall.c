@@ -645,6 +645,61 @@ static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, Linphon
 	}else call->af=AF_INET;
 }
 
+/**
+ * Fill the local ip that routes to the internet according to the destination, or guess it by other special means (upnp).
+ */
+static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr){
+	const char *ip;
+	int af = call->af;
+	const char *dest = NULL;
+	if (call->dest_proxy == NULL) {
+		struct addrinfo hints;
+		struct addrinfo *res = NULL;
+		int err;
+		const char *domain = linphone_address_get_domain(remote_addr);
+		memset(&hints, 0, sizeof(hints));
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_DGRAM;
+		hints.ai_flags = AI_NUMERICHOST;
+		err = getaddrinfo(domain, NULL, &hints, &res);
+		if (err == 0) {
+			dest = domain;
+		}
+	}
+	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
+		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
+		strncpy(call->localip,ip,LINPHONE_IPADDR_SIZE);
+		return;
+	}
+#ifdef BUILD_UPNP
+	else if (call->core->upnp != NULL && linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(call->core->upnp) == LinphoneUpnpStateOk) {
+		ip = linphone_upnp_context_get_external_ipaddress(call->core->upnp);
+		strncpy(call->localip,ip,LINPHONE_IPADDR_SIZE);
+		return;
+	}
+#endif //BUILD_UPNP
+	if (af==AF_UNSPEC){
+		if (linphone_core_ipv6_enabled(call->core)){
+			bool_t has_ipv6;
+			has_ipv6=linphone_core_get_local_ip_for(AF_INET6,dest,call->localip)==0;
+			if (strcmp(call->localip,"::1")!=0)
+				return; /*this machine has real ipv6 connectivity*/
+			if (linphone_core_get_local_ip_for(AF_INET,dest,call->localip)==0 && strcmp(call->localip,"127.0.0.1")!=0)
+				return; /*this machine has only ipv4 connectivity*/
+			if (has_ipv6){
+				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
+				strncpy(call->localip,"::1",LINPHONE_IPADDR_SIZE);
+				return;
+			}
+		}
+		/*in all other cases use IPv4*/
+		af=AF_INET;
+	}
+	if (linphone_core_get_local_ip_for(af,dest,call->localip)==0)
+		return;
+}
+
 static void linphone_call_destroy(LinphoneCall *obj);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCall);
@@ -662,7 +717,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
-	linphone_core_get_local_ip(lc,call->af,call->localip);
+	linphone_call_get_local_ip(call, to);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
 
@@ -748,7 +803,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	linphone_address_clean(from);
-	linphone_core_get_local_ip(lc,call->af,call->localip);
+	linphone_call_get_local_ip(call, from);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	call->dest_proxy = linphone_core_lookup_known_proxy(call->core, to);
