@@ -2811,8 +2811,8 @@ static void record_call(const char *filename, bool_t enableVideo) {
 
 #ifdef VIDEO_ENABLED
 	if(enableVideo) {
-		if((CU_ASSERT_PTR_NOT_NULL(linphone_core_find_payload_type(marie->lc, "H264", -1, -1)))
-				&& (CU_ASSERT_PTR_NOT_NULL(linphone_core_find_payload_type(pauline->lc, "H264", -1, -1)))) {
+		if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL)
+				&& (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
 			linphone_call_params_enable_video(marieParams, TRUE);
 			linphone_call_params_enable_video(paulineParams, TRUE);
 			disable_all_video_codecs_except_one(marie->lc, "H264");
