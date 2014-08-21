@@ -356,7 +356,8 @@ LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneF
 
 /**
  * Get Buddy list of LinphoneFriend
- * @param lc #LinphoneCore object
+ * @param[in] lc #LinphoneCore object
+ * @return \mslist{LinphoneFriend}
  */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 

@@ -138,8 +138,6 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
-static const int linphone_call_magic=0x3343;
-
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
 	LinphoneChatMessageOutgoing
@@ -183,7 +181,8 @@ typedef struct _PortConfig{
 
 struct _LinphoneCall
 {
-	int magic; /*used to distinguish from proxy config*/
+	belle_sip_object_t base;
+	void *user_data;
 	struct _LinphoneCore *core;
 	SalErrorInfo non_op_error;
 	int af; /*the address family to prefer for RTP path, guessed from signaling path*/
@@ -202,7 +201,6 @@ struct _LinphoneCall
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneProxyConfig *dest_proxy;
-	int refcnt;
 	void * user_pointer;
 	PortConfig media_ports[2];
 	MSMediaStreamSessions sessions[2]; /*the rtp, srtp, zrtp contexts for each stream*/
@@ -252,6 +250,8 @@ struct _LinphoneCall
 	bool_t paused_by_app;
 };
 
+BELLE_SIP_DECLARE_VPTR(LinphoneCall);
+
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
@@ -292,7 +292,6 @@ void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyC
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
-void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
@@ -402,15 +401,12 @@ extern SalCallbacks linphone_sal_callbacks;
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
-LinphoneCall * is_a_linphone_call(void *user_pointer);
-LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
-
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
-static const int linphone_proxy_config_magic=0x7979;
 LINPHONE_PUBLIC bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
 LINPHONE_PUBLIC bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
+void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
@@ -418,7 +414,8 @@ void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 
 struct _LinphoneProxyConfig
 {
-	int magic;
+	belle_sip_object_t base;
+	void *user_data;
 	struct _LinphoneCore *lc;
 	char *reg_proxy;
 	char *reg_identity;
@@ -447,7 +444,6 @@ struct _LinphoneProxyConfig
 	bool_t pad;
 	uint8_t avpf_rr_interval;
 	uint8_t quality_reporting_interval;
-	void* user_data;
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
@@ -456,6 +452,8 @@ struct _LinphoneProxyConfig
 	/*---*/
 
 };
+
+BELLE_SIP_DECLARE_VPTR(LinphoneProxyConfig);
 
 struct _LinphoneAuthInfo
 {
@@ -925,7 +923,9 @@ BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
-BELLE_SIP_TYPE_ID(LinphoneChatMessage)
+BELLE_SIP_TYPE_ID(LinphoneChatMessage),
+BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
+BELLE_SIP_TYPE_ID(LinphoneCall)
 BELLE_SIP_DECLARE_TYPES_END
 
 

@@ -72,6 +72,7 @@ class CArgument(CObject):
 	def __init__(self, t, name = '', enums = [], structs = []):
 		CObject.__init__(self, name)
 		self.description = None
+		self.containedType = None
 		keywords = [ 'const', 'struct', 'enum', 'signed', 'unsigned', 'short', 'long', '*' ]
 		fullySplittedType = []
 		splittedType = t.strip().split(' ')
@@ -302,6 +303,8 @@ class Project:
 				para.remove(n)
 			for n in para.findall('.//ref'):
 				n.attrib = {}
+			for n in para.findall(".//mslist"):
+				para.remove(n)
 		if descriptionNode.tag == 'parameterdescription':
 			descriptionNode.tag = 'description'
 		if descriptionNode.tag == 'simplesect':
@@ -335,6 +338,11 @@ class Project:
 					if st.associatedTypedef == td:
 						self.add(CClass(st))
 						break
+			elif ('Linphone' + td.definition) == td.name:
+				st = CStruct(td.name)
+				st.associatedTypedef = td
+				self.add(st)
+				self.add(CClass(st))
 		# Sort classes by length of name (longest first), so that methods are put in the right class
 		self.classes.sort(key = lambda c: len(c.name), reverse = True)
 		for e in self.__events:
@@ -480,6 +488,10 @@ class Project:
 		returnarg = CArgument(t, enums = self.enums, structs = self.__structs)
 		returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
 		if returndesc is not None:
+			if returnarg.ctype == 'MSList':
+				n = returndesc.find('.//mslist')
+				if n is not None:
+					returnarg.containedType = n.text
 			returnarg.description = self.__cleanDescription(returndesc)
 		elif returnarg.completeType != 'void':
 			missingDocWarning += "\tReturn value is not documented\n"
@@ -499,6 +511,10 @@ class Project:
 				for arg in argslist.arguments:
 					for paramdesc in paramdescs:
 						if arg.name == paramdesc.find('./parameternamelist').find('./parametername').text:
+							if arg.ctype == 'MSList':
+								n = paramdesc.find('.//mslist')
+								if n is not None:
+									arg.containedType = n.text
 							arg.description = self.__cleanDescription(paramdesc.find('./parameterdescription'))
 				missingDocWarning = ''
 				for arg in argslist.arguments:
@@ -589,12 +605,16 @@ class Generator:
 			functionAttributes['location'] = f.location
 		functionNode = ET.SubElement(parentNode, nodeName, functionAttributes)
 		returnValueAttributes = { 'type' : f.returnArgument.ctype, 'completetype' : f.returnArgument.completeType }
+		if f.returnArgument.containedType is not None:
+			returnValueAttributes['containedtype'] = f.returnArgument.containedType
 		returnValueNode = ET.SubElement(functionNode, 'return', returnValueAttributes)
 		if f.returnArgument.description is not None:
 			returnValueNode.append(f.returnArgument.description)
 		argumentsNode = ET.SubElement(functionNode, 'arguments')
 		for arg in f.arguments:
 			argumentNodeAttributes = { 'name' : arg.name, 'type' : arg.ctype, 'completetype' : arg.completeType }
+			if arg.containedType is not None:
+				argumentNodeAttributes['containedtype'] = arg.containedType
 			argumentNode = ET.SubElement(argumentsNode, 'argument', argumentNodeAttributes)
 			if arg.description is not None:
 				argumentNode.append(arg.description)

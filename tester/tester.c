@@ -50,7 +50,11 @@ const char *liblinphone_tester_file_prefix=".";
 #endif
 
 /* TODO: have the same "static" for QNX and windows as above? */
+#ifdef ANDROID
+const char *liblinphone_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cache";
+#else
 const char *liblinphone_tester_writable_dir_prefix = ".";
+#endif
 
 const char *userhostsfile = "tester_hosts";
 

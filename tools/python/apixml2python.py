@@ -38,50 +38,28 @@ blacklisted_events = [
 	'LinphoneCoreFileTransferSendCb'	# missing LinphoneContent
 ]
 blacklisted_functions = [
-	'linphone_call_get_user_pointer',	# rename to linphone_call_get_user_data
-	'linphone_call_set_user_pointer',	# rename to linphone_call_set_user_data
 	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
-	'linphone_call_log_get_start_date',	# missing time_t
-	'linphone_call_log_get_user_pointer',	# rename to linphone_call_log_get_user_data
-	'linphone_call_log_set_user_pointer',	# rename to linphone_call_log_set_user_data
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
-	'linphone_call_params_get_used_audio_codec',	# missing PayloadType
-	'linphone_call_params_get_used_video_codec',	# missing PayloadType
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_chat_message_get_file_transfer_information',	# missing LinphoneContent
-	'linphone_chat_message_get_time',	# missing time_t
 	'linphone_chat_message_start_file_download',	# to be handwritten because of callback
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
 	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
-	'linphone_chat_room_create_message_2',	# missing time_t
 	'linphone_core_can_we_add_call',	# private function
-	'linphone_core_enable_payload_type',	# missing PayloadType
-	'linphone_core_find_payload_type',	# missing PayloadType
-	'linphone_core_get_audio_codecs',	# missing PayloadType and MSList
-	'linphone_core_get_auth_info_list',	# missing MSList
-	'linphone_core_get_call_logs',	# missing MSList
-	'linphone_core_get_calls',	# missing MSList
-	'linphone_core_get_chat_rooms',	# missing MSList
+	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
-	'linphone_core_get_payload_type_bitrate',	# missing PayloadType
-	'linphone_core_get_friend_list',	# missing MSList
-	'linphone_core_get_proxy_config_list',	# missing MSList
 	'linphone_core_get_sip_transports',	# missing LCSipTransports
 	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
-	'linphone_core_get_video_codecs',	# missing PayloadType and MSList
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_core_payload_type_enabled',	# missing PayloadType
-	'linphone_core_payload_type_is_vbr',	# missing PayloadType
+	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
-	'linphone_core_set_payload_type_bitrate',	# missing PayloadType
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_core_set_audio_codecs',	# missing PayloadType and MSList
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
 	'linphone_core_subscribe',	# missing LinphoneContent
 	'linphone_event_notify',	# missing LinphoneContent
@@ -89,7 +67,6 @@ blacklisted_functions = [
 	'linphone_event_send_subscribe',	# missing LinphoneContent
 	'linphone_event_update_publish',	# missing LinphoneContent
 	'linphone_event_update_subscribe',	# missing LinphoneContent
-	'linphone_presence_model_get_timestamp',	# missing time_t
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
@@ -103,6 +80,8 @@ blacklisted_functions = [
 ]
 hand_written_functions = [
 	'linphone_chat_room_send_message2',
+	'linphone_core_get_sound_devices',
+	'linphone_core_get_video_devices',
 	'linphone_core_new',
 	'linphone_core_new_with_config'
 ]

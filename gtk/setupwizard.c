@@ -429,16 +429,19 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		linphone_address_destroy(identity);
         
-		// If account created on sip.linphone.org, we configure linphone to use TLS by default
-		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 && linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
-			LinphoneAddress *addr=linphone_address_new(creator->domain);
-			char *tmp;
-			linphone_address_set_transport(addr, LinphoneTransportTls);
-			tmp=linphone_address_as_string(addr);
-			linphone_proxy_config_set_server_addr(cfg,tmp);
-			linphone_proxy_config_set_route(cfg,tmp);
-			ms_free(tmp);
-			linphone_address_destroy(addr);
+		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 ){
+			linphone_proxy_config_enable_avpf(cfg,TRUE);
+			// If account created on sip.linphone.org, we configure linphone to use TLS by default
+			if (linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
+				LinphoneAddress *addr=linphone_address_new(creator->domain);
+				char *tmp;
+				linphone_address_set_transport(addr, LinphoneTransportTls);
+				tmp=linphone_address_as_string(addr);
+				linphone_proxy_config_set_server_addr(cfg,tmp);
+				linphone_proxy_config_set_route(cfg,tmp);
+				ms_free(tmp);
+				linphone_address_destroy(addr);
+			}
 		}
 		
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)

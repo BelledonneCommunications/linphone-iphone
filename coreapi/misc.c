@@ -69,7 +69,7 @@ static bool_t payload_type_enabled(const PayloadType *pt) {
 	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
 }
 
-bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt){
+bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
 		return payload_type_enabled(pt);
 	}
@@ -77,12 +77,12 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *p
 	return FALSE;
 }
 
-bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const PayloadType *pt){
+bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt){
 	if (pt->type==PAYLOAD_VIDEO) return TRUE;
 	return !!(pt->flags & PAYLOAD_TYPE_IS_VBR);
 }
 
-int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enabled){
+int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt, bool_t enabled){
 	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
 		_linphone_core_codec_config_write(lc);
@@ -108,7 +108,7 @@ const char *linphone_core_get_payload_type_description(LinphoneCore *lc, Payload
 	return NULL;
 }
 
-void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, PayloadType *pt, int bitrate){
+void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadType *pt, int bitrate){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
 		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
 			pt->normal_bitrate=bitrate*1000;
@@ -181,7 +181,7 @@ static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, 
 	}else return (int)ceil(get_audio_payload_bandwidth_from_codec_bitrate(pt)/1000.0);/*rounding codec bandwidth should be avoid, specially for AMR*/
 }
 
-int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const PayloadType *pt){
+int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePayloadType *pt){
 	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	if (pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED){
@@ -944,18 +944,6 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 			return TRUE;
 	}
 	return FALSE;
-}
-
-LinphoneCall * is_a_linphone_call(void *user_pointer){
-	LinphoneCall *call=(LinphoneCall*)user_pointer;
-	if (call==NULL) return NULL;
-	return call->magic==linphone_call_magic ? call : NULL;
-}
-
-LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer){
-	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)user_pointer;
-	if (cfg==NULL) return NULL;
-	return cfg->magic==linphone_proxy_config_magic ? cfg : NULL;
 }
 
 unsigned int linphone_core_get_audio_features(LinphoneCore *lc){

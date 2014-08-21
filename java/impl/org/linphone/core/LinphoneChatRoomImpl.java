@@ -27,9 +27,11 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native long getPeerAddress(long ptr);
 	private native void sendMessage(long ptr, String message);
 	private native void sendMessage2(long ptr, Object msg, long messagePtr, StateListener listener);
+	private native long[] getHistoryRange(long ptr, int begin, int end);
 	private native long[] getHistory(long ptr, int limit);
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
+	private native int getHistorySize(long ptr);
 	private native void deleteHistory(long ptr);
 	private native void compose(long ptr);
 	private native boolean isRemoteComposing(long ptr);
@@ -53,7 +55,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			sendMessage(nativePtr,message);
 		}
 	}
-	
+
 	@Override
 	public void sendMessage(LinphoneChatMessage message, StateListener listener) {
 		synchronized(getCore()){
@@ -67,37 +69,43 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			return new LinphoneChatMessageImpl(createLinphoneChatMessage(nativePtr, message));
 		}
 	}
-	
+
 	public LinphoneChatMessage[] getHistory() {
 		synchronized(getCore()){
 			return getHistory(0);
 		}
 	}
-	
+
+	public LinphoneChatMessage[] getHistoryRange(int begin, int end) {
+		synchronized(getCore()){
+			long[] typesPtr = getHistoryRange(nativePtr, begin, end);
+			return getHistoryPrivate(typesPtr);
+		}
+	}
+
 	public LinphoneChatMessage[] getHistory(int limit) {
 		synchronized(getCore()){
 			long[] typesPtr = getHistory(nativePtr, limit);
-			if (typesPtr == null) return null;
-			
-			LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];
-			for (int i=0; i < messages.length; i++) {
-				messages[i] = new LinphoneChatMessageImpl(typesPtr[i]);
-			}
-	
-			return messages;
+			return getHistoryPrivate(typesPtr);
 		}
 	}
-	
+
 	public void destroy() {
 		destroy(nativePtr);
 	}
-	
+
 	public int getUnreadMessagesCount() {
 		synchronized(getCore()){
 			return getUnreadMessagesCount(nativePtr);
 		}
 	}
-	
+
+	public int getHistorySize() {
+		synchronized(getCore()){
+			return getHistorySize(nativePtr);
+		}
+	}
+
 	public void deleteHistory() {
 		synchronized(getCore()){
 			deleteHistory(nativePtr);
@@ -115,27 +123,27 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			return isRemoteComposing(nativePtr);
 		}
 	}
-	
+
 	public void markAsRead() {
 		synchronized(getCore()){
 			markAsRead(nativePtr);
 		}
 	}
-	
+
 	public void deleteMessage(LinphoneChatMessage message) {
 		synchronized(getCore()){
 			if (message != null)
 				deleteMessage(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
 		}
 	}
-	
+
 	public void updateUrl(LinphoneChatMessage message) {
 		synchronized(getCore()){
 			if (message != null)
 				updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
 		}
 	}
-	
+
 	@Override
 	public LinphoneChatMessage createLinphoneChatMessage(String message,
 			String url, State state, long timestamp, boolean isRead,
@@ -149,5 +157,15 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	@Override
 	public synchronized LinphoneCore getCore() {
 		return (LinphoneCore)getCore(nativePtr);
+	}
+	private LinphoneChatMessage[] getHistoryPrivate(long[] typesPtr) {
+		if (typesPtr == null) return null;
+
+		LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];
+		for (int i=0; i < messages.length; i++) {
+			messages[i] = new LinphoneChatMessageImpl(typesPtr[i]);
+		}
+
+		return messages;
 	}
 }

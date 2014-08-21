@@ -246,8 +246,8 @@ bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
 
 /**
  * Returns an list of chat rooms
- * @param lc #LinphoneCore object
- * @return A list of #LinphoneChatRoom
+ * @param[in] lc #LinphoneCore object
+ * @return \mslist{LinphoneChatRoom}
 **/
 MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;

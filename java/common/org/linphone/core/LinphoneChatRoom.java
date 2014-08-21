@@ -21,8 +21,8 @@ package org.linphone.core;
 import org.linphone.core.LinphoneChatMessage.State;
 
 /**
- * 
- * A chat room is the place where text messages are exchanged. 
+ *
+ * A chat room is the place where text messages are exchanged.
 Can be created by linphone_core_create_chat_room().
  *
  */
@@ -43,7 +43,7 @@ public interface LinphoneChatRoom {
 	 * @param chat message
 	 */
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
-	
+
 	/**
 	 * Create a LinphoneChatMessage
 	 * @param chatRoom chat room associated to the message
@@ -51,31 +51,45 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message);
-	
+
 	/**
 	 * Returns the chat history associated with the peer address associated with this chat room
 	 * @return an array of LinphoneChatMessage
 	 */
 	LinphoneChatMessage[] getHistory();
-	
+
 	/**
 	 * Returns the chat history associated with the peer address associated with this chat room
 	 * @param limit the maximum number of messages to fetch
 	 * @return an array of LinphoneChatMessage
 	 */
 	LinphoneChatMessage[] getHistory(int limit);
-	
+
+	/**
+	 * Returns the chat history associated with the peer address associated with this chat room for the given range, sorted from oldest to most recent
+	 * @param begin the first (most recent) message to retrieve. Newest message has index 0. If negative, use value 0 instead.
+	 * @param end the last (oldest) message to retrieve. Oldest message has value "history size" - 1 (equivalent to -1). If negative or lower than begin value,  value is given, use -1.
+	 * @return an array of LinphoneChatMessage, empty if nothing has been found
+	 */
+	LinphoneChatMessage[] getHistoryRange(int begin, int end);
+
 	/**
 	 * Destroys a LinphoneChatRoom.
 	 */
 	void destroy();
-	
+
 	/**
 	 * Returns the amount of unread messages associated with the peer of this chatRoom.
 	 * @return the amount of unread messages
 	 */
 	int getUnreadMessagesCount();
-	
+
+	/**
+	 * Returns the amount of messages associated with the peer of this chatRoom.
+	 * @return the amount of messages in the conversation
+	 */
+	int getHistorySize();
+
 	/**
 	 * Deletes all the messages associated with the peer of this chat room
 	 */
@@ -91,24 +105,24 @@ public interface LinphoneChatRoom {
 	 * @return true if the remote is currently composing a message, false otherwise.
 	 */
 	boolean isRemoteComposing();
-	
+
 	/**
 	 * Marks all the messages in this conversation as read
 	 */
 	void markAsRead();
-	
+
 	/**
 	 * Deletes a message
 	 * @param message the message to delete
 	 */
 	void deleteMessage(LinphoneChatMessage message);
-	
+
 	/**
 	 * Update the value stored in the database for the external_body_url field
 	 * @param message to update
 	 */
 	void updateUrl(LinphoneChatMessage message);
-	
+
 	/**
 	 * Create a LinphoneChatMessage
 	 * @return LinphoneChatMessage object

@@ -843,8 +843,8 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
 	
-	if (!cfg || cfg->deletion_date!=0){
-		ms_message("Registration success for removed proxy config, ignored");
+	if (!cfg){
+		ms_message("Registration success for deleted proxy config, ignored");
 		return;
 	}
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
@@ -867,10 +867,6 @@ static void register_failure(SalOp *op){
 	if (cfg==NULL){
 		ms_warning("Registration failed for unknown proxy config.");
 		return ;
-	}
-	if (cfg->deletion_date!=0){
-		ms_message("Registration failed for removed proxy config, ignored");
-		return;
 	}
 	if (details==NULL)
 		details=_("no response timeout");

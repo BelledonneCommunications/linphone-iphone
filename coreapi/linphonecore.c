@@ -288,14 +288,14 @@ const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
 /**
  * Assign a user pointer to the call log.
 **/
-void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
+void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
 
 /**
  * Returns the user pointer associated with the call log.
 **/
-void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
+void *linphone_call_log_get_user_data(const LinphoneCallLog *cl){
 	return cl->user_pointer;
 }
 
@@ -1466,6 +1466,8 @@ LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, st
 
 /**
  * Returns the list of available audio codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the MSList points a PayloadType
  * structure holding the codec information.
@@ -1480,6 +1482,8 @@ const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc)
 
 /**
  * Returns the list of available video codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
  *
  * This list is unmodifiable. The ->data field of the MSList points a PayloadType
  * structure holding the codec information.
@@ -1518,44 +1522,6 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 }
 
 
-/*Returns the local ip that routes to the internet, or guessed by other special means (upnp)*/
-/*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
-void linphone_core_get_local_ip(LinphoneCore *lc, int af, char *result){
-	const char *ip;
-	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
-		&& (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
-		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#ifdef BUILD_UPNP
-	else if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
-			linphone_upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
-		ip = linphone_upnp_context_get_external_ipaddress(lc->upnp);
-		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
-		return;
-	}
-#endif //BUILD_UPNP
-	if (af==AF_UNSPEC){
-		if (linphone_core_ipv6_enabled(lc)){
-			bool_t has_ipv6;
-			has_ipv6=linphone_core_get_local_ip_for(AF_INET6,NULL,result)==0;
-			if (strcmp(result,"::1")!=0)
-				return; /*this machine has real ipv6 connectivity*/
-			if (linphone_core_get_local_ip_for(AF_INET,NULL,result)==0 && strcmp(result,"127.0.0.1")!=0)
-				return; /*this machine has only ipv4 connectivity*/
-			if (has_ipv6){
-				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
-				strncpy(result,"::1",LINPHONE_IPADDR_SIZE);
-				return;
-			}
-		}
-		/*in all other cases use IPv4*/
-		af=AF_INET;
-	}
-	if (linphone_core_get_local_ip_for(af,NULL,result)==0)
-		return;
-}
-
 static void update_primary_contact(LinphoneCore *lc){
 	char *guessed=NULL;
 	char tmp[LINPHONE_IPADDR_SIZE];
@@ -1570,7 +1536,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		ms_error("Could not parse identity contact !");
 		url=linphone_address_new("sip:unknown@unkwownhost");
 	}
-	linphone_core_get_local_ip(lc, AF_UNSPEC, tmp);
+	linphone_core_get_local_ip_for(AF_UNSPEC, NULL, tmp);
 	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 		ms_warning("Local loopback network only !");
 		lc->sip_conf.loopback_only=TRUE;
@@ -1631,6 +1597,9 @@ LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
 
 /**
  * Sets the list of audio codecs.
+ * @param[in] lc The LinphoneCore object
+ * @param[in] codecs \mslist{PayloadType}
+ * @return 0
  *
  * @ingroup media_parameters
  * The list is taken by the LinphoneCore thus the application should not free it.
@@ -1646,6 +1615,9 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 
 /**
  * Sets the list of video codecs.
+ * @param[in] lc The LinphoneCore object
+ * @param[in] codecs \mslist{PayloadType}
+ * @return 0
  *
  * @ingroup media_parameters
  * The list is taken by the LinphoneCore thus the application should not free it.
@@ -2160,7 +2132,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 	/* only do the network up checking every five seconds */
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
-		linphone_core_get_local_ip(lc,AF_UNSPEC,newip);
+		linphone_core_get_local_ip_for(AF_UNSPEC,NULL,newip);
 		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE; /*no network*/
@@ -2190,9 +2162,10 @@ static void proxy_update(LinphoneCore *lc){
 	for(elem=lc->sip_conf.deleted_proxies;elem!=NULL;elem=next){
 		LinphoneProxyConfig* cfg = (LinphoneProxyConfig*)elem->data;
 		next=elem->next;
-		if (ms_time(NULL) - cfg->deletion_date > 5) {
+		if (ms_time(NULL) - cfg->deletion_date > 32) {
 			lc->sip_conf.deleted_proxies =ms_list_remove_link(lc->sip_conf.deleted_proxies,elem);
-			ms_message("clearing proxy config for [%s]",linphone_proxy_config_get_addr(cfg));
+			ms_message("Proxy config for [%s] is definitely removed from core.",linphone_proxy_config_get_addr(cfg));
+			_linphone_proxy_config_release_ops(cfg);
 			linphone_proxy_config_destroy(cfg);
 		}
 	}
@@ -3279,6 +3252,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #ifdef VIDEO_ENABLED
 		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
+			video_stream_set_fps(call->videostream, linphone_core_get_preferred_framerate(lc));
 			if (call->camera_enabled && call->videostream->cam!=lc->video_conf.device){
 				video_stream_change_camera(call->videostream,lc->video_conf.device);
 			}else video_stream_update_video_params(call->videostream);
@@ -3671,6 +3645,8 @@ int linphone_core_terminate_all_calls(LinphoneCore *lc){
 
 /**
  * Returns the current list of calls.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneCall}
  *
  * Note that this list is read-only and might be changed by the core after a function call to linphone_core_iterate().
  * Similarly the LinphoneCall objects inside it might be destroyed without prior notice.
@@ -4813,6 +4789,8 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 
 /**
  * Get the list of call logs (past calls).
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneCallLog}
  *
  * @ingroup call_logs
 **/
@@ -6260,8 +6238,8 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 }
 
 
-PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
-	PayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
+LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	LinphonePayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
 		return result;
 	} else {
@@ -6302,6 +6280,19 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 	LinphoneCallParams *p=ms_new0(LinphoneCallParams,1);
 	linphone_core_init_default_params(lc, p);
 	return p;
+}
+
+/**
+ * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(), 
+ * linphone_core_accept_call_update().
+ * The parameters are initialized according to the current LinphoneCore configuration and the current state of the LinphoneCall.
+ * @param lc the LinphoneCore
+ * @param call the call for which the parameters are to be build, or NULL in the case where the parameters are to be used for a new outgoing call.
+ * @return a new LinphoneCallParams
+ */
+LinphoneCallParams *linphone_core_create_call_params(LinphoneCore *lc, LinphoneCall *call){
+	if (!call) return linphone_core_create_default_call_parameters(lc);
+	return linphone_call_params_copy(&call->params);
 }
 
 const char *linphone_reason_to_string(LinphoneReason err){
@@ -6713,4 +6704,21 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 
 void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
 	core->file_transfer_server=ms_strdup(server_url);
+}
+
+
+int linphone_payload_type_get_type(const LinphonePayloadType *pt) {
+	return pt->type;
+}
+
+int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt) {
+	return pt->normal_bitrate;
+}
+
+char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
+	return pt->mime_type;
+}
+
+int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
+	return pt->channels;
 }
