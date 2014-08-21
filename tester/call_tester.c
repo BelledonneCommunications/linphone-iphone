@@ -2778,14 +2778,25 @@ static void savpf_to_savpf_call(void) {
 	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
 }
 
-static void call_recording() {
+static char *create_filepath(const char *dir, const char *filename, const char *ext) {
+	char *filepath = ms_new0(char, strlen(dir) + strlen(filename) + strlen(ext) + 3);
+	strcpy(filepath, dir);
+	strcat(filepath, "/");
+	strcat(filepath, filename);
+	strcat(filepath, ".");
+	strcat(filepath, ext);
+	return filepath;
+}
+
+static void record_call(const char *filename, bool_t enableVideo) {
 	LinphoneCoreManager *marie = NULL;
 	LinphoneCoreManager *pauline = NULL;
 	LinphoneCallParams *marieParams = NULL;
 	LinphoneCallParams *paulineParams = NULL;
 	LinphoneCall *callInst = NULL;
-	int dummy=0;
-	char *filepath = NULL;
+	const char **formats, *format;
+	char *filepath;
+	int dummy=0, i;
 
 #ifdef ANDROID
 #ifdef HAVE_OPENH264
@@ -2798,61 +2809,49 @@ static void call_recording() {
 	marieParams = linphone_core_create_default_call_parameters(marie->lc);
 	paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 
-#ifdef ANDROID
-	const char dirname[] = "/sdcard/Movies/liblinphone_tester";
-#else
-	const char dirname[] = ".test";
-#endif
-
 #ifdef VIDEO_ENABLED
-	const char filename[] = "recording.mkv";
-#else
-	const char filename[] = "recording.wav";
-#endif
-
-	filepath = ms_new0(char, strlen(dirname) + strlen(filename) + 2);
-	strcpy(filepath, dirname);
-	strcat(filepath, "/");
-	strcat(filepath, filename);
-	if(access(dirname, F_OK) != 0) {
-#ifdef WIN32
-		CU_ASSERT_EQUAL(mkdir(dirname),0);
-#else
-		CU_ASSERT_EQUAL(mkdir(dirname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH), 0);
-#endif
-	}
-	CU_ASSERT_EQUAL(access(dirname, W_OK), 0);
-	if(access(filepath, F_OK) == 0) {
-		CU_ASSERT_EQUAL(remove(filepath), 0);
-	}
-
-	linphone_call_params_set_record_file(marieParams, filepath);
-
-#ifdef VIDEO_ENABLED
-	if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL) && (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
-		linphone_call_params_enable_video(marieParams, TRUE);
-		linphone_call_params_enable_video(paulineParams, TRUE);
-		disable_all_video_codecs_except_one(marie->lc, "H264");
-		disable_all_video_codecs_except_one(pauline->lc, "H264");
-	} else {
-		ms_warning("call_recording(): the H264 payload has not been found. Only sound will be recorded");
+	if(enableVideo) {
+		if((CU_ASSERT_PTR_NOT_NULL(linphone_core_find_payload_type(marie->lc, "H264", -1, -1)))
+				&& (CU_ASSERT_PTR_NOT_NULL(linphone_core_find_payload_type(pauline->lc, "H264", -1, -1)))) {
+			linphone_call_params_enable_video(marieParams, TRUE);
+			linphone_call_params_enable_video(paulineParams, TRUE);
+			disable_all_video_codecs_except_one(marie->lc, "H264");
+			disable_all_video_codecs_except_one(pauline->lc, "H264");
+		} else {
+			ms_warning("call_recording(): the H264 payload has not been found. Only sound will be recorded");
+		}
 	}
 #endif
 
-	CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams));
-	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
+	formats = linphone_core_get_supported_file_formats(marie->lc);
 
-	ms_message("call_recording(): the call will be recorded into %s", filepath);
-	linphone_call_start_recording(callInst);
-	wait_for_until(marie->lc,pauline->lc,&dummy,1,10000);
-	linphone_call_stop_recording(callInst);
+	for(i=0, format = formats[0]; format != NULL; i++, format = formats[i]) {
+		filepath = create_filepath(liblinphone_tester_writable_dir_prefix, filename, format);
+		remove(filepath);
+		linphone_call_params_set_record_file(marieParams, filepath);
+		if((CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams)))
+				&& (CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc)))) {
 
-	CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
-	end_call(marie, pauline);
-
+			ms_message("call_recording(): start recording into %s", filepath);
+			linphone_call_start_recording(callInst);
+			wait_for_until(marie->lc,pauline->lc,&dummy,1,5000);
+			linphone_call_stop_recording(callInst);
+			end_call(marie, pauline);
+			CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
+			remove(filepath);
+		}
+		ms_free(filepath);
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	ms_free(filepath);
+}
+
+static void audio_call_recording_test(void) {
+	record_call("recording", FALSE);
+}
+
+static void video_call_recording_test(void) {
+	record_call("recording", TRUE);
 }
 
 test_t call_tests[] = {
@@ -2865,6 +2864,7 @@ test_t call_tests[] = {
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
 	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
+	{ "Audio call recording", audio_call_recording_test },
 #if 0 /* not yet activated because not implemented */
 	{ "Multiple answers to a call", multiple_answers_call },
 #endif
@@ -2901,6 +2901,7 @@ test_t call_tests[] = {
 	{ "Call with ICE from video to non-video", call_with_ice_video_to_novideo},
 	{ "Call with ICE and video added", call_with_ice_video_added },
 	{ "Video call with ICE no matching audio codecs", video_call_with_ice_no_matching_audio_codecs },
+	{ "Video call recording", video_call_recording_test },
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
@@ -2946,7 +2947,6 @@ test_t call_tests[] = {
 	{ "SAVPF to AVPF call", savpf_to_avpf_call },
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
 	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
-	{ "Call recording", call_recording }
 };
 
 test_suite_t call_test_suite = {
