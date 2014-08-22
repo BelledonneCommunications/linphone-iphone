@@ -1179,27 +1179,26 @@ const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call){
 }
 
 /**
- * Get the user_pointer in the LinphoneCall
+ * Get the user pointer associated with the LinphoneCall
  *
  * @ingroup call_control
- *
- * return user_pointer an opaque user pointer that can be retrieved at any time
+ * @return  an opaque user pointer that can be retrieved at any time
 **/
 void *linphone_call_get_user_data(const LinphoneCall *call)
 {
-	return call->user_pointer;
+	return call->user_data;
 }
 
 /**
- * Set the user_pointer in the LinphoneCall
+ * Set the user pointer associated with the LinphoneCall
  *
  * @ingroup call_control
  *
- * the user_pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
+ * the user pointer is an opaque user pointer that can be retrieved at any time in the LinphoneCall
 **/
 void linphone_call_set_user_data(LinphoneCall *call, void *user_pointer)
 {
-	call->user_pointer = user_pointer;
+	call->user_data = user_pointer;
 }
 
 /**

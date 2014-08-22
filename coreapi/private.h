@@ -201,7 +201,6 @@ struct _LinphoneCall
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneProxyConfig *dest_proxy;
-	void * user_pointer;
 	PortConfig media_ports[2];
 	MSMediaStreamSessions sessions[2]; /*the rtp, srtp, zrtp contexts for each stream*/
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
