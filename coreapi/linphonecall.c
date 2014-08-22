@@ -679,25 +679,7 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		return;
 	}
 #endif //BUILD_UPNP
-	if (af==AF_UNSPEC){
-		if (linphone_core_ipv6_enabled(call->core)){
-			bool_t has_ipv6;
-			has_ipv6=linphone_core_get_local_ip_for(AF_INET6,dest,call->localip)==0;
-			if (strcmp(call->localip,"::1")!=0)
-				return; /*this machine has real ipv6 connectivity*/
-			if (linphone_core_get_local_ip_for(AF_INET,dest,call->localip)==0 && strcmp(call->localip,"127.0.0.1")!=0)
-				return; /*this machine has only ipv4 connectivity*/
-			if (has_ipv6){
-				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
-				strncpy(call->localip,"::1",LINPHONE_IPADDR_SIZE);
-				return;
-			}
-		}
-		/*in all other cases use IPv4*/
-		af=AF_INET;
-	}
-	if (linphone_core_get_local_ip_for(af,dest,call->localip)==0)
-		return;
+	linphone_core_get_local_ip(call->core, af, dest, call->localip);
 }
 
 static void linphone_call_destroy(LinphoneCall *obj);

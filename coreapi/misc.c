@@ -1125,6 +1125,26 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	return 0;
 }
 
+void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char *result) {
+	if (af == AF_UNSPEC) {
+		if (linphone_core_ipv6_enabled(lc)) {
+			bool_t has_ipv6 = linphone_core_get_local_ip_for(AF_INET6, dest, result) == 0;
+			if (strcmp(result, "::1") != 0)
+				return; /*this machine has real ipv6 connectivity*/
+			if ((linphone_core_get_local_ip_for(AF_INET, dest, result) == 0) && (strcmp(result, "127.0.0.1") != 0))
+				return; /*this machine has only ipv4 connectivity*/
+			if (has_ipv6) {
+				/*this machine has only local loopback for both ipv4 and ipv6, so prefer ipv6*/
+				strncpy(result, "::1", LINPHONE_IPADDR_SIZE);
+				return;
+			}
+		}
+		/*in all other cases use IPv4*/
+		af = AF_INET;
+	}
+	linphone_core_get_local_ip_for(af, dest, result);
+}
+
 SalReason linphone_reason_to_sal(LinphoneReason reason){
 	switch(reason){
 		case LinphoneReasonNone:

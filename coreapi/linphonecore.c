@@ -1536,7 +1536,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		ms_error("Could not parse identity contact !");
 		url=linphone_address_new("sip:unknown@unkwownhost");
 	}
-	linphone_core_get_local_ip_for(AF_UNSPEC, NULL, tmp);
+	linphone_core_get_local_ip(lc, AF_UNSPEC, NULL, tmp);
 	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 		ms_warning("Local loopback network only !");
 		lc->sip_conf.loopback_only=TRUE;
@@ -2132,7 +2132,7 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 
 	/* only do the network up checking every five seconds */
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
-		linphone_core_get_local_ip_for(AF_UNSPEC,NULL,newip);
+		linphone_core_get_local_ip(lc,AF_UNSPEC,NULL,newip);
 		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE; /*no network*/
