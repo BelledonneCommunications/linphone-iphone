@@ -548,8 +548,15 @@ class DeallocMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s(%p [%p])\", __FUNCTION__, self, native_ptr);\n"
 
 	def format_c_function_call(self):
+		reset_user_data_code = ''
+		if self.class_['class_name'] != 'Core' and self.class_['class_has_user_data']:
+			reset_user_data_code += \
+"""if (native_ptr != NULL) {{
+		{function_prefix}set_user_data(native_ptr, NULL);
+	}}
+""".format(function_prefix=self.class_['class_c_function_prefix'])
 		# Increment the refcount on self to prevent reentrancy in the dealloc method.
-		native_ptr_dealloc_code = "\tPy_INCREF(self);\n"
+		native_ptr_dealloc_code = "Py_INCREF(self);\n"
 		if self.class_['class_refcountable']:
 			native_ptr_dealloc_code += \
 """	if (native_ptr != NULL) {{
@@ -563,10 +570,11 @@ class DeallocMethodDefinition(MethodDefinition):
 	}}
 """.format(function_prefix=self.class_['class_c_function_prefix'])
 		return \
-"""{native_ptr_dealloc_code}
+"""	{reset_user_data_code}
+	{native_ptr_dealloc_code}
 	pylinphone_dispatch_messages();
 	self->ob_type->tp_free(self);
-""".format(native_ptr_dealloc_code=native_ptr_dealloc_code)
+""".format(reset_user_data_code=reset_user_data_code, native_ptr_dealloc_code=native_ptr_dealloc_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);"
@@ -689,27 +697,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "{common}\n{specific}".format(common=common, specific=specific)
 
 	def format_arguments_parsing(self):
-		body = "\tpygil_state = PyGILState_Ensure();\n"
-		for xml_method_arg in self.xml_method_args:
-			arg_name = xml_method_arg.get('name')
-			arg_type = xml_method_arg.get('type')
-			arg_complete_type = xml_method_arg.get('completetype')
-			arg_contained_type = xml_method_arg.get('containedtype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
-			if argument_type.fmt_str == 'O':
-				type_class = self.find_class_definition(arg_type)
-				get_user_data_code = ''
-				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
-				if type_class is not None and type_class['class_has_user_data']:
-					get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
-					get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
-				body += \
-"""	{get_user_data_code}
-	if (py{name} == NULL) {{
-		{new_from_native_pointer_code}
-	}}
-""".format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
-		return body
+		return "\tpygil_state = PyGILState_Ensure();\n"
 
 	def format_enter_trace(self):
 		fmt = '%p'
@@ -730,6 +718,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s({fmt})\", __FUNCTION__{args});\n".format(fmt=fmt, args=args)
 
 	def format_c_function_call(self):
+		create_python_objects_code = ''
+		decref_python_objects_code = ''
 		fmt = 'O'
 		args = ['pylc']
 		for xml_method_arg in self.xml_method_args:
@@ -743,14 +733,30 @@ class EventCallbackMethodDefinition(MethodDefinition):
 				args.append('py' + arg_name)
 			else:
 				args.append(arg_name)
+			if argument_type.fmt_str == 'O':
+				type_class = self.find_class_definition(arg_type)
+				get_user_data_code = ''
+				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
+				if type_class is not None and type_class['class_has_user_data']:
+					get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
+					get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
+				create_python_objects_code += \
+"""		{get_user_data_code}
+		if (py{name} == NULL) {{
+			{new_from_native_pointer_code}
+		}}
+""".format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
+				decref_python_objects_code += "\t\tPy_DECREF(py{name});\n".format(name=arg_name)
 		args=', '.join(args)
 		return \
 """	if ((func != NULL) && PyCallable_Check(func)) {{
+{create_python_objects_code}
 		if (PyEval_CallObject(func, Py_BuildValue("{fmt}", {args})) == NULL) {{
 			PyErr_Print();
 		}}
+{decref_python_objects_code}
 	}}
-""".format(fmt=fmt.replace('O', 'N'), args=args)
+""".format(fmt=fmt.replace('O', 'N'), args=args, create_python_objects_code=create_python_objects_code, decref_python_objects_code=decref_python_objects_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);\n"
