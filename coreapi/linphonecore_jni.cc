@@ -55,6 +55,7 @@ extern "C" void libmsbcg729_init();
 #ifdef HAVE_WEBRTC
 extern "C" void libmswebrtc_init();
 #endif
+#include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
 
 
@@ -3457,6 +3458,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioDscp(JNIEnv* env,jobject thiz,jlong ptr, jint dscp){
 	linphone_core_set_audio_dscp((LinphoneCore*)ptr,dscp);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(JNIEnv *env, jclass cls, jobject pm) {
+#ifdef ANDROID
+	JavaVM *jvm;
+	GetJavaVM(env, &jvm);
+	bellesip_wake_lock_init(jvm, pm);
+#endif
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAudioDscp(JNIEnv* env,jobject thiz,jlong ptr){
