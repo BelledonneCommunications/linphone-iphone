@@ -249,7 +249,6 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
 	PyGILState_STATE pygil_state;
 	PyObject *pycm = NULL;
-	PyObject *func = NULL;
 	PyObject *_dict = (PyObject *)ud;
 	PyObject *_cb = PyDict_GetItemString(_dict, "callback");
 	PyObject *_ud = PyDict_GetItemString(_dict, "user_data");
