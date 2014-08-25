@@ -3463,7 +3463,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioDscp(JNIEnv* env
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(JNIEnv *env, jclass cls, jobject pm) {
 #ifdef ANDROID
 	JavaVM *jvm;
-	GetJavaVM(env, &jvm);
+	env->GetJavaVM(&jvm);
 	bellesip_wake_lock_init(jvm, pm);
 #endif
 }
