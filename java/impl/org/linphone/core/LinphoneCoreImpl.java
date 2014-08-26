@@ -153,6 +153,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void enableSdp200Ack(long nativePtr,boolean enable);
 	private native boolean isSdp200AckEnabled(long nativePtr);
 	private native void stopRinging(long nativePtr);
+	private native static void setAndroidPowerManager(Object pm);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -179,6 +180,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void setContext(Object context) {
 		mContext = (Context)context;
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
 	}
 
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
@@ -272,6 +274,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized void destroy() {
 		isValid();
+		setAndroidPowerManager(null);
 		delete(nativePtr);
 		nativePtr = 0;
 	}
