@@ -1137,7 +1137,7 @@ int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 		ms_warning("ProxyConfig already entered, ignored.");
 		return 0;
 	}
-	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)cfg);
+	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)linphone_proxy_config_ref(cfg));
 	linphone_proxy_config_apply(cfg,lc);
 	return 0;
 }

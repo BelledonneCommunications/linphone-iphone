@@ -725,6 +725,7 @@ static void sip_config_read(LinphoneCore *lc)
 		LinphoneProxyConfig *cfg=linphone_proxy_config_new_from_config_file(lc,i);
 		if (cfg!=NULL){
 			linphone_core_add_proxy_config(lc,cfg);
+			linphone_proxy_config_unref(cfg);
 		}else{
 			break;
 		}
@@ -2166,7 +2167,7 @@ static void proxy_update(LinphoneCore *lc){
 			lc->sip_conf.deleted_proxies =ms_list_remove_link(lc->sip_conf.deleted_proxies,elem);
 			ms_message("Proxy config for [%s] is definitely removed from core.",linphone_proxy_config_get_addr(cfg));
 			_linphone_proxy_config_release_ops(cfg);
-			linphone_proxy_config_destroy(cfg);
+			linphone_proxy_config_unref(cfg);
 		}
 	}
 }
