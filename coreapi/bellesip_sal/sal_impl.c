@@ -98,12 +98,16 @@ void sal_disable_logs() {
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
 		sal->pending_auths=ms_list_append(sal->pending_auths,op);
+		op->has_auth_pending=TRUE;
 	}
 }
 
 void sal_remove_pending_auth(Sal *sal, SalOp *op){
-	if (ms_list_find(sal->pending_auths,op)){
-		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+	if (op->has_auth_pending){
+		op->has_auth_pending=FALSE;
+		if (ms_list_find(sal->pending_auths,op)){
+			sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+		}
 	}
 }
 

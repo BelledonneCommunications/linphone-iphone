@@ -758,8 +758,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	LinphoneCall *c1,*c2;
 	bool_t audio_success=FALSE;
 	bool_t video_success=FALSE;
-	int i;
 	bool_t video_enabled;
+	MSTimeSpec ts;
 
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
@@ -772,7 +772,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 
 	CU_ASSERT_EQUAL(linphone_call_params_video_enabled(linphone_call_get_current_params(c1)),linphone_call_params_video_enabled(linphone_call_get_current_params(c2)));
 	video_enabled=linphone_call_params_video_enabled(linphone_call_get_current_params(c1));
-	for (i=0;i<200;i++){
+	liblinphone_tester_clock_start(&ts);
+	do{
 		if ((c1 != NULL) && (c2 != NULL)) {
 			if (linphone_call_get_audio_stats(c1)->ice_state==state &&
 				linphone_call_get_audio_stats(c2)->ice_state==state ){
@@ -782,11 +783,12 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 			linphone_core_iterate(caller->lc);
 			linphone_core_iterate(callee->lc);
 		}
-		ms_usleep(50000);
-	}
+		ms_usleep(20000);
+	}while(liblinphone_tester_clock_elapsed(&ts,10000));
 
 	if (video_enabled){
-		for (i=0;i<200;i++){
+		liblinphone_tester_clock_start(&ts);
+		do{
 			if ((c1 != NULL) && (c2 != NULL)) {
 				if (linphone_call_get_video_stats(c1)->ice_state==state &&
 					linphone_call_get_video_stats(c2)->ice_state==state ){
@@ -796,8 +798,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
 			}
-			ms_usleep(50000);
-		}
+			ms_usleep(20000);
+		}while(liblinphone_tester_clock_elapsed(&ts,5000));
 	}
 
 	 /*make sure encryption mode are preserved*/

@@ -102,6 +102,7 @@ struct SalOp{
 	bool_t sdp_offering;
 	bool_t call_released;
 	bool_t manual_refresher;
+	bool_t has_auth_pending;
 	int auth_requests; /*number of auth requested for this op*/
 };
 
