@@ -138,8 +138,8 @@ class ArgumentType:
 			self.type_str = 'bool'
 			self.check_func = 'PyBool_Check'
 			self.convert_func = 'PyInt_AsLong'
-			self.fmt_str = 'i'
-			self.cfmt_str = '%d'
+			self.fmt_str = 'b'
+			self.cfmt_str = '%u'
 		elif self.basic_type == 'time_t':
 			self.type_str = 'DateTime'
 			self.check_func = 'PyDateTime_Check'
