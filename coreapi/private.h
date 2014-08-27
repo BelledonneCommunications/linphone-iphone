@@ -471,10 +471,11 @@ typedef enum _LinphoneIsComposingState {
 } LinphoneIsComposingState;
 
 struct _LinphoneChatRoom{
+    belle_sip_object_t base;
+    void *user_data;
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
-	void * user_data;
 	MSList *messages_hist;
 	MSList *transient_messages;
 	LinphoneIsComposingState remote_is_composing;
@@ -484,6 +485,7 @@ struct _LinphoneChatRoom{
 	belle_sip_source_t *composing_refresh_timer;
 };
 
+BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);
 
 
 struct _LinphoneFriend{
@@ -924,6 +926,7 @@ BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
+BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
 BELLE_SIP_TYPE_ID(LinphoneCall)
 BELLE_SIP_DECLARE_TYPES_END

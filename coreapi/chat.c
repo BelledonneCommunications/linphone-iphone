@@ -253,17 +253,26 @@ MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
 }
 
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- */
-LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
+static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
+    return linphone_address_weak_equal(cr->peer_url,from);
+}
+
+static void _linphone_chat_room_destroy(LinphoneChatRoom *obj);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatRoom);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
+   (belle_sip_object_destroy_t)_linphone_chat_room_destroy,
+   NULL, // clone
+   NULL, // marshal
+   FALSE
+);
+
+static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
 	LinphoneAddress *parsed_url=NULL;
 
 	if ((parsed_url=linphone_core_interpret_url(lc,to))!=NULL){
-		LinphoneChatRoom *cr=ms_new0(LinphoneChatRoom,1);
+		LinphoneChatRoom *cr=belle_sip_object_new(LinphoneChatRoom);
 		cr->lc=lc;
 		cr->peer=linphone_address_as_string(parsed_url);
 		cr->peer_url=parsed_url;
@@ -273,8 +282,33 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
 	return NULL;
 }
 
-bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
-	return linphone_address_weak_equal(cr->peer_url,from);
+LinphoneChatRoom * _linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
+    LinphoneChatRoom *cr=NULL;
+    MSList *elem;
+    for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
+        cr=(LinphoneChatRoom*)elem->data;
+        if (linphone_chat_room_matches(cr,addr)){
+            break;
+        }
+        cr=NULL;
+    }
+    return cr;
+}
+
+static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
+    LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
+    LinphoneChatRoom *ret;
+
+    if (to_addr==NULL){
+        ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
+        return NULL;
+    }
+    ret=_linphone_core_get_chat_room(lc,to_addr);
+    linphone_address_destroy(to_addr);
+    if (!ret){
+        ret=_linphone_core_create_chat_room(lc,to);
+    }
+    return ret;
 }
 
 /**
@@ -282,21 +316,41 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
  * @param lc #LinphoneCore object
  * @param to destination address for messages
  * @return #LinphoneChatRoom where messaging can take place.
+ * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
  */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
-	LinphoneChatRoom *ret;
+    return _linphone_core_get_or_create_chat_room(lc, to);
+}
 
-	if (to_addr==NULL){
-		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
-		return NULL;
-	}
-	ret=linphone_core_get_chat_room(lc,to_addr);
-	linphone_address_destroy(to_addr);
-	if (!ret){
-		ret=linphone_core_create_chat_room(lc,to);
-	}
-	return ret;
+/**
+ * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
+ * @param lc #LinphoneCore object
+ * @param to destination address for messages
+ * @return #LinphoneChatRoom where messaging can take place.
+ * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
+ */
+LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to) {
+    return _linphone_core_get_or_create_chat_room(lc, to);
+}
+
+/**
+ * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
+ * @param lc the linphone core
+ * @param addr a linphone address.
+ * @returns #LinphoneChatRoom where messaging can take place.
+**/
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
+    return _linphone_core_get_chat_room(lc, addr);
+}
+
+/**
+ * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
+ * @param lc The linphone core
+ * @param to The destination address for messages.
+ * @returns #LinphoneChatRoom where messaging can take place.
+**/
+LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
+    return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
@@ -326,11 +380,7 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 	}
 }
 
-/**
- * Destroy a LinphoneChatRoom.
- * @param cr #LinphoneChatRoom object
- */
-void linphone_chat_room_destroy(LinphoneChatRoom *cr){
+static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	LinphoneCore *lc=cr->lc;
 	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_unref);
 	linphone_chat_room_delete_composing_idle_timer(cr);
@@ -339,9 +389,33 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
-	ms_free(cr);
 }
 
+/**
+ * Destroy a LinphoneChatRoom.
+ * @param cr #LinphoneChatRoom object
+ * @deprecated Use linphone_chat_room_unref() instead.
+ */
+void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
+    belle_sip_object_unref(cr);
+}
+
+LinphoneChatRoom * linphone_chat_room_ref(LinphoneChatRoom *cr) {
+    belle_sip_object_ref(cr);
+    return cr;
+}
+
+void linphone_chat_room_unref(LinphoneChatRoom *cr) {
+    belle_sip_object_unref(cr);
+}
+
+void * linphone_chat_room_get_user_data(const LinphoneChatRoom *cr) {
+   return cr->user_data;
+}
+
+void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
+   cr->user_data = ud;
+}
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
@@ -445,25 +519,6 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 		cr->remote_is_composing = LinphoneIsComposingIdle;
 		cr->lc->vtable.is_composing_received(cr->lc, cr);
 	}
-}
-
-/**
- * Retrieve an existing chat room whose peer is the supplied address, if exists.
- * @param lc the linphone core
- * @param addr a linphone address.
- * @returns the matching chatroom, or NULL if no such chatroom exists.
-**/
-LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
-	LinphoneChatRoom *cr=NULL;
-	MSList *elem;
-	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
-		cr=(LinphoneChatRoom*)elem->data;
-		if (linphone_chat_room_matches(cr,addr)){
-			break;
-		}
-		cr=NULL;
-	}
-	return cr;
 }
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg){
@@ -663,20 +718,6 @@ LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
 **/
 LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr){
 	return cr->lc;
-}
-
-/**
- * Assign a user pointer to the chat room.
-**/
-void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud){
-	cr->user_data=ud;
-}
-
-/**
- * Retrieve the user pointer associated with the chat room.
-**/
-void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr){
-	return cr->user_data;
 }
 
 /**
