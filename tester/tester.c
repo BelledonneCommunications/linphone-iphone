@@ -160,7 +160,7 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
-		ms_usleep(100000);
+		ms_usleep(20000);
 	}
 	if(counter && *counter<value) return FALSE;
 	else return TRUE;
