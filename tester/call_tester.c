@@ -616,7 +616,7 @@ static void call_with_dns_time_out(void) {
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	linphone_core_iterate(marie->lc);
 	sal_set_dns_timeout(marie->lc->sal,0);
-	linphone_core_invite(marie->lc,"\"t\x8et\x8e\" sip:toto@toto.com"); /*just to use non ascii values*/
+	linphone_core_invite(marie->lc,"\"t\x8et\x8e\" <sip:toto@toto.com>"); /*just to use non ascii values*/
 	for(i=0;i<10;i++){
 		ms_usleep(200000);
 		linphone_core_iterate(marie->lc);
@@ -784,7 +784,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 			linphone_core_iterate(callee->lc);
 		}
 		ms_usleep(20000);
-	}while(liblinphone_tester_clock_elapsed(&ts,10000));
+	}while(!liblinphone_tester_clock_elapsed(&ts,10000));
 
 	if (video_enabled){
 		liblinphone_tester_clock_start(&ts);
@@ -799,7 +799,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 				linphone_core_iterate(callee->lc);
 			}
 			ms_usleep(20000);
-		}while(liblinphone_tester_clock_elapsed(&ts,5000));
+		}while(!liblinphone_tester_clock_elapsed(&ts,5000));
 	}
 
 	 /*make sure encryption mode are preserved*/
