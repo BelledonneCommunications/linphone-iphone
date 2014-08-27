@@ -1,27 +1,11 @@
 from nose.tools import assert_equals
 import linphone
-
-test_username = "liblinphone_tester"
-test_route = "sip2.linphone.org"
-
-def create_address(domain):
-    addr = linphone.Address.new(None)
-    assert addr != None
-    addr.username = test_username
-    assert_equals(addr.username, test_username)
-    if domain is not None:
-        domain = test_route
-    addr.domain = domain
-    assert_equals(addr.domain, domain)
-    addr.display_name = None
-    addr.display_name = "Mr Tester"
-    assert_equals(addr.display_name, "Mr Tester")
-    return addr
+import linphonetester
 
 class TestSetup:
 
     def test_address(self):
-        create_address(None)
+        linphonetester.create_address(None)
 
     def test_core_init(self):
         lc = linphone.Core.new({}, None, None)
