@@ -741,6 +741,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 	def format_c_function_call(self):
 		create_python_objects_code = ''
+		decref_python_objects_code = ''
 		fmt = 'O'
 		args = ['pylc']
 		for xml_method_arg in self.xml_method_args:
@@ -767,6 +768,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			{new_from_native_pointer_code}
 		}}
 """.format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
+				decref_python_objects_code += "\t\tPy_DECREF(py{name});\n".format(name=arg_name)
 		args=', '.join(args)
 		return \
 """	if ((func != NULL) && PyCallable_Check(func)) {{
@@ -774,8 +776,9 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		if (PyEval_CallObject(func, Py_BuildValue("{fmt}", {args})) == NULL) {{
 			PyErr_Print();
 		}}
+{decref_python_objects_code}
 	}}
-""".format(fmt=fmt.replace('O', 'N'), args=args, create_python_objects_code=create_python_objects_code)
+""".format(fmt=fmt.replace('O', 'N'), args=args, create_python_objects_code=create_python_objects_code, decref_python_objects_code=decref_python_objects_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);\n"
