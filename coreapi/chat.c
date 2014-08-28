@@ -1169,39 +1169,39 @@ void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
 
 /**
  * Set origin of the message
- *@param message #LinphoneChatMessage obj
- *@param from #LinphoneAddress origin of this message (copied)
+ * @param[in] message #LinphoneChatMessage obj
+ * @param[in] from #LinphoneAddress origin of this message (copied)
  */
-void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from) {
+void linphone_chat_message_set_from_address(LinphoneChatMessage* message, const LinphoneAddress* from) {
 	if(message->from) linphone_address_destroy(message->from);
 	message->from=linphone_address_clone(from);
 }
 
 /**
  * Get origin of the message
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneAddress
+ * @param[in] message #LinphoneChatMessage obj
+ * @return #LinphoneAddress
  */
-const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message) {
+const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* message) {
 	return message->from;
 }
 
 /**
  * Set destination of the message
- *@param message #LinphoneChatMessage obj
- *@param to #LinphoneAddress destination of this message (copied)
+ * @param[in] message #LinphoneChatMessage obj
+ * @param[in] to #LinphoneAddress destination of this message (copied)
  */
-void linphone_chat_message_set_to(LinphoneChatMessage* message, const LinphoneAddress* to) {
+void linphone_chat_message_set_to_address(LinphoneChatMessage* message, const LinphoneAddress* to) {
 	if(message->to) linphone_address_destroy(message->to);
 	message->to=linphone_address_clone(to);
 }
 
 /**
  * Get destination of the message
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneAddress
+ * @param[in] message #LinphoneChatMessage obj
+ * @return #LinphoneAddress
  */
-const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message){
+const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message){
 	if (message->to) return message->to;
 	if (message->dir==LinphoneChatMessageOutgoing){
 		return message->chat_room->peer_url;

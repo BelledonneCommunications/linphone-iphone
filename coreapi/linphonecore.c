@@ -328,16 +328,20 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 }
 
 /**
- * Returns origin (ie from) address of the call.
+ * Returns origin address (ie from) of the call.
+ * @param[in] cl LinphoneCallLog object
+ * @return The origin address (ie from) of the call.
 **/
-LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl){
+LinphoneAddress *linphone_call_log_get_from_address(LinphoneCallLog *cl){
 	return cl->from;
 }
 
 /**
  * Returns destination address (ie to) of the call.
+ * @param[in] cl LinphoneCallLog object
+ * @return The destination address (ie to) of the call.
 **/
-LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl){
+LinphoneAddress *linphone_call_log_get_to_address(LinphoneCallLog *cl){
 	return cl->to;
 }
 
