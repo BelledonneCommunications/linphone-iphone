@@ -205,8 +205,8 @@ class CoreManager:
     @classmethod
     def call_state_changed(cls, lc, call, state, msg):
         manager = lc.user_data
-        to_address = call.call_log.to.as_string()
-        #from_address = call.call_log.from.as_string()
+        to_address = call.call_log.to_address.as_string()
+        from_address = call.call_log.from_address.as_string()
         from_address = ''
         direction = "Outgoing"
         if call.call_log.dir == linphone.CallDir.CallIncoming:

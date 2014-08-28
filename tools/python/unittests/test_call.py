@@ -24,5 +24,5 @@ class TestCall:
         assert_equals(out_call.reason, linphone.Reason.ReasonBusy)
         if len(pauline.lc.call_logs) > 0:
             out_call_log = pauline.lc.call_logs[0]
-            assert out_call_log != None
+            assert out_call_log is not None
             assert_equals(out_call_log.status, linphone.CallStatus.CallAborted)
