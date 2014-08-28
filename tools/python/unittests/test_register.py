@@ -33,7 +33,7 @@ class RegisterCoreManager(linphonetester.CoreManager):
             proxy_cfg.route = route
             proxy_cfg.server_addr = route
         self.lc.add_proxy_config(proxy_cfg)
-        self.lc.default_proxy = proxy_cfg
+        self.lc.default_proxy_config = proxy_cfg
 
         #linphone_core_set_sip_transports(lc,&transport);
 
