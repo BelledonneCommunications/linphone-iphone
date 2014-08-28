@@ -136,7 +136,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 			}
 
 			// create proxy config
-			LinphoneProxyConfig proxyCfg = lcFactory.createProxyConfig(sipAddress, domain, null, true);
+			LinphoneProxyConfig proxyCfg = lc.createProxyConfig(sipAddress, domain, null, true);
 			proxyCfg.setExpires(2000);
 			lc.addProxyConfig(proxyCfg); // add it to linphone
 			lc.setDefaultProxyConfig(proxyCfg);

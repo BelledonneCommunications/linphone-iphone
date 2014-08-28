@@ -104,8 +104,6 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	
-	abstract public LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
-	
 	/**
 	 * Enable verbose traces
 	 * @param enable 

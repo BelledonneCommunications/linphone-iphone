@@ -34,13 +34,13 @@ import android.media.AudioManager;
 class LinphoneCoreImpl implements LinphoneCore {
 
 	private final  LinphoneCoreListener mListener; //to make sure to keep a reference on this object
-	private long nativePtr = 0;
+	protected long nativePtr = 0;
 	private Context mContext = null;
 	private AudioManager mAudioManager = null;
 	private boolean mSpeakerEnabled = false;
 	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata);
 	private native void iterate(long nativePtr);
-	private native long getDefaultProxyConfig(long nativePtr);
+	private native LinphoneProxyConfig getDefaultProxyConfig(long nativePtr);
 
 	private native void setDefaultProxyConfig(long nativePtr,long proxyCfgNativePtr);
 	private native int addProxyConfig(LinphoneProxyConfig jprtoxyCfg,long nativePtr,long proxyCfgNativePtr);
@@ -148,7 +148,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
 	private native int migrateToMultiTransport(long nativePtr);
-	private native long createProxyConfig(long nativePtr);
 	private native void setCallErrorTone(long nativePtr, int reason, String path);
 	private native void enableSdp200Ack(long nativePtr,boolean enable);
 	private native boolean isSdp200AckEnabled(long nativePtr);
@@ -195,12 +194,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
 		isValid();
-		long lNativePtr = getDefaultProxyConfig(nativePtr);	
-		if (lNativePtr!=0) {
-			return new LinphoneProxyConfigImpl(this,lNativePtr); 
-		} else {
-			return null;
-		}
+		return getDefaultProxyConfig(nativePtr);	
 	}
 
 	public synchronized LinphoneCall invite(String uri) {
@@ -228,8 +222,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void removeProxyConfig(LinphoneProxyConfig proxyCfg) {
 		isValid();
 		removeProxyConfig(nativePtr, ((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
-		((LinphoneProxyConfigImpl)proxyCfg).mCore=null;
-		((LinphoneProxyConfigImpl)proxyCfg).deleteNativePtr();
 	}
 	public synchronized void clearAuthInfos() {
 		isValid();
@@ -273,10 +265,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return logs;
 	}
 	public synchronized void destroy() {
-		isValid();
-		setAndroidPowerManager(null);
-		delete(nativePtr);
-		nativePtr = 0;
 	}
 	
 	private void isValid() {
@@ -1143,7 +1131,16 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	@Override
 	public synchronized LinphoneProxyConfig createProxyConfig() {
-		return new LinphoneProxyConfigImpl(this,createProxyConfig(nativePtr));
+		return new LinphoneProxyConfigImpl(this);
+	}
+	@Override
+	public synchronized LinphoneProxyConfig createProxyConfig(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
+		isValid();
+		try {
+			return new LinphoneProxyConfigImpl(this,identity,proxy,route,enableRegister);
+		} catch(LinphoneCoreException e){
+			return null;
+		}
 	}
 	@Override
 	public synchronized void setCallErrorTone(Reason reason, String path) {

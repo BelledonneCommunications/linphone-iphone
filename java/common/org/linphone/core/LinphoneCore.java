@@ -1558,6 +1558,7 @@ public interface LinphoneCore {
 	 * @return a default proxy config
 	 */
 	public LinphoneProxyConfig createProxyConfig();
+	public LinphoneProxyConfig createProxyConfig(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException;
 	
 	/**
 	 * Assign an audio file to played locally upon call failure, for a given reason.

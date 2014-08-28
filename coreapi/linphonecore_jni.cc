@@ -77,8 +77,7 @@ extern "C" void libmswebrtc_init();
 		return jUserDataObj; \
 	}
 
-
-#define RETURN_PROXY_CONFIG_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
+#define RETURN_PROXY_CONFIG_USER_DATA_OBJECT(javaclass, funcprefix, cobj, lc) \
 	{ \
 		jclass jUserDataObjectClass; \
 		jmethodID jUserDataObjectCtor; \
@@ -86,15 +85,15 @@ extern "C" void libmswebrtc_init();
 		jUserDataObj = (jobject)funcprefix ## _get_user_data(cobj); \
 		if (jUserDataObj == NULL) { \
 			jUserDataObjectClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/" javaclass)); \
-			jUserDataObjectCtor = env->GetMethodID(jUserDataObjectClass,"<init>", "(J)V"); \
-			jUserDataObj = env->NewObject(jUserDataObjectClass, jUserDataObjectCtor,(jlong) cobj); \
-			jUserDataObj = env->NewGlobalRef(jUserDataObj); \
+			jUserDataObjectCtor = env->GetMethodID(jUserDataObjectClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V"); \
+			jUserDataObj = env->NewObject(jUserDataObjectClass, jUserDataObjectCtor,lc, (jlong) cobj); \
+			jUserDataObj = env->NewWeakGlobalRef(jUserDataObj); \
 			funcprefix ## _set_user_data(cobj, jUserDataObj); \
+			funcprefix ## _ref(cobj); \
 			env->DeleteGlobalRef(jUserDataObjectClass); \
 		} \
 		return jUserDataObj; \
 	}
-
 
 static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
@@ -468,9 +467,30 @@ public:
 							,env->CallStaticObjectMethod(lcData->globalStateClass,lcData->globalStateFromIntId,(jint)gstate),
 							message ? env->NewStringUTF(message) : NULL);
 	}
+	jobject getProxy(JNIEnv *env , LinphoneProxyConfig *proxy, jobject core){
+			jobject jobj=0;
+
+			if (proxy!=NULL){
+				void *up=linphone_proxy_config_get_user_data(proxy);
+
+				if (up==NULL){
+					jobj=env->NewObject(proxyClass,proxyCtrId,core,(jlong)proxy);
+					linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
+					linphone_proxy_config_ref(proxy);
+				}else{
+					jobj=env->NewLocalRef((jobject)up);
+					if (jobj == NULL){
+						jobj=env->NewObject(proxyClass,proxyCtrId,core,(jlong)proxy);
+						linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
+					}
+				}
+			}
+			return jobj;
+		}
 	static void registrationStateChange(LinphoneCore *lc, LinphoneProxyConfig* proxy,LinphoneRegistrationState state,const char* message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
+		jobject jproxy;
 		if (result != 0) {
 			ms_error("cannot attach VM");
 			return;
@@ -479,7 +499,7 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->registrationStateId
 							,lcData->core
-							,env->NewObject(lcData->proxyClass,lcData->proxyCtrId,lcData->core,(jlong)proxy)
+							,(jproxy=lcData->getProxy(env,proxy,lcData->core))
 							,env->CallStaticObjectMethod(lcData->registrationStateClass,lcData->registrationStateFromIntId,(jint)state),
 							message ? env->NewStringUTF(message) : NULL);
 	}
@@ -895,35 +915,42 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultProxyConfig(	J
 		,jlong pc) {
 	linphone_core_set_default_proxy((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	JNIEnv*  env
+
+static jobject getOrCreateProxy(JNIEnv* env,LinphoneProxyConfig* proxy,jobject lc){
+	RETURN_PROXY_CONFIG_USER_DATA_OBJECT("LinphoneProxyConfigImpl", linphone_proxy_config, proxy, lc);
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
 
 	LinphoneProxyConfig *config=0;
+	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
 	linphone_core_get_default_proxy((LinphoneCore*)lc,&config);
-	return (jlong)config;
-}
-
-static jobject getOrCreateProxy(JNIEnv* env,LinphoneProxyConfig* proxy){
-	RETURN_PROXY_CONFIG_USER_DATA_OBJECT("LinphoneProxyConfigImpl", linphone_proxy_config, proxy);
+	if(config != 0) {
+		jobject jproxy = getOrCreateProxy(env,config,lcData->core);
+		return jproxy;
+	} else {
+		return NULL;
+	}
 }
 
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
 	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
-	jclass cls = env->FindClass("org/linphone/core/LinphoneProxyConfigImpl");
+	jclass cls = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 	jobjectArray jProxies = env->NewObjectArray(proxyCount,cls,NULL);
+	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
 
 	for (int i = 0; i < proxyCount; i++ ) {
 		LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
-		jobject jproxy = getOrCreateProxy(env,proxy);
+		jobject jproxy = getOrCreateProxy(env,proxy,lcData->core);
 		if(jproxy != NULL){
 			env->SetObjectArrayElement(jProxies, i, jproxy);
-		} else {
-			return NULL;
 		}
 		proxies = proxies->next;
 	}
+	env->DeleteGlobalRef(cls);
 	return jProxies;
 }
 
@@ -933,9 +960,7 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv* 
 		,jlong lc
 		,jlong pc) {
 	LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)pc;
-	linphone_proxy_config_set_user_data(proxy, env->NewGlobalRef(jproxyCfg));
-
-	return (jint)linphone_core_add_proxy_config((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
+	return (jint)linphone_core_add_proxy_config((LinphoneCore*)lc,proxy);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeProxyConfig(JNIEnv* env, jobject thiz, jlong lc, jlong proxy) {
@@ -1547,11 +1572,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMediaEncryptionMandat
 	linphone_core_set_media_encryption_mandatory((LinphoneCore*)lc, yesno);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createProxyConfig(JNIEnv* env, jobject thiz, jlong lc) {
-	LinphoneProxyConfig* proxy = linphone_core_create_proxy_config((LinphoneCore *)lc);
-	return (jlong) proxy;
-}
-
 /*
  * Class:     org_linphone_core_LinphoneCoreImpl
  * Method:    disableChat
@@ -1582,14 +1602,20 @@ extern "C" JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_ch
 
 //ProxyConfig
 
-extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_newLinphoneProxyConfig(JNIEnv*  env,jobject  thiz) {
-	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
-	return  (jlong) proxy;
+extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_createProxyConfig(JNIEnv* env, jobject thiz, jlong lc) {
+	LinphoneProxyConfig* proxy = linphone_core_create_proxy_config((LinphoneCore *)lc);
+	linphone_proxy_config_set_user_data(proxy,env->NewWeakGlobalRef(thiz));
+	return (jlong) proxy;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_delete(JNIEnv*  env,jobject  thiz,jlong ptr) {
-	linphone_proxy_config_destroy((LinphoneProxyConfig*)ptr);
+extern "C" void  Java_org_linphone_core_LinphoneProxyConfigImpl_finalize(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneProxyConfig *proxy=(LinphoneProxyConfig*)ptr;
+	linphone_proxy_config_set_user_data(proxy,NULL);
+	linphone_proxy_config_unref(proxy);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setIdentity(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jidentity) {
 	const char* identity = env->GetStringUTFChars(jidentity, NULL);
 	linphone_proxy_config_set_identity((LinphoneProxyConfig*)proxyCfg,identity);

@@ -22,32 +22,33 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 
 class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
-	protected long nativePtr;
+	protected final long nativePtr;
 	protected LinphoneCoreImpl mCore;
 	Object userData;
+	
+	private native void finalize(long ptr);
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
 	private native int getExpires(long nativePtr);
+	private native long createProxyConfig( long nativePtr);
 
-	boolean ownPtr = false;
-	protected LinphoneProxyConfigImpl(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
-		nativePtr = newLinphoneProxyConfig();
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core,String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
+		mCore=core;
+		nativePtr = createProxyConfig(core.nativePtr);
 		setIdentity(identity);
 		setProxy(proxy);
 		setRoute(route);
 		enableRegister(enableRegister);
-		ownPtr=true;
 	}
 
-	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core,long aNativePtr)  {
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core)  {
+		mCore=core;
+		nativePtr = createProxyConfig(core.nativePtr);
+	}
+	/*reserved for JNI */
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core, long aNativePtr)  {
 		mCore=core;
 		nativePtr = aNativePtr;
-		ownPtr=false;
-	}
-
-	protected LinphoneProxyConfigImpl(long aNativePtr) {
-		nativePtr = aNativePtr;
-		ownPtr=false;
 	}
 
 	private void isValid() {
@@ -56,16 +57,13 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		}
 	}
 
-	public void deleteNativePtr() {
-		nativePtr=0;
-	}
-
 	protected void finalize() throws Throwable {
-		//Log.e(LinphoneService.TAG,"fixme, should release underlying proxy config");
-		if (ownPtr) delete(nativePtr);
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
 	}
 	private native long newLinphoneProxyConfig();
-	private native void  delete(long ptr);
 
 	private native void edit(long ptr);
 	private native void done(long ptr);
