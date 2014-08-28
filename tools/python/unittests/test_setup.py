@@ -1,8 +1,14 @@
 from nose.tools import assert_equals
 import linphone
 import linphonetester
+import os
 
 class TestSetup:
+
+    @classmethod
+    def setup_class(cls):
+        base, ext = os.path.splitext(os.path.basename(__file__))
+        cls.logger = linphonetester.Logger(base + '.log')
 
     def test_address(self):
         linphonetester.create_address(None)

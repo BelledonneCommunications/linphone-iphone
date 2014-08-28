@@ -78,7 +78,7 @@ class TestRegister:
     @classmethod
     def setup_class(cls):
         base, ext = os.path.splitext(os.path.basename(__file__))
-        linphonetester.setup_logging(base + '.log')
+        cls.logger = linphonetester.Logger(base + '.log')
 
     def test_simple_register(self):
         cm = RegisterCoreManager()

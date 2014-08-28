@@ -11,19 +11,6 @@ test_password = "secret"
 test_route = "sip2.linphone.org"
 
 
-def log_handler(level, msg):
-    method = getattr(logging, level)
-    if not msg.strip().startswith('[PYLINPHONE]'):
-        msg = '[CORE] ' + msg
-    method(msg)
-
-def setup_logging(filename):
-    format = "%(asctime)s.%(msecs)03d %(levelname)s: %(message)s"
-    datefmt = "%H:%M:%S"
-    logging.basicConfig(filename=filename, level=logging.INFO, format=format, datefmt=datefmt)
-    linphone.set_log_handler(log_handler)
-
-
 def create_address(domain):
     addr = linphone.Address.new(None)
     assert addr != None
@@ -37,6 +24,25 @@ def create_address(domain):
     addr.display_name = "Mr Tester"
     assert_equals(addr.display_name, "Mr Tester")
     return addr
+
+
+class Logger(logging.Logger):
+
+    def __init__(self, filename):
+        logging.Logger.__init__(self, filename)
+        self.setLevel(logging.INFO)
+        handler = logging.FileHandler(filename)
+        handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', '%H:%M:%S')
+        handler.setFormatter(formatter)
+        self.addHandler(handler)
+        linphone.set_log_handler(self.log_handler)
+
+    def log_handler(self, level, msg):
+        method = getattr(self, level)
+        if not msg.strip().startswith('[PYLINPHONE]'):
+            msg = '[CORE] ' + msg
+        method(msg)
 
 
 class CoreManagerStats:
