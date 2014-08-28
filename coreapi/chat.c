@@ -268,18 +268,21 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
    FALSE
 );
 
-static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
-	LinphoneAddress *parsed_url=NULL;
+static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
+    LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
+    cr->lc = lc;
+    cr->peer = linphone_address_as_string(addr);
+    cr->peer_url = addr;
+    lc->chatrooms = ms_list_append(lc->chatrooms, (void *)cr);
+    return cr;
+}
 
-	if ((parsed_url=linphone_core_interpret_url(lc,to))!=NULL){
-		LinphoneChatRoom *cr=belle_sip_object_new(LinphoneChatRoom);
-		cr->lc=lc;
-		cr->peer=linphone_address_as_string(parsed_url);
-		cr->peer_url=parsed_url;
-		lc->chatrooms=ms_list_append(lc->chatrooms,(void *)cr);
-		return cr;
-	}
-	return NULL;
+static LinphoneChatRoom * _linphone_core_create_chat_room_from_url(LinphoneCore *lc, const char *to) {
+    LinphoneAddress *parsed_url = NULL;
+    if ((parsed_url = linphone_core_interpret_url(lc, to)) != NULL) {
+        return _linphone_core_create_chat_room(lc, parsed_url);
+    }
+    return NULL;
 }
 
 LinphoneChatRoom * _linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
@@ -306,7 +309,7 @@ static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* l
     ret=_linphone_core_get_chat_room(lc,to_addr);
     linphone_address_destroy(to_addr);
     if (!ret){
-        ret=_linphone_core_create_chat_room(lc,to);
+        ret=_linphone_core_create_chat_room_from_url(lc,to);
     }
     return ret;
 }
@@ -339,8 +342,12 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  * @param addr a linphone address.
  * @returns #LinphoneChatRoom where messaging can take place.
 **/
-LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
-    return _linphone_core_get_chat_room(lc, addr);
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, LinphoneAddress *addr){
+    LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
+    if (!ret) {
+        ret = _linphone_core_create_chat_room(lc, addr);
+    }
+    return ret;
 }
 
 /**
