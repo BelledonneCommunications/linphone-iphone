@@ -14,6 +14,7 @@ static void pylinphone_log(const char *level, int indent, const char *fmt, va_li
 	PyGILState_STATE gstate;
 
 	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
 	linphone_module = PyImport_ImportModule("linphone.linphone");
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
 		PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
@@ -71,6 +72,7 @@ static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_
 	const char *level;
 
 	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
 	linphone_module = PyImport_ImportModule("linphone.linphone");
 	level = pylinphone_ortp_log_level_to_string(lev);
 	if ((linphone_module != NULL) && PyObject_HasAttrString(linphone_module, "__log_handler")) {
