@@ -315,7 +315,6 @@ class MethodDefinition:
 		c_function_call_code += ', '.join(arg_names) + ");"
 		return_from_user_data_code = ''
 		new_from_native_pointer_code = ''
-		ref_native_pointer_code = ''
 		convert_from_code = ''
 		build_value_code = ''
 		result_variable = ''
@@ -332,13 +331,6 @@ class MethodDefinition:
 	}}
 """.format(func=get_user_data_function)
 					new_from_native_pointer_code = "pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
-					if self.self_arg is not None and return_type_class['class_refcountable']:
-						ref_function = return_type_class['class_c_function_prefix'] + "ref"
-						ref_native_pointer_code = \
-"""if (cresult != NULL) {{
-		{func}(({cast_type})cresult);
-	}}
-""".format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
 				else:
 					return_argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 					if return_argument_type.convert_from_func is not None:
@@ -355,13 +347,11 @@ class MethodDefinition:
 	pylinphone_dispatch_messages();
 	{return_from_user_data_code}
 	{new_from_native_pointer_code}
-	{ref_native_pointer_code}
 	{convert_from_code}
 	{build_value_code}
 """.format(c_function_call_code=c_function_call_code,
 		return_from_user_data_code=return_from_user_data_code,
 		new_from_native_pointer_code=new_from_native_pointer_code,
-		ref_native_pointer_code=ref_native_pointer_code,
 		convert_from_code=convert_from_code,
 		build_value_code=build_value_code)
 		return body
@@ -534,7 +524,10 @@ class NewFromNativePointerMethodDefinition(MethodDefinition):
 	def format_c_function_call(self):
 		set_user_data_func_call = ''
 		if self.class_['class_has_user_data']:
-			set_user_data_func_call = "\t{function_prefix}set_user_data(self->native_ptr, self);\n".format(function_prefix=self.class_['class_c_function_prefix'])
+			set_user_data_func_call = "{function_prefix}set_user_data(self->native_ptr, self);".format(function_prefix=self.class_['class_c_function_prefix'])
+		ref_native_pointer_code = ''
+		if self.class_['class_refcountable']:
+			ref_native_pointer_code = "{func}(self->native_ptr);".format(func=self.class_['class_c_function_prefix'] + "ref")
 		return \
 """	if (native_ptr == NULL) {{
 	{none_trace}
@@ -548,8 +541,10 @@ class NewFromNativePointerMethodDefinition(MethodDefinition):
 	PyObject_Init((PyObject *)self, type);
 	self->native_ptr = ({class_cname} *)native_ptr;
 	{set_user_data_func_call}
+	{ref_native_pointer_code}
 """.format(class_name=self.class_['class_name'], class_cname=self.class_['class_cname'],
-		none_trace=self.format_return_none_trace(), set_user_data_func_call=set_user_data_func_call)
+		none_trace=self.format_return_none_trace(), set_user_data_func_call=set_user_data_func_call,
+		ref_native_pointer_code=ref_native_pointer_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
