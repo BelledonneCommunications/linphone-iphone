@@ -257,7 +257,7 @@ static void text_message_with_privacy(void) {
 	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
 	linphone_proxy_config_set_privacy(pauline_proxy,LinphonePrivacyId);
 
-	CU_ASSERT_PTR_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));

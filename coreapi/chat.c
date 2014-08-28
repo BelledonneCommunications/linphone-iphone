@@ -342,10 +342,10 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  * @param addr a linphone address.
  * @returns #LinphoneChatRoom where messaging can take place.
 **/
-LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, LinphoneAddress *addr){
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
     LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
     if (!ret) {
-        ret = _linphone_core_create_chat_room(lc, addr);
+        ret = _linphone_core_create_chat_room(lc, linphone_address_clone(addr));
     }
     return ret;
 }

@@ -1374,7 +1374,7 @@ typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,Linph
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to);
-LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, LinphoneAddress *addr);
+LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to);
 LINPHONE_PUBLIC void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason);
 LINPHONE_PUBLIC void linphone_core_enable_chat(LinphoneCore *lc);
