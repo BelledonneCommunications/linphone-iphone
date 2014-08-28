@@ -2852,9 +2852,40 @@ static void audio_call_recording_test(void) {
 	record_call("recording", FALSE);
 }
 
+#ifdef VIDEO_ENABLED
 static void video_call_recording_test(void) {
 	record_call("recording", TRUE);
 }
+
+static void video_call_snapshot(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCall *callInst = NULL;
+	char *filename = create_filepath(liblinphone_tester_writable_dir_prefix, "snapshot", "jpeg");
+	int dummy = 0;
+
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
+	linphone_call_params_enable_video(marieParams, TRUE);
+	linphone_call_params_enable_video(paulineParams, TRUE);
+
+	if((CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams)))
+			&& (CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc)))) {
+		linphone_call_take_video_snapshot(callInst, filename);
+		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
+		CU_ASSERT_EQUAL(access(filename, F_OK), 0);
+//		remove(filename);
+	}
+	ms_free(filename);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+#endif
 
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
@@ -2904,6 +2935,7 @@ test_t call_tests[] = {
 	{ "Call with ICE and video added", call_with_ice_video_added },
 	{ "Video call with ICE no matching audio codecs", video_call_with_ice_no_matching_audio_codecs },
 	{ "Video call recording", video_call_recording_test },
+	{ "Snapshot", video_call_snapshot },
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },

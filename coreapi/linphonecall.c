@@ -1346,7 +1346,6 @@ int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file){
 		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
 	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
-	return -1;
 #endif
 	return -1;
 }
