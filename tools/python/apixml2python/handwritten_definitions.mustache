@@ -182,7 +182,7 @@ static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args
 		return NULL;
 	}
 
-	self = (pylinphone_CoreObject *)PyObject_New(pylinphone_CoreObject, &pylinphone_CoreType);
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
 	if (self == NULL) {
 		return NULL;
 	}
@@ -224,10 +224,11 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 		return NULL;
 	}
 
-	self = (pylinphone_CoreObject *)PyObject_New(pylinphone_CoreObject, &pylinphone_CoreType);
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
 	if (self == NULL) {
 		return NULL;
 	}
+	PyObject_Init((PyObject *)self, &pylinphone_CoreType);
 	Py_INCREF(_vtable_dict);
 	self->vtable_dict = _vtable_dict;
 {{#events}}
@@ -321,7 +322,7 @@ static PyObject * pylinphone_VideoSize_new(PyTypeObject *type, PyObject *args, P
 	return (PyObject *)self;
 }
 
-static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *kwds) {
+static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *kw) {
 	pylinphone_VideoSizeObject *vso = (pylinphone_VideoSizeObject *)self;
 	int width;
 	int height;
@@ -336,7 +337,7 @@ static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *k
 static PyMemberDef pylinphone_VideoSize_members[] = {
 	{ "width", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, width), 0, "[int] The width of the video" },
 	{ "height", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, height), 0, "[int] The height of the video" },
-	{ NULL }	/* Sentinel */
+	{ NULL, 0, 0, 0, NULL }	/* Sentinel */
 };
 
 static PyTypeObject pylinphone_VideoSizeType = {

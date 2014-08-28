@@ -485,13 +485,38 @@ class NewMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s()\", __FUNCTION__);\n"
 
 	def format_c_function_call(self):
-		return "\tself->native_ptr = NULL;\n"
+		return ''
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
 
 	def format_return_result(self):
 		return "\treturn (PyObject *)self;"
+
+class InitMethodDefinition(MethodDefinition):
+	def __init__(self, linphone_module, class_, method_node = None):
+		MethodDefinition.__init__(self, linphone_module, class_, method_node)
+
+	def format_local_variables_definition(self):
+		return \
+"""	pylinphone_{class_name}Object *self_obj = (pylinphone_{class_name}Object *)self;
+	self_obj->user_data = Py_None;
+""".format(class_name=self.class_['class_name'])
+
+	def format_arguments_parsing(self):
+		return ''
+
+	def format_enter_trace(self):
+		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s()\", __FUNCTION__);\n"
+
+	def format_c_function_call(self):
+		return "\tself_obj->native_ptr = NULL;\n"
+
+	def format_return_trace(self):
+		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
+
+	def format_return_result(self):
+		return "\treturn 0;"
 
 class NewFromNativePointerMethodDefinition(MethodDefinition):
 	def __init__(self, linphone_module, class_):
@@ -515,11 +540,12 @@ class NewFromNativePointerMethodDefinition(MethodDefinition):
 	{none_trace}
 		Py_RETURN_NONE;
 	}}
-	self = (pylinphone_{class_name}Object *)PyObject_New(pylinphone_{class_name}Object, type);
+	self = (pylinphone_{class_name}Object *)PyObject_CallObject((PyObject *)&pylinphone_{class_name}Type, NULL);
 	if (self == NULL) {{
 	{none_trace}
 		Py_RETURN_NONE;
 	}}
+	PyObject_Init((PyObject *)self, type);
 	self->native_ptr = ({class_cname} *)native_ptr;
 	{set_user_data_func_call}
 """.format(class_name=self.class_['class_name'], class_cname=self.class_['class_cname'],
@@ -573,8 +599,9 @@ class DeallocMethodDefinition(MethodDefinition):
 """	{reset_user_data_code}
 	{native_ptr_dealloc_code}
 	pylinphone_dispatch_messages();
+	Py_DECREF(((pylinphone_{class_name}Object *)self)->user_data);
 	self->ob_type->tp_free(self);
-""".format(reset_user_data_code=reset_user_data_code, native_ptr_dealloc_code=native_ptr_dealloc_code)
+""".format(class_name=self.class_['class_name'], reset_user_data_code=reset_user_data_code, native_ptr_dealloc_code=native_ptr_dealloc_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);"
@@ -936,6 +963,11 @@ class LinphoneModule(object):
 				c['new_body'] = NewMethodDefinition(self, c, xml_new_method).format()
 			except Exception, e:
 				e.args += (c['class_name'], 'new_body')
+				raise
+			try:
+				c['init_body'] = InitMethodDefinition(self, c, xml_new_method).format()
+			except Exception, e:
+				e.args += (c['class_name'], 'init_body')
 				raise
 			try:
 				c['new_from_native_pointer_body'] = NewFromNativePointerMethodDefinition(self, c).format()

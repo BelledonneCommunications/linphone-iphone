@@ -149,13 +149,11 @@ class CoreManagerStats:
 
 class CoreManager:
 
-    core_map = {}
-
     @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
         logging.info("New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
             state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
-        manager = CoreManager.core_map[lc]
+        manager = lc.user_data
         if state == linphone.RegistrationState.RegistrationNone:
             manager.stats.number_of_LinphoneRegistrationNone += 1
         elif state == linphone.RegistrationState.RegistrationProgress:
@@ -173,7 +171,7 @@ class CoreManager:
     def auth_info_requested(cls, lc, realm, username, domain):
         logging.info("Auth info requested  for user id [{username}] at realm [{realm}]".format(
             username=username, realm=realm))
-        manager = CoreManager.core_map[lc]
+        manager = lc.user_data
         manager.stats.number_of_auth_info_requested +=1
 
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
@@ -220,7 +218,7 @@ class CoreManager:
         if rc_file is not None:
             rc_path = os.path.join('rcfiles', rc_file)
         self.lc = self.configure_lc_from(vtable, tester_resources_path, rc_path)
-        CoreManager.core_map[self.lc] = self
+        self.lc.user_data = self
         if check_for_proxies and rc_file is not None:
             proxy_count = len(self.lc.proxy_config_list)
         else:
@@ -236,7 +234,6 @@ class CoreManager:
         #    self.identity.clean()
 
     def stop(self):
-        del CoreManager.core_map[self.lc]
         self.lc = None
 
     def __del__(self):
