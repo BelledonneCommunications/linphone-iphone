@@ -309,10 +309,9 @@ class CoreManager:
         assert_equals(self.stats.number_of_LinphoneRegistrationOk, proxy_count)
         self.enable_audio_codec("PCMU", 8000)
 
-        # TODO: Need to wrap getter of default proxy
-        #if self.lc.default_proxy is not None:
-        #    self.identity = linphone.Address.new(self.lc.default_proxy.identity)
-        #    self.identity.clean()
+        if self.lc.default_proxy_config is not None:
+            self.identity = linphone.Address.new(self.lc.default_proxy_config.identity)
+            self.identity.clean()
 
     def stop(self):
         self.lc = None

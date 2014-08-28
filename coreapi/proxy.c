@@ -1184,14 +1184,25 @@ void linphone_core_clear_proxy_config(LinphoneCore *lc){
 	ms_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
+
+static int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
+	int pos = -1;
+	if (lc->default_proxy != NULL) {
+		pos = ms_list_position(lc->sip_conf.proxies, ms_list_find(lc->sip_conf.proxies, (void *)lc->default_proxy));
+	}
+	return pos;
+}
+
 /**
  * Sets the default proxy.
  *
  * This default proxy must be part of the list of already entered LinphoneProxyConfig.
  * Toggling it as default will make LinphoneCore use the identity associated with
  * the proxy configuration in all incoming and outgoing calls.
+ * @param[in] lc LinphoneCore object
+ * @param[in] config The proxy configuration to use as the default one.
 **/
-void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *config){
+void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config){
 	/* check if this proxy is in our list */
 	if (config!=NULL){
 		if (ms_list_find(lc->sip_conf.proxies,config)==NULL){
@@ -1202,7 +1213,7 @@ void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *conf
 	}
 	lc->default_proxy=config;
 	if (linphone_core_ready(lc))
-		lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
+		lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy_config_index(lc));
 }
 
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
@@ -1212,14 +1223,20 @@ void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
 
 /**
  * Returns the default proxy configuration, that is the one used to determine the current identity.
+ * @deprecated Use linphone_core_get_default_proxy_config() instead.
 **/
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config){
-	int pos=-1;
 	if (config!=NULL) *config=lc->default_proxy;
-	if (lc->default_proxy!=NULL){
-		pos=ms_list_position(lc->sip_conf.proxies,ms_list_find(lc->sip_conf.proxies,(void *)lc->default_proxy));
-	}
-	return pos;
+	return linphone_core_get_default_proxy_config_index(lc);
+}
+
+/**
+ * Returns the default proxy configuration, that is the one used to determine the current identity.
+ * @param[in] lc LinphoneCore object
+ * @return The default proxy configuration.
+**/
+LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc) {
+	return lc->default_proxy;
 }
 
 /**
