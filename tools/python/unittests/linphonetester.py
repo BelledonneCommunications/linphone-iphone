@@ -176,6 +176,10 @@ class CoreManager:
         return res
 
     @classmethod
+    def wait_for(cls, manager1, manager2, func):
+        return cls.wait_for_until(manager1, manager2, func, 10000)
+
+    @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
         manager = lc.user_data
         if manager.logger is not None:
@@ -315,9 +319,6 @@ class CoreManager:
 
     def stop(self):
         self.lc = None
-
-    def __del__(self):
-        self.stop()
 
     def configure_lc_from(self, vtable, resources_path, rc_path):
         filepath = None
