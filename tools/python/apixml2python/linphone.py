@@ -329,7 +329,7 @@ class MethodDefinition:
 						get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
 						return_from_user_data_code = \
 """if ((cresult != NULL) && ({func}(cresult) != NULL)) {{
-		return (PyObject *){func}(cresult);
+		return Py_BuildValue("O", (PyObject *){func}(cresult));
 	}}
 """.format(func=get_user_data_function)
 					new_from_native_pointer_code = "pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
