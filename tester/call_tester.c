@@ -245,7 +245,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		const LinphoneCallParams* call_param = linphone_call_get_current_params(linphone_core_get_current_call(callee_mgr->lc));
 		CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
 		call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
-		CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
+		CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee_mgr->lc));
 		}
 	}
 	return result;
