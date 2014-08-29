@@ -137,9 +137,11 @@ class ArgumentType:
 		elif self.basic_type == 'bool_t':
 			self.type_str = 'bool'
 			self.check_func = 'PyBool_Check'
-			self.convert_func = 'PyInt_AsLong'
-			self.fmt_str = 'b'
-			self.cfmt_str = '%u'
+			self.convert_func = 'PyObject_IsTrue'
+			self.convert_from_func = 'PyBool_FromLong'
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
+			self.cnativefmt_str = '%u'
 		elif self.basic_type == 'time_t':
 			self.type_str = 'DateTime'
 			self.check_func = 'PyDateTime_Check'
@@ -147,7 +149,7 @@ class ArgumentType:
 			self.convert_from_func = 'PyDateTime_From_time_t'
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
-			self.cnativefmt_str = "%ld"
+			self.cnativefmt_str = '%ld'
 		elif self.basic_type == 'MSList':
 			self.type_str = 'list of linphone.' + self.contained_type
 			self.check_func = 'PyList_Check'
@@ -756,13 +758,16 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			else:
 				args.append(arg_name)
 			if argument_type.fmt_str == 'O':
-				type_class = self.find_class_definition(arg_type)
-				get_user_data_code = ''
-				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
-				if type_class is not None and type_class['class_has_user_data']:
-					get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
-					get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
-				create_python_objects_code += \
+				if argument_type.type_str == "bool":
+					create_python_objects_code += "\t\tpy{name} = {convert_from_func}({name});\n".format(name=arg_name, convert_from_func=argument_type.convert_from_func)
+				else:
+					type_class = self.find_class_definition(arg_type)
+					get_user_data_code = ''
+					new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
+					if type_class is not None and type_class['class_has_user_data']:
+						get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
+						get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
+					create_python_objects_code += \
 """		{get_user_data_code}
 		if (py{name} == NULL) {{
 			{new_from_native_pointer_code}
