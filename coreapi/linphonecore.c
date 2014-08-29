@@ -3016,7 +3016,7 @@ int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call,
 	return result;
 }
 
-bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
+bool_t linphone_core_is_incoming_invite_pending(LinphoneCore*lc){
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 	if(call != NULL)
 	{
@@ -5473,16 +5473,22 @@ float linphone_core_get_preferred_framerate(LinphoneCore *lc){
 
 /**
  * Ask the core to stream audio from and to files, instead of using the soundcard.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] yesno A boolean value asking to stream audio from and to files or not.
 **/
-void linphone_core_use_files(LinphoneCore *lc, bool_t yesno){
+void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
 /**
  * Sets a wav file to be played when putting somebody on hold,
- * or when files are used instead of soundcards (see linphone_core_use_files()).
+ * or when files are used instead of soundcards (see linphone_core_set_use_files()).
  *
  * The file must be a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] file The path to the file to be played when putting somebody on hold.
 **/
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
@@ -5500,10 +5506,13 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 
 /**
  * Sets a wav file where incoming stream is to be recorded,
- * when files are used instead of soundcards (see linphone_core_use_files()).
+ * when files are used instead of soundcards (see linphone_core_set_use_files()).
  *
  * This feature is different from call recording (linphone_call_params_set_record_file())
  * The file will be a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] file The path to the file where incoming stream is to be recorded.
 **/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);

@@ -770,7 +770,15 @@ LINPHONE_PUBLIC void linphone_call_set_user_data(LinphoneCall *call, void *ud);
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
+
+/**
+ * Get the remote address of the current call.
+ * @param[in] lc LinphoneCore object.
+ * @return The remote address of the current call or NULL if there is no current call.
+ * @ingroup call_control
+ */
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(LinphoneCore *lc);
+
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 LINPHONE_PUBLIC	char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
@@ -1903,7 +1911,16 @@ LINPHONE_PUBLIC	int linphone_core_transfer_call_to_another(LinphoneCore *lc, Lin
 
 LINPHONE_PUBLIC LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
-LINPHONE_PUBLIC	bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
+/** @deprecated Use linphone_core_is_incoming_invite_pending() instead. */
+#define linphone_core_inc_invite_pending(lc) linphone_core_is_incoming_invite_pending(lc)
+
+/**
+ * Tells whether there is an incoming invite pending.
+ * @ingroup call_control
+ * @param[in] lc LinphoneCore object
+ * @return A boolean telling whether an incoming invite is pending or not.
+ */
+LINPHONE_PUBLIC	bool_t linphone_core_is_incoming_invite_pending(LinphoneCore*lc);
 
 LINPHONE_PUBLIC bool_t linphone_core_in_call(const LinphoneCore *lc);
 
@@ -2636,8 +2653,10 @@ LINPHONE_PUBLIC int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
 /* start or stop streaming video in case of embedded window */
 void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 
+/** @deprecated Use linphone_core_set_use_files() instead. */
+#define linphone_core_use_files(lc, yesno) linphone_core_set_use_files(lc, yesno)
 /*play/record support: use files instead of soundcard*/
-LINPHONE_PUBLIC void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
+LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno);
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
