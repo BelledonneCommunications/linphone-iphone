@@ -288,7 +288,7 @@ void linphone_call_log_destroy(LinphoneCallLog *cl) {
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallLog);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallLog, belle_sip_object_t,
-	(belle_sip_object_destroy_t)linphone_call_log_destroy,
+	(belle_sip_object_destroy_t)_linphone_call_log_destroy,
 	NULL, // clone
 	NULL, // marshal
 	FALSE
