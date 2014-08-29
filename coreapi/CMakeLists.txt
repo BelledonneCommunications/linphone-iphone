@@ -42,6 +42,7 @@ set(SOURCE_FILES
 	bellesip_sal/sal_op_registration.c
 	bellesip_sal/sal_sdp.c
 	callbacks.c
+	call_log.c
 	chat.c
 	conference.c
 	ec-calibrator.c
@@ -139,7 +140,19 @@ install(TARGETS linphone
 )
 
 
-file(GLOB HEADER_FILES "*.h")
+set(HEADER_FILES
+	call_log.h
+	event.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	sipsetup.h
+	xml2lpc.h
+)
 
 install(FILES ${HEADER_FILES}
 	DESTINATION include/linphone

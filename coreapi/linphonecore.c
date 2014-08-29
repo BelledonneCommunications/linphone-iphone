@@ -107,70 +107,6 @@ static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct t
 	return strftime(s, max, fmt, tm);
 }
 
-static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
-	struct tm loctime;
-#ifdef WIN32
-#if !defined(_WIN32_WCE)
-	loctime=*localtime(&start_time);
-	/*FIXME*/
-#endif /*_WIN32_WCE*/
-#else
-	localtime_r(&start_time,&loctime);
-#endif
-	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",&loctime);
-}
-
-LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
-	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
-	cl->dir=call->dir;
-	cl->start_date_time=time(NULL);
-	set_call_log_date(cl,cl->start_date_time);
-	cl->from=from;
-	cl->to=to;
-	cl->status=LinphoneCallAborted; /*default status*/
-	cl->quality=-1;
-
-	cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
-	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
-	return cl;
-}
-
-void call_logs_write_to_config_file(LinphoneCore *lc){
-	MSList *elem;
-	char logsection[32];
-	int i;
-	char *tmp;
-	LpConfig *cfg=lc->config;
-
-	if (linphone_core_get_global_state (lc)==LinphoneGlobalStartup) return;
-
-	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
-		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
-		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
-		lp_config_clean_section(cfg,logsection);
-		lp_config_set_int(cfg,logsection,"dir",cl->dir);
-		lp_config_set_int(cfg,logsection,"status",cl->status);
-		tmp=linphone_address_as_string(cl->from);
-		lp_config_set_string(cfg,logsection,"from",tmp);
-		ms_free(tmp);
-		tmp=linphone_address_as_string(cl->to);
-		lp_config_set_string(cfg,logsection,"to",tmp);
-		ms_free(tmp);
-		if (cl->start_date_time)
-			lp_config_set_int64(cfg,logsection,"start_date_time",(int64_t)cl->start_date_time);
-		else lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
-		lp_config_set_int(cfg,logsection,"duration",cl->duration);
-		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
-		lp_config_set_float(cfg,logsection,"quality",cl->quality);
-		lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
-		lp_config_set_string(cfg,logsection,"call_id",cl->call_id);
-	}
-	for(;i<lc->max_call_logs;++i){
-		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
-		lp_config_clean_section(cfg,logsection);
-	}
-}
-
 static time_t string_to_time(const char *date){
 #ifndef WIN32
 	struct tm tmtime={0};
@@ -179,230 +115,6 @@ static time_t string_to_time(const char *date){
 #else
 	return 0;
 #endif
-}
-
-static void call_logs_read_from_config_file(LinphoneCore *lc){
-	char logsection[32];
-	int i;
-	const char *tmp;
-	uint64_t sec;
-	LpConfig *cfg=lc->config;
-	for(i=0;;++i){
-		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
-		if (lp_config_has_section(cfg,logsection)){
-			LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
-			cl->dir=lp_config_get_int(cfg,logsection,"dir",0);
-			cl->status=lp_config_get_int(cfg,logsection,"status",0);
-			tmp=lp_config_get_string(cfg,logsection,"from",NULL);
-			if (tmp) cl->from=linphone_address_new(tmp);
-			tmp=lp_config_get_string(cfg,logsection,"to",NULL);
-			if (tmp) cl->to=linphone_address_new(tmp);
-			sec=lp_config_get_int64(cfg,logsection,"start_date_time",0);
-			if (sec) {
-				/*new call log format with date expressed in seconds */
-				cl->start_date_time=(time_t)sec;
-				set_call_log_date(cl,cl->start_date_time);
-			}else{
-				tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
-				if (tmp) {
-					strncpy(cl->start_date,tmp,sizeof(cl->start_date));
-					cl->start_date_time=string_to_time(cl->start_date);
-				}
-			}
-			cl->duration=lp_config_get_int(cfg,logsection,"duration",0);
-			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
-			if (tmp) cl->refkey=ms_strdup(tmp);
-			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
-			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
-			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
-			if (tmp) cl->call_id=ms_strdup(tmp);
-			lc->call_logs=ms_list_append(lc->call_logs,cl);
-		}else break;
-	}
-}
-
-
-
-/**
- * @addtogroup call_logs
- * @{
-**/
-
-/**
- * Returns a human readable string describing the call.
- *
- * @note: the returned char* must be freed by the application (use ms_free()).
-**/
-char * linphone_call_log_to_str(LinphoneCallLog *cl){
-	char *status;
-	char *tmp;
-	char *from=linphone_address_as_string (cl->from);
-	char *to=linphone_address_as_string (cl->to);
-	switch(cl->status){
-		case LinphoneCallAborted:
-			status=_("aborted");
-			break;
-		case LinphoneCallSuccess:
-			status=_("completed");
-			break;
-		case LinphoneCallMissed:
-			status=_("missed");
-			break;
-		default:
-			status="unknown";
-	}
-	tmp=ortp_strdup_printf(_("%s at %s\nFrom: %s\nTo: %s\nStatus: %s\nDuration: %i mn %i sec\n"),
-			(cl->dir==LinphoneCallIncoming) ? _("Incoming call") : _("Outgoing call"),
-			cl->start_date,
-			from,
-			to,
-			status,
-			cl->duration/60,
-			cl->duration%60);
-	ms_free(from);
-	ms_free(to);
-	return tmp;
-}
-
-/**
- * Returns RTP statistics computed locally regarding the call.
- *
-**/
-const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl){
-	return &cl->local_stats;
-}
-
-/**
- * Returns RTP statistics computed by remote end and sent back via RTCP.
- *
- * @note Not implemented yet.
-**/
-const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl){
-	return &cl->remote_stats;
-}
-
-const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
-	return cl->call_id;
-}
-
-/**
- * Assign a user pointer to the call log.
-**/
-void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *up){
-	cl->user_pointer=up;
-}
-
-/**
- * Returns the user pointer associated with the call log.
-**/
-void *linphone_call_log_get_user_data(const LinphoneCallLog *cl){
-	return cl->user_pointer;
-}
-
-
-
-/**
- * Associate a persistent reference key to the call log.
- *
- * The reference key can be for example an id to an external database.
- * It is stored in the config file, thus can survive to process exits/restarts.
- *
-**/
-void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey){
-	if (cl->refkey!=NULL){
-		ms_free(cl->refkey);
-		cl->refkey=NULL;
-	}
-	if (refkey) cl->refkey=ms_strdup(refkey);
-}
-
-/**
- * Get the persistent reference key associated to the call log.
- *
- * The reference key can be for example an id to an external database.
- * It is stored in the config file, thus can survive to process exits/restarts.
- *
-**/
-const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
-	return cl->refkey;
-}
-
-/**
- * Returns origin address (ie from) of the call.
- * @param[in] cl LinphoneCallLog object
- * @return The origin address (ie from) of the call.
-**/
-LinphoneAddress *linphone_call_log_get_from_address(LinphoneCallLog *cl){
-	return cl->from;
-}
-
-/**
- * Returns destination address (ie to) of the call.
- * @param[in] cl LinphoneCallLog object
- * @return The destination address (ie to) of the call.
-**/
-LinphoneAddress *linphone_call_log_get_to_address(LinphoneCallLog *cl){
-	return cl->to;
-}
-
-/**
- * Returns remote address (that is from or to depending on call direction).
-**/
-LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl){
-	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
-}
-
-/**
- * Returns the direction of the call.
-**/
-LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl){
-	return cl->dir;
-}
-
-/**
- * Returns the status of the call.
-**/
-LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl){
-	return cl->status;
-}
-
-/**
- * Returns the start date of the call, expressed as a POSIX time_t.
-**/
-time_t linphone_call_log_get_start_date(LinphoneCallLog *cl){
-	return cl->start_date_time;
-}
-
-/**
- * Returns duration of the call.
-**/
-int linphone_call_log_get_duration(LinphoneCallLog *cl){
-	return cl->duration;
-}
-
-/**
- * Returns overall quality indication of the call.
-**/
-float linphone_call_log_get_quality(LinphoneCallLog *cl){
-	return cl->quality;
-}
-/**
- * return true if video was enabled at the end of the call
- */
-bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
-	return cl->video_enabled;
-}
-/** @} */
-
-void linphone_call_log_destroy(LinphoneCallLog *cl){
-	if (cl->from!=NULL) linphone_address_destroy(cl->from);
-	if (cl->to!=NULL) linphone_address_destroy(cl->to);
-	if (cl->refkey!=NULL) ms_free(cl->refkey);
-	if (cl->call_id) ms_free(cl->call_id);
-	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
-	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
-
-	ms_free(cl);
 }
 
 /**
@@ -4791,22 +4503,16 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
 		return LinphonePolicyNoFirewall;
 }
 
-/**
- * Get the list of call logs (past calls).
- * @param[in] lc The LinphoneCore object
- * @return \mslist{LinphoneCallLog}
- *
- * @ingroup call_logs
-**/
+
+
+/*******************************************************************************
+ * Call log related functions                                                  *
+ ******************************************************************************/
+
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
 	return lc->call_logs;
 }
 
-/**
- * Erase the call log.
- *
- * @ingroup call_logs
-**/
 void linphone_core_clear_call_logs(LinphoneCore *lc){
 	lc->missed_calls=0;
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
@@ -4827,6 +4533,9 @@ void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
 	call_logs_write_to_config_file(lc);
 	linphone_call_log_destroy(cl);
 }
+
+
+
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED

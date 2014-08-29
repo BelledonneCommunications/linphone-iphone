@@ -24,7 +24,7 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h call_log.h
 
 lib_LTLIBRARIES=liblinphone.la
 
@@ -59,6 +59,7 @@ liblinphone_la_SOURCES=\
 	lpc2xml.c \
 	remote_provisioning.c \
 	quality_reporting.c quality_reporting.h\
+	call_log.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
