@@ -9,6 +9,7 @@ import time
 test_username = "liblinphone_tester"
 test_password = "secret"
 test_route = "sip2.linphone.org"
+tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
 
 
 def create_address(domain):
@@ -211,7 +212,6 @@ class CoreManager:
         manager = lc.user_data
         to_address = call.call_log.to_address.as_string()
         from_address = call.call_log.from_address.as_string()
-        from_address = ''
         direction = "Outgoing"
         if call.call_log.dir == linphone.CallDir.CallIncoming:
             direction = "Incoming"
@@ -298,7 +298,6 @@ class CoreManager:
         self.identity = None
         self.stats = CoreManagerStats()
         rc_path = None
-        tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
         if rc_file is not None:
             rc_path = os.path.join('rcfiles', rc_file)
         self.lc = self.configure_lc_from(vtable, tester_resources_path, rc_path)
@@ -337,5 +336,9 @@ class CoreManager:
         for codec in codecs:
             self.lc.enable_payload_type(codec, False)
         codec = self.lc.find_payload_type(mime, rate, 1)
+        assert codec is not None
         if codec is not None:
             self.lc.enable_payload_type(codec, True)
+
+    def disable_all_audio_codecs_except_one(self, mime):
+        self.enable_audio_codec(mime, -1)
