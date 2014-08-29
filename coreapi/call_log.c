@@ -26,6 +26,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Internal functions                                                          *
  ******************************************************************************/
 
+/*prevent a gcc bug with %c*/
+static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
+	return strftime(s, max, fmt, tm);
+}
+
+static time_t string_to_time(const char *date){
+#ifndef WIN32
+	struct tm tmtime={0};
+	strptime(date,"%c",&tmtime);
+	return mktime(&tmtime);
+#else
+	return 0;
+#endif
+}
+
 static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
 	struct tm loctime;
 #ifdef WIN32

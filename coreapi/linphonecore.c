@@ -102,21 +102,6 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 }
 
 
-/*prevent a gcc bug with %c*/
-static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
-	return strftime(s, max, fmt, tm);
-}
-
-static time_t string_to_time(const char *date){
-#ifndef WIN32
-	struct tm tmtime={0};
-	strptime(date,"%c",&tmtime);
-	return mktime(&tmtime);
-#else
-	return 0;
-#endif
-}
-
 /**
  * Returns TRUE if the LinphoneCall asked to autoanswer
  *
