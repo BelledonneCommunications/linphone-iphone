@@ -235,32 +235,38 @@ bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
  * Reference and user data handling functions                                  *
  ******************************************************************************/
 
-void *linphone_call_log_get_user_data(const LinphoneCallLog *cl){
-	return cl->user_pointer;
+void *linphone_call_log_get_user_data(const LinphoneCallLog *cl) {
+	return cl->user_data;
 }
 
-void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *ud){
-	cl->user_pointer=ud;
+void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *ud) {
+	cl->user_data = ud;
 }
 
+LinphoneCallLog * linphone_call_log_ref(LinphoneCallLog *cl) {
+	belle_sip_object_ref(cl);
+	return cl;
+}
+
+void linphone_call_log_unref(LinphoneCallLog *cl) {
+	belle_sip_object_unref(cl);
+}
 
 /*******************************************************************************
  * Constructor and destructor functions                                        *
  ******************************************************************************/
 
-void linphone_call_log_destroy(LinphoneCallLog *cl){
+static void _linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->from!=NULL) linphone_address_destroy(cl->from);
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
 	if (cl->call_id) ms_free(cl->call_id);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
-
-	ms_free(cl);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
-	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
+	LinphoneCallLog *cl=belle_sip_object_new(LinphoneCallLog);
 	cl->dir=call->dir;
 	cl->start_date_time=time(NULL);
 	set_call_log_date(cl,cl->start_date_time);
@@ -273,3 +279,17 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
 	return cl;
 }
+
+/* DEPRECATED */
+void linphone_call_log_destroy(LinphoneCallLog *cl) {
+	belle_sip_object_unref(cl);
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCallLog);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallLog, belle_sip_object_t,
+	(belle_sip_object_destroy_t)linphone_call_log_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);

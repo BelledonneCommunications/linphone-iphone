@@ -198,6 +198,19 @@ LINPHONE_PUBLIC void *linphone_call_log_get_user_data(const LinphoneCallLog *cl)
 **/
 LINPHONE_PUBLIC void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *ud);
 
+/**
+ * Acquire a reference to the call log.
+ * @param[in] cl LinphoneCallLog object
+ * @return The same LinphoneCallLog object
+**/
+LINPHONE_PUBLIC LinphoneCallLog * linphone_call_log_ref(LinphoneCallLog *cl);
+
+/**
+ * Release a reference to the call log.
+ * @param[in] cl LinphoneCallLog object
+**/
+LINPHONE_PUBLIC void linphone_call_log_unref(LinphoneCallLog *cl);
+
 
 /*******************************************************************************
  * DEPRECATED                                                                  *
@@ -214,6 +227,13 @@ LINPHONE_PUBLIC void linphone_call_log_set_user_data(LinphoneCallLog *cl, void *
 
 /** @deprecated Use linphone_call_log_get_user_data() instead. */
 #define linphone_call_log_get_user_pointer(cl) linphone_call_log_get_user_data(cl)
+
+/**
+ * Destroy a LinphoneCallLog.
+ * @param cl LinphoneCallLog object
+ * @deprecated Use linphone_call_log_unref() instead.
+ */
+LINPHONE_PUBLIC void linphone_call_log_destroy(LinphoneCallLog *cl);
 
 
 /**

@@ -111,6 +111,8 @@ struct _LinphoneQualityReporting{
 };
 
 struct _LinphoneCallLog{
+	belle_sip_object_t base;
+	void *user_data;
 	struct _LinphoneCore *lc;
 	LinphoneCallDir dir; /**< The direction of the call*/
 	LinphoneCallStatus status; /**< The status of the call*/
@@ -119,17 +121,16 @@ struct _LinphoneCallLog{
 	char start_date[128]; /**<Human readable string containing the start date*/
 	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
-	void *user_pointer;
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
-
 	struct _LinphoneQualityReporting reporting;
-
 	bool_t video_enabled;
 };
+
+BELLE_SIP_DECLARE_VPTR(LinphoneCallLog);
 
 
 typedef struct _CallCallbackObj
@@ -922,14 +923,15 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
   */
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
-BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
-BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneCall),
+BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
-BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
-BELLE_SIP_TYPE_ID(LinphoneCall)
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneProxyConfig)
 BELLE_SIP_DECLARE_TYPES_END
 
 
