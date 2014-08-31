@@ -3240,3 +3240,9 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 		linphone_address_destroy(contact);
 	}
 }
+
+LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
+	if (call->player==NULL)
+		call->player=linphone_call_build_player(call);
+	return call->player;
+}

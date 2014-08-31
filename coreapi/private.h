@@ -230,6 +230,7 @@ struct _LinphoneCall
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	int localdesc_changed;/*not a boolean, contains a mask representing changes*/
+	LinphonePlayer *player;
 
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
@@ -262,6 +263,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *lo
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
+LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 
@@ -629,6 +631,7 @@ struct _LinphoneConference{
 	MSAudioEndpoint *record_endpoint;
 	RtpProfile *local_dummy_profile;
 	bool_t local_muted;
+	bool_t terminated;
 };
 
 
@@ -876,6 +879,23 @@ void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
+
+
+/*****************************************************************************
+ * Player interface
+ ****************************************************************************/
+
+struct _LinphonePlayer{
+	int (*open)(struct _LinphonePlayer* player, const char *filename);
+	int (*start)(struct _LinphonePlayer* player);
+	int (*pause)(struct _LinphonePlayer* player);
+	int (*seek)(struct _LinphonePlayer* player, int time_ms);
+	MSPlayerState (*get_state)(struct _LinphonePlayer* player);
+	void (*close)(struct _LinphonePlayer* player);
+	LinphonePlayerEofCallback cb;
+	void *user_data;
+	void *impl;
+};
 
 
 /*****************************************************************************

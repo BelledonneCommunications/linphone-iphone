@@ -646,6 +646,27 @@ LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(
 typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);
 
 /**
+ * Player interface.
+ * @ingroup call_control
+**/
+typedef struct _LinphonePlayer LinphonePlayer;
+
+/**
+ * Callback for notifying end of play (file).
+ * @param obj the LinphonePlayer
+ * @param user_data the user_data provided when calling linphone_player_open().
+ * @ingroup call_control
+**/
+typedef void (*LinphonePlayerEofCallback)(struct _LinphonePlayer *obj, void *user_data);
+
+int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
+int linphone_player_start(LinphonePlayer *obj);
+int linphone_player_pause(LinphonePlayer *obj);
+int linphone_player_seek(LinphonePlayer *obj, int time_ms);
+MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
+void linphone_player_close(LinphonePlayer *obj);
+
+/**
  * LinphoneCallState enum represents the different state a call can reach into.
  * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
  * @ingroup call_control
@@ -758,6 +779,7 @@ LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall 
 LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
+LINPHONE_PUBLIC LinphonePlayer * linphone_call_get_player(LinphoneCall *call);
 
 /**
  * Return TRUE if this call is currently part of a conference

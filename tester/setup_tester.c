@@ -23,6 +23,12 @@
 #include "lpconfig.h"
 #include "private.h"
 
+static void linphone_version_test(void){
+	const char *version=linphone_core_get_version();
+	/*make sure the git version is always included in the version number*/
+	CU_ASSERT_TRUE(strstr(version,"unknown")==NULL);
+}
+
 static void core_init_test(void) {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -177,6 +183,7 @@ static void chat_root_test(void) {
 }
 
 test_t setup_tests[] = {
+	{ "Version check", linphone_version_test },
 	{ "Linphone Address", linphone_address_test },
 	{ "Linphone proxy config address equal (internal api)", linphone_proxy_config_address_equal_test},
 	{ "Linphone proxy config server address change (internal api)", linphone_proxy_config_is_server_config_changed_test},

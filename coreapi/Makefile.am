@@ -60,6 +60,7 @@ liblinphone_la_SOURCES=\
 	remote_provisioning.c \
 	quality_reporting.c quality_reporting.h\
 	call_log.c \
+	player.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

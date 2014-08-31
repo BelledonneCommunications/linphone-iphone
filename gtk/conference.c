@@ -140,7 +140,7 @@ void linphone_gtk_set_in_conference(LinphoneCall *call){
 		gtk_box_pack_start(GTK_BOX(conferencee_box),participant,FALSE,FALSE,PADDING_PIXELS);
 		g_object_set_data_full(G_OBJECT(participant),"call",linphone_call_ref(call),(GDestroyNotify)linphone_call_unref);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(viewswitch),
-			gtk_notebook_page_num(GTK_NOTEBOOK(viewswitch),conf_frame));
+		gtk_notebook_page_num(GTK_NOTEBOOK(viewswitch),conf_frame));
 	}
 }
 
