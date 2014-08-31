@@ -573,8 +573,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->state=LinphoneCallIdle;
 	call->transfer_state = LinphoneCallIdle;
 	call->media_start_time=0;
-	call->log=linphone_call_log_new(call, from, to);
-	call->owns_call_log=TRUE;
+	call->log=linphone_call_log_new(call->dir, from, to);
 	call->camera_enabled=TRUE;
 	call->current_params.media_encryption=LinphoneMediaEncryptionNone;
 
@@ -864,7 +863,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	linphone_core_update_allocated_audio_bandwidth(lc);
 	linphone_call_stats_uninit(&call->stats[0]);
 	linphone_call_stats_uninit(&call->stats[1]);
-	call->owns_call_log=FALSE;
 	linphone_call_log_completed(call);
 
 
@@ -1041,8 +1039,8 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->transfer_target){
 		linphone_call_unref(obj->transfer_target);
 	}
-	if (obj->owns_call_log)
-		linphone_call_log_destroy(obj->log);
+	if (obj->log)
+		linphone_call_log_unref(obj->log);
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
 	}
@@ -3114,7 +3112,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 			lc->vtable.display_status(lc,info);
 		ms_free(info);
 	}
-	lc->call_logs=ms_list_prepend(lc->call_logs,(void *)call->log);
+	lc->call_logs=ms_list_prepend(lc->call_logs,linphone_call_log_ref(call->log));
 	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
 		MSList *elem,*prevelem=NULL;
 		/*find the last element*/
@@ -3122,7 +3120,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 			prevelem=elem;
 		}
 		elem=prevelem;
-		linphone_call_log_destroy((LinphoneCallLog*)elem->data);
+		linphone_call_log_unref((LinphoneCallLog*)elem->data);
 		lc->call_logs=ms_list_remove_link(lc->call_logs,elem);
 	}
 	if (lc->vtable.call_log_updated!=NULL){
@@ -3186,7 +3184,7 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 		zoom[0] = zoom_factor;
 		zoom[1] = *cx;
 		zoom[2] = *cy;
-			ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
+		ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 

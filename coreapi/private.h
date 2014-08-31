@@ -238,15 +238,14 @@ struct _LinphoneCall
 
 	bool_t all_muted; /*this flag is set during early medias*/
 	bool_t playing_ringbacktone;
-	bool_t owns_call_log;
 	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
-
 	bool_t auth_token_verified;
+	
 	bool_t defer_update;
-
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
 	bool_t record_active;
+
 	bool_t paused_by_app;
 };
 
@@ -259,7 +258,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md);
 /* private: */
-LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *local, LinphoneAddress * remote);
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);

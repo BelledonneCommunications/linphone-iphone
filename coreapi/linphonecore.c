@@ -4497,7 +4497,7 @@ const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
 
 void linphone_core_clear_call_logs(LinphoneCore *lc){
 	lc->missed_calls=0;
-	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
+	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_unref);
 	lc->call_logs=ms_list_free(lc->call_logs);
 	call_logs_write_to_config_file(lc);
 }
@@ -4513,7 +4513,7 @@ void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
 	lc->call_logs = ms_list_remove(lc->call_logs, cl);
 	call_logs_write_to_config_file(lc);
-	linphone_call_log_destroy(cl);
+	linphone_call_log_unref(cl);
 }
 
 
@@ -5735,7 +5735,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
 
-	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
+	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_unref);
 	lc->call_logs=ms_list_free(lc->call_logs);
 
 	ms_list_for_each(lc->last_recv_msg_ids,ms_free);

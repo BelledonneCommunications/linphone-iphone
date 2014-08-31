@@ -104,13 +104,16 @@ void call_logs_read_from_config_file(LinphoneCore *lc){
 	for(i=0;;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
 		if (lp_config_has_section(cfg,logsection)){
-			LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
-			cl->dir=lp_config_get_int(cfg,logsection,"dir",0);
-			cl->status=lp_config_get_int(cfg,logsection,"status",0);
+			LinphoneCallLog *cl;
+			LinphoneAddress *from=NULL,*to=NULL;
 			tmp=lp_config_get_string(cfg,logsection,"from",NULL);
-			if (tmp) cl->from=linphone_address_new(tmp);
+			if (tmp) from=linphone_address_new(tmp);
 			tmp=lp_config_get_string(cfg,logsection,"to",NULL);
-			if (tmp) cl->to=linphone_address_new(tmp);
+			if (tmp) to=linphone_address_new(tmp);
+			if (!from || !to)
+				continue;
+			cl=linphone_call_log_new(lp_config_get_int(cfg,logsection,"dir",0),from,to);
+			cl->status=lp_config_get_int(cfg,logsection,"status",0);
 			sec=lp_config_get_int64(cfg,logsection,"start_date_time",0);
 			if (sec) {
 				/*new call log format with date expressed in seconds */
@@ -266,9 +269,9 @@ static void _linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
 }
 
-LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to){
 	LinphoneCallLog *cl=belle_sip_object_new(LinphoneCallLog);
-	cl->dir=call->dir;
+	cl->dir=dir;
 	cl->start_date_time=time(NULL);
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
