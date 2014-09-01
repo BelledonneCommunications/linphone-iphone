@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void register_failure(SalOp *op);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
-	if (call->params.in_conference != call->current_params.in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
+	if (call->params->in_conference != call->current_params->in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
 	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_CHANGED;
 	if (call->localdesc_changed) ms_message("Local description has changed: %i", call->localdesc_changed);
 	return call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
@@ -171,10 +171,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
 		send_ringbacktone=TRUE;
 	}
-	if ((call->state==LinphoneCallIncomingEarlyMedia || call->state==LinphoneCallOutgoingEarlyMedia) && !call->params.real_early_media){
+	if ((call->state==LinphoneCallIncomingEarlyMedia || call->state==LinphoneCallOutgoingEarlyMedia) && !call->params->real_early_media){
 		all_muted=TRUE;
 	}
-	if (call->params.real_early_media && call->state==LinphoneCallOutgoingEarlyMedia){
+	if (call->params->real_early_media && call->state==LinphoneCallOutgoingEarlyMedia){
 		prepare_early_media_forking(call);
 	}
 	linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
@@ -349,7 +349,7 @@ static void call_ringing(SalOp *h){
 	if (call==NULL) return;
 	
 	/*set privacy*/
-	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Remote ringing."));
@@ -402,7 +402,7 @@ static void call_accepted(SalOp *op){
 		return ;
 	}
 	/*set privacy*/
-	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	/* Handle remote ICE attributes if any. */
 	if (call->ice_session != NULL) {
@@ -416,7 +416,7 @@ static void call_accepted(SalOp *op){
 
 	md=sal_call_get_final_media_description(op);
 	if (md) /*make sure re-invite will not propose video again*/
-		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
+		call->params->has_video &= linphone_core_media_description_contains_video_stream(md);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||
 	    call->state==LinphoneCallOutgoingRinging ||
@@ -470,7 +470,7 @@ static void call_accepted(SalOp *op){
 			/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
 			* further in the call, for example during pause,resume, conferencing reINVITEs*/
 			linphone_call_fix_call_parameters(call);
-			if (!call->current_params.in_conference)
+			if (!call->current_params->in_conference)
 				lc->current_call=call;
 			if (call->prevstate != LinphoneCallIncomingEarlyMedia) /*don't change state in aswer to a SIP UPDATE in early media*/
 				linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
@@ -743,22 +743,22 @@ static void call_failure(SalOp *op){
 				int i;
 				for (i = 0; i < call->localdesc->nb_streams; i++) {
 					if (!sal_stream_description_active(&call->localdesc->streams[i])) continue;
-					if (call->params.media_encryption == LinphoneMediaEncryptionSRTP) {
-						if (call->params.avpf_enabled == TRUE) {
+					if (call->params->media_encryption == LinphoneMediaEncryptionSRTP) {
+						if (call->params->avpf_enabled == TRUE) {
 							if (i == 0) ms_message("Retrying call [%p] with SAVP", call);
-							call->params.avpf_enabled = FALSE;
+							call->params->avpf_enabled = FALSE;
 							linphone_core_restart_invite(lc, call);
 							return;
 						} else if (!linphone_core_is_media_encryption_mandatory(lc)) {
 							if (i == 0) ms_message("Retrying call [%p] with AVP", call);
-							call->params.media_encryption = LinphoneMediaEncryptionNone;
+							call->params->media_encryption = LinphoneMediaEncryptionNone;
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 							linphone_core_restart_invite(lc, call);
 							return;
 						}
-					} else if (call->params.avpf_enabled == TRUE) {
+					} else if (call->params->avpf_enabled == TRUE) {
 						if (i == 0) ms_message("Retrying call [%p] with AVP", call);
-						call->params.avpf_enabled = FALSE;
+						call->params->avpf_enabled = FALSE;
 						linphone_core_restart_invite(lc, call);
 						return;
 					}

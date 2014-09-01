@@ -658,7 +658,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 		} else {
 			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
 		}
-		if (call->params.has_video && (video_check_list != NULL)) {
+		if (call->params->has_video && (video_check_list != NULL)) {
 			if (ice_check_list_state(video_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
 					case ICT_HostCandidate:
@@ -678,12 +678,12 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 		}
 	} else if (session_state == IS_Running) {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
-		if (call->params.has_video && (video_check_list != NULL)) {
+		if (call->params->has_video && (video_check_list != NULL)) {
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 		}
 	} else {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
-		if (call->params.has_video && (video_check_list != NULL)) {
+		if (call->params->has_video && (video_check_list != NULL)) {
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}

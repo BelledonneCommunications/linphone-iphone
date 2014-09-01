@@ -80,6 +80,8 @@ extern "C" {
 #endif
 
 struct _LinphoneCallParams{
+	belle_sip_object_t base;
+	void *user_data;
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
 	LinphoneMediaEncryption media_encryption;
@@ -103,6 +105,9 @@ struct _LinphoneCallParams{
 	LinphonePrivacyMask privacy;
 	uint16_t avpf_rr_interval;
 };
+
+BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
+
 
 struct _LinphoneQualityReporting{
 	reporting_session_report_t * reports[2]; /**Store information on audio and video media streams (RFC 6035) */
@@ -210,9 +215,9 @@ struct _LinphoneCall
 
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
-	LinphoneCallParams params;
-	LinphoneCallParams current_params;
-	LinphoneCallParams remote_params;
+	LinphoneCallParams *params;
+	LinphoneCallParams *current_params;
+	LinphoneCallParams *remote_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	int audio_bw;	/*upload bandwidth used by audio */
 	OrtpEvQueue *audiostream_app_evq;
@@ -264,6 +269,9 @@ void linphone_call_log_completed(LinphoneCall *call);
 void linphone_call_log_destroy(LinphoneCallLog *cl);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
+
+LinphoneCallParams * linphone_call_params_new(void);
+SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 
@@ -833,8 +841,6 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
-void _linphone_call_params_copy(LinphoneCallParams *params, const LinphoneCallParams *refparams);
-void linphone_call_params_uninit(LinphoneCallParams *params);
 
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
@@ -947,6 +953,7 @@ BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
+BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),

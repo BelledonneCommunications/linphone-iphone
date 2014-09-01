@@ -67,6 +67,7 @@ LOCAL_SRC_FILES := \
 	remote_provisioning.c \
 	quality_reporting.c \
 	call_log.c \
+	call_params.c \
 	player.c
 
 ifndef LINPHONE_VERSION

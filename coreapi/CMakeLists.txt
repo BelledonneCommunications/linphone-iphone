@@ -43,6 +43,7 @@ set(SOURCE_FILES
 	bellesip_sal/sal_sdp.c
 	callbacks.c
 	call_log.c
+	call_params.c
 	chat.c
 	conference.c
 	ec-calibrator.c
@@ -143,6 +144,7 @@ install(TARGETS linphone
 
 set(HEADER_FILES
 	call_log.h
+	call_params.h
 	event.h
 	linphonecore.h
 	linphonecore_utils.h
