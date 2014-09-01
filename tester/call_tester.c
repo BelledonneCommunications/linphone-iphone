@@ -28,7 +28,7 @@
 
 static void srtp_call(void);
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
-static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime);
+static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 
 // prototype definition for call_recording()
 #ifdef ANDROID
@@ -449,10 +449,15 @@ static void call_with_specified_codec_bitrate(void) {
 	bool_t call_ok;
 	char * codec = "opus";
 	int rate = 48000;
+	int min_bw=24;
+	int max_bw=40;
+
 #ifdef __arm__
 	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
 		codec = "speex";
-		rate = 16000;
+		rate = 8000;
+		min_bw=20;
+		max_bw=35;
 	}
 #endif
 
@@ -461,23 +466,23 @@ static void call_with_specified_codec_bitrate(void) {
 		goto end;
 	}
 
-	disable_all_audio_codecs_except_one(marie->lc,codec);
-	disable_all_audio_codecs_except_one(pauline->lc,codec);
+	disable_all_audio_codecs_except_one(marie->lc,codec,rate);
+	disable_all_audio_codecs_except_one(pauline->lc,codec,rate);
 
 	linphone_core_set_payload_type_bitrate(marie->lc,
 		linphone_core_find_payload_type(marie->lc,codec,rate,-1),
-		40);
+		max_bw);
 	linphone_core_set_payload_type_bitrate(pauline->lc,
 		linphone_core_find_payload_type(pauline->lc,codec,rate,-1),
-		24);
+		min_bw);
 
 	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
 	marie_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
 	pauline_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_TRUE(marie_stats->download_bandwidth<30);
-	CU_ASSERT_TRUE(pauline_stats->download_bandwidth>35);
+	CU_ASSERT_TRUE(marie_stats->download_bandwidth<(min_bw+5+min_bw*.1));
+	CU_ASSERT_TRUE(pauline_stats->download_bandwidth>(max_bw-5-max_bw*.1));
 
 end:
 	linphone_core_manager_destroy(marie);
@@ -571,7 +576,7 @@ static void cancelled_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime){
+static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate){
 	const MSList *elem=linphone_core_get_audio_codecs(lc);
 	PayloadType *pt;
 
@@ -579,7 +584,7 @@ static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mi
 		pt=(PayloadType*)elem->data;
 		linphone_core_enable_payload_type(lc,pt,FALSE);
 	}
-	pt=linphone_core_find_payload_type(lc,mime,-1,-1);
+	pt=linphone_core_find_payload_type(lc,mime,rate,-1);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(pt);
 	linphone_core_enable_payload_type(lc,pt,TRUE);
 }
@@ -603,8 +608,8 @@ static void call_failed_because_of_codecs(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* out_call;
 
-	disable_all_audio_codecs_except_one(marie->lc,"pcmu");
-	disable_all_audio_codecs_except_one(pauline->lc,"pcma");
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
 	out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
@@ -2055,8 +2060,8 @@ static void early_media_call_with_update_base(bool_t media_change){
 	lcs = ms_list_append(lcs,marie->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
 	if (media_change) {
-		disable_all_audio_codecs_except_one(marie->lc,"pcmu");
-		disable_all_audio_codecs_except_one(pauline->lc,"pcmu");
+		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+		disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
 
 	}
 	/*
@@ -2081,8 +2086,8 @@ static void early_media_call_with_update_base(bool_t media_change){
 	pauline_params = linphone_call_params_copy(linphone_call_get_current_params(pauline_call));
 
 	if (media_change) {
-		disable_all_audio_codecs_except_one(marie->lc,"pcma");
-		disable_all_audio_codecs_except_one(pauline->lc,"pcma");
+		disable_all_audio_codecs_except_one(marie->lc,"pcma",-1);
+		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
 	}
 	#define UPDATED_SESSION_NAME "nouveau nom de session"
 
