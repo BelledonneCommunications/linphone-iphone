@@ -125,6 +125,7 @@
     <ClCompile Include="..\..\coreapi\message_storage.c" />
     <ClCompile Include="..\..\coreapi\misc.c" />
     <ClCompile Include="..\..\coreapi\offeranswer.c" />
+    <ClCompile Include="..\..\coreapi\player.c" />
     <ClCompile Include="..\..\coreapi\presence.c" />
     <ClCompile Include="..\..\coreapi\proxy.c" />
     <ClCompile Include="..\..\coreapi\quality_reporting.c" />

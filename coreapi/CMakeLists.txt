@@ -59,6 +59,7 @@ set(SOURCE_FILES
 	message_storage.c
 	misc.c
 	offeranswer.c
+	player.c
 	presence.c
 	proxy.c
 	quality_reporting.c
