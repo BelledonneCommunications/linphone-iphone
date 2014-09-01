@@ -447,19 +447,28 @@ static void call_with_specified_codec_bitrate(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	const LinphoneCallStats *pauline_stats,*marie_stats;
 	bool_t call_ok;
-	if (linphone_core_find_payload_type(marie->lc,"opus",48000,-1)==NULL){
+	char * codec = "opus";
+	int rate = 48000;
+#ifdef __arm__
+	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
+		codec = "speex";
+		rate = 16000;
+	}
+#endif
+
+	if (linphone_core_find_payload_type(marie->lc,codec,rate,-1)==NULL){
 		ms_warning("opus codec not supported, test skipped.");
 		goto end;
 	}
 
-	disable_all_audio_codecs_except_one(marie->lc,"opus");
-	disable_all_audio_codecs_except_one(pauline->lc,"opus");
+	disable_all_audio_codecs_except_one(marie->lc,codec);
+	disable_all_audio_codecs_except_one(pauline->lc,codec);
 
 	linphone_core_set_payload_type_bitrate(marie->lc,
-		linphone_core_find_payload_type(marie->lc,"opus",48000,-1),
-		50);
+		linphone_core_find_payload_type(marie->lc,codec,rate,-1),
+		40);
 	linphone_core_set_payload_type_bitrate(pauline->lc,
-		linphone_core_find_payload_type(pauline->lc,"opus",48000,-1),
+		linphone_core_find_payload_type(pauline->lc,codec,rate,-1),
 		24);
 
 	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
@@ -468,7 +477,7 @@ static void call_with_specified_codec_bitrate(void) {
 	marie_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
 	pauline_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
 	CU_ASSERT_TRUE(marie_stats->download_bandwidth<30);
-	CU_ASSERT_TRUE(pauline_stats->download_bandwidth>45);
+	CU_ASSERT_TRUE(pauline_stats->download_bandwidth>35);
 
 end:
 	linphone_core_manager_destroy(marie);
