@@ -411,6 +411,7 @@ void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
+void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 /**/
 

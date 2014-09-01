@@ -254,7 +254,7 @@ MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 }
 
 static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
-    return linphone_address_weak_equal(cr->peer_url,from);
+	return linphone_address_weak_equal(cr->peer_url,from);
 }
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *obj);
@@ -262,56 +262,56 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *obj);
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatRoom);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
-   (belle_sip_object_destroy_t)_linphone_chat_room_destroy,
-   NULL, // clone
-   NULL, // marshal
-   FALSE
+	(belle_sip_object_destroy_t)_linphone_chat_room_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
 );
 
 static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
-    LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
-    cr->lc = lc;
-    cr->peer = linphone_address_as_string(addr);
-    cr->peer_url = addr;
-    lc->chatrooms = ms_list_append(lc->chatrooms, (void *)cr);
-    return cr;
+	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
+	cr->lc = lc;
+	cr->peer = linphone_address_as_string(addr);
+	cr->peer_url = addr;
+	lc->chatrooms = ms_list_append(lc->chatrooms, (void *)cr);
+	return cr;
 }
 
 static LinphoneChatRoom * _linphone_core_create_chat_room_from_url(LinphoneCore *lc, const char *to) {
-    LinphoneAddress *parsed_url = NULL;
-    if ((parsed_url = linphone_core_interpret_url(lc, to)) != NULL) {
-        return _linphone_core_create_chat_room(lc, parsed_url);
-    }
-    return NULL;
+	LinphoneAddress *parsed_url = NULL;
+	if ((parsed_url = linphone_core_interpret_url(lc, to)) != NULL) {
+		return _linphone_core_create_chat_room(lc, parsed_url);
+	}
+	return NULL;
 }
 
 LinphoneChatRoom * _linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
-    LinphoneChatRoom *cr=NULL;
-    MSList *elem;
-    for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
-        cr=(LinphoneChatRoom*)elem->data;
-        if (linphone_chat_room_matches(cr,addr)){
-            break;
-        }
-        cr=NULL;
-    }
-    return cr;
+	LinphoneChatRoom *cr=NULL;
+	MSList *elem;
+	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
+		cr=(LinphoneChatRoom*)elem->data;
+		if (linphone_chat_room_matches(cr,addr)){
+			break;
+		}
+		cr=NULL;
+	}
+	return cr;
 }
 
 static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-    LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
-    LinphoneChatRoom *ret;
+	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
+	LinphoneChatRoom *ret;
 
-    if (to_addr==NULL){
-        ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
-        return NULL;
-    }
-    ret=_linphone_core_get_chat_room(lc,to_addr);
-    linphone_address_destroy(to_addr);
-    if (!ret){
-        ret=_linphone_core_create_chat_room_from_url(lc,to);
-    }
-    return ret;
+	if (to_addr==NULL){
+		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
+		return NULL;
+	}
+	ret=_linphone_core_get_chat_room(lc,to_addr);
+	linphone_address_destroy(to_addr);
+	if (!ret){
+		ret=_linphone_core_create_chat_room_from_url(lc,to);
+	}
+	return ret;
 }
 
 /**
@@ -322,7 +322,7 @@ static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* l
  * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
  */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-    return _linphone_core_get_or_create_chat_room(lc, to);
+	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
 /**
@@ -333,7 +333,7 @@ LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const 
  * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
  */
 LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to) {
-    return _linphone_core_get_or_create_chat_room(lc, to);
+	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
 /**
@@ -343,11 +343,11 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  * @returns #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
-    LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
-    if (!ret) {
-        ret = _linphone_core_create_chat_room(lc, linphone_address_clone(addr));
-    }
-    return ret;
+	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
+	if (!ret) {
+		ret = _linphone_core_create_chat_room(lc, linphone_address_clone(addr));
+	}
+	return ret;
 }
 
 /**
@@ -357,7 +357,7 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
  * @returns #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
-    return _linphone_core_get_or_create_chat_room(lc, to);
+	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
@@ -388,12 +388,13 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 }
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
-	LinphoneCore *lc=cr->lc;
 	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_unref);
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
-	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
+	if (cr->lc != NULL) {
+		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms,(void *) cr);
+	}
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
 }
@@ -404,24 +405,29 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
  * @deprecated Use linphone_chat_room_unref() instead.
  */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
-    belle_sip_object_unref(cr);
+	linphone_chat_room_unref(cr);
+}
+
+void linphone_chat_room_release(LinphoneChatRoom *cr) {
+	cr->lc = NULL;
+	linphone_chat_room_unref(cr);
 }
 
 LinphoneChatRoom * linphone_chat_room_ref(LinphoneChatRoom *cr) {
-    belle_sip_object_ref(cr);
-    return cr;
+	belle_sip_object_ref(cr);
+	return cr;
 }
 
 void linphone_chat_room_unref(LinphoneChatRoom *cr) {
-    belle_sip_object_unref(cr);
+	belle_sip_object_unref(cr);
 }
 
 void * linphone_chat_room_get_user_data(const LinphoneChatRoom *cr) {
-   return cr->user_data;
+	return cr->user_data;
 }
 
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
-   cr->user_data = ud;
+	cr->user_data = ud;
 }
 
 

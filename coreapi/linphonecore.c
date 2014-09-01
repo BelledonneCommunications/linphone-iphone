@@ -5723,14 +5723,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 #endif //BUILD_UPNP
 
-	if (lc->chatrooms){
-		MSList *cr=ms_list_copy(lc->chatrooms);
-		MSList *elem;
-		for(elem=cr;elem!=NULL;elem=elem->next){
-			linphone_chat_room_destroy((LinphoneChatRoom*)elem->data);
-		}
-		ms_list_free(cr);
-	}
+	ms_list_for_each(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
+	lc->chatrooms = ms_list_free(lc->chatrooms);
 
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
