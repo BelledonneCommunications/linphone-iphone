@@ -66,10 +66,9 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 	FILE* file=NULL;
 	char receive_file[256];
 	snprintf(receive_file,sizeof(receive_file), "%s/receive_file.dump", liblinphone_tester_writable_dir_prefix);
-
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
-		file = fopen("receive_file.dump","wb");
+		file = fopen(receive_file,"wb");
 		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
 	} else {
 		/*next chunk*/

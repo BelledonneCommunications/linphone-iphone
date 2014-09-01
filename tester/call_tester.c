@@ -454,10 +454,15 @@ static void call_with_specified_codec_bitrate(void) {
 
 #ifdef __arm__
 	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
+#ifndef ANDROID
 		codec = "speex";
 		rate = 8000;
 		min_bw=20;
 		max_bw=35;
+#else
+		CU_PASS("Test requires at least a dual core");
+		goto end;
+#endif
 	}
 #endif
 

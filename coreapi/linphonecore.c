@@ -40,7 +40,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#include "liblinphone_gitversion.h"
+#ifndef ANDROID /*on Android LIBLINPHONE version is passed from root Makefile*/
+	#include "liblinphone_gitversion.h"
+#endif
 #else
 #ifndef LIBLINPHONE_GIT_VERSION
 #define LIBLINPHONE_GIT_VERSION "unknown"
@@ -1598,28 +1600,8 @@ int linphone_core_get_sip_port(LinphoneCore *lc)
 	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
 }
 
-#if !USE_BELLE_SIP
 static char _ua_name[64]="Linphone";
-static char _ua_version[64]=LINPHONE_VERSION;
-#endif
-
-#if HAVE_EXOSIP_GET_VERSION && !USE_BELLESIP
-extern const char *eXosip_get_version();
-#endif
-
-static void apply_user_agent(LinphoneCore *lc){
-#if !USE_BELLESIP /*default user agent is handled at sal level*/
-	char ua_string[256];
-	snprintf(ua_string,sizeof(ua_string)-1,"%s/%s (eXosip2/%s)",_ua_name,_ua_version,
-#if HAVE_EXOSIP_GET_VERSION
-		 eXosip_get_version()
-#else
-		 "unknown"
-#endif
-	);
-	if (lc->sal) sal_set_user_agent(lc->sal,ua_string);
-#endif
-}
+static char _ua_version[64]=LIBLINPHONE_VERSION;
 
 /**
  * Sets the user agent string used in SIP messages.
@@ -1627,27 +1609,15 @@ static void apply_user_agent(LinphoneCore *lc){
  * @ingroup misc
 **/
 void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char *ver){
-#if USE_BELLESIP
 	char ua_string[256];
 	snprintf(ua_string, sizeof(ua_string) - 1, "%s/%s", name?name:"", ver?ver:"");
 	if (lc->sal) {
 		sal_set_user_agent(lc->sal, ua_string);
 		sal_append_stack_string_to_user_agent(lc->sal);
 	}
-#else
-	strncpy(_ua_name,name,sizeof(_ua_name)-1);
-	strncpy(_ua_version,ver,sizeof(_ua_version));
-	apply_user_agent(lc);
-#endif
 }
 const char *linphone_core_get_user_agent(LinphoneCore *lc){
-#if USE_BELLESIP
 	return sal_get_user_agent(lc->sal);
-#else
-	static char ua_buffer[255] = {0};
-	snprintf(ua_buffer, "%s/%s", _ua_name, _ua_version, 254);
-	return ua_buffer;
-#endif
 }
 
 const char *linphone_core_get_user_agent_name(void){
@@ -1705,7 +1675,6 @@ static int apply_transports(LinphoneCore *lc){
 			}
 		}
 	}
-	apply_user_agent(lc);
 	return 0;
 }
 
