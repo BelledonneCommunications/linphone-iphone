@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef HAVE_CONFIG_H
+#include "config.h"
 #include "liblinphone_gitversion.h"
 #else
 #ifndef LIBLINPHONE_GIT_VERSION
