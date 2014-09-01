@@ -2910,7 +2910,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	if (params!=NULL){
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
-		has_video = call->params.has_video;
+		has_video = call->params->has_video;
 
 		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
@@ -2933,7 +2933,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		// Video adding
-		if (!has_video && call->params.has_video) {
+		if (!has_video && call->params->has_video) {
 			if(call->upnp_session != NULL) {
 				ms_message("Defer call update to add uPnP port mappings");
 				video_stream_prepare_video(call->videostream);
@@ -3040,7 +3040,7 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	SalMediaDescription *remote_desc;
 	bool_t keep_sdp_version;
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
-	bool_t old_has_video = call->params.has_video;
+	bool_t old_has_video = call->params->has_video;
 #endif
 
 	remote_desc = sal_call_get_remote_media_description(call->op);
@@ -3076,7 +3076,7 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	if(call->upnp_session != NULL) {
 		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
 #ifdef VIDEO_ENABLED
-		if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
+		if ((call->params->has_video) && (call->params->has_video != old_has_video)) {
 			video_stream_prepare_video(call->videostream);
 			if (linphone_core_update_upnp(lc, call)<0) {
 				/* uPnP update failed, proceed with the call anyway. */
