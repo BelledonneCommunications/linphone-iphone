@@ -310,53 +310,6 @@ LINPHONE_PUBLIC const char *linphone_media_encryption_to_string(LinphoneMediaEnc
 **/
 
 
-#ifdef IN_LINPHONE
-#include "linphonefriend.h"
-#include "event.h"
-#include "call_log.h"
-#include "call_params.h"
-#else
-#include "linphone/linphonefriend.h"
-#include "linphone/event.h"
-#include "linphone/call_log.h"
-#include "linphone/call_params.h"
-#endif
-
-LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
-LINPHONE_PUBLIC LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
-LINPHONE_PUBLIC LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
-LINPHONE_PUBLIC void linphone_address_unref(LinphoneAddress *addr);
-LINPHONE_PUBLIC const char *linphone_address_get_scheme(const LinphoneAddress *u);
-LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
-LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
-LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
-LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
-LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
-LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
-LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
-LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
-/*remove tags, params etc... so that it is displayable to the user*/
-LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
-LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *uri);
-LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
-LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
-LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
-LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
-LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
-LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
-
-/**
- * Create a #LinphoneAddress object by parsing the user supplied address, given as a string.
- * @param[in] lc #LinphoneCore object
- * @param[in] address String containing the user supplied address
- * @return The create #LinphoneAddress object
- * @ingroup linphone_address
- */
-LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address);
-
-struct _SipSetupContext;
-
-
 /*
  * Note for developers: this enum must be kept synchronized with the SalPrivacy enum declared in sal.h
  */
@@ -415,8 +368,53 @@ typedef unsigned int LinphonePrivacyMask;
 
 
 LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
-LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
-LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params);
+
+
+#ifdef IN_LINPHONE
+#include "linphonefriend.h"
+#include "event.h"
+#include "call_log.h"
+#include "call_params.h"
+#else
+#include "linphone/linphonefriend.h"
+#include "linphone/event.h"
+#include "linphone/call_log.h"
+#include "linphone/call_params.h"
+#endif
+
+LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
+LINPHONE_PUBLIC LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
+LINPHONE_PUBLIC LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_address_unref(LinphoneAddress *addr);
+LINPHONE_PUBLIC const char *linphone_address_get_scheme(const LinphoneAddress *u);
+LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
+LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
+LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
+LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
+LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
+LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
+LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
+LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
+/*remove tags, params etc... so that it is displayable to the user*/
+LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
+LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *uri);
+LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
+LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
+LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
+LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
+LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
+LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
+
+/**
+ * Create a #LinphoneAddress object by parsing the user supplied address, given as a string.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] address String containing the user supplied address
+ * @return The create #LinphoneAddress object
+ * @ingroup linphone_address
+ */
+LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address);
+
+struct _SipSetupContext;
 
 
 struct _LinphoneInfoMessage;

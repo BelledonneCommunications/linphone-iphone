@@ -80,6 +80,10 @@ LinphoneMediaEncryption linphone_call_params_get_media_encryption(const Linphone
 	return cp->media_encryption;
 }
 
+LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
+	return params->privacy;
+}
+
 float linphone_call_params_get_received_framerate(const LinphoneCallParams *cp){
 	return cp->received_fps;
 }
@@ -128,6 +132,10 @@ void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneM
 	cp->media_encryption = e;
 }
 
+void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
+	params->privacy=privacy;
+}
+
 void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path){
 	if (cp->record_file){
 		ms_free(cp->record_file);
@@ -148,27 +156,6 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
-
-/**
- * @ingroup call_control
- * Set requested level of privacy for the call.
- * \xmlonly <language-tags>javascript</language-tags> \endxmlonly
- * @param params the call parameters to be modified
- * @param privacy LinphonePrivacy to configure privacy
- * */
-void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
-	params->privacy=privacy;
-}
-
-/**
- * @ingroup call_control
- * Get requested level of privacy for the call.
- * @param params the call parameters
- * @return Privacy mode
- * */
-LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
-	return params->privacy;
-}
 
 
 /*******************************************************************************

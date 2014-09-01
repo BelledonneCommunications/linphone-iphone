@@ -117,6 +117,13 @@ LINPHONE_PUBLIC bool_t linphone_call_params_get_local_conference_mode(const Linp
 LINPHONE_PUBLIC LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp);
 
 /**
+ * Get requested level of privacy for the call.
+ * @param[in] cp LinphoneCallParams object
+ * @return The privacy mode used for the call.
+**/
+LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *cp);
+
+/**
  * Get the framerate of the video that is received.
  * @param[in] cp LinphoneCallParams object
  * @return The actual received framerate in frames per seconds, 0 if not available.
@@ -205,6 +212,14 @@ LINPHONE_PUBLIC void linphone_call_params_set_audio_bandwidth_limit(LinphoneCall
  * @param[in] enc The media encryption to use for the call.
 **/
 LINPHONE_PUBLIC void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption enc);
+
+/**
+ * Set requested level of privacy for the call.
+ * \xmlonly <language-tags>javascript</language-tags> \endxmlonly
+ * @param[in] cp LinphoneCallParams object
+ * @param[in] privacy The privacy mode to used for the call.
+**/
+LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
 
 /**
  * Enable recording of the call.
