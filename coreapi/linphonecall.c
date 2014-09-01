@@ -2813,6 +2813,42 @@ uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCa
 }
 
 /**
+ * Get the bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
+ * @param[in] stats LinphoneCallStats object
+ * @return The bandwidth measurement of the received stream in kbit/s.
+ */
+float linphone_call_stats_get_download_bandwidth(const LinphoneCallStats *stats) {
+	return stats->download_bandwidth;
+}
+
+/**
+ * Get the bandwidth measurement of the sent stream, expressed in kbit/s, including IP/UDP/RTP headers.
+ * @param[in] stats LinphoneCallStats object
+ * @return The bandwidth measurement of the sent stream in kbit/s.
+ */
+float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats) {
+	return stats->upload_bandwidth;
+}
+
+/**
+ * Get the state of ICE processing.
+ * @param[in] stats LinphoneCallStats object
+ * @return The state of ICE processing.
+ */
+LinphoneIceState linphone_call_stats_get_ice_state(const LinphoneCallStats *stats) {
+	return stats->ice_state;
+}
+
+/**
+ * Get the state of uPnP processing.
+ * @param[in] stats LinphoneCallStats object
+ * @return The state of uPnP processing.
+ */
+LinphoneUpnpState linphone_call_stats_get_upnp_state(const LinphoneCallStats *stats) {
+	return stats->upnp_state;
+}
+
+/**
  * Enable recording of the call (voice-only).
  * This function must be used before the call parameters are assigned to the call.
  * The call recording can be started and paused after the call is established with
