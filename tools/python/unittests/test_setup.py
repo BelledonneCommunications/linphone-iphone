@@ -1,6 +1,6 @@
 from nose.tools import assert_equals
 import linphone
-import linphonetester
+from linphonetester import *
 import os
 
 class TestSetup:
@@ -8,10 +8,10 @@ class TestSetup:
     @classmethod
     def setup_class(cls):
         base, ext = os.path.splitext(os.path.basename(__file__))
-        cls.logger = linphonetester.Logger(base + '.log')
+        cls.logger = Logger(base + '.log')
 
     def test_address(self):
-        linphonetester.create_address(None)
+        create_address(None)
 
     def test_core_init(self):
         lc = linphone.Core.new({}, None, None)

@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 from nose.tools import assert_equals
+from copy import deepcopy
 import linphone
 import logging
 import os
@@ -181,6 +182,78 @@ class CoreManager:
         return cls.wait_for_until(manager1, manager2, func, 10000)
 
     @classmethod
+    def call(cls, caller_manager, callee_manager, caller_params = None, callee_params = None, build_callee_params = False):
+        initial_caller_stats = deepcopy(caller_manager.stats)
+        initial_callee_stats = deepcopy(callee_manager.stats)
+
+        # Use playfile for callee to avoid locking on capture card
+        callee_manager.lc.use_files = True
+        callee_manager.lc.play_file = os.path.join(tester_resources_path, 'sounds', 'hello8000.wav')
+
+        if caller_params is None:
+            call = caller_manager.lc.invite_address(callee_manager.identity)
+        else:
+            call = caller_manager.lc.invite_address_with_params(callee_manager.identity, caller_params)
+        assert call is not None
+
+        assert_equals(CoreManager.wait_for(callee_manager, caller_manager,
+            lambda callee_manager, caller_manager: callee_manager.stats.number_of_LinphoneCallIncomingReceived == initial_callee_stats.number_of_LinphoneCallIncomingReceived + 1), True)
+        assert_equals(callee_manager.lc.incoming_invite_pending, True)
+        assert_equals(caller_manager.stats.number_of_LinphoneCallOutgoingProgress, initial_caller_stats.number_of_LinphoneCallOutgoingProgress + 1)
+
+        retry = 0
+        while (caller_manager.stats.number_of_LinphoneCallOutgoingRinging != initial_caller_stats.number_of_LinphoneCallOutgoingRinging + 1) and \
+            (caller_manager.stats.number_of_LinphoneCallOutgoingEarlyMedia != initial_caller_stats.number_of_LinphoneCallOutgoingEarlyMedia + 1) and \
+            retry < 20:
+            retry += 1
+            caller_manager.lc.iterate()
+            callee_manager.lc.iterate()
+            time.sleep(0.1)
+        assert ((caller_manager.stats.number_of_LinphoneCallOutgoingRinging == initial_caller_stats.number_of_LinphoneCallOutgoingRinging + 1) or \
+            (caller_manager.stats.number_of_LinphoneCallOutgoingEarlyMedia == initial_caller_stats.number_of_LinphoneCallOutgoingEarlyMedia + 1)) == True
+
+        assert callee_manager.lc.current_call_remote_address is not None
+        if caller_manager.lc.current_call is None or callee_manager.lc.current_call is None or callee_manager.lc.current_call_remote_address is None:
+            return False
+        callee_from_address = caller_manager.identity.clone()
+        callee_from_address.port = 0 # Remove port because port is never present in from header
+        assert_equals(callee_from_address.weak_equal(callee_manager.lc.current_call_remote_address), True)
+
+        if callee_params is not None:
+            callee_manager.lc.accept_call_with_params(callee_manager.lc.current_call, callee_params)
+        elif build_callee_params:
+            default_params = callee_manager.lc.create_call_params(callee_manager.lc.current_call)
+            callee_manager.lc.accept_call_with_params(callee_manager.lc.current_call, default_params)
+        else:
+            callee_manager.lc.accept_call(callee_manager.lc.current_call)
+        assert_equals(CoreManager.wait_for(callee_manager, caller_manager,
+            lambda callee_manager, caller_manager: (callee_manager.stats.number_of_LinphoneCallConnected == initial_callee_stats.number_of_LinphoneCallConnected + 1) and \
+                (caller_manager.stats.number_of_LinphoneCallConnected == initial_caller_stats.number_of_LinphoneCallConnected + 1)), True)
+        # Just to sleep
+        result = CoreManager.wait_for(callee_manager, caller_manager,
+            lambda callee_manager, caller_manager: (callee_manager.stats.number_of_LinphoneCallStreamsRunning == initial_callee_stats.number_of_LinphoneCallStreamsRunning + 1) and \
+                (caller_manager.stats.number_of_LinphoneCallStreamsRunning == initial_caller_stats.number_of_LinphoneCallStreamsRunning + 1))
+
+        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone:
+            # Wait for encryption to be on, in case of zrtp, it can take a few seconds
+            if caller_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+                CoreManager.wait_for(callee_manager, caller_manager,
+                    lambda callee_manager, caller_manager: caller_manager.stats.number_of_LinphoneCallEncryptedOn == initial_caller_stats.number_of_LinphoneCallEncryptedOn + 1)
+            if callee_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+                CoreManager.wait_for(callee_manager, caller_manager,
+                    lambda callee_manager, caller_manager: callee_manager.stats.number_of_LinphoneCallEncryptedOn == initial_callee_stats.number_of_LinphoneCallEncryptedOn + 1)
+            assert_equals(callee_manager.lc.current_call.current_params.media_encryption, caller_manager.lc.media_encryption)
+            assert_equals(caller_manager.lc.current_call.current_params.media_encryption, callee_manager.lc.media_encryption)
+
+        return result
+
+    @classmethod
+    def end_call(cls, caller_manager, callee_manager):
+        caller_manager.lc.terminate_all_calls()
+        assert_equals(CoreManager.wait_for(caller_manager, callee_manager,
+            lambda caller_manager, callee_manager: caller_manager.stats.number_of_LinphoneCallEnd == 1 and callee_manager.stats.number_of_LinphoneCallEnd == 1), True)
+
+    @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
         manager = lc.user_data
         if manager.logger is not None:
@@ -257,6 +330,20 @@ class CoreManager:
         else:
             raise Exception("Unexpected call state")
 
+    @classmethod
+    def message_received(cls, lc, room, message):
+        manager = lc.user_data
+        from_str = message.from_address.as_string()
+        text_str = message.text
+        external_body_url = message.external_body_url
+        if manager.logger is not None:
+            manager.logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
+                from_str=from_str, text_str=text_str, external_body_url=external_body_url))
+        manager.stats.number_of_LinphoneMessageReceived += 1
+
+        if message.external_body_url is not None:
+            manager.stats.number_of_LinphoneMessageExtBodyReceived += 1
+
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}, logger=None):
         self.logger = logger
         if not vtable.has_key('registration_state_changed'):
@@ -265,10 +352,8 @@ class CoreManager:
             vtable['auth_info_requested'] = CoreManager.auth_info_requested
         if not vtable.has_key('call_state_changed'):
             vtable['call_state_changed'] = CoreManager.call_state_changed
-        #if not vtable.has_key('text_received'):
-            #vtable['text_received'] = CoreManager.text_received
-        #if not vtable.has_key('message_received'):
-            #vtable['message_received'] = CoreManager.message_received
+        if not vtable.has_key('message_received'):
+            vtable['message_received'] = CoreManager.message_received
         #if not vtable.has_key('file_transfer_recv'):
             #vtable['file_transfer_recv'] = CoreManager.file_transfer_recv
         #if not vtable.has_key('file_transfer_send'):
