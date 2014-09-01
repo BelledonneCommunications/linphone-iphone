@@ -1133,7 +1133,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			}
 			if (md->name[0]!='\0') linphone_call_params_set_session_name(cp,md->name);
 		}
-		cp->custom_headers=(SalCustomHeader*)sal_op_get_recv_custom_header(call->op);
+		cp->custom_headers=sal_custom_header_clone((SalCustomHeader*)sal_op_get_recv_custom_header(call->op));
 		return cp;
 	}
 	return NULL;
