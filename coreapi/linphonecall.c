@@ -1108,9 +1108,10 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 	if (call->op){
 		LinphoneCallParams *cp;
+        SalMediaDescription *md;
 		if (call->remote_params != NULL) linphone_call_params_unref(call->remote_params);
 		cp = call->remote_params = linphone_call_params_new();
-		SalMediaDescription *md=sal_call_get_remote_media_description(call->op);
+		md=sal_call_get_remote_media_description(call->op);
 		if (md) {
 			SalStreamDescription *sd;
 			unsigned int i;
