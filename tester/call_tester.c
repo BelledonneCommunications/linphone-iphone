@@ -2899,7 +2899,7 @@ static void video_call_snapshot(void) {
 		linphone_call_take_video_snapshot(callInst, filename);
 		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
 		CU_ASSERT_EQUAL(access(filename, F_OK), 0);
-//		remove(filename);
+		remove(filename);
 	}
 	ms_free(filename);
 	linphone_core_manager_destroy(marie);
