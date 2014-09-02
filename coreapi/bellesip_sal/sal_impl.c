@@ -436,8 +436,8 @@ Sal * sal_init(){
 	sal->stack = belle_sip_stack_new(NULL);
 
 	sal->user_agent=belle_sip_header_user_agent_new();
-#if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
-	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
+#if defined(PACKAGE_NAME) && defined(LIBLINPHONE_VERSION)
+	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LIBLINPHONE_VERSION);
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);

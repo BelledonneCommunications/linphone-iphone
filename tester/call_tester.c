@@ -619,8 +619,8 @@ static void call_failed_because_of_codecs(void) {
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
-	/*flexisip will retain the 488 until the "urgent reply" timeout arrives.*/
-	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,6000));
+	/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
 	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
 
