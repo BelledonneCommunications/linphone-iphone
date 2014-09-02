@@ -1882,6 +1882,7 @@ static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *ca
 
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
+	LpConfig* conf;
 	int used_pt=-1;
 	char rtcp_tool[128]={0};
 	const SalStreamDescription *stream;
@@ -1926,8 +1927,13 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				/*playfile=NULL;*/
 			}
 			if (send_ringbacktone){
+				conf = linphone_core_get_config(lc);
 				captcard=NULL;
 				playfile=NULL;/* it is setup later*/
+				if( conf && lp_config_get_int(conf,"sound","send_ringback_without_playback", 0) == 1){
+					playcard = NULL;
+					recfile = NULL;
+				}
 			}
 			/*if playfile are supplied don't use soundcards*/
 			if (lc->use_files) {
