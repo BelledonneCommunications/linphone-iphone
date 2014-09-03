@@ -3388,6 +3388,60 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 	env->ReleaseStringUTFChars(jHost, cHost);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *env, jobject thiz, jlong pCore, jobject config) {
+	LinphoneTunnel *tunnel = linphone_core_get_tunnel((LinphoneCore *)pCore);
+	if(tunnel != NULL) {
+		jclass TunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfig");
+		jmethodID getHostMethod = env->GetMethodID(TunnelConfigClass, "getHost", "()Ljava/lang/String;");
+		jmethodID getPortMethod = env->GetMethodID(TunnelConfigClass, "getPort", "()I");
+		jmethodID getRemoteUdpMirrorPortMethod = env->GetMethodID(TunnelConfigClass, "getRemoteUdpMirrorPort", "()I");
+		jmethodID getDelayMethod = env->GetMethodID(TunnelConfigClass, "getDelay", "()I");
+		jstring hostString = (jstring)env->CallObjectMethod(config, getHostMethod);
+		const char *host = env->GetStringUTFChars(hostString, NULL);
+		if(host == NULL || strlen(host)==0) {
+			ms_error("LinphoneCore.tunnelAddServer(): no tunnel host defined");
+		}
+		LinphoneTunnelConfig *tunnelConfig = linphone_tunnel_config_new();
+		linphone_tunnel_config_set_host(tunnelConfig, host);
+		linphone_tunnel_config_set_port(tunnelConfig, env->CallIntMethod(config, getPortMethod));
+		linphone_tunnel_config_set_remote_udp_mirror_port(tunnelConfig, env->CallIntMethod(config, getRemoteUdpMirrorPortMethod));
+		linphone_tunnel_config_set_delay(tunnelConfig, env->CallIntMethod(config, getDelayMethod));
+		linphone_tunnel_add_server(tunnel, tunnelConfig);
+		env->ReleaseStringUTFChars(hostString, host);
+	} else {
+		ms_error("LinphoneCore.tunnelAddServer(): tunnel feature is not enabled");
+	}
+}
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_tunnelGetServers(JNIEnv *env, jobject thiz, jlong pCore) {
+	LinphoneTunnel *tunnel = linphone_core_get_tunnel((LinphoneCore *)pCore);
+	jclass TunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfig");
+	jmethodID setHostMethod = env->GetMethodID(TunnelConfigClass, "setHost", "(Ljava/lang/String;)V");
+	jmethodID setPortMethod = env->GetMethodID(TunnelConfigClass, "setPort", "(I)V");
+	jmethodID setRemoteUdpMirrorPortMethod = env->GetMethodID(TunnelConfigClass, "setRemoteUdpMirrorPort", "(I)V");
+	jmethodID setDelayMethod = env->GetMethodID(TunnelConfigClass, "setDelay", "(I)V");
+	jobjectArray tunnelConfigArray = NULL;
+
+	if(tunnel != NULL) {
+		const MSList *servers = linphone_tunnel_get_servers(tunnel);
+		const MSList *it;
+		int i;
+		ms_message("servers=%p", (void *)servers);
+		ms_message("taille=%i", ms_list_size(servers));
+		tunnelConfigArray = env->NewObjectArray(ms_list_size(servers), TunnelConfigClass, NULL);
+		for(it = servers, i=0; it != NULL; it = it->next, i++) {
+			const LinphoneTunnelConfig *conf = (const LinphoneTunnelConfig *)it->data;
+			jobject elt = env->AllocObject(TunnelConfigClass);
+			env->CallVoidMethod(elt, setHostMethod, env->NewStringUTF(linphone_tunnel_config_get_host(conf)));
+			env->CallVoidMethod(elt, setPortMethod, linphone_tunnel_config_get_port(conf));
+			env->CallVoidMethod(elt, setRemoteUdpMirrorPortMethod, linphone_tunnel_config_get_remote_udp_mirror_port(conf));
+			env->CallVoidMethod(elt, setDelayMethod, linphone_tunnel_config_get_delay(conf));
+			env->SetObjectArrayElement(tunnelConfigArray, i, elt);
+		}
+	}
+	return tunnelConfigArray;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetHttpProxy(JNIEnv *env,jobject thiz,jlong pCore,
 		jstring jHost, jint port, jstring username, jstring password) {
 

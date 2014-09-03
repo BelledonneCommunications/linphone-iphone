@@ -22,6 +22,7 @@ import static android.media.AudioManager.MODE_IN_CALL;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.mediastream.Log;
@@ -749,6 +750,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized void tunnelAddServerAndMirror(String host, int port, int mirror, int ms) {
 		tunnelAddServerAndMirror(nativePtr, host, port, mirror, ms);
+	}
+	
+	private native void tunnelAddServer(long nativePtr, TunnelConfig config);
+	@Override
+	public synchronized void tunnelAddServer(TunnelConfig config) {
+		tunnelAddServer(nativePtr, config);
+	}
+	
+	private native final TunnelConfig[] tunnelGetServers(long nativePtr);
+	@Override
+	public synchronized final TunnelConfig[] tunnelGetServers() {
+		return tunnelGetServers(nativePtr);
 	}
 
 	private native void tunnelAutoDetect(long nativePtr);

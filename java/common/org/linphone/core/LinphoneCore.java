@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
@@ -1246,6 +1247,16 @@ public interface LinphoneCore {
 	 * @param roundTripDelay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms
 	 */
 	void tunnelAddServerAndMirror(String host, int port, int udpMirrorPort, int roundTripDelay);
+	/**
+	 * Add a server to the list of tunnel servers.
+	 * @param config Parameters of the server to add.
+	 */
+	void tunnelAddServer(TunnelConfig config);
+	/**
+	 * Returns a list of configured servers.
+	 * @return Array of server configs.
+	 */
+	TunnelConfig[] tunnelGetServers();
 
 	boolean isTunnelAvailable();
 	/**
@@ -1640,5 +1651,4 @@ public interface LinphoneCore {
 	 * @param value the jitter buffer size in milliseconds.
 	 */
 	public void setVideoJittcomp(int value);
-	
 }
