@@ -1,7 +1,7 @@
 /*
  *  C Implementation: tunnel
  *
- * Description: 
+ * Description:
  *
  *
  * Author: Simon Morlat <simon.morlat@linphone.org>, (C) 2009
@@ -136,13 +136,14 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 
 
 TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
-,mCore(lc)
-,mCallback(NULL)
-,mEnabled(false)
-,mTunnelClient(NULL)
-,mAutoDetectStarted(false)
-,mReady(false)
-,mHttpProxyPort(0){
+	,mCore(lc)
+	,mCallback(NULL)
+	,mEnabled(false)
+	,mTunnelClient(NULL)
+	,mAutoDetectStarted(false)
+	,mReady(false)
+	,mHttpProxyPort(0)
+	,mPreviousRegistrationEnabled(false){
 
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
@@ -167,22 +168,36 @@ void TunnelManager::stopClient(){
 	}
 }
 
-void TunnelManager::processTunnelEvent(const Event &ev){
+void TunnelManager::registration(){
 	LinphoneProxyConfig* lProxy;
-	linphone_core_get_default_proxy(mCore, &lProxy);
 
-	if (mEnabled && mTunnelClient->isReady()){
-		ms_message("Tunnel is up, registering now");
+	//  tunnel was enabled
+	if (isReady()){
 		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
 
 		sal_enable_tunnel(mCore->sal, mTunnelClient);
+	// tunnel was disabled
+	} else {
+		linphone_core_set_sip_transports(mCore, &mRegularTransport);
+		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
+	}
 
-		//register
-		if (lProxy) {
-			linphone_proxy_config_refresh_register(lProxy);
-		}
+	// registration occurs always after an unregistation has been made. First we
+	// need to reset the previous registration mode
+	linphone_core_get_default_proxy(mCore, &lProxy);
+	if (lProxy) {
+		linphone_proxy_config_edit(lProxy);
+		linphone_proxy_config_enable_register(lProxy,mPreviousRegistrationEnabled);
+		linphone_proxy_config_done(lProxy);
+	}
+}
+
+void TunnelManager::processTunnelEvent(const Event &ev){
+	if (mEnabled && mTunnelClient->isReady()){
 		mReady=true;
+		ms_message("Tunnel is up, registering now");
+		registration();
 	}else if (mEnabled && !mTunnelClient->isReady()){
 		/* we got disconnected from the tunnel */
 		mReady=false;
@@ -191,27 +206,37 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 
 void TunnelManager::waitUnRegistration(){
 	LinphoneProxyConfig* lProxy;
+
 	linphone_core_get_default_proxy(mCore, &lProxy);
-	if (lProxy && linphone_proxy_config_get_state(lProxy)==LinphoneRegistrationOk) {
-		int i=0;
-		linphone_proxy_config_edit(lProxy);
-		linphone_proxy_config_enable_register(lProxy,FALSE);
-		linphone_proxy_config_done(lProxy);
-		//make sure unregister is sent and authenticated
-		do{
-			linphone_core_iterate(mCore);
-			ms_usleep(20000);
-			if (i>100){
-				ms_message("tunnel: timeout for unregistration expired, giving up");
-				break;
-			}
-			i++;
-		}while(linphone_proxy_config_get_state(lProxy)!=LinphoneRegistrationCleared);
-	}	
+	if (lProxy){
+		mPreviousRegistrationEnabled=linphone_proxy_config_register_enabled(lProxy);
+		if (linphone_proxy_config_is_registered(lProxy)) {
+			int i=0;
+			linphone_proxy_config_edit(lProxy);
+			linphone_proxy_config_enable_register(lProxy,FALSE);
+			linphone_proxy_config_done(lProxy);
+			sal_unregister(lProxy->op);
+			//make sure unregister is sent and authenticated
+			do{
+				linphone_core_iterate(mCore);
+				ms_usleep(20000);
+				if (i>100){
+					ms_message("tunnel: timeout for unregistration expired, giving up");
+					break;
+				}
+				i++;
+			}while(linphone_proxy_config_is_registered(lProxy));
+			ms_message("Unregistration %s", linphone_proxy_config_is_registered(lProxy)?"failed":"succeeded");
+		}else{
+			ms_message("No registration pending");
+		}
+	}
 }
 
+/*Each time tunnel is enabled/disabled, we need to unregister previous session and re-register. Since tunnel initialization
+is asynchronous, we temporary disable auto register while tunnel sets up, and reenable it when re-registering. */
 void TunnelManager::enable(bool isEnable) {
-	ms_message("Turning tunnel [%s]",(isEnable?"on":"off"));
+	ms_message("Turning tunnel [%s]", isEnable ?"on" : "off");
 	if (isEnable && !mEnabled){
 		mEnabled=true;
 		//1 save transport and firewall policy
@@ -224,7 +249,8 @@ void TunnelManager::enable(bool isEnable) {
 	}else if (!isEnable && mEnabled){
 		//1 unregister
 		waitUnRegistration();
-		
+
+		// 2 stop tunnel
 		mEnabled=false;
 		stopClient();
 		mReady=false;
@@ -239,18 +265,8 @@ void TunnelManager::enable(bool isEnable) {
 		lTransport.dtls_port = 0;
 		linphone_core_set_sip_transports(mCore, &lTransport);
 
-		//Restore transport and firewall policy
-		linphone_core_set_sip_transports(mCore, &mRegularTransport);
-		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
-		//register
-		LinphoneProxyConfig* lProxy;
-		linphone_core_get_default_proxy(mCore, &lProxy);
-		if (lProxy) {
-			linphone_proxy_config_edit(lProxy);
-			linphone_proxy_config_enable_register(lProxy,TRUE);
-			linphone_proxy_config_done(lProxy);
-		}
-
+		// register
+		registration();
 	}
 }
 
@@ -320,7 +336,7 @@ void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 		SetLogLevel(TUNNEL_ERROR|TUNNEL_WARN);
 	}
 }
-	
+
 
 bool TunnelManager::isEnabled() {
 	return mEnabled;
@@ -336,7 +352,7 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
 			// enable tunnel but also try backup server
 			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
-			
+
 			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 			lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 		} else {
@@ -375,7 +391,7 @@ void TunnelManager::autoDetect() {
 	mCurrentUdpMirrorClient =mUdpMirrorClients.begin();
 	UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 	lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
-	
+
 }
 
 void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd) {

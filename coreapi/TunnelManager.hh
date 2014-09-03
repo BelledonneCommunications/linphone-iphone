@@ -1,7 +1,7 @@
 /*
  *  C Implementation: tunnel
  *
- * Description: 
+ * Description:
  *
  *
  *
@@ -25,22 +25,22 @@ namespace belledonnecomm {
 class TunnelClient;
 class UdpMirrorClient;
 /**
- * @addtogroup tunnel_client 
+ * @addtogroup tunnel_client
  * @{
 **/
 
 	/**
-	 * The TunnelManager class extends the LinphoneCore functionnality in order to provide an easy to use API to 
+	 * The TunnelManager class extends the LinphoneCore functionnality in order to provide an easy to use API to
 	 * - provision tunnel servers ip addresses and ports
 	 * - start/stop the tunneling service
 	 * - be informed of of connection and disconnection events to the tunnel server
 	 * - perform auto-detection whether tunneling is required, based on a test of sending/receiving a flow of UDP packets.
-	 * 
+	 *
 	 * It takes in charge automatically the SIP registration procedure when connecting or disconnecting to a tunnel server.
 	 * No other action on LinphoneCore is required to enable full operation in tunnel mode.
 	**/
 	class TunnelManager : public TunnelClientController{
-		
+
 	public:
 		/**
 		 * Add a tunnel server. At least one should be provided to be able to connect.
@@ -61,13 +61,13 @@ class UdpMirrorClient;
 		void addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay);
 		/**
 		 * Removes all tunnel server address previously entered with addServer()
-		**/ 
+		**/
 		void cleanServers();
 		/**
 		 * Register a state callback to be notified whenever the tunnel client is connected or disconnected to the tunnel server.
 		 * @param cb application callback function to use for notifying of connection/disconnection events.
 		 * @param userdata An opaque pointer passed to the callback, used optionally by the application to retrieve a context.
-		**/		
+		**/
 		void setCallback(StateCallback cb, void *userdata);
 		/**
 		 * Start connecting to a tunnel server.
@@ -156,6 +156,7 @@ class UdpMirrorClient;
 		static void tunnelCallback(bool connected, TunnelManager *zis);
 		static void sOnIterate(TunnelManager *zis);
 		static void sUdpMirrorClientCallback(bool result, void* data);
+		void registration();
 		void waitUnRegistration();
 		void processTunnelEvent(const Event &ev);
 		void processUdpMirrorEvent(const Event &ev);
@@ -185,6 +186,7 @@ class UdpMirrorClient;
 		std::string mHttpProxyHost;
 		int mHttpProxyPort;
 		LinphoneFirewallPolicy mPreviousFirewallPolicy;
+		bool mPreviousRegistrationEnabled;
 	};
 
 /**
