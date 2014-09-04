@@ -23,9 +23,8 @@
 
 @implementation LinphoneLogger
 
-+ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,... {
-    va_list args;
-	va_start (args, format);
+
++ (void)logv:(LinphoneLoggerSeverity)severity format:(NSString*)format args:(va_list)args{
     NSString *str = [[NSString alloc] initWithFormat: format arguments:args];
     if(severity <= LinphoneLoggerDebug) {
         ms_debug("%s", [str UTF8String]);
@@ -39,6 +38,12 @@
         ms_fatal("%s", [str UTF8String]);
     }
     [str release];
+}
+
++ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,... {
+    va_list args;
+	va_start (args, format);
+    [LinphoneLogger logv:severity format:format args:args];
     va_end (args);
 }
 
@@ -237,3 +242,29 @@
 }
 
 @end
+
+#define LOGV(level, argstart)   \
+    va_list args;               \
+    va_start(args, argstart);   \
+    [LinphoneLogger logv:level format:argstart args:args]; \
+    va_end(args);
+
+void Linphone_log(NSString* format, ...){
+    LOGV(LinphoneLoggerLog, format);
+}
+
+void Linphone_dbg(NSString* format, ...){
+    LOGV(LinphoneLoggerDebug, format);
+}
+
+void Linphone_warn(NSString* format, ...){
+    LOGV(LinphoneLoggerWarning, format);
+}
+
+void Linphone_err(NSString* format, ...){
+    LOGV(LinphoneLoggerError, format);
+}
+
+void Linphone_fatal(NSString* format, ...){
+    LOGV(LinphoneLoggerFatal, format);
+}

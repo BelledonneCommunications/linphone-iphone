@@ -54,6 +54,7 @@ endif
 
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
+LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-mswebrtc build-msopenh264
 
@@ -319,22 +320,21 @@ multi-arch:
 
 
 delivery-sdk: multi-arch
+	echo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
 	cd $(BUILDER_SRC_DIR)/../ \
-	&& zip  -r   $(BUILDER_SRC_DIR)/liblinphone-iphone-sdk.zip \
+	&& zip -r $(BUILDER_SRC_DIR)/liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \
 	liblinphone-sdk/apple-darwin \
 	liblinphone-tutorials \
 	-x liblinphone-tutorials/hello-world/build\* \
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3 
 
-delivery:
-	cd $(BUILDER_SRC_DIR)/../ \
+.PHONY delivery:
+	cd $(BUILDER_SRC_DIR)/../../ \
 	&& zip  -r   $(BUILDER_SRC_DIR)/linphone-iphone.zip \
-	liblinphone-sdk linphone-iphone linphone/pixmaps/red.png \
-	linphone/pixmaps/green.png linphone/share/ringback.wav \
-	linphone/share/rings/oldphone-mono.wav \
+	linphone-iphone  \
 	-x linphone-iphone/build\* \
-	-x \*.git\*
+	--exclude linphone-iphone/.git\* --exclude \*.[od] --exclude \*.so.\* --exclude \*.a  --exclude linphone-iphone/liblinphone-sdk/apple-darwin/\* --exclude \*.lo 
 
 ipa:
 	cd $(BUILDER_SRC_DIR)/../ \

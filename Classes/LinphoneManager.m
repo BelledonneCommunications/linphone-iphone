@@ -273,6 +273,8 @@ struct codec_name_pref_table codec_pref_table[]={
 		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
 		configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]] , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		
+        [self migrateFromUserPrefs];
+		
 		//set default values for first boot
 		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
 #ifdef DEBUG
@@ -437,6 +439,45 @@ exit_dbmigration:
 
     [LinphoneLogger log:LinphoneLoggerLog format:@"Message storage migration finished: success = %@", migrated ? @"TRUE":@"FALSE"];
     return migrated;
+}
+
+- (void)migrateFromUserPrefs {
+    static const char* migration_flag = "userpref_migration_done";
+
+    if( configDb == nil ) return;
+
+    if( lp_config_get_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 0) ){
+        Linphone_log(@"UserPrefs migration already performed, skip");
+        return;
+    }
+
+    NSDictionary* defaults = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSArray* defaults_keys = [defaults allKeys];
+    NSDictionary* values   = @{@"backgroundmode_preference" :@YES,
+                               @"debugenable_preference"    :@NO,
+                               @"start_at_boot_preference"  :@YES};
+    BOOL shouldSync        = FALSE;
+
+    Linphone_log(@"%d user prefs", [defaults_keys count]);
+
+    for( NSString* userpref in values ){
+        if( [defaults_keys containsObject:userpref] ){
+            Linphone_log(@"Migrating %@ from user preferences: %d", userpref, [[defaults objectForKey:userpref] boolValue]);
+            lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[defaults objectForKey:userpref] boolValue]);
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:userpref];
+            shouldSync = TRUE;
+        } else if ( lp_config_get_string(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], NULL) == NULL ){
+            // no default value found in our linphonerc, we need to add them
+            lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[values objectForKey:userpref] boolValue]);
+        }
+    }
+
+    if( shouldSync ){
+        Linphone_log(@"Synchronizing...");
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    // don't get back here in the future
+    lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 1);
 }
 
 
@@ -713,6 +754,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             speaker_already_enabled = TRUE;
         }
     }
+
     if (state == LinphoneCallConnected && !mCallCenter) {
 		/*only register CT call center CB for connected call*/
 		[self setupGSMInteraction];
@@ -1116,11 +1158,29 @@ static LinphoneCoreVTable linphonec_vtable = {
             const char* addr = linphone_proxy_config_get_addr(proxy);
             // we want to enable AVPF for the proxies
             if( addr && strstr(addr, "sip.linphone.org") != 0 ){
+                Linphone_log(@"Migrating proxy config to use AVPF");
                 linphone_proxy_config_enable_avpf(proxy, TRUE);
             }
             proxies = proxies->next;
         }
         [self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
+    }
+    /* Quality Reporting migration */
+    if( [self lpConfigBoolForKey:@"quality_report_migration_done" forSection:@"app"] == FALSE ){
+        const MSList* proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+        while(proxies){
+            LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
+            const char* addr = linphone_proxy_config_get_addr(proxy);
+            // we want to enable quality reporting for the proxies that are on linphone.org
+            if( addr && strstr(addr, "sip.linphone.org") != 0 ){
+                Linphone_log(@"Migrating proxy config to send quality report");
+                linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
+                linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
+                linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
+            }
+            proxies = proxies->next;
+        }
+        [self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
     }
 
     [self setupNetworkReachabilityCallback];
@@ -1624,6 +1684,13 @@ static void audioRouteChangeListenerCallback (
         }
         linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     }
+
+    // workaround for video policy not correctly updated for automatic accept
+    BOOL video = linphone_call_params_video_enabled(lcallParams);
+    const LinphoneVideoPolicy* policy = linphone_core_get_video_policy(theLinphoneCore);
+    video &= policy->automatically_accept;
+    linphone_call_params_enable_video(lcallParams, video);
+
     linphone_core_accept_call_with_params(theLinphoneCore,call, lcallParams);
 }
 

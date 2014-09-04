@@ -110,7 +110,6 @@ sdk:
 	make -f builder-iphone-os.mk delivery-sdk 
 
 build: broadcast_all sdk
-	make -f builder-iphone-os.mk delivery-sdk 
 
 ipa: build broadcast_ipa
 

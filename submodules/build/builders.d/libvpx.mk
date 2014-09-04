@@ -2,9 +2,9 @@ libvpx_dir?=externals/libvpx
 
 libvpx_configure_options=\
 	--enable-static   --disable-shared \
-	--enable-error-concealment --disable-examples \
+	--disable-examples --disable-unit-tests \
 	--enable-realtime-only --enable-spatial-resampling \
-	--enable-vp8 --enable-multithread --disable-vp9
+	--enable-vp8 --enable-multithread --disable-vp9 
 
 take_binary=
 
