@@ -271,7 +271,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 					/* remove ending white spaces */
 					for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
 
-					if (pos2-pos1>=0){
+					if (pos2-pos1>0){
 						/* found a pair key,value */
 
 						if (cur!=NULL){
@@ -457,10 +457,10 @@ int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 		int ret=0;
-		
+
 		if (strstr(str,"0x")==str){
 			sscanf(str,"%x",&ret);
-		}else 
+		}else
 			sscanf(str,"%i",&ret);
 		return ret;
 	}
@@ -493,7 +493,7 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL){
-			if (value!=NULL)
+			if (value!=NULL && value[0] != '\0')
 				lp_item_set_value(item,value);
 			else lp_section_remove_item(sec,item);
 		}else{
@@ -542,12 +542,19 @@ void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key
 void lp_item_write(LpItem *item, FILE *file){
 	if (item->is_comment)
 		fprintf(file,"%s",item->value);
-	else
+	else if (item->value && item->value[0] != '\0' )
 		fprintf(file,"%s=%s\n",item->key,item->value);
+	else {
+		ms_warning("Not writing item %s to file, it is empty", item->key);
+	}
 }
 
 void lp_section_param_write(LpSectionParam *param, FILE *file){
-	fprintf(file, " %s=%s", param->key, param->value);
+	if( param->value && param->value[0] != '\0') {
+		fprintf(file, " %s=%s", param->key, param->value);
+	} else {
+		ms_warning("Not writing param %s to file, it is empty", param->key);
+	}
 }
 
 void lp_section_write(LpSection *sec, FILE *file){
