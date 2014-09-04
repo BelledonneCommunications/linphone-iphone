@@ -143,6 +143,29 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	lp_config_destroy(conf);
 }
 
+static void linphone_lpconfig_from_xml_zerolen_value(){
+	static const char* zero_xml_file = "remote_zero_length_params_rc";
+	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", liblinphone_tester_file_prefix, zero_xml_file);
+	LpConfig* conf;
+
+	LinphoneCoreManager* mgr = linphone_core_manager_new2("empty_rc",FALSE);
+
+	CU_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0);
+
+	conf = mgr->lc->config;
+
+	ms_error("ZERO: %s", lp_config_get_string(conf,"test","zero_len","LOL"));
+
+	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
+
+	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */
+	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
+
+	linphone_core_manager_destroy(mgr);
+
+}
+
 void linphone_proxy_config_address_equal_test() {
 	LinphoneAddress *a = linphone_address_new("sip:toto@titi");
 	LinphoneAddress *b = linphone_address_new("sips:toto@titi");
@@ -226,6 +249,7 @@ test_t setup_tests[] = {
 	{ "LPConfig from buffer", linphone_lpconfig_from_buffer },
 	{ "LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value },
 	{ "LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value },
+	{ "LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value },
 	{ "Chat room", chat_root_test }
 };
 

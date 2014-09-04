@@ -497,10 +497,10 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 				lp_item_set_value(item,value);
 			else lp_section_remove_item(sec,item);
 		}else{
-			if (value!=NULL)
+			if (value!=NULL && value[0] != '\0')
 				lp_section_add_item(sec,lp_item_new(key,value));
 		}
-	}else if (value!=NULL){
+	}else if (value!=NULL && value[0] != '\0'){
 		sec=lp_section_new(section);
 		lp_config_add_section(lpconfig,sec);
 		lp_section_add_item(sec,lp_item_new(key,value));

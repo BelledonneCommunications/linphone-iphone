@@ -246,7 +246,7 @@ struct _LinphoneCall
 	bool_t playing_ringbacktone;
 	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
 	bool_t auth_token_verified;
-	
+
 	bool_t defer_update;
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
@@ -482,8 +482,8 @@ typedef enum _LinphoneIsComposingState {
 } LinphoneIsComposingState;
 
 struct _LinphoneChatRoom{
-    belle_sip_object_t base;
-    void *user_data;
+	belle_sip_object_t base;
+	void *user_data;
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
@@ -886,7 +886,7 @@ void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
-
+int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
 
 /*****************************************************************************
  * Player interface
