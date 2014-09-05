@@ -13,7 +13,8 @@ common_SRC_FILES := \
 	flexisip_tester.c \
 	tester.c \
 	remote_provisioning_tester.c \
-	quality_reporting_tester.c
+	quality_reporting_tester.c \
+	transport_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \

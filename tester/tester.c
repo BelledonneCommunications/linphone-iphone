@@ -370,6 +370,7 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&flexisip_test_suite);
 	add_test_suite(&remote_provisioning_test_suite);
 	add_test_suite(&quality_reporting_test_suite);
+	add_test_suite(&transport_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

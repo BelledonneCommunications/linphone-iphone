@@ -266,7 +266,7 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
 	return call_with_params(caller_mgr,callee_mgr,NULL,NULL);
 }
 
-static void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
+void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
 	linphone_core_terminate_all_calls(m1->lc);
 	CU_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallEnd,1));

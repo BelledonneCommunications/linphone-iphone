@@ -55,6 +55,9 @@ static inline _LpConfig *config(LinphoneTunnel *tunnel){
 
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 	delete tunnel->manager;
+
+	ms_list_free_with_data(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy);
+
 	ms_free(tunnel);
 }
 
@@ -100,12 +103,12 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 			break;
 		case 3:
 			delay = atoi(pch);
-			break;	
+			break;
 		default:
 			// Abort
 			pos = 0;
 			break;
-			
+
 		}
 		++pos;
 		pch = strtok(NULL, ":");
@@ -121,7 +124,7 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 	if(pos == 4) {
 		linphone_tunnel_config_set_delay(tunnel_config, delay);
 	}
-	ms_free(dstr);	
+	ms_free(dstr);
 	return tunnel_config;
 }
 
@@ -152,12 +155,12 @@ static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
 
 static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
 	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) == -1) {
-		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
 			linphone_tunnel_config_get_port(tunnel_config));
 	} else {
-		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
-			linphone_tunnel_config_get_port(tunnel_config), 
-			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config), 
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config),
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
 			linphone_tunnel_config_get_delay(tunnel_config));
 	}
 	tunnel->config_list = ms_list_append(tunnel->config_list, tunnel_config);
@@ -209,10 +212,10 @@ void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig 
 	MSList *elem = ms_list_find(tunnel->config_list, tunnel_config);
 	if(elem != NULL) {
 		tunnel->config_list = ms_list_remove(tunnel->config_list, tunnel_config);
-		linphone_tunnel_config_destroy(tunnel_config);		
+		linphone_tunnel_config_destroy(tunnel_config);
 		linphone_tunnel_refresh_config(tunnel);
 		linphone_tunnel_save_config(tunnel);
-	}	
+	}
 }
 
 const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
@@ -221,11 +224,11 @@ const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->cleanServers();
-	
+
 	/* Free the list */
-	ms_list_for_each(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy); 
-	tunnel->config_list = ms_list_free(tunnel->config_list);
-	
+	ms_list_free_with_data(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy);
+	tunnel->config_list = NULL;
+
 	linphone_tunnel_save_config(tunnel);
 }
 

@@ -1563,7 +1563,11 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if (lc->rtptf){
 		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->media_ports[0].rtp_port);
 		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->media_ports[0].rtcp_port);
-		rtp_session_set_transports(audiostream->ms.sessions.rtp_session,artp,artcp);
+		RtpTransport *meta_rtp;
+		RtpTransport *meta_rtcp;
+		meta_rtp_transport_new(&meta_rtp,TRUE,artp, 0);
+		meta_rtp_transport_new(&meta_rtcp,FALSE,artcp, 0);
+		rtp_session_set_transports(audiostream->ms.sessions.rtp_session,meta_rtp,meta_rtcp);
 	}
 
 	call->audiostream_app_evq = ortp_ev_queue_new();

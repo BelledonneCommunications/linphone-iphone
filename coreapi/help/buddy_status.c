@@ -1,7 +1,7 @@
 
 /*
 buddy_status
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@ static void new_subscription_requested (LinphoneCore *lc,  LinphoneFriend *frien
  * Registration state notification callback
  */
 static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+		printf("New registration state %s for user id [%s] at proxy [%s]"
 				,linphone_registration_state_to_string(cstate)
 				,linphone_proxy_config_get_identity(cfg)
 				,linphone_proxy_config_get_addr(cfg));
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the both notify_presence_received and new_subscription_requested callbacks
 	 in order to get notifications about friend status.
