@@ -540,7 +540,6 @@ class NewFromNativePointerMethodDefinition(MethodDefinition):
 	{none_trace}
 		Py_RETURN_NONE;
 	}}
-	PyObject_Init((PyObject *)self, type);
 	self->native_ptr = ({class_cname} *)native_ptr;
 	{set_user_data_func_call}
 	{ref_native_pointer_code}
