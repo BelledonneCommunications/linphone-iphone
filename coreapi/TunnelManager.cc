@@ -79,11 +79,14 @@ static void sCloseRtpTransport(RtpTransport *t, void *userData){
 }
 void TunnelManager::closeRtpTransport(RtpTransport *t, TunnelSocket *s){
 	mTunnelClient->closeSocket(s);
-	ms_free(t);
 }
 
 static RtpTransport *sCreateRtpTransport(void* userData, int port){
 	return ((TunnelManager *) userData)->createRtpTransport(port);
+}
+
+void sDestroyRtpTransport(RtpTransport *t){
+	ms_free(t);
 }
 
 RtpTransport *TunnelManager::createRtpTransport(int port){
@@ -94,6 +97,7 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 	t->t_recvfrom=customRecvfrom;
 	t->t_sendto=customSendto;
 	t->t_close=sCloseRtpTransport;
+	t->t_destroy=sDestroyRtpTransport;
 	t->data=socket;
 	return t;
 }

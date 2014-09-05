@@ -1605,9 +1605,13 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		if (lc->rtptf){
 			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[1].rtp_port);
 			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->media_ports[1].rtcp_port);
-			rtp_session_set_transports(call->videostream->ms.sessions.rtp_session,vrtp,vrtcp);
+			RtpTransport *meta_rtp;
+			RtpTransport *meta_rtcp;
+			meta_rtp_transport_new(&meta_rtp,TRUE,vrtp, 0);
+			meta_rtp_transport_new(&meta_rtcp,FALSE,vrtcp, 0);
+			rtp_session_set_transports(call->videostream->ms.sessions.rtp_session,meta_rtp,meta_rtcp);
 		}
-			call->videostream_app_evq = ortp_ev_queue_new();
+		call->videostream_app_evq = ortp_ev_queue_new();
 		rtp_session_register_event_queue(call->videostream->ms.sessions.rtp_session,call->videostream_app_evq);
 		_linphone_call_prepare_ice_for_stream(call,1,FALSE);
 #ifdef TEST_EXT_RENDERER
