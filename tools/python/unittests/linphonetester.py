@@ -392,7 +392,8 @@ class CoreManager:
         else:
             proxy_count = 0
         if proxy_count:
-            self.logger.warning(self)
+            if self.logger is not None:
+                self.logger.warning(self)
             CoreManager.wait_for_until(self, None, lambda manager: manager.stats.number_of_LinphoneRegistrationOk == proxy_count, 5000 * proxy_count)
         assert_equals(self.stats.number_of_LinphoneRegistrationOk, proxy_count)
         self.enable_audio_codec("PCMU", 8000)
