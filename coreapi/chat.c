@@ -1347,6 +1347,7 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 		linphone_content_uninit(msg->file_transfer_information);
 		ms_free(msg->file_transfer_information);
 	}
+	ms_message("LinphoneChatMessage [%p] destroyed.",msg);
 }
 
 
