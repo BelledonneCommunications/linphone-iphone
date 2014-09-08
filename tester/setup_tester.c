@@ -154,8 +154,6 @@ static void linphone_lpconfig_from_xml_zerolen_value(){
 
 	conf = mgr->lc->config;
 
-	ms_error("ZERO: %s", lp_config_get_string(conf,"test","zero_len","LOL"));
-
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
