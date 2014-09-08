@@ -770,9 +770,8 @@ class EventCallbackMethodDefinition(MethodDefinition):
 """		{get_user_data_code}
 		if (py{name} == NULL) {{
 			{new_from_native_pointer_code}
-		}} else {{
-			Py_INCREF(py{name});
 		}}
+		Py_INCREF(py{name});
 """.format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
 				decref_python_objects_code += "\t\tPy_DECREF(py{name});\n".format(name=arg_name)
 		args=', '.join(args)
