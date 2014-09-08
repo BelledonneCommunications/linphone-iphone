@@ -1223,7 +1223,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized boolean isAdaptiveRateControlEnabled() {
 		return isAdaptiveRateControlEnabled(nativePtr);
 	}
-	public synchronized  getAdaptiveRateAlgorithm() {
+	public synchronized AdaptiveRateAlgorithm getAdaptiveRateAlgorithm() {
 		return AdaptiveRateAlgorithm.fromInt(getAdaptiveRateAlgorithm(nativePtr));
 	}
 	public synchronized void setAdaptiveRateAlgorithm(AdaptiveRateAlgorithm alg) {
