@@ -1667,3 +1667,7 @@ void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_
 uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cfg) {
 	return cfg->avpf_rr_interval;
 }
+
+char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg) {
+	return sal_get_public_uri(cfg->op);
+}

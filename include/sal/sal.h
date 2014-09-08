@@ -751,5 +751,5 @@ int sal_body_has_type(const SalBody *body, const char *type, const char *subtype
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
 
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
-
+char* sal_get_public_uri(SalOp *sal);
 #endif
