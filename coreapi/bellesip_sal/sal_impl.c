@@ -984,7 +984,7 @@ const char *sal_get_supported_tags(Sal *ctx){
 }
 
 void sal_add_supported_tag(Sal *ctx, const char* tag){
-	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,NULL);
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
 	if (!elem){
 		ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
 		make_supported_header(ctx);
@@ -993,7 +993,7 @@ void sal_add_supported_tag(Sal *ctx, const char* tag){
 }
 
 void sal_remove_supported_tag(Sal *ctx, const char* tag){
-	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,NULL);
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
 	if (elem){
 		ms_free(elem->data);
 		ctx->supported_tags=ms_list_remove_link(ctx->supported_tags,elem);

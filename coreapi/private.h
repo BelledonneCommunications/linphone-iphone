@@ -261,6 +261,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneCall);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op);
+void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md);

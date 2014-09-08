@@ -2820,7 +2820,7 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 
 		// if parameters are passed, update the media description
 		if ( params ) {
-			call->params = linphone_call_params_copy(params);
+			linphone_call_set_new_params(call,params);
 			linphone_call_make_local_media_description ( lc,call );
 			sal_call_set_local_media_description ( call->op,call->localdesc );
 			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
@@ -2926,8 +2926,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 
 		}
 #endif /* defined(VIDEO_ENABLED) && defined(BUILD_UPNP) */
-
-		call->params = linphone_call_params_copy(params);
+		linphone_call_set_new_params(call,params);
 		err=linphone_call_prepare_ice(call,FALSE);
 		if (err==1) {
 			ms_message("Defer call update to gather ICE candidates");
@@ -3057,7 +3056,7 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	if (params==NULL){
 		call->params->has_video=lc->video_policy.automatically_accept || call->current_params->has_video;
 	}else
-		call->params = linphone_call_params_copy(params);
+		linphone_call_set_new_params(call,params);
 
 	if (call->params->has_video && !linphone_core_video_enabled(lc)){
 		ms_warning("linphone_core_accept_call_update(): requested video but video support is globally disabled. Refusing video.");
@@ -3172,7 +3171,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	linphone_call_set_contact_op(call);
 	if (params){
 		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-		call->params = linphone_call_params_copy(params);
+		linphone_call_set_new_params(call,params);
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
 		if (md) {

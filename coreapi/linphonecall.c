@@ -3066,3 +3066,10 @@ LinphonePlayer *linphone_call_get_player(LinphoneCall *call){
 		call->player=linphone_call_build_player(call);
 	return call->player;
 }
+
+void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params){
+	LinphoneCallParams *cp=NULL;
+	if (params) cp=linphone_call_params_copy(params);
+	if (call->params) linphone_call_params_unref(call->params);
+	call->params=cp;
+}

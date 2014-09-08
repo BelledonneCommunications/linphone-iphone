@@ -2925,6 +2925,7 @@ static void call_with_in_dialog_update(void) {
 	params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 	params->no_user_consent=TRUE;
 	linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
+	linphone_call_params_destroy(params);
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
