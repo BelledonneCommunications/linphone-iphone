@@ -32,9 +32,11 @@ static void pylinphone_log(const char *level, int indent, const char *fmt, va_li
 					}
 					if (indent == 1) current_indent++;
 					if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
-						if (PyEval_CallObject(log_handler, Py_BuildValue("ss", level, logstr)) == NULL) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
 							PyErr_Print();
 						}
+						Py_DECREF(pyargs);
 					}
 				}
 				Py_DECREF(log_handler);
@@ -86,9 +88,11 @@ static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_
 				if (PyCallable_Check(log_handler)) {
 					char logstr[4096];
 					if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
-						if (PyEval_CallObject(log_handler, Py_BuildValue("ss", level, logstr)) == NULL) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
 							PyErr_Print();
 						}
+						Py_DECREF(pyargs);
 					}
 				}
 				Py_DECREF(log_handler);
@@ -237,7 +241,6 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 	if (self == NULL) {
 		return NULL;
 	}
-	PyObject_Init((PyObject *)self, &pylinphone_CoreType);
 	Py_INCREF(_vtable_dict);
 	self->vtable_dict = _vtable_dict;
 {{#events}}
@@ -259,18 +262,19 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
 	PyGILState_STATE pygil_state;
 	PyObject *pycm = NULL;
-	bool_t incref = FALSE;
 	PyObject *_dict = (PyObject *)ud;
 	PyObject *_cb = PyDict_GetItemString(_dict, "callback");
 	PyObject *_ud = PyDict_GetItemString(_dict, "user_data");
 
 	pygil_state = PyGILState_Ensure();
-	pycm = pylinphone_ChatMessage_from_native_ptr(&pylinphone_ChatMessageType, msg, &incref);
+	pycm = pylinphone_ChatMessage_from_native_ptr(&pylinphone_ChatMessageType, msg);
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, %p [%p], %d, %p)", __FUNCTION__, pycm, msg, state, ud);
 	if ((_cb != NULL) && PyCallable_Check(_cb)) {
-		if (PyEval_CallObject(_cb, Py_BuildValue((incref == TRUE) ? "OiO" : "NiO", pycm, state, _ud)) == NULL) {
+		PyObject *args = Py_BuildValue("OiO", pycm, state, _ud);
+		if (PyEval_CallObject(_cb, args) == NULL) {
 			PyErr_Print();
 		}
+		Py_DECREF(args);
 	}
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
 	PyGILState_Release(pygil_state);
@@ -408,10 +412,12 @@ PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
 	if (linphone_module != NULL) {
 		PyObject *cls = PyObject_GetAttrString(linphone_module, "VideoSize");
 		if (cls != NULL) {
-			pyret = PyEval_CallObject(cls, Py_BuildValue("ii", vs.width, vs.height));
+			PyObject *args = Py_BuildValue("ii", vs.width, vs.height);
+			pyret = PyEval_CallObject(cls, args);
 			if (pyret == NULL) {
 				PyErr_Print();
 			}
+			Py_DECREF(args);
 			Py_DECREF(cls);
 		}
 		Py_DECREF(linphone_module);
@@ -433,8 +439,15 @@ time_t PyDateTime_As_time_t(PyObject *obj) {
 		if (calendar_module != NULL) {
 			PyObject *timegm = PyObject_GetAttrString(calendar_module, "timegm");
 			if (timegm != NULL) {
-				PyObject *tuple = PyEval_CallObject(utctimetuple, Py_BuildValue("()"));
-				PyObject *pyres = PyEval_CallObject(timegm, Py_BuildValue("(O)", tuple));
+				PyObject *args;
+				PyObject *tuple;
+				PyObject *pyres;
+				args = Py_BuildValue("()");
+				tuple = PyEval_CallObject(utctimetuple, args);
+				Py_DECREF(args);
+				args = Py_BuildValue("(O)", tuple);
+				pyres = PyEval_CallObject(timegm, args);
+				Py_DECREF(args);
 				ret = (time_t)PyLong_AsLong(pyres);
 				Py_DECREF(timegm);
 			}
@@ -457,10 +470,12 @@ PyObject * PyDateTime_From_time_t(time_t t) {
 		if (datetime_class != NULL) {
 			PyObject *utcfromtimestamp = PyObject_GetAttrString(datetime_class, "utcfromtimestamp");
 			if (utcfromtimestamp != NULL) {
-				pyret = PyEval_CallObject(utcfromtimestamp, Py_BuildValue("(f)", (float)t));
+				PyObject *args = Py_BuildValue("(f)", (float)t);
+				pyret = PyEval_CallObject(utcfromtimestamp, args);
 				if (pyret == NULL) {
 					PyErr_Print();
 				}
+				Py_DECREF(args);
 				Py_DECREF(utcfromtimestamp);
 			}
 			Py_DECREF(datetime_class);
