@@ -5375,7 +5375,7 @@ void linphone_core_stop_dtmf(LinphoneCore *lc){
  *
  * @ingroup initializing
 **/
-void *linphone_core_get_user_data(LinphoneCore *lc){
+void *linphone_core_get_user_data(const LinphoneCore *lc){
 	return lc->data;
 }
 

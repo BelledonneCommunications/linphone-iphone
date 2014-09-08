@@ -2593,7 +2593,7 @@ LINPHONE_PUBLIC	void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t ena
  */
 LINPHONE_PUBLIC	bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
 
-LINPHONE_PUBLIC	void *linphone_core_get_user_data(LinphoneCore *lc);
+LINPHONE_PUBLIC	void *linphone_core_get_user_data(const LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_user_data(LinphoneCore *lc, void *userdata);
 
 /* returns LpConfig object to read/write to the config file: usefull if you wish to extend
