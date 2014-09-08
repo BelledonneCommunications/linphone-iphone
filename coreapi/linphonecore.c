@@ -2854,7 +2854,7 @@ int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call){
 
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
-	bool_t no_user_consent=call->params.no_user_consent;
+	bool_t no_user_consent=call->params->no_user_consent;
 
 	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
 #ifdef BUILD_UPNP
