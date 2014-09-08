@@ -503,58 +503,53 @@ static void call_ack(SalOp *op){
 	}
 }
 
-static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
-	SalMediaDescription *md;
-	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
-	if (rmd!=NULL && call->ice_session!=NULL) {
-		linphone_core_update_ice_from_remote_media_description(call,rmd);
-		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
-	}
-#ifdef BUILD_UPNP
-	if(call->upnp_session != NULL) {
-		linphone_core_update_upnp_from_remote_media_description(call, rmd);
-		linphone_core_update_local_media_description_from_upnp(call->localdesc,call->upnp_session);
-	}
-#endif //BUILD_UPNP
-	linphone_call_update_remote_session_id_and_ver(call);
-	sal_call_accept(call->op);
-	md=sal_call_get_final_media_description(call->op);
-	if (md && !sal_media_description_empty(md)){
-		linphone_core_update_streams(lc,call,md);
-	}
-}
-
 static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 	/*when we are resumed, increment session id, because sdp is changed (a=recvonly disapears)*/
 	linphone_call_increment_local_media_description(call);
-	call_accept_update(lc,call);
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
-	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	_linphone_core_accept_call_update(lc,call,NULL,LinphoneCallStreamsRunning,"Connected (streams running)");
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	/*when we are resumed, increment session id, because sdp is changed (a=recvonly appears)*/
 	linphone_call_increment_local_media_description(call);
-	call_accept_update(lc,call);
 	/* we are being paused */
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We are paused by other party."));
-	linphone_call_set_state (call,LinphoneCallPausedByRemote,"Call paused by remote");
+	_linphone_core_accept_call_update(lc,call,NULL,LinphoneCallPausedByRemote,"Call paused by remote");
+	
 }
 
-static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call,bool_t notify_application){
+static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t is_update){
 	/*first check if media capabilities are compatible*/
-	SalMediaDescription* md;
-	linphone_call_make_local_media_description(lc,call);
-	sal_call_set_local_media_description(call->op,call->localdesc);
-	md=sal_call_get_final_media_description(call->op);
-	if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
-		sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
-		return;
+	SalMediaDescription *md;
+	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
+	SalMediaDescription *prev_result_desc=call->resultdesc;
+	
+	if (rmd!=NULL){
+		if (call->state!=LinphoneCallPaused){
+			/*in paused state, we must stay in paused state.*/
+			linphone_call_make_local_media_description(lc,call);
+			sal_call_set_local_media_description(call->op,call->localdesc);
+		}
+		md=sal_call_get_final_media_description(call->op);
+		if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
+			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
+			return;
+		}
+		if (is_update && prev_result_desc && md){
+			int diff=sal_media_description_equals(prev_result_desc,md);
+			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
+				ms_warning("Cannot accept this update, it is changing parameters that require user approval");
+				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/ 
+				return;
+			}
+		}
 	}
 
-	if (notify_application) {
+	if (call->state==LinphoneCallStreamsRunning) {
+		/*reINVITE and in-dialogs UPDATE go here*/
 		if(lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Call is updated by remote."));
 		call->defer_update=FALSE;
@@ -562,22 +557,22 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call,bool_t n
 		if (call->defer_update==FALSE){
 			linphone_core_accept_call_update(lc,call,NULL);
 		}
-	} else { /*SIP UPDATE case*/
-		/*can be call from any state*/
-		_linphone_core_accept_call_update(lc,call,NULL);
+		if (rmd==NULL)
+			call->expect_media_in_ack=TRUE;
+	} else if (is_update){ /*SIP UPDATE case, can occur in early states*/
+		_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
 	}
 }
 
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
-static void call_updating(SalOp *op){
+static void call_updating(SalOp *op, bool_t is_update){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
-
+	
 	if (rmd==NULL){
-		/* case of a reINVITE without SDP */
-		call_accept_update(lc,call);
-		call->expect_media_in_ack=TRUE;
+		/* case of a reINVITE or UPDATE without SDP */
+		call_updated_by_remote(lc,call,is_update);
 		return;
 	}
 
@@ -588,19 +583,38 @@ static void call_updating(SalOp *op){
 			}else call_paused_by_remote(lc,call);
 		break;
 		/*SIP UPDATE CASE*/
+		case LinphoneCallOutgoingRinging:
 		case LinphoneCallOutgoingEarlyMedia:
-			call_updated_by_remote(lc,call,FALSE);
+		case LinphoneCallIncomingEarlyMedia:
+			if (is_update) call_updated_by_remote(lc,call,is_update);
 			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallConnected:
 			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
 				call_paused_by_remote(lc,call);
 			}else{
-				call_updated_by_remote(lc,call,TRUE);
+				call_updated_by_remote(lc,call,is_update);
 			}
 		break;
-		default:
-			call_accept_update(lc,call);
+		case LinphoneCallPaused:
+			call_updated_by_remote(lc,call,is_update);
+		break;
+		case LinphoneCallUpdating:
+		case LinphoneCallPausing:
+		case LinphoneCallResuming:
+		case LinphoneCallUpdatedByRemote:
+			sal_call_decline(call->op,SalReasonNotImplemented,NULL);
+			/*no break*/
+		case LinphoneCallIdle:
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallEnd:
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallRefered:
+		case LinphoneCallError:
+		case LinphoneCallReleased:
+			ms_warning("Receiving reINVITE or UPDATE while in state [%s], should not happen.",linphone_call_state_to_string(call->state));
+		break;
 	}
 }
 

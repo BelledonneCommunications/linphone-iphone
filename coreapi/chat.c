@@ -635,6 +635,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	linphone_address_destroy(addr);
 	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
+	linphone_chat_message_unref(msg);
 	ms_free(cleanfrom);
 	ms_free(from);
 }

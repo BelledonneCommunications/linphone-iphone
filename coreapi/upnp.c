@@ -834,7 +834,7 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 				linphone_core_start_update_call(lc, call);
 				break;
 			case LinphoneCallUpdatedByRemote:
-				linphone_core_start_accept_call_update(lc, call);
+				linphone_core_start_accept_call_update(lc, call,call->prevstate,linphone_call_state_to_string(call->prevstate));
 				break;
 			case LinphoneCallOutgoingInit:
 				linphone_core_proceed_with_invite_if_ready(lc, call, NULL);

@@ -39,6 +39,8 @@ struct Sal{
 	char *root_ca;
 	char *uuid;
 	int refresher_retry_after; /*retry after value for refresher*/
+	MSList *supported_tags;/*list of char * */
+	belle_sip_header_t *supported;
 	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
@@ -164,8 +166,6 @@ void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
 bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
 
 SalReason sal_reason_to_sip_code(SalReason r);
-
-belle_sip_header_t * sal_make_supported_header(Sal *sal);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
 

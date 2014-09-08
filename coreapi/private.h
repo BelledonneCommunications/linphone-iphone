@@ -102,8 +102,9 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
-	LinphonePrivacyMask privacy;
+	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/ 
 	uint16_t avpf_rr_interval;
+	LinphonePrivacyMask privacy;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -404,7 +405,7 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const LinphoneAddress* destination/* = NULL if to be taken from the call log */);
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
-int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState next_state, const char *state_info);
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
@@ -656,7 +657,7 @@ LinphoneToneDescription *linphone_core_get_call_error_tone(const LinphoneCore *l
 void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason);
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile);
 const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id);
-int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params, LinphoneCallState next_state, const char *state_info);
 typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore

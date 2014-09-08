@@ -2908,6 +2908,72 @@ static void video_call_snapshot(void) {
 
 #endif
 
+static void call_with_in_dialog_update(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCallParams *params;
+
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	CU_ASSERT_TRUE(call(pauline,marie));
+	liblinphone_tester_check_rtcp(marie,pauline);
+	params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
+	params->no_user_consent=TRUE;
+	linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
+static void call_with_custom_supported_tags(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	const LinphoneCallParams *remote_params;
+	const char *recv_supported;
+
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	
+	linphone_core_add_supported_tag(marie->lc,"pouet-tag");
+	CU_ASSERT_TRUE(call(pauline,marie));
+	liblinphone_tester_check_rtcp(marie,pauline);
+	remote_params=linphone_call_get_remote_params(linphone_core_get_current_call(pauline->lc));
+	recv_supported=linphone_call_params_get_custom_header(remote_params,"supported");
+	CU_ASSERT_PTR_NOT_NULL(recv_supported);
+	if (recv_supported){
+		CU_ASSERT_TRUE(strstr(recv_supported,"pouet-tag")!=NULL);
+	}
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -3002,6 +3068,8 @@ test_t call_tests[] = {
 	{ "SAVPF to AVPF call", savpf_to_avpf_call },
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
 	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
+	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
+	{ "Call with custom supported tags", call_with_custom_supported_tags }
 };
 
 test_suite_t call_test_suite = {

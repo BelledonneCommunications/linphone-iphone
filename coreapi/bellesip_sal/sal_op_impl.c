@@ -118,9 +118,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	return contact_header;
 }
 
-belle_sip_header_t * sal_make_supported_header(Sal *sal){
-	return belle_sip_header_create("Supported","replaces, outbound");
-}
+
 
 static void add_initial_route_set(belle_sip_request_t *request, const MSList *list){
 	const MSList *elem;
@@ -201,7 +199,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyUser));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(privacy_header));
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),sal_make_supported_header(op->base.root));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->base.root->supported);
 	return req;
 }
 

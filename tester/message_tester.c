@@ -331,23 +331,34 @@ static void text_message_compatibility_mode(void) {
 }
 
 static void text_message_with_ack(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
-	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	belle_sip_object_enable_leak_detector(TRUE);
+	int begin=belle_sip_object_get_object_count();
+	int leaked_objects;
+	
 	{
-		int dummy=0;
-		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
-		reset_counters(&marie->stat);
-		reset_counters(&pauline->stat);
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+		char* to = linphone_address_as_string(marie->identity);
+		LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+		LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+		{
+			int dummy=0;
+			wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
+			reset_counters(&marie->stat);
+			reset_counters(&pauline->stat);
+		}
+		linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
+		CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
 	}
-	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
 }
 
 static void text_message_with_external_body(void) {

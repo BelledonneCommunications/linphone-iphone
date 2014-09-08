@@ -29,7 +29,7 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org 
+Download gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org, direct link: http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip 
 
 Install all these three package in /:
 

@@ -534,6 +534,8 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
 	belle_sip_object_unref(sal->listener);
+	if (sal->supported) belle_sip_object_unref(sal->supported);
+	ms_list_free_with_data(sal->supported_tags,ms_free);
 	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
 	ms_free(sal);
@@ -932,10 +934,79 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	return 0;
 }
 
+static void make_supported_header(Sal *sal){
+	MSList *it;
+	char *alltags=NULL;
+	size_t buflen=64;
+	size_t written=0;
+	
+	if (sal->supported){
+		belle_sip_object_unref(sal->supported);
+		sal->supported=NULL;
+	}
+	for(it=sal->supported_tags;it!=NULL;it=it->next){
+		const char *tag=(const char*)it->data;
+		size_t taglen=strlen(tag);
+		if (alltags==NULL || (written+taglen+1>=buflen)) alltags=ms_realloc(alltags,(buflen=buflen*2));
+		snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
+	}
+	if (alltags){
+		sal->supported=belle_sip_header_create("Supported",alltags);
+		if (sal->supported){
+			belle_sip_object_ref(sal->supported);
+		}
+		ms_free(alltags);
+	}
+}
+
+void sal_set_supported_tags(Sal *ctx, const char* tags){
+	ctx->supported_tags=ms_list_free_with_data(ctx->supported_tags,ms_free);
+	if (tags){
+		char *iter;
+		char *buffer=ms_strdup(tags);
+		char *tag;
+		char *context=NULL;
+		iter=buffer;
+		while((tag=strtok_r(iter,", ",&context))!=NULL){
+			iter=NULL;
+			ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+		}
+		ms_free(buffer);
+	}
+	make_supported_header(ctx);
+}
+
+const char *sal_get_supported_tags(Sal *ctx){
+	if (ctx->supported){
+		return belle_sip_header_get_unparsed_value(ctx->supported);
+	}
+	return NULL;
+}
+
+void sal_add_supported_tag(Sal *ctx, const char* tag){
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,NULL);
+	if (!elem){
+		ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+		make_supported_header(ctx);
+	}
+	
+}
+
+void sal_remove_supported_tag(Sal *ctx, const char* tag){
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,NULL);
+	if (elem){
+		ms_free(elem->data);
+		ctx->supported_tags=ms_list_remove_link(ctx->supported_tags,elem);
+		make_supported_header(ctx);
+	}
+}
+
+
+
 belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_request_t* req, int code ) {
 	belle_sip_response_t *resp=belle_sip_response_create_from_request(req,code);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),sal_make_supported_header(sal));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),sal->supported);
 	return resp;
 }
 

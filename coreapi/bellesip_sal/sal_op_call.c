@@ -185,6 +185,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	int code = belle_sip_response_get_status_code(response);
 	belle_sip_header_content_type_t *header_content_type=NULL;
 	belle_sip_dialog_t *dialog=belle_sip_response_event_get_dialog(event);
+	const char *method;
 
 	if (!client_transaction) {
 		ms_warning("Discarding stateless response [%i] on op [%p]",code,op);
@@ -193,13 +194,13 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	set_or_update_dialog(op,dialog);
 	dialog_state=dialog ? belle_sip_dialog_get_state(dialog) : BELLE_SIP_DIALOG_NULL;
-
+	method=belle_sip_request_get_method(req);
 	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,dialog,belle_sip_dialog_state_to_string(dialog_state));
 
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {
-			if (strcmp("INVITE",belle_sip_request_get_method(req))==0 ) {
+			if (strcmp("INVITE",method)==0 ) {
 				if (op->state == SalOpStateTerminating) {
 					/*check if CANCEL was sent before*/
 					if (strcmp("CANCEL",belle_sip_request_get_method(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_client_trans))))!=0) {
@@ -238,28 +239,28 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			switch (op->state) {
 				case SalOpStateEarly:/*invite case*/
-				case SalOpStateActive: /*re-invite case*/
-					if (code >=200
-						&& code<300
-						&& strcmp("INVITE",belle_sip_request_get_method(req))==0) {
-						handle_sdp_from_response(op,response);
-						ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
-						if (ack==NULL) {
-							ms_error("This call has been already terminated.");
-							return ;
+				case SalOpStateActive: /*re-invite, INFO, UPDATE case*/
+					if (strcmp("INVITE",method)==0){
+						if (code >=200 && code<300) {
+							handle_sdp_from_response(op,response);
+							ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
+							if (ack==NULL) {
+								ms_error("This call has been already terminated.");
+								return ;
+							}
+							if (op->sdp_answer){
+								set_sdp(BELLE_SIP_MESSAGE(ack),op->sdp_answer);
+								belle_sip_object_unref(op->sdp_answer);
+								op->sdp_answer=NULL;
+							}
+							belle_sip_dialog_send_ack(op->dialog,ack);
+							op->base.root->callbacks.call_accepted(op); /*INVITE*/
+							op->state=SalOpStateActive;
+						}else if (code >= 300){
+							call_set_error(op,response);
 						}
-						if (op->sdp_answer){
-							set_sdp(BELLE_SIP_MESSAGE(ack),op->sdp_answer);
-							belle_sip_object_unref(op->sdp_answer);
-							op->sdp_answer=NULL;
-						}
-						belle_sip_dialog_send_ack(op->dialog,ack);
-						op->base.root->callbacks.call_accepted(op); /*INVITE*/
-						op->state=SalOpStateActive;
-					}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
-						call_set_error(op,response);
-					} else if (code == 491
-							&& strcmp("INFO",belle_sip_request_get_method(req)) == 0
+					}else if (strcmp("INFO",method)==0){
+						if (code == 491
 							&& (header_content_type = belle_sip_message_get_header_by_type(req,belle_sip_header_content_type_t))
 							&& strcmp("application",belle_sip_header_content_type_get_type(header_content_type))==0
 							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
@@ -267,8 +268,11 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
 						ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
 						belle_sip_object_unref(s);
-					}else {
-							/*ignoring*/
+						}else {
+								/*ignoring*/
+						}
+					}else if (strcmp("UPDATE",method)==0){
+						op->base.root->callbacks.call_accepted(op); /*INVITE*/
 					}
 				break;
 				case SalOpStateTerminating:
@@ -419,6 +423,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
 	const char *method=belle_sip_request_get_method(req);
+	bool_t is_update=FALSE;
 
 	if (strcmp("ACK",method)!=0){  /*ACK does'nt create srv transaction*/
 		server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
@@ -490,7 +495,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		} else if (strcmp("UPDATE",method)==0) {
 			sal_op_reset_descriptions(op);
 			if (process_sdp_for_invite(op,req)==0)
-				op->base.root->callbacks.call_updating(op);
+				op->base.root->callbacks.call_updating(op,TRUE);
 		} else {
 			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY",belle_sip_request_get_method(req));
 			unsupported_method(server_transaction,req);
@@ -522,11 +527,11 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 			op->state=SalOpStateTerminating;
 			/*call end not notified by dialog deletion because transaction can end before dialog*/
-		} else if(strcmp("INVITE",method)==0) {
+		} else if(strcmp("INVITE",method)==0 || (is_update=(strcmp("UPDATE",method)==0)) ) {
 			/*re-invite*/
 			sal_op_reset_descriptions(op);
 			if (process_sdp_for_invite(op,req)==0)
-				op->base.root->callbacks.call_updating(op);
+				op->base.root->callbacks.call_updating(op,is_update);
 		} else if (strcmp("INFO",method)==0){
 			if (belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
 				&&	strstr(belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)),"picture_fast_update")) {
@@ -564,22 +569,6 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			belle_sip_server_transaction_send_response(server_transaction,sal_op_create_response_from_request(op,req,481));
 		} else if (strcmp("MESSAGE",method)==0){
 			sal_process_incoming_message(op,event);
-		} else if (strcmp("UPDATE",method)==0) {
-
-			/*FIXME jehan:  It might be better to silently accept UPDATE which do not modify either the number or the nature of streams*/
-
-			/*rfc 3311
-			 * 5.2 Receiving an UPDATE
-			 * ...
-			 * If the UAS cannot change the session parameters without prompting the user, it SHOULD reject
-   	   	   	 * the request with a 504 response.
-			 */
-			resp=sal_op_create_response_from_request(op,req,504);
-			belle_sip_response_set_reason_phrase(resp,"Cannot change the session parameters without prompting the user");
-			/*belle_sip_message_add_header(	BELLE_SIP_MESSAGE(resp)
-											,belle_sip_header_create( "Warning", "Cannot change the session parameters without prompting the user"));*/
-			belle_sip_server_transaction_send_response(server_transaction,resp);
-			return;
 		}else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 			unsupported_method(server_transaction,req);
@@ -796,13 +785,15 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	return 0;
 }
 
-int sal_call_update(SalOp *op, const char *subject){
-
+int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 	belle_sip_request_t *update;
 	belle_sip_dialog_state_t state=belle_sip_dialog_get_state(op->dialog);
 	/*check for dialog state*/
 	if ( state == BELLE_SIP_DIALOG_CONFIRMED) {
-		update=belle_sip_dialog_create_request(op->dialog,"INVITE");
+		if (no_user_consent)
+			update=belle_sip_dialog_create_request(op->dialog,"UPDATE");
+		else
+			update=belle_sip_dialog_create_request(op->dialog,"INVITE");
 	} else if (state == BELLE_SIP_DIALOG_EARLY)  {
 		update=belle_sip_dialog_create_request(op->dialog,"UPDATE");
 	} else {

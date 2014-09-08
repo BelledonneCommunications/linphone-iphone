@@ -1424,7 +1424,7 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			ms_message("First video frame decoded successfully");
 			if (call->nextVideoFrameDecoded._func != NULL)
-			call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
+				call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
 			break;
 		case MS_VIDEO_DECODER_SEND_PLI:
 		case MS_VIDEO_DECODER_SEND_SLI:
@@ -2766,7 +2766,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_core_start_update_call(call->core, call);
 				break;
 			case LinphoneCallUpdatedByRemote:
-				linphone_core_start_accept_call_update(call->core, call);
+				linphone_core_start_accept_call_update(call->core, call,call->prevstate,linphone_call_state_to_string(call->prevstate));
 				break;
 			case LinphoneCallOutgoingInit:
 				linphone_call_stop_media_streams_for_ice_gathering(call);
@@ -2781,7 +2781,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		}
 	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
 		if (call->state==LinphoneCallUpdatedByRemote){
-			linphone_core_start_accept_call_update(call->core, call);
+			linphone_core_start_accept_call_update(call->core, call,call->prevstate,linphone_call_state_to_string(call->prevstate));
 			linphone_core_update_ice_state_in_call_stats(call);
 		}
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {

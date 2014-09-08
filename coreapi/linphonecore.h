@@ -2861,6 +2861,10 @@ LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, 
 **/
 LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
 
+LINPHONE_PUBLIC void linphone_core_add_supported_tag(LinphoneCore *core, const char *tag);
+
+LINPHONE_PUBLIC void linphone_core_remove_supported_tag(LinphoneCore *core, const char *tag);
+
 #ifdef __cplusplus
 }
 #endif
