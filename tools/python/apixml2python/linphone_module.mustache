@@ -62,7 +62,7 @@ typedef struct {
 
 {{#classes}}
 static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self);
-static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr);
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr, bool_t *incref);
 {{#class_type_hand_written_methods}}
 static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args);
 {{/class_type_hand_written_methods}}
@@ -75,9 +75,13 @@ static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyOb
 PyObject * PyList_FromMSListOf{{c_contained_type}}(const MSList *msl) {
 	PyObject *pyl = PyList_New(0);
 	while (msl != NULL) {
+		bool_t incref = FALSE;
 		{{c_contained_type}} *native_ptr = ({{c_contained_type}} *)msl->data;
-		PyObject *item = pylinphone_{{python_contained_type}}_new_from_native_ptr(&pylinphone_{{python_contained_type}}Type, native_ptr);
+		PyObject *item = pylinphone_{{python_contained_type}}_from_native_ptr(&pylinphone_{{python_contained_type}}Type, native_ptr, &incref);
 		PyList_Append(pyl, item);
+		if (incref != TRUE) {
+			Py_DECREF(item);
+		}
 		msl = ms_list_next(msl);
 	}
 	return pyl;
@@ -107,8 +111,8 @@ static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self
 	return ((pylinphone_{{class_name}}Object *)self)->native_ptr;
 }
 
-static PyObject * pylinphone_{{class_name}}_new_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr) {
-{{{new_from_native_pointer_body}}}
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr, bool_t *incref) {
+{{{from_native_pointer_body}}}
 }
 
 static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {

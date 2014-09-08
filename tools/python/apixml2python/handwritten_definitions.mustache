@@ -259,18 +259,16 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
 	PyGILState_STATE pygil_state;
 	PyObject *pycm = NULL;
+	bool_t incref = FALSE;
 	PyObject *_dict = (PyObject *)ud;
 	PyObject *_cb = PyDict_GetItemString(_dict, "callback");
 	PyObject *_ud = PyDict_GetItemString(_dict, "user_data");
 
 	pygil_state = PyGILState_Ensure();
-	pycm = linphone_chat_message_get_user_data(msg);
-	if (pycm == NULL) {
-		pycm = pylinphone_ChatMessage_new_from_native_ptr(&pylinphone_ChatMessageType, msg);
-	}
+	pycm = pylinphone_ChatMessage_from_native_ptr(&pylinphone_ChatMessageType, msg, &incref);
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, %p [%p], %d, %p)", __FUNCTION__, pycm, msg, state, ud);
 	if ((_cb != NULL) && PyCallable_Check(_cb)) {
-		if (PyEval_CallObject(_cb, Py_BuildValue("OiO", pycm, state, _ud)) == NULL) {
+		if (PyEval_CallObject(_cb, Py_BuildValue((incref == TRUE) ? "OiO" : "NiO", pycm, state, _ud)) == NULL) {
 			PyErr_Print();
 		}
 	}
