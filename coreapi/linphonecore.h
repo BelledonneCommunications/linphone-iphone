@@ -1877,6 +1877,9 @@ LINPHONE_PUBLIC	int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
 
+LINPHONE_PUBLIC void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, MSQosAnalyzerAlgorithm algorithm);
+LINPHONE_PUBLIC MSQosAnalyzerAlgorithm linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc);
+
 LINPHONE_PUBLIC	void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
 LINPHONE_PUBLIC	int  linphone_core_get_download_ptime(LinphoneCore *lc);
 

@@ -785,6 +785,36 @@ bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"net","adaptive_rate_control",TRUE);
 }
 
+/**
+ * Sets adaptive rate algorithm. It will be used for each new calls starting from
+ * now. Calls already started will not be updated.
+ *
+ * @ingroup media_parameters
+ *
+**/
+void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, MSQosAnalyzerAlgorithm algorithm){
+	lp_config_set_string(lc->config,"net","adaptive_rate_algorithm",ms_qos_analyzer_algorithm_to_string(algorithm));
+}
+
+/**
+ * Returns which adaptive rate algorithm is currently configured for future calls.
+ *
+ * @ingroup media_parameters
+ *
+ * See linphone_core_set_adaptive_rate_algorithm().
+**/
+MSQosAnalyzerAlgorithm linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
+	const char* alg = lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", NULL);
+
+	if (alg == NULL || strcmp(alg, "Simple")==0)
+		return MSQosAnalyzerAlgorithmSimple;
+	else if (strcmp(alg, "Stateful")==0)
+		return MSQosAnalyzerAlgorithmStateful;
+
+	ms_error("Invalid value for key net/adaptive_rate_control: %s", alg);
+	return MSQosAnalyzerAlgorithmSimple;
+}
+
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","rtcp_enabled",TRUE);
 }
@@ -5031,13 +5061,13 @@ static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoS
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
 		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
-		
+
 		if (oldvsize.width==0){
 			oldvsize=lc->video_conf.vsize;
 		}
 		lc->video_conf.vsize=vsize;
 		update_preview_size(lc,oldvsize,vsize);
-		
+
 		if (linphone_core_ready(lc))
 			lp_config_set_string(lc->config,"video","size",video_size_get_name(vsize));
 	}
@@ -5951,7 +5981,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 }
 
 /**
- * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(), 
+ * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(),
  * linphone_core_accept_call_update().
  * The parameters are initialized according to the current LinphoneCore configuration and the current state of the LinphoneCall.
  * @param lc the LinphoneCore

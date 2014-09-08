@@ -1333,6 +1333,20 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isAdaptiveRateContro
 																			) {
 	return (jboolean)linphone_core_adaptive_rate_control_enabled((LinphoneCore*)lc);
 }
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAdaptiveRateAlgorithm(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			) {
+	return (jint)linphone_core_get_adaptive_rate_algorithm((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAdaptiveRateAlgorithm(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jint alg) {
+	linphone_core_set_adaptive_rate_algorithm((LinphoneCore*)lc,(MSQosAnalyzerAlgorithm)alg);
+}
+
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(JNIEnv*  env
 																			,jobject  thiz
