@@ -169,7 +169,7 @@ LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
  * @param  tunnel object
  * Returns a boolean indicating whether tunnel is connected successfully.
 **/
-bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel);
 
 /**
  * @param  tunnel object
