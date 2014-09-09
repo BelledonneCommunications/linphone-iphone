@@ -654,7 +654,7 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 void linphone_reporting_call_state_updated(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
 
-	if (! quality_reporting_enabled(call)){
+	if (state == LinphoneCallReleased||!quality_reporting_enabled(call)){
 		return;
 	}
 	switch (state){
