@@ -208,6 +208,7 @@ public:
 		vTable.notify_received=notifyReceived;
 		vTable.publish_state_changed=publishStateChanged;
 		vTable.configuring_status=configuringStatus;
+		vTable.file_transfer_progress_indication=fileTransferProgressIndication;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -310,6 +311,8 @@ public:
 		configuringStateId = env->GetMethodID(listenerClass,"configuringStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;Ljava/lang/String;)V");
 		configuringStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RemoteProvisioningState"));
 		configuringStateFromIntId = env->GetStaticMethodID(configuringStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;");
+
+		fileTransferProgressIndicationId = env->GetMethodID(listenerClass, "fileTransferProgressIndication", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;I)V");
 	}
 
 	~LinphoneCoreData() {
@@ -416,6 +419,8 @@ public:
 
 	jclass subscriptionDirClass;
 	jmethodID subscriptionDirFromIntId;
+
+	jmethodID fileTransferProgressIndicationId;
 
 	LinphoneCoreVTable vTable;
 
@@ -791,6 +796,22 @@ public:
 		}
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
 		env->CallVoidMethod(lcData->listener, lcData->configuringStateId, lcData->core, env->CallStaticObjectMethod(lcData->configuringStateClass,lcData->configuringStateFromIntId,(jint)status), message ? env->NewStringUTF(message) : NULL);
+	}
+
+	static void fileTransferProgressIndication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener, 
+				lcData->fileTransferProgressIndicationId, 
+				lcData->core, 
+				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				content ? create_java_linphone_content(env, content) : NULL,
+				progress);
 	}
 };
 

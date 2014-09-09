@@ -6399,6 +6399,10 @@ void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * ser
 	core->file_transfer_server=ms_strdup(server_url);
 }
 
+const char * linphone_core_get_file_transfer_server(LinphoneCore *core) {
+	return core->file_transfer_server;
+}
+
 /**
  * This function controls signaling features supported by the core.
  * They are typically included in a SIP Supported header.

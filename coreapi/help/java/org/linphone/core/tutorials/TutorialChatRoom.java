@@ -218,5 +218,12 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		
 	}
 
+	@Override
+	public void fileTransferProgressIndication(LinphoneCore lc,
+			LinphoneChatMessage message, LinphoneContent content, int progress) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

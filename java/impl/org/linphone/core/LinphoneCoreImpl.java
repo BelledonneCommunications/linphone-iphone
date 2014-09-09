@@ -22,7 +22,6 @@ import static android.media.AudioManager.MODE_IN_CALL;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.mediastream.Log;
@@ -1240,6 +1239,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized void setVideoJittcomp(int value) {
 		setVideoJittcomp(nativePtr,value);
+	}
+	
+	@Override
+	public void setFileTransferServer(String serverUrl) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public String getFileTransferServer() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

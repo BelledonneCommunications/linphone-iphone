@@ -168,4 +168,23 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 
 		return messages;
 	}
+	
+	@Override
+	public LinphoneChatMessage createFileTransferMessage(LinphoneContent content) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public void cancelFileTransfer(LinphoneChatMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public LinphoneContent getFileTransferInformation(
+			LinphoneChatMessage message) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

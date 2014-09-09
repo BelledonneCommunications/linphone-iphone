@@ -188,6 +188,14 @@ public interface LinphoneCoreListener {
 	/** @Deprecated Callback to display a warning to the user 
 	 * @return */
 	void displayWarning(LinphoneCore lc,String message);
-
+	
+	/**
+	 * Callback to be notified about the transfer progress.
+	 * @param lc the LinphoneCore
+	 * @param message the LinphoneChatMessage
+	 * @param content the LinphoneContent
+	 * @param progress percentage of the transfer done
+	 */
+	void fileTransferProgressIndication(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, int progress);
 }
 

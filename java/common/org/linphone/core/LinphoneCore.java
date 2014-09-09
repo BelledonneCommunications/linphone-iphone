@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-import java.util.List;
 import java.util.Vector;
 
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
@@ -1695,4 +1694,16 @@ public interface LinphoneCore {
 	 * @param value the jitter buffer size in milliseconds.
 	 */
 	public void setVideoJittcomp(int value);
+	
+	/**
+	 * Globaly set an http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml.
+	 * @param serverUrl URL of the file server like https://file.linphone.org/upload.php
+	 */
+	public void setFileTransferServer(String serverUrl);
+	
+	/**
+	 * Get the globaly set http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml.
+	 * @return the serverUrl
+	 */
+	public String getFileTransferServer();
 }
