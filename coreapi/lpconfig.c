@@ -39,6 +39,12 @@
 #endif
 #endif /*_WIN32_WCE*/
 
+#ifdef WIN32
+#include <Shlwapi.h>
+#else
+#include <libgen.h>
+#endif
+
 
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
@@ -656,4 +662,56 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
 	return lp_config_get_string(lpconfig, default_section, key, default_value);
+}
+
+static char *_lp_config_dirname(char *path) {
+#ifdef WIN32
+	char *dir = ms_strdup(path);
+	PathRemoveFileSpec(dir);
+	return dir;
+#else
+	char *tmp = ms_strdup(path);
+	char *dir = ms_strdup(dirname(tmp));
+	ms_free(tmp);
+	return dir;
+#endif
+}
+
+void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
+	if(strlen(data) > 0) {
+		char *dir = _lp_config_dirname(lpconfig->filename);
+		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
+		FILE *file = fopen(filepath, "w");
+		if(file != NULL) {
+			fprintf(file, "%s", data);
+			fclose(file);
+		} else {
+			ms_error("Could not open %s for write", filepath);
+		}
+		ms_free(dir);
+		ms_free(filepath);
+	} else {
+		ms_warning("%s has not been created because there is no data to write", filename);
+	}
+}
+
+char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename) {
+	char *dir = _lp_config_dirname(lpconfig->filename);
+	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
+	char *result = NULL;
+	if(access(filepath, F_OK) == 0) {
+		FILE *file = fopen(filepath, "r");
+		if(file != NULL) {
+			result = ms_new0(char, MAX_LEN);
+			fgets(result, MAX_LEN, file);
+			fclose(file);
+		} else {
+			ms_error("Could not open %s for read", filepath);
+		}
+	} else {
+		ms_message("%s does not exist", filepath);
+	}
+	ms_free(dir);
+	ms_free(filepath);
+	return result;
 }
