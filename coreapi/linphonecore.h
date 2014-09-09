@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msvideo.h"
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/bitratecontrol.h"
 
 #ifdef IN_LINPHONE
 #include "sipsetup.h"
