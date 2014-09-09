@@ -760,6 +760,18 @@ public interface LinphoneCore {
 	boolean isAdaptiveRateControlEnabled();
 
 	/**
+	 *	Sets adaptive rate algorithm. It will be used for each new calls
+	 *  starting from now. Calls already started will not be updated.
+	 */
+	void setAdaptiveRateAlgorithm(AdaptiveRateAlgorithm alg);
+
+	/**
+	 * Returns which adaptive rate algorithm is currently configured for
+	 * future calls.
+	*/
+	AdaptiveRateAlgorithm getAdaptiveRateAlgorithm();
+
+	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
 	 */
