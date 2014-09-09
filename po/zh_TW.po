@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-01 21:24+0200\n"
+"POT-Creation-Date: 2014-09-09 10:37+0200\n"
 "PO-Revision-Date: 2011-04-06 21:24+0800\n"
 "Last-Translator: Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>\n"
 "Language-Team: \n"
@@ -146,7 +146,7 @@ msgstr "帳號設定助理"
 msgid "Call with %s"
 msgstr "和 %s 通話"
 
-#: ../gtk/main.c:1171
+#: ../gtk/main.c:1181
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -158,7 +158,7 @@ msgstr ""
 "您是否要允許他看見您的上線狀態或將他加入您的連絡人清單？\n"
 "如果您回答否，這個人會被暫時列入黑名單。"
 
-#: ../gtk/main.c:1248
+#: ../gtk/main.c:1258
 #, fuzzy, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -167,61 +167,61 @@ msgstr ""
 "請輸入您使用者名稱 <i>%s</i>\n"
 "於網域 <i>%s</i> 的密碼："
 
-#: ../gtk/main.c:1364
+#: ../gtk/main.c:1374
 #, fuzzy
 msgid "Call error"
 msgstr "通話紀錄"
 
-#: ../gtk/main.c:1367 ../coreapi/linphonecore.c:3515
+#: ../gtk/main.c:1377 ../coreapi/linphonecore.c:3216
 msgid "Call ended"
 msgstr "通話已結束"
 
-#: ../gtk/main.c:1370 ../coreapi/linphonecore.c:254
+#: ../gtk/main.c:1380
 msgid "Incoming call"
 msgstr "來電"
 
-#: ../gtk/main.c:1372 ../gtk/incall_view.c:513 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1382 ../gtk/incall_view.c:516 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "接聽"
 
-#: ../gtk/main.c:1374 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1384 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "拒接"
 
-#: ../gtk/main.c:1380
+#: ../gtk/main.c:1390
 #, fuzzy
 msgid "Call paused"
 msgstr "通話已放棄"
 
-#: ../gtk/main.c:1380
+#: ../gtk/main.c:1390
 #, fuzzy, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>連接埠</b>"
 
-#: ../gtk/main.c:1447
+#: ../gtk/main.c:1457
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1609
+#: ../gtk/main.c:1619
 msgid "Website link"
 msgstr "網站連結"
 
-#: ../gtk/main.c:1658
+#: ../gtk/main.c:1668
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - 網路視訊電話"
 
-#: ../gtk/main.c:1750
+#: ../gtk/main.c:1760
 #, c-format
 msgid "%s (Default)"
 msgstr "%s （預設值）"
 
-#: ../gtk/main.c:2086 ../coreapi/callbacks.c:927
+#: ../gtk/main.c:2096 ../coreapi/callbacks.c:929
 #, c-format
 msgid "We are transferred to %s"
 msgstr "我們被轉接到 %s"
 
-#: ../gtk/main.c:2096
+#: ../gtk/main.c:2106
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -229,7 +229,7 @@ msgstr ""
 "在這臺電腦中偵測不到音效卡。\n"
 "您將無法傳送或接收語音電話。"
 
-#: ../gtk/main.c:2237
+#: ../gtk/main.c:2247
 msgid "A free SIP video-phone"
 msgstr "自由的 SIP 視訊電話"
 
@@ -536,41 +536,41 @@ msgid ""
 "Then come back here and press Next button."
 msgstr ""
 
-#: ../gtk/setupwizard.c:564
+#: ../gtk/setupwizard.c:567
 #, fuzzy
 msgid "SIP account configuration assistant"
 msgstr "帳號設定助理"
 
-#: ../gtk/setupwizard.c:582
+#: ../gtk/setupwizard.c:585
 msgid "Welcome to the account setup assistant"
 msgstr "歡迎使用帳號設定助理"
 
-#: ../gtk/setupwizard.c:587
+#: ../gtk/setupwizard.c:590
 msgid "Account setup assistant"
 msgstr "帳號設定助理"
 
-#: ../gtk/setupwizard.c:593
+#: ../gtk/setupwizard.c:596
 #, fuzzy
 msgid "Configure your account (step 1/1)"
 msgstr "設定 SIP 帳號"
 
-#: ../gtk/setupwizard.c:598
+#: ../gtk/setupwizard.c:601
 msgid "Enter your sip username (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:602
+#: ../gtk/setupwizard.c:605
 msgid "Enter account information (step 1/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:611
+#: ../gtk/setupwizard.c:614
 msgid "Validation (step 2/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:616
+#: ../gtk/setupwizard.c:619
 msgid "Error"
 msgstr ""
 
-#: ../gtk/setupwizard.c:620 ../gtk/audio_assistant.c:519
+#: ../gtk/setupwizard.c:623 ../gtk/audio_assistant.c:519
 msgid "Terminating"
 msgstr ""
 
@@ -641,131 +641,131 @@ msgstr "ICE 過濾器"
 msgid "Direct or through server"
 msgstr ""
 
-#: ../gtk/incall_view.c:266 ../gtk/incall_view.c:276
+#: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
 
-#: ../gtk/incall_view.c:271 ../gtk/incall_view.c:272
+#: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
-msgid "%ix%i"
+msgid "%ix%i @ %f fps"
 msgstr ""
 
-#: ../gtk/incall_view.c:301
+#: ../gtk/incall_view.c:304
 #, c-format
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:399 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:402 ../gtk/main.ui.h:12
 msgid "Hang up"
 msgstr ""
 
-#: ../gtk/incall_view.c:492
+#: ../gtk/incall_view.c:495
 msgid "<b>Calling...</b>"
 msgstr "<b>播打...</b>"
 
-#: ../gtk/incall_view.c:495 ../gtk/incall_view.c:698
+#: ../gtk/incall_view.c:498 ../gtk/incall_view.c:701
 msgid "00::00::00"
 msgstr "00::00::00"
 
-#: ../gtk/incall_view.c:506
+#: ../gtk/incall_view.c:509
 msgid "<b>Incoming call</b>"
 msgstr "<b>來電</b>"
 
-#: ../gtk/incall_view.c:543
+#: ../gtk/incall_view.c:546
 msgid "good"
 msgstr ""
 
-#: ../gtk/incall_view.c:545
+#: ../gtk/incall_view.c:548
 msgid "average"
 msgstr ""
 
-#: ../gtk/incall_view.c:547
+#: ../gtk/incall_view.c:550
 msgid "poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:549
+#: ../gtk/incall_view.c:552
 msgid "very poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:551
+#: ../gtk/incall_view.c:554
 msgid "too bad"
 msgstr ""
 
-#: ../gtk/incall_view.c:552 ../gtk/incall_view.c:568
+#: ../gtk/incall_view.c:555 ../gtk/incall_view.c:571
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:660
+#: ../gtk/incall_view.c:663
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:666
+#: ../gtk/incall_view.c:669
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:672
+#: ../gtk/incall_view.c:675
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:672 ../gtk/main.ui.h:4
+#: ../gtk/incall_view.c:675 ../gtk/main.ui.h:4
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:693
+#: ../gtk/incall_view.c:696
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:693
+#: ../gtk/incall_view.c:696
 msgid "<b>In call</b>"
 msgstr "<b>通話中</b>"
 
-#: ../gtk/incall_view.c:729
+#: ../gtk/incall_view.c:732
 msgid "<b>Paused call</b>"
 msgstr "<b>暫停通話</b>"
 
-#: ../gtk/incall_view.c:742
+#: ../gtk/incall_view.c:745
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "%02i::%02i::%02i"
 
-#: ../gtk/incall_view.c:760
+#: ../gtk/incall_view.c:763
 msgid "<b>Call ended.</b>"
 msgstr "<b>通話結束。</b>"
 
-#: ../gtk/incall_view.c:791
+#: ../gtk/incall_view.c:794
 msgid "Transfer in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:794
+#: ../gtk/incall_view.c:797
 #, fuzzy
 msgid "Transfer done."
 msgstr "轉接"
 
-#: ../gtk/incall_view.c:797
+#: ../gtk/incall_view.c:800
 #, fuzzy
 msgid "Transfer failed."
 msgstr "轉接"
 
-#: ../gtk/incall_view.c:841
+#: ../gtk/incall_view.c:844
 msgid "Resume"
 msgstr "繼續"
 
-#: ../gtk/incall_view.c:848 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:851 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr "暫停"
 
-#: ../gtk/incall_view.c:913
+#: ../gtk/incall_view.c:916
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
 
-#: ../gtk/incall_view.c:913
+#: ../gtk/incall_view.c:916
 #, fuzzy
 msgid "(Paused)"
 msgstr "暫停"
@@ -1815,96 +1815,65 @@ msgstr "連線中..."
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:242
-msgid "aborted"
-msgstr "已放棄"
-
-#: ../coreapi/linphonecore.c:245
-msgid "completed"
-msgstr "已完成"
-
-#: ../coreapi/linphonecore.c:248
-msgid "missed"
-msgstr "未接"
-
-#: ../coreapi/linphonecore.c:253
-#, c-format
-msgid ""
-"%s at %s\n"
-"From: %s\n"
-"To: %s\n"
-"Status: %s\n"
-"Duration: %i mn %i sec\n"
-msgstr ""
-"%s 於 %s\n"
-"從：%s\n"
-"到：%s\n"
-"狀態：%s\n"
-"持續時間：%i 分 %i 秒\n"
-
-#: ../coreapi/linphonecore.c:254
-msgid "Outgoing call"
-msgstr "去電"
-
-#: ../coreapi/linphonecore.c:1287
+#: ../coreapi/linphonecore.c:1011
 msgid "Ready"
 msgstr "準備就緒"
 
-#: ../coreapi/linphonecore.c:2248
+#: ../coreapi/linphonecore.c:1944
 #, fuzzy
 msgid "Configuring"
 msgstr "確認"
 
-#: ../coreapi/linphonecore.c:2410
+#: ../coreapi/linphonecore.c:2110
 msgid "Looking for telephone number destination..."
 msgstr "尋找電話號碼目的端..."
 
-#: ../coreapi/linphonecore.c:2413
+#: ../coreapi/linphonecore.c:2113
 msgid "Could not resolve this number."
 msgstr "無法解析這個號碼。"
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2695
+#: ../coreapi/linphonecore.c:2395
 msgid "Contacting"
 msgstr "正在連絡"
 
-#: ../coreapi/linphonecore.c:2702
+#: ../coreapi/linphonecore.c:2402
 msgid "Could not call"
 msgstr "無法通話"
 
-#: ../coreapi/linphonecore.c:2852
+#: ../coreapi/linphonecore.c:2553
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "抱歉，我們已達瀏同步通話的最大數目"
 
-#: ../coreapi/linphonecore.c:3022
+#: ../coreapi/linphonecore.c:2722
 msgid "is contacting you"
 msgstr "正在連絡您"
 
-#: ../coreapi/linphonecore.c:3023
+#: ../coreapi/linphonecore.c:2723
 msgid " and asked autoanswer."
 msgstr "並要求自動接聽。"
 
-#: ../coreapi/linphonecore.c:3023
+#: ../coreapi/linphonecore.c:2723
 msgid "."
 msgstr "."
 
-#: ../coreapi/linphonecore.c:3139
+#: ../coreapi/linphonecore.c:2839
 msgid "Modifying call parameters..."
 msgstr "修改通話參數..."
 
-#: ../coreapi/linphonecore.c:3469
+#: ../coreapi/linphonecore.c:3170
 msgid "Connected."
 msgstr "已連線。"
 
-#: ../coreapi/linphonecore.c:3495
+#: ../coreapi/linphonecore.c:3196
 msgid "Call aborted"
 msgstr "通話已放棄"
 
-#: ../coreapi/linphonecore.c:3685
+#: ../coreapi/linphonecore.c:3388
 msgid "Could not pause the call"
 msgstr "無法暫停通話"
 
-#: ../coreapi/linphonecore.c:3690
+#: ../coreapi/linphonecore.c:3393
 msgid "Pausing the current call..."
 msgstr "暫停目前的通話..."
 
@@ -1969,14 +1938,14 @@ msgstr "時間長度"
 msgid "Unknown-bug"
 msgstr "不明錯誤"
 
-#: ../coreapi/proxy.c:279
+#: ../coreapi/proxy.c:314
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
 "您輸入的 sip 代理位址是無效的，它必須要以「sip:」開頭，後面接主機名稱。"
 
-#: ../coreapi/proxy.c:285
+#: ../coreapi/proxy.c:320
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1984,116 +1953,116 @@ msgstr ""
 "您輸入的 sip 身分是無效的。\n"
 "它應該看起來像 sip:使用者名稱@代理網域，像是 sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1299
+#: ../coreapi/proxy.c:1369
 #, c-format
 msgid "Could not login as %s"
 msgstr "無法以 %s 登入"
 
-#: ../coreapi/callbacks.c:354
+#: ../coreapi/callbacks.c:355
 msgid "Remote ringing."
 msgstr "遠端響鈴。"
 
-#: ../coreapi/callbacks.c:370
+#: ../coreapi/callbacks.c:371
 msgid "Remote ringing..."
 msgstr "遠端響鈴..."
 
-#: ../coreapi/callbacks.c:381
+#: ../coreapi/callbacks.c:382
 msgid "Early media."
 msgstr "早期媒體。"
 
-#: ../coreapi/callbacks.c:432
+#: ../coreapi/callbacks.c:433
 #, c-format
 msgid "Call with %s is paused."
 msgstr "和 %s 的通話已暫停。"
 
-#: ../coreapi/callbacks.c:445
+#: ../coreapi/callbacks.c:446
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "通話由 %s 接聽 - 保留中。"
 
-#: ../coreapi/callbacks.c:456
+#: ../coreapi/callbacks.c:457
 msgid "Call resumed."
 msgstr "通話已繼續。"
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:462
 #, c-format
 msgid "Call answered by %s."
 msgstr "通話由 %s 接聽。"
 
-#: ../coreapi/callbacks.c:480
+#: ../coreapi/callbacks.c:481
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:531
+#: ../coreapi/callbacks.c:532
 #, fuzzy
 msgid "We have been resumed."
 msgstr "我們要繼續了..."
 
-#: ../coreapi/callbacks.c:541
+#: ../coreapi/callbacks.c:542
 msgid "We are paused by other party."
 msgstr ""
 
-#: ../coreapi/callbacks.c:558
+#: ../coreapi/callbacks.c:559
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:637
+#: ../coreapi/callbacks.c:638
 msgid "Call terminated."
 msgstr "通話已終止。"
 
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:667
 msgid "User is busy."
 msgstr "使用者現正忙碌。"
 
-#: ../coreapi/callbacks.c:667
+#: ../coreapi/callbacks.c:668
 msgid "User is temporarily unavailable."
 msgstr "使用者暫時無法聯繫。"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:669
+#: ../coreapi/callbacks.c:670
 msgid "User does not want to be disturbed."
 msgstr "使用者不想要被打擾。"
 
-#: ../coreapi/callbacks.c:670
+#: ../coreapi/callbacks.c:671
 msgid "Call declined."
 msgstr "通話被拒接。"
 
-#: ../coreapi/callbacks.c:685
+#: ../coreapi/callbacks.c:686
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:716
+#: ../coreapi/callbacks.c:717
 msgid "Redirected"
 msgstr "已重新導向"
 
-#: ../coreapi/callbacks.c:766
+#: ../coreapi/callbacks.c:767
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:777
+#: ../coreapi/callbacks.c:778
 msgid "Call failed."
 msgstr "通話失敗。"
 
-#: ../coreapi/callbacks.c:852
+#: ../coreapi/callbacks.c:858
 #, c-format
 msgid "Registration on %s successful."
 msgstr "在 %s 註冊成功。"
 
-#: ../coreapi/callbacks.c:853
+#: ../coreapi/callbacks.c:859
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "在 %s 取消註冊完成。"
 
-#: ../coreapi/callbacks.c:875
+#: ../coreapi/callbacks.c:877
 msgid "no response timeout"
 msgstr "沒有回應逾時"
 
-#: ../coreapi/callbacks.c:878
+#: ../coreapi/callbacks.c:880
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "在 %s 註冊失敗：%s"
 
-#: ../coreapi/callbacks.c:885
+#: ../coreapi/callbacks.c:887
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -2102,11 +2071,36 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr "驗證失敗"
 
-#: ../coreapi/linphonecall.c:2994
+#: ../coreapi/linphonecall.c:2916
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "您有 %i 通未接來電。"
+
+#~ msgid "aborted"
+#~ msgstr "已放棄"
+
+#~ msgid "completed"
+#~ msgstr "已完成"
+
+#~ msgid "missed"
+#~ msgstr "未接"
+
+#~ msgid ""
+#~ "%s at %s\n"
+#~ "From: %s\n"
+#~ "To: %s\n"
+#~ "Status: %s\n"
+#~ "Duration: %i mn %i sec\n"
+#~ msgstr ""
+#~ "%s 於 %s\n"
+#~ "從：%s\n"
+#~ "到：%s\n"
+#~ "狀態：%s\n"
+#~ "持續時間：%i 分 %i 秒\n"
+
+#~ msgid "Outgoing call"
+#~ msgstr "去電"
 
 #~ msgid "No response."
 #~ msgstr "沒有回應。"

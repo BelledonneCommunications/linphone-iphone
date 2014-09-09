@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-01 21:24+0200\n"
+"POT-Creation-Date: 2014-09-09 10:37+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
@@ -148,7 +148,7 @@ msgstr "Kontoinstallationsassistenten"
 msgid "Call with %s"
 msgstr "Samtal med %s"
 
-#: ../gtk/main.c:1171
+#: ../gtk/main.c:1181
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -161,7 +161,7 @@ msgstr ""
 "henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
-#: ../gtk/main.c:1248
+#: ../gtk/main.c:1258
 #, fuzzy, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -170,67 +170,67 @@ msgstr ""
 "Mata in ditt lösenord för användaren <i>%s</i>\n"
 "vid domänen <i>%s</i>:"
 
-#: ../gtk/main.c:1364
+#: ../gtk/main.c:1374
 #, fuzzy
 msgid "Call error"
 msgstr "Samtalshistorik"
 
-#: ../gtk/main.c:1367 ../coreapi/linphonecore.c:3515
+#: ../gtk/main.c:1377 ../coreapi/linphonecore.c:3216
 msgid "Call ended"
 msgstr "Samtalet slut"
 
-#: ../gtk/main.c:1370 ../coreapi/linphonecore.c:254
+#: ../gtk/main.c:1380
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
-#: ../gtk/main.c:1372 ../gtk/incall_view.c:513 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1382 ../gtk/incall_view.c:516 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr ""
 
-#: ../gtk/main.c:1374 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1384 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Avböj"
 
-#: ../gtk/main.c:1380
+#: ../gtk/main.c:1390
 #, fuzzy
 msgid "Call paused"
 msgstr "avbrytade"
 
-#: ../gtk/main.c:1380
+#: ../gtk/main.c:1390
 #, fuzzy, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>Portar</b>"
 
-#: ../gtk/main.c:1447
+#: ../gtk/main.c:1457
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1609
+#: ../gtk/main.c:1619
 msgid "Website link"
 msgstr "Webbsajt"
 
-#: ../gtk/main.c:1658
+#: ../gtk/main.c:1668
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk/main.c:1750
+#: ../gtk/main.c:1760
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk/main.c:2086 ../coreapi/callbacks.c:927
+#: ../gtk/main.c:2096 ../coreapi/callbacks.c:929
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:2096
+#: ../gtk/main.c:2106
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2237
+#: ../gtk/main.c:2247
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
@@ -538,41 +538,41 @@ msgid ""
 "Then come back here and press Next button."
 msgstr ""
 
-#: ../gtk/setupwizard.c:564
+#: ../gtk/setupwizard.c:567
 #, fuzzy
 msgid "SIP account configuration assistant"
 msgstr "Kontoinstallationsassistenten"
 
-#: ../gtk/setupwizard.c:582
+#: ../gtk/setupwizard.c:585
 msgid "Welcome to the account setup assistant"
 msgstr "Välkommen till kontoinstallationsassistenten"
 
-#: ../gtk/setupwizard.c:587
+#: ../gtk/setupwizard.c:590
 msgid "Account setup assistant"
 msgstr "Kontoinstallationsassistenten"
 
-#: ../gtk/setupwizard.c:593
+#: ../gtk/setupwizard.c:596
 #, fuzzy
 msgid "Configure your account (step 1/1)"
 msgstr "Konfigurera ett SIP konto"
 
-#: ../gtk/setupwizard.c:598
+#: ../gtk/setupwizard.c:601
 msgid "Enter your sip username (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:602
+#: ../gtk/setupwizard.c:605
 msgid "Enter account information (step 1/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:611
+#: ../gtk/setupwizard.c:614
 msgid "Validation (step 2/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:616
+#: ../gtk/setupwizard.c:619
 msgid "Error"
 msgstr ""
 
-#: ../gtk/setupwizard.c:620 ../gtk/audio_assistant.c:519
+#: ../gtk/setupwizard.c:623 ../gtk/audio_assistant.c:519
 #, fuzzy
 msgid "Terminating"
 msgstr "Lägg på"
@@ -643,133 +643,133 @@ msgstr "Samtalet avböjdes."
 msgid "Direct or through server"
 msgstr ""
 
-#: ../gtk/incall_view.c:266 ../gtk/incall_view.c:276
+#: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
 
-#: ../gtk/incall_view.c:271 ../gtk/incall_view.c:272
+#: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
-msgid "%ix%i"
+msgid "%ix%i @ %f fps"
 msgstr ""
 
-#: ../gtk/incall_view.c:301
+#: ../gtk/incall_view.c:304
 #, c-format
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:399 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:402 ../gtk/main.ui.h:12
 msgid "Hang up"
 msgstr ""
 
-#: ../gtk/incall_view.c:492
+#: ../gtk/incall_view.c:495
 msgid "<b>Calling...</b>"
 msgstr "<b>Ringer...</b>"
 
-#: ../gtk/incall_view.c:495 ../gtk/incall_view.c:698
+#: ../gtk/incall_view.c:498 ../gtk/incall_view.c:701
 msgid "00::00::00"
 msgstr "00:00:00"
 
-#: ../gtk/incall_view.c:506
+#: ../gtk/incall_view.c:509
 #, fuzzy
 msgid "<b>Incoming call</b>"
 msgstr "Inkommande samtal"
 
-#: ../gtk/incall_view.c:543
+#: ../gtk/incall_view.c:546
 msgid "good"
 msgstr ""
 
-#: ../gtk/incall_view.c:545
+#: ../gtk/incall_view.c:548
 msgid "average"
 msgstr ""
 
-#: ../gtk/incall_view.c:547
+#: ../gtk/incall_view.c:550
 msgid "poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:549
+#: ../gtk/incall_view.c:552
 msgid "very poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:551
+#: ../gtk/incall_view.c:554
 msgid "too bad"
 msgstr ""
 
-#: ../gtk/incall_view.c:552 ../gtk/incall_view.c:568
+#: ../gtk/incall_view.c:555 ../gtk/incall_view.c:571
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:660
+#: ../gtk/incall_view.c:663
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:666
+#: ../gtk/incall_view.c:669
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:672
+#: ../gtk/incall_view.c:675
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:672 ../gtk/main.ui.h:4
+#: ../gtk/incall_view.c:675 ../gtk/main.ui.h:4
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:693
+#: ../gtk/incall_view.c:696
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:693
+#: ../gtk/incall_view.c:696
 #, fuzzy
 msgid "<b>In call</b>"
 msgstr "<b>I samtal med</b>"
 
-#: ../gtk/incall_view.c:729
+#: ../gtk/incall_view.c:732
 #, fuzzy
 msgid "<b>Paused call</b>"
 msgstr "<b>Lägg på</b>"
 
-#: ../gtk/incall_view.c:742
+#: ../gtk/incall_view.c:745
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "%02i:%02i:%02i"
 
-#: ../gtk/incall_view.c:760
+#: ../gtk/incall_view.c:763
 msgid "<b>Call ended.</b>"
 msgstr "<b>Samtalet slut.</b>"
 
-#: ../gtk/incall_view.c:791
+#: ../gtk/incall_view.c:794
 msgid "Transfer in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:794
+#: ../gtk/incall_view.c:797
 msgid "Transfer done."
 msgstr ""
 
-#: ../gtk/incall_view.c:797
+#: ../gtk/incall_view.c:800
 #, fuzzy
 msgid "Transfer failed."
 msgstr "Samtalet avböjdes."
 
-#: ../gtk/incall_view.c:841
+#: ../gtk/incall_view.c:844
 msgid "Resume"
 msgstr ""
 
-#: ../gtk/incall_view.c:848 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:851 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr ""
 
-#: ../gtk/incall_view.c:913
+#: ../gtk/incall_view.c:916
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
 
-#: ../gtk/incall_view.c:913
+#: ../gtk/incall_view.c:916
 msgid "(Paused)"
 msgstr ""
 
@@ -1827,100 +1827,69 @@ msgstr "Kontaktar"
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:242
-msgid "aborted"
-msgstr "avbrytade"
-
-#: ../coreapi/linphonecore.c:245
-msgid "completed"
-msgstr "avslutade"
-
-#: ../coreapi/linphonecore.c:248
-msgid "missed"
-msgstr "missade"
-
-#: ../coreapi/linphonecore.c:253
-#, c-format
-msgid ""
-"%s at %s\n"
-"From: %s\n"
-"To: %s\n"
-"Status: %s\n"
-"Duration: %i mn %i sec\n"
-msgstr ""
-"%s på %s\n"
-"Från: %s\n"
-"Till: %s\n"
-"Status: %s\n"
-"Längd: %i min %i sek\n"
-
-#: ../coreapi/linphonecore.c:254
-msgid "Outgoing call"
-msgstr "Utgående samtal"
-
-#: ../coreapi/linphonecore.c:1287
+#: ../coreapi/linphonecore.c:1011
 msgid "Ready"
 msgstr "Redo"
 
-#: ../coreapi/linphonecore.c:2248
+#: ../coreapi/linphonecore.c:1944
 #, fuzzy
 msgid "Configuring"
 msgstr "Bekräftelse"
 
-#: ../coreapi/linphonecore.c:2410
+#: ../coreapi/linphonecore.c:2110
 msgid "Looking for telephone number destination..."
 msgstr "Leta efter telefonnummer för destinationen..."
 
-#: ../coreapi/linphonecore.c:2413
+#: ../coreapi/linphonecore.c:2113
 msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2695
+#: ../coreapi/linphonecore.c:2395
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: ../coreapi/linphonecore.c:2702
+#: ../coreapi/linphonecore.c:2402
 #, fuzzy
 msgid "Could not call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:2852
+#: ../coreapi/linphonecore.c:2553
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3022
+#: ../coreapi/linphonecore.c:2722
 #, fuzzy
 msgid "is contacting you"
 msgstr "kontaktar dig."
 
-#: ../coreapi/linphonecore.c:3023
+#: ../coreapi/linphonecore.c:2723
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3023
+#: ../coreapi/linphonecore.c:2723
 msgid "."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3139
+#: ../coreapi/linphonecore.c:2839
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3469
+#: ../coreapi/linphonecore.c:3170
 msgid "Connected."
 msgstr "Kopplad"
 
-#: ../coreapi/linphonecore.c:3495
+#: ../coreapi/linphonecore.c:3196
 #, fuzzy
 msgid "Call aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:3685
+#: ../coreapi/linphonecore.c:3388
 #, fuzzy
 msgid "Could not pause the call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:3690
+#: ../coreapi/linphonecore.c:3393
 #, fuzzy
 msgid "Pausing the current call..."
 msgstr "Nuvarande samtal"
@@ -1986,7 +1955,7 @@ msgstr "Förlopp"
 msgid "Unknown-bug"
 msgstr "Okänd bug"
 
-#: ../coreapi/proxy.c:279
+#: ../coreapi/proxy.c:314
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
@@ -1994,7 +1963,7 @@ msgstr ""
 "SIP proxy adressen som du matade in är inte rätt, adressen måste starta med "
 "\"sip:\", följd av ett hostnamn"
 
-#: ../coreapi/proxy.c:285
+#: ../coreapi/proxy.c:320
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -2002,119 +1971,119 @@ msgstr ""
 "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
 "namn@domän, såsom sip:peter@exempel.se"
 
-#: ../coreapi/proxy.c:1299
+#: ../coreapi/proxy.c:1369
 #, c-format
 msgid "Could not login as %s"
 msgstr "Kunde inte logga in som %s"
 
-#: ../coreapi/callbacks.c:354
+#: ../coreapi/callbacks.c:355
 msgid "Remote ringing."
 msgstr "Ringer hos motparten."
 
-#: ../coreapi/callbacks.c:370
+#: ../coreapi/callbacks.c:371
 #, fuzzy
 msgid "Remote ringing..."
 msgstr "Ringer hos motparten."
 
-#: ../coreapi/callbacks.c:381
+#: ../coreapi/callbacks.c:382
 msgid "Early media."
 msgstr "Tidig media"
 
-#: ../coreapi/callbacks.c:432
+#: ../coreapi/callbacks.c:433
 #, fuzzy, c-format
 msgid "Call with %s is paused."
 msgstr "Samtal med %s"
 
-#: ../coreapi/callbacks.c:445
+#: ../coreapi/callbacks.c:446
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:456
+#: ../coreapi/callbacks.c:457
 #, fuzzy
 msgid "Call resumed."
 msgstr "Samtalet slut"
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:462
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:480
+#: ../coreapi/callbacks.c:481
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:531
+#: ../coreapi/callbacks.c:532
 msgid "We have been resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:541
+#: ../coreapi/callbacks.c:542
 msgid "We are paused by other party."
 msgstr ""
 
-#: ../coreapi/callbacks.c:558
+#: ../coreapi/callbacks.c:559
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:637
+#: ../coreapi/callbacks.c:638
 msgid "Call terminated."
 msgstr "Samtalet slut."
 
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:667
 msgid "User is busy."
 msgstr "Användare upptagen."
 
-#: ../coreapi/callbacks.c:667
+#: ../coreapi/callbacks.c:668
 msgid "User is temporarily unavailable."
 msgstr "Användaren temporärt inte tillgänglig."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:669
+#: ../coreapi/callbacks.c:670
 msgid "User does not want to be disturbed."
 msgstr "Användaren vill inte bli störd."
 
-#: ../coreapi/callbacks.c:670
+#: ../coreapi/callbacks.c:671
 msgid "Call declined."
 msgstr "Samtalet avböjdes."
 
-#: ../coreapi/callbacks.c:685
+#: ../coreapi/callbacks.c:686
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:716
+#: ../coreapi/callbacks.c:717
 #, fuzzy
 msgid "Redirected"
 msgstr "Omdirigerat till %s..."
 
-#: ../coreapi/callbacks.c:766
+#: ../coreapi/callbacks.c:767
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:777
+#: ../coreapi/callbacks.c:778
 #, fuzzy
 msgid "Call failed."
 msgstr "Samtalet avböjdes."
 
-#: ../coreapi/callbacks.c:852
+#: ../coreapi/callbacks.c:858
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering hos %s lyckades."
 
-#: ../coreapi/callbacks.c:853
+#: ../coreapi/callbacks.c:859
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Avregistrering hos %s lyckades."
 
-#: ../coreapi/callbacks.c:875
+#: ../coreapi/callbacks.c:877
 msgid "no response timeout"
 msgstr "Inget svar inom angiven tid"
 
-#: ../coreapi/callbacks.c:878
+#: ../coreapi/callbacks.c:880
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering hos %s mislyckades: %s"
 
-#: ../coreapi/callbacks.c:885
+#: ../coreapi/callbacks.c:887
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -2123,12 +2092,37 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr "Linphone - Autentisering krävs"
 
-#: ../coreapi/linphonecall.c:2994
+#: ../coreapi/linphonecall.c:2916
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Du har %i missat samtal"
 msgstr[1] "Du har %i missade samtal"
+
+#~ msgid "aborted"
+#~ msgstr "avbrytade"
+
+#~ msgid "completed"
+#~ msgstr "avslutade"
+
+#~ msgid "missed"
+#~ msgstr "missade"
+
+#~ msgid ""
+#~ "%s at %s\n"
+#~ "From: %s\n"
+#~ "To: %s\n"
+#~ "Status: %s\n"
+#~ "Duration: %i mn %i sec\n"
+#~ msgstr ""
+#~ "%s på %s\n"
+#~ "Från: %s\n"
+#~ "Till: %s\n"
+#~ "Status: %s\n"
+#~ "Längd: %i min %i sek\n"
+
+#~ msgid "Outgoing call"
+#~ msgstr "Utgående samtal"
 
 #, fuzzy
 #~ msgid "No response."
