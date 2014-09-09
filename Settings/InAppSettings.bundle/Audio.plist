@@ -200,6 +200,26 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<string>Simple</string>
+			<key>Key</key>
+			<string>adaptive_rate_algorithm_preference</string>
+			<key>Title</key>
+			<string>Adaptive rate algorithm</string>
+			<key>Titles</key>
+			<array>
+				<string>Simple</string>
+				<string>Stateful</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>Simple</string>
+				<string>Stateful</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<integer>36</integer>
 			<key>Key</key>
 			<string>audio_codec_bitrate_limit_preference</string>

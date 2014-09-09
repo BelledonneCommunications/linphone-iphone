@@ -1,5 +1,5 @@
 ############################################################################
-# Makefile 
+# Makefile
 # Copyright (C) 2009  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -56,7 +56,7 @@ endif
 
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
-	@echo 
+	@echo
 	@echo "***************************************************************************"
 	@echo "***************************************************************************"
 	@echo "*****CAUTION, this liblinphone SDK is built using 3rd party GPL code ******"
@@ -68,7 +68,7 @@ warning:
 	@echo "***************************************************************************"
 else
 warning:
-	@echo 
+	@echo
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
 	@echo "*****Linphone SDK without 3rd party GPL software           ******"
@@ -84,17 +84,17 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
 
-armv7-%: 
+armv7-%:
 	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
-armv7s-%: 
+armv7s-%:
 	make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
 
-simu-%: 
+simu-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
 
 
-build-% clean-% veryclean-%: 
+build-% clean-% veryclean-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
 	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $@
@@ -106,8 +106,8 @@ broadcast_%:
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
 	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
 
-sdk: 
-	make -f builder-iphone-os.mk delivery-sdk 
+sdk:
+	make -f builder-iphone-os.mk delivery-sdk
 
 build: broadcast_all sdk
 
@@ -119,7 +119,7 @@ veryclean: broadcast_veryclean
 
 
 zipres:
-	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork 
+	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork
 	@echo Archive 'ios_assets.tar.gz' placed in root directory
 
 help:
