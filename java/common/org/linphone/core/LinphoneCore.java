@@ -310,11 +310,11 @@ public interface LinphoneCore {
 			values.addElement(this);
 			mStringValue=stringValue;
 		}
-		public static AdaptiveRateAlgorithm fromInt(int value) {
+		public static AdaptiveRateAlgorithm fromString(String value) {
 
 			for (int i=0; i<values.size();i++) {
 				AdaptiveRateAlgorithm alg = (AdaptiveRateAlgorithm) values.elementAt(i);
-				if (alg.mValue == value) return alg;
+				if (alg.mStringValue.equals(value)) return alg;
 			}
 			throw new RuntimeException("AdaptiveRateAlgorithm not found ["+value+"]");
 		}

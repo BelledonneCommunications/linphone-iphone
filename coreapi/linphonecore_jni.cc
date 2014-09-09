@@ -1333,18 +1333,26 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isAdaptiveRateContro
 																			) {
 	return (jboolean)linphone_core_adaptive_rate_control_enabled((LinphoneCore*)lc);
 }
-extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAdaptiveRateAlgorithm(JNIEnv*  env
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getAdaptiveRateAlgorithm(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
 																			) {
-	return (jint)linphone_core_get_adaptive_rate_algorithm((LinphoneCore*)lc);
+	const char* alg = linphone_core_get_adaptive_rate_algorithm((LinphoneCore*)lc);
+	if (alg) {
+		return env->NewStringUTF(alg);
+	} else {
+		return NULL;
+	}
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAdaptiveRateAlgorithm(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
-																			,jint alg) {
-	linphone_core_set_adaptive_rate_algorithm((LinphoneCore*)lc,(MSQosAnalyzerAlgorithm)alg);
+																			,jstring jalg) {
+	const char* alg = jalg?env->GetStringUTFChars(jalg, NULL):NULL;
+	linphone_core_set_adaptive_rate_algorithm((LinphoneCore*)lc,alg);
+	if (alg) env->ReleaseStringUTFChars(jalg, alg);
+
 }
 
 

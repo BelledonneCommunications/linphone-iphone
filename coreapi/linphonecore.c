@@ -793,8 +793,8 @@ bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc){
  * @ingroup media_parameters
  *
 **/
-void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, MSQosAnalyzerAlgorithm algorithm){
-	lp_config_set_string(lc->config,"net","adaptive_rate_algorithm",ms_qos_analyzer_algorithm_to_string(algorithm));
+void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* algorithm){
+	lp_config_set_string(lc->config,"net","adaptive_rate_algorithm",algorithm);
 }
 
 /**
@@ -804,16 +804,8 @@ void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, MSQosAnalyzerAl
  *
  * See linphone_core_set_adaptive_rate_algorithm().
 **/
-MSQosAnalyzerAlgorithm linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
-	const char* alg = lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", NULL);
-
-	if (alg == NULL || strcmp(alg, "Simple")==0)
-		return MSQosAnalyzerAlgorithmSimple;
-	else if (strcmp(alg, "Stateful")==0)
-		return MSQosAnalyzerAlgorithmStateful;
-
-	ms_error("Invalid value for key net/adaptive_rate_control: %s", alg);
-	return MSQosAnalyzerAlgorithmSimple;
+const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
+	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", NULL);
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
