@@ -226,6 +226,12 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	else
 		proxy_count=0;
 
+#if TARGET_OS_IPHONE
+	linphone_core_set_playback_device( mgr->lc, "AU: Audio Unit Tester");
+	linphone_core_set_capture_device( mgr->lc, "AU: Audio Unit Tester");
+	linphone_core_set_ringer_device( mgr->lc, "AU: Audio Unit Tester");
+#endif
+
 	if (proxy_count)
 		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,5000*proxy_count);
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
