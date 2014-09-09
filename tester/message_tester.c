@@ -77,7 +77,6 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 		if (size==0) { /* tranfer complete */
 			stats* counters = get_stats(lc);
 			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-			linphone_chat_message_destroy(message);
 			counters->number_of_LinphoneMessageExtBodyReceived++;
 			fclose(file);
 		} else { /* store content on a file*/
