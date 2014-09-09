@@ -39,7 +39,7 @@
 #endif
 #endif /*_WIN32_WCE*/
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #include <Shlwapi.h>
 #else
 #include <libgen.h>
@@ -665,7 +665,7 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 }
 
 static char *_lp_config_dirname(char *path) {
-#ifdef WIN32
+#ifdef _MSC_VER
 	char *dir = ms_strdup(path);
 	PathRemoveFileSpec(dir);
 	return dir;
