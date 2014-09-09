@@ -3528,6 +3528,7 @@ static int remote_address_compare(LinphoneCall *call, const LinphoneAddress *rad
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
 	LinphoneAddress *raddr=linphone_address_new(remote_address);
 	MSList *elem=ms_list_find_custom(lc->calls,(int (*)(const void*,const void *))remote_address_compare,raddr);
+	linphone_address_unref(raddr);
 	if (elem) return (LinphoneCall*) elem->data;
 	return NULL;
 }

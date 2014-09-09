@@ -658,6 +658,7 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		if (err == 0) {
 			dest = domain;
 		}
+		if (res != NULL) freeaddrinfo(res);
 	}
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
 		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
