@@ -168,7 +168,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 
 	protected void finalize() throws Throwable {
-
+		if (nativePtr!=0) destroy();
 	}
 
 	private boolean contextInitialized() {
@@ -267,6 +267,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return logs;
 	}
 	public synchronized void destroy() {
+		delete(nativePtr);
+		nativePtr=0;
 	}
 
 	private void isValid() {
