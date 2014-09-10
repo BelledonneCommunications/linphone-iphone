@@ -272,6 +272,8 @@ static PyMethodDef pylinphone_{{enum_name}}_ModuleMethods[] = {
 
 {{/enums}}
 
+{{> linphone_testing_module}}
+
 PyMODINIT_FUNC initlinphone(void) {
 	PyObject *m;
 	PyObject *menum;
@@ -318,4 +320,6 @@ PyMODINIT_FUNC initlinphone(void) {
 	/* Hand-written classes. */
 	Py_INCREF(&pylinphone_VideoSizeType);
 	PyModule_AddObject(m, "VideoSize", (PyObject *)&pylinphone_VideoSizeType);
+
+	pylinphone_init_testing_module(m);
 }

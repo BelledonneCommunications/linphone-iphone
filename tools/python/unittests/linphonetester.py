@@ -392,8 +392,6 @@ class CoreManager:
         else:
             proxy_count = 0
         if proxy_count:
-            if self.logger is not None:
-                self.logger.warning(self)
             CoreManager.wait_for_until(self, None, lambda manager: manager.stats.number_of_LinphoneRegistrationOk == proxy_count, 5000 * proxy_count)
         assert_equals(self.stats.number_of_LinphoneRegistrationOk, proxy_count)
         self.enable_audio_codec("PCMU", 8000)
@@ -411,6 +409,7 @@ class CoreManager:
             filepath = os.path.join(resources_path, rc_path)
             assert_equals(os.path.isfile(filepath), True)
         lc = linphone.Core.new(vtable, None, filepath)
+        linphone.testing.set_dns_user_hosts_file(lc, os.path.join(resources_path, 'tester_hosts'))
         lc.root_ca = os.path.join(resources_path, 'certificates', 'cn', 'cafile.pem')
         lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
         lc.ringback = os.path.join(resources_path, 'sounds', 'ringback.wav')
