@@ -703,7 +703,9 @@ char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filenam
 		FILE *file = fopen(filepath, "r");
 		if(file != NULL) {
 			result = ms_new0(char, MAX_LEN);
-			fgets(result, MAX_LEN, file);
+			if(fgets(result, MAX_LEN, file) == NULL) {
+				ms_error("%s could not be loaded", filepath);
+			}
 			fclose(file);
 		} else {
 			ms_error("Could not open %s for read", filepath);
