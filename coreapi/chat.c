@@ -128,6 +128,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_http_request_listener_t *l;
 			belle_generic_uri_t *uri;
 			belle_http_request_t *req;
+			char* ua;
 
 			/* temporary storage of the header of the message part header */
 			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
@@ -141,7 +142,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
 			belle_sip_multipart_body_handler_t *bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
 
-			char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 
 			belle_sip_free(content_type);
 			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);

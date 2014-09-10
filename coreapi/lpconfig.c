@@ -699,7 +699,7 @@ char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *dir = _lp_config_dirname(lpconfig->filename);
 	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 	char *result = NULL;
-	if(access(filepath, F_OK) == 0) {
+	if(ortp_file_exist(filepath) == 0) {
 		FILE *file = fopen(filepath, "r");
 		if(file != NULL) {
 			result = ms_new0(char, MAX_LEN);
