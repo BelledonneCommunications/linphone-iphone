@@ -7,6 +7,9 @@
 /* User name */
 "User name" = "Nom d'utilisateur";
 
+/* User name */
+"User ID" = "ID d'utilisateur";
+
 /* Password */
 "Password" = "Mot de passe";
 
@@ -55,3 +58,5 @@
 /* Clear cache */
 "Clear cache" = "Clear cache";
 
+/* Advanced Account */
+"Advanced account" = "Compte avancé";

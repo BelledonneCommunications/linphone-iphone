@@ -82,6 +82,8 @@
 		2200C2DB174BB87A002E9A70 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EED1600B4E400B92522 /* AssetsLibrary.framework */; };
 		2200C2DC174BBB24002E9A70 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 226EF06B15FA256B005865C7 /* MobileCoreServices.framework */; };
 		22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
+		220784DF19509EF3001C3BDF /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; };
+		220784E019509EF3001C3BDF /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		220FAD3210765B400068D98F /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
@@ -140,7 +142,6 @@
 		22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */; };
 		22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B5F03410CE6B2F00777D97 /* AddressBook.framework */; };
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
-		22C39D5E192354250008E1B6 /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
 		22D8F144147548E2008C97DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -179,10 +180,6 @@
 		22D8F176147548E2008C97DB /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; };
 		22D8F177147548E2008C97DB /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
 		22D8F178147548E2008C97DB /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
-		22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
-		22D8F17A147548E2008C97DB /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
-		22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
-		22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		22E0A822111C44E100B04932 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* AboutViewController.m */; };
 		22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
@@ -230,7 +227,6 @@
 		D306459F1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */; };
 		D30BBD1915D402A7000F93DD /* contact_ok_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */; };
-		D30BF33316A427BC00AF0026 /* libtunnel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D30BF33216A427BC00AF0026 /* libtunnel.a */; };
 		D30BF33416A427D300AF0026 /* libtunnel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D30BF33216A427BC00AF0026 /* libtunnel.a */; };
 		D3103924162C3C5100C00C18 /* linphone_splashscreen-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */; };
 		D3103925162C3C5200C00C18 /* linphone_splashscreen-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */; };
@@ -2461,8 +2457,6 @@
 			files = (
 				F01A77C718EBECEA00E287CA /* libstdc++.6.dylib in Frameworks */,
 				F01A77C518EBEC6200E287CA /* MediaPlayer.framework in Frameworks */,
-				F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */,
-				15017E71177357C500784ACB /* libxml2.a in Frameworks */,
 				2200C2DC174BBB24002E9A70 /* MobileCoreServices.framework in Frameworks */,
 				2200C2DB174BB87A002E9A70 /* AssetsLibrary.framework in Frameworks */,
 				D30562131671DC3E00C97967 /* libNinePatch.a in Frameworks */,
@@ -2488,23 +2482,21 @@
 				D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */,
 				22D8F174147548E2008C97DB /* libilbc.a in Frameworks */,
 				22D8F16B147548E2008C97DB /* libgsm.a in Frameworks */,
+				220784DF19509EF3001C3BDF /* libmsopenh264.a in Frameworks */,
+				220784E019509EF3001C3BDF /* (null) in Frameworks */,
 				D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */,
 				D37EE10B16032DC2003608A6 /* libmediastreamer_base.a in Frameworks */,
 				D37EE10C16032DC2003608A6 /* libmediastreamer_voip.a in Frameworks */,
-				22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */,
 				22D8F175147548E2008C97DB /* libmsilbc.a in Frameworks */,
-				22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */,
-				22D8F17A147548E2008C97DB /* libopencore-amrnb.a in Frameworks */,
 				22D8F177147548E2008C97DB /* libortp.a in Frameworks */,
-				22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */,
 				22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */,
-				22C39D5E192354250008E1B6 /* libbzrtp.a in Frameworks */,
 				22D8F16E147548E2008C97DB /* libspeex.a in Frameworks */,
 				22509043196BD902007863F6 /* libopenh264.a in Frameworks */,
 				22D8F16F147548E2008C97DB /* libspeexdsp.a in Frameworks */,
-				D30BF33316A427BC00AF0026 /* libtunnel.a in Frameworks */,
 				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
 				223CA7E816D9256E00EF1BEC /* libantlr3c.a in Frameworks */,
+				F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */,
+				15017E71177357C500784ACB /* libxml2.a in Frameworks */,
 				223CA7E916D9257200EF1BEC /* libbellesip.a in Frameworks */,
 				22AF73C31754C0D800BE8398 /* libopus.a in Frameworks */,
 			);
@@ -5556,9 +5548,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
+					HAVE_OPENH264,
 					VIDEO_ENABLED,
-					DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
 					"liblinphone-sdk/apple-darwin/include",
@@ -5569,9 +5560,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5597,7 +5587,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
+					HAVE_OPENH264,
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
@@ -5611,7 +5601,6 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5638,7 +5627,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
+					HAVE_OPENH264,
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
@@ -5652,7 +5641,6 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
@@ -5679,7 +5667,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
+					HAVE_OPENH264,
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
@@ -5693,7 +5681,6 @@
 					"$(BUILT_PRODUCTS_DIR)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";

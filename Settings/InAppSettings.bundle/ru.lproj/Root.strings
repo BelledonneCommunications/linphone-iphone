@@ -7,6 +7,9 @@
 /* User name */
 "User name" = "Имя пользователя";
 
+/* User name */
+"User ID" = "ID пользователя";
+
 /* Password */
 "Password" = "Пароль";
 
@@ -55,3 +58,5 @@
 /* Clear cache */
 "Clear cache" = "Clear cache";
 
+/* Advanced Account */
+"Advanced account" = "Дополнительный счет";
