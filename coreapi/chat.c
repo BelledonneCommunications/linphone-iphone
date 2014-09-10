@@ -100,7 +100,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	char *buf = (char *)buffer;
 
 	/* if we've not reach the end of file yet, ask for more data*/
-	if (offset<chatMsg->file_transfer_information->size){
+	if (offset<chatMsg->file_transfer_information->size){ 
 		/* get data from call back */
 		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
 	}
@@ -1385,7 +1385,6 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
 	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
 	msg->http_request=NULL; /* this will store the http request during file upload to the server */
-
 	return msg;
 }
 

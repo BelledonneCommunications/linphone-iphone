@@ -59,4 +59,8 @@ public interface LinphoneContent {
 	 * Set the data, as a byte buffer.
 	**/
 	void setData(byte data[]);
+	
+	void setName(String name);
+	
+	String getName();
 }

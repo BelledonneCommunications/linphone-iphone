@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.core;
 
+import java.nio.ByteBuffer;
+
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 
 
@@ -197,5 +199,26 @@ public interface LinphoneCoreListener {
 	 * @param progress percentage of the transfer done
 	 */
 	void fileTransferProgressIndication(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, int progress);
+	
+	/**
+	 * Callback to be notified when new data has been received
+	 * @param lc the LinphoneCore
+	 * @param message the LinphoneChatMessage
+	 * @param content the LinphoneContent
+	 * @param buffer
+	 * @param size
+	 */
+	void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, String buffer, int size);
+	
+	/**
+	 * Callback to be notified when new data needs to be sent
+	 * @param lc the LinphoneCore
+	 * @param message the LinphoneChatMessage
+	 * @param content the LinphoneContent
+	 * @param buffer
+	 * @param size
+	 * @return the number of bytes written into buffer
+	 */
+	int fileTransferSend(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, ByteBuffer buffer, int size);
 }
 

@@ -157,4 +157,15 @@ public interface LinphoneChatMessage {
 	 * @return an ErrorInfo.
 	 */
 	ErrorInfo getErrorInfo();
+	
+	/**
+	 * Start the download of the file bundled in the message
+	 */
+	void startFileDownload(LinphoneChatMessage.StateListener listener);
+	
+	/**
+	 * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
+	 * @return a pointer to the LinphoneContent structure or NULL if not present.
+	 */
+	LinphoneContent getFileTransferInformation();
 }

@@ -169,22 +169,19 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		return messages;
 	}
 	
+	private native long createFileTransferMessage(long ptr, String name, String type, String subtype, int size);
 	@Override
 	public LinphoneChatMessage createFileTransferMessage(LinphoneContent content) {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized(getCore()) {
+			return new LinphoneChatMessageImpl(createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getSize()));
+		}
 	}
 	
+	private native void cancelFileTransfer(long ptr, long messagePtr);
 	@Override
 	public void cancelFileTransfer(LinphoneChatMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public LinphoneContent getFileTransferInformation(
-			LinphoneChatMessage message) {
-		// TODO Auto-generated method stub
-		return null;
+		synchronized(getCore()) {
+			cancelFileTransfer(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
+		}
 	}
 }

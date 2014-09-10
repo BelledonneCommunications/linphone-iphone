@@ -149,11 +149,4 @@ public interface LinphoneChatRoom {
 	 * @param message
 	 */
 	void cancelFileTransfer(LinphoneChatMessage message);
-	
-	/**
-	 * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
-	 * @param message
-	 * @return a pointer to the LinphoneContent structure or NULL if not present.
-	 */
-	LinphoneContent getFileTransferInformation(LinphoneChatMessage message);
 }

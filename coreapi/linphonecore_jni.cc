@@ -209,6 +209,8 @@ public:
 		vTable.publish_state_changed=publishStateChanged;
 		vTable.configuring_status=configuringStatus;
 		vTable.file_transfer_progress_indication=fileTransferProgressIndication;
+		vTable.file_transfer_send=fileTransferSend;
+		vTable.file_transfer_recv=fileTransferRecv;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -313,6 +315,8 @@ public:
 		configuringStateFromIntId = env->GetStaticMethodID(configuringStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;");
 
 		fileTransferProgressIndicationId = env->GetMethodID(listenerClass, "fileTransferProgressIndication", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;I)V");
+		fileTransferSendId = env->GetMethodID(listenerClass, "fileTransferSend", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/nio/ByteBuffer;I)I");
+		fileTransferRecvId = env->GetMethodID(listenerClass, "fileTransferRecv", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/lang/String;I)V");
 	}
 
 	~LinphoneCoreData() {
@@ -421,6 +425,8 @@ public:
 	jmethodID subscriptionDirFromIntId;
 
 	jmethodID fileTransferProgressIndicationId;
+	jmethodID fileTransferSendId;
+	jmethodID fileTransferRecvId;
 
 	LinphoneCoreVTable vTable;
 
@@ -812,6 +818,41 @@ public:
 				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
 				content ? create_java_linphone_content(env, content) : NULL,
 				progress);
+	}
+
+	static void fileTransferSend(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, char* buff, size_t* size) {
+		JNIEnv *env = 0;
+		size_t asking = *size;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		*size = env->CallIntMethod(lcData->listener, 
+				lcData->fileTransferSendId, 
+				lcData->core, 
+				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				content ? create_java_linphone_content(env, content) : NULL,
+				buff ? env->NewDirectByteBuffer(buff, asking) : NULL,
+				asking);
+	}
+
+	static void fileTransferRecv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener, 
+				lcData->fileTransferRecvId, 
+				lcData->core, 
+				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				content ? create_java_linphone_content(env, content) : NULL,
+				buff ? env->NewStringUTF(buff) : NULL,
+				size);
 	}
 };
 
@@ -2614,6 +2655,45 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
 	linphone_chat_room_destroy((LinphoneChatRoom*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
+	LinphoneContent content = {0};
+	LinphoneChatMessage *message = NULL;
+
+	content.type = (char*)env->GetStringUTFChars(jtype, NULL);
+	content.subtype = (char*)env->GetStringUTFChars(jsubtype, NULL);
+	content.name = (char*)env->GetStringUTFChars(jname, NULL);
+	content.size = data_size;
+	message = linphone_chat_room_create_file_transfer_message((LinphoneChatRoom *)ptr, &content);
+	env->ReleaseStringUTFChars(jtype, content.type);
+	env->ReleaseStringUTFChars(jsubtype, content.subtype);
+	env->ReleaseStringUTFChars(jname, content.name);
+
+	return (jlong) message;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr, jlong message) {
+	linphone_chat_room_cancel_file_transfer((LinphoneChatMessage *)message);
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneChatMessageImpl_getFileTransferInformation(JNIEnv* env, jobject  thiz, jlong ptr) {
+	const LinphoneContent *content = linphone_chat_message_get_file_transfer_information((LinphoneChatMessage *)ptr);
+	if (content)
+		return create_java_linphone_content(env, content);
+	return NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFileTransferServer(JNIEnv* env, jobject thiz, jlong ptr, jstring server_url) {
+	const char * url = server_url ? env->GetStringUTFChars(server_url, NULL) : NULL;	
+	linphone_core_set_file_transfer_server((LinphoneCore *)ptr, url);
+	if (server_url)
+		env->ReleaseStringUTFChars(server_url, url);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getFileTransferServer(JNIEnv* env, jobject thiz, jlong ptr) {
+	const char * server_url = linphone_core_get_file_transfer_server((LinphoneCore *)ptr);
+	return server_url ? env->NewStringUTF(server_url) : NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_store(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong ptr) {
@@ -2799,6 +2879,13 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*
 	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
 	linphone_chat_room_send_message2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr, chat_room_impl_callback, (void*)listener);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_startFileDownload(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
+	jobject listener = env->NewGlobalRef(jlistener);
+	LinphoneChatMessage * message = (LinphoneChatMessage *)ptr;
+	message->cb_ud = listener;
+	linphone_chat_message_start_file_download(message, chat_room_impl_callback);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
@@ -3836,22 +3923,23 @@ extern "C" jintArray Java_org_linphone_core_LpConfigImpl_getIntRange(JNIEnv *env
 static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content){
 	jclass contentClass;
 	jmethodID ctor;
-	jstring jtype, jsubtype, jencoding;
-	jbyteArray jdata=NULL;
+	jstring jtype, jsubtype, jencoding, jname;
+	jbyteArray jdata = NULL;
 
 	contentClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneContentImpl"));
-	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;)V");
+	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;)V");
 
-	jtype=env->NewStringUTF(content->type);
-	jsubtype=env->NewStringUTF(content->subtype);
-	jencoding=content->encoding ? env->NewStringUTF(content->encoding) : NULL;
+	jtype = env->NewStringUTF(content->type);
+	jsubtype = env->NewStringUTF(content->subtype);
+	jencoding = content->encoding ? env->NewStringUTF(content->encoding) : NULL;
+	jname = content->name ? env->NewStringUTF(content->name) : NULL;
 
 	if (content->data){
-		jdata=env->NewByteArray(content->size);
-		env->SetByteArrayRegion(jdata,0,content->size,(jbyte*)content->data);
+		jdata = env->NewByteArray(content->size);
+		env->SetByteArrayRegion(jdata, 0, content->size, (jbyte*)content->data);
 	}
 
-	jobject jobj=env->NewObject(contentClass,ctor,jtype, jsubtype, jdata,jencoding);
+	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding);
 	env->DeleteGlobalRef(contentClass);
 	return jobj;
 }

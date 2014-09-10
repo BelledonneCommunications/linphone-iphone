@@ -1,14 +1,23 @@
 package org.linphone.core;
 
 public class LinphoneContentImpl implements LinphoneContent {
-	private String mType, mSubtype, mEncoding;
+	private String mType, mSubtype, mEncoding, mName;
 	private byte[] mData;
 
-	public LinphoneContentImpl(String type, String subtype, byte data[], String encoding ){
-		mType=type;
-		mSubtype=subtype;
-		mData=data;
-		mEncoding=encoding;
+	public LinphoneContentImpl(String type, String subtype, byte data[], String encoding){
+		mType = type;
+		mSubtype = subtype;
+		mData = data;
+		mEncoding = encoding;
+		mName = null;
+	}
+	
+	public LinphoneContentImpl(String name, String type, String subtype, byte data[], String encoding){
+		mType = type;
+		mSubtype = subtype;
+		mData = data;
+		mEncoding = encoding;
+		mName = name;
 	}
 	
 	@Override
@@ -23,32 +32,39 @@ public class LinphoneContentImpl implements LinphoneContent {
 
 	@Override
 	public String getDataAsString() {
-		return new String(mData);
+		if (mData != null)
+			return new String(mData);
+		return null;
 	}
 
 	@Override
 	public int getSize() {
-		return mData.length;
+		if (mData != null)
+			return mData.length;
+		return 0;
 	}
 
 	@Override
 	public void setType(String type) {
-		mType=type;
+		mType = type;
 	}
 
 	@Override
 	public void setSubtype(String subtype) {
-		mSubtype=subtype;
+		mSubtype = subtype;
 	}
 
 	@Override
 	public void setStringData(String data) {
-		mData=data.getBytes();
+		if (data != null)
+			mData = data.getBytes();
+		else
+			mData = null;
 	}
 
 	@Override
 	public void setData(byte data[]){
-		mData=data;
+		mData = data;
 	}
 
 	@Override
@@ -63,7 +79,17 @@ public class LinphoneContentImpl implements LinphoneContent {
 
 	@Override
 	public void setEncoding(String encoding) {
-		mEncoding=encoding;
+		mEncoding = encoding;
+	}
+
+	@Override
+	public void setName(String name) {
+		mName = name;
+	}
+
+	@Override
+	public String getName() {
+		return mName;
 	}
 
 }
