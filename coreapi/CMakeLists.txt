@@ -116,6 +116,9 @@ set(LIBS
 	${MS2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
+if(WIN32)
+	list(APPEND LIBS shlwapi)
+endif()
 
 if(ENABLE_STATIC)
 	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
