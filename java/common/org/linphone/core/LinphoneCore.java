@@ -313,7 +313,7 @@ public interface LinphoneCore {
 
 			for (int i=0; i<values.size();i++) {
 				AdaptiveRateAlgorithm alg = (AdaptiveRateAlgorithm) values.elementAt(i);
-				if (alg.mStringValue.equals(value)) return alg;
+				if (alg.mStringValue.equalsIgnoreCase(value)) return alg;
 			}
 			throw new RuntimeException("AdaptiveRateAlgorithm not found ["+value+"]");
 		}
