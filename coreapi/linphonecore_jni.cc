@@ -631,11 +631,12 @@ public:
 				return;
 			}
 			LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+			/*note: we call linphone_chat_message_ref() because the application does not acquire the object when invoked from a callback*/
 			env->CallVoidMethod(lcData->listener
 								,lcData->messageReceivedId
 								,lcData->core
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
+								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)linphone_chat_message_ref(msg)));
 		}
 	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 		JNIEnv *env = 0;
