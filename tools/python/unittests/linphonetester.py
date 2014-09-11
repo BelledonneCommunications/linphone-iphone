@@ -10,7 +10,12 @@ import time
 test_username = "liblinphone_tester"
 test_password = "secret"
 test_route = "sip2.linphone.org"
-tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
+if os.path.isdir(os.path.join(os.path.dirname(__file__), "rcfiles")):
+    # Running unit tests from an installed package
+    tester_resources_path = os.path.abspath(os.path.dirname(__file__))
+else:
+    # Running unit tests from the linphone sources
+    tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
 
 
 def create_address(domain):
