@@ -36,7 +36,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
-dnl don't put anythingelse before AC_PROG_CC unless checking if macro still work for clang
+dnl do not put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
 
@@ -207,7 +207,7 @@ if test "$enable_ldap" = "true"; then
 	if test "$found_ldap$found_sasl" = "yesyes"; then
 		AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
 	else
-		AC_MSG_ERROR([Can't use LDAP due to previous errors])
+		AC_MSG_ERROR([Cannot use LDAP due to previous errors])
 	fi
 
 fi
@@ -673,7 +673,15 @@ case $CC in
 		STRICT_OPTIONS="$STRICT_OPTIONS -Wno-array-bounds "
 	;;
 esac
-
+# because Darwin's gcc is actually clang, we need to check it...
+case "$target_os" in
+	*darwin*)
+	STRICT_OPTIONS="$STRICT_OPTIONS -Wno-error=unknown-warning-option -Qunused-arguments -Wno-tautological-compare -Wno-unused-function "
+	#disabled due to wrong optimization false positive with small string
+	#(cf. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=35903)
+	STRICT_OPTIONS="$STRICT_OPTIONS -Wno-array-bounds "
+	;;
+esac
 if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
