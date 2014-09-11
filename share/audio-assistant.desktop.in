@@ -1,9 +1,12 @@
-[Desktop Entry]
-Name=Audio assistant
-Comment=Linphone audio assistant
-Comment[fr]=Assistant audio de Linphone.
-Type=Application
-Exec=linphone --run-audio-assistant
-Icon=/usr/local/share/pixmaps/linphone/linphone.png
-Terminal=false
-Categories=Network;Telephony;
+--- audio-assistant.desktop.in.orig	2014-09-09 20:25:09.000000000 +0400
++++ audio-assistant.desktop.in	2014-09-10 01:37:53.000000000 +0400
+@@ -1,7 +1,9 @@
+ [Desktop Entry]
+ Name=Audio assistant
++Name[ru]=Помощник аудио
+ Comment=Linphone audio assistant
+ Comment[fr]=Assistant audio de Linphone.
++Comment[ru]=Помощник аудио Linphone
+ Type=Application
+ Exec=linphone --run-audio-assistant
+ Icon=/usr/local/share/pixmaps/linphone/linphone.png
