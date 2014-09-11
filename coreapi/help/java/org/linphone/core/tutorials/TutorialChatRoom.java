@@ -229,7 +229,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 
 	@Override
 	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
-			LinphoneContent content, String buffer, int size) {
+			LinphoneContent content, byte[] buffer, int size) {
 		// TODO Auto-generated method stub
 		
 	}

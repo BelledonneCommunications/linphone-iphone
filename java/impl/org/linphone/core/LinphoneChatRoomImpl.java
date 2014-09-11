@@ -173,7 +173,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	@Override
 	public LinphoneChatMessage createFileTransferMessage(LinphoneContent content) {
 		synchronized(getCore()) {
-			return new LinphoneChatMessageImpl(createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getSize()));
+			return new LinphoneChatMessageImpl(createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getRealSize()));
 		}
 	}
 	

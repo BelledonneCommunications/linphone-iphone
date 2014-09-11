@@ -316,7 +316,7 @@ public:
 
 		fileTransferProgressIndicationId = env->GetMethodID(listenerClass, "fileTransferProgressIndication", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;I)V");
 		fileTransferSendId = env->GetMethodID(listenerClass, "fileTransferSend", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/nio/ByteBuffer;I)I");
-		fileTransferRecvId = env->GetMethodID(listenerClass, "fileTransferRecv", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/lang/String;I)V");
+		fileTransferRecvId = env->GetMethodID(listenerClass, "fileTransferRecv", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;[BI)V");
 	}
 
 	~LinphoneCoreData() {
@@ -847,12 +847,16 @@ public:
 			return;
 		}
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		
+		jbyteArray jbytes = env->NewByteArray(size);
+		env->SetByteArrayRegion(jbytes, 0, size, (jbyte*)buff);
+		
 		env->CallVoidMethod(lcData->listener, 
 				lcData->fileTransferRecvId, 
 				lcData->core, 
 				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
 				content ? create_java_linphone_content(env, content) : NULL,
-				buff ? env->NewStringUTF(buff) : NULL,
+				jbytes,
 				size);
 	}
 };
@@ -3926,21 +3930,23 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jmethodID ctor;
 	jstring jtype, jsubtype, jencoding, jname;
 	jbyteArray jdata = NULL;
+	jint jsize = 0;
 
 	contentClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneContentImpl"));
-	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;)V");
+	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;I)V");
 
 	jtype = env->NewStringUTF(content->type);
 	jsubtype = env->NewStringUTF(content->subtype);
 	jencoding = content->encoding ? env->NewStringUTF(content->encoding) : NULL;
 	jname = content->name ? env->NewStringUTF(content->name) : NULL;
+	jsize = (jint) content->size;
 
 	if (content->data){
 		jdata = env->NewByteArray(content->size);
 		env->SetByteArrayRegion(jdata, 0, content->size, (jbyte*)content->data);
 	}
 
-	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding);
+	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding, jsize);
 	env->DeleteGlobalRef(contentClass);
 	return jobj;
 }

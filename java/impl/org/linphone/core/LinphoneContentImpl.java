@@ -3,6 +3,7 @@ package org.linphone.core;
 public class LinphoneContentImpl implements LinphoneContent {
 	private String mType, mSubtype, mEncoding, mName;
 	private byte[] mData;
+	private int mExpectedSize;
 
 	public LinphoneContentImpl(String type, String subtype, byte data[], String encoding){
 		mType = type;
@@ -10,14 +11,16 @@ public class LinphoneContentImpl implements LinphoneContent {
 		mData = data;
 		mEncoding = encoding;
 		mName = null;
+		mExpectedSize = 0;
 	}
 	
-	public LinphoneContentImpl(String name, String type, String subtype, byte data[], String encoding){
+	public LinphoneContentImpl(String name, String type, String subtype, byte data[], String encoding, int expectedSize){
 		mType = type;
 		mSubtype = subtype;
 		mData = data;
 		mEncoding = encoding;
 		mName = name;
+		mExpectedSize = expectedSize;
 	}
 	
 	@Override
@@ -36,9 +39,19 @@ public class LinphoneContentImpl implements LinphoneContent {
 			return new String(mData);
 		return null;
 	}
+	
+	@Override
+	public void setExpectedSize(int size) {
+		mExpectedSize = size;
+	}
 
 	@Override
-	public int getSize() {
+	public int getExpectedSize() {
+		return mExpectedSize;
+	}
+
+	@Override
+	public int getRealSize() {
 		if (mData != null)
 			return mData.length;
 		return 0;
@@ -91,5 +104,4 @@ public class LinphoneContentImpl implements LinphoneContent {
 	public String getName() {
 		return mName;
 	}
-
 }

@@ -208,7 +208,7 @@ public interface LinphoneCoreListener {
 	 * @param buffer
 	 * @param size
 	 */
-	void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, String buffer, int size);
+	void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message, LinphoneContent content, byte[] buffer, int size);
 	
 	/**
 	 * Callback to be notified when new data needs to be sent

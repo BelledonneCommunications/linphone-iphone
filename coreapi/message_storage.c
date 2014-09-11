@@ -37,6 +37,49 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
 	return NULL;
 }
 
+/* DB layout:
+ * | 0  | storage_id
+ * | 1  | type
+ * | 2  | subtype
+ * | 3  | name
+ * | 4  | encoding
+ * | 5  | size
+ * | 6  | data
+ */
+// Callback for sql request when getting linphone content
+static int callback_content(void *data, int argc, char **argv, char **colName) {
+	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
+	
+	if (message->file_transfer_information) {
+		linphone_content_uninit(message->file_transfer_information);
+		ms_free(message->file_transfer_information);
+		message->file_transfer_information = NULL;
+	}
+	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
+	
+	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
+	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
+	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
+	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
+	message->file_transfer_information->size = (size_t) atoi(argv[5]);
+	
+	return 0;
+}
+
+static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id) {
+	char* errmsg = NULL;
+	int ret;
+	char * buf;
+	
+	buf = sqlite3_mprintf("SELECT * FROM content WHERE id = %i", content_id);
+	ret = sqlite3_exec(db, buf, callback_content, message, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Error in creation: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+	sqlite3_free(buf);
+}
 
 /* DB layout:
  * | 0  | storage_id
@@ -50,6 +93,7 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
  * | 8  | external body url
  * | 9  | utc timestamp
  * | 10 | app data text
+ * | 11 | linphone content
  */
 static void create_chat_message(char **argv, void *data){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
@@ -90,6 +134,13 @@ static void create_chat_message(char **argv, void *data){
 		new_message->storage_id=storage_id;
 		new_message->external_body_url= argv[8] ? ms_strdup(argv[8])  : NULL;
 		new_message->appdata          = argv[10]? ms_strdup(argv[10]) : NULL;
+		
+		if (argv[11] != NULL) {
+			int id = atoi(argv[11]);
+			if (id >= 0) {
+				fetch_content_from_database(cr->lc->db, new_message, id);
+			}
+		}
 	}
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
@@ -139,24 +190,51 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 	}
 }
 
+static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
+	LinphoneCore *lc = linphone_chat_room_get_lc(msg->chat_room);
+	int id = -1;
+	if (lc->db) {
+		LinphoneContent *content = msg->file_transfer_information;
+		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
+						content->type,
+						content->subtype,
+						content->name,
+						content->encoding,
+						content->size,
+						NULL
+ 					);
+		linphone_sql_request(lc->db, buf);
+		sqlite3_free(buf);
+		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
+	}
+	return id;
+}
+
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
-	int id=0;
+	int id = 0;
 
 	if (lc->db){
+		int content_id = -1;
+		if (msg->file_transfer_information) {
+			content_id = linphone_chat_message_store_content(msg);
+		}
+		
 		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		char *buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q);",
+		char *buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
 						local_contact,
-								  peer,
-								  msg->dir,
-								  msg->message,
-								  "-1", /* use UTC field now */
-								  msg->is_read,
-								  msg->state,
-								  msg->external_body_url,
-								  msg->time,
-								  msg->appdata);
+						peer,
+						msg->dir,
+						msg->message,
+						"-1", /* use UTC field now */
+						msg->is_read,
+						msg->state,
+						msg->external_body_url,
+						msg->time,
+						msg->appdata,
+						content_id
+ 					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -409,7 +487,7 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for URL.");
+		ms_debug("Table history updated successfully for URL.");
 	}
 
 	// for UTC timestamp storage
@@ -418,7 +496,7 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for UTC.");
+		ms_debug("Table history updated successfully for UTC.");
 		// migrate from old text-based timestamps to unix time-based timestamps
 		linphone_migrate_timestamps(db);
 	}
@@ -429,7 +507,32 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for app-specific data.");
+		ms_debug("Table history updated successfully for app-specific data.");
+	}
+
+	// new field for linphone content storage
+	ret=sqlite3_exec(db,"ALTER TABLE history ADD COLUMN content INTEGER;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s.", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ms_debug("Table history updated successfully for content data.");
+		ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS content ("
+							"id INTEGER PRIMARY KEY AUTOINCREMENT,"
+							"type TEXT,"
+							"subtype TEXT,"
+							"name TEXT,"
+							"encoding TEXT,"
+							"size INTEGER,"
+							"data BLOB"
+						");",
+			0,0,&errmsg);
+		if(ret != SQLITE_OK) {
+			ms_error("Error in creation: %s.\n", errmsg);
+			sqlite3_free(errmsg);
+		} else {
+			ms_debug("Table content successfully created.");
+		}
 	}
 }
 
