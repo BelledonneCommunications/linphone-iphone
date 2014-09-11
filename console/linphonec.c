@@ -367,8 +367,8 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			} else if (real_early_media_sending) {
-				linphonec_out("Sending early media using real hardware\n");
 				LinphoneCallParams* callparams = linphone_core_create_default_call_parameters(lc);
+				linphonec_out("Sending early media using real hardware\n");
 				linphone_call_params_enable_early_media_sending(callparams, TRUE);
 				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
 				linphone_core_accept_early_media_with_params(lc, call, callparams);
@@ -828,12 +828,13 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 #ifdef HAVE_READLINE
 	rl_hook_func_t *old_event_hook;
 #endif
+	LinphoneAuthInfo *pending_auth;
 
 	if (reentrancy!=0) return 0;
 
 	reentrancy++;
 
-	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
+	pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
 		pending_auth->username, pending_auth->realm);

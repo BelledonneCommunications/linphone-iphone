@@ -131,7 +131,7 @@ static double get_audio_payload_bandwidth_from_codec_bitrate(const PayloadType *
 	double npacket=50;
 	double packet_size;
 	int bitrate;
-	
+
 	if (strcmp(payload_type_get_mime(&payload_type_aaceld_44k), payload_type_get_mime(pt))==0) {
 		/*special case of aac 44K because ptime= 10ms*/
 		npacket=100;
@@ -209,7 +209,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	int max_codec_bitrate=0;
-	
+
 	for(elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		if (payload_type_enabled(pt)){
@@ -996,7 +996,7 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size){
 	struct ifaddrs *ifpstart;
 	char retaddr[LINPHONE_IPADDR_SIZE]={0};
 	bool_t found=FALSE;
-	
+
 	if (getifaddrs(&ifpstart) < 0) {
 		return -1;
 	}
@@ -1097,6 +1097,9 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	int err;
+#ifdef HAVE_GETIFADDRS
+	int found_ifs;
+#endif
 	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 
 	if (dest==NULL){
@@ -1112,8 +1115,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 
 #ifdef HAVE_GETIFADDRS
 	/*we use getifaddrs for lookup of default interface */
-	int found_ifs;
-
 	found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
 	if (found_ifs==1){
 		return 0;

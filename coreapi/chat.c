@@ -100,7 +100,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	char *buf = (char *)buffer;
 
 	/* if we've not reach the end of file yet, ask for more data*/
-	if (offset<chatMsg->file_transfer_information->size){ 
+	if (offset<chatMsg->file_transfer_information->size){
 		/* get data from call back */
 		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
 	}
@@ -130,13 +130,16 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_http_request_t *req;
 			belle_sip_multipart_body_handler_t *bh;
 			char* ua;
+			char *content_type;
+			char *first_part_header;
+			belle_sip_user_body_handler_t *first_part_bh;
 
 			/* temporary storage of the header of the message part header */
-			char *content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
-			char *first_part_header = belle_sip_strdup_printf("Content-Disposition: form-data; name=\"File\"; filename=\"%s\"\r\nContent-Type: %s\r\n\r\n", msg->file_transfer_information->name, content_type);
+			content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
+			first_part_header=belle_sip_strdup_printf("Content-Disposition: form-data; name=\"File\"; filename=\"%s\"\r\nContent-Type: %s\r\n\r\n", msg->file_transfer_information->name, content_type);
 
 			/* create a user body handler to take care of the file */
-			belle_sip_user_body_handler_t *first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
+			first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
 			belle_sip_body_handler_set_header((belle_sip_body_handler_t *)first_part_bh, first_part_header); /* set the header for this part */
 			belle_sip_free(first_part_header);
 

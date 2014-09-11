@@ -1,7 +1,7 @@
 
 /*
 linphone
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -144,6 +144,10 @@ int main(int argc, char *argv[]){
 	const char* dest_friend=NULL;
 	int i;
 	const char* big_file_content="big file";
+	LinphoneChatRoom* chat_room;
+	LinphoneContent content;
+	LinphoneChatMessage* chat_message;
+
 	/*seting dummy file content to something*/
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
 		memcpy(big_file+i, big_file_content, strlen(big_file_content));
@@ -156,7 +160,7 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the file_transfer_received callback
 	 in order to get notifications about incoming file receive, file_transfer_send to feed file to be transfered
@@ -183,9 +187,8 @@ int main(int argc, char *argv[]){
 
 
 	/*Next step is to create a chat room*/
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(lc,dest_friend);
+	chat_room = linphone_core_create_chat_room(lc,dest_friend);
 
-	LinphoneContent content;
 	memset(&content,0,sizeof(content));
 	content.type="text";
 	content.subtype="plain";
@@ -193,7 +196,7 @@ int main(int argc, char *argv[]){
 	content.name = "bigfile.txt";
 
 	/*now create a chat message with custom content*/
-	LinphoneChatMessage* chat_message = linphone_chat_room_create_file_transfer_message(chat_room,&content);
+	chat_message = linphone_chat_room_create_file_transfer_message(chat_room,&content);
 	if (chat_message == NULL) {
 		printf("returned message is null\n");
 	}

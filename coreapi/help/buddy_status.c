@@ -87,6 +87,8 @@ int main(int argc, char *argv[]){
 	char* identity=NULL;
 	char* password=NULL;
 
+	LinphoneFriend* my_friend=NULL;
+
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
 		dest_friend=argv[1];
@@ -123,11 +125,11 @@ int main(int argc, char *argv[]){
 		LinphoneProxyConfig* proxy_cfg = linphone_proxy_config_new();
 		/*parse identity*/
 		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAuthInfo *info;
 		if (from==NULL){
 			printf("%s not a valid sip uri, must be like sip:toto@sip.linphone.org \n",identity);
 			goto end;
 		}
-		LinphoneAuthInfo *info;
 		if (password!=NULL){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
 			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
@@ -152,7 +154,6 @@ int main(int argc, char *argv[]){
 		while(	running && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationProgress);
 
 	}
-	LinphoneFriend* my_friend=NULL;
 
 	if (dest_friend) {
 		my_friend = linphone_friend_new_with_address(dest_friend); /*creates friend object from dest*/

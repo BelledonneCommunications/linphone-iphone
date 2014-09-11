@@ -1,7 +1,7 @@
 
 /*
 linphone
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 	LinphoneCoreVTable vtable={0};
 
 	char* dest_friend=NULL;
-
+	LinphoneChatRoom* chat_room;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the text_received callback
 	 in order to get notifications about incoming message.
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
 
 
 	/*Next step is to create a chat root*/
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(lc,dest_friend);
+	chat_room = linphone_core_create_chat_room(lc,dest_friend);
 
 	linphone_chat_room_send_message(chat_room,"Hello world"); /*sending message*/
 

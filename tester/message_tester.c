@@ -329,10 +329,11 @@ static void text_message_compatibility_mode(void) {
 }
 
 static void text_message_with_ack(void) {
-	belle_sip_object_enable_leak_detector(TRUE);
-	int begin=belle_sip_object_get_object_count();
 	int leaked_objects;
-	
+	int begin;
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
 	{
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -905,6 +906,7 @@ static void message_storage_migration() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	char src_db[256];
 	char tmp_db[256];
+	MSList* chatrooms;
 	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
 	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_writable_dir_prefix);
 
@@ -917,7 +919,7 @@ static void message_storage_migration() {
 	// This will test the migration procedure
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
 
-	MSList* chatrooms = linphone_core_get_chat_rooms(marie->lc);
+	chatrooms = linphone_core_get_chat_rooms(marie->lc);
 	CU_ASSERT(ms_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage

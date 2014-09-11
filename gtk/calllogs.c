@@ -36,7 +36,7 @@ void call_log_selection_changed(GtkTreeView *v){
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
 	GtkTreeModel *model=NULL;
-	
+
 	select = gtk_tree_view_get_selection(v);
 	if (select!=NULL){
 		if (gtk_tree_selection_get_selected (select, &model, &iter)){
@@ -51,7 +51,7 @@ void call_log_selection_changed(GtkTreeView *v){
 void linphone_gtk_call_log_chat_selected(GtkWidget *w){
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
-	
+
 	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(w));
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
@@ -72,7 +72,7 @@ void linphone_gtk_call_log_chat_selected(GtkWidget *w){
 void linphone_gtk_call_log_add_contact(GtkWidget *w){
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
-	
+
 	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(w));
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
@@ -109,7 +109,7 @@ static bool_t put_selection_to_uribar(GtkWidget *treeview){
 			cl = (LinphoneCallLog *)pcl;
 			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
 			tmp = linphone_address_as_string(la);
-			if(tmp!=NULL) 
+			if(tmp!=NULL)
 				gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),tmp);
 			ms_free(tmp);
 			return TRUE;
@@ -133,7 +133,7 @@ static GtkWidget *linphone_gtk_create_call_log_menu(GtkWidget *call_log){
 	GtkWidget *image;
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
-	
+
 	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(call_log));
 	if (select!=NULL){
 		GtkTreeModel *model=NULL;
@@ -202,7 +202,7 @@ void linphone_gtk_call_log_clear_missed_call(){
 	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_REFRESH,GTK_ICON_SIZE_MENU);
 	GtkWidget *l;
 	const gchar*text=gtk_label_get_text(GTK_LABEL(linphone_gtk_get_widget(mw,"label3")));
-	
+
 	l=gtk_label_new(text);
 	gtk_box_pack_start(GTK_BOX(box),image,FALSE,FALSE,0);
 	gtk_box_pack_start(GTK_BOX(box),l,FALSE,FALSE,0);
@@ -228,7 +228,7 @@ void linphone_gtk_call_log_display_missed_call(int nb){
 	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_REFRESH,GTK_ICON_SIZE_MENU);
 	GtkWidget *l;
 	gchar *buf;
-	
+
 	buf=g_markup_printf_escaped(_("<b>Recent calls (%i)</b>"),nb);
 	l=gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(l),buf);
@@ -281,7 +281,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		LinphoneFriend *lf=NULL;
 		int duration=linphone_call_log_get_duration(cl);
 		time_t start_date_time=linphone_call_log_get_start_date(cl);
-		
+		GdkPixbuf *incoming;
+		GdkPixbuf *outgoing;
+
 #if GLIB_CHECK_VERSION(2,26,0)
 		if (start_date_time){
 			GDateTime *dt=g_date_time_new_from_unix_local(start_date_time);
@@ -332,7 +334,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		if (status==NULL) {
 				headtxt=g_markup_printf_escaped(_("<big><b>%s</b></big>\t%s"),display,start_date ? start_date : "");
 				logtxt=g_markup_printf_escaped(
-				_("<small><i>%s</i>\t" 
+				_("<small><i>%s</i>\t"
 				  "<i>Quality: %s</i></small>\n%s\t%s\t"),
 				addr, quality, minutes, seconds);
 		} else {
@@ -346,8 +348,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		if (start_date) g_free(start_date);
 		gtk_tree_store_append (store,&iter,NULL);
 
-		GdkPixbuf *incoming = create_pixbuf("call_status_incoming.png");
-		GdkPixbuf *outgoing = create_pixbuf("call_status_outgoing.png");
+		incoming = create_pixbuf("call_status_incoming.png");
+		outgoing = create_pixbuf("call_status_outgoing.png");
 		gtk_tree_store_set (store,&iter,
 		               0, linphone_call_log_get_dir(cl)==LinphoneCallOutgoing ? outgoing : incoming,
 		               1, headtxt,2,cl,-1);

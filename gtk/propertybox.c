@@ -179,6 +179,7 @@ void linphone_gtk_ldap_save(GtkWidget *button)
 	GtkEntry* entry;
 	GtkToggleButton* toggle;
 	GtkSpinButton* spin;
+	GtkComboBox* cbox;
 
 	ms_message("SAVE LDAP");
 
@@ -204,7 +205,7 @@ void linphone_gtk_ldap_save(GtkWidget *button)
 	linphone_dictionary_set_string(dict, "sasl_realm", gtk_entry_get_text(entry));
 
 
-	GtkComboBox* cbox = GTK_COMBO_BOX(linphone_gtk_get_widget(ldap_widget,"ldap_auth_method"));
+	cbox = GTK_COMBO_BOX(linphone_gtk_get_widget(ldap_widget,"ldap_auth_method"));
 	linphone_dictionary_set_string(dict, "auth_method", gtk_combo_box_get_active_text(cbox));
 
 	entry = GTK_ENTRY(linphone_gtk_get_widget(ldap_widget,"ldap_base_object"));
@@ -245,10 +246,11 @@ void linphone_gtk_ldap_save(GtkWidget *button)
 }
 
 void linphone_gtk_fill_video_sizes(GtkWidget *combo){
-	const MSVideoSizeDef *def=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());;
-	int i,active=0;
+	int i;
+	int active=0;
 	char vsize_def[256];
 	MSVideoSize cur=linphone_core_get_preferred_video_size(linphone_gtk_get_core());
+	const MSVideoSizeDef *def=linphone_core_get_supported_video_sizes(linphone_gtk_get_core());;
 	/* glade creates a combo box without list model and text renderer,
 	unless we fill it with a dummy text.
 	This dummy text needs to be removed first*/
@@ -1098,14 +1100,14 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 	const char *all_langs="C " LINPHONE_ALL_LANGS;
 	const char *name;
 	int i=0,index=0;
+	int cur_lang_index=-1;
+	char text[256]={0};
 	const char *cur_lang;
 	#if defined(WIN32) || defined(__APPLE__)
 		cur_lang=getenv("LANG");
 	#else
 		cur_lang=getenv("LANGUAGE");
 	#endif
-	int cur_lang_index=-1;
-	char text[256]={0};
 	if (cur_lang==NULL) cur_lang="C";
 	/* glade creates a combo box without list model and text renderer,
 	unless we fill it with a dummy text.

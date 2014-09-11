@@ -457,9 +457,9 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	return ret;
 }
 int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
+	int result;
 	va_list args;
 	va_start(args, format);
-	int result;
 #ifndef ANDROID
 	result = vfprintf(stream,format,args);
 #else

@@ -603,6 +603,7 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 	char *arg1 = args;
 	char *arg2 = NULL;
 	char *ptr = args;
+	LinphoneChatRoom *cr;
 
 	if (!args) return 0;
 
@@ -619,7 +620,7 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 		/* missing one parameter */
 		return 0;
 	}
-	LinphoneChatRoom *cr = linphone_core_create_chat_room(lc,arg1);
+	cr = linphone_core_create_chat_room(lc,arg1);
 	linphone_chat_room_send_message(cr,arg2);
 	return 1;
 }
@@ -2441,8 +2442,9 @@ static void lpc_display_call_states(LinphoneCore *lc){
 	}else{
 		for(;elem!=NULL;elem=elem->next){
 			const char *flag;
+			bool_t in_conference;
 			call=(LinphoneCall*)elem->data;
-			bool_t in_conference=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
+			in_conference=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;
