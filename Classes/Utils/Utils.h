@@ -27,8 +27,8 @@
  })
 
 typedef enum _LinphoneLoggerSeverity {
-    LinphoneLoggerLog = 0,
-    LinphoneLoggerDebug,
+    LinphoneLoggerDebug = 0,
+    LinphoneLoggerLog,
     LinphoneLoggerWarning,
     LinphoneLoggerError,
     LinphoneLoggerFatal
