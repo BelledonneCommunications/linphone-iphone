@@ -619,7 +619,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         download_data = [[NSMutableData alloc] init];
 
         linphone_chat_message_set_user_data(msg, self);
-        linphone_chat_message_start_file_download(msg);
+        linphone_chat_message_start_file_download(msg,NULL);
 
         [messageView setHidden:TRUE];
         [transferView setHidden:FALSE];

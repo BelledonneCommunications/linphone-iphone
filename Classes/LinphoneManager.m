@@ -1128,7 +1128,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     .is_composing_received = linphone_iphone_is_composing_received,
     .configuring_status = linphone_iphone_configuring_status_changed,
     .global_state_changed = linphone_iphone_global_state_changed,
-    .file_transfer_received = linphone_iphone_file_transfer_recv,
+    .file_transfer_recv = linphone_iphone_file_transfer_recv,
     .file_transfer_send = linphone_iphone_file_transfer_send,
     .file_transfer_progress_indication = linphone_iphone_file_transfer_progress
 
