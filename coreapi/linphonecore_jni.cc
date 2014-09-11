@@ -623,8 +623,25 @@ public:
 							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
 	}
+	jobject getChatMessage(JNIEnv *env , LinphoneChatMessage *msg){
+		jobject jobj = 0;
+
+		if (msg != NULL){
+			void *up = linphone_chat_message_get_user_data(msg);
+
+			if (up == NULL) {
+				jobj = env->NewObject(chatMessageClass,chatMessageCtrId,(jlong)linphone_chat_message_ref(msg));
+				jobj = env->NewGlobalRef(jobj);
+				linphone_chat_message_set_user_data(msg,(void*)jobj);
+			} else {
+				jobj = (jobject)up;
+			}
+		}
+		return jobj;
+	}
 	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 			JNIEnv *env = 0;
+			jobject jmsg;
 			jint result = jvm->AttachCurrentThread(&env,NULL);
 			if (result != 0) {
 				ms_error("cannot attach VM");
@@ -636,7 +653,7 @@ public:
 								,lcData->messageReceivedId
 								,lcData->core
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)linphone_chat_message_ref(msg)));
+								,(jmsg = lcData->getChatMessage(env, msg)));
 		}
 	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 		JNIEnv *env = 0;
@@ -807,6 +824,7 @@ public:
 
 	static void fileTransferProgressIndication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
 		JNIEnv *env = 0;
+		jobject jmsg;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
 			ms_error("cannot attach VM");
@@ -816,13 +834,14 @@ public:
 		env->CallVoidMethod(lcData->listener, 
 				lcData->fileTransferProgressIndicationId, 
 				lcData->core, 
-				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				(jmsg = lcData->getChatMessage(env, message)),
 				content ? create_java_linphone_content(env, content) : NULL,
 				progress);
 	}
 
 	static void fileTransferSend(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, char* buff, size_t* size) {
 		JNIEnv *env = 0;
+		jobject jmsg;
 		size_t asking = *size;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
@@ -833,7 +852,7 @@ public:
 		*size = env->CallIntMethod(lcData->listener, 
 				lcData->fileTransferSendId, 
 				lcData->core, 
-				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				(jmsg = lcData->getChatMessage(env, message)),
 				content ? create_java_linphone_content(env, content) : NULL,
 				buff ? env->NewDirectByteBuffer(buff, asking) : NULL,
 				asking);
@@ -841,6 +860,7 @@ public:
 
 	static void fileTransferRecv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
 		JNIEnv *env = 0;
+		jobject jmsg;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
 			ms_error("cannot attach VM");
@@ -854,7 +874,7 @@ public:
 		env->CallVoidMethod(lcData->listener, 
 				lcData->fileTransferRecvId, 
 				lcData->core, 
-				message ? env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)message) : NULL,
+				(jmsg = lcData->getChatMessage(env, message)),
 				content ? create_java_linphone_content(env, content) : NULL,
 				jbytes,
 				size);
