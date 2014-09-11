@@ -4175,7 +4175,7 @@ void linphone_core_set_ringback(LinphoneCore *lc, const char *path){
 	if (lc->sound_conf.remote_ring!=0){
 		ms_free(lc->sound_conf.remote_ring);
 	}
-	lc->sound_conf.remote_ring=path?ms_strdup(path):path;
+	lc->sound_conf.remote_ring=path?ms_strdup(path):NULL;
 }
 
 /**

@@ -528,10 +528,19 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			op->state=SalOpStateTerminating;
 			/*call end not notified by dialog deletion because transaction can end before dialog*/
 		} else if(strcmp("INVITE",method)==0 || (is_update=(strcmp("UPDATE",method)==0)) ) {
-			/*re-invite*/
-			sal_op_reset_descriptions(op);
-			if (process_sdp_for_invite(op,req)==0)
-				op->base.root->callbacks.call_updating(op,is_update);
+			if (is_update && !belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))) {
+				/*session timer case*/
+				/*session expire should be handled. to be done when real session timer (rfc4028) will be implemented*/
+				resp=sal_op_create_response_from_request(op,req,200);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
+				belle_sip_object_unref(op->pending_update_server_trans);
+				op->pending_update_server_trans=NULL;
+			} else {
+				/*re-invite*/
+				sal_op_reset_descriptions(op);
+				if (process_sdp_for_invite(op,req)==0)
+					op->base.root->callbacks.call_updating(op,is_update);
+			}
 		} else if (strcmp("INFO",method)==0){
 			if (belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
 				&&	strstr(belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)),"picture_fast_update")) {
