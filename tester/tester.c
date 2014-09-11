@@ -1,4 +1,4 @@
-/*
+ /*
  tester - liblinphone test suite
  Copyright (C) 2013  Belledonne Communications SARL
 
@@ -229,7 +229,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 #if TARGET_OS_IPHONE
 	linphone_core_set_playback_device( mgr->lc, "AU: Audio Unit Tester");
 	linphone_core_set_capture_device( mgr->lc, "AU: Audio Unit Tester");
-	linphone_core_set_ringer_device( mgr->lc, "AU: Audio Unit Tester");
+	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
+	linphone_core_set_ringback(mgr->lc, NULL);
 #endif
 
 	if (proxy_count)

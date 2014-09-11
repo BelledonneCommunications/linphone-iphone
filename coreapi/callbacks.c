@@ -96,7 +96,7 @@ static void prepare_early_media_forking(LinphoneCall *call){
 	if (call->videostream){
 		rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,FALSE);
 	}
-	
+
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -163,7 +163,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
 	}
-	
+
 	if (call->audiostream==NULL){
 		/*this happens after pausing the call locally. The streams are destroyed and then we wait the 200Ok to recreate them*/
 		linphone_call_init_media_streams (call);
@@ -182,9 +182,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
 	end:
-	if (oldmd) 
+	if (oldmd)
 		sal_media_description_unref(oldmd);
-	
+
 }
 #if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
@@ -192,7 +192,7 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (linphone_address_weak_equal(call->log->from,from) &&
-		    linphone_address_weak_equal(call->log->to, to)){
+			linphone_address_weak_equal(call->log->to, to)){
 			return TRUE;
 		}
 	}
@@ -220,11 +220,11 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (call->state==LinphoneCallIncomingReceived
-		    || call->state==LinphoneCallIncomingEarlyMedia
-		    || call->state==LinphoneCallOutgoingInit
-		    || call->state==LinphoneCallOutgoingProgress
-		    || call->state==LinphoneCallOutgoingEarlyMedia
-		    || call->state==LinphoneCallOutgoingRinging){
+			|| call->state==LinphoneCallIncomingEarlyMedia
+			|| call->state==LinphoneCallOutgoingInit
+			|| call->state==LinphoneCallOutgoingProgress
+			|| call->state==LinphoneCallOutgoingEarlyMedia
+			|| call->state==LinphoneCallOutgoingRinging){
 			return TRUE;
 		}
 	}
@@ -239,7 +239,7 @@ static void call_received(SalOp *h){
 	LinphoneAddress *from_addr, *to_addr;
 	/*this mode is deprcated because probably useless*/
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
-	
+
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
 		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
@@ -285,9 +285,9 @@ static void call_received(SalOp *h){
 		linphone_address_destroy(to_addr);
 		return;
 	}
-	
+
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
-	
+
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
@@ -313,7 +313,7 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 	int i;
 	SalStreamDescription *ref_stream,*new_stream;
 	ms_message("Early media response received from another branch, checking if media can be forked to this new destination.");
-	
+
 	for (i=0;i<cur_md->nb_streams;++i){
 		if (!sal_stream_description_active(&cur_md->streams[i])) continue;
 		ref_stream=&cur_md->streams[i];
@@ -345,15 +345,15 @@ static void call_ringing(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(h);
 	SalMediaDescription *md;
-	
+
 	if (call==NULL) return;
-	
+
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Remote ringing."));
-	
+
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
 		linphone_core_stop_dtmf_stream(lc);
@@ -364,10 +364,12 @@ static void call_ringing(SalOp *h){
 			/*we release sound before playing ringback tone*/
 			if (call->audiostream)
 				audio_stream_unprepare_sound(call->audiostream);
-			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
+			if( lc->sound_conf.remote_ring ){
+				lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
+			}
 		}
 		ms_message("Remote ringing...");
-		if (lc->vtable.display_status) 
+		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
@@ -378,7 +380,7 @@ static void call_ringing(SalOp *h){
 			return;
 		}
 		if (lc->vtable.show) lc->vtable.show(lc);
-		if (lc->vtable.display_status) 
+		if (lc->vtable.display_status)
 			lc->vtable.display_status(lc,_("Early media."));
 		linphone_call_set_state(call,LinphoneCallOutgoingEarlyMedia,"Early media");
 		linphone_core_stop_ringing(lc);
@@ -396,7 +398,7 @@ static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *md;
-	
+
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
@@ -417,17 +419,17 @@ static void call_accepted(SalOp *op){
 	md=sal_call_get_final_media_description(op);
 	if (md) /*make sure re-invite will not propose video again*/
 		call->params->has_video &= linphone_core_media_description_contains_video_stream(md);
-	
+
 	if (call->state==LinphoneCallOutgoingProgress ||
-	    call->state==LinphoneCallOutgoingRinging ||
-	    call->state==LinphoneCallOutgoingEarlyMedia){
+		call->state==LinphoneCallOutgoingRinging ||
+		call->state==LinphoneCallOutgoingEarlyMedia){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 		if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
 	}
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
-		    sal_media_description_has_dir(md,SalStreamInactive)){
+			sal_media_description_has_dir(md,SalStreamInactive)){
 			if (lc->vtable.display_status){
 				char *tmp=linphone_call_get_remote_address_as_string (call);
 				char *msg=ms_strdup_printf(_("Call with %s is paused."),tmp);
@@ -518,7 +520,7 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We are paused by other party."));
 	_linphone_core_accept_call_update(lc,call,NULL,LinphoneCallPausedByRemote,"Call paused by remote");
-	
+
 }
 
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t is_update){
@@ -526,7 +528,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 	SalMediaDescription *md;
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *prev_result_desc=call->resultdesc;
-	
+
 	if (rmd!=NULL){
 		if (call->state!=LinphoneCallPaused){
 			/*in paused state, we must stay in paused state.*/
@@ -542,7 +544,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 			int diff=sal_media_description_equals(prev_result_desc,md);
 			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
 				ms_warning("Cannot accept this update, it is changing parameters that require user approval");
-				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/ 
+				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/
 				return;
 			}
 		}
@@ -569,7 +571,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
-	
+
 	if (rmd==NULL){
 		/* case of a reINVITE or UPDATE without SDP */
 		call_updated_by_remote(lc,call,is_update);
@@ -623,7 +625,7 @@ static void call_terminated(SalOp *op, const char *from){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 
 	if (call==NULL) return;
-	
+
 	switch(linphone_call_get_state(call)){
 		case LinphoneCallEnd:
 		case LinphoneCallError:
@@ -662,7 +664,7 @@ static int resume_call_after_failed_transfer(LinphoneCall *call){
 	ms_message("!!!!!!!!!!resume_call_after_failed_transfer");
 	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
 		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
-	
+
 	if (call->was_automatically_paused && call->state==LinphoneCallPaused){
 		if (sal_op_is_idle(call->op)){
 			linphone_core_resume_call(call->core,call);
@@ -691,7 +693,7 @@ static void call_failure(SalOp *op){
 		ms_warning("Call faillure reported on already terminated call.");
 		return ;
 	}
-	
+
 	if (lc->vtable.show) lc->vtable.show(lc);
 	switch(ei->reason){
 		case SalReasonNone:
@@ -810,7 +812,7 @@ static void call_failure(SalOp *op){
 #ifdef BUILD_UPNP
 	linphone_call_delete_upnp_session(call);
 #endif //BUILD_UPNP
-	
+
 	if (call->state!=LinphoneCallEnd && call->state!=LinphoneCallError){
 		if (ei->reason==SalReasonDeclined){
 			linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
@@ -819,7 +821,7 @@ static void call_failure(SalOp *op){
 		}
 		if (ei->reason!=SalReasonNone) linphone_core_play_call_error_tone(lc,linphone_reason_from_sal(ei->reason));
 	}
-	
+
 	if (referer){
 		/*notify referer of the failure*/
 		linphone_core_notify_refer_state(lc,referer,call);
@@ -861,20 +863,20 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
-	
+
 	if (!cfg){
 		ms_message("Registration success for deleted proxy config, ignored");
 		return;
 	}
 	linphone_proxy_config_set_state(cfg, registered ? LinphoneRegistrationOk : LinphoneRegistrationCleared ,
-	                                registered ? "Registration successful" : "Unregistration done");
+									registered ? "Registration successful" : "Unregistration done");
 	if (lc->vtable.display_status){
 		if (registered) msg=ms_strdup_printf(_("Registration on %s successful."),sal_op_get_proxy(op));
 		else msg=ms_strdup_printf(_("Unregistration on %s done."),sal_op_get_proxy(op));
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);
 	}
-	
+
 }
 
 static void register_failure(SalOp *op){
@@ -889,7 +891,7 @@ static void register_failure(SalOp *op){
 	}
 	if (details==NULL)
 		details=_("no response timeout");
-	
+
 	if (lc->vtable.display_status) {
 		char *msg=ortp_strdup_printf(_("Registration on %s failed: %s"),sal_op_get_proxy(op), details);
 		lc->vtable.display_status(lc,msg);
@@ -1150,9 +1152,9 @@ static void info_received(SalOp *op, const SalBody *body){
 static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	const SalErrorInfo *ei=sal_op_get_error_info(op);
-	
+
 	if (lev==NULL) return;
-	
+
 	if (status==SalSubscribeActive){
 		linphone_event_set_state(lev,LinphoneSubscriptionActive);
 	}else if (status==SalSubscribePending){
@@ -1169,7 +1171,7 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneContent content;
-	
+
 	if (lev==NULL) {
 		/*out of subscribe notify */
 		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
@@ -1186,31 +1188,31 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 static void subscribe_received(SalOp *op, const char *eventname, const SalBody *body){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	
+
 	if (lev==NULL) {
 		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionIncoming,eventname);
 		linphone_event_set_state(lev,LinphoneSubscriptionIncomingReceived);
 	}else{
 		/*subscribe refresh, unhandled*/
 	}
-	
+
 }
 
 static void subscribe_closed(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
-	
+
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 }
 
 static void on_publish_response(SalOp* op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	const SalErrorInfo *ei=sal_op_get_error_info(op);
-	
+
 	if (lev==NULL) return;
 	if (ei->reason==SalReasonNone){
 		if (!lev->terminating)
 			linphone_event_set_publish_state(lev,LinphonePublishOk);
-		else 
+		else
 			linphone_event_set_publish_state(lev,LinphonePublishCleared);
 	}else{
 		if (lev->publish_state==LinphonePublishOk){
@@ -1223,9 +1225,9 @@ static void on_publish_response(SalOp* op){
 
 static void on_expire(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
-	
+
 	if (lev==NULL) return;
-	
+
 	if (linphone_event_get_publish_state(lev)==LinphonePublishOk){
 		linphone_event_set_publish_state(lev,LinphonePublishExpiring);
 	}else if (linphone_event_get_subscription_state(lev)==LinphoneSubscriptionActive){
