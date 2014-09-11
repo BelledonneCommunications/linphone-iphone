@@ -134,6 +134,7 @@ class CoreManagerStats:
         self.number_of_LinphonePresenceActivityVacation = 0
         self.number_of_LinphonePresenceActivityWorking = 0
         self.number_of_LinphonePresenceActivityWorship = 0
+        self.last_received_presence = None
 
         self.number_of_inforeceived = 0
 
@@ -349,6 +350,83 @@ class CoreManager:
         if message.external_body_url is not None:
             manager.stats.number_of_LinphoneMessageExtBodyReceived += 1
 
+    @classmethod
+    def new_subscription_requested(cls, lc, lf, url):
+        manager = lc.user_data
+        if manager.logger is not None:
+            manager.logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
+                from_str=lf.address.as_string(), url=url))
+        manager.stats.number_of_NewSubscriptionRequest += 1
+        lc.add_friend(lf) # Accept subscription
+
+    @classmethod
+    def notify_presence_received(cls, lc, lf):
+        manager = lc.user_data
+        if manager.logger is not None:
+            manager.logger.info("[TESTER] New notify request: from [{from_str}]".format(
+                from_str=lf.address.as_string()))
+        manager.stats.number_of_NotifyReceived += 1
+        manager.stats.last_received_presence = lf.presence_model
+        acttype = manager.stats.last_received_presence.activity.type
+        if acttype == linphone.PresenceActivityType.PresenceActivityOffline:
+            manager.stats.number_of_LinphonePresenceActivityOffline += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityOnline:
+            manager.stats.number_of_LinphonePresenceActivityOnline += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityAppointment:
+            manager.stats.number_of_LinphonePresenceActivityAppointment += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityAway:
+            manager.stats.number_of_LinphonePresenceActivityAway += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityBreakfast:
+            manager.stats.number_of_LinphonePresenceActivityBreakfast += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityBusy:
+            manager.stats.number_of_LinphonePresenceActivityBusy += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityDinner:
+            manager.stats.number_of_LinphonePresenceActivityDinner += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityHoliday:
+            manager.stats.number_of_LinphonePresenceActivityHoliday += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityInTransit:
+            manager.stats.number_of_LinphonePresenceActivityInTransit += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityLookingForWork:
+            manager.stats.number_of_LinphonePresenceActivityLookingForWork += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityLunch:
+            manager.stats.number_of_LinphonePresenceActivityLunch += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityMeal:
+            manager.stats.number_of_LinphonePresenceActivityMeal += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityMeeting:
+            manager.stats.number_of_LinphonePresenceActivityMeeting += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityOnThePhone:
+            manager.stats.number_of_LinphonePresenceActivityOnThePhone += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityOther:
+            manager.stats.number_of_LinphonePresenceActivityOther += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityPerformance:
+            manager.stats.number_of_LinphonePresenceActivityPerformance += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityPermanentAbsence:
+            manager.stats.number_of_LinphonePresenceActivityPermanentAbsence += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityPlaying:
+            manager.stats.number_of_LinphonePresenceActivityPlaying += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityPresentation:
+            manager.stats.number_of_LinphonePresenceActivityPresentation += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityShopping:
+            manager.stats.number_of_LinphonePresenceActivityShopping += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivitySleeping:
+            manager.stats.number_of_LinphonePresenceActivitySleeping += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivitySpectator:
+            manager.stats.number_of_LinphonePresenceActivitySpectator += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivitySteering:
+            manager.stats.number_of_LinphonePresenceActivitySteering += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityTravel:
+            manager.stats.number_of_LinphonePresenceActivityTravel += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityTV:
+            manager.stats.number_of_LinphonePresenceActivityTV += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityUnknown:
+            manager.stats.number_of_LinphonePresenceActivityUnknown += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityVacation:
+            manager.stats.number_of_LinphonePresenceActivityVacation += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityWorking:
+            manager.stats.number_of_LinphonePresenceActivityWorking += 1
+        elif acttype == linphone.PresenceActivityType.PresenceActivityWorship:
+            manager.stats.number_of_LinphonePresenceActivityWorship += 1
+
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}, logger=None):
         self.logger = logger
         if not vtable.has_key('registration_state_changed'):
@@ -367,10 +445,10 @@ class CoreManager:
             #vtable['file_transfer_progress_indication'] = CoreManager.file_transfer_progress_indication
         #if not vtable.has_key('is_composing_received'):
             #vtable['is_composing_received'] = CoreManager.is_composing_received
-        #if not vtable.has_key('new_subscription_requested'):
-            #vtable['new_subscription_requested'] = CoreManager.new_subscription_requested
-        #if not vtable.has_key('notify_presence_received'):
-            #vtable['notify_presence_received'] = CoreManager.notify_presence_received
+        if not vtable.has_key('new_subscription_requested'):
+            vtable['new_subscription_requested'] = CoreManager.new_subscription_requested
+        if not vtable.has_key('notify_presence_received'):
+            vtable['notify_presence_received'] = CoreManager.notify_presence_received
         #if not vtable.has_key('transfer_state_changed'):
             #vtable['transfer_state_changed'] = CoreManager.transfer_state_changed
         #if not vtable.has_key('info_received'):
