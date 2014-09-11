@@ -668,6 +668,9 @@ STRICT_OPTIONS="-Wall -Wdeclaration-after-statement -Wuninitialized"
 case $CC in
 	*clang*)
 		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments "
+		#disabled due to wrong optimization false positive with small string
+		#(cf. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=35903)
+		STRICT_OPTIONS="$STRICT_OPTIONS -Wno-array-bounds "
 	;;
 esac
 

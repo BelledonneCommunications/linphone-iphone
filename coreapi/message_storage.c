@@ -49,7 +49,7 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
 // Callback for sql request when getting linphone content
 static int callback_content(void *data, int argc, char **argv, char **colName) {
 	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
-	
+
 	if (message->file_transfer_information) {
 		linphone_content_uninit(message->file_transfer_information);
 		ms_free(message->file_transfer_information);
@@ -57,13 +57,13 @@ static int callback_content(void *data, int argc, char **argv, char **colName) {
 	}
 	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
-	
+
 	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
 	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
 	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
 	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
 	message->file_transfer_information->size = (size_t) atoi(argv[5]);
-	
+
 	return 0;
 }
 
@@ -71,7 +71,7 @@ static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *messag
 	char* errmsg = NULL;
 	int ret;
 	char * buf;
-	
+
 	buf = sqlite3_mprintf("SELECT * FROM content WHERE id = %i", content_id);
 	ret = sqlite3_exec(db, buf, callback_content, message, &errmsg);
 	if (ret != SQLITE_OK) {
@@ -134,7 +134,7 @@ static void create_chat_message(char **argv, void *data){
 		new_message->storage_id=storage_id;
 		new_message->external_body_url= argv[8] ? ms_strdup(argv[8])  : NULL;
 		new_message->appdata          = argv[10]? ms_strdup(argv[10]) : NULL;
-		
+
 		if (argv[11] != NULL) {
 			int id = atoi(argv[11]);
 			if (id >= 0) {
@@ -216,13 +216,16 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 
 	if (lc->db){
 		int content_id = -1;
+		char *peer;
+		char *local_contact;
+		char *buf;
 		if (msg->file_transfer_information) {
 			content_id = linphone_chat_message_store_content(msg);
 		}
-		
-		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
-		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		char *buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
+
+		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
+		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
+		buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
 						local_contact,
 						peer,
 						msg->dir,
