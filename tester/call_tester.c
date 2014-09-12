@@ -2297,6 +2297,10 @@ static void call_transfer_existing_call_outgoing_call(void) {
 
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	const MSList* calls;
+	
+	linphone_core_use_files (pauline->lc,TRUE);
+	linphone_core_use_files (laure->lc,TRUE);
+	
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 

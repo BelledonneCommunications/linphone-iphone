@@ -514,7 +514,7 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
-	/*when we are resumed, increment session id, because sdp is changed (a=recvonly appears)*/
+	/*when we are paused, increment session id, because sdp is changed (a=recvonly appears)*/
 	linphone_call_increment_local_media_description(call);
 	/* we are being paused */
 	if(lc->vtable.display_status)
@@ -582,7 +582,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
-			}else call_paused_by_remote(lc,call);
+			}else call_updated_by_remote(lc,call,is_update);
 		break;
 		/*SIP UPDATE CASE*/
 		case LinphoneCallOutgoingRinging:
@@ -599,7 +599,11 @@ static void call_updating(SalOp *op, bool_t is_update){
 			}
 		break;
 		case LinphoneCallPaused:
-			call_updated_by_remote(lc,call,is_update);
+			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
+				call_paused_by_remote(lc,call);
+			}else{
+				call_updated_by_remote(lc,call,is_update);
+			}
 		break;
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
