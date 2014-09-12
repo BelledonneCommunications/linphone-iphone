@@ -106,8 +106,8 @@ abstract public class LinphoneCoreFactory {
 	
 	/**
 	 * Enable verbose traces
-	 * @param enable 
-	 * @param tag
+	 * @param enable true to enable debug mode, false to disable it
+	 * @param tag Tag which prefixes each log message.
 	 */
 	abstract public  void setDebugMode(boolean enable, String tag);
 	
