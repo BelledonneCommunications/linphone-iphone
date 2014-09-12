@@ -250,8 +250,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (message = %Q OR url = %Q) AND utc = %i;",
-								  msg->state,msg->message,msg->external_body_url,msg->time);
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i) AND utc = %i;",
+								  msg->state,msg->storage_id,msg->time);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 	}

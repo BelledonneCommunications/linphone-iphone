@@ -176,9 +176,6 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			}
 			body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			msg->message = ms_strdup(body);
-			linphone_content_uninit(msg->file_transfer_information);
-			ms_free(msg->file_transfer_information);
-			msg->file_transfer_information = NULL;
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
 			_linphone_chat_room_send_message(msg->chat_room, msg);
 		}
@@ -424,7 +421,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	time_t t=time(NULL);
 	linphone_chat_message_ref(msg);
 	/* Check if we shall upload a file to a server */
-	if (msg->file_transfer_information != NULL) {
+	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
 		belle_http_request_listener_callbacks_t cbs={0};
 		belle_http_request_listener_t *l;
@@ -481,6 +478,9 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 			sal_text_send(op, identity, cr->peer,msg->message);
 		} else {
 			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message);
+			// Remove the message to prevent the xml from the file uplaod to be stored in the database
+			ms_free(msg->message);
+			msg->message = NULL;
 		}
 	}
 	msg->dir=LinphoneChatMessageOutgoing;
