@@ -618,7 +618,7 @@ static int linphone_ldap_request_entry_compare_strong(const void*a, const void* 
 static inline LinphoneLDAPContactSearch* linphone_ldap_contact_provider_request_search( LinphoneLDAPContactProvider* obj, int msgid )
 {
 	LinphoneLDAPContactSearch dummy = {};
-	MSList* lingerst_entry;
+	MSList* list_entry;
 	dummy.msgid = msgid;
 
 	list_entry = ms_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
