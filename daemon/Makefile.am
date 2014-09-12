@@ -51,6 +51,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/audio-stream-start.h \
 			commands/audio-stream-stop.h \
 			commands/audio-stream-stats.h \
+			commands/auth-infos-clear.h \
 			commands/call.h \
 			commands/call-stats.h \
 			commands/call-status.h \
