@@ -65,7 +65,6 @@ void LSLog(NSString* fmt, ...){
     for (int i=0; i<count; i++) {
         const char* suite = liblinphone_tester_test_suite_name(i);
 
-		LSLog(@"Running '%s' suite", suite);
 		int test_count = liblinphone_tester_nb_tests(suite);
 		for( int k = 0; k<test_count; k++){
 			const char* test =liblinphone_tester_test_name(suite, k);
@@ -100,6 +99,7 @@ void LSLog(NSString* fmt, ...){
 
 - (void)testForSuite:(NSString*)suite andTest:(NSString*)test
 {
+	LSLog(@"Launching test %@ from suite %@", test, suite);
 	XCTAssertFalse(liblinphone_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
 }
 
