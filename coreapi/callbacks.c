@@ -1170,7 +1170,7 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, const SalBody *body){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneContent content;
+	LinphoneContent content={0};
 
 	if (lev==NULL) {
 		/*out of subscribe notify */
