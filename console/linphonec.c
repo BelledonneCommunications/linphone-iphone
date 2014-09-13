@@ -536,6 +536,7 @@ char *linphonec_readline(char *prompt){
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
 		while(1){
+			
 			ms_mutex_lock(&prompt_mutex);
 			if (have_prompt){
 				char *ret=strdup(received_prompt);
@@ -546,15 +547,17 @@ char *linphonec_readline(char *prompt){
 			ms_mutex_unlock(&prompt_mutex);
 			linphonec_idle_call();
 #ifdef WIN32
-			Sleep(20);
-			/* Following is to get the video window going as it
-				 should. Maybe should we only have this on when the option -V
-				 or -D is on? */
-			MSG msg;
+			{
+				MSG msg;
+				Sleep(20);
+				/* Following is to get the video window going as it
+					should. Maybe should we only have this on when the option -V
+					or -D is on? */
 
-			if (PeekMessage(&msg, NULL, 0, 0,1)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				if (PeekMessage(&msg, NULL, 0, 0,1)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
 			}
 #else
 			usleep(20000);
