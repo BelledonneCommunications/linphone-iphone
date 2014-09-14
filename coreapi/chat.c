@@ -134,21 +134,20 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			char *first_part_header;
 			belle_sip_user_body_handler_t *first_part_bh;
 
-			/* temporary storage of the header of the message part header */
-			content_type=belle_sip_strdup_printf("%s/%s", msg->file_transfer_information->type, msg->file_transfer_information->subtype);
-			first_part_header=belle_sip_strdup_printf("Content-Disposition: form-data; name=\"File\"; filename=\"%s\"\r\nContent-Type: %s\r\n\r\n", msg->file_transfer_information->name, content_type);
+			/* temporary storage for the Content-disposition header value */
+			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", msg->file_transfer_information->name);
 
-			/* create a user body handler to take care of the file */
+			/* create a user body handler to take care of the file and add the content disposition and content-type headers */
 			first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
-			belle_sip_body_handler_set_header((belle_sip_body_handler_t *)first_part_bh, first_part_header); /* set the header for this part */
+			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
 			belle_sip_free(first_part_header);
+			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(msg->file_transfer_information->type, msg->file_transfer_information->subtype));
 
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
 			bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
 
 			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 
-			belle_sip_free(content_type);
 			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);
 
 			uri=belle_generic_uri_parse(msg->chat_room->lc->file_transfer_server);
