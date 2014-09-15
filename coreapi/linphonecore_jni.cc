@@ -2707,6 +2707,18 @@ extern "C" jobject Java_org_linphone_core_LinphoneChatMessageImpl_getFileTransfe
 	return NULL;
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getAppData(JNIEnv* env, jobject  thiz, jlong ptr) {
+	const char * app_data = linphone_chat_message_get_appdata((LinphoneChatMessage *)ptr);
+	return app_data ? env->NewStringUTF(app_data) : NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setAppData(JNIEnv* env, jobject  thiz, jlong ptr, jstring appdata) {
+	const char * data = appdata ? env->GetStringUTFChars(appdata, NULL) : NULL;	
+	linphone_chat_message_set_appdata((LinphoneChatMessage *)ptr, data);
+	if (appdata)
+		env->ReleaseStringUTFChars(appdata, data);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFileTransferServer(JNIEnv* env, jobject thiz, jlong ptr, jstring server_url) {
 	const char * url = server_url ? env->GetStringUTFChars(server_url, NULL) : NULL;	
 	linphone_core_set_file_transfer_server((LinphoneCore *)ptr, url);

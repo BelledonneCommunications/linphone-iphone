@@ -168,4 +168,15 @@ public interface LinphoneChatMessage {
 	 * @return a pointer to the LinphoneContent structure or NULL if not present.
 	 */
 	LinphoneContent getFileTransferInformation();
+	
+	/**
+	 * Sets data in the chat message
+	 * @param data to store in the message
+	 */
+	void setAppData(String data);
+	
+	/**
+	 * @return the data stored in the chat message if any, else null
+	 */
+	String getAppData();
 }
