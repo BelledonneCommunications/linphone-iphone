@@ -77,9 +77,7 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	/* call back given by application level */
-	if (lc->vtable.file_transfer_progress_indication != NULL) {
-		lc->vtable.file_transfer_progress_indication(lc, chatMsg, chatMsg->file_transfer_information, (size_t)(((double)offset/(double)total)*100.0));
-	}
+	linphone_core_notify_file_transfer_progress_indication(lc, chatMsg, chatMsg->file_transfer_information, (size_t)(((double)offset/(double)total)*100.0));
 	return;
 }
 
@@ -102,7 +100,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	/* if we've not reach the end of file yet, ask for more data*/
 	if (offset<chatMsg->file_transfer_information->size){
 		/* get data from call back */
-		lc->vtable.file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
+		linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
 	}
 
 	return BELLE_SIP_CONTINUE;
@@ -510,12 +508,10 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
 	if (msg->message)
 		//legacy API
-		if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, msg->from, msg->message);
-	if (lc->vtable.message_received!=NULL) lc->vtable.message_received(lc, cr,msg);
-	if (cr->lc->vtable.is_composing_received != NULL) {
-		cr->remote_is_composing = LinphoneIsComposingIdle;
-		cr->lc->vtable.is_composing_received(cr->lc, cr);
-	}
+		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
+	linphone_core_notify_message_received(lc, cr,msg);
+	cr->remote_is_composing = LinphoneIsComposingIdle;
+	linphone_core_notify_is_composing_received(cr->lc, cr);
 }
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg){
@@ -629,8 +625,7 @@ static int linphone_chat_room_remote_refresh_composing_expired(void *data, unsig
 	belle_sip_object_unref(cr->remote_composing_refresh_timer);
 	cr->remote_composing_refresh_timer = NULL;
 	cr->remote_is_composing = LinphoneIsComposingIdle;
-	if (cr->lc->vtable.is_composing_received != NULL)
-		cr->lc->vtable.is_composing_received(cr->lc, cr);
+	linphone_core_notify_is_composing_received(cr->lc, cr);
 	return BELLE_SIP_STOP;
 }
 
@@ -675,8 +670,7 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 		}
 
 		cr->remote_is_composing = state;
-		if (cr->lc->vtable.is_composing_received != NULL)
-			cr->lc->vtable.is_composing_received(cr->lc, cr);
+		linphone_core_notify_is_composing_received(cr->lc, cr);
 	}
 }
 
@@ -1034,9 +1028,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		return;
 	}
 	/* call back given by application level */
-	if (lc->vtable.file_transfer_recv != NULL) {
-		lc->vtable.file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
-	}
+	linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
 	return;
 }
 
@@ -1101,9 +1093,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 			LinphoneCore *lc = chatMsg->chat_room->lc;
 			/* file downloaded succesfully, call again the callback with size at zero */
-			if (lc->vtable.file_transfer_recv != NULL) {
-				lc->vtable.file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
-			}
+			linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
 		}
 	}
 }

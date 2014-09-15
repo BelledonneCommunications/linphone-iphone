@@ -192,8 +192,7 @@ void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody
 		LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
 		if (body) linphone_content_copy_from_sal_body(&info->content,body);
-		if (lc->vtable.info_received)
-			lc->vtable.info_received(lc,call,info);
+		linphone_core_notify_info_received(lc,call,info);
 		linphone_info_message_destroy(info);
 	}
 }

@@ -677,7 +677,7 @@ typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore
 {
-	LinphoneCoreVTable vtable;
+	MSList* vtables;
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
@@ -735,6 +735,7 @@ struct _LinphoneCore
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
+	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
 	bool_t use_preview_window;
 
 	time_t network_last_check;
@@ -976,6 +977,44 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig)
 BELLE_SIP_DECLARE_TYPES_END
+
+
+
+void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+void linphone_core_notify_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
+void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
+void linphone_core_notify_show_interface(LinphoneCore *lc);
+void linphone_core_notify_display_status(LinphoneCore *lc, const char *message);
+void linphone_core_notify_display_message(LinphoneCore *lc, const char *message);
+void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message);
+void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url);
+void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
+void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
+void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl);
+void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
+void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
+void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress);
+void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
+void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf);
+/*
+ * return true if at least a registered vtable has a cb for dtmf received*/
+bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc);
+void linphone_core_notify_refer_received(LinphoneCore *lc, const char *refer_to);
+void linphone_core_notify_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
+void linphone_core_notify_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+void linphone_core_notify_call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
+void linphone_core_notify_info_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
+void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
+void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable);
+
+void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
+void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
+void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
+
 
 
 #ifdef __cplusplus

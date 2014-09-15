@@ -421,8 +421,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			ms_error("Could not obtain stun server addrinfo.");
 			return -1;
 		}
-		if (lc->vtable.display_status!=NULL)
-			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
+		linphone_core_notify_display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
 		sock1=create_socket(call->media_ports[0].rtp_port);
@@ -603,8 +602,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ms_warning("Fail to resolve STUN server for ICE gathering.");
 		return -1;
 	}
-	if (lc->vtable.display_status != NULL)
-		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
+	linphone_core_notify_display_status(lc, _("ICE local candidates gathering in progress..."));
 
 	/* Gather local host candidates. */
 	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {

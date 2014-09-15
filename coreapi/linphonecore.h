@@ -1612,6 +1612,13 @@ typedef enum _LinphoneConfiguringState {
 typedef void (*LinphoneCoreConfiguringStatusCb)(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
 
 /**
+ * Callback prototype for reporting network change either automatically detected or notified by #linphone_core_set_network_reachable.
+ * @param lc the LinphoneCore
+ * @param reachable true if network is reachable.
+ */
+typedef void (*LinphoneCoreNetworkReachableCb)(LinphoneCore *lc, bool_t reachable);
+
+/**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
@@ -1645,7 +1652,20 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreFileTransferRecvCb file_transfer_recv; /** Callback to store file received attached to a #LinphoneChatMessage */
 	LinphoneCoreFileTransferSendCb file_transfer_send; /** Callback to collect file chunk to be sent for a #LinphoneChatMessage */
 	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**Callback to indicate file transfer progress*/
+	LinphoneCoreNetworkReachableCb network_reachable; /** Call back to report IP network status (I.E up/down)*/
 } LinphoneCoreVTable;
+
+/**
+ * Instantiate a vtable with all argument set to NULL
+ * @returns newly allocated vtable
+ */
+LINPHONE_PUBLIC LinphoneCoreVTable *linphone_vtable_new();
+
+/**
+ * destroy a vtable.
+ * @param vtable to be destroyed
+ */
+LINPHONE_PUBLIC void linphone_vtable_destroy(LinphoneCoreVTable* table);
 
 /**
  * @}
@@ -1751,24 +1771,26 @@ LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVT
 /* function to be periodically called in a main loop */
 /* For ICE to work properly it should be called every 20ms */
 LINPHONE_PUBLIC	void linphone_core_iterate(LinphoneCore *lc);
-#if 0 /*not implemented yet*/
+
 /**
  * @ingroup initializing
- * Provide Linphone Core with an unique identifier. This be later used to identified contact address coming from this device.
- * Value is not saved.
+ * add a listener to be notified of linphone core events. Once events are received, registered vtable are invoked in order.
+ * @param vtable a LinphoneCoreVTable structure holding your application callbacks. Object is owned by linphone core until linphone_core_remove_listener.
  * @param lc object
  * @param string identifying the device, can be EMEI or UDID
  *
  */
-void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id);
+LINPHONE_PUBLIC void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable);
 /**
  * @ingroup initializing
- * get Linphone unique identifier
+ * remove a listener registred by linphone_core_add_listener.
+ * @param vtable a LinphoneCoreVTable structure holding your application callbacks
+ * @param lc object
+ * @param string identifying the device, can be EMEI or UDID
  *
  */
-const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable);
 
-#endif
 
 /*sets the user-agent string in sip messages, ideally called just after linphone_core_new() or linphone_core_init() */
 LINPHONE_PUBLIC	void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);

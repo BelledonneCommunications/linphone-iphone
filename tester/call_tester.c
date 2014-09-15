@@ -2297,10 +2297,10 @@ static void call_transfer_existing_call_outgoing_call(void) {
 
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	const MSList* calls;
-	
+
 	linphone_core_use_files (pauline->lc,TRUE);
 	linphone_core_use_files (laure->lc,TRUE);
-	
+
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 
@@ -2315,7 +2315,7 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	CU_ASSERT_TRUE(call(marie,laure));
 	marie_call_laure=linphone_core_get_current_call(marie->lc);
 	laure_called_by_marie=linphone_core_get_current_call(laure->lc);
-	/*marie pause pauline*/
+	/*marie pause laure*/
 	CU_ASSERT_TRUE(pause_call_1(marie,marie_call_laure,laure,laure_called_by_marie));
 
 	reset_counters(&marie->stat);
@@ -2570,7 +2570,9 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		linphone_core_set_user_agent(marie->lc,user_agent,NULL);
 	}
 	if (!enable_auth_req_cb) {
-		marie->lc->vtable.auth_info_requested=NULL;
+
+		((LinphoneCoreVTable*)(marie->lc->vtables->data))->auth_info_requested=NULL;
+
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
 	}
 

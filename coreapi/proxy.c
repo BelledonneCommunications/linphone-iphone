@@ -310,14 +310,14 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
 	if (obj->reg_proxy==NULL){
-		if (lc && lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
+		if (lc)
+			linphone_core_notify_display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
 						" followed by a hostname."));
 		return FALSE;
 	}
 	if (obj->reg_identity==NULL){
-		if (lc && lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
+		if (lc)
+			linphone_core_notify_display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
 					"sip:username@proxydomain, such as sip:alice@example.net"));
 		return FALSE;
 	}
@@ -1365,9 +1365,9 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	caps=sip_setup_context_get_capabilities(ssc);
 	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
 		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0){
-			if (lc->vtable.display_warning){
+			{
 				char *tmp=ms_strdup_printf(_("Could not login as %s"),cfg->reg_identity);
-				lc->vtable.display_warning(lc,tmp);
+				linphone_core_notify_display_warning(lc,tmp);
 				ms_free(tmp);
 			}
 			return;
@@ -1567,9 +1567,8 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 		if (update_friends){
 			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
 		}
-		if (lc && lc->vtable.registration_state_changed){
-			lc->vtable.registration_state_changed(lc,cfg,state,message);
-		}
+		if (lc)
+			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
 	} else {
 		/*state already reported*/
 	}

@@ -216,12 +216,9 @@ static void text_message_within_dialog(void) {
 
 static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
 static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
-	stats* counters;
 	ms_message("text_message_with_credential_from_auth_cb:Auth info requested  for user id [%s] at realm [%s]\n"
 						,username
 						,realm);
-	counters = get_stats(lc);
-	counters->number_of_auth_info_requested++;
 	linphone_core_add_auth_info(lc,text_message_with_credential_from_auth_cb_auth_info); /*add stored authentication info to LinphoneCore*/
 }
 
@@ -229,13 +226,15 @@ static void text_message_with_credential_from_auth_cb_auth_info_requested(Linpho
 static void text_message_with_credential_from_auth_cb(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
+	LinphoneCoreVTable* vtable = linphone_vtable_new();
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
 
 	/*to force cb to be called*/
 	linphone_core_clear_all_auth_info(marie->lc);
-	marie->lc->vtable.auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
+	vtable->auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
+	linphone_core_add_listener(marie->lc, vtable);
 
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);

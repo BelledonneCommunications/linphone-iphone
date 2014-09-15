@@ -193,6 +193,8 @@ typedef struct _stats {
 
 	int number_of_LinphoneCallEncryptedOn;
 	int number_of_LinphoneCallEncryptedOff;
+	int number_of_NetworkReachableTrue;
+	int number_of_NetworkReachableFalse;
 	LinphoneChatMessage* last_received_chat_message;
 }stats;
 

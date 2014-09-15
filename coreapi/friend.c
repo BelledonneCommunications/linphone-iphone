@@ -253,8 +253,7 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 			linphone_presence_model_unref(lf->presence);
 		}
 		lf->presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,"unknown activity");
-		if (lc->vtable.notify_presence_received)
-			lc->vtable.notify_presence_received(lc,lf);
+		linphone_core_notify_notify_presence_received(lc,lf);
 	}
 	lf->initial_subscribes_sent=FALSE;
 }

@@ -57,7 +57,15 @@ const char *liblinphone_tester_writable_dir_prefix = ".";
 #endif
 
 const char *userhostsfile = "tester_hosts";
-
+static void network_reachable(LinphoneCore *lc, bool_t reachable) {
+	stats* counters;
+	ms_message("Network reachable [%s]",reachable?"TRUE":"FALSE");
+	counters = get_stats(lc);
+	if (reachable)
+		counters->number_of_NetworkReachableTrue++;
+	else
+		counters->number_of_NetworkReachableFalse++;
+}
 void liblinphone_tester_clock_start(MSTimeSpec *start){
 	ms_get_cur_time(start);
 }
@@ -216,6 +224,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
 	mgr->v_table.configuring_status=linphone_configuration_status;
 	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
+	mgr->v_table.network_reachable=network_reachable;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);

@@ -992,9 +992,7 @@ static void linphone_core_free_payload_types(LinphoneCore *lc){
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message){
 	lc->state=gstate;
-	if (lc->vtable.global_state_changed){
-		lc->vtable.global_state_changed(lc,gstate,message);
-	}
+	linphone_core_notify_global_state_changed(lc,gstate,message);
 }
 
 static void misc_config_read(LinphoneCore *lc) {
@@ -1030,15 +1028,13 @@ static void linphone_core_start(LinphoneCore * lc) {
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
 
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Ready"));
+	linphone_core_notify_display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
 	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message) {
-	if (lc->vtable.configuring_status)
-		lc->vtable.configuring_status(lc, state, message);
+	linphone_core_notify_configuring_status(lc, state, message);
 
 	if (state == LinphoneConfiguringSuccessful) {
 		if (linphone_core_is_provisioning_transient(lc) == TRUE)
@@ -1051,13 +1047,15 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	const char *remote_provisioning_uri = NULL;
+	LinphoneCoreVTable* local_vtable= linphone_vtable_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
 
-	memcpy(&lc->vtable,vtable,sizeof(LinphoneCoreVTable));
+	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
+	lc->vtables=ms_list_append(lc->vtables,local_vtable);
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
@@ -1654,8 +1652,7 @@ const char *linphone_core_get_user_agent_version(void){
 static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
 	ms_warning("%s",msg);
-	if (lc->vtable.display_warning)
-		lc->vtable.display_warning(lc,msg);
+	linphone_core_notify_display_warning(lc,msg);
 	ms_free(msg);
 }
 
@@ -1868,8 +1865,7 @@ static void assign_buddy_info(LinphoneCore *lc, BuddyInfo *info){
 	if (lf!=NULL){
 		lf->info=info;
 		ms_message("%s has a BuddyInfo assigned with image %p",info->sip_uri, info->image_data);
-		if (lc->vtable.buddy_info_updated)
-			lc->vtable.buddy_info_updated(lc,lf);
+		linphone_core_notify_buddy_info_updated(lc,lf);
 	}else{
 		ms_warning("Could not any friend with uri %s",info->sip_uri);
 	}
@@ -1955,7 +1951,10 @@ void linphone_core_iterate(LinphoneCore *lc){
 	int elapsed;
 	bool_t one_second_elapsed=FALSE;
 	const char *remote_provisioning_uri = NULL;
-
+	if (lc->network_reachable_to_be_notified) {
+		lc->network_reachable_to_be_notified=FALSE;
+		linphone_core_notify_network_reachable(lc,lc->network_reachable);
+	}
 	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
 		if (sal_get_root_ca(lc->sal)) {
 			belle_tls_verify_policy_t *tls_policy = belle_tls_verify_policy_new();
@@ -1963,8 +1962,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			belle_http_provider_set_tls_verify_policy(lc->http_provider, tls_policy);
 		}
 
-		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc, _("Configuring"));
+		linphone_core_notify_display_status(lc, _("Configuring"));
 		linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
 
 		remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
@@ -2129,11 +2127,9 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	if (*url=='\0') return NULL;
 
 	if (is_enum(url,&enum_domain)){
-		if (lc->vtable.display_status!=NULL)
-			lc->vtable.display_status(lc,_("Looking for telephone number destination..."));
+		linphone_core_notify_display_status(lc,_("Looking for telephone number destination..."));
 		if (enum_lookup(enum_domain,&enumres)<0){
-			if (lc->vtable.display_status!=NULL)
-				lc->vtable.display_status(lc,_("Could not resolve this number."));
+			linphone_core_notify_display_status(lc,_("Could not resolve this number."));
 			ms_free(enum_domain);
 			return NULL;
 		}
@@ -2416,13 +2412,11 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
 
 	barmsg=ortp_strdup_printf("%s %s", _("Contacting"), real_url);
-	if (lc->vtable.display_status!=NULL)
-		lc->vtable.display_status(lc,barmsg);
+	linphone_core_notify_display_status(lc,barmsg);
 	ms_free(barmsg);
 
 	if (err<0){
-		if (lc->vtable.display_status!=NULL)
-			lc->vtable.display_status(lc,_("Could not call"));
+		linphone_core_notify_display_status(lc,_("Could not call"));
 		linphone_call_stop_media_streams(call);
 		linphone_call_set_state(call,LinphoneCallError,"Call failed");
 	}else {
@@ -2572,8 +2566,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	linphone_core_preempt_sound_resources(lc);
 
 	if(!linphone_core_can_we_add_call(lc)){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
+		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
 
@@ -2744,9 +2737,8 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_address_destroy(from_parsed);
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
 		(sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
-	if (lc->vtable.show) lc->vtable.show(lc);
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,barmesg);
+	linphone_core_notify_show_interface(lc);
+	linphone_core_notify_display_status(lc,barmesg);
 
 	/* play the ring if this is the only call*/
 	if (ms_list_size(lc->calls)==1){
@@ -2861,8 +2853,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	}else{
 		subject="Refreshing";
 	}
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	linphone_core_notify_display_status(lc,_("Modifying call parameters..."));
 	sal_call_set_local_media_description (call->op,call->localdesc);
 	if (call->dest_proxy && call->dest_proxy->op){
 		/*give a chance to update the contact address if connectivity has changed*/
@@ -3190,8 +3181,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_accept(call->op);
-	if (lc->vtable.display_status!=NULL)
-		lc->vtable.display_status(lc,_("Connected."));
+	linphone_core_notify_display_status(lc,_("Connected."));
 	lc->current_call=call;
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
@@ -3216,8 +3206,7 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 	linphone_call_delete_upnp_session(call);
 #endif //BUILD_UPNP
 
-	if (lc->vtable.display_status!=NULL)
-		lc->vtable.display_status(lc,_("Call aborted") );
+	linphone_core_notify_display_status(lc,_("Call aborted") );
 	linphone_call_set_state(call,LinphoneCallError,error);
 	return 0;
 }
@@ -3236,8 +3225,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_delete_upnp_session(call);
 #endif //BUILD_UPNP
 
-	if (lc->vtable.display_status!=NULL)
-		lc->vtable.display_status(lc,_("Call ended") );
+	linphone_core_notify_display_status(lc,_("Call ended") );
 	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
 }
 
@@ -3408,13 +3396,11 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 	}
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	if (sal_call_update(call->op,subject,FALSE) != 0){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("Could not pause the call"));
+		linphone_core_notify_display_warning(lc,_("Could not pause the call"));
 	}
 	lc->current_call=NULL;
 	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,_("Pausing the current call..."));
+	linphone_core_notify_display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
 	call->paused_by_app=FALSE;
@@ -3499,8 +3485,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->params->in_conference==FALSE)
 		lc->current_call=call;
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
-	if (lc->vtable.display_status)
-		lc->vtable.display_status(lc,temp);
+	linphone_core_notify_display_status(lc,temp);
 	return 0;
 }
 
@@ -5767,6 +5752,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (liblinphone_serialize_logs == TRUE) {
 		ortp_set_log_thread_id(0);
 	}
+	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_vtable_destroy);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
@@ -5774,7 +5760,7 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
 
 	if (lc->network_reachable==isReachable) return; // no change, ignore.
-
+	lc->network_reachable_to_be_notified=TRUE;
 	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
@@ -6455,4 +6441,124 @@ char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
 
 int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
 	return pt->channels;
+}
+
+LinphoneCoreVTable *linphone_vtable_new() {
+	return ms_new0(LinphoneCoreVTable,1);
+}
+
+void linphone_vtable_destroy(LinphoneCoreVTable* table) {
+	ms_free(table);
+}
+#define NOTIFY_IF_EXIST(function_name) \
+	MSList* iterator; \
+	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\
+	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next) \
+			if (((LinphoneCoreVTable*)(iterator->data))->function_name)\
+				((LinphoneCoreVTable*)(iterator->data))->function_name
+
+void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
+	NOTIFY_IF_EXIST(global_state_changed)(lc,gstate,message);
+}
+void linphone_core_notify_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message){
+	NOTIFY_IF_EXIST(call_state_changed)(lc,call,cstate,message);
+}
+void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token) {
+	NOTIFY_IF_EXIST(call_encryption_changed)(lc,call,on,authentication_token);
+}
+void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
+	NOTIFY_IF_EXIST(registration_state_changed)(lc,cfg,cstate,message);
+}
+void linphone_core_notify_show_interface(LinphoneCore *lc){
+	NOTIFY_IF_EXIST(show)(lc);
+}
+void linphone_core_notify_display_status(LinphoneCore *lc, const char *message) {
+	NOTIFY_IF_EXIST(display_status)(lc,message);
+}
+void linphone_core_notify_display_message(LinphoneCore *lc, const char *message){
+	NOTIFY_IF_EXIST(display_message)(lc,message);
+}
+void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message){
+	NOTIFY_IF_EXIST(display_warning)(lc,message);
+}
+void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url){
+	NOTIFY_IF_EXIST(display_url)(lc,message,url);
+}
+void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf){
+	NOTIFY_IF_EXIST(notify_presence_received)(lc,lf);
+}
+void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
+	NOTIFY_IF_EXIST(new_subscription_requested)(lc,lf,url);
+}
+void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
+	NOTIFY_IF_EXIST(auth_info_requested)(lc,realm,username,domain);
+}
+void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl){
+	NOTIFY_IF_EXIST(call_log_updated)(lc,newcl);
+}
+void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
+	NOTIFY_IF_EXIST(text_received)(lc,room,from,message);
+}
+void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message){
+	NOTIFY_IF_EXIST(message_received)(lc,room,message);
+}
+void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
+	NOTIFY_IF_EXIST(file_transfer_recv)(lc,message,content,buff,size);
+}
+void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size) {
+	NOTIFY_IF_EXIST(file_transfer_send)(lc,message,content,buff,size);
+}
+void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
+	NOTIFY_IF_EXIST(file_transfer_progress_indication)(lc,message,content,progress);
+}
+void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
+	NOTIFY_IF_EXIST(is_composing_received)(lc,room);
+}
+void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf) {
+	NOTIFY_IF_EXIST(dtmf_received)(lc,call,dtmf);
+}
+bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc) {
+	MSList* iterator;
+	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next)
+		if (((LinphoneCoreVTable*)(iterator->data))->dtmf_received)
+			return TRUE;
+	return FALSE;
+}
+void linphone_core_notify_refer_received(LinphoneCore *lc, const char *refer_to) {
+	NOTIFY_IF_EXIST(refer_received)(lc,refer_to);
+}
+void linphone_core_notify_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf) {
+	NOTIFY_IF_EXIST(buddy_info_updated)(lc,lf);
+}
+void linphone_core_notify_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
+	NOTIFY_IF_EXIST(transfer_state_changed)(lc,transfered,new_call_state);
+}
+void linphone_core_notify_call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats) {
+	NOTIFY_IF_EXIST(call_stats_updated)(lc,call,stats);
+}
+void linphone_core_notify_info_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg) {
+	NOTIFY_IF_EXIST(info_received)(lc,call,msg);
+}
+void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
+	NOTIFY_IF_EXIST(configuring_status)(lc,status,message);
+}
+void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
+	NOTIFY_IF_EXIST(network_reachable)(lc,reachable);
+}
+void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
+	NOTIFY_IF_EXIST(notify_received)(lc,lev,notified_event,body);
+}
+void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
+	NOTIFY_IF_EXIST(subscription_state_changed)(lc,lev,state);
+}
+void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
+	NOTIFY_IF_EXIST(publish_state_changed)(lc,lev,state);
+}
+void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable) {
+	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
+	lc->vtables=ms_list_append(lc->vtables,vtable);
+}
+void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {
+	ms_message("Vtable [%p] unregistered on core [%p]",lc,vtable);
+	lc->vtables=ms_list_remove(lc->vtables,(void*)vtable);
 }
