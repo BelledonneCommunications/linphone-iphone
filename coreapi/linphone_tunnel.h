@@ -142,7 +142,7 @@ LINPHONE_PUBLIC void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, Linph
  * @param  tunnel object
  * returns a string of space separated list of host:port of tunnel server addresses
  * */
-LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
 
 /**
  * @param  tunnel object
@@ -163,13 +163,13 @@ LINPHONE_PUBLIC void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabl
  * @param  tunnel object
  * Returns a boolean indicating whether tunneled operation is enabled.
 **/
-LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
 
 /**
  * @param  tunnel object
  * Returns a boolean indicating whether tunnel is connected successfully.
 **/
-LINPHONE_PUBLIC bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel);
 
 /**
  * @param  tunnel object

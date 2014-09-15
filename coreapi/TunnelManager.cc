@@ -116,7 +116,7 @@ void TunnelManager::start() {
 	mTunnelClient->start();
 }
 
-bool TunnelManager::isStarted() {
+bool TunnelManager::isStarted() const {
 	return mTunnelClient != 0 && mTunnelClient->isStarted();
 }
 
@@ -178,14 +178,10 @@ void TunnelManager::registration(){
 
 	//  tunnel was enabled
 	if (isReady()){
-		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
 		if(mTunnelizeSipPackets) {
 			sal_enable_tunnel(mCore->sal, mTunnelClient);
 		}
-	// tunnel was disabled
-	} else {
-		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
 	}
 
 	// registration occurs always after an unregistation has been made. First we
@@ -209,7 +205,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 	}
 }
 
-void TunnelManager::waitUnRegistration(){
+void TunnelManager::waitUnRegistration() {
 	LinphoneProxyConfig* lProxy;
 
 	linphone_core_get_default_proxy(mCore, &lProxy);
@@ -244,11 +240,9 @@ void TunnelManager::enable(bool isEnable) {
 	ms_message("Turning tunnel [%s]", isEnable ?"on" : "off");
 	if (isEnable && !mEnabled){
 		mEnabled=true;
-		//1 save firewall policy
-		mPreviousFirewallPolicy=linphone_core_get_firewall_policy(mCore);
-		//2 unregister
+		//1 unregister
 		waitUnRegistration();
-		//3 insert tunnel
+		//2 insert tunnel
 		start();
 	}else if (!isEnable && mEnabled){
 		//1 unregister
@@ -334,7 +328,7 @@ void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 }
 
 
-bool TunnelManager::isEnabled() {
+bool TunnelManager::isEnabled() const {
 	return mEnabled;
 }
 
@@ -414,6 +408,6 @@ void TunnelManager::setHttpProxy(const char *host,int port, const char *username
 	if (mTunnelClient) mTunnelClient->setHttpProxy(host, port, username, passwd);
 }
 
-LinphoneCore *TunnelManager::getLinphoneCore(){
+LinphoneCore *TunnelManager::getLinphoneCore() const{
 	return mCore;
 }

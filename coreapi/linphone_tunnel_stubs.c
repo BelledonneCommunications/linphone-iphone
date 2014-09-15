@@ -29,7 +29,7 @@
 #include "lpconfig.h"
 
 
-LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
+LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
 

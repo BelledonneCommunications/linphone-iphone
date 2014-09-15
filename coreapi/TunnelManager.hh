@@ -98,7 +98,7 @@ class UdpMirrorClient;
 		/**
 		 * Returns a boolean indicating whether tunneled operation is enabled.
 		**/
-		bool isEnabled();
+		bool isEnabled() const;
 		/**
 		 * Enables debug logs of the Tunnel subsystem.
 		**/
@@ -145,7 +145,7 @@ class UdpMirrorClient;
 		/**
 		 * Get associated Linphone Core.
 		 */
-		LinphoneCore *getLinphoneCore();
+		LinphoneCore *getLinphoneCore() const;
 		virtual void setHttpProxy(const char *host,int port, const char *username, const char *passwd);
 		virtual bool isReady() const;
 	private:
@@ -161,7 +161,7 @@ class UdpMirrorClient;
 			}mData;
 		};
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
-		virtual bool isStarted();
+		virtual bool isStarted() const;
 		void onIterate();
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 		static int customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
@@ -201,7 +201,6 @@ class UdpMirrorClient;
 		std::string mHttpPasswd;
 		std::string mHttpProxyHost;
 		int mHttpProxyPort;
-		LinphoneFirewallPolicy mPreviousFirewallPolicy;
 		bool mPreviousRegistrationEnabled;
 		bool mTunnelizeSipPackets;
 	};

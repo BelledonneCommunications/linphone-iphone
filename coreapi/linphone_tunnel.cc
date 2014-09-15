@@ -29,7 +29,7 @@
 #include "private.h"
 #include "lpconfig.h"
 
-LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
+LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
 
@@ -45,11 +45,11 @@ extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
 	return tunnel;
 }
 
-static inline belledonnecomm::TunnelManager *bcTunnel(LinphoneTunnel *tunnel){
+static inline belledonnecomm::TunnelManager *bcTunnel(const LinphoneTunnel *tunnel){
 	return tunnel->manager;
 }
 
-static inline _LpConfig *config(LinphoneTunnel *tunnel){
+static inline _LpConfig *config(const LinphoneTunnel *tunnel){
 	return tunnel->manager->getLinphoneCore()->config;
 }
 
@@ -129,7 +129,7 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 }
 
 
-static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
+static void linphone_tunnel_save_config(const LinphoneTunnel *tunnel) {
 	MSList *elem = NULL;
 	char *tmp = NULL, *old_tmp = NULL, *tc_str = NULL;
 	for(elem = tunnel->config_list; elem != NULL; elem = elem->next) {
@@ -218,7 +218,7 @@ void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig 
 	}
 }
 
-const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
+const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel){
 	return tunnel->config_list;
 }
 
@@ -238,11 +238,11 @@ void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
 	bcTunnel(tunnel)->enable(enabled);
 }
 
-bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
+bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel){
 	return bcTunnel(tunnel)->isEnabled();
 }
 
-bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel){
+bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
 	return bcTunnel(tunnel)->isReady();
 }
 
