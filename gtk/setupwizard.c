@@ -335,7 +335,7 @@ static GtkWidget *create_account_information_page() {
 	entryEmail=gtk_entry_new();
 	entryPassword2=gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword2), FALSE);
-	checkNewsletter=gtk_check_button_new_with_label("Keep me informed with linphone updates");
+	checkNewsletter=gtk_check_button_new_with_label(_("Keep me informed with linphone updates"));
 
 	gdk_color_parse ("red", &color);
 	labelError=gtk_label_new(NULL);
