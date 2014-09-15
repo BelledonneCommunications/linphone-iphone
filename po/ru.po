@@ -523,7 +523,7 @@ msgstr "Подтвердите ваш пароль: (*)"
 
 #: ../gtk/setupwizard.c:338
 msgid "Keep me informed with linphone updates"
-msgstr ""
+msgstr "Информировать об обновлениях linphone"
 
 #: ../gtk/setupwizard.c:394
 msgid ""
@@ -1258,7 +1258,7 @@ msgstr "Аудио RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:22
 msgid "Fixed"
-msgstr "Исправлено"
+msgstr "Фиксированный"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Media encryption is mandatory"
