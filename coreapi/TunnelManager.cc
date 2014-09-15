@@ -147,7 +147,8 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 	,mAutoDetectStarted(false)
 	,mReady(false)
 	,mHttpProxyPort(0)
-	,mPreviousRegistrationEnabled(false){
+	,mPreviousRegistrationEnabled(false)
+	,mTunnelizeSipPackets(true){
 
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
@@ -179,11 +180,11 @@ void TunnelManager::registration(){
 	if (isReady()){
 		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
-
-		sal_enable_tunnel(mCore->sal, mTunnelClient);
+		if(mTunnelizeSipPackets) {
+			sal_enable_tunnel(mCore->sal, mTunnelClient);
+		}
 	// tunnel was disabled
 	} else {
-		linphone_core_set_sip_transports(mCore, &mRegularTransport);
 		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
 	}
 
@@ -243,8 +244,7 @@ void TunnelManager::enable(bool isEnable) {
 	ms_message("Turning tunnel [%s]", isEnable ?"on" : "off");
 	if (isEnable && !mEnabled){
 		mEnabled=true;
-		//1 save transport and firewall policy
-		linphone_core_get_sip_transports(mCore, &mRegularTransport);
+		//1 save firewall policy
 		mPreviousFirewallPolicy=linphone_core_get_firewall_policy(mCore);
 		//2 unregister
 		waitUnRegistration();
@@ -259,17 +259,9 @@ void TunnelManager::enable(bool isEnable) {
 		stopClient();
 		mReady=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
-
 		sal_disable_tunnel(mCore->sal);
-		// Set empty transports to force the setting of regular transport, otherwise it is not applied
-		LCSipTransports lTransport;
-		lTransport.udp_port = 0;
-		lTransport.tcp_port = 0;
-		lTransport.tls_port = 0;
-		lTransport.dtls_port = 0;
-		linphone_core_set_sip_transports(mCore, &lTransport);
 
-		// register
+		// 3 register
 		registration();
 	}
 }
@@ -402,6 +394,16 @@ void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd
 	mHttpUserName=username?username:"";
 	mHttpPasswd=passwd?passwd:"";
 	if (mTunnelClient) mTunnelClient->setHttpProxyAuthInfo(username,passwd);
+}
+
+void TunnelManager::tunnelizeSipPackets(bool enable){
+	if(enable != mTunnelizeSipPackets) {
+		mTunnelizeSipPackets = enable;
+		if(mEnabled && isReady()) {
+			waitUnRegistration();
+			registration();
+		}
+	}
 }
 
 void TunnelManager::setHttpProxy(const char *host,int port, const char *username, const char *passwd){

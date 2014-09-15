@@ -33,7 +33,7 @@ class UdpMirrorClient;
 	 * The TunnelManager class extends the LinphoneCore functionnality in order to provide an easy to use API to
 	 * - provision tunnel servers ip addresses and ports
 	 * - start/stop the tunneling service
-	 * - be informed of of connection and disconnection events to the tunnel server
+	 * - be informed of connection and disconnection events to the tunnel server
 	 * - perform auto-detection whether tunneling is required, based on a test of sending/receiving a flow of UDP packets.
 	 *
 	 * It takes in charge automatically the SIP registration procedure when connecting or disconnecting to a tunnel server.
@@ -91,8 +91,8 @@ class UdpMirrorClient;
 		void enable(bool isEnabled);
 		/**
 		 * In auto detect mode, the tunnel manager try to establish a real time rtp cummunication with the tunnel server on  specified port.
-		 *<br>In case of success, the tunnel is automatically turned off. Otherwise, if no udp commmunication is feasible, tunnel mode is turned on.
-		 *<br> Call this method each time to run the auto detection algorithm
+		 *<br/>In case of success, the tunnel is automatically turned off. Otherwise, if no udp commmunication is feasible, tunnel mode is turned on.
+		 *<br/> Call this method each time to run the auto detection algorithm
 		 */
 		void autoDetect();
 		/**
@@ -115,7 +115,22 @@ class UdpMirrorClient;
 		 * @param passwd The password.
 		**/
 		void setHttpProxyAuthInfo(const char* username,const char* passwd);
+		/**
+		 * Indicate to the tunnel manager whether SIP packets must pass
+		 * through the tunnel. That featurte is automatically enabled at
+		 * the creation of the TunnelManager instance.
+		 * @param enable If set to TRUE, SIP packets will pass through the tunnel.
+		 * If set to FALSE, SIP packets will pass by the configured proxies.
+		 */
+		void tunnelizeSipPackets(bool enable = true);
+		/**
+		 * @brief Destructor
+		 */
 		~TunnelManager();
+		/**
+		 * @brief Constructor
+		 * @param lc The LinphoneCore instance of which the TunnelManager will be associated to.
+		 */
 		TunnelManager(LinphoneCore* lc);
 		/**
 		 * Destroy the given RtpTransport.
@@ -161,8 +176,10 @@ class UdpMirrorClient;
 		void processTunnelEvent(const Event &ev);
 		void processUdpMirrorEvent(const Event &ev);
 		void postEvent(const Event &ev);
+		void stopClient();
+
+	private:
 		LinphoneCore* mCore;
-		LCSipTransports mRegularTransport;
 #ifndef USE_BELLESIP
 		TunnelSocket *mSipSocket;
 		eXosip_transport_hooks_t mExosipTransport;
@@ -175,7 +192,6 @@ class UdpMirrorClient;
 		UdpMirrorClientList mUdpMirrorClients;
 		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
 		TunnelClient* mTunnelClient;
-		void stopClient();
 		Mutex mMutex;
 		static Mutex sMutex;
 		bool mAutoDetectStarted;
@@ -187,6 +203,7 @@ class UdpMirrorClient;
 		int mHttpProxyPort;
 		LinphoneFirewallPolicy mPreviousFirewallPolicy;
 		bool mPreviousRegistrationEnabled;
+		bool mTunnelizeSipPackets;
 	};
 
 /**
