@@ -661,7 +661,9 @@ AC_ARG_ENABLE(strict,
 	[strictness=yes]
 )
 
-STRICT_OPTIONS="-Wall -Wdeclaration-after-statement -Wuninitialized"
+STRICT_OPTIONS="-Wall -Wuninitialized"
+STRICT_OPTIONS_CC="-Wdeclaration-after-statement "
+STRICT_OPTIONS_CXX=""
 
 #for clang
 
@@ -688,6 +690,8 @@ if test "$strictness" = "yes" ; then
 fi
 
 AC_SUBST(STRICT_OPTIONS)
+AC_SUBST(STRICT_OPTIONS_CC)
+AC_SUBST(STRICT_OPTIONS_CXX)
 
 top_srcdir=`dirname $0`
 
