@@ -645,28 +645,44 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 			belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		}
 	}
-	return ;
 }
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
 #ifdef TUNNEL_ENABLED
-	belle_sip_listening_point_t *lp;
-	int result;
-
-	sal_unlisten_ports(ctx);
-	lp = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
-	if (lp == NULL) return -1;
-
-	belle_sip_listening_point_set_keep_alive(lp, ctx->keep_alive);
-	result = belle_sip_provider_add_listening_point(ctx->prov, lp);
-	set_tls_properties(ctx);
-	return result;
+	belle_sip_listening_point_t *lpUDP = NULL;
+	if(ctx->lpTunnel != NULL) {
+		ortp_error("sal_enable_tunnel(): tunnel is already enabled");
+		return -1;
+	}
+	while((lpUDP = belle_sip_provider_get_listening_point(ctx->prov, "udp")) != NULL) {
+		belle_sip_object_ref(lpUDP);
+		belle_sip_provider_remove_listening_point(ctx->prov, lpUDP);
+		ctx->UDPListeningPoints = ms_list_append(ctx->UDPListeningPoints, lpUDP);
+	}
+	ctx->lpTunnel = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
+	if(ctx->lpTunnel == NULL) return -1;
+	belle_sip_listening_point_set_keep_alive(ctx->lpTunnel, ctx->keep_alive);
+	belle_sip_provider_add_listening_point(ctx->prov, ctx->lpTunnel);
+	belle_sip_object_ref(ctx->lpTunnel);
+	return 0;
 #else
 	return 0;
 #endif
 }
 void sal_disable_tunnel(Sal *ctx) {
 #ifdef TUNNEL_ENABLED
-	sal_unlisten_ports(ctx);
+	MSList *it;
+	if(ctx->lpTunnel == NULL) {
+		ortp_warning("sal_disable_tunnel(): no tunnel to disable");
+	} else {
+		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lpTunnel);
+		belle_sip_object_unref(ctx->lpTunnel);
+		ctx->lpTunnel = NULL;
+		for(it=ctx->UDPListeningPoints; it!=NULL; it=it->next) {
+			belle_sip_provider_add_listening_point(ctx->prov, (belle_sip_listening_point_t *)it->data);
+		}
+		ms_list_free_with_data(ctx->UDPListeningPoints, belle_sip_object_unref);
+		ctx->UDPListeningPoints = NULL;
+	}
 #endif
 }
 /**

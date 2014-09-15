@@ -33,6 +33,8 @@ struct Sal{
 	belle_sip_provider_t *prov;
 	belle_sip_header_user_agent_t* user_agent;
 	belle_sip_listener_t *listener;
+	belle_sip_listening_point_t *lpTunnel;
+	MSList *UDPListeningPoints;
 	void *up; /*user pointer*/
 	int session_expires;
 	unsigned int keep_alive;
