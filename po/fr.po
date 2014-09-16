@@ -1584,11 +1584,11 @@ msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
-msgstr "<b>Configuration du tunnel<b>"
+msgstr "<b>Configuration du tunnel</b>"
 
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
-msgstr "<b>Configuration d'un proxy http (optionel)<b>"
+msgstr "<b>Configuration d'un proxy http (optionel)</b>"
 
 #: ../gtk/keypad.ui.h:1
 msgid "D"
