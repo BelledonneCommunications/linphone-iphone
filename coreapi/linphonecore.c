@@ -1025,7 +1025,9 @@ static void linphone_core_start(LinphoneCore * lc) {
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
-	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
+	if (lc->tunnel) {
+		linphone_tunnel_configure(lc->tunnel);
+	}
 #endif
 
 	linphone_core_notify_display_status(lc,_("Ready"));

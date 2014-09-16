@@ -122,7 +122,12 @@ class UdpMirrorClient;
 		 * @param enable If set to TRUE, SIP packets will pass through the tunnel.
 		 * If set to FALSE, SIP packets will pass by the configured proxies.
 		 */
-		void tunnelizeSipPackets(bool enable = true);
+		void tunnelizeSipPackets(bool enable);
+		/**
+		 * @brief Check whether the tunnel manager is set to tunnelize SIP packets
+		 * @return True, SIP packets pass through the tunnel
+		 */
+		bool tunnelizeSipPacketsEnabled() const;
 		/**
 		 * @brief Destructor
 		 */

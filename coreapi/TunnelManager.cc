@@ -400,6 +400,10 @@ void TunnelManager::tunnelizeSipPackets(bool enable){
 	}
 }
 
+bool TunnelManager::tunnelizeSipPacketsEnabled() const {
+	return mTunnelizeSipPackets;
+}
+
 void TunnelManager::setHttpProxy(const char *host,int port, const char *username, const char *passwd){
 	mHttpUserName=username?username:"";
 	mHttpPasswd=passwd?passwd:"";
