@@ -561,7 +561,7 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 									sal_address_get_port(addr),
 									sal_transport_to_string(sal_address_get_transport(addr)));
 	if (sal_address_get_port(addr)==-1 && lp==NULL){
-		int random_port=(0xDFFF&random())+1024;
+		int random_port=(0xDFFF&ortp_random())+1024;
 		ms_warning("This version of belle-sip doesn't support random port, choosing one here.");
 		lp = belle_sip_stack_create_listening_point(ctx->stack,
 						sal_address_get_domain(addr),
