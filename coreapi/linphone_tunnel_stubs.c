@@ -86,4 +86,4 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_enable_sip_packets_transport(LinphoneTunnel *tunnel, bool_t enable) {}
-bool_t linphone_tunnel_sip_packets_transport_is_enabled(const LinphoneTunnel *tunnel) {}
+bool_t linphone_tunnel_sip_packets_transport_is_enabled(const LinphoneTunnel *tunnel) { return FALSE; }
