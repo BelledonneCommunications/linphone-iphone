@@ -197,18 +197,18 @@ LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
 
 /**
- * @brief Set whether SIP packets must be directly sent to a UA or pass through a tunnel
+ * @brief Set whether SIP packets must be directly sent to a UA or pass through the tunnel
  * @param tunnel Tunnel to configure
- * @param enable If true, SIP packets shall pass through a tunnel
+ * @param enable If true, SIP packets shall pass through the tunnel
  */
-LINPHONE_PUBLIC void linphone_tunnel_enable_sip_packets_transport(LinphoneTunnel *tunnel, bool_t enable);
+LINPHONE_PUBLIC void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable);
 
 /**
- * @brief Checks wether tunnel is set to transport SIP packets
- * @param LinphoneTunnel
- * @return tunnel True, SIP packets shall pass through a tunnel
+ * @brief Check whether tunnel is set to transport SIP packets
+ * @param tunnel Tunnel to check
+ * @return True, SIP packets shall pass through through tunnel
  */
-LINPHONE_PUBLIC bool_t linphone_tunnel_sip_packets_transport_is_enabled(const LinphoneTunnel *tunnel);
+LINPHONE_PUBLIC bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel);
 
 /**
  * Set an optional http proxy to go through when connecting to tunnel server.

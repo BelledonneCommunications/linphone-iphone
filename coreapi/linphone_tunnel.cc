@@ -328,12 +328,12 @@ bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
 	return tunnel->auto_detect_enabled;
 }
 
-void linphone_tunnel_enable_sip_packets_transport(LinphoneTunnel *tunnel, bool_t enable) {
+void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {
 	bcTunnel(tunnel)->tunnelizeSipPackets(enable);
 	lp_config_set_int(config(tunnel), "tunnel", "transport_SIP", (enable ? TRUE : FALSE));
 }
 
-bool_t linphone_tunnel_sip_packets_transport_is_enabled(const LinphoneTunnel *tunnel) {
+bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
 	return bcTunnel(tunnel)->tunnelizeSipPacketsEnabled() ? TRUE : FALSE;
 }
 
@@ -350,6 +350,6 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "transport_SIP", TRUE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
-	linphone_tunnel_enable_sip_packets_transport(tunnel, tunnelizeSIPPackets);
+	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
 	linphone_tunnel_enable(tunnel, enabled);
 }
