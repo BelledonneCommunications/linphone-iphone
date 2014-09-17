@@ -5521,15 +5521,11 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
-	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
-	ms_list_free(config->proxies);
-	config->proxies=NULL;
+	config->proxies=ms_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 
-	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
-	ms_list_free(lc->auth_info);
-	lc->auth_info=NULL;
+	lc->auth_info=ms_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 
 	/*now that we are unregisted, we no longer need the tunnel.*/
 #ifdef TUNNEL_ENABLED

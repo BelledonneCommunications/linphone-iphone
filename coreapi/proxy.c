@@ -188,6 +188,11 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg) {
 	belle_sip_object_unref(cfg);
 }
 
+void _linphone_proxy_config_release(LinphoneProxyConfig *cfg) {
+	_linphone_proxy_config_release_ops(cfg);
+	belle_sip_object_unref(cfg);
+}
+
 LinphoneProxyConfig *linphone_proxy_config_ref(LinphoneProxyConfig *cfg) {
 	belle_sip_object_ref(cfg);
 	return cfg;

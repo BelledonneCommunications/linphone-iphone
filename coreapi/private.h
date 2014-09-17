@@ -300,6 +300,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenc
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj);
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
+void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
  * Can be NULL
