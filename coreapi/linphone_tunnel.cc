@@ -243,7 +243,7 @@ bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel){
 }
 
 bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
-	return bcTunnel(tunnel)->isReady();
+	return bcTunnel(tunnel)->isConnected();
 }
 
 static OrtpLogFunc tunnelOrtpLogHandler=NULL;

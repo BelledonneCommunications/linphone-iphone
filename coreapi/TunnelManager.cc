@@ -19,7 +19,6 @@
 #ifndef USE_BELLESIP
 #include "eXosip2/eXosip_transport_hook.h"
 #endif
-#include "tunnel/udp_mirror.hh"
 #include "private.h"
 
 #ifdef ANDROID
@@ -67,11 +66,6 @@ void TunnelManager::reconnect(){
 		mTunnelClient->reconnect();
 }
 
-void TunnelManager::setCallback(StateCallback cb, void *userdata) {
-	mCallback=cb;
-	mCallbackData=userdata;
-}
-
 static void sCloseRtpTransport(RtpTransport *t, void *userData){
 	TunnelSocket *s=(TunnelSocket*)userData;
 	TunnelManager *manager=(TunnelManager*)s->getUserPointer();
@@ -102,10 +96,10 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 	return t;
 }
 
-void TunnelManager::start() {
+void TunnelManager::connect() {
 	if (!mTunnelClient) {
 		mTunnelClient = new TunnelClient();
-		mTunnelClient->setCallback((StateCallback)tunnelCallback,this);
+		mTunnelClient->setCallback((TunnelClientController::StateCallback)tunnelCallback,this);
 		list<ServerAddr>::iterator it;
 		for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
 			const ServerAddr &addr=*it;
@@ -116,12 +110,8 @@ void TunnelManager::start() {
 	mTunnelClient->start();
 }
 
-bool TunnelManager::isStarted() const {
-	return mTunnelClient != 0 && mTunnelClient->isStarted();
-}
-
-bool TunnelManager::isReady() const {
-	return mTunnelClient && mTunnelClient->isReady() && mReady;
+bool TunnelManager::isConnected() const {
+	return mTunnelClient && mTunnelClient->isReady() && mIsConnected;
 }
 
 int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
@@ -139,17 +129,16 @@ int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flag
 }
 
 
-TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
-	,mCore(lc)
-	,mCallback(NULL)
-	,mEnabled(false)
-	,mTunnelClient(NULL)
-	,mAutoDetectStarted(false)
-	,mReady(false)
-	,mHttpProxyPort(0)
-	,mPreviousRegistrationEnabled(false)
-	,mTunnelizeSipPackets(true){
-
+TunnelManager::TunnelManager(LinphoneCore* lc) :
+	mCore(lc),
+	mEnabled(false),
+	mTunnelClient(NULL),
+	mAutoDetectStarted(false),
+	mIsConnected(false),
+	mHttpProxyPort(0),
+	mPreviousRegistrationEnabled(false),
+	mTunnelizeSipPackets(true)
+{
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
 	mTransportFactories.audio_rtcp_func_data=this;
@@ -162,10 +151,10 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 }
 
 TunnelManager::~TunnelManager(){
-	stopClient();
+	disconnect();
 }
 
-void TunnelManager::stopClient(){
+void TunnelManager::disconnect(){
 	sal_disable_tunnel(mCore->sal);
 	if (mTunnelClient){
 		delete mTunnelClient;
@@ -177,7 +166,7 @@ void TunnelManager::registration(){
 	LinphoneProxyConfig* lProxy;
 
 	//  tunnel was enabled
-	if (isReady()){
+	if (isConnected()){
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
 		if(mTunnelizeSipPackets) {
 			sal_enable_tunnel(mCore->sal, mTunnelClient);
@@ -196,12 +185,12 @@ void TunnelManager::registration(){
 
 void TunnelManager::processTunnelEvent(const Event &ev){
 	if (mEnabled && mTunnelClient->isReady()){
-		mReady=true;
+		mIsConnected=true;
 		ms_message("Tunnel is up, registering now");
 		registration();
 	}else if (mEnabled && !mTunnelClient->isReady()){
 		/* we got disconnected from the tunnel */
-		mReady=false;
+		mIsConnected=false;
 	}
 }
 
@@ -243,15 +232,15 @@ void TunnelManager::enable(bool isEnable) {
 		//1 unregister
 		waitUnRegistration();
 		//2 insert tunnel
-		start();
+		connect();
 	}else if (!isEnable && mEnabled){
 		//1 unregister
 		waitUnRegistration();
 
 		// 2 stop tunnel
 		mEnabled=false;
-		stopClient();
-		mReady=false;
+		disconnect();
+		mIsConnected=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 		sal_disable_tunnel(mCore->sal);
 
@@ -393,7 +382,7 @@ void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd
 void TunnelManager::tunnelizeSipPackets(bool enable){
 	if(enable != mTunnelizeSipPackets) {
 		mTunnelizeSipPackets = enable;
-		if(mEnabled && isReady()) {
+		if(mEnabled && isConnected()) {
 			waitUnRegistration();
 			registration();
 		}

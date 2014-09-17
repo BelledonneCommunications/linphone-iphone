@@ -50,6 +50,12 @@ extern "C"
 
 typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
 
+typedef enum _LinphoneTunnelMode {
+	LinphoneTunnelModeDisabled,
+	LinphoneTunnelModeEnabled,
+	LinphoneTunnelModeAuto
+} LinphoneTunnelMode;
+
 /**
  * Create a new tunnel configuration
  */
