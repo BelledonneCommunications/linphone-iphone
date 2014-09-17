@@ -114,7 +114,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *ob
 	obj->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
 	obj->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	obj->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
-	obj->avpf_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", 0) : 0;
+	obj->avpf_mode = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault) : LinphoneAVPFDefault;
 	obj->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	obj->publish_expires=-1;
 }
@@ -1286,7 +1286,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
-	lp_config_set_int(config, key, "avpf", obj->avpf_enabled);
+	lp_config_set_int(config, key, "avpf", obj->avpf_mode);
 	lp_config_set_int(config, key, "avpf_rr_interval", obj->avpf_rr_interval);
 	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
 	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
@@ -1338,7 +1338,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
-	CONFIGURE_BOOL_VALUE(cfg,config,key,avpf,"avpf")
+	CONFIGURE_INT_VALUE(cfg,config,key,avpf_mode,"avpf")
 	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval")
 	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus")
 	CONFIGURE_STRING_VALUE(cfg,config,key,dial_prefix,"dial_prefix")
@@ -1651,11 +1651,22 @@ int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *obj) {
 }
 
 void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable) {
-	cfg->avpf_enabled = enable;
+	cfg->avpf_mode=enable ? LinphoneAVPFEnabled : LinphoneAVPFDisabled;
 }
 
 bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg) {
-	return cfg->avpf_enabled;
+	if (cfg->avpf_mode==LinphoneAVPFDefault && cfg->lc){
+		return linphone_core_get_avpf_mode(cfg->lc)==LinphoneAVPFEnabled;
+	}
+	return cfg->avpf_mode == LinphoneAVPFEnabled;
+}
+
+LinphoneAVPFMode linphone_proxy_config_get_avpf_mode(const LinphoneProxyConfig *cfg){
+	return cfg->avpf_mode;
+}
+
+void linphone_proxy_config_set_avpf_mode(LinphoneProxyConfig *cfg, LinphoneAVPFMode mode){
+	cfg->avpf_mode=mode;
 }
 
 void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_t interval) {

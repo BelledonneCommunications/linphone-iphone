@@ -288,6 +288,20 @@ LINPHONE_PUBLIC int linphone_payload_type_get_channels(const LinphonePayloadType
 
 
 /**
+ * Enum describing RTP AVPF activation modes.
+**/
+enum _LinphoneAVPFMode{
+	LinphoneAVPFDefault=-1, /**<Use default value defined at upper level*/
+	LinphoneAVPFDisabled, /**<AVPF is disabled*/
+	LinphoneAVPFEnabled /**<AVPF is enabled */
+};
+
+/**
+ * Enum describing RTP AVPF activation modes.
+**/
+typedef enum _LinphoneAVPFMode  LinphoneAVPFMode;
+
+/**
  * Enum describing type of media encryption types.
 **/
 enum _LinphoneMediaEncryption {
@@ -1014,6 +1028,7 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_file_transfer_server(const
  * Indicates whether AVPF/SAVPF must be used for calls using this proxy config.
  * @param[in] cfg #LinphoneProxyConfig object
  * @param[in] enable True to enable AVPF/SAVF, false to disable it.
+ * @deprecated use linphone_proxy_config_set_avpf_mode()
  */
 LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable);
 
@@ -1021,6 +1036,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg,
  * Indicates whether AVPF/SAVPF is being used for calls using this proxy config.
  * @param[in] cfg #LinphoneProxyConfig object
  * @return True if AVPF/SAVPF is enabled, false otherwise.
+ * @deprecated use linphone_proxy_config_set_avpf_mode()
  */
 LINPHONE_PUBLIC bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg);
 
@@ -1037,6 +1053,20 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyCon
  * @return The interval in seconds.
  */
 LINPHONE_PUBLIC uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cfg);
+
+/**
+ * Get enablement status of RTCP feedback (also known as AVPF profile).
+ * @param[in] cfg the proxy config
+ * @return the enablement mode, which can be LinphoneAVPFDefault (use LinphoneCore's mode), LinphoneAVPFEnabled (avpf is enabled), or LinphoneAVPFDisabled (disabled).
+**/
+LINPHONE_PUBLIC LinphoneAVPFMode linphone_proxy_config_get_avpf_mode(const LinphoneProxyConfig *cfg);
+
+/**
+ * Enable the use of RTCP feedback (also known as AVPF profile).
+ * @param[in] cfg the proxy config
+ * @param[in] mode the enablement mode, which can be LinphoneAVPFDefault (use LinphoneCore's mode), LinphoneAVPFEnabled (avpf is enabled), or LinphoneAVPFDisabled (disabled).
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_set_avpf_mode(LinphoneProxyConfig *cfg, LinphoneAVPFMode mode);
 
 /**
  * @}
@@ -2894,6 +2924,12 @@ LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneC
 LINPHONE_PUBLIC void linphone_core_add_supported_tag(LinphoneCore *core, const char *tag);
 
 LINPHONE_PUBLIC void linphone_core_remove_supported_tag(LinphoneCore *core, const char *tag);
+
+LINPHONE_PUBLIC void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode);
+
+LINPHONE_PUBLIC LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc);
+
+LINPHONE_PUBLIC int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

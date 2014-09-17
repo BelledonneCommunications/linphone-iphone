@@ -507,6 +507,7 @@ static void rtp_config_read(LinphoneCore *lc)
 	adaptive_jitt_comp_enabled = lp_config_get_int(lc->config, "rtp", "video_adaptive_jitt_comp_enabled", TRUE);
 	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 	lc->rtp_conf.disable_upnp = lp_config_get_int(lc->config, "rtp", "disable_upnp", FALSE);
+	linphone_core_set_avpf_mode(lc,lp_config_get_int(lc->config,"rtp","avpf",0));
 }
 
 static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
@@ -2579,6 +2580,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		from=linphone_proxy_config_get_identity(proxy);
 		cp->avpf_enabled = linphone_proxy_config_avpf_enabled(proxy);
 		cp->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(proxy) * 1000;
+	}else{
+		cp->avpf_enabled=linphone_core_get_avpf_mode(lc)==LinphoneAVPFEnabled;
+		if (cp->avpf_enabled) cp->avpf_rr_interval=linphone_core_get_avpf_rr_interval(lc) * 1000;
 	}
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -2599,7 +2603,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
-	call->log->start_date_time=time(NULL);
+	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);
 
 	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
@@ -6428,6 +6432,47 @@ void linphone_core_remove_supported_tag(LinphoneCore *lc, const char *tag){
 	lp_config_set_string(lc->config,"sip","supported",sal_get_supported_tags(lc->sal));
 }
 
+/**
+ * Enable RTCP feedback (also known as RTP/AVPF profile).
+ * Setting LinphoneAVPFDefault is equivalent to LinphoneAVPFDisabled.
+ * This setting can be overriden per LinphoneProxyConfig with linphone_proxy_config_set_avpf_mode().
+ * The value set here is used for calls placed or received out of any proxy configured, or if the proxy config is configured with LinphoneAVPFDefault.
+ * @param lc the LinphoneCore
+ * @param mode the mode.
+**/
+void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
+	if (mode==LinphoneAVPFDefault) mode=LinphoneAVPFDisabled;
+	lc->rtp_conf.avpf_mode=mode;
+	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"rtp","avpf",mode);
+}
+
+/**
+ * Return AVPF enablement. See linphone_core_set_avpf_mode() .
+ * @param lc the core
+ * @return the avpf enablement mode.
+**/
+LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc){
+	return lc->rtp_conf.avpf_mode;
+}
+
+/**
+ * Return the avpf report interval in seconds.
+ * @param lc the LinphoneCore
+ * @return the avpf report interval in seconds.
+**/
+int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","avpf_rr_interval",5);
+}
+
+/**
+ * Set the avpf report interval in seconds.
+ * This value can be overriden by the proxy config using linphone_proxy_config_set_avpf_rr_interval().
+ * @param lc the core
+ * @param interval interval in seconds. 
+**/
+void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
+	return lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
+}
 
 int linphone_payload_type_get_type(const LinphonePayloadType *pt) {
 	return pt->type;

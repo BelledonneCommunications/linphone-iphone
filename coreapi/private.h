@@ -103,7 +103,7 @@ struct _LinphoneCallParams{
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/ 
-	uint16_t avpf_rr_interval;
+	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
 };
 
@@ -461,16 +461,18 @@ struct _LinphoneProxyConfig
 	char *dial_prefix;
 	LinphoneRegistrationState state;
 	SalOp *publish_op;
+	LinphoneAVPFMode avpf_mode;
+	
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t publish;
 	bool_t dial_escape_plus;
+	
 	bool_t send_publish;
 	bool_t quality_reporting_enabled;
-	bool_t avpf_enabled;
-	bool_t pad;
 	uint8_t avpf_rr_interval;
 	uint8_t quality_reporting_interval;
+	
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
@@ -567,6 +569,7 @@ typedef struct rtp_config
 	int nortp_timeout;
 	int disable_upnp;
 	MSCryptoSuite *srtp_suites;
+	LinphoneAVPFMode avpf_mode;
 	bool_t rtp_no_xmit_on_audio_mute;
 							  /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;

@@ -738,7 +738,7 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 		if (call->dest_proxy != NULL) {
 			call->params->avpf_rr_interval = linphone_proxy_config_get_avpf_rr_interval(call->dest_proxy) * 1000;
 		} else {
-			call->params->avpf_rr_interval = 5000;
+			call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
 		}
 	}
 	if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
