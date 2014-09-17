@@ -2827,11 +2827,11 @@ static void record_call(const char *filename, bool_t enableVideo) {
 	char *filepath;
 	int dummy=0, i;
 
-#ifdef ANDROID
-#ifdef HAVE_OPENH264
+#if defined(HAVE_OPENH264) && defined(ANDROID)
+	ms_init();
 	libmsopenh264_init();
 #endif
-#endif
+
 
 	marie = linphone_core_manager_new("marie_h264_rc");
 	pauline = linphone_core_manager_new("pauline_h264_rc");
@@ -2873,6 +2873,9 @@ static void record_call(const char *filename, bool_t enableVideo) {
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+#if defined(HAVE_OPENH264) && defined(ANDROID)
+	ms_exit();
+#endif
 }
 
 static void audio_call_recording_test(void) {
