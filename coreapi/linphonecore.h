@@ -2486,6 +2486,24 @@ LINPHONE_PUBLIC void linphone_core_enable_video_capture(LinphoneCore *lc, bool_t
 **/
 LINPHONE_PUBLIC void linphone_core_enable_video_display(LinphoneCore *lc, bool_t enable);
 
+
+/**
+ * Enable or disable video source reuse when switching from preview to actual video call.
+ *
+ * This source reuse is useful when you always display the preview, even before calls are initiated.
+ * By keeping the video source for the transition to a real video call, you will smooth out the
+ * source close/reopen cycle.
+ *
+ * This function does not have any effect durfing calls. It just indicates the #LinphoneCore to
+ * initiate future calls with video source reuse or not.
+ * Also, at the end of a video call, the source will be closed whatsoever for now.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] enable TRUE to enable video source reuse. FALSE to disable it for subsequent calls.
+ * @ingroup media_parameters
+ *
+ */
+LINPHONE_PUBLIC void linphone_core_enable_video_source_reuse(LinphoneCore* lc, bool_t enable);
+
 /**
  * Tells whether video capture is enabled.
  * @param[in] lc #LinphoneCore object.

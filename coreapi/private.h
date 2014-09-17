@@ -632,6 +632,7 @@ typedef struct video_config{
 	bool_t show_local;
 	bool_t display;
 	bool_t selfview; /*during calls*/
+	bool_t reuse_preview_source;
 }video_config_t;
 
 typedef struct ui_config
