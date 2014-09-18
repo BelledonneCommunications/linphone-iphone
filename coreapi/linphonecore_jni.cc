@@ -3621,6 +3621,37 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env
 	linphone_tunnel_enable(tunnel, enable);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetMode(JNIEnv *env, jobject thiz, jlong pCore, jint mode) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		linphone_tunnel_set_mode(tunnel, (LinphoneTunnelMode)mode);
+	}
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_tunnelGetMode(JNIEnv *env, jobject thiz, jlong pCore) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		return (jint)linphone_tunnel_get_mode(tunnel);
+	} else {
+		return 0;
+	}
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnableSip(JNIEnv *env, jobject thiz, jlong pCore, jboolean enable) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		linphone_tunnel_enable_sip(tunnel, (bool_t)enable);
+	}
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_tunnelSipEnabled(JNIEnv *env, jobject thiz, jlong pCore) {
+	LinphoneTunnel *tunnel = ((LinphoneCore *)pCore)->tunnel;
+	if(tunnel != NULL) {
+		return (jboolean)linphone_tunnel_sip_enabled(tunnel);
+	} else {
+		return JNI_FALSE;
+	}
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUserAgent(JNIEnv *env,jobject thiz,jlong pCore, jstring name, jstring version){
 	const char* cname=env->GetStringUTFChars(name, NULL);
