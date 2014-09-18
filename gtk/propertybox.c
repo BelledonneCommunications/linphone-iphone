@@ -830,8 +830,11 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 
 static void linphone_gtk_proxy_closed(GtkWidget *w){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(w),"config");
+	gboolean was_editing=! GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_new"));
 	if (cfg){
-		linphone_proxy_config_done(cfg);
+		if (was_editing){
+			linphone_proxy_config_done(cfg);
+		}else linphone_proxy_config_destroy(cfg);
 	}
 }
 
@@ -909,7 +912,15 @@ void linphone_gtk_proxy_address_changed(GtkEditable *editable){
 void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 	GtkWidget *w=linphone_gtk_create_window("sip_account");
 	const char *tmp;
-	if (cfg){
+	gboolean is_new=FALSE;
+	
+	if (!cfg) {
+		cfg=linphone_core_create_proxy_config(linphone_gtk_get_core());
+		is_new=TRUE;
+		g_object_set_data(G_OBJECT(w),"is_new",GINT_TO_POINTER(TRUE));
+	}
+	
+	if (!is_new){
 		linphone_proxy_config_edit(cfg);
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"identity")),
 			linphone_proxy_config_get_identity(cfg));
@@ -918,17 +929,19 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 		if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"route")),tmp);
 		tmp=linphone_proxy_config_get_contact_parameters(cfg);
 		if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"params")),tmp);
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod")),
-			linphone_proxy_config_get_expires(cfg));
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register")),
-			linphone_proxy_config_register_enabled(cfg));
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"publish")),
-			linphone_proxy_config_publish_enabled(cfg));
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf")),
-			linphone_proxy_config_avpf_enabled(cfg));
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval")),
-			linphone_proxy_config_get_avpf_rr_interval(cfg));
 	}
+	
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod")),
+		linphone_proxy_config_get_expires(cfg));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register")),
+		linphone_proxy_config_register_enabled(cfg));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"publish")),
+		linphone_proxy_config_publish_enabled(cfg));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"avpf")),
+		linphone_proxy_config_avpf_enabled(cfg));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"avpf_rr_interval")),
+		linphone_proxy_config_get_avpf_rr_interval(cfg));
+
 	g_object_set_data(G_OBJECT(w),"config",(gpointer)cfg);
 	g_object_set_data(G_OBJECT(w),"parameters",(gpointer)pb);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_gtk_proxy_closed,w);
@@ -946,12 +959,8 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(w),"config");
 	int index=gtk_combo_box_get_active(GTK_COMBO_BOX(linphone_gtk_get_widget(w,"transport")));
 	LinphoneTransportType tport=(LinphoneTransportType)index;
-	gboolean was_editing=TRUE;
+	gboolean was_editing=! GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_new"));
 
-	if (!cfg){
-		was_editing=FALSE;
-		cfg=linphone_proxy_config_new();
-	}
 	linphone_proxy_config_set_identity(cfg,
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"identity"))));
 	if (linphone_proxy_config_set_server_addr(cfg,
