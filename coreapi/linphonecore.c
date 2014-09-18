@@ -4466,7 +4466,7 @@ LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const Linphon
 	const char *policy;
 	if(lie) {
 		LinphoneTunnel *tunnel = linphone_core_get_tunnel(lc);
-		if(tunnel != NULL && linphone_tunnel_enabled(tunnel)) {
+		if(tunnel != NULL && linphone_tunnel_get_mode(tunnel)) {
 			return LinphonePolicyNoFirewall;
 		}
 	}

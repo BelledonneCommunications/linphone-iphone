@@ -91,7 +91,7 @@ static void call_with_transport_base(bool_t use_tunnel, LinphoneMediaEncryption 
 			tmp_char = linphone_address_as_string(route);
 			linphone_proxy_config_set_route(proxy, tmp_char);
 			ms_free(tmp_char);
-			linphone_tunnel_enable(tunnel, TRUE);
+			linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeEnable);
 			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 			linphone_tunnel_config_set_port(config, 443);
 			linphone_tunnel_add_server(tunnel, config);

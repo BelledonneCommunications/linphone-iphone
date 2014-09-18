@@ -29,6 +29,11 @@
 #include "private.h"
 #include "lpconfig.h"
 
+static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
+
+static LinphoneTunnelMode _string_to_tunnel_mode(const char *string);
+static const char *_tunnel_mode_to_string(LinphoneTunnelMode mode);
+
 LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
@@ -36,7 +41,6 @@ LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 struct _LinphoneTunnel {
 	belledonnecomm::TunnelManager *manager;
 	MSList *config_list;
-	bool_t auto_detect_enabled;
 };
 
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
@@ -45,7 +49,7 @@ extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
 	return tunnel;
 }
 
-static inline belledonnecomm::TunnelManager *bcTunnel(const LinphoneTunnel *tunnel){
+belledonnecomm::TunnelManager *bcTunnel(const LinphoneTunnel *tunnel){
 	return tunnel->manager;
 }
 
@@ -232,14 +236,13 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 	linphone_tunnel_save_config(tunnel);
 }
 
-void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
-	tunnel->auto_detect_enabled = FALSE;
-	lp_config_set_int(config(tunnel),"tunnel","enabled",(int)enabled);
-	bcTunnel(tunnel)->enable(enabled);
+void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode){
+	lp_config_set_string(config(tunnel),"tunnel","mode", _tunnel_mode_to_string(mode));
+	bcTunnel(tunnel)->setMode(mode);
 }
 
-bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel){
-	return bcTunnel(tunnel)->isEnabled();
+LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel){
+	return bcTunnel(tunnel)->getMode();
 }
 
 bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
@@ -319,18 +322,9 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->reconnect();
 }
 
-void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
-	tunnel->auto_detect_enabled = TRUE;
-	bcTunnel(tunnel)->autoDetect();
-}
-
-bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
-	return tunnel->auto_detect_enabled;
-}
-
 void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {
 	bcTunnel(tunnel)->tunnelizeSipPackets(enable);
-	lp_config_set_int(config(tunnel), "tunnel", "transport_SIP", (enable ? TRUE : FALSE));
+	lp_config_set_int(config(tunnel), "tunnel", "sip", (enable ? TRUE : FALSE));
 }
 
 bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
@@ -341,15 +335,52 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(level,fmt,args);
 }
 
+static LinphoneTunnelMode _string_to_tunnel_mode(const char *string) {
+	if(string != NULL) {
+		int i;
+		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
+		if(i<3) {
+			return (LinphoneTunnelMode)i;
+		} else {
+			ms_error("Invalid tunnel mode '%s'", string);
+			return LinphoneTunnelModeDisable;
+		}
+	} else {
+		return LinphoneTunnelModeDisable;
+	}
+}
+
+static const char *_tunnel_mode_to_string(LinphoneTunnelMode mode) {
+	return _tunnel_mode_str[mode];
+}
+
 /**
  * Startup tunnel using configuration.
  * Called internally from linphonecore at startup.
  */
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-	bool_t enabled=(bool_t)lp_config_get_int(config(tunnel),"tunnel","enabled",FALSE);
-	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "transport_SIP", TRUE);
+	LinphoneTunnelMode mode = _string_to_tunnel_mode(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
+	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
-	linphone_tunnel_enable(tunnel, enabled);
+	linphone_tunnel_set_mode(tunnel, mode);
+}
+
+/* Deprecated functions */
+void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled) {
+	if(enabled) linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeEnable);
+	else linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeDisable);
+}
+
+bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel) {
+	return linphone_tunnel_get_mode(tunnel) == LinphoneTunnelModeEnable;
+}
+
+void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel) {
+	linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeAuto);
+}
+
+bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
+	return linphone_tunnel_get_mode(tunnel) == LinphoneTunnelModeAuto;
 }

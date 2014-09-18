@@ -1592,7 +1592,7 @@ void linphone_gtk_edit_tunnel(GtkButton *button){
 	if (port==0) port=443;
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")), port);
 
-	if (linphone_tunnel_enabled(tunnel)){
+	if (linphone_tunnel_get_mode(tunnel)){
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")),1);
 	} else{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_disable")),1);
@@ -1636,7 +1636,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	linphone_tunnel_config_set_host(config, host);
 	linphone_tunnel_config_set_port(config, port);
 	linphone_tunnel_add_server(tunnel, config);
-	linphone_tunnel_enable(tunnel,enabled);
+	linphone_tunnel_set_mode(tunnel, (enabled ? LinphoneTunnelModeEnable : LinphoneTunnelModeDisable));
 	linphone_tunnel_set_http_proxy(tunnel,http_host,http_port,username,password);
 
 	gtk_widget_destroy(w);

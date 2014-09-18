@@ -15,6 +15,7 @@
 #include <tunnel/client.hh>
 #include <tunnel/udp_mirror.hh>
 #include "linphonecore.h"
+#include "linphone_tunnel.h"
 
 #ifndef USE_BELLESIP
 extern "C" {
@@ -70,22 +71,15 @@ namespace belledonnecomm {
 		**/
 		void reconnect();
 		/**
-		 * Sets whether tunneling of SIP and RTP is required.
-		 * @param isEnabled If true enter in tunneled mode, if false exits from tunneled mode.
-		 * The TunnelManager takes care of refreshing SIP registration when switching on or off the tunneled mode.
-		 *
-		**/
-		void enable(bool isEnabled);
-		/**
-		 * In auto detect mode, the tunnel manager try to establish a real time rtp cummunication with the tunnel server on  specified port.
-		 *<br/>In case of success, the tunnel is automatically turned off. Otherwise, if no udp commmunication is feasible, tunnel mode is turned on.
-		 *<br/> Call this method each time to run the auto detection algorithm
+		 * @brief setMode
+		 * @param mode
 		 */
-		void autoDetect();
+		void setMode(LinphoneTunnelMode mode);
 		/**
-		 * Returns a boolean indicating whether tunneled operation is enabled.
-		**/
-		bool isEnabled() const;
+		 * @brief Return the tunnel mode
+		 * @return #LinphoneTunnelMode
+		 */
+		LinphoneTunnelMode getMode() const;
 		/**
 		 * Enables debug logs of the Tunnel subsystem.
 		**/
@@ -147,6 +141,7 @@ namespace belledonnecomm {
 		 * @return True whether the tunnel is connected
 		 */
 		bool isConnected() const;
+
 	private:
 		enum EventType{
 			UdpMirrorClientEvent,
@@ -168,6 +163,7 @@ namespace belledonnecomm {
 		static void tunnelCallback(bool connected, TunnelManager *zis);
 		static void sOnIterate(TunnelManager *zis);
 		static void sUdpMirrorClientCallback(bool result, void* data);
+		static void networkReachableCb(LinphoneCore *lc, bool_t reachable);
 
 	private:
 		void onIterate();
@@ -176,8 +172,9 @@ namespace belledonnecomm {
 		void processTunnelEvent(const Event &ev);
 		void processUdpMirrorEvent(const Event &ev);
 		void postEvent(const Event &ev);
-		void connect();
-		void disconnect();
+		void startClient();
+		void stopClient();
+		void autoDetect();
 
 	private:
 		LinphoneCore* mCore;
@@ -185,14 +182,13 @@ namespace belledonnecomm {
 		TunnelSocket *mSipSocket;
 		eXosip_transport_hooks_t mExosipTransport;
 #endif
-		bool mEnabled;
+		LinphoneTunnelMode mMode;
 		std::queue<Event> mEvq;
 		std::list <ServerAddr> mServerAddrs;
 		UdpMirrorClientList mUdpMirrorClients;
 		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
 		TunnelClient* mTunnelClient;
 		Mutex mMutex;
-		bool mAutoDetectStarted;
 		bool mIsConnected;
 		LinphoneRtpTransportFactories mTransportFactories;
 		std::string mHttpUserName;
@@ -201,6 +197,7 @@ namespace belledonnecomm {
 		int mHttpProxyPort;
 		bool mPreviousRegistrationEnabled;
 		bool mTunnelizeSipPackets;
+		LinphoneCoreVTable *mVTable;
 	};
 
 /**

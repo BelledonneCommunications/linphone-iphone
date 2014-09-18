@@ -52,11 +52,11 @@ const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel){
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 }
 
-void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
+void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode) {
 }
 
-bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel){
-	return FALSE;
+LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel){
+	return LinphoneTunnelModeDisable;
 }
 
 bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
@@ -79,11 +79,14 @@ void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 }
 
-void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
-}
-
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {}
 bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) { return FALSE; }
+
+/* Deprecated functions */
+void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled) {}
+bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel) { return FALSE; }
+void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel) {}
+bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) { return FALSE; }
