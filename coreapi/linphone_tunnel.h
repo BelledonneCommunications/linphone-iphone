@@ -137,22 +137,22 @@ LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel
 LINPHONE_PUBLIC void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
 
 /**
- * Remove tunnel server configuration
- *
+ * @brief Remove tunnel server configuration
  * @param tunnel object
  * @param tunnel_config object
  */
 LINPHONE_PUBLIC void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
 
 /**
- * @param  tunnel object
- * returns a string of space separated list of host:port of tunnel server addresses
- * */
+ * @brief Get added servers
+ * @param  tunnel A LinphoneTunnel object
+ * @return A list of LinphoneTunnelConfig objects
+ */
 LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
 
 /**
- * @param  tunnel object
- * Removes all tunnel server address previously entered with addServer()
+ * @brief Removes all tunnel server address previously entered with addServer()
+ * @param  tunnel A LinphoneTunnel object
 **/
 LINPHONE_PUBLIC void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
 
@@ -168,14 +168,16 @@ LINPHONE_PUBLIC void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
 LINPHONE_PUBLIC void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode);
 
 /**
- * @param  tunnel object
- * Returns a boolean indicating whether tunneled operation is enabled.
+ * @brief Get the tunnel mode
+ * @param  tunnel A LinphoneTunnel object
+ * @return Return a #LinphoneTunnelMode enumeration
 **/
 LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel);
 
 /**
- * @param  tunnel object
- * Returns a boolean indicating whether tunnel is connected successfully.
+ * @brief Check whether the tunnel is connected
+ * @param  tunnel LinphoneTunnel object
+ * @return True if the tunnel is connected
 **/
 LINPHONE_PUBLIC bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel);
 
