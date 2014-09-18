@@ -671,9 +671,7 @@ int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
 void sal_disable_tunnel(Sal *ctx) {
 #ifdef TUNNEL_ENABLED
 	MSList *it;
-	if(ctx->lpTunnel == NULL) {
-		ortp_warning("sal_disable_tunnel(): no tunnel to disable");
-	} else {
+	if(ctx->lpTunnel) {
 		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lpTunnel);
 		belle_sip_object_unref(ctx->lpTunnel);
 		ctx->lpTunnel = NULL;
