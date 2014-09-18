@@ -648,21 +648,21 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 }
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
 #ifdef TUNNEL_ENABLED
-	belle_sip_listening_point_t *lpUDP = NULL;
-	if(ctx->lpTunnel != NULL) {
+	belle_sip_listening_point_t *lp_udp = NULL;
+	if(ctx->lp_tunnel != NULL) {
 		ortp_error("sal_enable_tunnel(): tunnel is already enabled");
 		return -1;
 	}
-	while((lpUDP = belle_sip_provider_get_listening_point(ctx->prov, "udp")) != NULL) {
-		belle_sip_object_ref(lpUDP);
-		belle_sip_provider_remove_listening_point(ctx->prov, lpUDP);
-		ctx->UDPListeningPoints = ms_list_append(ctx->UDPListeningPoints, lpUDP);
+	while((lp_udp = belle_sip_provider_get_listening_point(ctx->prov, "udp")) != NULL) {
+		belle_sip_object_ref(lp_udp);
+		belle_sip_provider_remove_listening_point(ctx->prov, lp_udp);
+		ctx->udp_listening_points = ms_list_append(ctx->udp_listening_points, lp_udp);
 	}
-	ctx->lpTunnel = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
-	if(ctx->lpTunnel == NULL) return -1;
-	belle_sip_listening_point_set_keep_alive(ctx->lpTunnel, ctx->keep_alive);
-	belle_sip_provider_add_listening_point(ctx->prov, ctx->lpTunnel);
-	belle_sip_object_ref(ctx->lpTunnel);
+	ctx->lp_tunnel = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
+	if(ctx->lp_tunnel == NULL) return -1;
+	belle_sip_listening_point_set_keep_alive(ctx->lp_tunnel, ctx->keep_alive);
+	belle_sip_provider_add_listening_point(ctx->prov, ctx->lp_tunnel);
+	belle_sip_object_ref(ctx->lp_tunnel);
 	return 0;
 #else
 	return 0;
@@ -671,15 +671,15 @@ int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
 void sal_disable_tunnel(Sal *ctx) {
 #ifdef TUNNEL_ENABLED
 	MSList *it;
-	if(ctx->lpTunnel) {
-		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lpTunnel);
-		belle_sip_object_unref(ctx->lpTunnel);
-		ctx->lpTunnel = NULL;
-		for(it=ctx->UDPListeningPoints; it!=NULL; it=it->next) {
+	if(ctx->lp_tunnel) {
+		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lp_tunnel);
+		belle_sip_object_unref(ctx->lp_tunnel);
+		ctx->lp_tunnel = NULL;
+		for(it=ctx->udp_listening_points; it!=NULL; it=it->next) {
 			belle_sip_provider_add_listening_point(ctx->prov, (belle_sip_listening_point_t *)it->data);
 		}
-		ms_list_free_with_data(ctx->UDPListeningPoints, belle_sip_object_unref);
-		ctx->UDPListeningPoints = NULL;
+		ms_list_free_with_data(ctx->udp_listening_points, belle_sip_object_unref);
+		ctx->udp_listening_points = NULL;
 	}
 #endif
 }
