@@ -23,6 +23,11 @@ firewall_policy=0
 download_bw=380
 upload_bw=380
 
+[sound]
+playback_dev_id=AU: Audio Unit Receiver
+capture_dev_id=AU: Audio Unit Receiver
+eq_active=0
+
 [app]
 rotation_preference=auto
 animations_preference=1
@@ -31,7 +36,7 @@ use_system_contacts=0
 start_at_boot_preference=1
 backgroundmode_preference=1
 autoanswer_notif_preference=1
-
+voiceproc_preference=1
 
 [default_values]
 reg_expires=600

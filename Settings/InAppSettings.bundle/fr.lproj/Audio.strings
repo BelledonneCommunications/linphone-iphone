@@ -48,3 +48,16 @@
 
 /* Codec bitrate limit */
 "Codec bitrate limit" = "Limite de débit du codec";
+
+/* Voice processing */
+"Enable Voice Processing"="Optimiser le son pour la VoIP";
+
+/* Bass Boost / equalizer */
+"Enable Bass Boost"="Activer Bass Boost";
+
+/* Adaptative */
+"Adaptive rate algorithm"="Adaptation du débit";
+
+"Simple"="Simple";
+
+"Stateful"="Stateful";

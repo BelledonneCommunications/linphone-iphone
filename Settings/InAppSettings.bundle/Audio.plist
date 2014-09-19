@@ -248,11 +248,21 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>voiceproc_preference</string>
+			<key>Title</key>
+			<string>Enable Voice Processing</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
-			<string>disable_voiceproc</string>
+			<string>eq_active</string>
 			<key>Title</key>
-			<string>Disable VoiceProc and Equalizer</string>
+			<string>Enable Bass Boost</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

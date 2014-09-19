@@ -187,8 +187,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
 		[self setString:linphone_core_get_adaptive_rate_algorithm(lc) forKey:@"adaptive_rate_algorithm_preference"];
 		
-        [self setInteger:lp_config_get_int(conf, "audio", "codec_bitrate_limit", kLinphoneAudioVbrCodecDefaultBitrate) forKey:@"audio_codec_bitrate_limit_preference"];
-        [self setInteger:lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "disable_voiceproc", 0) forKey:@"disable_voiceproc"];
+		[self setInteger:lp_config_get_int(conf, "audio", "codec_bitrate_limit", kLinphoneAudioVbrCodecDefaultBitrate) forKey:@"audio_codec_bitrate_limit_preference"];
+        [self setInteger:lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "voiceproc_preference", 1) forKey:@"voiceproc_preference"];
+        [self setInteger:lp_config_get_int(conf, "sound", "eq_active", 0) forKey:@"eq_active"];
 	}
 
 	[self setBool:lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "advanced_account_preference", 0) forKey:@"advanced_account_preference"];
@@ -543,7 +544,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
                                                    [self stringForKey:@"adaptive_rate_algorithm_preference"] cStringUsingEncoding:[NSString defaultCStringEncoding]
                                                    ]);
 
-    lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "disable_voiceproc", [self boolForKey:@"disable_voiceproc"]);
+	// Voice processing
+	BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
+    lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "voiceproc_preference", voice_processing);
+	NSString* au_device = @"AU: Audio Unit Receiver";
+	if( !voice_processing ){ au_device = @"AU: Audio Unit NoVoiceProc";	}
+	linphone_core_set_capture_device(lc, [au_device UTF8String]);
+	linphone_core_set_playback_device(lc, [au_device UTF8String]);
+
+	BOOL equalizer = [self boolForKey:@"eq_active"];
+	lp_config_set_int(config, "sound", "eq_active", equalizer);
 
     linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);

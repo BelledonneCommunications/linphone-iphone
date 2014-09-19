@@ -48,3 +48,9 @@
 
 /* Codec bitrate limit */
 "Codec bitrate limit" = "Codec bitrate limit";
+
+/* Voice processing */
+"Enable Voice Processing"="Enable Voice Processing";
+
+/* Bass Boost / equalizer */
+"Enable Bass Boost"="Enable Bass Boost";
