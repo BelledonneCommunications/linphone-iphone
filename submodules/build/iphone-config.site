@@ -1,7 +1,7 @@
 # -*- shell-script -*-
 
-SDK_VERSION_MAJOR=4
-SDK_VERSION=4.0
+SDK_VERSION_MAJOR=5
+SDK_VERSION=5.0
 MCPU=""
 CLANG_TARGET_SPECIFIER=miphoneos-version-min
 if test "${host_alias}" = "i386-apple-darwin" ; then 
