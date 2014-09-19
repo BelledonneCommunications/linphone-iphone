@@ -166,11 +166,12 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mTransportFactories.video_rtp_func_data=this;
 	mVTable = linphone_vtable_new();
 	mVTable->network_reachable = networkReachableCb;
+	linphone_core_add_listener(mCore, mVTable);
 }
 
 TunnelManager::~TunnelManager(){
 	stopClient();
-	if(mMode == LinphoneTunnelModeAuto) linphone_core_remove_listener(mCore, mVTable);
+	linphone_core_remove_listener(mCore, mVTable);
 	linphone_vtable_destroy(mVTable);
 }
 
@@ -232,20 +233,17 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 		switch(mode) {
 		case LinphoneTunnelModeEnable:
 			mMode = mode;
-			linphone_core_remove_listener(mCore, mVTable);
 			startClient();
 			/* registration is done by proccessTunnelEvent() when the tunnel
 			the tunnel succeed to connect */
 			break;
 		case LinphoneTunnelModeDisable:
 			mMode = mode;
-			linphone_core_remove_listener(mCore, mVTable);
 			stopClient();
 			registration();
 			break;
 		case LinphoneTunnelModeAuto:
 			mMode = mode;
-			linphone_core_add_listener(mCore, mVTable);
 			autoDetect();
 			/* Registration is not needed because processUdpMirrorEvent() will
 			call either connect() or disconnect(). Should disconnect() is called,
