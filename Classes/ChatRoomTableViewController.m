@@ -73,7 +73,7 @@
 
 - (void)addChatEntry:(LinphoneChatMessage*)chat {
 
-    messageList = ms_list_append(messageList, chat);
+    messageList = ms_list_append(messageList, linphone_chat_message_ref(chat));
     int pos = ms_list_size(messageList) - 1;
 
     [self.tableView beginUpdates];

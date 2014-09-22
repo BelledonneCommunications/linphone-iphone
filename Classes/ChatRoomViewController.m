@@ -333,7 +333,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         [LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
     }
 
-    [tableController addChatEntry:linphone_chat_message_ref(msg)];
+    [tableController addChatEntry:msg];
     [tableController scrollToBottom:true];
     return TRUE;
 }
