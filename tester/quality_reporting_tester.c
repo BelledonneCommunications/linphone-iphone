@@ -80,10 +80,12 @@ char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics,
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SessionDesc:"));
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "JitterBuffer:"));
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PacketLoss:"));
-		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "QualityEst:"));
 	}
 	if (metrics->rtcp_sr_count+metrics->rtcp_xr_count>0){
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Delay:"));
+	}
+	if (metrics->rtcp_xr_count){
+		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "QualityEst:"));
 	}
 
 	return body;
