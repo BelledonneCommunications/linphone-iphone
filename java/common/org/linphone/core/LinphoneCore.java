@@ -1279,9 +1279,84 @@ public interface LinphoneCore {
 	 * @param path path to music file played to remote side when on hold.
 	 */
 	void setPlayFile(String path);
+	
+	
+	enum TunnelMode {
+		disable(0),
+		enable(1),
+		auto(2);
+		private final int value;
+		
+		private TunnelMode(int value){
+			this.value = value;
+		}
+		public static int enumToInt(TunnelMode enum_mode) {
+			return enum_mode.value;
+		}
+		public static TunnelMode intToEnum(int value) {
+			switch(value) {
+			case 0: return disable;
+			case 1: return enable;
+			case 2: return auto;
+			default: return disable;
+			}
+		}
+	}
+	
+	/**
+	 * @deprecated Use tunnelSetMode() instead
+	 * Enable or disable tunnel
+	 * @param enable True to enable and false to disable
+	 */
 	void tunnelEnable(boolean enable);
+	
+	/**
+	 * Set the tunnel mode.
+	 * The tunnel can be enable or disable by passing 'enable' or 'disable'.
+	 * If the mode is set to 'auto', Linphone will try to establish an RTP session
+	 * on the mirror port of the tunnel server. If the connection fails, the tunnel
+	 * will be activated. 
+	 * @param mode enable, disable or auto
+	 */
+	void tunnelSetMode(TunnelMode mode);
+	
+	/**
+	 * Get the set mode
+	 * @return 
+	 */
+	TunnelMode tunnelGetMode();
+	
+	/**
+	 * Set whether sip packets must pass through the tunnel
+	 * @param enable If true, tunnel will transport SIP packets in addition
+	 * of RTP packets.
+	 */
+	void tunnelEnableSip(boolean enable);
+	
+	/**
+	 * Check whether SIP tuneling is enabled
+	 * @return true means the tunnel is set to transport SIP packets
+	 */
+	boolean tunnelSipEnabled();
+	
+	/**
+	 * @deprecated Use tunnelSetMode instaead
+	 * Enable tunnel if the mirror RTP session cannot be established
+	 */
 	void tunnelAutoDetect();
+	
+	/**
+	 * Clean the list of server
+	 */
 	void tunnelCleanServers();
+	
+	/**
+	 * Set an optional HTTP proxy
+	 * @param proxy_host
+	 * @param port 
+	 * @param username 
+	 * @param password
+	 */
 	void tunnelSetHttpProxy(String proxy_host, int port, String username, String password);
 	/**
 	 * @param host tunnel server ip address

@@ -784,6 +784,30 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void tunnelEnable(boolean enable) {
 		tunnelEnable(nativePtr, enable);
 	}
+	
+	private native void tunnelSetMode(long nativePtr, int mode);
+	@Override
+	public synchronized void tunnelSetMode(LinphoneCore.TunnelMode mode) {
+		tunnelSetMode(nativePtr, TunnelMode.enumToInt(mode));
+	}
+	
+	private native int tunnelGetMode(long nativePtr);
+	@Override
+	public synchronized LinphoneCore.TunnelMode tunnelGetMode() {
+		return LinphoneCore.TunnelMode.intToEnum(tunnelGetMode(nativePtr));
+	}
+	
+	private native void tunnelEnableSip(long nativePtr, boolean enable);
+	@Override
+	public void tunnelEnableSip(boolean enable) {
+		tunnelEnableSip(nativePtr, enable);
+	}
+	
+	private native boolean tunnelSipEnabled(long nativePtr);
+	@Override
+	public boolean tunnelSipEnabled() {
+		return tunnelSipEnabled(nativePtr);
+	}
 
 	@Override
 	public native boolean isTunnelAvailable();
