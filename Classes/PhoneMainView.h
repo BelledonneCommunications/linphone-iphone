@@ -73,6 +73,7 @@
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;
 
+- (void)updateApplicationBadgeNumber;
 + (PhoneMainView*) instance;
 
 @end
