@@ -25,10 +25,16 @@
 #include "lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+#include "mediastreamer2/dsptools.h"
+
+#ifdef WIN32
+#define unlink _unlink
+#endif
 
 static void srtp_call(void);
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
 static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
+static char *create_filepath(const char *dir, const char *filename, const char *ext);
 
 // prototype definition for call_recording()
 #ifdef ANDROID
@@ -1878,6 +1884,53 @@ static void call_with_declined_srtp(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void on_eof(LinphonePlayer *player, void *user_data){
+	LinphoneCoreManager *marie=(LinphoneCoreManager*)user_data;
+	marie->stat.number_of_player_eof++;
+}
+
+static void call_with_file_player(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphonePlayer *player;
+	char hellopath[256];
+	char *recordpath = create_filepath(liblinphone_tester_writable_dir_prefix, "record", "wav");
+	float similar;
+	
+	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
+	unlink(recordpath);
+	
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	
+	/*caller uses soundcard*/
+	
+	/*callee is recording and plays file*/
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(pauline->lc,hellopath);
+	linphone_core_set_record_file(pauline->lc,recordpath);
+	
+	CU_ASSERT_TRUE(call(marie,pauline));
+
+	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_PTR_NOT_NULL(player);
+	if (player){
+		CU_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
+		CU_ASSERT_TRUE(linphone_player_start(player)==0);
+	}
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
+	
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL)==0);
+	CU_ASSERT_TRUE(similar>0.9);
+	CU_ASSERT_TRUE(similar<=1.0);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(recordpath);
+}
+
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -2808,13 +2861,7 @@ static void savpf_to_savpf_call(void) {
 }
 
 static char *create_filepath(const char *dir, const char *filename, const char *ext) {
-	char *filepath = ms_new0(char, strlen(dir) + strlen(filename) + strlen(ext) + 3);
-	strcpy(filepath, dir);
-	strcat(filepath, "/");
-	strcat(filepath, filename);
-	strcat(filepath, ".");
-	strcat(filepath, ext);
-	return filepath;
+	return ms_strdup_printf("%s/%s.%s",dir,filename,ext);
 }
 
 static void record_call(const char *filename, bool_t enableVideo) {
@@ -3015,6 +3062,7 @@ test_t call_tests[] = {
 	{ "ZRTP call",zrtp_call},
 	{ "ZRTP video call",zrtp_video_call},
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
+	{ "Call with file player", call_with_file_player}, 
 #ifdef VIDEO_ENABLED
 	{ "Simple video call",video_call},
 	{ "Simple video call using policy",video_call_using_policy},

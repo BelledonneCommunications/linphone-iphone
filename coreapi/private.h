@@ -1020,7 +1020,8 @@ void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, 
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 
-
+void set_mic_gain_db(AudioStream *st, float gain);
+void set_playback_gain_db(AudioStream *st, float gain);
 
 #ifdef __cplusplus
 }

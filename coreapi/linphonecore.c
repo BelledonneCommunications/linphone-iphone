@@ -3778,9 +3778,7 @@ void linphone_core_set_mic_gain_db (LinphoneCore *lc, float gaindb){
 		ms_message("linphone_core_set_mic_gain_db(): no active call.");
 		return;
 	}
-	if (st->volsend){
-		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
-	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+	set_mic_gain_db(st,gain);
 }
 
 /**
@@ -3811,9 +3809,7 @@ void linphone_core_set_playback_gain_db (LinphoneCore *lc, float gaindb){
 		ms_message("linphone_core_set_playback_gain_db(): no active call.");
 		return;
 	}
-	if (st->volrecv){
-		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
-	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+	set_playback_gain_db(st,gain);
 }
 
 /**

@@ -1662,6 +1662,19 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 	}
 }
 
+void set_mic_gain_db(AudioStream *st, float gain){
+	if (st->volsend){
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply mic gain: gain control wasn't activated.");
+}
+
+void set_playback_gain_db(AudioStream *st, float gain){
+	if (st->volrecv){
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply playback gain: gain control wasn't activated.");
+}
+
+/*This function is not static because used internally in linphone-daemon project*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lc->sound_conf.soft_mic_lev;
 	float thres = 0;
@@ -1678,13 +1691,13 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	int spk_agc;
 
 	if (!muted)
-		linphone_core_set_mic_gain_db (lc, mic_gain);
+		set_mic_gain_db(st,mic_gain);
 	else
 		audio_stream_set_mic_gain(st,0);
 
 	recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
-		linphone_core_set_playback_gain_db (lc,recv_gain);
+		set_playback_gain_db(st,recv_gain);
 	}
 
 	if (st->volsend){
@@ -1720,10 +1733,10 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	parametrize_equalizer(lc,st);
 }
 
-static void post_configure_audio_streams(LinphoneCall*call){
+static void post_configure_audio_streams(LinphoneCall *call, bool_t muted){
 	AudioStream *st=call->audiostream;
 	LinphoneCore *lc=call->core;
-	_post_configure_audio_stream(st,lc,call->audio_muted);
+	_post_configure_audio_stream(st,lc,muted);
 	if (linphone_core_dtmf_received_has_listener(lc)){
 		audio_stream_play_received_dtmfs(call->audiostream,FALSE);
 	}
@@ -1996,10 +2009,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				captcard,
 				use_ec
 				);
-			post_configure_audio_streams(call);
-			if (muted && !send_ringbacktone){
-				audio_stream_set_mic_gain(call->audiostream,0);
-			}
+			post_configure_audio_streams(call, muted && !send_ringbacktone);
 			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
 				int pause_time=500;
 				ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
