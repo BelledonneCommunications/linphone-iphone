@@ -118,10 +118,77 @@
     }
 }
 
+- (UIUserNotificationCategory*)newMessageNotificationCategory {
+    
+    UIMutableUserNotificationAction* reply = [[UIMutableUserNotificationAction alloc] init];
+    reply.identifier = @"reply";
+    reply.title = NSLocalizedString(@"Reply", nil);
+    reply.activationMode = UIUserNotificationActivationModeForeground;
+    reply.destructive = NO;
+    reply.authenticationRequired = YES;
+    
+    UIMutableUserNotificationAction* mark_read = [[UIMutableUserNotificationAction alloc] init];
+    mark_read.identifier = @"mark_read";
+    mark_read.title = NSLocalizedString(@"Mark Read", nil);
+    mark_read.activationMode = UIUserNotificationActivationModeBackground;
+    mark_read.destructive = NO;
+    mark_read.authenticationRequired = NO;
+    
+    
+    NSArray* localRingActions = @[mark_read, reply];
+    
+    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
+    localRingNotifAction.identifier = @"incoming_msg";
+    [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
+    [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
+    
+    return localRingNotifAction;
+}
+
+- (UIUserNotificationCategory*)newCallNotificationCategory {
+    UIMutableUserNotificationAction* Answer = [[UIMutableUserNotificationAction alloc] init];
+    Answer.identifier = @"answer";
+    Answer.title = NSLocalizedString(@"Answer", nil);
+    Answer.activationMode = UIUserNotificationActivationModeForeground;
+    Answer.destructive = NO;
+    Answer.authenticationRequired = YES;
+    
+    UIMutableUserNotificationAction* Decline = [[UIMutableUserNotificationAction alloc] init];
+    Decline.identifier = @"decline";
+    Decline.title = NSLocalizedString(@"Decline", nil);
+    Decline.activationMode = UIUserNotificationActivationModeBackground;
+    Decline.destructive = YES;
+    Decline.authenticationRequired = NO;
+    
+    
+    NSArray* localRingActions = @[Decline, Answer];
+    
+    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
+    localRingNotifAction.identifier = @"incoming_call";
+    [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
+    [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
+    
+    return localRingNotifAction;
+}
+
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability];
+    
+    UIApplication* app= [UIApplication sharedApplication];
+    
+    if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
+        /* iOS8 notifications can be actioned! Awesome: */
+        UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+       
+        NSSet* categories = [NSSet setWithObjects:[self newCallNotificationCategory], [self newMessageNotificationCategory], nil];
+        UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
+        [app registerUserNotificationSettings:userSettings];
+        [app registerForRemoteNotifications];
+    } else {
+        NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
+        [app registerForRemoteNotificationTypes:notifTypes];
+    }
     
 
 	LinphoneManager* instance = [LinphoneManager instance];
@@ -351,6 +418,41 @@
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
     [LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: Error %@", [error localizedDescription]];
     [[LinphoneManager instance] setPushNotificationToken:nil];
+}
+
+#pragma mark - User notifications
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [LinphoneLogger log:LinphoneLoggerLog format:@"%@", NSStringFromSelector(_cmd)];
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
+    [LinphoneLogger log:LinphoneLoggerLog format:@"%@", NSStringFromSelector(_cmd)];
+    if( [notification.category isEqualToString:@"incoming_call"]) {
+        if( [identifier isEqualToString:@"answer"] ){
+            // use the standard handler
+            [self application:application didReceiveLocalNotification:notification];
+        } else if( [identifier isEqualToString:@"decline"] ){
+            LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+            if( call ) linphone_core_decline_call([LinphoneManager getLc], call, LinphoneReasonDeclined);
+        }
+    } else if( [notification.category isEqualToString:@"incoming_msg"] ){
+        if( [identifier isEqualToString:@"reply"] ){
+            // use the standard handler
+            [self application:application didReceiveLocalNotification:notification];
+        } else if( [identifier isEqualToString:@"mark_read"] ){
+            LinphoneChatRoom* room = [[notification.userInfo objectForKey:@"room"] pointerValue];
+            if( room ){
+                linphone_chat_room_mark_as_read(room);
+            }
+            
+        }
+    }
+    completionHandler();
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
+    completionHandler();
 }
 
 #pragma mark - Remote configuration Functions (URL Handler)
