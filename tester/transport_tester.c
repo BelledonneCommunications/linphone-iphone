@@ -59,7 +59,7 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 	ms_free(contact);
 	return ms_strdup(contact_host_ip);
 }
-static void call_with_transport_base(bool_t use_tunnel, LinphoneMediaEncryption encryption) {
+static void call_with_transport_base(bool_t use_tunnel, bool_t with_sip, LinphoneMediaEncryption encryption) {
 	if (linphone_core_tunnel_available()){
 		char *tmp_char;
 		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
@@ -92,6 +92,7 @@ static void call_with_transport_base(bool_t use_tunnel, LinphoneMediaEncryption 
 			linphone_proxy_config_set_route(proxy, tmp_char);
 			ms_free(tmp_char);
 			linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeEnable);
+			if(with_sip) linphone_tunnel_enable_sip(tunnel, with_sip);
 			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 			linphone_tunnel_config_set_port(config, 443);
 			linphone_tunnel_add_server(tunnel, config);
@@ -130,16 +131,21 @@ static void call_with_transport_base(bool_t use_tunnel, LinphoneMediaEncryption 
 }
 
 static void call_with_tunnel(void) {
-	call_with_transport_base(TRUE,LinphoneMediaEncryptionNone);
+	call_with_transport_base(TRUE, TRUE, LinphoneMediaEncryptionNone);
 }
 
 static void call_with_tunnel_srtp(void) {
-	call_with_transport_base(TRUE,LinphoneMediaEncryptionSRTP);
+	call_with_transport_base(TRUE, TRUE, LinphoneMediaEncryptionSRTP);
+}
+
+static void call_with_tunnel_without_sip(void) {
+	call_with_transport_base(TRUE, FALSE, LinphoneMediaEncryptionNone);
 }
 
 test_t transport_tests[] = {
 	{ "Tunnel only", call_with_tunnel },
 	{ "Tunnel with SRTP", call_with_tunnel_srtp },
+	{ "Tunnel without SIP", call_with_tunnel_without_sip }
 };
 
 test_suite_t transport_test_suite = {
