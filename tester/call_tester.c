@@ -1895,7 +1895,7 @@ static void call_with_file_player(void) {
 	LinphonePlayer *player;
 	char hellopath[256];
 	char *recordpath = create_filepath(liblinphone_tester_writable_dir_prefix, "record", "wav");
-	float similar;
+	double similar;
 	
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
