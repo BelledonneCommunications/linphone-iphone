@@ -2642,10 +2642,10 @@ uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCa
 	if (!stats || !call)
 		return 0;
 	memset(&rtp_stats, 0, sizeof(rtp_stats));
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL)
 		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
 #ifdef VIDEO_ENABLED
-	else
+	else if (call->videostream != NULL)
 		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
 #endif
 	return rtp_stats.outoftime;
