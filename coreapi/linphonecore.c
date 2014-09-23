@@ -4452,11 +4452,11 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
 
-inline LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+ORTP_INLINE LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
 }
 
-inline LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+ORTP_INLINE LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
 }
 
