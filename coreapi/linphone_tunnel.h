@@ -268,7 +268,6 @@ LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
  */
 LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
 
-
 /**
  * @}
 **/

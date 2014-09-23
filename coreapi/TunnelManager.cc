@@ -111,6 +111,7 @@ void TunnelManager::startClient() {
 	if(mTunnelizeSipPackets) {
 		sal_enable_tunnel(mCore->sal, mTunnelClient);
 	}
+	mConnecting = true;
 }
 
 void TunnelManager::stopClient(){
@@ -148,11 +149,12 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mExosipTransport(NULL),
 #endif
 	mMode(LinphoneTunnelModeDisable),
-	mTunnelClient(NULL),
-	mIsConnected(false),
-	mHttpProxyPort(0),
-	mPreviousRegistrationEnabled(false),
+	mAutoDetecting(false),
+	mConnecting(false),
+	mScheduledRegistration(false),
 	mTunnelizeSipPackets(true),
+	mTunnelClient(NULL),
+	mHttpProxyPort(0),
 	mVTable(NULL)
 {
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
@@ -175,79 +177,46 @@ TunnelManager::~TunnelManager(){
 	linphone_vtable_destroy(mVTable);
 }
 
-void TunnelManager::registration(){
-	// registration occurs always after an unregistation has been made. First we
-	// need to reset the previous registration mode
+void TunnelManager::doRegistration(){
 	LinphoneProxyConfig* lProxy;
 	linphone_core_get_default_proxy(mCore, &lProxy);
 	if (lProxy) {
-		linphone_proxy_config_edit(lProxy);
-		linphone_proxy_config_enable_register(lProxy,mPreviousRegistrationEnabled);
-		linphone_proxy_config_done(lProxy);
+		if(linphone_proxy_config_get_state(lProxy) != LinphoneRegistrationProgress) {
+			linphone_proxy_config_refresh_register(lProxy);
+			mScheduledRegistration = false;
+		} else {
+			mScheduledRegistration = true;
+		}
+	} else {
+		mScheduledRegistration = false;
 	}
 }
 
 void TunnelManager::processTunnelEvent(const Event &ev){
 	if (ev.mData.mConnected){
 		ms_message("Tunnel is up, registering now");
-		registration();
+		doRegistration();
 	} else {
 		ms_error("Tunnel has been disconnected");
 	}
+	mConnecting = false;
 }
 
-void TunnelManager::waitUnRegistration() {
-	LinphoneProxyConfig* lProxy;
-
-	linphone_core_get_default_proxy(mCore, &lProxy);
-	if (lProxy){
-		mPreviousRegistrationEnabled=linphone_proxy_config_register_enabled(lProxy);
-		if (linphone_proxy_config_is_registered(lProxy)) {
-			int i=0;
-			linphone_proxy_config_edit(lProxy);
-			linphone_proxy_config_enable_register(lProxy,FALSE);
-			linphone_proxy_config_done(lProxy);
-			sal_unregister(lProxy->op);
-			//make sure unregister is sent and authenticated
-			do{
-				linphone_core_iterate(mCore);
-				ms_usleep(20000);
-				if (i>100){
-					ms_message("tunnel: timeout for unregistration expired, giving up");
-					break;
-				}
-				i++;
-			}while(linphone_proxy_config_is_registered(lProxy));
-			ms_message("Unregistration %s", linphone_proxy_config_is_registered(lProxy)?"failed":"succeeded");
-		}else{
-			ms_message("No registration pending");
-		}
-	}
-}
-
-/*Each time tunnel is enabled/disabled, we need to unregister previous session and re-register. Since tunnel initialization
-is asynchronous, we temporary disable auto register while tunnel sets up, and reenable it when re-registering. */
 void TunnelManager::setMode(LinphoneTunnelMode mode) {
 	if(mMode != mode) {
-		waitUnRegistration();
 		switch(mode) {
 		case LinphoneTunnelModeEnable:
 			mMode = mode;
 			startClient();
-			/* registration is done by proccessTunnelEvent() when the tunnel
-			the tunnel succeed to connect */
 			break;
 		case LinphoneTunnelModeDisable:
 			mMode = mode;
 			stopClient();
-			registration();
+			doRegistration();
 			break;
 		case LinphoneTunnelModeAuto:
 			mMode = mode;
 			autoDetect();
-			/* Registration is not needed because processUdpMirrorEvent() will
-			call either connect() or disconnect(). Should disconnect() is called,
-			processUdpMirrorEvent() care to call registratin() */
 			break;
 		default:
 			ms_error("TunnelManager::setMode(): invalid mode (%d)", mode);
@@ -263,6 +232,9 @@ void TunnelManager::tunnelCallback(bool connected, TunnelManager *zis){
 }
 
 void TunnelManager::onIterate(){
+	if(mScheduledRegistration) {
+		doRegistration();
+	}
 	mMutex.lock();
 	while(!mEvq.empty()){
 		Event ev=mEvq.front();
@@ -331,18 +303,18 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 	if (ev.mData.mHaveUdp) {
 		LOGI("Tunnel is not required, disabling");
 		stopClient();
-		registration();
+		doRegistration();
+		mAutoDetecting = false;
 	} else {
 		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
-			// enable tunnel but also try backup server
 			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
-
 			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 			lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 		} else {
 			LOGI("Tunnel is required, enabling; no backup udp mirror available");
 			startClient();
+			mAutoDetecting = false;
 		}
 	}
 }
@@ -369,7 +341,10 @@ void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 }
 
 void TunnelManager::autoDetect() {
-	// first check if udp mirrors was provisionned
+	if(mAutoDetecting) {
+		LOGE("Cannot start auto detection. One auto detection is going on");
+		return;
+	}
 	if (mUdpMirrorClients.empty()) {
 		LOGE("No UDP mirror server configured aborting auto detection");
 		return;
@@ -377,6 +352,7 @@ void TunnelManager::autoDetect() {
 	mCurrentUdpMirrorClient = mUdpMirrorClients.begin();
 	UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 	lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
+	mAutoDetecting = true;
 }
 
 void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd) {
@@ -389,10 +365,9 @@ void TunnelManager::tunnelizeSipPackets(bool enable){
 	if(enable != mTunnelizeSipPackets) {
 		mTunnelizeSipPackets = enable;
 		if(isConnected()) {
-			waitUnRegistration();
 			if(mTunnelizeSipPackets) sal_enable_tunnel(mCore->sal, mTunnelClient);
 			else sal_disable_tunnel(mCore->sal);
-			registration();
+			doRegistration();
 		}
 	}
 }

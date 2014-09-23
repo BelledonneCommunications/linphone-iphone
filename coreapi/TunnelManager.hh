@@ -167,37 +167,37 @@ namespace belledonnecomm {
 
 	private:
 		void onIterate();
-		void registration();
-		void waitUnRegistration();
-		void processTunnelEvent(const Event &ev);
-		void processUdpMirrorEvent(const Event &ev);
-		void postEvent(const Event &ev);
+		void doRegistration();
 		void startClient();
 		void stopClient();
 		void autoDetect();
+		void processTunnelEvent(const Event &ev);
+		void processUdpMirrorEvent(const Event &ev);
+		void postEvent(const Event &ev);
 
 	private:
 		LinphoneCore* mCore;
-#ifndef USE_BELLESIP
-		TunnelSocket *mSipSocket;
-		eXosip_transport_hooks_t mExosipTransport;
-#endif
 		LinphoneTunnelMode mMode;
-		std::queue<Event> mEvq;
-		std::list <ServerAddr> mServerAddrs;
-		UdpMirrorClientList mUdpMirrorClients;
-		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
+		bool mAutoDetecting;
+		bool mConnecting;
+		bool mScheduledRegistration;
+		bool mTunnelizeSipPackets;
 		TunnelClient* mTunnelClient;
-		Mutex mMutex;
-		bool mIsConnected;
-		LinphoneRtpTransportFactories mTransportFactories;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;
 		std::string mHttpProxyHost;
 		int mHttpProxyPort;
-		bool mPreviousRegistrationEnabled;
-		bool mTunnelizeSipPackets;
 		LinphoneCoreVTable *mVTable;
+		std::list <ServerAddr> mServerAddrs;
+		UdpMirrorClientList mUdpMirrorClients;
+		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
+		LinphoneRtpTransportFactories mTransportFactories;
+		Mutex mMutex;
+		std::queue<Event> mEvq;
+#ifndef USE_BELLESIP
+		TunnelSocket *mSipSocket;
+		eXosip_transport_hooks_t mExosipTransport;
+#endif
 	};
 
 /**
