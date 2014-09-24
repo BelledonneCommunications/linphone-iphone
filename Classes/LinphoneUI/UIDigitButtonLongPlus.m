@@ -1,4 +1,4 @@
-/* UIDigitButton.h
+/* UIDigitButton.m
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,16 +17,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-#import <UIKit/UIKit.h>
+#import "UIDigitButtonLongPlus.h"
 
-#import "UILongTouchButton.h"
+@implementation UIDigitButtonLongPlus
 
+#pragma mark - UILongTouchButtonDelegate Functions
 
-@interface UIDigitButton : UILongTouchButton {
+- (void)onRepeatTouch {
 }
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
-@property char digit;
-@property bool dtmf;
+- (void)onLongTouch {
+	NSString* newAddress = [[self.addressField.text substringToIndex: [self.addressField.text length]-1]  stringByAppendingString:@"+"];
+    [self.addressField setText:newAddress];
+}
 
 @end

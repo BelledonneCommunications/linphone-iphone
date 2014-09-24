@@ -91,17 +91,4 @@
 	linphone_core_stop_dtmf([LinphoneManager getLc]);
 }
 
-
-#pragma mark - UILongTouchButtonDelegate Functions
-
-- (void)onRepeatTouch {
-}
-
-- (void)onLongTouch {
-    if (digit == '0') {
-        NSString* newAddress = [[addressField.text substringToIndex: [addressField.text length]-1]  stringByAppendingString:@"+"];
-        [addressField setText:newAddress];
-    }
-}
-
 @end
