@@ -25,12 +25,14 @@
 [submodule "submodules/externals/x264"]
 	path = submodules/externals/x264
 	url = git://git.videolan.org/x264.git
+	ignore = dirty
 [submodule "submodules/msx264"]
 	path = submodules/msx264
 	url = git://git.linphone.org/msx264.git
 [submodule "submodules/externals/libvpx"]
 	path = submodules/externals/libvpx
 	url = http://git.chromium.org/webm/libvpx.git
+	ignore = dirty
 [submodule "submodules/bzrtp"]
 	path = submodules/bzrtp
 	url =  git://git.linphone.org/bzrtp.git 
@@ -55,15 +57,18 @@
 [submodule "submodules/externals/opus"]
 	path = submodules/externals/opus
 	url = git://git.opus-codec.org/opus.git
+	ignore = dirty
 [submodule "submodules/externals/libxml2"]
 	path = submodules/externals/libxml2
 	url = git://git.gnome.org/libxml2
+	ignore = dirty
 [submodule "submodules/cunit"]
 	path = submodules/cunit
 	url = git://git.linphone.org/cunit.git
 [submodule "submodules/externals/openh264"]
 	path = submodules/externals/openh264
 	url = https://github.com/cisco/openh264
+	ignore = dirty
 [submodule "submodules/msopenh264"]
 	path = submodules/msopenh264
 	url = git://git.linphone.org/msopenh264.git
