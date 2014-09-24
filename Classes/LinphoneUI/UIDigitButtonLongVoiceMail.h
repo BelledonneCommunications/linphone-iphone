@@ -1,4 +1,5 @@
-/* UIDigitButton.m
+
+/* UIDigitButton.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,18 +18,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIDigitButtonLongPlus.h"
+#import <UIKit/UIKit.h>
 
-@implementation UIDigitButtonLongPlus
+#import "UIDigitButton.h"
 
-#pragma mark - UILongTouchButtonDelegate Functions
 
-- (void)onRepeatTouch {
-}
-
-- (void)onLongTouch {
-	NSString* newAddress = [[self.addressField.text substringToIndex: [self.addressField.text length]-1]  stringByAppendingString:@"+"];
-	[self.addressField setText:newAddress];
+@interface UIDigitButtonLongVoiceMail : UIDigitButton {
 }
 
 @end

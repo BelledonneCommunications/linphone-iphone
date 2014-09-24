@@ -205,6 +205,8 @@
 		57F005CB15EE2D9200914747 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C715EE2D9200914747 /* linphonerc-factory~ipad */; };
 		631C4FB119D2A8F2004BFE77 /* UIDigitButtonLongPlus.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */; };
 		631C4FB219D2A8F2004BFE77 /* UIDigitButtonLongPlus.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */; };
+		631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
+		631C4FB819D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -1649,6 +1651,8 @@
 		57F005C715EE2D9200914747 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		631C4FAF19D2A8F2004BFE77 /* UIDigitButtonLongPlus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongPlus.h; sourceTree = "<group>"; };
 		631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongPlus.m; sourceTree = "<group>"; };
+		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
+		631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongVoiceMail.m; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -2724,6 +2728,8 @@
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
 				631C4FAF19D2A8F2004BFE77 /* UIDigitButtonLongPlus.h */,
 				631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */,
+				631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */,
+				631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */,
 				D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */,
 				D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */,
 				22BB1A67132FF16A005CD7AA /* UIEraseButton.h */,
@@ -5036,6 +5042,7 @@
 				D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
+				631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */,
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
@@ -5136,6 +5143,7 @@
 				D3807FF715C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				D3807FF915C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFB15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
+				631C4FB819D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */,
 				D3807FFD15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				D3807FFF15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800115C2894A005BE9BC /* IASKSwitch.m in Sources */,

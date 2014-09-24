@@ -559,6 +559,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
     linphone_core_set_inc_timeout(lc, [self integerForKey:@"incoming_call_timeout_preference"]);
     linphone_core_set_in_call_timeout(lc, [self integerForKey:@"in_call_timeout_preference"]);
+	lp_config_set_string(config, "app", "voice_mail_uri", [[self stringForKey:@"voice_mail_uri_preference"] UTF8String]);
 
 	bool enableVideo = [self boolForKey:@"enable_video_preference"];
 	linphone_core_enable_video(lc, enableVideo, enableVideo);

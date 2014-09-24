@@ -17,9 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIDigitButtonLongPlus.h"
+#import "UIDigitButtonLongVoiceMail.h"
+#import "Utils.h"
+#include "LinphoneManager.h"
 
-@implementation UIDigitButtonLongPlus
+@implementation UIDigitButtonLongVoiceMail
 
 #pragma mark - UILongTouchButtonDelegate Functions
 
@@ -27,8 +29,16 @@
 }
 
 - (void)onLongTouch {
-	NSString* newAddress = [[self.addressField.text substringToIndex: [self.addressField.text length]-1]  stringByAppendingString:@"+"];
-	[self.addressField setText:newAddress];
+	if(![LinphoneManager isLcReady]) {
+		[LinphoneLogger log:LinphoneLoggerWarning format:@"Cannot call voice mail: Linphone core not ready"];
+		return;
+	}
+	LinphoneManager* lm = [LinphoneManager instance];
+
+	NSString * voiceMailUri = [lm lpConfigStringForKey:@"voice_mail_uri" withDefault:NULL];
+	if (voiceMailUri != NULL) {
+		[lm call:voiceMailUri displayName:NSLocalizedString(@"Voice mail",nil) transfer:FALSE];
+	}
 }
 
 @end
