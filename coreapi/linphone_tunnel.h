@@ -57,6 +57,21 @@ typedef enum _LinphoneTunnelMode {
 } LinphoneTunnelMode;
 
 /**
+ * @brief Convert a string into LinphoneTunnelMode enum
+ * @param string String to convert
+ * @return An LinphoneTunnelMode enum. If the passed string is NULL or
+ * does not match with any mode, the LinphoneTunnelModeDisable is returned.
+ */
+LINPHONE_PUBLIC LinphoneTunnelMode string_to_tunnel_mode(const char *string);
+
+/**
+ * @brief Convert a tunnel mode enum into string
+ * @param mode Enum to convert
+ * @return "disable", "enable" or "auto"
+ */
+LINPHONE_PUBLIC const char *tunnel_mode_to_string(LinphoneTunnelMode mode);
+
+/**
  * Create a new tunnel configuration
  */
 LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_tunnel_config_new(void);

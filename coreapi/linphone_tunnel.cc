@@ -31,9 +31,6 @@
 
 static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
 
-static LinphoneTunnelMode _string_to_tunnel_mode(const char *string);
-static const char *_tunnel_mode_to_string(LinphoneTunnelMode mode);
-
 LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
@@ -237,7 +234,7 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode){
-	lp_config_set_string(config(tunnel),"tunnel","mode", _tunnel_mode_to_string(mode));
+	lp_config_set_string(config(tunnel),"tunnel","mode", tunnel_mode_to_string(mode));
 	bcTunnel(tunnel)->setMode(mode);
 }
 
@@ -335,7 +332,7 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(level,fmt,args);
 }
 
-static LinphoneTunnelMode _string_to_tunnel_mode(const char *string) {
+LinphoneTunnelMode string_to_tunnel_mode(const char *string) {
 	if(string != NULL) {
 		int i;
 		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
@@ -350,7 +347,7 @@ static LinphoneTunnelMode _string_to_tunnel_mode(const char *string) {
 	}
 }
 
-static const char *_tunnel_mode_to_string(LinphoneTunnelMode mode) {
+const char *tunnel_mode_to_string(LinphoneTunnelMode mode) {
 	return _tunnel_mode_str[mode];
 }
 
@@ -359,7 +356,7 @@ static const char *_tunnel_mode_to_string(LinphoneTunnelMode mode) {
  * Called internally from linphonecore at startup.
  */
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-	LinphoneTunnelMode mode = _string_to_tunnel_mode(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
+	LinphoneTunnelMode mode = string_to_tunnel_mode(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);

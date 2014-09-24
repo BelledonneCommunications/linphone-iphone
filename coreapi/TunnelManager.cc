@@ -96,6 +96,7 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 }
 
 void TunnelManager::startClient() {
+	ms_message("TunnelManager: Starting tunnel client");
 	if (mTunnelClient == NULL) {
 		mTunnelClient = new TunnelClient();
 		mTunnelClient->setCallback((TunnelClientController::StateCallback)tunnelCallback,this);
@@ -115,6 +116,7 @@ void TunnelManager::startClient() {
 }
 
 void TunnelManager::stopClient(){
+	ms_message("TunnelManager: Stopping tunnel client");
 	linphone_core_set_rtp_transport_factories(mCore,NULL);
 	sal_disable_tunnel(mCore->sal);
 	if (mTunnelClient){
@@ -182,10 +184,12 @@ void TunnelManager::doRegistration(){
 		LinphoneProxyConfig* lProxy;
 		linphone_core_get_default_proxy(mCore, &lProxy);
 		if (lProxy) {
+			ms_message("TunnelManager: need to register");
 			if(linphone_proxy_config_get_state(lProxy) != LinphoneRegistrationProgress) {
 				linphone_proxy_config_refresh_register(lProxy);
 				mScheduledRegistration = false;
 			} else {
+				ms_warning("TunnelManager: register difered. There is already a registration in progress");
 				mScheduledRegistration = true;
 			}
 		} else {
@@ -196,7 +200,7 @@ void TunnelManager::doRegistration(){
 
 void TunnelManager::processTunnelEvent(const Event &ev){
 	if (ev.mData.mConnected){
-		ms_message("Tunnel is up, registering now");
+		ms_message("Tunnel is connected");
 		doRegistration();
 	} else {
 		ms_error("Tunnel has been disconnected");
@@ -206,6 +210,9 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 
 void TunnelManager::setMode(LinphoneTunnelMode mode) {
 	if(mMode != mode) {
+		ms_message("TunnelManager: Switching mode from %s to %s",
+				   tunnel_mode_to_string(mMode),
+				   tunnel_mode_to_string(mode));
 		switch(mode) {
 		case LinphoneTunnelModeEnable:
 			mMode = mode;
@@ -235,6 +242,7 @@ void TunnelManager::tunnelCallback(bool connected, TunnelManager *zis){
 
 void TunnelManager::onIterate(){
 	if(mScheduledRegistration) {
+		ms_message("Apply difered registration");
 		doRegistration();
 	}
 	mMutex.lock();
@@ -303,18 +311,19 @@ LinphoneTunnelMode TunnelManager::getMode() const {
 
 void TunnelManager::processUdpMirrorEvent(const Event &ev){
 	if (ev.mData.mHaveUdp) {
-		LOGI("Tunnel is not required, disabling");
+		ms_message("TunnelManager: auto detection test succeed");
 		stopClient();
 		doRegistration();
 		mAutoDetecting = false;
 	} else {
+		ms_message("TunnelManager: auto detection test failed");
 		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
-			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
+			ms_message("TunnelManager: trying another udp mirror");
 			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 			lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 		} else {
-			LOGI("Tunnel is required, enabling; no backup udp mirror available");
+			ms_message("TunnelManager: all auto detection failed. Need ti enable tunnel");
 			startClient();
 			mAutoDetecting = false;
 		}
@@ -344,11 +353,11 @@ void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 
 void TunnelManager::autoDetect() {
 	if(mAutoDetecting) {
-		LOGE("Cannot start auto detection. One auto detection is going on");
+		ms_error("TunnelManager: Cannot start auto detection. One auto detection is going on");
 		return;
 	}
 	if (mUdpMirrorClients.empty()) {
-		LOGE("No UDP mirror server configured aborting auto detection");
+		ms_error("TunnelManager: No UDP mirror server configured aborting auto detection");
 		return;
 	}
 	mCurrentUdpMirrorClient = mUdpMirrorClients.begin();
