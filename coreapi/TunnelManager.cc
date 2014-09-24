@@ -178,17 +178,19 @@ TunnelManager::~TunnelManager(){
 }
 
 void TunnelManager::doRegistration(){
-	LinphoneProxyConfig* lProxy;
-	linphone_core_get_default_proxy(mCore, &lProxy);
-	if (lProxy) {
-		if(linphone_proxy_config_get_state(lProxy) != LinphoneRegistrationProgress) {
-			linphone_proxy_config_refresh_register(lProxy);
-			mScheduledRegistration = false;
+	if(mTunnelizeSipPackets) {
+		LinphoneProxyConfig* lProxy;
+		linphone_core_get_default_proxy(mCore, &lProxy);
+		if (lProxy) {
+			if(linphone_proxy_config_get_state(lProxy) != LinphoneRegistrationProgress) {
+				linphone_proxy_config_refresh_register(lProxy);
+				mScheduledRegistration = false;
+			} else {
+				mScheduledRegistration = true;
+			}
 		} else {
-			mScheduledRegistration = true;
+			mScheduledRegistration = false;
 		}
-	} else {
-		mScheduledRegistration = false;
 	}
 }
 
@@ -362,14 +364,7 @@ void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd
 }
 
 void TunnelManager::tunnelizeSipPackets(bool enable){
-	if(enable != mTunnelizeSipPackets) {
 		mTunnelizeSipPackets = enable;
-		if(isConnected()) {
-			if(mTunnelizeSipPackets) sal_enable_tunnel(mCore->sal, mTunnelClient);
-			else sal_disable_tunnel(mCore->sal);
-			doRegistration();
-		}
-	}
 }
 
 bool TunnelManager::tunnelizeSipPacketsEnabled() const {
