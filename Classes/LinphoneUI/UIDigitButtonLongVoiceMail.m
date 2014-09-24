@@ -36,6 +36,7 @@
 	LinphoneManager* lm = [LinphoneManager instance];
 
 	NSString * voiceMailUri = [lm lpConfigStringForKey:@"voice_mail_uri" withDefault:NULL];
+	
 	if (voiceMailUri != NULL) {
 		[lm call:voiceMailUri displayName:NSLocalizedString(@"Voice mail",nil) transfer:FALSE];
 	}
