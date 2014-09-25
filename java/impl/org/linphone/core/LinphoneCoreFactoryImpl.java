@@ -109,12 +109,6 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public LinphoneProxyConfig createProxyConfig(String identity, String proxy,
-			String route, boolean enableRegister) throws LinphoneCoreException {
-		return new LinphoneProxyConfigImpl(identity,proxy,route,enableRegister);
-	}
-
-	@Override
 	public native void setDebugMode(boolean enable, String tag);
 
 	

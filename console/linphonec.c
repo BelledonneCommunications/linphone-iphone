@@ -367,8 +367,8 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			} else if (real_early_media_sending) {
-				linphonec_out("Sending early media using real hardware\n");
 				LinphoneCallParams* callparams = linphone_core_create_default_call_parameters(lc);
+				linphonec_out("Sending early media using real hardware\n");
 				linphone_call_params_enable_early_media_sending(callparams, TRUE);
 				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
 				linphone_core_accept_early_media_with_params(lc, call, callparams);
@@ -536,6 +536,7 @@ char *linphonec_readline(char *prompt){
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
 		while(1){
+			
 			ms_mutex_lock(&prompt_mutex);
 			if (have_prompt){
 				char *ret=strdup(received_prompt);
@@ -546,15 +547,17 @@ char *linphonec_readline(char *prompt){
 			ms_mutex_unlock(&prompt_mutex);
 			linphonec_idle_call();
 #ifdef WIN32
-			Sleep(20);
-			/* Following is to get the video window going as it
-				 should. Maybe should we only have this on when the option -V
-				 or -D is on? */
-			MSG msg;
+			{
+				MSG msg;
+				Sleep(20);
+				/* Following is to get the video window going as it
+					should. Maybe should we only have this on when the option -V
+					or -D is on? */
 
-			if (PeekMessage(&msg, NULL, 0, 0,1)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				if (PeekMessage(&msg, NULL, 0, 0,1)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
 			}
 #else
 			usleep(20000);
@@ -747,7 +750,7 @@ linphonec_init(int argc, char **argv)
 	linphone_core_enable_video_display(linphonec, display_enabled);
 	if (display_enabled && window_id != 0)
 	{
-		printf ("Setting window_id: 0x%x\n", window_id);
+		printf("Setting window_id: 0x%x\n", window_id);
 		linphone_core_set_native_video_window_id(linphonec,window_id);
 	}
 
@@ -828,12 +831,13 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 #ifdef HAVE_READLINE
 	rl_hook_func_t *old_event_hook;
 #endif
+	LinphoneAuthInfo *pending_auth;
 
 	if (reentrancy!=0) return 0;
 
 	reentrancy++;
 
-	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
+	pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
 		pending_auth->username, pending_auth->realm);

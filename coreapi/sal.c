@@ -307,7 +307,7 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
-	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	for(i = 0; i < md1->nb_streams; ++i){
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
@@ -385,6 +385,13 @@ void sal_op_add_route_address(SalOp *op, const SalAddress *address){
 	} else {
 		sal_op_set_route_address(op,address);
 	}
+}
+void sal_op_set_realm(SalOp *op, const char *realm){
+	SalOpBase* op_base = (SalOpBase*)op;
+	if (op_base->realm != NULL){
+		ms_free(op_base->realm);
+	}
+	op_base->realm = ms_strdup(realm);
 }
 void sal_op_set_from(SalOp *op, const char *from){
 	SET_PARAM(op,from);
@@ -510,6 +517,10 @@ void __sal_op_free(SalOp *op){
 	if (b->route) {
 		ms_free(b->route);
 		b->route=NULL;
+	}
+	if (b->realm) {
+		ms_free(b->realm);
+		b->realm=NULL;
 	}
 	if (b->contact_address) {
 		sal_address_destroy(b->contact_address);
@@ -724,3 +735,9 @@ belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {
 	return sal->stack;
 }
 
+char* sal_op_get_public_uri(SalOp *op) {
+	if (op && op->refresher) {
+		return belle_sip_refresher_get_public_uri(op->refresher);
+	}
+	return NULL;
+}

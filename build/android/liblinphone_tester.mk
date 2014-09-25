@@ -13,7 +13,8 @@ common_SRC_FILES := \
 	flexisip_tester.c \
 	tester.c \
 	remote_provisioning_tester.c \
-	quality_reporting_tester.c
+	quality_reporting_tester.c \
+	transport_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
@@ -31,6 +32,10 @@ LOCAL_SRC_FILES += $(common_SRC_FILES)
 LOCAL_C_INCLUDES = $(common_C_INCLUDES)
 LOCAL_CFLAGS = -DIN_LINPHONE
 LOCAL_LDLIBS := -llog
+
+ifeq ($(BUILD_MATROSKA), 1)
+LOCAL_CFLAGS += -DHAVE_MATROSKA
+endif
 
 LOCAL_SHARED_LIBRARIES := cunit liblinphone
 include $(BUILD_SHARED_LIBRARY)

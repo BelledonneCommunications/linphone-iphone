@@ -37,6 +37,49 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
 	return NULL;
 }
 
+/* DB layout:
+ * | 0  | storage_id
+ * | 1  | type
+ * | 2  | subtype
+ * | 3  | name
+ * | 4  | encoding
+ * | 5  | size
+ * | 6  | data
+ */
+// Callback for sql request when getting linphone content
+static int callback_content(void *data, int argc, char **argv, char **colName) {
+	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
+
+	if (message->file_transfer_information) {
+		linphone_content_uninit(message->file_transfer_information);
+		ms_free(message->file_transfer_information);
+		message->file_transfer_information = NULL;
+	}
+	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
+
+	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
+	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
+	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
+	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
+	message->file_transfer_information->size = (size_t) atoi(argv[5]);
+
+	return 0;
+}
+
+static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id) {
+	char* errmsg = NULL;
+	int ret;
+	char * buf;
+
+	buf = sqlite3_mprintf("SELECT * FROM content WHERE id = %i", content_id);
+	ret = sqlite3_exec(db, buf, callback_content, message, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Error in creation: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+	sqlite3_free(buf);
+}
 
 /* DB layout:
  * | 0  | storage_id
@@ -50,10 +93,12 @@ static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, u
  * | 8  | external body url
  * | 9  | utc timestamp
  * | 10 | app data text
+ * | 11 | linphone content
  */
 static void create_chat_message(char **argv, void *data){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	LinphoneAddress *from;
+	LinphoneAddress *to;
 
 	unsigned int storage_id = atoi(argv[0]);
 
@@ -65,12 +110,18 @@ static void create_chat_message(char **argv, void *data){
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
 			from=linphone_address_new(argv[2]);
+			to=linphone_address_new(argv[1]);
 		} else {
 			new_message->dir=LinphoneChatMessageOutgoing;
 			from=linphone_address_new(argv[1]);
+			to=linphone_address_new(argv[2]);
 		}
 		linphone_chat_message_set_from(new_message,from);
 		linphone_address_destroy(from);
+		if (to){
+			linphone_chat_message_set_to(new_message,to);
+			linphone_address_destroy(to);
+		}
 
 		if( argv[9] != NULL ){
 			new_message->time = (time_t)atol(argv[9]);
@@ -83,6 +134,13 @@ static void create_chat_message(char **argv, void *data){
 		new_message->storage_id=storage_id;
 		new_message->external_body_url= argv[8] ? ms_strdup(argv[8])  : NULL;
 		new_message->appdata          = argv[10]? ms_strdup(argv[10]) : NULL;
+
+		if (argv[11] != NULL) {
+			int id = atoi(argv[11]);
+			if (id >= 0) {
+				fetch_content_from_database(cr->lc->db, new_message, id);
+			}
+		}
 	}
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
@@ -105,7 +163,7 @@ void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom 
 	int ret;
 	ret=sqlite3_exec(db,stmt,callback,cr,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("Error in creation: %s.\n", errmsg);
+		ms_error("Error in creation: %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -115,7 +173,7 @@ int linphone_sql_request(sqlite3* db,const char *stmt){
 	int ret;
 	ret=sqlite3_exec(db,stmt,NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("linphone_sql_request: error sqlite3_exec(): %s.\n", errmsg);
+		ms_error("linphone_sql_request: statement %s -> error sqlite3_exec(): %s.", stmt, errmsg);
 		sqlite3_free(errmsg);
 	}
 	return ret;
@@ -127,29 +185,59 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 	int ret;
 	ret=sqlite3_exec(db,stmt,callback_all,lc,&errmsg);
 	if(ret != SQLITE_OK) {
-		ms_error("linphone_sql_request_all: error sqlite3_exec(): %s.\n", errmsg);
+		ms_error("linphone_sql_request_all: error sqlite3_exec(): %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
 
+static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
+	LinphoneCore *lc = linphone_chat_room_get_lc(msg->chat_room);
+	int id = -1;
+	if (lc->db) {
+		LinphoneContent *content = msg->file_transfer_information;
+		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
+						content->type,
+						content->subtype,
+						content->name,
+						content->encoding,
+						content->size,
+						NULL
+ 					);
+		linphone_sql_request(lc->db, buf);
+		sqlite3_free(buf);
+		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
+	}
+	return id;
+}
+
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
-	int id=0;
+	int id = 0;
 
 	if (lc->db){
-		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
-		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		char *buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q);",
+		int content_id = -1;
+		char *peer;
+		char *local_contact;
+		char *buf;
+		if (msg->file_transfer_information) {
+			content_id = linphone_chat_message_store_content(msg);
+		}
+
+		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
+		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
+		buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
 						local_contact,
-								  peer,
-								  msg->dir,
-								  msg->message,
-								  "-1", /* use UTC field now */
-								  msg->is_read,
-								  msg->state,
-								  msg->external_body_url,
-								  msg->time,
-								  msg->appdata);
+						peer,
+						msg->dir,
+						msg->message,
+						"-1", /* use UTC field now */
+						msg->is_read,
+						msg->state,
+						msg->external_body_url,
+						msg->time,
+						msg->appdata,
+						content_id
+ 					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -162,8 +250,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (message = %Q OR url = %Q) AND utc = %i;",
-								  msg->state,msg->message,msg->external_body_url,msg->time);
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i) AND utc = %i;",
+								  msg->state,msg->storage_id,msg->time);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 	}
@@ -189,11 +277,13 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	int read=1;
+	char *peer;
+	char *buf;
 
 	if (lc->db==NULL) return ;
 
-	char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	char *buf=sqlite3_mprintf("UPDATE history SET read=%i WHERE remoteContact = %Q;",
+	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	buf=sqlite3_mprintf("UPDATE history SET read=%i WHERE remoteContact = %Q;",
 				   read,peer);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
@@ -202,24 +292,28 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 
 void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	char *buf;
 
 	if (lc->db==NULL) return ;
 
-	char *buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%i;",msg->external_body_url,msg->storage_id);
+	buf=sqlite3_mprintf("UPDATE history SET url=%Q WHERE id=%i;",msg->external_body_url,msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 }
 
-int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t unread_only){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	int numrows=0;
+	char *peer;
+	char *buf;
+	sqlite3_stmt *selectStatement;
+	int returnValue;
 
 	if (lc->db==NULL) return 0;
 
-	char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	char *buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q AND read = 0;",peer);
-	sqlite3_stmt *selectStatement;
-	int returnValue = sqlite3_prepare_v2(lc->db,buf,-1,&selectStatement,NULL);
+	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;",peer,unread_only?"AND read = 0":"");
+	returnValue = sqlite3_prepare_v2(lc->db,buf,-1,&selectStatement,NULL);
 	if (returnValue == SQLITE_OK){
 		if(sqlite3_step(selectStatement) == SQLITE_ROW){
 			numrows= sqlite3_column_int(selectStatement, 0);
@@ -231,52 +325,84 @@ int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
 	return numrows;
 }
 
+int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+	return linphone_chat_room_get_messages_count(cr, TRUE);
+}
+
+int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
+	return linphone_chat_room_get_messages_count(cr, FALSE);
+}
+
 void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	LinphoneCore *lc=cr->lc;
+	char *buf;
 
 	if (lc->db==NULL) return ;
 
-	char *buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
+	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	LinphoneCore *lc=cr->lc;
+	char *peer;
+	char *buf;
 
 	if (lc->db==NULL) return ;
 
-	char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-	char *buf=sqlite3_mprintf("DELETE FROM history WHERE remoteContact = %Q;",peer);
+	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	buf=sqlite3_mprintf("DELETE FROM history WHERE remoteContact = %Q;",peer);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
 }
 
-MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	MSList *ret;
 	char *buf;
 	char *peer;
 	uint64_t begin,end;
+	int buf_max_size = 512;
 
 	if (lc->db==NULL) return NULL;
-	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+
 	cr->messages_hist = NULL;
-	if (nb_message > 0)
-		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC LIMIT %i ;",peer,nb_message);
-	else
-		buf=sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC;",peer);
+
+	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
+	buf=ms_malloc(buf_max_size);
+	buf=sqlite3_snprintf(buf_max_size-1,buf,"SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC",peer);
+
+	if (startm<0) startm=0;
+
+	if (endm>0&&endm>=startm){
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT %i ",buf,endm+1-startm);
+	}else if(startm>0){
+		ms_message("%s(): end is lower than start (%d < %d). No end assumed.",__FUNCTION__,endm,startm);
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT -1",buf);
+	}
+
+	if (startm>0){
+		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s OFFSET %i ",buf,startm);
+	}
+
 	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
 	end=ortp_get_cur_time_ms();
-	ms_message("linphone_chat_room_get_history(): completed in %i ms",(int)(end-begin));
-	sqlite3_free(buf);
+	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	ms_free(buf);
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;
 	ms_free(peer);
 	return ret;
 }
+
+MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
+	return linphone_chat_room_get_history_range(cr, 0, nb_message);
+}
+
 
 void linphone_close_storage(sqlite3* db){
 	sqlite3_close(db);
@@ -357,8 +483,9 @@ static void linphone_migrate_timestamps(sqlite3* db){
 		sqlite3_free(errmsg);
 		linphone_sql_request(db, "ROLLBACK");
 	} else {
+		uint64_t end;
 		linphone_sql_request(db, "COMMIT");
-		uint64_t end=ortp_get_cur_time_ms();
+		end=ortp_get_cur_time_ms();
 		ms_message("Migrated message timestamps to UTC in %i ms",(int)(end-begin));
 	}
 }
@@ -373,7 +500,7 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for URL.");
+		ms_debug("Table history updated successfully for URL.");
 	}
 
 	// for UTC timestamp storage
@@ -382,7 +509,7 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for UTC.");
+		ms_debug("Table history updated successfully for UTC.");
 		// migrate from old text-based timestamps to unix time-based timestamps
 		linphone_migrate_timestamps(db);
 	}
@@ -393,7 +520,32 @@ void linphone_update_table(sqlite3* db) {
 		ms_message("Table already up to date: %s.", errmsg);
 		sqlite3_free(errmsg);
 	} else {
-		ms_debug("Table updated successfully for app-specific data.");
+		ms_debug("Table history updated successfully for app-specific data.");
+	}
+
+	// new field for linphone content storage
+	ret=sqlite3_exec(db,"ALTER TABLE history ADD COLUMN content INTEGER;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s.", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ms_debug("Table history updated successfully for content data.");
+		ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS content ("
+							"id INTEGER PRIMARY KEY AUTOINCREMENT,"
+							"type TEXT,"
+							"subtype TEXT,"
+							"name TEXT,"
+							"encoding TEXT,"
+							"size INTEGER,"
+							"data BLOB"
+						");",
+			0,0,&errmsg);
+		if(ret != SQLITE_OK) {
+			ms_error("Error in creation: %s.\n", errmsg);
+			sqlite3_free(errmsg);
+		} else {
+			ms_debug("Table content successfully created.");
+		}
 	}
 }
 
@@ -477,6 +629,10 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
 }
 
+LINPHONE_PUBLIC MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end){
+	return NULL;
+}
+
 void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 }
 
@@ -496,6 +652,10 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 }
 
 int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
+	return 0;
+}
+
+int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
 	return 0;
 }
 

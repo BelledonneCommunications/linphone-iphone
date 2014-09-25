@@ -48,6 +48,12 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		return new LinphoneAddressImpl(getFrom(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	
+	private native long getTo(long ptr);
+	@Override
+	public LinphoneAddress getTo() {
+		return new LinphoneAddressImpl(getTo(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
+	}
+	
 	private native void addCustomHeader(long nativePtr, String name, String value);
 	@Override
 	public void addCustomHeader(String name, String value) {
@@ -93,7 +99,32 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
-	protected void finalize(){
+	protected void finalize() throws Throwable{
 		unref(nativePtr);
+		super.finalize();
+	}
+	
+	private native void startFileDownload(long ptr, StateListener listener);
+	@Override
+	public void startFileDownload(StateListener listener) {
+		startFileDownload(nativePtr, listener);
+	}
+	
+	private native Object getFileTransferInformation(long ptr);
+	@Override
+	public LinphoneContent getFileTransferInformation() {
+		return (LinphoneContent) getFileTransferInformation(nativePtr);
+	}
+	
+	private native void setAppData(long ptr, String data);
+	@Override
+	public void setAppData(String data) {
+		setAppData(nativePtr, data);
+	}
+	
+	private native String getAppData(long ptr);
+	@Override
+	public String getAppData() {
+		return getAppData(nativePtr);
 	}
 }

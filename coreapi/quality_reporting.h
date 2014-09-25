@@ -137,6 +137,7 @@ typedef struct reporting_session_report {
 
 	// for internal processing
 	time_t last_report_date;
+	LinphoneCall *call;
 } reporting_session_report_t;
 
 

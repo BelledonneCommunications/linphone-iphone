@@ -39,6 +39,12 @@
 #endif
 #endif /*_WIN32_WCE*/
 
+#ifdef _MSC_VER
+#include <Shlwapi.h>
+#else
+#include <libgen.h>
+#endif
+
 
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
@@ -271,7 +277,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 					/* remove ending white spaces */
 					for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
 
-					if (pos2-pos1>=0){
+					if (pos2-pos1>0){
 						/* found a pair key,value */
 
 						if (cur!=NULL){
@@ -457,10 +463,10 @@ int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 		int ret=0;
-		
+
 		if (strstr(str,"0x")==str){
 			sscanf(str,"%x",&ret);
-		}else 
+		}else
 			sscanf(str,"%i",&ret);
 		return ret;
 	}
@@ -493,14 +499,14 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 	if (sec!=NULL){
 		item=lp_section_find_item(sec,key);
 		if (item!=NULL){
-			if (value!=NULL)
+			if (value!=NULL && value[0] != '\0')
 				lp_item_set_value(item,value);
 			else lp_section_remove_item(sec,item);
 		}else{
-			if (value!=NULL)
+			if (value!=NULL && value[0] != '\0')
 				lp_section_add_item(sec,lp_item_new(key,value));
 		}
-	}else if (value!=NULL){
+	}else if (value!=NULL && value[0] != '\0'){
 		sec=lp_section_new(section);
 		lp_config_add_section(lpconfig,sec);
 		lp_section_add_item(sec,lp_item_new(key,value));
@@ -542,12 +548,19 @@ void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key
 void lp_item_write(LpItem *item, FILE *file){
 	if (item->is_comment)
 		fprintf(file,"%s",item->value);
-	else
+	else if (item->value && item->value[0] != '\0' )
 		fprintf(file,"%s=%s\n",item->key,item->value);
+	else {
+		ms_warning("Not writing item %s to file, it is empty", item->key);
+	}
 }
 
 void lp_section_param_write(LpSectionParam *param, FILE *file){
-	fprintf(file, " %s=%s", param->key, param->value);
+	if( param->value && param->value[0] != '\0') {
+		fprintf(file, " %s=%s", param->key, param->value);
+	} else {
+		ms_warning("Not writing param %s to file, it is empty", param->key);
+	}
 }
 
 void lp_section_write(LpSection *sec, FILE *file){
@@ -649,4 +662,58 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 	strcat(default_section, DEFAULT_VALUES_SUFFIX);
 
 	return lp_config_get_string(lpconfig, default_section, key, default_value);
+}
+
+static char *_lp_config_dirname(char *path) {
+#ifdef _MSC_VER
+	char *dir = ms_strdup(path);
+	PathRemoveFileSpec(dir);
+	return dir;
+#else
+	char *tmp = ms_strdup(path);
+	char *dir = ms_strdup(dirname(tmp));
+	ms_free(tmp);
+	return dir;
+#endif
+}
+
+void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
+	if(strlen(data) > 0) {
+		char *dir = _lp_config_dirname(lpconfig->filename);
+		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
+		FILE *file = fopen(filepath, "w");
+		if(file != NULL) {
+			fprintf(file, "%s", data);
+			fclose(file);
+		} else {
+			ms_error("Could not open %s for write", filepath);
+		}
+		ms_free(dir);
+		ms_free(filepath);
+	} else {
+		ms_warning("%s has not been created because there is no data to write", filename);
+	}
+}
+
+char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename) {
+	char *dir = _lp_config_dirname(lpconfig->filename);
+	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
+	char *result = NULL;
+	if(ortp_file_exist(filepath) == 0) {
+		FILE *file = fopen(filepath, "r");
+		if(file != NULL) {
+			result = ms_new0(char, MAX_LEN);
+			if(fgets(result, MAX_LEN, file) == NULL) {
+				ms_error("%s could not be loaded", filepath);
+			}
+			fclose(file);
+		} else {
+			ms_error("Could not open %s for read", filepath);
+		}
+	} else {
+		ms_message("%s does not exist", filepath);
+	}
+	ms_free(dir);
+	ms_free(filepath);
+	return result;
 }

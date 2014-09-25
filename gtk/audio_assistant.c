@@ -168,11 +168,12 @@ static void dialog_click(GtkWidget *dialog, guint response_id, GtkWidget *page){
 }
 
 static void calibration_finished(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay, void *data){
+	GtkWidget * dialog;
+	GtkWidget *speaker_page;
 	ms_message("echo calibration finished %s.",status==LinphoneEcCalibratorDone ? "successfully" : "with faillure");
 	if (status==LinphoneEcCalibratorDone) ms_message("Measured delay is %i",delay);
 
-	GtkWidget * dialog;
-	GtkWidget *speaker_page = get_widget_from_assistant("speaker_page");
+	speaker_page = get_widget_from_assistant("speaker_page");
 
 	dialog = gtk_message_dialog_new (
 			GTK_WINDOW(audio_assistant),
@@ -208,6 +209,7 @@ void linphone_gtk_start_record_sound(GtkWidget *w, gpointer data){
 	AudioStream *stream = NULL;
 	MSSndCardManager *manager = ms_snd_card_manager_get();
 	gboolean active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
+	gint timeout_id;
 
 	if(active){
 		gchar *path = get_record_file();
@@ -217,12 +219,12 @@ void linphone_gtk_start_record_sound(GtkWidget *w, gpointer data){
 				path,NULL,ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE);
 			g_object_set_data(G_OBJECT(audio_assistant),"record_stream",stream);
 		}
-		gint timeout_id = gtk_timeout_add(6000,(GtkFunction)linphone_gtk_stop_record,NULL);
+		timeout_id = gtk_timeout_add(6000,(GtkFunction)linphone_gtk_stop_record,NULL);
 		g_object_set_data(G_OBJECT(audio_assistant),"timeout_id",GINT_TO_POINTER(timeout_id));
 		g_object_set_data(G_OBJECT(audio_assistant),"path",path);
 	} else {
 		stream = (AudioStream *)g_object_get_data(G_OBJECT(audio_assistant),"record_stream");
-		gint timeout_id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(audio_assistant),"timeout_id"));
+		timeout_id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(audio_assistant),"timeout_id"));
 		gtk_timeout_remove(timeout_id);
 		if(stream != NULL){
 			audio_stream_stop(stream);
@@ -322,7 +324,7 @@ static GtkWidget *create_intro(){
 static GtkWidget *create_mic_page(){
 	GtkWidget *vbox=gtk_table_new(3,2,FALSE);
 	LinphoneCore *lc=linphone_gtk_get_core();
-
+	const char **sound_devices;
 	GtkWidget *labelMicChoice=gtk_label_new(_("Capture device"));
 	GtkWidget *labelMicLevel=gtk_label_new(_("Recorded volume"));
 	GtkWidget *mic_audiolevel=gtk_progress_bar_new();
@@ -348,8 +350,8 @@ static GtkWidget *create_mic_page(){
 
 	set_widget_to_assistant("mic_audiolevel",mic_audiolevel);
 	set_widget_to_assistant("label_audiolevel",label_audiolevel);
-	
-	const char **sound_devices=linphone_core_get_sound_devices(lc);
+
+	sound_devices=linphone_core_get_sound_devices(lc);
 	linphone_gtk_fill_combo_box(capture_device, sound_devices,
 					linphone_core_get_capture_device(lc), CAP_CAPTURE);
 	gtk_widget_show_all(vbox);
@@ -370,6 +372,7 @@ static GtkWidget *create_speaker_page(){
 	GtkWidget *playback_device=gtk_combo_box_new();
 	GtkWidget *mixer_button=gtk_button_new_with_label("System sound preferences");
 	GtkWidget *image;
+	const char **sound_devices;
 
 	image=gtk_image_new_from_stock(GTK_STOCK_PREFERENCES,GTK_ICON_SIZE_MENU);
 	gtk_button_set_image(GTK_BUTTON(mixer_button),image);
@@ -382,7 +385,7 @@ static GtkWidget *create_speaker_page(){
 
 	gtk_table_set_row_spacings(GTK_TABLE(vbox),10);
 
-	const char **sound_devices=linphone_core_get_sound_devices(lc);
+	sound_devices=linphone_core_get_sound_devices(lc);
 	linphone_gtk_fill_combo_box(playback_device, sound_devices,
 					linphone_core_get_playback_device(lc),CAP_PLAYBACK);
 	gtk_widget_show_all(vbox);
@@ -414,9 +417,9 @@ static GtkWidget *create_play_record_page(){
 	gtk_table_attach(GTK_TABLE(vbox), rec_button, 1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 0,0);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelPlay, 0, 1, 1, 2);
 	gtk_table_attach(GTK_TABLE(vbox),  play_button, 1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 0,0);
-	
+
 	gtk_widget_show_all(vbox);
-	
+
 	set_widget_to_assistant("rec_button",rec_button);
 	set_widget_to_assistant("play_button",play_button);
 	g_signal_connect(G_OBJECT(rec_button),"toggled",(GCallback)linphone_gtk_start_record_sound,vbox);
@@ -480,18 +483,23 @@ void linphone_gtk_audio_assistant_apply(GtkWidget *w){
 
 void linphone_gtk_show_audio_assistant(void){
 	GtkWidget *w;
+	GtkWidget *welcome;
+	GtkWidget *mic_page;
+	GtkWidget *speaker_page;
+	GtkWidget *play_record_page;
+	GtkWidget *end_page;
 	if(audio_assistant!=NULL)
 		return;
 	w=audio_assistant=linphone_gtk_create_window("audio_assistant");
 
 	gtk_window_set_resizable (GTK_WINDOW(w), FALSE);
 	gtk_window_set_title(GTK_WINDOW(w),_("Audio Assistant"));
-	
-	GtkWidget *welcome=create_intro();
-	GtkWidget *mic_page=create_mic_page();
-	GtkWidget *speaker_page=create_speaker_page();
-	GtkWidget *play_record_page=create_play_record_page();
-	GtkWidget *end_page=create_end_page();
+
+	welcome=create_intro();
+	mic_page=create_mic_page();
+	speaker_page=create_speaker_page();
+	play_record_page=create_play_record_page();
+	end_page=create_end_page();
 
 	gtk_assistant_append_page(GTK_ASSISTANT(w),welcome);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),welcome,GTK_ASSISTANT_PAGE_INTRO);

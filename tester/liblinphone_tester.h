@@ -58,6 +58,7 @@ extern test_suite_t flexisip_test_suite;
 extern test_suite_t stun_test_suite;
 extern test_suite_t remote_provisioning_test_suite;
 extern test_suite_t quality_reporting_test_suite;
+extern test_suite_t transport_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -192,6 +193,8 @@ typedef struct _stats {
 
 	int number_of_LinphoneCallEncryptedOn;
 	int number_of_LinphoneCallEncryptedOff;
+	int number_of_NetworkReachableTrue;
+	int number_of_NetworkReachableFalse;
 	LinphoneChatMessage* last_received_chat_message;
 }stats;
 
@@ -239,6 +242,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						, const LinphoneCallParams *caller_params
 						, const LinphoneCallParams *callee_params);
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
+void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
 const char *liblinphone_tester_get_subscribe_content(void);
@@ -247,6 +251,10 @@ void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,Linph
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
 void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
+#ifdef ANDROID
+void cunit_android_trace_handler(int level, const char *fmt, va_list args) ;
+#endif
+int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...);
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

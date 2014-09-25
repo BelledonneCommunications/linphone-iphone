@@ -607,7 +607,7 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 		mapping.remote_port = port->external_port;
 		mapping.remote_host = "";
 		snprintf(description, 128, "%s %s at %s:%d",
-				PACKAGE_NAME,
+				"Linphone",
 				(port->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP": "UDP",
 				port->local_addr, port->local_port);
 		mapping.description = description;
@@ -834,7 +834,7 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 				linphone_core_start_update_call(lc, call);
 				break;
 			case LinphoneCallUpdatedByRemote:
-				linphone_core_start_accept_call_update(lc, call);
+				linphone_core_start_accept_call_update(lc, call,call->prevstate,linphone_call_state_to_string(call->prevstate));
 				break;
 			case LinphoneCallOutgoingInit:
 				linphone_core_proceed_with_invite_if_ready(lc, call, NULL);

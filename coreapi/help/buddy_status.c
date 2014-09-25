@@ -1,7 +1,7 @@
 
 /*
 buddy_status
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@ static void new_subscription_requested (LinphoneCore *lc,  LinphoneFriend *frien
  * Registration state notification callback
  */
 static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+		printf("New registration state %s for user id [%s] at proxy [%s]"
 				,linphone_registration_state_to_string(cstate)
 				,linphone_proxy_config_get_identity(cfg)
 				,linphone_proxy_config_get_addr(cfg));
@@ -86,6 +86,8 @@ int main(int argc, char *argv[]){
 	char* dest_friend=NULL;
 	char* identity=NULL;
 	char* password=NULL;
+
+	LinphoneFriend* my_friend=NULL;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
@@ -104,7 +106,7 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the both notify_presence_received and new_subscription_requested callbacks
 	 in order to get notifications about friend status.
@@ -123,11 +125,11 @@ int main(int argc, char *argv[]){
 		LinphoneProxyConfig* proxy_cfg = linphone_proxy_config_new();
 		/*parse identity*/
 		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAuthInfo *info;
 		if (from==NULL){
 			printf("%s not a valid sip uri, must be like sip:toto@sip.linphone.org \n",identity);
 			goto end;
 		}
-		LinphoneAuthInfo *info;
 		if (password!=NULL){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
 			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
@@ -152,7 +154,6 @@ int main(int argc, char *argv[]){
 		while(	running && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationProgress);
 
 	}
-	LinphoneFriend* my_friend=NULL;
 
 	if (dest_friend) {
 		my_friend = linphone_friend_new_with_address(dest_friend); /*creates friend object from dest*/

@@ -864,7 +864,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 
 	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
 		unsigned int max_res_count = linphone_ldap_contact_provider_get_max_result(ldap);
-
+		LinphoneContactSearch* search;
 		if( previous_search  &&
 			(strstr(predicate, previous_search) == predicate) && // last search contained results from this one
 			(prev_res_count != max_res_count) ){ // and we didn't reach the max result limit
@@ -879,7 +879,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 		gtk_object_set_data(GTK_OBJECT(uribar), "previous_search", ms_strdup(predicate));
 
 		ms_message("launch_contact_provider_search");
-		LinphoneContactSearch* search =linphone_contact_provider_begin_search(
+		search =linphone_contact_provider_begin_search(
 					linphone_contact_provider_cast(ldap_provider),
 					predicate, on_contact_provider_search_results, uribar
 					);
@@ -940,6 +940,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	//bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
 	int call_list_size=ms_list_size(calls);
+	GtkWidget *conf_frame;
 
 	if (calls==NULL){
 		start_active=TRUE;
@@ -962,7 +963,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,add_call);
 
 	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
-	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 		linphone_gtk_enable_conference_button(lc,call_list_size>1);
@@ -1000,7 +1001,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 			break;
 		}
 	}
-	
+
 	if (address){
 		id=linphone_address_get_username(address);
 		if (id==NULL) id=linphone_address_get_domain(address);
@@ -1172,13 +1173,14 @@ static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint respon
 
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	GtkWidget *dialog;
+	gchar *message;
 
 	if (linphone_gtk_get_ui_config_int("subscribe_deny_all",0)){
 		linphone_core_reject_subscriber(linphone_gtk_get_core(),lf);
 		return;
 	}
 
-	gchar *message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
+	message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
 	dialog = gtk_message_dialog_new (
 				GTK_WINDOW(linphone_gtk_get_main_window()),
                                 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1540,7 +1542,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
 	if (!found) {
-		g_warning("Could not find proxy config in combo box of identities.");
+		/*ignored, this is a notification for a removed proxy config.*/
 		return;
 	}
 	switch (rs){
@@ -2001,10 +2003,11 @@ void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer us
 void linphone_gtk_create_keypad(GtkWidget *button){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
+	GtkWidget *keypad;
 	if(k!=NULL){
 		gtk_widget_destroy(k);
 	}
-	GtkWidget *keypad=linphone_gtk_create_window("keypad");
+	keypad=linphone_gtk_create_window("keypad");
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
 	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);

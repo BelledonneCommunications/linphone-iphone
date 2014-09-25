@@ -33,7 +33,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 
 	private native int notify(long nativeptr, String type, String subtype, byte data[], String encoding);
 	@Override
-	public synchronized void notify(LinphoneContent content) {
+	public void notify(LinphoneContent content) {
 		synchronized(getCore()){
 			notify(mNativePtr,content.getType(),content.getSubtype(),content.getData(),content.getEncoding());
 		}
@@ -41,7 +41,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 
 	private native int updateSubscribe(long nativePtr, String type, String subtype, byte data[], String encoding);
 	@Override
-	public synchronized void updateSubscribe(LinphoneContent content) {
+	public void updateSubscribe(LinphoneContent content) {
 		synchronized(getCore()){
 			updateSubscribe(mNativePtr,content.getType(), content.getSubtype(),content.getData(),content.getEncoding());
 		}
@@ -49,7 +49,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 
 	private native int updatePublish(long nativePtr, String type, String subtype, byte data[], String encoding);
 	@Override
-	public synchronized void updatePublish(LinphoneContent content) {
+	public void updatePublish(LinphoneContent content) {
 		synchronized(getCore()){
 			updatePublish(mNativePtr,content.getType(), content.getSubtype(),content.getData(),content.getEncoding());
 		}
@@ -57,7 +57,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 
 	private native int terminate(long nativePtr);
 	@Override
-	public synchronized void terminate() {
+	public void terminate() {
 		synchronized(getCore()){
 			terminate(mNativePtr);
 		}
@@ -115,7 +115,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 
 	private native void sendSubscribe(long ptr, String type, String subtype, byte data [], String encoding);
 	@Override
-	public synchronized void sendSubscribe(LinphoneContent body) {
+	public void sendSubscribe(LinphoneContent body) {
 		synchronized(getCore()){
 			if (body != null)
 				sendSubscribe(mNativePtr, body.getType(), body.getSubtype(), body.getData(), body.getEncoding());
@@ -126,7 +126,7 @@ public class LinphoneEventImpl implements LinphoneEvent {
 	
 	private native void sendPublish(long ptr, String type, String subtype, byte data [], String encoding);
 	@Override
-	public synchronized void sendPublish(LinphoneContent body) {
+	public void sendPublish(LinphoneContent body) {
 		synchronized(getCore()){
 			if (body != null)
 				sendPublish(mNativePtr, body.getType(), body.getSubtype(), body.getData(), body.getEncoding());

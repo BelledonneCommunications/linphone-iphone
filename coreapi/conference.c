@@ -41,6 +41,7 @@ static void conference_check_init(LinphoneConference *ctx, int samplerate){
 		MSAudioConferenceParams params;
 		params.samplerate=samplerate;
 		ctx->conf=ms_audio_conference_new(&params);
+		ctx->terminated=FALSE;
 	}
 }
 
@@ -74,7 +75,7 @@ void linphone_core_conference_check_uninit(LinphoneCore *lc){
 	if (ctx->conf){
 		int remote_count=remote_participants_count(ctx);
 		ms_message("conference_check_uninit(): size=%i",linphone_conference_get_size(ctx));
-		if (remote_count==1){
+		if (remote_count==1 && !ctx->terminated){
 			convert_conference_to_call(lc);
 		}
 		if (remote_count==0){
@@ -98,7 +99,7 @@ void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted){
 	LinphoneCore *lc=call->core;
 	LinphoneConference *conf=&lc->conf_ctx;
 	MSAudioEndpoint *ep;
-	call->params.has_video = FALSE;
+	call->params->has_video = FALSE;
 	call->camera_enabled = FALSE;
 	ep=ms_audio_endpoint_get_from_stream(call->audiostream,TRUE);
 	ms_audio_conference_add_member(conf->conf,ep);
@@ -184,15 +185,15 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 	LinphoneConference *conf=&lc->conf_ctx;
 	
-	if (call->current_params.in_conference){
+	if (call->current_params->in_conference){
 		ms_error("Already in conference");
 		return -1;
 	}
 	conference_check_init(&lc->conf_ctx, lp_config_get_int(lc->config, "sound","conference_rate",16000));
 	
 	if (call->state==LinphoneCallPaused){
-		call->params.in_conference=TRUE;
-		call->params.has_video=FALSE;
+		call->params->in_conference=TRUE;
+		call->params->has_video=FALSE;
 		linphone_core_resume_call(lc,call);
 	}else if (call->state==LinphoneCallStreamsRunning){
 		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
@@ -222,8 +223,8 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 	int err=0;
 	char *str;
 
-	if (!call->current_params.in_conference){
-		if (call->params.in_conference){
+	if (!call->current_params->in_conference){
+		if (call->params->in_conference){
 			ms_warning("Not (yet) in conference, be patient");
 			return -1;
 		}else{
@@ -231,7 +232,7 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 			return -1;
 		}
 	}
-	call->params.in_conference=FALSE;
+	call->params->in_conference=FALSE;
 
 	str=linphone_call_get_remote_address_as_string(call);
 	ms_message("%s will be removed from conference", str);
@@ -251,7 +252,6 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 		ms_message("Pausing call to actually remove from conference");
 		err=_linphone_core_pause_call(lc,call);
 	}
-
 	return err;
 }
 
@@ -267,7 +267,7 @@ static int convert_conference_to_call(LinphoneCore *lc){
 	while (calls) {
 		LinphoneCall *rc=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (rc->params.in_conference) { // not using current_param
+		if (rc->params->in_conference) { // not using current_param
 			bool_t active_after_removed=linphone_core_is_in_conference(lc);
 			err=remove_from_conference(lc, rc, active_after_removed);
 			break;
@@ -370,7 +370,7 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (!call->current_params.in_conference) {
+		if (!call->current_params->in_conference) {
 			linphone_core_add_to_conference(lc, call);
 		}
 	}
@@ -388,10 +388,13 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 **/
 int linphone_core_terminate_conference(LinphoneCore *lc) {
 	MSList *calls=lc->calls;
+	LinphoneConference *conf=&lc->conf_ctx;
+	conf->terminated=TRUE;
+
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		if (call->current_params.in_conference) {
+		if (call->current_params->in_conference) {
 			linphone_core_terminate_call(lc, call);
 		}
 	}

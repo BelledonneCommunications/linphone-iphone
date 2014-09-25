@@ -1,0 +1,528 @@
+static void pylinphone_dispatch_messages(void) {
+#ifdef WIN32
+	MSG msg;
+	while (PeekMessage(&msg, NULL, 0, 0, 1)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+#endif
+}
+
+static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
+	static int current_indent = 1;
+	PyObject *linphone_module;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	if (linphone_module != NULL) {
+		if (PyObject_HasAttrString(linphone_module, "__log_handler")) {
+			PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+			if (log_handler != NULL) {
+				if (PyCallable_Check(log_handler)) {
+					char logstr[4096];
+					int i = 0;
+					if (indent == -1) current_indent--;
+					if (current_indent < 1) current_indent = 1;
+					if ((indent >= -1) && (indent <= 1)) {
+						for (i = 0; i < current_indent; i++) {
+							logstr[i] = '\t';
+						}
+					}
+					if (indent == 1) current_indent++;
+					if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
+							PyErr_Print();
+						}
+						Py_DECREF(pyargs);
+					}
+				}
+				Py_DECREF(log_handler);
+			}
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+}
+
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("debug", indent, fmt, args);
+	va_end(args);
+}
+
+static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
+	switch (lev) {
+		default:
+		case ORTP_DEBUG:
+			return "debug";
+		case ORTP_MESSAGE:
+			return "info";
+		case ORTP_WARNING:
+			return "warning";
+		case ORTP_ERROR:
+			return "error";
+		case ORTP_FATAL:
+			return "critical";
+		case ORTP_TRACE:
+			return "debug";
+	}
+}
+
+static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	PyGILState_STATE gstate;
+	PyObject *linphone_module;
+	const char *level;
+
+	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	level = pylinphone_ortp_log_level_to_string(lev);
+	if (linphone_module != NULL) {
+		if (PyObject_HasAttrString(linphone_module, "__log_handler")) {
+			PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+			if (log_handler != NULL) {
+				if (PyCallable_Check(log_handler)) {
+					char logstr[4096];
+					if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
+							PyErr_Print();
+						}
+						Py_DECREF(pyargs);
+					}
+				}
+				Py_DECREF(log_handler);
+			}
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+}
+
+static void pylinphone_init_logging(void) {
+	linphone_core_serialize_logs();
+	linphone_core_set_log_handler(pylinphone_module_log_handler);
+	linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+}
+
+
+static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObject *args) {
+	PyObject *linphone_module = PyImport_ImportModule("linphone.linphone");
+	PyObject *callback;
+	if (!PyArg_ParseTuple(args, "O", &callback)) {
+		return NULL;
+	}
+	if (!PyCallable_Check(callback) && (callback != Py_None)) {
+		PyErr_SetString(PyExc_TypeError, "The argument must be a callable or None");
+		return NULL;
+	}
+	if (linphone_module != NULL) {
+		PyObject_SetAttrString(linphone_module, "__log_handler", callback);
+		Py_DECREF(linphone_module);
+	}
+	Py_RETURN_NONE;
+}
+
+
+static PyObject * pylinphone_Core_get_sound_devices(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_devices;
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_devices = linphone_core_get_sound_devices(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_devices != NULL) {
+		PyObject *_item = PyString_FromString(*_devices);
+		PyList_Append(_list, _item);
+		_devices++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}
+
+static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_devices;
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_devices = linphone_core_get_video_devices(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_devices != NULL) {
+		PyObject *_item = PyString_FromString(*_devices);
+		PyList_Append(_list, _item);
+		_devices++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}
+
+static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
+	const char * _config_path;
+	const char * _factory_config_path;
+
+	if (!PyArg_ParseTuple(args, "Ozz", &_vtable_dict, &_config_path, &_factory_config_path)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+{{#events}}
+	{{{event_vtable_reference}}}
+{{/events}}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, \"%s\", \"%s\")", __FUNCTION__, _vtable_dict, _config_path, _factory_config_path);
+	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
+	PyObject * _config;
+	LpConfig * _config_native_ptr;
+
+	if (!PyArg_ParseTuple(args, "OO", &_vtable_dict, &_config)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+		return NULL;
+	}
+
+	if ((_config_native_ptr = pylinphone_LpConfig_get_native_ptr(_config)) == NULL) {
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+{{#events}}
+	{{{event_vtable_reference}}}
+{{/events}}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, _config, _config_native_ptr);
+	cresult = linphone_core_new_with_config(&_vtable, _config_native_ptr, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+
+static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
+	PyGILState_STATE pygil_state;
+	PyObject *pycm = NULL;
+	PyObject *_dict = (PyObject *)ud;
+	PyObject *_cb = PyDict_GetItemString(_dict, "callback");
+	PyObject *_ud = PyDict_GetItemString(_dict, "user_data");
+
+	pygil_state = PyGILState_Ensure();
+	pycm = pylinphone_ChatMessage_from_native_ptr(&pylinphone_ChatMessageType, msg);
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, %p [%p], %d, %p)", __FUNCTION__, pycm, msg, state, ud);
+	if ((_cb != NULL) && PyCallable_Check(_cb)) {
+		PyObject *args = Py_BuildValue("OiO", pycm, state, _ud);
+		if (PyEval_CallObject(_cb, args) == NULL) {
+			PyErr_Print();
+		}
+		Py_DECREF(args);
+	}
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+	PyGILState_Release(pygil_state);
+}
+
+static PyObject * pylinphone_ChatRoom_instance_method_send_message2(PyObject *self, PyObject *args) {
+	PyObject *_chat_message;
+	PyObject *_dict;
+	PyObject *_cb;
+	PyObject *_ud;
+	LinphoneChatMessage * _chat_message_native_ptr;
+	LinphoneChatRoom *native_ptr = pylinphone_ChatRoom_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.ChatRoom instance");
+		return NULL;
+	}
+	if (!PyArg_ParseTuple(args, "OOO", &_chat_message, &_cb, &_ud)) {
+		return NULL;
+	}
+	if (!PyObject_IsInstance(_chat_message, (PyObject *)&pylinphone_ChatMessageType)) {
+		PyErr_SetString(PyExc_TypeError, "The msg argument must be a linphone.ChatMessage");
+		return NULL;
+	}
+	if ((_cb != Py_None) && !PyCallable_Check(_cb)) {
+		PyErr_SetString(PyExc_TypeError, "The status_cb argument must be a callable");
+		return NULL;
+	}
+	if ((_chat_message_native_ptr = pylinphone_ChatMessage_get_native_ptr(_chat_message)) == NULL) {
+		return NULL;
+	}
+	_dict = PyDict_New();
+	PyDict_SetItemString(_dict, "callback", _cb);
+	PyDict_SetItemString(_dict, "user_data", _ud);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p], %p, %p)", __FUNCTION__, self, native_ptr, _chat_message, _chat_message_native_ptr, _cb, _ud);
+	linphone_chat_room_send_message2(native_ptr, _chat_message_native_ptr, pylinphone_ChatRoom_callback_chat_message_state_changed, _dict);
+	pylinphone_dispatch_messages();
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
+	Py_RETURN_NONE;
+}
+
+
+
+static void pylinphone_VideoSize_dealloc(PyObject *self) {
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, self);
+	self->ob_type->tp_free(self);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+}
+
+static PyObject * pylinphone_VideoSize_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
+	pylinphone_VideoSizeObject *self = (pylinphone_VideoSizeObject *)type->tp_alloc(type, 0);
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s()", __FUNCTION__);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, self);
+	return (PyObject *)self;
+}
+
+static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *kw) {
+	pylinphone_VideoSizeObject *vso = (pylinphone_VideoSizeObject *)self;
+	int width;
+	int height;
+	if (!PyArg_ParseTuple(args, "ii", &width, &height)) {
+		return -1;
+	}
+	vso->vs.width = width;
+	vso->vs.height = height;
+	return 0;
+}
+
+static PyMemberDef pylinphone_VideoSize_members[] = {
+	{ "width", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, width), 0, "[int] The width of the video" },
+	{ "height", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, height), 0, "[int] The height of the video" },
+	{ NULL, 0, 0, 0, NULL }	/* Sentinel */
+};
+
+static PyTypeObject pylinphone_VideoSizeType = {
+	PyObject_HEAD_INIT(NULL)
+	0,	/* ob_size */
+	"linphone.VideoSize",	/* tp_name */
+	sizeof(pylinphone_VideoSizeObject),	/* tp_basicsize */
+	0,	/* tp_itemsize */
+	pylinphone_VideoSize_dealloc,	/* tp_dealloc */
+	0,	/* tp_print */
+	0,	/* tp_getattr */
+	0,	/* tp_setattr */
+	0,	/* tp_compare */
+	0,	/* tp_repr */
+	0,	/* tp_as_number */
+	0,	/* tp_as_sequence */
+	0,	/* tp_as_mapping */
+	0,	/* tp_hash */
+	0,	/* tp_call */
+	0,	/* tp_str */
+	0,	/* tp_getattro */
+	0,	/* tp_setattro */
+	0,	/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,	/* tp_flags */
+	"Object representing the size of a video: its width and its height in pixels.",	/* tp_doc */
+	0,	/* tp_traverse */
+	0,	/* tp_clear */
+	0,	/* tp_richcompare */
+	0,	/* tp_weaklistoffset */
+	0,	/* tp_iter */
+	0,	/* tp_iternext */
+	0,	/* tp_methods */
+	pylinphone_VideoSize_members,	/* tp_members */
+	0,	/* tp_getset */
+	0,	/* tp_base */
+	0,	/* tp_dict */
+	0,	/* tp_descr_get */
+	0,	/* tp_descr_set */
+	0,	/* tp_dictoffset */
+	pylinphone_VideoSize_init,	/* tp_init */
+	0,	/* tp_alloc */
+	pylinphone_VideoSize_new,	/* tp_new */
+	0,	/* tp_free */
+};
+
+int PyLinphoneVideoSize_Check(PyObject *p) {
+	return PyObject_IsInstance(p, (PyObject *)&pylinphone_VideoSizeType);
+}
+
+MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj) {
+	return ((pylinphone_VideoSizeObject *)obj)->vs;
+}
+
+PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
+	PyObject *linphone_module;
+	PyObject *pyret = NULL;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	if (linphone_module != NULL) {
+		PyObject *cls = PyObject_GetAttrString(linphone_module, "VideoSize");
+		if (cls != NULL) {
+			PyObject *args = Py_BuildValue("ii", vs.width, vs.height);
+			pyret = PyEval_CallObject(cls, args);
+			if (pyret == NULL) {
+				PyErr_Print();
+			}
+			Py_DECREF(args);
+			Py_DECREF(cls);
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
+time_t PyDateTime_As_time_t(PyObject *obj) {
+	time_t ret = -1;
+	PyObject *utctimetuple = PyObject_GetAttrString(obj, "utctimetuple");
+	if (utctimetuple != NULL) {
+		PyObject *calendar_module = PyImport_ImportModule("calendar");
+		if (calendar_module != NULL) {
+			PyObject *timegm = PyObject_GetAttrString(calendar_module, "timegm");
+			if (timegm != NULL) {
+				PyObject *args;
+				PyObject *tuple;
+				PyObject *pyres;
+				args = Py_BuildValue("()");
+				tuple = PyEval_CallObject(utctimetuple, args);
+				Py_DECREF(args);
+				args = Py_BuildValue("(O)", tuple);
+				pyres = PyEval_CallObject(timegm, args);
+				Py_DECREF(args);
+				ret = (time_t)PyLong_AsLong(pyres);
+				Py_DECREF(timegm);
+			}
+			Py_DECREF(calendar_module);
+		}
+		Py_DECREF(utctimetuple);
+	}
+	return ret;
+}
+
+PyObject * PyDateTime_From_time_t(time_t t) {
+	PyObject *pyret = NULL;
+	PyObject *datetime_module;
+	if (t == -1) {
+		Py_RETURN_NONE;
+	}
+	datetime_module = PyImport_ImportModule("datetime");
+	if (datetime_module != NULL) {
+		PyObject *datetime_class = PyObject_GetAttrString(datetime_module, "datetime");
+		if (datetime_class != NULL) {
+			PyObject *utcfromtimestamp = PyObject_GetAttrString(datetime_class, "utcfromtimestamp");
+			if (utcfromtimestamp != NULL) {
+				PyObject *args = Py_BuildValue("(f)", (float)t);
+				pyret = PyEval_CallObject(utcfromtimestamp, args);
+				if (pyret == NULL) {
+					PyErr_Print();
+				}
+				Py_DECREF(args);
+				Py_DECREF(utcfromtimestamp);
+			}
+			Py_DECREF(datetime_class);
+		}
+		Py_DECREF(datetime_module);
+	}
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
+static PyObject * pylinphone_PayloadTypeType_module_method_string(PyObject *self, PyObject *args) {
+	const char *value_str = "[invalid]";
+	int value;
+	PyObject *pyret;
+	if (!PyArg_ParseTuple(args, "i", &value)) {
+		return NULL;
+	}
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%d)", __FUNCTION__, value);
+	switch (value) {
+		case PAYLOAD_AUDIO_CONTINUOUS:
+			value_str = "PAYLOAD_AUDIO_CONTINUOUS";
+			break;
+		case PAYLOAD_AUDIO_PACKETIZED:
+			value_str = "PAYLOAD_AUDIO_PACKETIZED";
+			break;
+		case PAYLOAD_VIDEO:
+			value_str = "PAYLOAD_VIDEO";
+			break;
+		case PAYLOAD_TEXT:
+			value_str = "PAYLOAD_TEXT";
+			break;
+		case PAYLOAD_OTHER:
+			value_str = "PAYLOAD_OTHER";
+			break;
+		default:
+			break;
+	}
+	pyret = Py_BuildValue("z", value_str);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static PyMethodDef pylinphone_PayloadTypeType_ModuleMethods[] = {
+	{ "string", pylinphone_PayloadTypeType_module_method_string, METH_VARARGS, "Get a string representation of a linphone.PayloadTypeType value." },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};

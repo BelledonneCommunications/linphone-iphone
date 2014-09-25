@@ -1,0 +1,15 @@
+static PyObject * pylinphone_Core_get_sound_devices(PyObject *self, void *closure);
+static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure);
+
+static PyTypeObject pylinphone_VideoSizeType;
+
+typedef struct {
+	PyObject_HEAD
+	MSVideoSize vs;
+} pylinphone_VideoSizeObject;
+
+int PyLinphoneVideoSize_Check(PyObject *p);
+MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj);
+PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs);
+time_t PyDateTime_As_time_t(PyObject *obj);
+PyObject * PyDateTime_From_time_t(time_t t);

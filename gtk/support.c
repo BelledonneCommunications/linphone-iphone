@@ -92,17 +92,17 @@ create_pixbuf_animation(const gchar     *filename)
 	gchar *pathname = NULL;
 	GdkPixbufAnimation *pixbuf;
 	GError *error = NULL;
-	
+
 	if (!filename || !filename[0])
 		return NULL;
-	
+
 	pathname = find_pixmap_file (filename);
-	
+
 	if (!pathname){
 		g_warning (_("Couldn't find pixmap file: %s"), filename);
 		return NULL;
 	}
-	
+
 	pixbuf = gdk_pixbuf_animation_new_from_file (pathname, &error);
 	if (!pixbuf){
 		fprintf (stderr, "Failed to load pixbuf file: %s: %s\n",
@@ -156,6 +156,11 @@ const char *linphone_gtk_get_lang(const char *config_file){
 void linphone_gtk_set_lang(const char *code){
 	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
 	const char *curlang;
+
+	#ifdef WIN32
+	char tmp[128];
+	#endif
+
 	#if defined(WIN32) || defined(__APPLE__)
 		curlang=getenv("LANG");
 	#else
@@ -167,12 +172,11 @@ void linphone_gtk_set_lang(const char *code){
 	}
 	lp_config_set_string(cfg,"GtkUi","lang",code);
 #ifdef WIN32
-	char tmp[128];
 	snprintf(tmp,sizeof(tmp),"LANG=%s",code);
 	_putenv(tmp);
 #elif __APPLE__
 	setenv("LANG",code,1);
-#else 
+#else
 	setenv("LANGUAGE",code,1);
 #endif
 }

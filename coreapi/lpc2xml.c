@@ -29,7 +29,7 @@ struct _lpc2xml_context {
 	const LpConfig *lpc;
 	lpc2xml_function cbf;
 	void *ctx;
-	
+
 	xmlDoc *doc;
 	char errorBuffer[LPC2XML_BZ];
 	char warningBuffer[LPC2XML_BZ];
@@ -42,7 +42,7 @@ lpc2xml_context* lpc2xml_context_new(lpc2xml_function cbf, void *ctx) {
 		xmlCtx->lpc = NULL;
 		xmlCtx->cbf = cbf;
 		xmlCtx->ctx = ctx;
-		
+
 		xmlCtx->doc = NULL;
 		xmlCtx->errorBuffer[0]='\0';
 		xmlCtx->warningBuffer[0]='\0';
@@ -64,8 +64,8 @@ static void lpc2xml_context_clear_logs(lpc2xml_context *ctx) {
 }
 
 static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...) {
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	if(xmlCtx->cbf != NULL) {
 		xmlCtx->cbf((xmlCtx)->ctx, level, fmt, args);
 	}
@@ -75,8 +75,8 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
 static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
 	int sl = strlen(xmlCtx->errorBuffer);
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);
 	va_end(args);
 }
@@ -85,8 +85,8 @@ static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
 	int sl = strlen(xmlCtx->warningBuffer);
-	va_list args;	
-	va_start(args, fmt);	
+	va_list args;
+	va_start(args, fmt);
 	vsnprintf(xmlCtx->warningBuffer + sl, LPC2XML_BZ-sl, fmt, args);
 	va_end(args);
 }
@@ -114,25 +114,27 @@ struct __processSectionCtx {
 static void processSection_cb(const char *entry, struct __processSectionCtx *ctx) {
 	if(ctx->ret == 0) {
 		const char *comment = "#";
+		xmlNode *node;
+		xmlAttr *name_attr;
 		if (strncmp(comment, entry, strlen(comment)) == 0) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped commented entry %s", entry);
 			ctx->ret = 0;
 			return;
 		}
 
-		xmlNode *node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"entry", NULL);
+		node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"entry", NULL);
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"entry\" element");
 			ctx->ret = -1;
 			return;
 		}
-		xmlAttr *name_attr = xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)entry);
+		name_attr = xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)entry);
 		if(name_attr == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create name attribute for \"entry\" element");
 			ctx->ret = -1;
 			return;
 		}
-	
+
 		ctx->ret = processEntry(ctx->section, entry, node, ctx->ctx);
 	}
 }
@@ -154,12 +156,13 @@ struct __processConfigCtx {
 static void processConfig_cb(const char *section, struct __processConfigCtx *ctx) {
 	if(ctx->ret == 0) {
 		xmlNode *node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
+		xmlAttr *name_attr;
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"section\" element");
 			ctx->ret = -1;
 			return;
 		}
-		xmlAttr *name_attr = xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)section);
+		name_attr = xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)section);
 		if(name_attr == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create name attribute for \"section\" element");
 			ctx->ret = -1;
@@ -177,22 +180,25 @@ static int processConfig(xmlNode *node, lpc2xml_context *ctx) {
 
 static int processDoc(xmlDoc *doc, lpc2xml_context *ctx) {
 	int ret = 0;
+	xmlNs *xsi_ns;
+	xmlNs *lpc_ns;
+	xmlAttr *schemaLocation;
 	xmlNode *root_node = xmlNewNode(NULL, (const xmlChar *)"config");
 	if(root_node == NULL) {
 		lpc2xml_log(ctx, LPC2XML_ERROR, "Can't create \"config\" element");
 		return -1;
 	}
-	xmlNs *lpc_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd", NULL);
+	lpc_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd", NULL);
 	if(lpc_ns == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create lpc namespace");
 	} else {
 		xmlSetNs(root_node, lpc_ns);
 	}
-	xmlNs *xsi_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar *)"xsi");
+	xsi_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar *)"xsi");
 	if(lpc_ns == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create xsi namespace");
 	}
-	xmlAttr *schemaLocation = xmlNewNsProp(root_node, xsi_ns, (const xmlChar *)"schemaLocation", (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd");
+	schemaLocation = xmlNewNsProp(root_node, xsi_ns, (const xmlChar *)"schemaLocation", (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd");
 	if(schemaLocation == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create schemaLocation");
 	}
@@ -203,12 +209,13 @@ static int processDoc(xmlDoc *doc, lpc2xml_context *ctx) {
 
 static int internal_convert_lpc2xml(lpc2xml_context *ctx) {
 	int ret = 0;
+	xmlDoc *doc;
 	lpc2xml_log(ctx, LPC2XML_DEBUG, "Generation started");
 	if(ctx->doc != NULL) {
 		xmlFreeDoc(ctx->doc);
 		ctx->doc = NULL;
 	}
-	xmlDoc *doc = xmlNewDoc((const xmlChar *)"1.0");
+	doc = xmlNewDoc((const xmlChar *)"1.0");
 	ret  = processDoc(doc, ctx);
 	if(ret == 0) {
 		ctx->doc = doc;
@@ -226,9 +233,10 @@ int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lpc) {
 
 int lpc2xml_convert_file(lpc2xml_context* context, const char *filename) {
 	int ret = -1;
+	xmlSaveCtxtPtr save_ctx;
 	lpc2xml_context_clear_logs(context);
 	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
-	xmlSaveCtxtPtr save_ctx = xmlSaveToFilename(filename, "UTF-8", XML_SAVE_FORMAT);
+	save_ctx = xmlSaveToFilename(filename, "UTF-8", XML_SAVE_FORMAT);
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {
@@ -248,9 +256,10 @@ int lpc2xml_convert_file(lpc2xml_context* context, const char *filename) {
 
 int lpc2xml_convert_fd(lpc2xml_context* context, int fd) {
 	int ret = -1;
+	xmlSaveCtxtPtr save_ctx;
 	lpc2xml_context_clear_logs(context);
 	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
-	xmlSaveCtxtPtr save_ctx = xmlSaveToFd(fd, "UTF-8", XML_SAVE_FORMAT);
+	save_ctx = xmlSaveToFd(fd, "UTF-8", XML_SAVE_FORMAT);
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {
@@ -271,9 +280,10 @@ int lpc2xml_convert_fd(lpc2xml_context* context, int fd) {
 int lpc2xml_convert_string(lpc2xml_context* context, char **content) {
 	int ret = -1;
 	xmlBufferPtr buffer = xmlBufferCreate();
+	xmlSaveCtxtPtr save_ctx;
 	lpc2xml_context_clear_logs(context);
 	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
-	xmlSaveCtxtPtr save_ctx = xmlSaveToBuffer(buffer, "UTF-8", XML_SAVE_FORMAT);
+	save_ctx = xmlSaveToBuffer(buffer, "UTF-8", XML_SAVE_FORMAT);
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {

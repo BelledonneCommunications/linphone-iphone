@@ -98,12 +98,16 @@ void sal_disable_logs() {
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
 		sal->pending_auths=ms_list_append(sal->pending_auths,op);
+		op->has_auth_pending=TRUE;
 	}
 }
 
 void sal_remove_pending_auth(Sal *sal, SalOp *op){
-	if (ms_list_find(sal->pending_auths,op)){
-		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+	if (op->has_auth_pending){
+		op->has_auth_pending=FALSE;
+		if (ms_list_find(sal->pending_auths,op)){
+			sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+		}
 	}
 }
 
@@ -137,7 +141,7 @@ void sal_process_authentication(SalOp *op) {
 		return;
 	}
 
-	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,from_uri,&auth_list,op->base.realm)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,new_request);
 		} else {
@@ -432,8 +436,8 @@ Sal * sal_init(){
 	sal->stack = belle_sip_stack_new(NULL);
 
 	sal->user_agent=belle_sip_header_user_agent_new();
-#if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
-	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
+#if defined(PACKAGE_NAME) && defined(LIBLINPHONE_VERSION)
+	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LIBLINPHONE_VERSION);
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
@@ -530,6 +534,8 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
 	belle_sip_object_unref(sal->listener);
+	if (sal->supported) belle_sip_object_unref(sal->supported);
+	ms_list_free_with_data(sal->supported_tags,ms_free);
 	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
 	ms_free(sal);
@@ -555,7 +561,7 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 									sal_address_get_port(addr),
 									sal_transport_to_string(sal_address_get_transport(addr)));
 	if (sal_address_get_port(addr)==-1 && lp==NULL){
-		int random_port=(0xDFFF&random())+1024;
+		int random_port=(0xDFFF&ortp_random())+1024;
 		ms_warning("This version of belle-sip doesn't support random port, choosing one here.");
 		lp = belle_sip_stack_create_listening_point(ctx->stack,
 						sal_address_get_domain(addr),
@@ -639,28 +645,42 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 			belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		}
 	}
-	return ;
 }
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
 #ifdef TUNNEL_ENABLED
-	belle_sip_listening_point_t *lp;
-	int result;
-
-	sal_unlisten_ports(ctx);
-	lp = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
-	if (lp == NULL) return -1;
-
-	belle_sip_listening_point_set_keep_alive(lp, ctx->keep_alive);
-	result = belle_sip_provider_add_listening_point(ctx->prov, lp);
-	set_tls_properties(ctx);
-	return result;
+	belle_sip_listening_point_t *lp_udp = NULL;
+	if(ctx->lp_tunnel != NULL) {
+		ortp_error("sal_enable_tunnel(): tunnel is already enabled");
+		return -1;
+	}
+	while((lp_udp = belle_sip_provider_get_listening_point(ctx->prov, "udp")) != NULL) {
+		belle_sip_object_ref(lp_udp);
+		belle_sip_provider_remove_listening_point(ctx->prov, lp_udp);
+		ctx->udp_listening_points = ms_list_append(ctx->udp_listening_points, lp_udp);
+	}
+	ctx->lp_tunnel = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
+	if(ctx->lp_tunnel == NULL) return -1;
+	belle_sip_listening_point_set_keep_alive(ctx->lp_tunnel, ctx->keep_alive);
+	belle_sip_provider_add_listening_point(ctx->prov, ctx->lp_tunnel);
+	belle_sip_object_ref(ctx->lp_tunnel);
+	return 0;
 #else
 	return 0;
 #endif
 }
 void sal_disable_tunnel(Sal *ctx) {
 #ifdef TUNNEL_ENABLED
-	sal_unlisten_ports(ctx);
+	MSList *it;
+	if(ctx->lp_tunnel) {
+		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lp_tunnel);
+		belle_sip_object_unref(ctx->lp_tunnel);
+		ctx->lp_tunnel = NULL;
+		for(it=ctx->udp_listening_points; it!=NULL; it=it->next) {
+			belle_sip_provider_add_listening_point(ctx->prov, (belle_sip_listening_point_t *)it->data);
+		}
+		ms_list_free_with_data(ctx->udp_listening_points, belle_sip_object_unref);
+		ctx->udp_listening_points = NULL;
+	}
 #endif
 }
 /**
@@ -928,10 +948,79 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	return 0;
 }
 
+static void make_supported_header(Sal *sal){
+	MSList *it;
+	char *alltags=NULL;
+	size_t buflen=64;
+	size_t written=0;
+	
+	if (sal->supported){
+		belle_sip_object_unref(sal->supported);
+		sal->supported=NULL;
+	}
+	for(it=sal->supported_tags;it!=NULL;it=it->next){
+		const char *tag=(const char*)it->data;
+		size_t taglen=strlen(tag);
+		if (alltags==NULL || (written+taglen+1>=buflen)) alltags=ms_realloc(alltags,(buflen=buflen*2));
+		snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
+	}
+	if (alltags){
+		sal->supported=belle_sip_header_create("Supported",alltags);
+		if (sal->supported){
+			belle_sip_object_ref(sal->supported);
+		}
+		ms_free(alltags);
+	}
+}
+
+void sal_set_supported_tags(Sal *ctx, const char* tags){
+	ctx->supported_tags=ms_list_free_with_data(ctx->supported_tags,ms_free);
+	if (tags){
+		char *iter;
+		char *buffer=ms_strdup(tags);
+		char *tag;
+		char *context=NULL;
+		iter=buffer;
+		while((tag=strtok_r(iter,", ",&context))!=NULL){
+			iter=NULL;
+			ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+		}
+		ms_free(buffer);
+	}
+	make_supported_header(ctx);
+}
+
+const char *sal_get_supported_tags(Sal *ctx){
+	if (ctx->supported){
+		return belle_sip_header_get_unparsed_value(ctx->supported);
+	}
+	return NULL;
+}
+
+void sal_add_supported_tag(Sal *ctx, const char* tag){
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
+	if (!elem){
+		ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
+		make_supported_header(ctx);
+	}
+	
+}
+
+void sal_remove_supported_tag(Sal *ctx, const char* tag){
+	MSList *elem=ms_list_find_custom(ctx->supported_tags,(MSCompareFunc)strcasecmp,tag);
+	if (elem){
+		ms_free(elem->data);
+		ctx->supported_tags=ms_list_remove_link(ctx->supported_tags,elem);
+		make_supported_header(ctx);
+	}
+}
+
+
+
 belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_request_t* req, int code ) {
 	belle_sip_response_t *resp=belle_sip_response_create_from_request(req,code);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),sal_make_supported_header(sal));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),sal->supported);
 	return resp;
 }
 

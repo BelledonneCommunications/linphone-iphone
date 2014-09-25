@@ -43,9 +43,10 @@ static void upnp_check_state(void) {
 
 static void upnp_check_ipaddress(void) {
 	int tmp = 0;
+	const char *addr;
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
-	const char *addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
+	addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
 	CU_ASSERT_TRUE(addr != NULL && strlen(addr)>=7);
 	linphone_core_manager_destroy(lc_upnp);
 }

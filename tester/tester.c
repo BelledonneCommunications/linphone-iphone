@@ -1,4 +1,4 @@
-/*
+ /*
  tester - liblinphone test suite
  Copyright (C) 2013  Belledonne Communications SARL
 
@@ -50,10 +50,22 @@ const char *liblinphone_tester_file_prefix=".";
 #endif
 
 /* TODO: have the same "static" for QNX and windows as above? */
+#ifdef ANDROID
+const char *liblinphone_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cache";
+#else
 const char *liblinphone_tester_writable_dir_prefix = ".";
+#endif
 
 const char *userhostsfile = "tester_hosts";
-
+static void network_reachable(LinphoneCore *lc, bool_t reachable) {
+	stats* counters;
+	ms_message("Network reachable [%s]",reachable?"TRUE":"FALSE");
+	counters = get_stats(lc);
+	if (reachable)
+		counters->number_of_NetworkReachableTrue++;
+	else
+		counters->number_of_NetworkReachableFalse++;
+}
 void liblinphone_tester_clock_start(MSTimeSpec *start){
 	ms_get_cur_time(start);
 }
@@ -156,7 +168,7 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
-		ms_usleep(100000);
+		ms_usleep(20000);
 	}
 	if(counter && *counter<value) return FALSE;
 	else return TRUE;
@@ -199,7 +211,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
-	mgr->v_table.file_transfer_received=file_transfer_received;
+	mgr->v_table.file_transfer_recv=file_transfer_received;
 	mgr->v_table.file_transfer_send=file_transfer_send;
 	mgr->v_table.file_transfer_progress_indication=file_transfer_progress_indication;
 	mgr->v_table.is_composing_received=is_composing_received;
@@ -212,6 +224,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
 	mgr->v_table.configuring_status=linphone_configuration_status;
 	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
+	mgr->v_table.network_reachable=network_reachable;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
@@ -221,6 +234,13 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	else
 		proxy_count=0;
+
+#if TARGET_OS_IPHONE
+	linphone_core_set_playback_device( mgr->lc, "AU: Audio Unit Tester");
+	linphone_core_set_capture_device( mgr->lc, "AU: Audio Unit Tester");
+	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
+	linphone_core_set_ringback(mgr->lc, NULL);
+#endif
 
 	if (proxy_count)
 		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,5000*proxy_count);
@@ -250,6 +270,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->lc) linphone_core_destroy(mgr->lc);
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
+	if (mgr->stat.last_received_chat_message) linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	ms_free(mgr);
 }
 
@@ -294,7 +315,7 @@ int liblinphone_tester_test_suite_index(const char *suite_name) {
 void liblinphone_tester_list_suites() {
 	int j;
 	for(j=0;j<liblinphone_tester_nb_test_suites();j++) {
-		fprintf(stdout, "%s\n", liblinphone_tester_test_suite_name(j));
+		liblinphone_tester_fprintf(stdout, "%s\n", liblinphone_tester_test_suite_name(j));
 	}
 }
 
@@ -302,7 +323,7 @@ void liblinphone_tester_list_suite_tests(const char *suite_name) {
 	int j;
 	for( j = 0; j < liblinphone_tester_nb_tests(suite_name); j++) {
 		const char *test_name = liblinphone_tester_test_name(suite_name, j);
-		fprintf(stdout, "%s\n", test_name);
+		liblinphone_tester_fprintf(stdout, "%s\n", test_name);
 	}
 }
 
@@ -366,6 +387,7 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&flexisip_test_suite);
 	add_test_suite(&remote_provisioning_test_suite);
 	add_test_suite(&quality_reporting_test_suite);
+	add_test_suite(&transport_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {
@@ -443,4 +465,17 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	CU_cleanup_registry();
 	return ret;
 }
-
+int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
+	int result;
+	va_list args;
+	va_start(args, format);
+#ifndef ANDROID
+	result = vfprintf(stream,format,args);
+#else
+	/*used by liblinphone tester to retrieve suite list*/
+	result = 0;
+	cunit_android_trace_handler(stream, format, args);
+#endif
+	va_end(args);
+	return result;
+}

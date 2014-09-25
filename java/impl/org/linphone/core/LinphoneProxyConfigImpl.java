@@ -22,42 +22,33 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 
 class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
-	protected long nativePtr;
+	protected final long nativePtr;
 	protected LinphoneCoreImpl mCore;
-	protected boolean isDeleting;
-
+	Object userData;
+	
+	private native void finalize(long ptr);
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
 	private native int getExpires(long nativePtr);
+	private native long createProxyConfig( long nativePtr);
 
-	boolean ownPtr = false;
-	protected LinphoneProxyConfigImpl(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
-		nativePtr = newLinphoneProxyConfig();
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core,String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
+		mCore=core;
+		nativePtr = createProxyConfig(core.nativePtr);
 		setIdentity(identity);
 		setProxy(proxy);
 		setRoute(route);
-		setIsDeleted(false);
 		enableRegister(enableRegister);
-		ownPtr=true;
 	}
 
-	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core,long aNativePtr)  {
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core)  {
+		mCore=core;
+		nativePtr = createProxyConfig(core.nativePtr);
+	}
+	/*reserved for JNI */
+	protected LinphoneProxyConfigImpl(LinphoneCoreImpl core, long aNativePtr)  {
 		mCore=core;
 		nativePtr = aNativePtr;
-		ownPtr=false;
-	}
-
-	protected LinphoneProxyConfigImpl(long aNativePtr) {
-		nativePtr = aNativePtr;
-		ownPtr=false;
-	}
-
-	public boolean getIsDeleted() {
-		return isDeleting;
-	}
-
-	public void setIsDeleted(boolean b) {
-		isDeleting = b;
 	}
 
 	private void isValid() {
@@ -66,16 +57,13 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		}
 	}
 
-	public void deleteNativePtr() {
-		nativePtr=0;
-	}
-
 	protected void finalize() throws Throwable {
-		//Log.e(LinphoneService.TAG,"fixme, should release underlying proxy config");
-		if (ownPtr) delete(nativePtr);
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
 	}
 	private native long newLinphoneProxyConfig();
-	private native void  delete(long ptr);
 
 	private native void edit(long ptr);
 	private native void done(long ptr);
@@ -212,7 +200,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	}
 	public boolean publishEnabled() {
 		isValid();
-		return publishEnabled(nativePtr); 
+		return publishEnabled(nativePtr);
 	}
 	@Override
 	public void setContactParameters(String params) {
@@ -304,21 +292,21 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public ErrorInfo getErrorInfo() {
 		return new ErrorInfoImpl(getErrorInfo(nativePtr));
 	}
-	
+
 	private native void enableQualityReporting(long nativePtr, boolean enable);
 	@Override
 	public void enableQualityReporting(boolean enable) {
 		isValid();
 		enableQualityReporting(nativePtr, enable);
 	}
-	
+
 	private native boolean qualityReportingEnabled(long nativePtr);
 	@Override
 	public boolean qualityReportingEnabled() {
 		isValid();
 		return avpfEnabled(nativePtr);
 	}
-	
+
 	private native void setQualityReportingInterval(long nativePtr, int interval);
 	@Override
 	public void setQualityReportingInterval(int interval) {
@@ -331,6 +319,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		isValid();
 		return getQualityReportingInterval(nativePtr);
 	}
+
 	private native void setQualityReportingCollector(long nativePtr, String collector);
 	@Override
 	public void setQualityReportingCollector(String collector) {
@@ -343,5 +332,42 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 		isValid();
 		return getQualityReportingCollector(nativePtr);
+	}
+
+	private native void setRealm(long nativePtr, String realm);
+	@Override
+	public void setRealm(String realm) {
+		isValid();
+		setRealm(nativePtr, realm);
+	}
+	private native String getRealm(long nativePtr);
+	@Override
+	public String getRealm() {
+
+		isValid();
+		return getRealm(nativePtr);
+	}
+
+	private native void setPublishExpires(long nativePtr, int expires);
+	@Override
+	public void setPublishExpires(int expires) {
+		isValid();
+		setPublishExpires(nativePtr, expires);
+	}
+	private native int getPublishExpires(long nativePtr);
+	@Override
+	public int getPublishExpires() {
+
+		isValid();
+		return getPublishExpires(nativePtr);
+	}
+
+	@Override
+	public void setUserData(Object obj) {
+		userData = obj;
+	}
+	@Override
+	public Object getUserData() {
+		return userData;
 	}
 }

@@ -43,17 +43,18 @@ void cb_function(void *ctx, xml2lpc_log_level level, const char *msg, va_list li
 
 void show_usage(int argc, char *argv[]) {
 	fprintf(stderr, "usage %s convert <xml_file> <lpc_file>\n"
-			"      %s validate <xml_file> <xsd_file>\n", 
+			"      %s validate <xml_file> <xsd_file>\n",
 			argv[0], argv[0]);
 }
 
 int main(int argc, char *argv[]) {
+	xml2lpc_context *ctx;
 	if(argc != 4) {
 		show_usage(argc, argv);
 		return -1;
 	}
-	
-	xml2lpc_context *ctx = xml2lpc_context_new(cb_function, NULL);
+
+	ctx = xml2lpc_context_new(cb_function, NULL);
 	xml2lpc_set_xml_file(ctx, argv[2]);
 	if(strcmp("convert", argv[1]) == 0) {
 		LpConfig *lpc = lp_config_new(argv[3]);

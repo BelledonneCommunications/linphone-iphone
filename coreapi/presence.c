@@ -89,9 +89,9 @@ static char presence_id_valid_start_characters[] = ":_abcdefghijklmnopqrstuvwxyz
 static char * generate_presence_id(void) {
 	char id[7];
 	int i;
-	id[0] = presence_id_valid_start_characters[random() % (sizeof(presence_id_valid_start_characters)-1)];
+	id[0] = presence_id_valid_start_characters[ortp_random() % (sizeof(presence_id_valid_start_characters)-1)];
 	for (i = 1; i < 6; i++) {
-		id[i] = presence_id_valid_characters[random() % (sizeof(presence_id_valid_characters)-1)];
+		id[i] = presence_id_valid_characters[ortp_random() % (sizeof(presence_id_valid_characters)-1)];
 	}
 	id[6] = '\0';
 
@@ -1043,7 +1043,7 @@ void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *u
 	model->user_data = user_data;
 }
 
-void * linphone_presence_model_get_user_data(LinphonePresenceModel *model) {
+void * linphone_presence_model_get_user_data(const LinphonePresenceModel *model) {
 	return model->user_data;
 }
 
@@ -1065,7 +1065,7 @@ void linphone_presence_service_set_user_data(LinphonePresenceService *service, v
 	service->user_data = user_data;
 }
 
-void * linphone_presence_service_get_user_data(LinphonePresenceService *service) {
+void * linphone_presence_service_get_user_data(const LinphonePresenceService *service) {
 	return service->user_data;
 }
 
@@ -1087,7 +1087,7 @@ void linphone_presence_person_set_user_data(LinphonePresencePerson *person, void
 	person->user_data = user_data;
 }
 
-void * linphone_presence_person_get_user_data(LinphonePresencePerson *person) {
+void * linphone_presence_person_get_user_data(const LinphonePresencePerson *person) {
 	return person->user_data;
 }
 
@@ -1109,7 +1109,7 @@ void linphone_presence_activity_set_user_data(LinphonePresenceActivity *activity
 	activity->user_data = user_data;
 }
 
-void * linphone_presence_activity_get_user_data(LinphonePresenceActivity *activity) {
+void * linphone_presence_activity_get_user_data(const LinphonePresenceActivity *activity) {
 	return activity->user_data;
 }
 
@@ -1131,7 +1131,7 @@ void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user
 	note->user_data = user_data;
 }
 
-void * linphone_presence_note_get_user_data(LinphonePresenceNote *note) {
+void * linphone_presence_note_get_user_data(const LinphonePresenceNote *note) {
 	return note->user_data;
 }
 
@@ -1443,9 +1443,9 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
-	if (lc->vtable.new_subscription_requested!=NULL) {
+	{
 		char *tmp=linphone_address_as_string(fl->uri);
-		lc->vtable.new_subscription_requested(lc,fl,tmp);
+		linphone_core_notify_new_subscription_requested(lc,fl,tmp);
 		ms_free(tmp);
 	}
 }
@@ -1876,8 +1876,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		}
 		lf->presence = presence;
 		lf->subscribe_active=TRUE;
-		if (lc->vtable.notify_presence_received)
-			lc->vtable.notify_presence_received(lc,(LinphoneFriend*)lf);
+		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");

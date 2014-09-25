@@ -33,12 +33,16 @@ struct Sal{
 	belle_sip_provider_t *prov;
 	belle_sip_header_user_agent_t* user_agent;
 	belle_sip_listener_t *listener;
+	belle_sip_listening_point_t *lp_tunnel;
+	MSList *udp_listening_points;
 	void *up; /*user pointer*/
 	int session_expires;
 	unsigned int keep_alive;
 	char *root_ca;
 	char *uuid;
 	int refresher_retry_after; /*retry after value for refresher*/
+	MSList *supported_tags;/*list of char * */
+	belle_sip_header_t *supported;
 	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
@@ -102,6 +106,7 @@ struct SalOp{
 	bool_t sdp_offering;
 	bool_t call_released;
 	bool_t manual_refresher;
+	bool_t has_auth_pending;
 	int auth_requests; /*number of auth requested for this op*/
 };
 
@@ -163,8 +168,6 @@ void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
 bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
 
 SalReason sal_reason_to_sip_code(SalReason r);
-
-belle_sip_header_t * sal_make_supported_header(Sal *sal);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
 

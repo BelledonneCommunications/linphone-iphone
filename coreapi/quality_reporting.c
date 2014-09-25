@@ -405,15 +405,9 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 	}
 }
 
-typedef struct on_action_suggested_struct{
-	LinphoneCall *call;
-	int stats_type;
-}on_action_suggested_struct_t;
-
 static void qos_analyzer_on_action_suggested(void *user_data, int datac, const char** datav){
-	on_action_suggested_struct_t * oass = (on_action_suggested_struct_t *)user_data;
-	LinphoneCall *call = oass->call;
-	reporting_session_report_t *report = call->log->reporting.reports[oass->stats_type];
+	reporting_session_report_t *report = (reporting_session_report_t*)user_data;
+	LinphoneCall *call = report->call;
 	char * appendbuf;
 	int i;
 	int ptime = -1;
@@ -653,16 +647,16 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call) {
 
 void linphone_reporting_call_state_updated(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
+	MSQosAnalyzer *analyzer;
+	int i;
 
-	if (! quality_reporting_enabled(call)){
+	if (state == LinphoneCallReleased||!quality_reporting_enabled(call)){
 		return;
 	}
 	switch (state){
 		case LinphoneCallStreamsRunning:{
 			bool_t video_enabled=media_report_enabled(call, LINPHONE_CALL_STATS_VIDEO);
-			int i;
 			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
-			MSQosAnalyzer *analyzer;
 			for (i=0;i<2;i++){
 
 				if (streams[i]==NULL||streams[i]->rc==NULL){
@@ -673,14 +667,12 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 
 				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
 				if (analyzer){
-					on_action_suggested_struct_t * oass = ms_new0(on_action_suggested_struct_t, 1);
-					oass->call = call;
-					oass->stats_type = i;
+					call->log->reporting.reports[i]->call=call;
 					STR_REASSIGN(call->log->reporting.reports[i]->qos_analyzer.name, ms_strdup(ms_qos_analyzer_get_name(analyzer)));
 
 					ms_qos_analyzer_set_on_action_suggested(analyzer,
 						qos_analyzer_on_action_suggested,
-						oass);
+						call->log->reporting.reports[i]);
 				}
 			}
 			linphone_reporting_update_ip(call);
@@ -691,6 +683,16 @@ void linphone_reporting_call_state_updated(LinphoneCall *call){
 			break;
 		}
 		case LinphoneCallEnd:{
+			MediaStream *streams[2] = {(MediaStream*) call->audiostream, (MediaStream *) call->videostream};
+			for (i=0;i<2;i++){
+				if (streams[i]==NULL||streams[i]->rc==NULL){
+					continue;
+				}
+				analyzer=ms_bitrate_controller_get_qos_analyzer(streams[i]->rc);
+				if (analyzer){
+					ms_qos_analyzer_set_on_action_suggested(analyzer, NULL, NULL);
+				}
+			}
 			if (call->log->status==LinphoneCallSuccess || call->log->status==LinphoneCallAborted){
 				linphone_reporting_publish_session_report(call, TRUE);
 			}

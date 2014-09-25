@@ -4,19 +4,19 @@ Software to install
 Download lastest mingw-get-setup.exe from http://www.mingw.org
 Run mingw-get-setup.exe.
 In the package list, select and install:
-* mingw32-developer-tool
+* mingw-developer-toolkit
 * mingw32-base
 * mingw32-gcc-g++
+* mingw32-pthreads-w32
 * msys-base
+* msys-zip
+* msys-unzip
+* msys-wget
 
 For more information:
 http://www.mingw.org/wiki/Getting_Started
 
 In mingw shell (also refered as msys), run
-
-mingw-get install msys-zip
-mingw-get install msys-unzip
-mingw-get install msys-wget
 
 mkdir -p /opt/perl/bin
 cp /bin/perl /opt/perl/bin/.
@@ -29,7 +29,7 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org 
+Download gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org, direct link: http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip 
 
 Install all these three package in /:
 
@@ -48,7 +48,7 @@ libintl.a libintl.la libintl.dll.a
 
 * Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
 
-* Install msys-git from (http://code.google.com/p/msysgit/). During installation you are asked to make a choice about how line endings are treated by git. Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
+* Install msys-git from (http://msysgit.github.io/). During installation you are asked to make a choice about how line endings are treated by git. Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
 
 
 General rules for compilation
@@ -63,6 +63,7 @@ cd /c/sources
 
 Building belle-sip
 ******************
+  * make sure that java version 1.6 is available in the PATH. java-1.7 will not work with antlr generator.
   * download the sources with msys-git shell using the following command:
     $ git clone git://git.linphone.org/belle-sip.git
   * compile and install 
@@ -98,7 +99,8 @@ Building plugins (optional)
 ***************************
 
   This the example for msx264 (H264 plugin), the same applies for other linphone plugins.
-  $ cd mediastreamer2/plugins/msx264
+  $ git clone git://git.linphone.org/msx264.git
+  $ cd msx264
   $ ./autogen.sh
   $ PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
   #make a binary zip of this plugin

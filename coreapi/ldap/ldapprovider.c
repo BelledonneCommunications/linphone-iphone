@@ -567,10 +567,11 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 		belle_sip_object_unref(obj);
 		obj = NULL;
 	} else {
+		int ret;
 		linphone_dictionary_foreach( config, linphone_ldap_contact_provider_config_dump_cb, 0 );
 		linphone_ldap_contact_provider_loadconfig(obj, config);
 
-		int ret = ldap_initialize(&(obj->ld),obj->server);
+		ret = ldap_initialize(&(obj->ld),obj->server);
 
 		if( ret != LDAP_SUCCESS ){
 			ms_error( "Problem initializing ldap on url '%s': %s", obj->server, ldap_err2string(ret));
@@ -617,9 +618,10 @@ static int linphone_ldap_request_entry_compare_strong(const void*a, const void* 
 static inline LinphoneLDAPContactSearch* linphone_ldap_contact_provider_request_search( LinphoneLDAPContactProvider* obj, int msgid )
 {
 	LinphoneLDAPContactSearch dummy = {};
+	MSList* list_entry;
 	dummy.msgid = msgid;
 
-	MSList* list_entry = ms_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
+	list_entry = ms_list_find_custom(obj->requests, linphone_ldap_request_entry_compare_weak, &dummy);
 	if( list_entry ) return list_entry->data;
 	else return NULL;
 }
@@ -680,13 +682,14 @@ static LinphoneLDAPContactSearch* linphone_ldap_contact_provider_begin_search ( 
 		void* cb_data )
 {
 	bool_t connected = obj->connected;
+	LinphoneLDAPContactSearch* request;
 
 	// if we're not yet connected, bind
 	if( !connected ) {
 		if( !obj->bind_thread ) linphone_ldap_contact_provider_bind(obj);
 	}
 
-	LinphoneLDAPContactSearch* request = linphone_ldap_contact_search_create( obj, predicate, cb, cb_data );
+	request = linphone_ldap_contact_search_create( obj, predicate, cb, cb_data );
 
 	if( connected ){
 		int ret = linphone_ldap_contact_provider_perform_search(obj, request);
@@ -711,6 +714,7 @@ static LinphoneLDAPContactSearch* linphone_ldap_contact_provider_begin_search ( 
 static int linphone_ldap_contact_provider_marshal(LinphoneLDAPContactProvider* obj, char* buff, size_t buff_size, size_t *offset)
 {
 	belle_sip_error_code error = BELLE_SIP_OK;
+	char **attr;
 
 	error = belle_sip_snprintf(buff, buff_size, offset, "ld:%p,\n", obj->ld);
 	if(error!= BELLE_SIP_OK) return error;
@@ -741,7 +745,7 @@ static int linphone_ldap_contact_provider_marshal(LinphoneLDAPContactProvider* o
 							   obj->sip_attr, obj->name_attr);
 	if(error!= BELLE_SIP_OK) return error;
 
-	char **attr = obj->attributes;
+	attr = obj->attributes;
 	while( *attr ){
 		error = belle_sip_snprintf(buff, buff_size, offset, "- %s\n", *attr);
 		if(error!= BELLE_SIP_OK) return error;
