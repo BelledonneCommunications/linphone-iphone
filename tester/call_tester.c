@@ -1931,6 +1931,67 @@ static void call_with_file_player(void) {
 	ms_free(recordpath);
 }
 
+static bool_t is_format_supported(LinphoneCore *lc, const char *fmt){
+	const char **formats=linphone_core_get_supported_file_formats(lc);
+	for(;*formats!=NULL;++formats){
+		if (strcasecmp(*formats,fmt)==0) return TRUE;
+	}
+	return FALSE;
+}
+
+static void call_with_mkv_file_player(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphonePlayer *player;
+	char hellomkv[256];
+	char hellowav[256];
+	char *recordpath;
+	double similar;
+	
+	if (!is_format_supported(marie->lc,"mkv")){
+		ms_warning("Test skipped, no mkv support.");
+		goto end;
+	}
+	recordpath = create_filepath(liblinphone_tester_writable_dir_prefix, "record", "wav");
+	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
+	unlink(recordpath);
+	
+	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", liblinphone_tester_file_prefix);
+	
+	/*caller uses soundcard*/
+	
+	/*callee is recording and plays file*/
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(pauline->lc,hellowav); /*just to send something but we are not testing what is sent by pauline*/
+	linphone_core_set_record_file(pauline->lc,recordpath);
+	
+	CU_ASSERT_TRUE(call(marie,pauline));
+
+	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_PTR_NOT_NULL(player);
+	if (player){
+		CU_ASSERT_TRUE(linphone_player_open(player,hellomkv,on_eof,marie)==0);
+		CU_ASSERT_TRUE(linphone_player_start(player)==0);
+	}
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
+	
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
+	CU_ASSERT_TRUE(similar>0.9);
+	CU_ASSERT_TRUE(similar<=1.0);
+	ms_free(recordpath);
+	
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	
+}
+
+
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -3062,7 +3123,8 @@ test_t call_tests[] = {
 	{ "ZRTP call",zrtp_call},
 	{ "ZRTP video call",zrtp_video_call},
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
-	{ "Call with file player", call_with_file_player}, 
+	{ "Call with file player", call_with_file_player},
+	{ "Call with mkv file player", call_with_mkv_file_player},
 #ifdef VIDEO_ENABLED
 	{ "Simple video call",video_call},
 	{ "Simple video call using policy",video_call_using_policy},

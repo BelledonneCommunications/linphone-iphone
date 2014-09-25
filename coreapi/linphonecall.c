@@ -2228,7 +2228,7 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
 static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDescription *local_st_desc, SalStreamDescription *old_stream, SalStreamDescription *new_stream, MediaStream *ms){
 	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
 	if (crypto_idx >= 0) {
-		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED)
+		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
 			media_stream_set_srtp_send_key(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
 			media_stream_set_srtp_recv_key(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key);

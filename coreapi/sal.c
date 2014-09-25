@@ -280,9 +280,11 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	if (sd1->proto != sd2->proto) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
 		if ((sd1->crypto[i].tag != sd2->crypto[i].tag)
-			|| (sd1->crypto[i].algo != sd2->crypto[i].algo)
-			|| (strncmp(sd1->crypto[i].master_key, sd2->crypto[i].master_key, sizeof(sd1->crypto[i].master_key) - 1))) {
-			result |= SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED;
+			|| (sd1->crypto[i].algo != sd2->crypto[i].algo)){
+			result|=SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED;
+		}
+		if ((strncmp(sd1->crypto[i].master_key, sd2->crypto[i].master_key, sizeof(sd1->crypto[i].master_key) - 1))) {
+			result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
 		}
 	}
 

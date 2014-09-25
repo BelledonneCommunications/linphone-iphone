@@ -152,7 +152,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 						ms_message("Network parameters have changed, update them.");
 						linphone_core_update_streams_destinations(lc, call, oldmd, new_md);
 					}
-					if (md_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED) {
+					if (md_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED) {
 						ms_message("Crypto parameters have changed, update them.");
 						linphone_call_update_crypto_parameters(call, oldmd, new_md);
 					}
@@ -535,7 +535,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		}
 		if (is_update && prev_result_desc && md){
 			int diff=sal_media_description_equals(prev_result_desc,md);
-			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
+			if (diff & (SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)){
 				ms_warning("Cannot accept this update, it is changing parameters that require user approval");
 				sal_call_decline(call->op,SalReasonNotAcceptable,NULL); /*FIXME should send 504 Cannot change the session parameters without prompting the user"*/
 				return;
@@ -655,7 +655,6 @@ static void call_terminated(SalOp *op, const char *from){
 }
 
 static int resume_call_after_failed_transfer(LinphoneCall *call){
-	ms_message("!!!!!!!!!!resume_call_after_failed_transfer");
 	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
 		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
 
@@ -663,7 +662,7 @@ static int resume_call_after_failed_transfer(LinphoneCall *call){
 		if (sal_op_is_idle(call->op)){
 			linphone_core_resume_call(call->core,call);
 		}else {
-			ms_message("!!!!!!!!!!resume_call_after_failed_transfer, salop was busy");
+			ms_message("resume_call_after_failed_transfer(), salop was busy");
 			return BELLE_SIP_CONTINUE;
 		}
 	}

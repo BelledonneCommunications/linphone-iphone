@@ -318,6 +318,8 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	belle_sip_server_transaction_t *server_transaction=belle_sip_transaction_terminated_event_get_server_transaction(event);
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
+	bool_t release_call=FALSE;
+	
 	if (client_transaction) {
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(client_transaction));
@@ -328,9 +330,21 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	if (op->state ==SalOpStateTerminating
 			&& strcmp("BYE",belle_sip_request_get_method(req))==0
 			&& (!resp || (belle_sip_response_get_status_code(resp) !=401
-			&& belle_sip_response_get_status_code(resp) !=407))) {
-		if (op->dialog==NULL) call_set_released(op);
+			&& belle_sip_response_get_status_code(resp) !=407))
+			&& op->dialog==NULL) {
+		release_call=TRUE;
 	}
+	if (server_transaction){
+		if (op->pending_server_trans==server_transaction){
+			belle_sip_object_unref(op->pending_server_trans);
+			op->pending_server_trans=NULL;
+		}
+		if (op->pending_update_server_trans==server_transaction){
+			belle_sip_object_unref(op->pending_update_server_trans);
+			op->pending_update_server_trans=NULL;
+		}
+	}
+	if (release_call) call_set_released(op);
 }
 
 static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_transaction, belle_sip_request_t* request,int status_code) {
@@ -777,6 +791,7 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	belle_sip_response_t* response;
 	belle_sip_header_contact_t* contact=NULL;
 	int status=sal_reason_to_sip_code(reason);
+	belle_sip_transaction_t *trans;
 
 	if (reason==SalReasonRedirect){
 		if (redirection!=NULL) {
@@ -788,9 +803,15 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 			ms_error("Cannot redirect to null");
 		}
 	}
-	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),status);
+	trans=(belle_sip_transaction_t*)op->pending_server_trans;
+	if (!trans) trans=(belle_sip_transaction_t*)op->pending_update_server_trans;
+	if (!trans){
+		ms_error("sal_call_decline(): no pending transaction to decline.");
+		return -1;
+	}
+	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(trans),status);
 	if (contact) belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact));
-	belle_sip_server_transaction_send_response(op->pending_server_trans,response);
+	belle_sip_server_transaction_send_response(BELLE_SIP_SERVER_TRANSACTION(trans),response);
 	return 0;
 }
 
