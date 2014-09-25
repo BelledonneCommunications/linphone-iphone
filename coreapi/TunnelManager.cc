@@ -174,6 +174,9 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 }
 
 TunnelManager::~TunnelManager(){
+	for(UdpMirrorClientList::iterator udpMirror = mUdpMirrorClients.begin(); udpMirror != mUdpMirrorClients.end(); udpMirror++) {
+		udpMirror->stop();
+	}
 	stopClient();
 	linphone_core_remove_listener(mCore, mVTable);
 	linphone_vtable_destroy(mVTable);
