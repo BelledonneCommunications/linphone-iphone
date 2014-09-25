@@ -153,11 +153,16 @@ static void call_with_tunnel_auto(void) {
 	call_with_transport_base(LinphoneTunnelModeAuto, TRUE, LinphoneMediaEncryptionNone);
 }
 
+static void call_with_tunnel_auto_without_sip_with_srtp(void) {
+	call_with_transport_base(LinphoneTunnelModeAuto, FALSE, LinphoneMediaEncryptionSRTP);
+}
+
 test_t transport_tests[] = {
 	{ "Tunnel only", call_with_tunnel },
 	{ "Tunnel with SRTP", call_with_tunnel_srtp },
 	{ "Tunnel without SIP", call_with_tunnel_without_sip },
-	{ "Tunnel in automatic mode", call_with_tunnel_auto }
+	{ "Tunnel in automatic mode", call_with_tunnel_auto },
+	{ "Tunnel in automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp },
 };
 
 test_suite_t transport_test_suite = {
