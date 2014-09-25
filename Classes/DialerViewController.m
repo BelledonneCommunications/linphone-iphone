@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */               
+ */
 
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -76,7 +76,7 @@
 	[callButton release];
     [addCallButton release];
     [transferButton release];
-    
+
 	[oneButton release];
 	[twoButton release];
 	[threeButton release];
@@ -89,13 +89,13 @@
 	[starButton release];
 	[zeroButton release];
 	[sharpButton release];
-    
+
     [videoPreview release];
     [videoCameraSwitch release];
-    
+
     // Remove all observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
 	[super dealloc];
 }
 
@@ -106,12 +106,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"Dialer" 
-                                                                content:@"DialerViewController" 
-                                                               stateBar:@"UIStateBar" 
-                                                        stateBarEnabled:true 
-                                                                 tabBar:@"UIMainBar" 
-                                                          tabBarEnabled:true 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Dialer"
+                                                                content:@"DialerViewController"
+                                                               stateBar:@"UIStateBar"
+                                                        stateBarEnabled:true
+                                                                 tabBar:@"UIMainBar"
+                                                          tabBarEnabled:true
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
@@ -124,13 +124,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(callUpdateEvent:) 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(callUpdateEvent:)
                                                  name:kLinphoneCallUpdate
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
@@ -178,16 +178,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
 
     }
-} 
+}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
     // Remove observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCallUpdate
                                                   object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
                                                   object:nil];
@@ -195,7 +195,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
 	[zeroButton    setDigit:'0'];
 	[oneButton     setDigit:'1'];
 	[twoButton     setDigit:'2'];
@@ -208,9 +208,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[nineButton    setDigit:'9'];
 	[starButton    setDigit:'*'];
 	[sharpButton   setDigit:'#'];
-    
+
     [addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
-    
+
     if([LinphoneManager runningOnIpad]) {
         if ([LinphoneManager instance].frontCamId != nil) {
             // only show camera switch button if we have more than 1 camera
@@ -248,7 +248,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Event Functions
 
-- (void)callUpdateEvent:(NSNotification*)notif { 
+- (void)callUpdateEvent:(NSNotification*)notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     [self callUpdate:call state:state];
@@ -283,7 +283,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [transferButton setHidden:true];
             }
             [callButton setHidden:true];
-            [backButton setHidden:false]; 
+            [backButton setHidden:false];
             [addContactButton setHidden:true];
         } else {
             [addCallButton setHidden:true];
@@ -330,7 +330,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == addressField) {
         [addressField resignFirstResponder];
-    } 
+    }
     return YES;
 }
 
@@ -341,10 +341,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [ContactSelection setSelectionMode:ContactSelectionModeEdit];
     [ContactSelection setAddAddress:[addressField text]];
     [ContactSelection setSipFilter:nil];
-    [ContactSelection setEmailFilter:FALSE];
+    [ContactSelection setNameOrEmailFilter:nil];
+    [ContactSelection enableEmailFilter:FALSE];
     ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
     if(controller != nil) {
-        
+
     }
 }
 

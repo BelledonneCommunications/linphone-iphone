@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */
 
 #import "ContactsViewController.h"
 #import "PhoneMainView.h"
@@ -28,46 +28,57 @@
 static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
 static NSString* sAddAddress = nil;
 static NSString* sSipFilter = nil;
-static BOOL sEmailFilter = FALSE;
+static BOOL sEnableEmailFilter = FALSE;
+static NSString* sNameOrEmailFilter;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
-    sSelectionMode = selectionMode;
+	sSelectionMode = selectionMode;
 }
 
 + (ContactSelectionMode)getSelectionMode {
-    return sSelectionMode;
+	return sSelectionMode;
 }
 
 + (void)setAddAddress:(NSString*)address {
-    if(sAddAddress != nil) {
-        [sAddAddress release];
-        sAddAddress= nil;
-    }
-    if(address != nil) {
-        sAddAddress = [address retain];
-    }
+	if(sAddAddress != nil) {
+		[sAddAddress release];
+		sAddAddress= nil;
+	}
+	if(address != nil) {
+		sAddAddress = [address retain];
+	}
 }
 
 + (NSString*)getAddAddress {
-    return sAddAddress;
+	return sAddAddress;
 }
 
 + (void)setSipFilter:(NSString*)domain {
-    [sSipFilter release];
+	[sSipFilter release];
 	sSipFilter = [domain retain];
 }
 
 + (NSString*)getSipFilter {
-    return sSipFilter;
+	return sSipFilter;
 }
 
-+ (void)setEmailFilter:(BOOL)enable {
-    sEmailFilter = enable;
++ (void)enableEmailFilter:(BOOL)enable {
+	sEnableEmailFilter = enable;
 }
 
-+ (BOOL)getEmailFilter {
-    return sEmailFilter;
++ (BOOL)emailFilterEnabled {
+	return sEnableEmailFilter;
 }
+
++ (void)setNameOrEmailFilter:(NSString*)fuzzyName {
+	[sNameOrEmailFilter release];
+	sNameOrEmailFilter = [fuzzyName retain];
+}
+
++ (NSString*)getNameOrEmailFilter {
+	return sNameOrEmailFilter;
+}
+
 
 @end
 
@@ -85,28 +96,30 @@ static BOOL sEmailFilter = FALSE;
 @synthesize toolBar;
 
 typedef enum _HistoryView {
-    History_All,
-    History_Linphone,
-    History_MAX
+	History_All,
+	History_Linphone,
+	History_Search,
+	History_MAX
 } HistoryView;
 
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
+	return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
 }
 
 - (void)dealloc {
-    [tableController release];
-    [tableView release];
-    
-    [allButton release];
-    [linphoneButton release];
-    [backButton release];
-    [addButton release];
-    
-    [super dealloc];
+	[tableController release];
+	[tableView release];
+
+	[allButton release];
+	[linphoneButton release];
+	[backButton release];
+	[addButton release];
+
+	[_searchBar release];
+	[super dealloc];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -114,181 +127,181 @@ typedef enum _HistoryView {
 static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
-    if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"Contacts" 
-                                                                content:@"ContactsViewController" 
-                                                               stateBar:nil 
-                                                        stateBarEnabled:false 
-                                                                 tabBar:@"UIMainBar" 
-                                                          tabBarEnabled:true 
-                                                             fullscreen:false
-                                                          landscapeMode:[LinphoneManager runningOnIpad]
-                                                           portraitMode:true];
-    }
-    return compositeDescription;
+	if(compositeDescription == nil) {
+		compositeDescription = [[UICompositeViewDescription alloc]	init:@"Contacts"
+										content:@"ContactsViewController"
+										stateBar:nil
+										stateBarEnabled:false
+										tabBar:@"UIMainBar"
+										tabBarEnabled:true
+										fullscreen:false
+										landscapeMode:[LinphoneManager runningOnIpad]
+										portraitMode:true];
+	}
+	return compositeDescription;
 }
 
 
 #pragma mark - ViewController Functions
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
+	[super viewWillDisappear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-    if( use_system && !self.sysViewController){// use system contacts
-        ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
-        picker.peoplePickerDelegate = self;
-        picker.view.frame = self.view.frame;
+	[super viewWillAppear:animated];
 
-        [self.view addSubview:picker.view];
+	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
+	if( use_system && !self.sysViewController){// use system contacts
+		ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
+		picker.peoplePickerDelegate = self;
+		picker.view.frame = self.view.frame;
 
-        self.sysViewController = picker;
+		[self.view addSubview:picker.view];
 
-    } else if( !use_system && !self.tableController ){
+		self.sysViewController = picker;
 
-        CGRect subViewFrame= self.view.frame;
-        // let the toolBar be visible
-        subViewFrame.origin.y += self.toolBar.frame.size.height;
-        subViewFrame.size.height -= self.toolBar.frame.size.height;
+	} else if( !use_system && !self.tableController ){
 
-        self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
-        self.tableView = [[[UITableView alloc] init] autorelease];
+		CGRect subViewFrame= self.view.frame;
+		// let the toolBar be visible
+		subViewFrame.origin.y += self.toolBar.frame.size.height;
+		subViewFrame.size.height -= self.toolBar.frame.size.height;
 
-        self.tableController.view = self.tableView;
-        self.tableView.frame = subViewFrame;
+		self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
+		self.tableView = [[[UITableView alloc] init] autorelease];
 
-        self.tableView.dataSource = self.tableController;
-        self.tableView.delegate   = self.tableController;
+		self.tableController.view = self.tableView;
+		self.tableView.frame = subViewFrame;
 
-        self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
-                                           UIViewAutoresizingFlexibleWidth |
-                                       UIViewAutoresizingFlexibleTopMargin |
-                                    UIViewAutoresizingFlexibleBottomMargin |
-                                      UIViewAutoresizingFlexibleLeftMargin |
-                                     UIViewAutoresizingFlexibleRightMargin;
+		self.tableView.dataSource = self.tableController;
+		self.tableView.delegate   = self.tableController;
 
-        [self.view addSubview:tableView];
-        [self update];
-    }
+		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+										   UIViewAutoresizingFlexibleWidth |
+									   UIViewAutoresizingFlexibleTopMargin |
+									UIViewAutoresizingFlexibleBottomMargin |
+									  UIViewAutoresizingFlexibleLeftMargin |
+									 UIViewAutoresizingFlexibleRightMargin;
+
+		[self.view addSubview:tableView];
+		[self update];
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if(![FastAddressBook isAuthorized]) {
-        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Address book",nil)
+	[super viewDidAppear:animated];
+	if(![FastAddressBook isAuthorized]) {
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Address book",nil)
 														message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
-                                                                                  "Toggle the application in Settings > Privacy > Contacts",nil)
+																				  "Toggle the application in Settings > Privacy > Contacts",nil)
 													   delegate:nil
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil];
 		[error show];
 		[error release];
-        [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
-    }
+		[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
+	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
+	[super viewDidDisappear:animated];
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [self changeView:History_All];
-    
-    // Set selected+over background: IB lack !
-    [linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
-    [linphoneButton setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+	[super viewDidLoad];
+
+	[self changeView:History_All];
+
+	// Set selected+over background: IB lack !
+	[linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
+				 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+
+	[linphoneButton setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
 					forState:UIControlStateNormal];
-	
+
 	[LinphoneUtils buttonFixStates:linphoneButton];
-    
-    // Set selected+over background: IB lack !
-    [allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"] 
-                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
-    [LinphoneUtils buttonFixStates:allButton];
-    
-    [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-    [tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
+
+	// Set selected+over background: IB lack !
+	[allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"]
+					forState:(UIControlStateHighlighted | UIControlStateSelected)];
+
+	[LinphoneUtils buttonFixStates:allButton];
+
+	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+	[tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 
 #pragma mark -
 
 - (void)changeView:(HistoryView)view {
-    if(view == History_All) {
-        [ContactSelection setSipFilter:nil];
-        [ContactSelection setEmailFilter:FALSE];
-        [tableController loadData];
-        allButton.selected = TRUE;
-    } else {
-        allButton.selected = FALSE;
-    }
+	if(view == History_All) {
+		[ContactSelection setSipFilter:nil];
+		[ContactSelection enableEmailFilter:FALSE];
+		[tableController loadData];
+		allButton.selected = TRUE;
+	} else {
+		allButton.selected = FALSE;
+	}
 
-    if(view == History_Linphone) {
-        [ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
-        [ContactSelection setEmailFilter:FALSE];
-        [tableController loadData];
-        linphoneButton.selected = TRUE;
-    } else {
-        linphoneButton.selected = FALSE;
-    }
+	if(view == History_Linphone) {
+		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
+		[ContactSelection enableEmailFilter:FALSE];
+		[tableController loadData];
+		linphoneButton.selected = TRUE;
+	} else {
+		linphoneButton.selected = FALSE;
+	}
 }
 
 - (void)update {
-    switch ([ContactSelection getSelectionMode]) {
-        case ContactSelectionModePhone:
-        case ContactSelectionModeMessage:
-            [addButton setHidden:TRUE];
-            [backButton setHidden:FALSE];
-            break;
-        default:
-            [addButton setHidden:FALSE];
-            [backButton setHidden:TRUE];
-            break;
-    }
-    if([ContactSelection getSipFilter]) {
-        allButton.selected = FALSE;
-        linphoneButton.selected = TRUE;
-    } else {
-        allButton.selected = TRUE;
-        linphoneButton.selected = FALSE;   
-    }
-    [tableController loadData];
+	switch ([ContactSelection getSelectionMode]) {
+		case ContactSelectionModePhone:
+		case ContactSelectionModeMessage:
+			[addButton setHidden:TRUE];
+			[backButton setHidden:FALSE];
+			break;
+		default:
+			[addButton setHidden:FALSE];
+			[backButton setHidden:TRUE];
+			break;
+	}
+	if([ContactSelection getSipFilter]) {
+		allButton.selected = FALSE;
+		linphoneButton.selected = TRUE;
+	} else {
+		allButton.selected = TRUE;
+		linphoneButton.selected = FALSE;
+	}
+	[tableController loadData];
 }
 
 
 #pragma mark - Action Functions
 
 - (IBAction)onAllClick:(id)event {
-    [self changeView: History_All];
+	[self changeView: History_All];
 }
 
 - (IBAction)onLinphoneClick:(id)event {
-    [self changeView: History_Linphone];
+	[self changeView: History_Linphone];
 }
 
 - (IBAction)onAddContactClick:(id)event {
-    // Go to Contact details view
-    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
-    if(controller != nil) {
-        if([ContactSelection getAddAddress] == nil) {
-            [controller newContact];
-        } else {
-            [controller newContact:[ContactSelection getAddAddress]];
-        }
-    }
+	// Go to Contact details view
+	ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
+	if(controller != nil) {
+		if([ContactSelection getAddAddress] == nil) {
+			[controller newContact];
+		} else {
+			[controller newContact:[ContactSelection getAddAddress]];
+		}
+	}
 }
 
 - (IBAction)onBackClick:(id)event {
-    [[PhoneMainView instance] popCurrentView];
+	[[PhoneMainView instance] popCurrentView];
 }
 
 
@@ -296,8 +309,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 -(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
-    [[PhoneMainView instance] popCurrentView];
-    return;
+	[[PhoneMainView instance] popCurrentView];
+	return;
 }
 
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
@@ -314,19 +327,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
 	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
-    // Go to dialer view
-    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
-    if(controller != nil) {
-        [controller call:phoneNumber displayName:[(NSString*)ABRecordCopyCompositeName(person) autorelease]];
-    }
-    [phoneNumber release];
-    CFRelease(multiValue);
+	// Go to dialer view
+	DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+	if(controller != nil) {
+		[controller call:phoneNumber displayName:[(NSString*)ABRecordCopyCompositeName(person) autorelease]];
+	}
+	[phoneNumber release];
+	CFRelease(multiValue);
 	return false;
 }
 
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+	[ContactSelection setNameOrEmailFilter:searchText];
+	[tableController loadData];
+}
 
 - (void)viewDidUnload {
-    [self setToolBar:nil];
-    [super viewDidUnload];
+	[self setToolBar:nil];
+	[super viewDidUnload];
 }
 @end

@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */
 
 #import "HistoryDetailsViewController.h"
 #import "PhoneMainView.h"
@@ -55,10 +55,10 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [dateFormatter release];
     [callLogId release];
-    
+
     [avatarImage release];
     [addressLabel release];
     [dateLabel release];
@@ -72,7 +72,7 @@
     [callButton release];
     [messageButton release];
     [addContactButton release];
-    
+
     [super dealloc];
 }
 
@@ -83,12 +83,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"HistoryDetails" 
-                                                                content:@"HistoryDetailsViewController" 
-                                                               stateBar:nil 
-                                                        stateBarEnabled:false 
-                                                                 tabBar:@"UIMainBar" 
-                                                          tabBarEnabled:true 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"HistoryDetails"
+                                                                content:@"HistoryDetailsViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar:@"UIMainBar"
+                                                          tabBarEnabled:true
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
@@ -124,12 +124,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     if( use_system ){
         [addContactButton setHidden:TRUE];
     }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(update) 
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(update)
                                                  name:kLinphoneAddressBookUpdate
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(coreUpdateEvent:)
                                                  name:kLinphoneCoreUpdate
@@ -138,11 +138,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneAddressBookUpdate
                                                   object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCoreUpdate
                                                   object:nil];
@@ -156,7 +156,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 + (void)adaptSize:(UILabel*)label field:(UIView*)field {
     //
@@ -164,20 +164,20 @@ static UICompositeViewDescription *compositeDescription = nil;
     //
     CGRect labelFrame = [label frame];
     CGRect fieldFrame = [field frame];
-    
+
     fieldFrame.origin.x -= labelFrame.size.width;
-    
+
     // Compute firstName size
     CGSize contraints;
     contraints.height = [label frame].size.height;
     contraints.width = ([field frame].size.width + [field frame].origin.x) - [label frame].origin.x;
     CGSize firstNameSize = [[label text] sizeWithFont:[label font] constrainedToSize: contraints];
     labelFrame.size.width = firstNameSize.width;
-    
+
     // Compute lastName size & position
     fieldFrame.origin.x += labelFrame.size.width;
     fieldFrame.size.width = (contraints.width + [label frame].origin.x) - fieldFrame.origin.x;
-    
+
     [label setFrame: labelFrame];
     [field setFrame: fieldFrame];
 }
@@ -186,7 +186,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(![LinphoneManager isLcReady]) {
         return;
     }
-    
+
     // Look for the call log
     callLog = NULL;
     const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
@@ -199,20 +199,20 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         list = list->next;
     }
-    
+
     // Pop if callLog is null
     if(callLog == NULL) {
         [[PhoneMainView instance] popCurrentView];
         return;
     }
-    
+
 	LinphoneAddress* addr =linphone_call_log_get_remote_address(callLog);
-    
+
     UIImage *image = nil;
     NSString* address  = nil;
     if(addr != NULL) {
         BOOL useLinphoneAddress = true;
-        // contact name 
+        // contact name
         char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress) {
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
@@ -227,25 +227,25 @@ static UICompositeViewDescription *compositeDescription = nil;
         if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
             const char* lUserName = linphone_address_get_username(addr);
-            if (lDisplayName) 
+            if (lDisplayName)
                 address = [NSString stringWithUTF8String:lDisplayName];
-            else if(lUserName) 
+            else if(lUserName)
                 address = [NSString stringWithUTF8String:lUserName];
         }
     }
-    
+
     // Set Image
     if(image == nil) {
         image = [UIImage imageNamed:@"avatar_unknown.png"];
     }
     [avatarImage setImage:image];
-    
+
     // Set Address
     if(address == nil) {
         address = NSLocalizedString(@"Unknown", nil);
     }
     [addressLabel setText:address];
-    
+
     // Hide/Show add button
     BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
     if(contact) {
@@ -253,7 +253,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else if (!use_system) {
         [addContactButton setHidden:FALSE];
     }
-    
+
     // State
     NSMutableString *state = [NSMutableString string];
 	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
@@ -283,7 +283,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Duration
     int duration = linphone_call_log_get_duration(callLog);
     [durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
-    
+
     // contact name
     [plainAddressLabel setText:@""];
     if (addr != NULL) {
@@ -297,7 +297,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 		}
     }
-    
+
     if (addr != NULL) {
         [callButton setHidden:FALSE];
         [messageButton setHidden:FALSE];
@@ -305,7 +305,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callButton setHidden:TRUE];
         [messageButton setHidden:TRUE];
     }
-    
+
 }
 
 
@@ -327,16 +327,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddContactClick:(id)event {
     LinphoneAddress* addr;
-	
+
 	addr=linphone_call_log_get_remote_address(callLog);
     if (addr != NULL) {
         char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress != NULL) {
             [ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
             [ContactSelection setSelectionMode:ContactSelectionModeEdit];
-            
+
             [ContactSelection setSipFilter:nil];
-            [ContactSelection setEmailFilter:FALSE];
+            [ContactSelection enableEmailFilter:FALSE];
+            [ContactSelection setNameOrEmailFilter:nil];
             ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
             if(controller != nil) {
             }
@@ -346,26 +347,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)event {
-    LinphoneAddress* addr; 
+    LinphoneAddress* addr;
 	addr=linphone_call_log_get_remote_address(callLog);
-    
+
     char* lAddress = linphone_address_as_string_uri_only(addr);
-    if(lAddress == NULL) 
+    if(lAddress == NULL)
         return;
-    
+
     NSString *displayName = nil;
     if(contact != nil) {
-       displayName = [FastAddressBook getContactDisplayName:contact]; 
+       displayName = [FastAddressBook getContactDisplayName:contact];
     } else {
         const char* lDisplayName = linphone_address_get_display_name(addr);
         const char* lUserName = linphone_address_get_username(addr);
-        if (lDisplayName) 
+        if (lDisplayName)
             displayName = [NSString stringWithUTF8String:lDisplayName];
-        else if(lUserName) 
+        else if(lUserName)
             displayName = [NSString stringWithUTF8String:lUserName];
     }
-    
-    
+
+
     DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
         if(displayName != nil) {
@@ -380,11 +381,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onMessageClick:(id)event {
     LinphoneAddress* addr;
 	addr=linphone_call_log_get_remote_address(callLog);
-    
+
     char* lAddress = linphone_address_as_string_uri_only(addr);
     if(lAddress == NULL)
         return;
-    
+
     NSString *displayName = nil;
     if(contact != nil) {
         displayName = [FastAddressBook getContactDisplayName:contact];
@@ -396,7 +397,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         else if(lUserName)
             displayName = [NSString stringWithUTF8String:lUserName];
     }
-    
+
     // Go to ChatRoom view
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);

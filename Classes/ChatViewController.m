@@ -123,7 +123,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
 		[ContactSelection setAddAddress:nil];
 		[ContactSelection setSipFilter: [LinphoneManager instance].contactFilter];
-		[ContactSelection setEmailFilter:FALSE];
+		[ContactSelection enableEmailFilter:FALSE];
+		[ContactSelection setNameOrEmailFilter:nil];
 		[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
 	} else {
 		[self startChatRoom]; 
