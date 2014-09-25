@@ -2846,6 +2846,7 @@ int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call){
 
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
+	int err;
 	bool_t no_user_consent=call->params->no_user_consent;
 
 	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
@@ -2862,12 +2863,22 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 		subject="Refreshing";
 	}
 	linphone_core_notify_display_status(lc,_("Modifying call parameters..."));
-	sal_call_set_local_media_description (call->op,call->localdesc);
+	if (!lc->sip_conf.sdp_200_ack){
+		sal_call_set_local_media_description (call->op,call->localdesc);
+	} else {
+		sal_call_set_local_media_description (call->op,NULL);
+	}
 	if (call->dest_proxy && call->dest_proxy->op){
 		/*give a chance to update the contact address if connectivity has changed*/
 		sal_op_set_contact_address(call->op,sal_op_get_contact_address(call->dest_proxy->op));
 	}else sal_op_set_contact_address(call->op,NULL);
-	return sal_call_update(call->op,subject,no_user_consent);
+	err= sal_call_update(call->op,subject,no_user_consent);
+	if (lc->sip_conf.sdp_200_ack){
+		/*we are NOT offering, set local media description after sending the call so that we are ready to
+		 process the remote offer when it will arrive*/
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	return err;
 }
 
 /**

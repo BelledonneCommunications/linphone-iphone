@@ -781,6 +781,7 @@ static void call_with_no_sdp(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+
 static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state) {
 	LinphoneCall *c1,*c2;
 	bool_t audio_success=FALSE;
@@ -3056,7 +3057,57 @@ static void call_with_in_dialog_update(void) {
 		belle_sip_object_dump_active_objects();
 	}
 }
+static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
+	int begin;
+	int leaked_objects;
+	int dummy=0;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCallParams *params;
 
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	CU_ASSERT_TRUE(call(pauline,marie));
+	liblinphone_tester_check_rtcp(marie,pauline);
+	params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
+
+	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMU",8000,1),FALSE); /*disable PCMU*/
+	linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMU",8000,1),FALSE); /*disable PCMU*/
+	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
+	linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
+	if (no_sdp) {
+		linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+	}
+	linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
+	linphone_call_params_destroy(params);
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_STRING_EQUAL("PCMA",linphone_payload_type_get_mime_type(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))));
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+static void call_with_in_dialog_codec_change(void) {
+	call_with_in_dialog_codec_change_base(FALSE);
+}
+static void call_with_in_dialog_codec_change_no_sdp(void) {
+	call_with_in_dialog_codec_change_base(TRUE);
+}
 static void call_with_custom_supported_tags(void) {
 	int begin;
 	int leaked_objects;
@@ -3188,6 +3239,8 @@ test_t call_tests[] = {
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
 	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
+	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
+	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
 	{ "Call with custom supported tags", call_with_custom_supported_tags }
 };
 
