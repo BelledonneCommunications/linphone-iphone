@@ -99,6 +99,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	char *buf = (char *)buffer;
+	char *content_type=belle_sip_strdup_printf("%s/%s", chatMsg->file_transfer_information->type, chatMsg->file_transfer_information->subtype);
 	size_t end_of_file=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
 
 	/* if we've not reach the end of file yet, ask for more data*/
@@ -197,14 +198,13 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			msg->http_request=req; /* update the reference to the http request to be able to cancel it during upload */
 			belle_http_provider_send_request(msg->chat_room->lc->http_provider,req,l);
 		}
-			
 		if (code == 200 ) { /* file has been uplaoded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			
 			/* TODO Check that the transfer has not been cancelled, note this shall be removed once the belle sip API will provide a cancel request as we shall never reach this part if the transfer is actually cancelled */
 			if (msg->http_request == NULL) {
 				return;
-
+			}
 			/* if we have an encryption key for the file, we must insert it into the message */
 			if (msg->file_transfer_information->key != NULL) { 
 				/* parse the message body */
@@ -243,11 +243,11 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			} else { /* no encryption key, transfer in plain, just copy the message sent by server */
 				msg->message = ms_strdup(body);
 			}
+
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
 			_linphone_chat_room_send_message(msg->chat_room, msg);
 		}
 	}
-
 }
 
 
@@ -1115,17 +1115,18 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	/* TODO: while belle sip doesn't implement the cancel http request method, test if a request is still linked to the message before forwarding the data to callback */
 	if (chatMsg->http_request == NULL) {
 		return;
+	}
 
 	if (chatMsg->file_transfer_information->key != NULL) { /* we have a key, we must decrypt the file */
 		/* get data from callback to a plainBuffer */
 		char *plainBuffer = (char *)malloc(size);
 		lime_decryptFile(&(chatMsg->file_transfer_information->cryptoContext), chatMsg->file_transfer_information->key, size, plainBuffer, (char *)buffer);
 		/* call back given by application level */
-		linphone_core_notify_file_transfer_rec(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
+		linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
 		free(plainBuffer);
 	} else { /* regular file, no deciphering */
 		/* call back given by application level */
-		linphone_core_notify_file_transfer_recd(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
+		linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
 	}
 
 	return;
