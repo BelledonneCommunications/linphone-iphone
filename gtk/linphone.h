@@ -48,6 +48,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
 
+#define LINPHONE_ICON "linphone.png"
+
 enum {
 	COMPLETION_HISTORY,
 	COMPLETION_LDAP

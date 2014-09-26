@@ -29,6 +29,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+#ifdef __linux
+#include <gdk/gdkx.h>
+#elif defined(WIN32)
+#include <gdk/gdk-win32.h>
+#elif defined(__APPLE__)
+#include <gdk/gdk-quartz.h>
+#endif
+
+#include <gdk/gdkkeysyms.h>
 
 gboolean linphone_gtk_use_in_call_view(){
 	static int val=-1;
@@ -687,6 +696,111 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 	}
 }
 
+char *linphone_gtk_address(const LinphoneAddress *addr){
+	const char *displayname=linphone_address_get_display_name(addr);
+	if (!displayname) return linphone_address_as_string_uri_only(addr);
+	return ms_strdup(displayname);
+}
+
+unsigned long get_native_handle(GdkWindow *gdkw){
+#ifdef __linux
+	return GDK_WINDOW_XID(gdkw);
+#elif defined(WIN32)
+	return GDK_WINDOW_HWND(gdkw);
+#elif defined(__APPLE__)
+	return gdk_quartz_window_get_nsview(gdkw);
+#endif
+	g_warning("No way to get the native handle from gdk window");
+	return 0;
+}
+
+static gint resize_video_window(LinphoneCall *call){
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	if (params){
+		MSVideoSize vsize=linphone_call_params_get_received_video_size(params);
+		if (vsize.width>0 && vsize.height>0){
+			GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+			GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
+			gint curw,curh;
+			if (video_window){
+				gtk_window_get_size(GTK_WINDOW(video_window),&curw,&curh);
+				if (vsize.width*vsize.height>curw*curh){
+					gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
+				}
+			}
+		}
+	}
+	return TRUE;
+}
+
+static void on_video_window_destroy(GtkWidget *w, guint timeout){
+	g_source_remove(timeout);
+}
+
+static void on_video_window_key_press(GtkWidget *w, GdkEvent *ev, gpointer up){
+	g_message("Key press event");
+	switch(ev->key.keyval){
+		case GDK_KEY_f:
+		case GDK_KEY_F:
+			gtk_window_fullscreen(GTK_WINDOW(w));
+		break;
+		case GDK_KEY_Escape:
+			gtk_window_unfullscreen(GTK_WINDOW(w));
+		break;
+	}
+}
+
+GtkWidget *create_video_window(LinphoneCall *call){
+	char *remote,*title;
+	GtkWidget *video_window;
+	const LinphoneAddress *addr;
+	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
+	GdkPixbuf *pbuf=create_pixbuf(icon_path);
+	guint timeout;
+	MSVideoSize vsize=MS_VIDEO_SIZE_CIF;
+	GdkColor color;
+	
+	addr=linphone_call_get_remote_address(call);
+	remote=linphone_gtk_address(addr);
+	video_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	title=g_strdup_printf("%s - Video call with %s",linphone_gtk_get_ui_config("title","Linphone"),remote);
+	ms_free(remote);
+	gtk_window_set_title(GTK_WINDOW(video_window),title);
+	g_free(title);
+	if (pbuf){
+		gtk_window_set_icon(GTK_WINDOW(video_window),pbuf);
+	}
+	gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
+	gdk_color_parse("black",&color);
+	gtk_widget_modify_bg(video_window,GTK_STATE_NORMAL,&color);
+	gtk_widget_show(video_window);
+	timeout=g_timeout_add(500,(GSourceFunc)resize_video_window,call);
+	g_signal_connect(video_window,"destroy",(GCallback)on_video_window_destroy,GINT_TO_POINTER(timeout));
+	g_signal_connect(video_window,"key-press-event",(GCallback)on_video_window_key_press,NULL);
+	return video_window;
+}
+
+void linphone_gtk_in_call_show_video(LinphoneCall *call){
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	LinphoneCore *lc=linphone_gtk_get_core();
+	
+	if (linphone_call_get_state(call)!=LinphoneCallPaused && params && linphone_call_params_video_enabled(params)){
+		if (video_window==NULL){
+			video_window=create_video_window(call);
+			g_object_set_data(G_OBJECT(callview),"video_window",video_window);
+		}
+		linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
+	}else{
+		linphone_core_set_native_video_window_id(lc,(unsigned long)-1);
+		if (video_window){
+			gtk_widget_destroy(video_window);
+			g_object_set_data(G_OBJECT(callview),"video_window",NULL);
+		}
+	}
+}
+
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
@@ -696,6 +810,8 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	gboolean in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
+	linphone_gtk_in_call_show_video(call);
+	
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
@@ -736,7 +852,7 @@ void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Paused call</b>"));
-
+	linphone_gtk_in_call_show_video(call);
 	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PAUSE,TRUE);
 }
 
@@ -760,13 +876,15 @@ static gboolean in_call_view_terminated(LinphoneCall *call){
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status;
+	GtkWidget *video_window;
 	gboolean in_conf;
 	guint taskid;
 	if(callview==NULL) return;
+	video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 	status=linphone_gtk_get_widget(callview,"in_call_status");
 	taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
-
+	gtk_widget_destroy(video_window);
 	if (status==NULL) return;
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));

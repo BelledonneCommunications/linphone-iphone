@@ -500,7 +500,6 @@ static void *pipe_thread(void*p){
 }
 
 static void start_pipe_reader(void){
-	ms_mutex_init(&prompt_mutex,NULL);
 	pipe_reader_run=TRUE;
 	ortp_thread_create(&pipe_reader_th,NULL,pipe_thread,NULL);
 }
