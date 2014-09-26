@@ -805,6 +805,7 @@ linphonec_finish(int exit_status)
 	if (mylogfile != NULL && mylogfile != stdout)
 	{
 		fclose (mylogfile);
+		mylogfile=stdout;
 	}
 	printf("\n");
 	exit(exit_status);
