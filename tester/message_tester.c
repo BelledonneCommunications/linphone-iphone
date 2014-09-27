@@ -443,6 +443,61 @@ static void file_transfer_message(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+/* same than previous but with a 160 characters file */
+#define SMALL_FILE_SIZE 160
+static void small_file_transfer_message(void) {
+	int i;
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+	LinphoneContent content;
+	const char* big_file_content="big file"; /* setting dummy file content to something */
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
+	for (i=0;i<SMALL_FILE_SIZE;i+=strlen(big_file_content))
+		memcpy(big_file+i, big_file_content, strlen(big_file_content));
+
+	big_file[0]=*"S";
+	big_file[SMALL_FILE_SIZE - 1]=*"E";
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
+
+	/* create a chatroom on pauline's side */
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+	/* create a file transfer message */
+	memset(&content,0,sizeof(content));
+	content.type="text";
+	content.subtype="plain";
+	content.size=SMALL_FILE_SIZE; /*total size to be transfered*/
+	content.name = "bigfile.txt";
+	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	{
+		int dummy=0;
+		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
+		reset_counters(&marie->stat);
+		reset_counters(&pauline->stat);
+	}
+	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	if (marie->stat.last_received_chat_message ) {
+		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message, liblinphone_tester_chat_message_state_change);
+	}
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void file_transfer_message_io_error_upload(void) {
 	int i;
 	char* to;
@@ -983,6 +1038,7 @@ test_t message_tests[] = {
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body },
 	{ "File transfer message", file_transfer_message },
+	{ "Small File transfer message", small_file_transfer_message},
 	{ "File transfer message with io error at upload", file_transfer_message_io_error_upload },
 /*	{ "File transfer message with io error at download", file_transfer_message_io_error_download },*/
 	{ "File transfer message upload cancelled", file_transfer_message_upload_cancelled },
