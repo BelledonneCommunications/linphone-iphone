@@ -105,11 +105,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	bool_t external_body=FALSE;
 	bool_t cipher_xml=FALSE;
 	bool_t rcs_filetransfer=FALSE;
+	uint8_t *decryptedMessage = NULL;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	/* check if we have a xml/cipher message to be decrypted */
-	uint8_t *decryptedMessage = NULL;
 	if (content_type && (cipher_xml=is_cipher_xml(content_type))) {
 		/* access the zrtp cache to get keys needed to decipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
@@ -117,17 +117,22 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
 		} else {
+			int cacheSize;
+			uint8_t *cacheString;
+			int retval;
+			xmlDocPtr cacheXml;
+
 			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-			int cacheSize = ftell(CACHEFD);     /* Get file length */
+			cacheSize = ftell(CACHEFD);     /* Get file length */
 			rewind(CACHEFD);               /* Back to start of file */
-			uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
+			cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
 			fread(cacheString, 1, cacheSize, CACHEFD);
 			cacheString[cacheSize] = '\0';
 			cacheSize += 1;
 			fclose(CACHEFD);
-			xmlDocPtr cacheXml = xmlParseDoc(cacheString);
+			cacheXml = xmlParseDoc(cacheString);
 			free(cacheString);
-			int retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
+			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s - op [%p]", lime_error_code_to_string(retval), op);
 				free(decryptedMessage);
@@ -254,17 +259,22 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
 			return 0;
 		} else {
+			int cacheSize;
+			uint8_t *cacheString;
+			xmlDocPtr cacheXml;
+			int retval;
+
 			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-			int cacheSize = ftell(CACHEFD);     /* Get file length */
+			cacheSize = ftell(CACHEFD);     /* Get file length */
 			rewind(CACHEFD);               /* Back to start of file */
-			uint8_t *cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
+			cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
 			fread(cacheString, 1, cacheSize, CACHEFD);
 			cacheString[cacheSize] = '\0';
 			cacheSize += 1;
 			fclose(CACHEFD);
-			xmlDocPtr cacheXml = xmlParseDoc(cacheString);
+			cacheXml = xmlParseDoc(cacheString);
 			free(cacheString);
-			int retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
+			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
 			if (retval != 0) {
 				ms_warning("Unable to encrypt message for %s : %s - op [%p]", peer_uri, lime_error_code_to_string(retval), op);
 				xmlFreeDoc(cacheXml);

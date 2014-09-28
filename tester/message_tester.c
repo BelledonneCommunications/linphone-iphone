@@ -74,15 +74,15 @@ void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, cons
 	} else {
 		/*next chunk*/
 		file = (FILE*)linphone_chat_message_get_user_data(message);
+	}
 
-		if (size==0) { /* tranfer complete */
-			stats* counters = get_stats(lc);
-			counters->number_of_LinphoneMessageExtBodyReceived++;
-			fclose(file);
-		} else { /* store content on a file*/
-			if (fwrite(buff,size,1,file)==-1){
-				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
-			}
+	if (size==0) { /* tranfer complete */
+		stats* counters = get_stats(lc);
+		counters->number_of_LinphoneMessageExtBodyReceived++;
+		fclose(file);
+	} else { /* store content on a file*/
+		if (fwrite(buff,size,1,file)==-1){
+			ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 		}
 	}
 }
@@ -167,13 +167,15 @@ void liblinphone_tester_chat_message_state_change(LinphoneChatMessage* msg,Linph
 static void text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	char* to;
+	LinphoneChatRoom* chat_room;
 
 	/* make sure lime is not enabled */
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 	{
 		int dummy=0;
@@ -269,6 +271,10 @@ static void text_message_with_credential_from_auth_cb(void) {
 }
 
 static void text_message_with_privacy(void) {
+	char *to;
+	LinphoneChatRoom* chat_room;
+
+	LinphoneProxyConfig* pauline_proxy;
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -276,9 +282,8 @@ static void text_message_with_privacy(void) {
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	LinphoneProxyConfig* pauline_proxy;
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 
 	/*test proxy config privacy*/
@@ -352,18 +357,19 @@ static void text_message_compatibility_mode(void) {
 static void text_message_with_ack(void) {
 	int leaked_objects;
 	int begin;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
 
 	/* make sure lime is not enabled */
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 	{
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 		char* to = linphone_address_as_string(marie->identity);
 		LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 		LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -388,6 +394,10 @@ static void text_message_with_ack(void) {
 }
 
 static void text_message_with_external_body(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -395,9 +405,9 @@ static void text_message_with_external_body(void) {
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
-	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	linphone_chat_message_set_external_body_url(message,message_external_body_url="http://www.linphone.org");
 	{
 		int dummy=0;
@@ -424,37 +434,35 @@ static void text_message_with_external_body(void) {
 }
 
 static void file_transfer_message(void) {
-	int i;
-	LinphoneCoreManager *marie, *pauline;
-	LinphoneChatRoom *chat_room;
+		int i;
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
 	LinphoneContent content;
-	LinphoneChatMessage *message;
-	/* setting dummy file content to something */
-	const char* big_file_content="big file";
-	for (i=0;i<=sizeof(big_file)-strlen(big_file_content);i+=strlen(big_file_content))
-		memcpy(big_file+i, big_file_content, strlen(big_file_content));
-
-	if (i<sizeof(big_file)) {
-		memcpy(big_file+i, big_file_content, sizeof(big_file)-i);
-	}
-
-	big_file[0]=*"S";
-	big_file[sizeof(big_file)-1]=*"E";
-
-	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
+	const char* big_file_content="big file"; /* setting dummy file content to something */
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	/* make sure lime is not enabled */
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
+	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
+		memcpy(big_file+i, big_file_content, strlen(big_file_content));
+
+	big_file[0]=*"S";
+	big_file[sizeof(big_file)-1]=*"E";
+
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 	/* create a chatroom on pauline's side */
-	char* to = linphone_address_as_string(marie->identity);
+	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
-
+	ms_free(to);
 	/* create a file transfer message */
 	memset(&content,0,sizeof(content));
 	content.type="text";
@@ -462,12 +470,21 @@ static void file_transfer_message(void) {
 	content.size=sizeof(big_file); /*total size to be transfered*/
 	content.name = "bigfile.txt";
 	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
-
+	{
+		int dummy=0;
+		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
+		reset_counters(&marie->stat);
+		reset_counters(&pauline->stat);
+	}
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	if (marie->stat.last_received_chat_message ) {
+		linphone_chat_message_start_file_download(marie->stat.last_received_chat_message, liblinphone_tester_chat_message_state_change);
+	}
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
 
 	linphone_core_manager_destroy(marie);
@@ -545,6 +562,10 @@ static void file_transfer_message_io_error_upload(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/* make sure lime is not enabled */
+	linphone_core_set_lime(marie->lc, 0);
+	linphone_core_set_lime(pauline->lc, 0);
+
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
@@ -606,6 +627,10 @@ static void file_transfer_message_io_error_download(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/* make sure lime is not enabled */
+	linphone_core_set_lime(marie->lc, 0);
+	linphone_core_set_lime(pauline->lc, 0);
+
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
@@ -670,6 +695,10 @@ static void file_transfer_message_upload_cancelled(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/* make sure lime is not enabled */
+	linphone_core_set_lime(marie->lc, 0);
+	linphone_core_set_lime(pauline->lc, 0);
+
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
@@ -725,6 +754,10 @@ static void file_transfer_message_download_cancelled(void) {
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/* make sure lime is not enabled */
+	linphone_core_set_lime(marie->lc, 0);
+	linphone_core_set_lime(pauline->lc, 0);
+
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
@@ -781,6 +814,10 @@ static void file_transfer_message_download_cancelled(void) {
 }
 
 static void text_message_with_send_error(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -788,9 +825,9 @@ static void text_message_with_send_error(void) {
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	char* to = linphone_address_as_string(pauline->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
-	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	to = linphone_address_as_string(pauline->identity);
+	chat_room = linphone_core_create_chat_room(marie->lc,to);
+	message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
@@ -822,6 +859,10 @@ static void text_message_with_send_error(void) {
 }
 
 static void text_message_denied(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -829,9 +870,9 @@ static void text_message_denied(void) {
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	char* to = linphone_address_as_string(pauline->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
-	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	to = linphone_address_as_string(pauline->identity);
+	chat_room = linphone_core_create_chat_room(marie->lc,to);
+	message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 
 	/*pauline doesn't want to be disturbed*/
 	linphone_core_disable_chat(pauline->lc,LinphoneReasonDoNotDisturb);
@@ -865,16 +906,16 @@ void info_message_received(LinphoneCore *lc, LinphoneCall* call, const LinphoneI
 
 
 static void info_message_with_args(bool_t with_content) {
+	LinphoneInfoMessage *info;
+	const LinphoneContent *content;
+	const char *hvalue;
+
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	/* make sure lime is not enabled */
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
-
-	LinphoneInfoMessage *info;
-	const LinphoneContent *content;
-	const char *hvalue;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
@@ -932,6 +973,10 @@ static void info_message_with_body(){
 }
 
 static void is_composing_notification(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
+	int dummy = 0;
+
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -939,9 +984,8 @@ static void is_composing_notification(void) {
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc, to);
-	int dummy = 0;
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc, to);
 
 	ms_free(to);
 	{
@@ -961,8 +1005,8 @@ static void is_composing_notification(void) {
 }
 
 void printHex(char *title, uint8_t *data, uint32_t length) {
-	printf ("%s : ", title);
 	int i;
+	printf ("%s : ", title);
 	for (i=0; i<length; i++) {
 		printf ("0x%02x, ", data[i]);
 	}
@@ -971,17 +1015,35 @@ void printHex(char *title, uint8_t *data, uint32_t length) {
 
 static void lime_unit(void) {
 	int retval;
+	int size;
+	uint8_t *cacheBufferString;
+	xmlDocPtr cacheBufferAlice;
+	xmlDocPtr cacheBufferBob;
+	uint8_t *multipartMessage = NULL;
+	uint8_t *decryptedMessage = NULL;
+	xmlChar *xmlStringOutput;
+	int xmlStringLength;
+	limeURIKeys_t associatedKeys;
+	int i;
+	limeKey_t associatedKey;
+	uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
+	uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
+	uint8_t encryptedMessage[48];
+	uint8_t plainMessage[48];
+	uint8_t receiverZID[12];
+	xmlDocPtr cacheBuffer;
+
 	/* Load Alice cache file */
 	FILE *CACHE = fopen("ZIDCacheAlice.xml", "r+");
 	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
-  	int size = ftell(CACHE);     /* Get file length */
+  	size = ftell(CACHE);     /* Get file length */
   	rewind(CACHE);               /* Back to start of file */
-	uint8_t *cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
+	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
 	fread(cacheBufferString, 1, size, CACHE);
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
-	xmlDocPtr cacheBufferAlice = xmlParseDoc(cacheBufferString);
+	cacheBufferAlice = xmlParseDoc(cacheBufferString);
 	free(cacheBufferString);
 	
 	/* Load Bob cache file */
@@ -994,13 +1056,12 @@ static void lime_unit(void) {
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
-	xmlDocPtr cacheBufferBob = xmlParseDoc(cacheBufferString);
+	cacheBufferBob = xmlParseDoc(cacheBufferString);
 	free(cacheBufferString);
 
 
 
 	/* encrypt a message */
-	uint8_t *multipartMessage = NULL;
 	retval = lime_createMultipartMessage(cacheBufferAlice, (uint8_t *)"Bonjour les petits lapins,ca va? éh oui oui", (uint8_t *)"sip:pauline@sip.example.org", &multipartMessage);
 
 	printf("create message return %d\n", retval);
@@ -1009,7 +1070,6 @@ static void lime_unit(void) {
 	}
 
 	/* decrypt the multipart message */
-	uint8_t *decryptedMessage = NULL;
 	retval = lime_decryptMultipartMessage(cacheBufferBob, multipartMessage, &decryptedMessage);
 
 	printf("decrypt message return %d\n", retval);
@@ -1021,8 +1081,6 @@ static void lime_unit(void) {
 
 	/* update ZID files */
 	/* dump the xml document into a string */
-	xmlChar *xmlStringOutput;
-	int xmlStringLength;
 	xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 	/* write it to the file */
 	CACHE = fopen("ZIDCacheAlice.xml", "w+");
@@ -1051,18 +1109,16 @@ static void lime_unit(void) {
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
-	xmlDocPtr cacheBuffer = xmlParseDoc(cacheBufferString);
+	cacheBuffer = xmlParseDoc(cacheBufferString);
 	free(cacheBufferString);
 
 	/* get data from cache : sender */
-	limeURIKeys_t associatedKeys;
 	associatedKeys.peerURI = (uint8_t *)malloc(15);
 	memcpy(associatedKeys.peerURI, "pipo1@pipo.com", 15);
 	associatedKeys.associatedZIDNumber  = 0;
 	retval = lime_getCachedSndKeysByURI(cacheBuffer, &associatedKeys);
 	printf("getCachedKeys returns %d, number of key found %d\n", retval, associatedKeys.associatedZIDNumber);
 
-	int i;
 	for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
 		printHex("ZID", associatedKeys.peerKeys[i]->peerZID, 12);
 		printHex("key", associatedKeys.peerKeys[i]->key, 32);
@@ -1071,8 +1127,6 @@ static void lime_unit(void) {
 	}
 
 	/* get data from cache : receiver */
-	limeKey_t associatedKey;
-	uint8_t targetZID[12] = {0x00, 0x5d, 0xbe, 0x03, 0x99, 0x64, 0x3d, 0x95, 0x3a, 0x22, 0x02, 0xdd};
 	memcpy(associatedKey.peerZID, targetZID, 12);
 	retval = lime_getCachedRcvKeyByZid(cacheBuffer, &associatedKey);
 	printf("getCachedKey by ZID return %d\n", retval);
@@ -1082,13 +1136,9 @@ static void lime_unit(void) {
 	printf("session index %d\n", associatedKey.sessionIndex);
 
 	/* encrypt/decrypt a message */
-	uint8_t senderZID[12] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x70, 0x80, 0x90, 0xa0, 0xb0, 0xc0, 0xd0};
-	uint8_t encryptedMessage[48];
-	uint8_t plainMessage[48];
 	lime_encryptMessage(associatedKeys.peerKeys[0], (uint8_t *)"bla Bla bla b! Pipo", 20, senderZID, encryptedMessage);
 	printHex("Ciphered", encryptedMessage, 32);
 	/* invert sender and receiverZID to decrypt/authenticate */
-	uint8_t receiverZID[12];
 	memcpy(receiverZID, associatedKeys.peerKeys[0]->peerZID, 12);
 	memcpy(associatedKeys.peerKeys[0]->peerZID, senderZID, 12);
 	retval = lime_decryptMessage(associatedKeys.peerKeys[0], encryptedMessage, 36, receiverZID, plainMessage);
@@ -1123,6 +1173,8 @@ static void lime_unit(void) {
 }
 
 static void lime_text_message(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -1134,8 +1186,8 @@ static void lime_text_message(void) {
 	linphone_core_set_zrtp_secrets_file(marie->lc, "ZIDCacheAlice.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, "ZIDCacheBob.xml");
 
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
@@ -1277,6 +1329,7 @@ static void history_messages_count() {
 #endif
 
 test_t message_tests[] = {
+	{ "Lime Text Message", lime_text_message },
 	{ "Text message", text_message },
 	{ "Text message within call's dialog", text_message_within_dialog},
 	{ "Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
@@ -1295,8 +1348,7 @@ test_t message_tests[] = {
 	{ "Info message", info_message },
 	{ "Info message with body", info_message_with_body },
 	{ "IsComposing notification", is_composing_notification },
-	{ "Lime Unitary", lime_unit },
-	{ "Lime Text Message", lime_text_message }
+	{ "Lime Unitary", lime_unit }
 #ifdef MSG_STORAGE_ENABLED
 	,{ "Database migration", message_storage_migration }
 	,{ "History count", history_messages_count }

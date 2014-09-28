@@ -90,17 +90,20 @@ void lime_int8ToStr(uint8_t *outputString, uint8_t *inputBytes, uint16_t inputBy
 
 
 int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
+	xmlNodePtr cur;
+	xmlChar *selfZidHex;
+
 	if (cacheBuffer == NULL ) { 
 		return LIME_INVALID_CACHE; 
 	}
 
-	xmlNodePtr cur = xmlDocGetRootElement(cacheBuffer);
+	cur = xmlDocGetRootElement(cacheBuffer);
 	/* if we found a root element, parse its children node */
 	if (cur!=NULL) 
 	{
 		cur = cur->xmlChildrenNode;
 	}
-	xmlChar *selfZidHex = NULL;
+	selfZidHex = NULL;
 	while (cur!=NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"selfZID"))){ /* self ZID found, extract it */
 			selfZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode, 1);		
@@ -122,6 +125,7 @@ int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
 }
 
 int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys) {
+	xmlNodePtr cur;
 	
 	/* parse the file to get all peer matching the sipURI given in associatedKeys*/
 	if (cacheBuffer == NULL ) { /* there is no cache return error */
@@ -132,7 +136,7 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 	associatedKeys->associatedZIDNumber = 0;
 	associatedKeys->peerKeys = NULL;
 
-	xmlNodePtr cur = xmlDocGetRootElement(cacheBuffer);
+	cur = xmlDocGetRootElement(cacheBuffer);
 	/* if we found a root element, parse its children node */
 	if (cur!=NULL) 
 	{
@@ -141,8 +145,8 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 	while (cur!=NULL) { /* loop on all peer nodes */
 		uint8_t matchingURIFlag = 0; /* this flag is set to one if we found the requested sipURI in the current peer node */
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))) { /* found a peer node, check if there is a matching sipURI node in it */
-			matchingURIFlag = 0;
 			xmlNodePtr peerNodeChildren = cur->xmlChildrenNode;
+			matchingURIFlag = 0;
 
 			/* loop on children nodes until the end or we found the matching sipURI */
 			while (peerNodeChildren!=NULL && matchingURIFlag==0) {
@@ -182,8 +186,8 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"sndIndex")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
 						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
+						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
 						lime_strToUint8(sessionIndexBuffer, nodeContent, 8);
 						/* convert it back to a uint32_t (MSByte first)*/
 						currentPeerKeys->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
@@ -219,26 +223,27 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
 }
 
 int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
+	uint8_t peerZidHex[25];
+	/* to check we collect all the information needed from the cache and that pvs(boolean for previously verified Sas) is set in cache */
+	uint8_t itemFound = 0;
+	uint8_t pvs = 0;
+	xmlNodePtr cur;
+
 	if (cacheBuffer == NULL ) { /* there is no cache return error */
 		return LIME_INVALID_CACHE;
 	}
 
 	/* get the given ZID into hex format */
-	uint8_t peerZidHex[25];
 	lime_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
 	peerZidHex[24]='\0'; /* must be a null terminated string */
 
-	xmlNodePtr cur = xmlDocGetRootElement(cacheBuffer);
+	cur = xmlDocGetRootElement(cacheBuffer);
 	/* if we found a root element, parse its children node */
 	if (cur!=NULL) 
 	{
 		cur = cur->xmlChildrenNode;
 
 	}
-
-	/* to check we collect all the information needed from the cache and that pvs(boolean for previously verified Sas) is set in cache */
-	uint8_t itemFound = 0;
-	uint8_t pvs = 0;
 
 	while (cur!=NULL) { /* loop on all peer nodes */
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
@@ -258,8 +263,8 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 						itemFound++;
 					}
 					if (!xmlStrcmp(peerNodeChildren->name, (const xmlChar *)"rcvIndex")) {
-						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
 						uint8_t sessionIndexBuffer[4]; /* session index is a uint32_t but we first retrieved it as an hexa string, convert it to a 4 uint8_t buffer */
+						nodeContent = xmlNodeListGetString(cacheBuffer, peerNodeChildren->xmlChildrenNode, 1);
 						lime_strToUint8(sessionIndexBuffer, nodeContent, 8);
 						/* convert it back to a uint32_t (MSByte first)*/
 						associatedKey->sessionIndex = sessionIndexBuffer[3] + (sessionIndexBuffer[2]<<8) + (sessionIndexBuffer[1]<<16) + (sessionIndexBuffer[0]<<24);
@@ -291,16 +296,22 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey) {
 }
 
 int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role) {
+	xmlNodePtr cur;
+	uint8_t peerZidHex[25];
+	uint8_t keyHex[65]; /* key is 32 bytes long -> 64 bytes string + null termination */
+	uint8_t sessionIdHex[65]; /* sessionId is 32 bytes long -> 64 bytes string + null termination */
+	uint8_t sessionIndexHex[9]; /*  sessionInedx is an uint32_t : 4 bytes long -> 8 bytes string + null termination */
+	uint8_t itemFound = 0;
+
 	if (cacheBuffer == NULL ) { /* there is no cache return error */
 		return LIME_INVALID_CACHE;
 	}
 
 	/* get the given ZID into hex format */
-	uint8_t peerZidHex[25];
 	lime_int8ToStr(peerZidHex, associatedKey->peerZID, 12);
 	peerZidHex[24]='\0'; /* must be a null terminated string */
 
-	xmlNodePtr cur = xmlDocGetRootElement(cacheBuffer);
+	cur = xmlDocGetRootElement(cacheBuffer);
 	/* if we found a root element, parse its children node */
 	if (cur!=NULL) 
 	{
@@ -309,13 +320,10 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	}
 
 	/* convert the given tag content to null terminated Hexadecimal strings */
-	uint8_t keyHex[65]; /* key is 32 bytes long -> 64 bytes string + null termination */
 	lime_int8ToStr(keyHex, associatedKey->key, 32);
 	keyHex[64] = '\0';
-	uint8_t sessionIdHex[65]; /* sessionId is 32 bytes long -> 64 bytes string + null termination */
 	lime_int8ToStr(sessionIdHex, associatedKey->sessionId, 32);
 	sessionIdHex[64] = '\0';
-	uint8_t sessionIndexHex[9]; /*  sessionInedx is an uint32_t : 4 bytes long -> 8 bytes string + null termination */
 	sessionIndexHex[0] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>28)&0x0F));
 	sessionIndexHex[1] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>24)&0x0F));
 	sessionIndexHex[2] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex>>20)&0x0F));
@@ -326,7 +334,6 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	sessionIndexHex[7] = lime_byteToChar((uint8_t)((associatedKey->sessionIndex)&0x0F));
 	sessionIndexHex[8] = '\0';
 
-	uint8_t itemFound = 0;
 	while (cur!=NULL && itemFound<3) { /* loop on all peer nodes */
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"peer"))){ /* found a peer, check his ZID element */
 			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, cur->xmlChildrenNode->xmlChildrenNode, 1); /* ZID is the first element of peer */
@@ -373,6 +380,9 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 }
 
 int lime_deriveKey(limeKey_t *key) {
+	uint8_t inputData[55];
+	uint8_t derivedKey[32];
+
 	if (key == NULL) {
 		return LIME_UNABLE_TO_DERIVE_KEY;
 	}
@@ -383,7 +393,6 @@ int lime_deriveKey(limeKey_t *key) {
 
  	/* Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||0x00000100)*/
 	/* total data to be hashed is       55 bytes  :           4   +      10     +   1 +     32   +   4         +   4 */
-	uint8_t inputData[55];
 	inputData[0] = 0x00;
 	inputData[1] = 0x00;
 	inputData[2] = 0x00;
@@ -406,7 +415,6 @@ int lime_deriveKey(limeKey_t *key) {
 	inputData[54] = 0x00;
 
 	/* derive the key in a temp buffer */
-	uint8_t derivedKey[32];
 #if POLARSSL_VERSION_NUMBER >= 0x01030000 /* for Polarssl version 1.3 */
 	sha256_hmac(key->key, 32, inputData, 55, derivedKey, 0); /* last param to zero to select SHA256 and not SHA224 */
 #else /* for Polarssl version 1.2 */
@@ -439,8 +447,9 @@ void lime_freeKeys(limeURIKeys_t associatedKeys) {
 }
 
 int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage) {
-	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	uint8_t authenticatedData[28];
+	gcm_context gcmContext;
+	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	memcpy(authenticatedData, selfZID, 12);
 	memcpy(authenticatedData+12, key->peerZID, 12);
 	authenticatedData[24] = (uint8_t)((key->sessionIndex>>24)&0x000000FF);
@@ -450,14 +459,12 @@ int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageL
 
 	/* AES-GCM : key is 192 bits long, Init Vector 64 bits. 256 bits key given is AES key||IV */
 	/* tag is 16 bytes long and is set in the 16 first bytes of the encrypted message */
-	gcm_context gcmContext;
 	gcm_init(&gcmContext, POLARSSL_CIPHER_ID_AES, key->key, 192);
 	gcm_crypt_and_tag(&gcmContext, GCM_ENCRYPT, messageLength, key->key+24, 8, authenticatedData, 28, plainMessage, encryptedMessage+16, 16, encryptedMessage);
 	gcm_free(&gcmContext);
 
 	return 0;
 }
-
 
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
 	gcm_context *gcmContext;
@@ -509,8 +516,11 @@ int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 
 
 int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage) {
-	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	uint8_t authenticatedData[28];
+	gcm_context gcmContext;
+	int retval;
+
+	/* Authenticated data is senderZID(12 bytes)||receiverZID(12 bytes)||sessionIndex(4 bytes) */
 	memcpy(authenticatedData, key->peerZID, 12);
 	memcpy(authenticatedData+12, selfZID, 12);
 	authenticatedData[24] = (uint8_t)((key->sessionIndex>>24)&0x000000FF);
@@ -520,10 +530,9 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 
 	/* AES-GCM : key is 192 bits long, Init Vector 64 bits. 256 bits key given is AES key||IV */
 	/* tag is 16 bytes long and is the 16 first bytes of the encrypted message */
-	gcm_context gcmContext;
 	gcm_init(&gcmContext, POLARSSL_CIPHER_ID_AES, key->key, 192);
 	/* messageLength-16 is the length of encrypted data, messageLength include the 16 bytes tag included at the begining of encryptedMessage */
-	int retval = gcm_auth_decrypt(&gcmContext, messageLength-16, key->key+24, 8, authenticatedData, 28, encryptedMessage, 16, encryptedMessage+16, plainMessage);
+	retval = gcm_auth_decrypt(&gcmContext, messageLength-16, key->key+24, 8, authenticatedData, 28, encryptedMessage, 16, encryptedMessage+16, plainMessage);
 	gcm_free(&gcmContext);
 	/* add the null termination char */
 	plainMessage[messageLength-16] = '\0';
@@ -532,20 +541,25 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
 }
 
 int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) {
-	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
 	uint8_t selfZidHex[25];
+	uint8_t selfZid[12]; /* same data but in byte buffer */
+	uint32_t encryptedMessageLength;
+	limeURIKeys_t associatedKeys;
+	xmlDocPtr xmlOutputMessage;
+	xmlNodePtr rootNode;
+	int i;
+	int xmlStringLength;
+
+	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
 		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
 	}
-	uint8_t selfZid[12]; /* same data but in byte buffer */
 	lime_strToUint8(selfZid, selfZidHex, 24);
 
 	/* encrypted message length is plaintext + 16 for tag */
-	uint32_t encryptedMessageLength = strlen((char *)message) + 16;
-
+	encryptedMessageLength = strlen((char *)message) + 16;
 
 	/* retrieve keys associated to the peer URI */
-	limeURIKeys_t associatedKeys;
 	associatedKeys.peerURI = (uint8_t *)malloc(strlen((char *)peerURI)+1);
 	strcpy((char *)(associatedKeys.peerURI), (char *)peerURI);
 	associatedKeys.associatedZIDNumber  = 0;
@@ -562,16 +576,21 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	}
 
 	/* create an xml doc to hold the multipart message */
-	xmlDocPtr xmlOutputMessage = xmlNewDoc((const xmlChar *)"1.0");
+	xmlOutputMessage = xmlNewDoc((const xmlChar *)"1.0");
 	/* root tag is "doc" */
-	xmlNodePtr rootNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"doc", NULL);
+	rootNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"doc", NULL);
 	xmlDocSetRootElement(xmlOutputMessage, rootNode);
 	/* add the self ZID child */
 	xmlNewTextChild(rootNode, NULL, (const xmlChar *)"ZID", selfZidHex);
 
 	/* loop on all keys found */
-	int i;
 	for (i=0; i<associatedKeys.associatedZIDNumber; i++) {
+		uint8_t peerZidHex[25];
+		uint8_t sessionIndexHex[9];
+		xmlNodePtr msgNode;
+		int b64Size;
+		char *encryptedMessageb64;
+
 		/* encrypt message with current key */
 		limeKey_t *currentKey = associatedKeys.peerKeys[i];
 		/* encrypted message include a 16 bytes tag */
@@ -583,11 +602,9 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		 * 		<index>session index</index>
 		 * 		<text>ciphertext</text>
 		 * </msg> */
-		xmlNodePtr msgNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"msg", NULL);
-		uint8_t peerZidHex[25];
+		msgNode = xmlNewDocNode(xmlOutputMessage, NULL, (const xmlChar *)"msg", NULL);
 		lime_int8ToStr(peerZidHex, currentKey->peerZID, 12);
 		peerZidHex[24] = '\0';
-		uint8_t sessionIndexHex[9];
 		sessionIndexHex[0] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>28)&0x0F));
 		sessionIndexHex[1] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>24)&0x0F));
 		sessionIndexHex[2] = lime_byteToChar((uint8_t)((currentKey->sessionIndex>>20)&0x0F));
@@ -602,8 +619,8 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"index", sessionIndexHex);
 
 		/* convert the cipherText to base 64 */
-		int b64Size =  b64_encode(NULL, encryptedMessageLength, NULL, 0);
-		char *encryptedMessageb64 = (char *)malloc(b64Size+1);
+		b64Size =  b64_encode(NULL, encryptedMessageLength, NULL, 0);
+		encryptedMessageb64 = (char *)malloc(b64Size+1);
 		b64Size = b64_encode(encryptedMessage, encryptedMessageLength, encryptedMessageb64, b64Size);
 		encryptedMessageb64[b64Size] = '\0'; /* libxml need a null terminated string */
 		xmlNewTextChild(msgNode, NULL, (const xmlChar *)"text", (const xmlChar *)encryptedMessageb64);
@@ -619,7 +636,6 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 	}
 
 	/* dump the whole message doc into the output */
-	int xmlStringLength;
 	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, output, &xmlStringLength, "UTF-8", 0);
 	xmlFreeDoc(xmlOutputMessage);
 
@@ -630,16 +646,23 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
 
 int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) {
 	int retval;
+	uint8_t selfZidHex[25];
+	uint8_t selfZid[12]; /* same data but in byte buffer */
+	limeKey_t associatedKey;
+	xmlChar *peerZidHex = NULL;
+	xmlNodePtr cur;
+	uint8_t *encryptedMessage = NULL;
+	uint32_t encryptedMessageLength = 0;
+	uint32_t usedSessionIndex = 0;
+	xmlDocPtr xmlEncryptedMessage;
 
 	if (cacheBuffer == NULL) {
 		return LIME_INVALID_CACHE;
 	}
 	/* retrieve selfZIDHex from cache(return a 24 char hexa string + null termination) */
-	uint8_t selfZidHex[25];
 	if (lime_getSelfZid(cacheBuffer, selfZidHex) != 0) {
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
-	uint8_t selfZid[12]; /* same data but in byte buffer */
 	lime_strToUint8(selfZid, selfZidHex, 24);
 
 	/* parse the message into an xml doc */
@@ -647,15 +670,13 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	if (memcmp(message, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38) != 0 ) {
 		return LIME_INVALID_ENCRYPTED_MESSAGE;
 	}
-	xmlDocPtr xmlEncryptedMessage = xmlParseDoc((const xmlChar *)message);
+	xmlEncryptedMessage = xmlParseDoc((const xmlChar *)message);
 	if (xmlEncryptedMessage == NULL) {
 		return LIME_INVALID_ENCRYPTED_MESSAGE;
 	}
 
 	/* retrieve the sender ZID which is the first child of root */
-	limeKey_t associatedKey;
-	xmlChar *peerZidHex = NULL;
-	xmlNodePtr cur = xmlDocGetRootElement(xmlEncryptedMessage);
+	cur = xmlDocGetRootElement(xmlEncryptedMessage);
 	if (cur != NULL) {
 		cur = cur->xmlChildrenNode;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ZID"))){ /* sender ZID found, extract it */
@@ -665,10 +686,6 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 			cur = cur->next;
 		}
 	}
-
-	uint8_t *encryptedMessage = NULL;
-	uint32_t encryptedMessageLength = 0;
-	uint32_t usedSessionIndex = 0;
 
 	if (peerZidHex != NULL) {
 		/* get from cache the matching key */
@@ -686,8 +703,11 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 			xmlChar *currentZidHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1); /* pZID is the first element of msg */
 			if (!xmlStrcmp(currentZidHex, (const xmlChar *)selfZidHex)) { /* we found the msg node we are looking for */
 				/* get the index (second node in the msg one) */
+				xmlChar *sessionIndexHex;
+				xmlChar *encryptedMessageb64;
+
 				msgChildrenNode = msgChildrenNode->next;
-				xmlChar *sessionIndexHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
+				sessionIndexHex = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
 				usedSessionIndex = (((uint32_t)lime_charToByte(sessionIndexHex[0]))<<28)
 					| (((uint32_t)lime_charToByte(sessionIndexHex[1]))<<24)
 					| (((uint32_t)lime_charToByte(sessionIndexHex[2]))<<20)
@@ -700,7 +720,7 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 				/* get the encrypted message */
 				msgChildrenNode = msgChildrenNode->next;
 				/* convert the cipherText from base 64 */
-				xmlChar *encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
+				encryptedMessageb64 = xmlNodeListGetString(cacheBuffer, msgChildrenNode->xmlChildrenNode, 1);
 				encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), NULL, 0);
 				encryptedMessage = (uint8_t *)malloc(encryptedMessageLength);
 				encryptedMessageLength = b64_decode((char *)encryptedMessageb64, strlen((char *)encryptedMessageb64), encryptedMessage, encryptedMessageLength);

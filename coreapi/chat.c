@@ -99,34 +99,29 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	char *buf = (char *)buffer;
-	char *content_type=belle_sip_strdup_printf("%s/%s", chatMsg->file_transfer_information->type, chatMsg->file_transfer_information->subtype);
-	size_t end_of_file=linphone_chat_message_compute_filepart_header_size(chatMsg->file_transfer_information->name, content_type)+chatMsg->file_transfer_information->size;
 
 	/* if we've not reach the end of file yet, ask for more data*/
 	if (offset<chatMsg->file_transfer_information->size){
 		
 		if (chatMsg->file_transfer_information->key != NULL) { /* if we have a key to cipher the message, use it! */
+			char *plainBuffer;
 			/* get data from callback to a plainBuffer */
 			/* if this chunk is not the last one, the lenght must be a multiple of block cipher size(16 bytes)*/
-			if (offset+*size<end_of_file) {
+			if (offset+*size<chatMsg->file_transfer_information->size) {
 				*size -=(*size%16);
 			}
-			char *plainBuffer = (char *)malloc(*size);
-			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
+			plainBuffer = (char *)malloc(*size);
+			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
 			lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), chatMsg->file_transfer_information->key, *size, plainBuffer, (char*)buffer); 
 			free(plainBuffer);
+			/* check if we reach the end of file */
+			if (offset+*size>=chatMsg->file_transfer_information->size) {
+				/* conclude file ciphering by calling it context with a zero size */
+				lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), NULL, 0, NULL, NULL);
+			}
 		} else {
 			/* get data from call back directly to the output buffer */
 			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
-		}
-		/* DEBUG DEBUG : THIS SHALL NEVER HAPPEND */
-		if (*size == 0) {
-			exit(1);
-		}
-	}else{
-		/* conclude the file ciphering if needed */
-		if (chatMsg->file_transfer_information->key != NULL) { 
-			lime_encryptFile(&(chatMsg->file_transfer_information->cryptoContext), NULL, 0, NULL, NULL); 
 		}
 	}
 
@@ -148,12 +143,6 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 	if (event->response){
 		int code=belle_http_response_get_status_code(event->response);
 		if (code == 204) { /* this is the reply to the first post to the server - an empty message */
-			/* shall we encrypt the file */
-			if (msg->chat_room->lc->lime == 1) {
-				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
-				msg->file_transfer_information->key = (unsigned char *)malloc(FILE_TRANSFER_KEY_SIZE);
-				sal_get_random_bytes(msg->file_transfer_information->key, FILE_TRANSFER_KEY_SIZE);
-			}
 			/* start uploading the file */
 			belle_http_request_listener_callbacks_t cbs={0};
 			belle_http_request_listener_t *l;
@@ -164,6 +153,13 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			char *content_type;
 			char *first_part_header;
 			belle_sip_user_body_handler_t *first_part_bh;
+
+			/* shall we encrypt the file */
+			if (msg->chat_room->lc->lime == 1) {
+				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
+				msg->file_transfer_information->key = (unsigned char *)malloc(FILE_TRANSFER_KEY_SIZE);
+				sal_get_random_bytes(msg->file_transfer_information->key, FILE_TRANSFER_KEY_SIZE);
+			}
 
 			/* temporary storage for the Content-disposition header value */
 			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", msg->file_transfer_information->name);
@@ -220,6 +216,8 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 								/* convert key to base64 */
 								int b64Size =  b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
 								char *keyb64 = (char *)malloc(b64Size+1);
+								int xmlStringLength;
+
 								b64Size = b64_encode(msg->file_transfer_information->key, FILE_TRANSFER_KEY_SIZE, keyb64, b64Size);
 								keyb64[b64Size] = '\0'; /* libxml need a null terminated string */
 
@@ -228,7 +226,6 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 								xmlFree(typeAttribute);
 
 								/* dump the xml into msg->message */
-								int xmlStringLength;
 								xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength, "UTF-8", 0);
 
 								break;
@@ -1106,12 +1103,13 @@ const LinphoneContent *linphone_chat_message_get_file_transfer_information(const
 }
 
 static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
+	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+	LinphoneCore *lc = chatMsg->chat_room->lc;
+
 	/* first call may be with a zero size, ignore it */
 	if (size == 0) {
 		return;
 	}
-	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
-	LinphoneCore *lc = chatMsg->chat_room->lc;
 	/* TODO: while belle sip doesn't implement the cancel http request method, test if a request is still linked to the message before forwarding the data to callback */
 	if (chatMsg->http_request == NULL) {
 		return;
