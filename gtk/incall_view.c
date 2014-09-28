@@ -34,7 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #elif defined(WIN32)
 #include <gdk/gdk-win32.h>
 #elif defined(__APPLE__)
-#include <gdk/gdk-quartz.h>
+extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
+extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
 #endif
 
 #include <gdk/gdkkeysyms.h>
@@ -706,11 +707,11 @@ char *linphone_gtk_address(const LinphoneAddress *addr){
 
 unsigned long get_native_handle(GdkWindow *gdkw){
 #ifdef __linux
-	return GDK_WINDOW_XID(gdkw);
+	return (unsigned long)GDK_WINDOW_XID(gdkw);
 #elif defined(WIN32)
-	return GDK_WINDOW_HWND(gdkw);
+	return (unsigned long)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return gdk_quartz_window_get_nsview(gdkw);
+	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;
