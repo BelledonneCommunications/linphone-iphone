@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef __linux
 #include <gdk/gdkx.h>
 #elif defined(WIN32)
-#include <gdk/gdk-win32.h>
+#include <gdk/gdkwin32.h>
 #elif defined(__APPLE__)
 extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
 extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
