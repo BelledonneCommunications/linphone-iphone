@@ -899,7 +899,7 @@ dnl # Check for doxygen
 dnl ##################################################
 
 AC_PATH_PROG(DOXYGEN,doxygen,false)
-AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
+AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
 
 AC_CONFIG_FILES([
