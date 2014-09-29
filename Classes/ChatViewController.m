@@ -110,11 +110,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 -(void) startChatRoom {
 	//Push ChatRoom
+    LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [addressField.text UTF8String]);
+    if( room != nil ){
 	ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
 	if(controller != nil) {
         LinphoneChatRoom* room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], [addressField.text UTF8String]);
 		[controller setChatRoom:room];
 	}
+    } else {
+        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
+                                                        message:@"Please specify the entire SIP address for the chat"
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                                              otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+    }
 	addressField.text = @"";
 	
 }
