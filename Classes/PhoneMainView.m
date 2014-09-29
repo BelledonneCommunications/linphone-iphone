@@ -193,14 +193,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(interfaceOrientation == self.interfaceOrientation)
-        return YES;
-    return NO;
-}
 
 - (NSUInteger)supportedInterfaceOrientations {
-    return 0;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
