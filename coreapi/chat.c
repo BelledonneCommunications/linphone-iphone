@@ -228,6 +228,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 								/* add the node containing the key to the file-info node */
 								xmlNewTextChild(cur, NULL, (const xmlChar *)"file-key", (const xmlChar *)keyb64);
 								xmlFree(typeAttribute);
+								free(keyb64);
 
 								/* look for the file-name node and update its content */
 								while (fileInfoNodeChildren!=NULL) {

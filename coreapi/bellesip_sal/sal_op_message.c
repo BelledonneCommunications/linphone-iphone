@@ -195,6 +195,8 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		salmsg.message_id=message_id;
 		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
 		op->base.root->callbacks.text_received(op,&salmsg);
+
+		free(decryptedMessage);
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
 		if (salmsg.url) ms_free((char*)salmsg.url);
@@ -230,6 +232,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	size_t content_length = msg?strlen(msg):0;
 	time_t curtime=time(NULL);
 	uint8_t *multipartEncryptedMessage = NULL;
+	int retval;
 	
 	if (op->dialog){
 		/*for SIP MESSAGE that are sent in call's dialog*/
@@ -303,8 +306,10 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),(multipartEncryptedMessage==NULL)?msg:(const char *)multipartEncryptedMessage,content_length);
-	return sal_op_send_request(op,req);
+	retval = sal_op_send_request(op,req);
+	free(multipartEncryptedMessage);
 
+	return retval;
 }
 
 int sal_message_reply(SalOp *op, SalReason reason){
