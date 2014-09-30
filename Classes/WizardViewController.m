@@ -917,7 +917,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
-    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+    if(([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
+       UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         int width = endFrame.size.height;
         endFrame.size.height = endFrame.size.width;
         endFrame.size.width = width;

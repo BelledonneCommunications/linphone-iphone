@@ -71,6 +71,7 @@
 - (void)setFullScreen:(BOOL) enabled;
 - (void)setStateBarHidden:(BOOL) hidden;
 - (void)setToolBarHidden:(BOOL) hidden;
+- (BOOL)currentViewSupportsLandscape;
 - (UIViewController *)getCachedController:(NSString*)name;
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;
