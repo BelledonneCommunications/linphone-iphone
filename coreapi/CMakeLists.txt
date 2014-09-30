@@ -53,7 +53,6 @@ set(SOURCE_FILES
 	info.c
 	linphonecall.c
 	linphonecore.c
-	linphone_tunnel_stubs.c
 	linphone_tunnel_config.c
 	lpconfig.c
 	lsd.c
@@ -89,6 +88,8 @@ if(ENABLE_TUNNEL)
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
+else()
+	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
 endif()
 
 set(GENERATED_SOURCE_FILES
@@ -116,6 +117,9 @@ set(LIBS
 	${MS2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
+if(ENABLE_TUNNEL)
+	list(APPEND LIBS ${TUNNEL_LIBRARIES})
+endif()
 if(WIN32)
 	list(APPEND LIBS shlwapi)
 endif()

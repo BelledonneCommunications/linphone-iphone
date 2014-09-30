@@ -61,6 +61,13 @@ endif()
 find_package(BelleSIP REQUIRED)
 find_package(MS2 REQUIRED)
 find_package(XML2 REQUIRED)
+if(ENABLE_TUNNEL)
+	find_package(Tunnel)
+	if(NOT TUNNEL_FOUND)
+		message(WARNING "Could not find the tunnel library!")
+		set(ENABLE_TUNNEL OFF CACHE BOOL "Enable tunnel support" FORCE)
+	endif()
+endif()
 
 
 include_directories(
@@ -72,6 +79,9 @@ include_directories(
 	${MS2_INCLUDE_DIRS}
 	${XML2_INCLUDE_DIRS}
 )
+if(ENABLE_TUNNEL)
+	include_directories(${TUNNEL_INCLUDE_DIRS})
+endif()
 
 if(MSVC)
 	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
