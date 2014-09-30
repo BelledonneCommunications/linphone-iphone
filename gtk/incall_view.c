@@ -750,6 +750,12 @@ static void video_window_set_fullscreen(GtkWidget *w, gboolean val){
 			gtk_window_unfullscreen(GTK_WINDOW(w));
 	}
 }
+/*old names in old version of gdk*/
+#ifndef GDK_KEY_Escape
+#define GDK_KEY_Escape GDK_Escape
+#define GDK_KEY_F GDK_F
+#define GDK_KEY_f GDK_f
+#endif
 
 static void on_video_window_key_press(GtkWidget *w, GdkEvent *ev, gpointer up){
 	g_message("Key press event");
