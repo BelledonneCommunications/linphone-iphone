@@ -87,23 +87,22 @@ static PhoneMainView* phoneMainViewInstance=nil;
     // Avoid IOS 4 bug
     if(loadCount++ > 0)
         return;
-    
+
     [super viewDidLoad];
 
     volumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(-100,-100,16,16)];
     volumeView.showsRouteButton = false;
     volumeView.userInteractionEnabled = false;
 
-    [self.view addSubview: mainViewController.view];
+    [self.view addSubview:mainViewController.view];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [mainViewController viewWillAppear:animated];
-    }   
-    
+    }
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
@@ -132,7 +131,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [mainViewController viewWillDisappear:animated];
     }
@@ -195,7 +194,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 
 - (NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskPortrait;
+    static NSUInteger supported = -1;
+    if (supported == -1) {
+        if( [LinphoneManager runningOnIpad ] )
+            supported = UIInterfaceOrientationMaskAll;
+        else
+            supported = UIInterfaceOrientationMaskPortrait;
+    }
+
+    return supported;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
