@@ -1353,6 +1353,8 @@
 		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F0489300180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
+		F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
+		F0642EF219DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
 		F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F066515617F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
@@ -2282,6 +2284,7 @@
 		F03CA84118C72F1A0008889D /* UITextViewNoDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITextViewNoDefine.h; sourceTree = "<group>"; };
 		F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITextViewNoDefine.m; sourceTree = "<group>"; };
 		F04892FE180C3296002FED35 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ImageOptim.sh; sourceTree = "<group>"; };
+		F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		F066515317F9A02E0064280C /* UITransparentTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentTVCell.h; sourceTree = "<group>"; };
 		F066515417F9A02E0064280C /* UITransparentTVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentTVCell.m; sourceTree = "<group>"; };
 		F0818E7B17FC5160005A3330 /* linphone_icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_120.png; path = Resources/linphone_icon_120.png; sourceTree = "<group>"; };
@@ -2670,6 +2673,7 @@
 				D38187E015FE348A00C3EDCA /* WizardViewController.xib */,
 				D3D5126E160B3AD400946DF8 /* WizardViewController~ipad.xib */,
 				D3D5126A160B3A8E00946DF8 /* WizardViews.xib */,
+				F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -4163,6 +4167,7 @@
 				D3A74F4215C69392001500B9 /* speaker_on_disabled~ipad.png in Resources */,
 				D3A74F4415C69392001500B9 /* speaker_on_over~ipad.png in Resources */,
 				D3A74F4615C69392001500B9 /* statebar_background_landscape~ipad.png in Resources */,
+				F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */,
 				D3A74F4815C69392001500B9 /* statebar_background~ipad.png in Resources */,
 				D3A74F4A15C69392001500B9 /* transfer_call_default~ipad.png in Resources */,
 				D3A74F4C15C69392001500B9 /* transfer_call_over~ipad.png in Resources */,
@@ -4709,6 +4714,7 @@
 				D3A74F4315C69392001500B9 /* speaker_on_disabled~ipad.png in Resources */,
 				D3A74F4515C69392001500B9 /* speaker_on_over~ipad.png in Resources */,
 				D3A74F4715C69392001500B9 /* statebar_background_landscape~ipad.png in Resources */,
+				F0642EF219DAC891009DB336 /* MainStoryboard.storyboard in Resources */,
 				D3A74F4915C69392001500B9 /* statebar_background~ipad.png in Resources */,
 				D3A74F4B15C69392001500B9 /* transfer_call_default~ipad.png in Resources */,
 				D3A74F4D15C69392001500B9 /* transfer_call_over~ipad.png in Resources */,

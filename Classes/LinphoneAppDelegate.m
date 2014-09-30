@@ -30,14 +30,10 @@
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
 
-@implementation UILinphoneWindow
-
-@end
-
 @implementation LinphoneAppDelegate
 
 @synthesize started,configURL;
-
+@synthesize window;
 
 #pragma mark - Lifecycle Functions
 
@@ -234,6 +230,7 @@
         // Only execute one time at application start
         if(!started) {
             started = TRUE;
+            [self.window makeKeyAndVisible];
             [[PhoneMainView instance] startUp];
         }
     }
