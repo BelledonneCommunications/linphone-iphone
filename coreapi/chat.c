@@ -159,10 +159,13 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
 				msg->file_transfer_information->key = (unsigned char *)malloc(FILE_TRANSFER_KEY_SIZE);
 				sal_get_random_bytes(msg->file_transfer_information->key, FILE_TRANSFER_KEY_SIZE);
+				/* temporary storage for the Content-disposition header value : use a generic filename to not leak it 
+				 * Actual filename stored in msg->file_transfer_information->name will be set in encrypted message sended to the  */
+				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"filename.txt\"");
+			} else {
+				/* temporary storage for the Content-disposition header value */
+				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", msg->file_transfer_information->name);
 			}
-
-			/* temporary storage for the Content-disposition header value */
-			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", msg->file_transfer_information->name);
 
 			/* create a user body handler to take care of the file and add the content disposition and content-type headers */
 			first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
@@ -201,7 +204,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			if (msg->http_request == NULL) {
 				return;
 			}
-			/* if we have an encryption key for the file, we must insert it into the message */
+			/* if we have an encryption key for the file, we must insert it into the message and restore the correct filename */
 			if (msg->file_transfer_information->key != NULL) { 
 				/* parse the message body */
 				xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
@@ -213,6 +216,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a type="file" attribute */
 							xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
 							if(!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for : add a file-key children node */
+								xmlNodePtr fileInfoNodeChildren = cur->xmlChildrenNode; /* need to parse the children node to update the file-name one */
 								/* convert key to base64 */
 								int b64Size =  b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
 								char *keyb64 = (char *)malloc(b64Size+1);
@@ -224,6 +228,17 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 								/* add the node containing the key to the file-info node */
 								xmlNewTextChild(cur, NULL, (const xmlChar *)"file-key", (const xmlChar *)keyb64);
 								xmlFree(typeAttribute);
+
+								/* look for the file-name node and update its content */
+								while (fileInfoNodeChildren!=NULL) {
+									if (!xmlStrcmp(fileInfoNodeChildren->name, (const xmlChar *)"file-name")) { /* we found a the file-name node, update its content with the real filename */
+										/* update node content */
+										xmlNodeSetContent(fileInfoNodeChildren, (const xmlChar *)(msg->file_transfer_information->name));
+										break;
+									}
+									fileInfoNodeChildren = fileInfoNodeChildren->next;
+								}
+
 
 								/* dump the xml into msg->message */
 								xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength, "UTF-8", 0);
