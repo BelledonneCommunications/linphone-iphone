@@ -33,6 +33,7 @@
 @synthesize landscapeMode;
 @synthesize portraitMode;
 
+
 - (id)copy {
     UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
     copy.content = self.content;
@@ -43,6 +44,7 @@
     copy.fullscreen = self.fullscreen;
     copy.landscapeMode = self.landscapeMode;
     copy.portraitMode = self.portraitMode;
+    copy.darkBackground = self.darkBackground;
     return copy;
 }
 
@@ -56,7 +58,7 @@
                           tabBarEnabled:(BOOL) atabBarEnabled
                              fullscreen:(BOOL) afullscreen
                           landscapeMode:(BOOL) alandscapeMode
-                           portraitMode:(BOOL) aportraitMode {
+                           portraitMode:(BOOL) aportraitMode{
     self.name = aname;
     self.content = acontent;
     self.stateBar = astateBar;
@@ -66,6 +68,7 @@
     self.fullscreen = afullscreen;
     self.landscapeMode = alandscapeMode;
     self.portraitMode = aportraitMode;
+    self.darkBackground = false;
     
     return self;
 }

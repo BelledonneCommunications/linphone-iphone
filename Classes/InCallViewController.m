@@ -105,6 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                              fullscreen:false
                                                           landscapeMode:true
                                                            portraitMode:true];
+        compositeDescription.darkBackground = true;
     }
     return compositeDescription;
 }

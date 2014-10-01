@@ -35,6 +35,7 @@
 @property (assign) BOOL fullscreen;
 @property (assign) BOOL landscapeMode;
 @property (assign) BOOL portraitMode;
+@property (assign) BOOL darkBackground;
 
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription*) description;
