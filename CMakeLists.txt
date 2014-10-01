@@ -104,6 +104,9 @@ add_definitions(-DHAVE_CONFIG_H)
 
 add_subdirectory(coreapi)
 add_subdirectory(share)
+if(ENABLE_TOOLS)
+	add_subdirectory(tools)
+endif()
 
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/FindLinphone.cmake
