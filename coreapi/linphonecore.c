@@ -4999,15 +4999,15 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 }
 
 static MSVideoSizeDef supported_resolutions[]={
-#if !ANDROID & !TARGET_OS_IPHONE
+#if !ANDROID && !TARGET_OS_IPHONE
 	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
 #endif
-#if !ANDROID & !TARGET_OS_MAC /*limite to most common size because mac card cannot list supported resolutions*/
+#if !ANDROID && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
 	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
 	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
 #endif
 	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
-#if !ANDROID & !TARGET_OS_MAC
+#if !ANDROID && !TARGET_OS_MAC
 	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
 #endif
 #if !ANDROID && !TARGET_OS_IPHONE
@@ -5039,22 +5039,32 @@ const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
 static MSVideoSize video_size_get_by_name(const char *name){
 	MSVideoSizeDef *pdef=supported_resolutions;
 	MSVideoSize null_vsize={0,0};
+	MSVideoSize parsed;
 	if (!name) return null_vsize;
 	for(;pdef->name!=NULL;pdef++){
 		if (strcasecmp(name,pdef->name)==0){
 			return pdef->vsize;
 		}
 	}
+	if (sscanf(name,"%ix%i",&parsed.width,&parsed.height)==2){
+		return parsed;
+	}
 	ms_warning("Video resolution %s is not supported in linphone.",name);
 	return null_vsize;
 }
 
+/* warning: function not reentrant*/
 static const char *video_size_get_name(MSVideoSize vsize){
 	MSVideoSizeDef *pdef=supported_resolutions;
+	static char customsize[64]={0};
 	for(;pdef->name!=NULL;pdef++){
 		if (pdef->vsize.width==vsize.width && pdef->vsize.height==vsize.height){
 			return pdef->name;
 		}
+	}
+	if (vsize.width && vsize.height){
+		snprintf(customsize,sizeof(customsize)-1,"%ix%i",vsize.width,vsize.height);
+		return customsize;
 	}
 	return NULL;
 }
@@ -5104,6 +5114,7 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
  * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
 **/
 void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
+	MSVideoSize oldvsize;
 	if (vsize.width==0 && vsize.height==0){
 		/*special case to reset the forced preview size mode*/
 		lc->video_conf.preview_vsize=vsize;
@@ -5111,16 +5122,24 @@ void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 			lp_config_set_string(lc->config,"video","preview_size",NULL);
 		return;
 	}
-	if (video_size_supported(vsize)){
-		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
-		lc->video_conf.preview_vsize=vsize;
-		if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-			toggle_video_preview(lc,FALSE);
-			toggle_video_preview(lc,TRUE);
-		}
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+	oldvsize=lc->video_conf.preview_vsize;
+	lc->video_conf.preview_vsize=vsize;
+	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
+		toggle_video_preview(lc,FALSE);
+		toggle_video_preview(lc,TRUE);
 	}
+	if (linphone_core_ready(lc))
+		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+}
+
+/**
+ * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
+ * @see linphone_core_set_preview_video_size()
+ * @param lc the core
+ * @return a MSVideoSize
+**/
+MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
+	return lc->video_conf.preview_vsize;
 }
 
 /**
