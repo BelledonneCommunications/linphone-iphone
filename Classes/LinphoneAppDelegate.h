@@ -25,7 +25,6 @@
 
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     @private
-	UIWindow *window;
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL started;
 	int savedMaxCall;

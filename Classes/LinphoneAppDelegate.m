@@ -231,6 +231,7 @@
         if(!started) {
             started = TRUE;
             [self.window makeKeyAndVisible];
+            [RootViewManager setupWithPortrait:(PhoneMainView*)self.window.rootViewController];
             [[PhoneMainView instance] startUp];
         }
     }

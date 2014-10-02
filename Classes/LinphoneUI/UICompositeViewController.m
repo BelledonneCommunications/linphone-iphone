@@ -308,7 +308,7 @@
         firstResponder = [UICompositeViewController findFirstResponder:controller.view];
     }
 
-   // [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
     if(firstResponder) {
         [firstResponder resignFirstResponder];
         [firstResponder becomeFirstResponder];
@@ -343,11 +343,6 @@
         }
         if(remove) {
             [LinphoneLogger log:LinphoneLoggerLog format:@"Free cached view: %@", key];
-            UIViewController *vc = [viewControllerCache objectForKey:key];
-            if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
-                [vc viewWillUnload];
-            }
-            [vc viewDidUnload];
             [viewControllerCache removeObjectForKey:key];
         }
     }
@@ -506,7 +501,7 @@
         self.tabBarViewController = newTabBarViewController;
         
         // Update rotation
-        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:(UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation];
         if(currentOrientation != correctOrientation) {
             [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
             if( UIInterfaceOrientationIsLandscape(correctOrientation) ){

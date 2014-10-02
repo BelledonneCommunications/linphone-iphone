@@ -108,7 +108,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                  tabBar:/*@"UIMainBar"*/nil
                                                           tabBarEnabled:false /*to keep room for chat*/
                                                              fullscreen:false
-                                                          landscapeMode:[LinphoneManager runningOnIpad]
+                                                          landscapeMode:true
                                                            portraitMode:true];
     }
     return compositeDescription;

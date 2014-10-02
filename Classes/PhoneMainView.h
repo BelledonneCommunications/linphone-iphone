@@ -23,6 +23,7 @@
 #import "LinphoneManager.h"
 #import "UICompositeViewController.h"
 
+/* These imports are here so that we can import PhoneMainView.h without bothering to import all the rest of the view headers */
 #import "AboutViewController.h"
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
@@ -43,10 +44,23 @@
 #import "ConsoleViewController.h"
 #import "ImageViewController.h"
 
+
+@class PhoneMainView;
+
+@interface RootViewManager : NSObject
+
+@property (nonatomic, retain) PhoneMainView* portraitViewController;
+@property (nonatomic, retain) PhoneMainView* rotatingViewController;
+@property (nonatomic, retain) NSMutableArray* viewDescriptionStack;
+
++(RootViewManager*)instance;
++ (void)setupWithPortrait:(PhoneMainView*)portrait;
+- (PhoneMainView*)currentView;
+
+@end
+
 @interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
     @private
-    int loadCount;
-    NSMutableArray *viewStack;
     NSMutableArray *inhibitedEvents;
     NSTimer *batteryTimer;
 }
@@ -54,6 +68,7 @@
 @property (nonatomic, retain) IBOutlet UIView *statusBarBG;
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
 
+@property (nonatomic, retain) NSString* name;
 @property (readonly) UICompositeViewDescription *currentView;
 @property (readonly, retain) MPVolumeView* volumeView;
 
