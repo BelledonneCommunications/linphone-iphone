@@ -5135,6 +5135,7 @@ void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 /**
  * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
  * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
  * @param lc the core
  * @return a MSVideoSize
 **/
