@@ -22,7 +22,8 @@ liblinphonetester_la_SOURCES = tester.c \
 				stun_tester.c \
 				remote_provisioning_tester.c \
 				quality_reporting_tester.c \
-				transport_tester.c
+				transport_tester.c \
+				player_tester.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
