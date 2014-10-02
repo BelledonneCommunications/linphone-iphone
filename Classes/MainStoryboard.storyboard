@@ -8,7 +8,7 @@
         <!--Phone Main View-->
         <scene sceneID="qBS-cv-8Um">
             <objects>
-                <viewController id="eUP-Pz-8te" customClass="PhoneMainView" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhoneMainView" wantsFullScreenLayout="YES" id="eUP-Pz-8te" customClass="PhoneMainView" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6Tz-cV-9RM">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -32,12 +32,12 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qO2-xf-enZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <viewController nibName="UICompositeViewController" wantsFullScreenLayout="YES" id="emC-P9-oZj" userLabel="mainViewController" customClass="UICompositeViewController">
+                <viewController storyboardIdentifier="uicompositevc" nibName="UICompositeViewController" wantsFullScreenLayout="YES" id="emC-P9-oZj" userLabel="mainViewController" customClass="UICompositeViewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedStatusBarMetrics"/>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="880" y="302"/>
+            <point key="canvasLocation" x="342" y="73"/>
         </scene>
     </scenes>
     <resources>
