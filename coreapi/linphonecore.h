@@ -595,6 +595,22 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
 void linphone_player_close(LinphonePlayer *obj);
 
 /**
+ * @brief Create an independent media file player.
+ * This player support WAVE and MATROSKA formats.
+ * @param lc A LinphoneCore
+ * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
+ * @param video_out Video display. If NULL, the video display set in LinphoneCore will be used
+ * @return A pointer on the new instance. NULL if faild.
+ */
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out);
+
+/**
+ * @brief Destroy a file player
+ * @param obj File player to destroy
+ */
+LINPHONE_PUBLIC void file_player_destroy(LinphonePlayer *obj);
+
+/**
  * LinphoneCallState enum represents the different state a call can reach into.
  * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
  * @ingroup call_control
