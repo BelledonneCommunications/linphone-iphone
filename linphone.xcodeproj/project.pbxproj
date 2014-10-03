@@ -5563,6 +5563,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=objc-method-access";
 			};
 			name = Debug;
 		};
@@ -5631,6 +5632,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=objc-method-access";
 			};
 			name = DistributionAdhoc;
 		};
@@ -5856,6 +5858,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=objc-method-access";
 			};
 			name = Release;
 		};
@@ -5924,6 +5927,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=objc-method-access";
 			};
 			name = Distribution;
 		};
