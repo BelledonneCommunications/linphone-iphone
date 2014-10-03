@@ -5,7 +5,7 @@
 		<entry name="reg_proxy" overwrite="true">&lt;sip:sip.linphone.org:5223;transport=tls&gt;</entry>
 		<entry name="reg_route" overwrite="true">&lt;sip:sip.linphone.org:5223;transport=tls&gt;</entry>
 		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
-		<entry name="reg_expires" overwrite="true">604800</entry>
+		<entry name="reg_expires" overwrite="true">1314000</entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 		<entry name="publish" overwrite="true">0</entry>
 		<entry name="dial_escape_plus" overwrite="true">0</entry>
