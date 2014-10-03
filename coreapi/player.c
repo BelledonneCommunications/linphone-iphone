@@ -146,7 +146,7 @@ static int call_player_seek(LinphonePlayer *player, int time_ms){
 static void call_player_close(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return;
-	ms_filter_call_method_noarg(call->audiostream->av_player.player,MS_PLAYER_CLOSE);
+	audio_stream_close_remote_play(call->audiostream);
 	
 }
 
