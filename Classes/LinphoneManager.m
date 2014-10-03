@@ -1264,37 +1264,12 @@ static BOOL libStarted = FALSE;
 	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
 
-	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
-
-	libmsilbc_init();
-#if defined (HAVE_SILK)
-	libmssilk_init();
-#endif
-#ifdef HAVE_AMR
-	libmsamr_init(); //load amr plugin if present from the liblinphone sdk
-#endif
-#ifdef HAVE_X264
-	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
-#endif
-#ifdef HAVE_OPENH264
-	libmsopenh264_init(); //load openh264 plugin if present from the liblinphone sdk
-#endif
-
-#if HAVE_G729
-	libmsbcg729_init(); // load g729 plugin
-#endif
-
-	/*to make sure we don't loose debug trace*/
-	if ([self  lpConfigBoolForKey:@"debugenable_preference"]) {
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	}
 
 	// create linphone core
 	[self createLinphoneCore];
 	linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
-	//init audio session
+	// init audio session (just getting the instance will init)
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	BOOL bAudioInputAvailable= audioSession.inputAvailable;
 	NSError* err;
@@ -1330,6 +1305,32 @@ static BOOL libStarted = FALSE;
 
 	connectivity=none;
 
+    ms_init(); // Need to initialize mediastreamer2 before loading the plugins
+
+    libmsilbc_init();
+#if defined (HAVE_SILK)
+    libmssilk_init();
+#endif
+#ifdef HAVE_AMR
+    libmsamr_init(); //load amr plugin if present from the liblinphone sdk
+#endif
+#ifdef HAVE_X264
+    libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+#endif
+#ifdef HAVE_OPENH264
+    libmsopenh264_init(); //load openh264 plugin if present from the liblinphone sdk
+#endif
+
+#if HAVE_G729
+    libmsbcg729_init(); // load g729 plugin
+#endif
+
+    /*to make sure we don't loose debug trace*/
+    if ([self  lpConfigBoolForKey:@"debugenable_preference"]) {
+        linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+        ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+    }
+
 
 	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
 										 ,configDb
@@ -1346,7 +1347,7 @@ static BOOL libStarted = FALSE;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configuringStateChangedNotificationHandler:) name:kLinphoneConfiguringStateUpdate object:nil];
 
-	/*call iterate once immediately in order to initiate background connections with sip server, if any */
+	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning grab, if any */
 	linphone_core_iterate(theLinphoneCore);
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
