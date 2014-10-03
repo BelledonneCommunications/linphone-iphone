@@ -33,6 +33,7 @@
 @synthesize landscapeMode;
 @synthesize portraitMode;
 
+
 - (id)copy {
     UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
     copy.content = self.content;
@@ -43,6 +44,7 @@
     copy.fullscreen = self.fullscreen;
     copy.landscapeMode = self.landscapeMode;
     copy.portraitMode = self.portraitMode;
+    copy.darkBackground = self.darkBackground;
     return copy;
 }
 
@@ -56,7 +58,7 @@
                           tabBarEnabled:(BOOL) atabBarEnabled
                              fullscreen:(BOOL) afullscreen
                           landscapeMode:(BOOL) alandscapeMode
-                           portraitMode:(BOOL) aportraitMode {
+                           portraitMode:(BOOL) aportraitMode{
     self.name = aname;
     self.content = acontent;
     self.stateBar = astateBar;
@@ -66,6 +68,7 @@
     self.fullscreen = afullscreen;
     self.landscapeMode = alandscapeMode;
     self.portraitMode = aportraitMode;
+    self.darkBackground = false;
     
     return self;
 }
@@ -165,13 +168,31 @@
 
 #pragma mark - ViewController Functions
 
+- (void)updateViewsFramesAccordingToLaunchOrientation {
+    CGRect frame = [self.view frame]; // this view has the correct size at launch (1024/768 for iPad, 320*{568,480} for iPhone)
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    BOOL portrait = UIInterfaceOrientationIsPortrait(orientation);
+    CGRect oppositeFrame = frame;
+    oppositeFrame.size.height = frame.size.width;
+    oppositeFrame.size.width = frame.size.height;
+
+    // if we start in portrait, the landscape view must get the opposite height and width
+    if( portrait || [[UIDevice currentDevice].systemName floatValue] < 8 ){
+        Linphone_log(@"landscape get opposite: %@", NSStringFromCGSize(oppositeFrame.size));
+        [landscapeView setFrame:oppositeFrame];
+    } else {
+        // if we start in landscape, the landscape view has to get the current size,
+        // whereas the portrait has to get the opposite
+        Linphone_log(@"landscape get frame: %@ and portrait gets opposite: %@", NSStringFromCGSize(frame.size), NSStringFromCGSize(oppositeFrame.size));
+        [landscapeView setFrame:frame];
+        [portraitView setFrame:oppositeFrame];
+    }
+}
+
 - (void)viewDidLoad {
-    /* Force landscape view to match portrait view */
-    CGRect frame = [portraitView frame];
-    int height = frame.size.width;
-    frame.size.width = frame.size.height;
-    frame.size.height = height;
-    [landscapeView setFrame:frame];
+    /* Force landscape view to match portrait view, because portrait view inherits 
+       the device screen size at load */
+    [self updateViewsFramesAccordingToLaunchOrientation];
     [super viewDidLoad];
 }
 
@@ -215,6 +236,8 @@
     [self.stateBarViewController viewDidDisappear:animated];
 }
 
+#pragma mark - Rotation messages
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     currentOrientation = toInterfaceOrientation;
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -224,7 +247,7 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];  // Will invoke TPMultiLayout
     [self.contentViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self.tabBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self.stateBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -265,57 +288,26 @@
  */
 + (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     UIView *firstResponder = nil;
-    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
-        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"] ||
-           [NSStringFromClass(window.class) isEqualToString:@"_UIAlertOverlayWindow"] ) {
-            continue;
-        }
-        UIView *view = window;
-        UIViewController *controller = nil;
-        CGRect frame = [view frame];
-        if([window isKindOfClass:[UILinphoneWindow class]]) {
-            controller = window.rootViewController;
-            view = controller.view;
-        }
-        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
-        
-        NSTimeInterval animationDuration = 0.0;
-        if(animated) {
-            animationDuration = 0.3f;
-        }
-        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
-        if(animated) {
-            [UIView beginAnimations:nil context:nil];
-            [UIView setAnimationDuration:animationDuration];
-        }
-        switch (orientation) {
-            case UIInterfaceOrientationPortrait:
-                [view setTransform: CGAffineTransformMakeRotation(0)];
-                break;
-            case UIInterfaceOrientationPortraitUpsideDown:
-                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
-                break;
-            default:
-                break;
-        }
-        if([window isKindOfClass:[UILinphoneWindow class]]) {
-            [view setFrame:frame];
-        }
-        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
-        if(animated) {
-            [UIView commitAnimations];
-        }
-        [controller didRotateFromInterfaceOrientation:oldOrientation];
-        if(firstResponder == nil) {
-            firstResponder = [UICompositeViewController findFirstResponder:view];
-        }
+
+    UIViewController *controller = nil;
+
+    controller = [[UIApplication sharedApplication] keyWindow].rootViewController;
+    CGRect frame = [[UIScreen mainScreen] bounds];
+    UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
+
+    NSTimeInterval animationDuration = animated? 0.3f : 0.0;
+
+    [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
+    [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
+    [controller didRotateFromInterfaceOrientation:oldOrientation];
+    [UIView animateWithDuration:animationDuration animations:^{
+        [controller.view setFrame:frame];
+    }];
+
+    if(firstResponder == nil) {
+        firstResponder = [UICompositeViewController findFirstResponder:controller.view];
     }
+
     [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
     if(firstResponder) {
         [firstResponder resignFirstResponder];
@@ -351,11 +343,6 @@
         }
         if(remove) {
             [LinphoneLogger log:LinphoneLoggerLog format:@"Free cached view: %@", key];
-            UIViewController *vc = [viewControllerCache objectForKey:key];
-            if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
-                [vc viewWillUnload];
-            }
-            [vc viewDidUnload];
             [viewControllerCache removeObjectForKey:key];
         }
     }
@@ -499,8 +486,8 @@
 
         UIViewController *newContentViewController  = [self getCachedController:description.content];
         UIViewController *newStateBarViewController = [self getCachedController:description.stateBar];
-        UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
-        
+        UIViewController *newTabBarViewController   = [self getCachedController:description.tabBar];
+
         [UICompositeViewController removeSubView: oldContentViewController];
         if(oldTabBarViewController != nil && oldTabBarViewController != newTabBarViewController) {
             [UICompositeViewController removeSubView:oldTabBarViewController];
@@ -508,15 +495,20 @@
         if(oldStateBarViewController != nil && oldStateBarViewController != newStateBarViewController) {
             [UICompositeViewController removeSubView:oldStateBarViewController];
         }
-        
+
         self.stateBarViewController = newStateBarViewController;
         self.contentViewController = newContentViewController;
         self.tabBarViewController = newTabBarViewController;
         
         // Update rotation
-        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:(UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation];
         if(currentOrientation != correctOrientation) {
             [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+            if( UIInterfaceOrientationIsLandscape(correctOrientation) ){
+                [self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+                [self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+                [self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+            }
         } else {
             if(oldContentViewController != newContentViewController) {
                 UIInterfaceOrientation oldOrientation = self.contentViewController.interfaceOrientation;
@@ -536,7 +528,7 @@
                 [self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
                 [self.stateBarViewController didRotateFromInterfaceOrientation:oldOrientation];
             }
-        }
+       }
     } else {
        oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
     }
@@ -679,6 +671,10 @@
 
 - (UIViewController *) getCurrentViewController {
     return [[self.contentViewController retain] autorelease];
+}
+
+- (BOOL)currentViewSupportsLandscape {
+    return currentViewDescription ? currentViewDescription.landscapeMode : FALSE;
 }
 
 @end

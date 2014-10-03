@@ -1,5 +1,5 @@
 ############################################################################
-# builder-generic.mk 
+# builder-generic.mk
 # Copyright (C) 2009  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
- 
+
 host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
@@ -40,7 +40,7 @@ linphone_configure_controls = \
 				--disable-tools \
 				--enable-msg-storage=yes
 
-                              
+
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
 ifeq ($(enable_debug),yes)
@@ -82,19 +82,19 @@ else
                 SWITCHES += disable_tunnel
 endif
 
-ifeq ($(enable_gpl_third_parties),yes) 
+ifeq ($(enable_gpl_third_parties),yes)
 	SWITCHES+= enable_gpl_third_parties
-	
+
 	ifeq ($(enable_ffmpeg), yes)
-		linphone_configure_controls+= --enable-ffmpeg 
+		linphone_configure_controls+= --enable-ffmpeg
 		SWITCHES += enable_ffmpeg
 	else
-		linphone_configure_controls+= --disable-ffmpeg 
+		linphone_configure_controls+= --disable-ffmpeg
 		SWITCHES += disable_ffmpeg
 	endif
 
 else # !enable gpl
-	linphone_configure_controls+= --disable-ffmpeg 
+	linphone_configure_controls+= --disable-ffmpeg
 	SWITCHES += disable_gpl_third_parties disable_ffmpeg
 endif
 
@@ -107,12 +107,10 @@ $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
 	cd $(LINPHONE_BUILD_DIR) && rm -f *able_$*
 	touch $@
-	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 # end of switches parsing
 
-osip_dir=externals/osip
-eXosip_dir=externals/exosip
 speex_dir=externals/speex
 gsm_dir=externals/gsm
 
@@ -124,12 +122,12 @@ LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
 
 ifneq (,$(findstring arm,$(host)))
 	#SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
-	CFLAGS := $(CFLAGS) -marm 
+	CFLAGS := $(CFLAGS) -marm
 	SPEEX_CONFIGURE_OPTION := --disable-float-api --enable-arm5e-asm --enable-fixed-point
 endif
 
 ifneq (,$(findstring armv7,$(host)))
-	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm 
+	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm
 endif
 
 clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
@@ -143,7 +141,7 @@ veryclean: veryclean-linphone veryclean-msbcg729
 
 # list of the submodules to build, the order is important
 MS_MODULES      := msilbc libilbc msamr mssilk msx264 mswebrtc msopenh264
-SUBMODULES_LIST := polarssl 
+SUBMODULES_LIST := polarssl
 
 ifeq ($(enable_tunnel),yes)
 SUBMODULES_LIST += tunnel
@@ -178,16 +176,16 @@ $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 	${linphone_configure_controls}
-	
+
 
 #libphone only (asume dependencies are met)
-build-liblinphone: $(LINPHONE_BUILD_DIR)/Makefile 
+build-liblinphone: $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate &&  make  && make install
 
-clean-makefile-liblinphone:  
-	 cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile	 
-	 
-clean-liblinphone: 
+clean-makefile-liblinphone:
+	 cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
+
+clean-liblinphone:
 	 cd  $(LINPHONE_BUILD_DIR) && make clean
 
 #speex
@@ -219,6 +217,7 @@ clean-makefile-speex:
 
 build-libgsm:
 	cp -rf $(BUILDER_SRC_DIR)/$(gsm_dir) $(BUILDER_BUILD_DIR)/$(gsm_dir)
+	rm -rf $(BUILDER_BUILD_DIR)/$(gsm_dir)/.git
 	rm -f $(prefix)/lib/libgsm.a
 	rm -rf $(prefix)/include/gsm
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
@@ -230,7 +229,7 @@ clean-libgsm:
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
 	&& make clean
 
-veryclean-libgsm: 
+veryclean-libgsm:
 	 -cd $(BUILDER_BUILD_DIR)/$(gsm_dir) \
 	&& make uninstall
 
@@ -327,14 +326,22 @@ delivery-sdk: multi-arch
 	liblinphone-tutorials \
 	-x liblinphone-tutorials/hello-world/build\* \
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \
-	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3 
+	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3
+
+download-sdk:
+	cd $(BUILDER_SRC_DIR)/../
+	rm -fr liblinphone-iphone-sdk-latest*
+	wget http://linphone.org/snapshots/ios/liblinphone-iphone-sdk-latest.zip
+	unzip -o -q liblinphone-iphone-sdk-latest.zip
+	rm -fr ../../liblinphone-sdk/
+	mv liblinphone-sdk ../..
 
 .PHONY delivery:
 	cd $(BUILDER_SRC_DIR)/../../ \
 	&& zip  -r   $(BUILDER_SRC_DIR)/linphone-iphone.zip \
 	linphone-iphone  \
 	-x linphone-iphone/build\* \
-	--exclude linphone-iphone/.git\* --exclude \*.[od] --exclude \*.so.\* --exclude \*.a  --exclude linphone-iphone/liblinphone-sdk/apple-darwin/\* --exclude \*.lo 
+	--exclude linphone-iphone/.git\* --exclude \*.[od] --exclude \*.so.\* --exclude \*.a  --exclude linphone-iphone/liblinphone-sdk/apple-darwin/\* --exclude \*.lo
 
 ipa:
 	cd $(BUILDER_SRC_DIR)/../ \

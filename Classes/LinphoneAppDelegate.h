@@ -23,13 +23,8 @@
 
 #import "LinphoneCoreSettingsStore.h"
 
-@interface UILinphoneWindow : UIWindow
-
-@end
-
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     @private
-	UIWindow *window;
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL started;
 	int savedMaxCall;
@@ -40,6 +35,7 @@
 @property (assign) BOOL started;
 @property (nonatomic, retain) UIAlertView *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
+@property (nonatomic, strong) UIWindow* window;
 
 
 @end

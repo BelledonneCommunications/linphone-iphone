@@ -134,3 +134,16 @@ index e851562..c159f9e 100644
      movlt       r0,  #0
      bx          lr
  .endfunc
+diff --git a/configure b/configure
+index 250b0ac..af69d44 100755
+--- a/configure
++++ b/configure
+@@ -456,7 +456,7 @@ case $host_os in
+         ;;
+     darwin*)
+         SYS="MACOSX"
+-        CFLAGS="$CFLAGS -falign-loops=16"
++        CFLAGS="$CFLAGS"
+         libm="-lm"
+         if [ "$pic" = "no" ]; then
+             cc_check "" -mdynamic-no-pic && CFLAGS="$CFLAGS -mdynamic-no-pic"

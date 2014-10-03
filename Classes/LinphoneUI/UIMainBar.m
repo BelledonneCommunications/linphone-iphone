@@ -4,16 +4,16 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -46,7 +46,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [historyButton release];
     [contactsButton release];
     [dialerButton release];
@@ -56,7 +56,7 @@ static NSString * const kDisappearAnimation = @"disappear";
     [historyNotificationLabel release];
     [chatNotificationView release];
     [chatNotificationLabel release];
-    
+
     [super dealloc];
 }
 
@@ -65,17 +65,17 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(changeViewEvent:) 
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(changeViewEvent:)
                                                  name:kLinphoneMainViewChange
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(callUpdate:) 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(callUpdate:)
                                                  name:kLinphoneCallUpdate
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(textReceived:) 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textReceived:)
                                                  name:kLinphoneTextReceived
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -87,14 +87,14 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneMainViewChange
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCallUpdate
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneTextReceived
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -103,35 +103,35 @@ static NSString * const kDisappearAnimation = @"disappear";
 }
 
 - (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(applicationWillEnterForeground:) 
-                                                 name:UIApplicationWillEnterForegroundNotification 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    
+
     {
         UIButton *historyButtonLandscape = (UIButton*) [landscapeView viewWithTag:[historyButton tag]];
         // Set selected+over background: IB lack !
         [historyButton setBackgroundImage:[UIImage imageNamed:@"history_selected.png"]
                                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         // Set selected+over background: IB lack !
         [historyButtonLandscape setBackgroundImage:[UIImage imageNamed:@"history_selected_landscape.png"]
                                            forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         [LinphoneUtils buttonFixStatesForTabs:historyButton];
         [LinphoneUtils buttonFixStatesForTabs:historyButtonLandscape];
     }
-    
+
     {
         UIButton *contactsButtonLandscape = (UIButton*) [landscapeView viewWithTag:[contactsButton tag]];
         // Set selected+over background: IB lack !
         [contactsButton setBackgroundImage:[UIImage imageNamed:@"contacts_selected.png"]
                                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         // Set selected+over background: IB lack !
         [contactsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"contacts_selected_landscape.png"]
                                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         [LinphoneUtils buttonFixStatesForTabs:contactsButton];
         [LinphoneUtils buttonFixStatesForTabs:contactsButtonLandscape];
     }
@@ -140,11 +140,11 @@ static NSString * const kDisappearAnimation = @"disappear";
         // Set selected+over background: IB lack !
         [dialerButton setBackgroundImage:[UIImage imageNamed:@"dialer_selected.png"]
                                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         // Set selected+over background: IB lack !
         [dialerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"dialer_selected_landscape.png"]
                                            forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         [LinphoneUtils buttonFixStatesForTabs:dialerButton];
         [LinphoneUtils buttonFixStatesForTabs:dialerButtonLandscape];
     }
@@ -153,37 +153,37 @@ static NSString * const kDisappearAnimation = @"disappear";
         // Set selected+over background: IB lack !
         [settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_selected.png"]
                                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         // Set selected+over background: IB lack !
         [settingsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"settings_selected_landscape.png"]
                                        forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         [LinphoneUtils buttonFixStatesForTabs:settingsButton];
         [LinphoneUtils buttonFixStatesForTabs:settingsButtonLandscape];
     }
-    
+
     {
         UIButton *chatButtonLandscape = (UIButton*) [landscapeView viewWithTag:[chatButton tag]];
         // Set selected+over background: IB lack !
         [chatButton setBackgroundImage:[UIImage imageNamed:@"chat_selected.png"]
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         // Set selected+over background: IB lack !
         [chatButtonLandscape setBackgroundImage:[UIImage imageNamed:@"chat_selected_landscape.png"]
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         [LinphoneUtils buttonFixStatesForTabs:chatButton];
         [LinphoneUtils buttonFixStatesForTabs:chatButtonLandscape];
     }
-    
+
     [super viewDidLoad]; // Have to be after due to TPMultiLayoutViewController
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:UIApplicationWillEnterForegroundNotification 
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillEnterForegroundNotification
                                                   object:nil];
 }
 
@@ -203,8 +203,8 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 #pragma mark - Event Functions
 
-- (void)applicationWillEnterForeground:(NSNotification*)notif { 
-    // Force the animations 
+- (void)applicationWillEnterForeground:(NSNotification*)notif {
+    // Force the animations
     [[self.view layer] removeAllAnimations];
     [historyNotificationView.layer setTransform:CATransform3DIdentity];
     [chatNotificationView.layer setTransform:CATransform3DIdentity];
@@ -219,7 +219,7 @@ static NSString * const kDisappearAnimation = @"disappear";
     [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:TRUE];
 }
 
-- (void)changeViewEvent:(NSNotification*)notif {  
+- (void)changeViewEvent:(NSNotification*)notif {
     //UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
     //if(view != nil)
     [self updateView:[[PhoneMainView instance] firstView]];
@@ -246,7 +246,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 - (void)update:(BOOL)appear{
     [self updateView:[[PhoneMainView instance] firstView]];
@@ -354,14 +354,14 @@ static NSString * const kDisappearAnimation = @"disappear";
     bounce.autoreverses = TRUE;
     bounce.repeatCount = HUGE_VALF;
     [target.layer addAnimation:bounce forKey:animationID];
-    
+
 }
 
 - (void)stopBounceAnimation:(NSString *)animationID target:(UIView *)target {
     [target.layer removeAnimationForKey:animationID];
 }
-         
-- (void)updateView:(UICompositeViewDescription*) view {  
+
+- (void)updateView:(UICompositeViewDescription*) view {
     // Update buttons
     if([view equal:[HistoryViewController compositeViewDescription]]) {
         historyButton.selected = TRUE;
@@ -401,7 +401,8 @@ static NSString * const kDisappearAnimation = @"disappear";
     [ContactSelection setSelectionMode:ContactSelectionModeNone];
     [ContactSelection setAddAddress:nil];
     [ContactSelection setSipFilter:nil];
-    [ContactSelection setEmailFilter:FALSE];
+    [ContactSelection enableEmailFilter:FALSE];
+    [ContactSelection setNameOrEmailFilter:nil];
     [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
 
@@ -422,7 +423,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 - (NSDictionary*)attributesForView:(UIView*)view {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-    
+
     [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
     [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
     if([view isKindOfClass:[UIButton class]]) {
@@ -430,7 +431,7 @@ static NSString * const kDisappearAnimation = @"disappear";
         [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
     }
     [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
-    
+
     return attributes;
 }
 

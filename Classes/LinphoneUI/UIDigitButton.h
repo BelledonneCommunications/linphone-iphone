@@ -22,7 +22,7 @@
 #import "UILongTouchButton.h"
 
 
-@interface UIDigitButton : UILongTouchButton<UILongTouchButtonDelegate> {
+@interface UIDigitButton : UILongTouchButton {
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;

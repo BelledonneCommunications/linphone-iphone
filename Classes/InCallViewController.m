@@ -105,6 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                              fullscreen:false
                                                           landscapeMode:true
                                                            portraitMode:true];
+        compositeDescription.darkBackground = true;
     }
     return compositeDescription;
 }
@@ -129,9 +130,6 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillDisappear:animated];
-    }
     
     if( hiddenVolume ) {
         [[PhoneMainView instance] setVolumeHidden:FALSE];
@@ -146,10 +144,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillAppear:animated];
-    }   
-    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdateEvent:) 
@@ -160,11 +154,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidAppear:animated];
-    }
-    
+
     // Set windows (warn memory leaks)
     linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
     linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
@@ -179,11 +169,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidDisappear:animated];
-    }
-    
+
     [[PhoneMainView instance] fullScreen:false];
     // Disable tap
     [singleFingerTap setEnabled:FALSE];

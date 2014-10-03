@@ -630,7 +630,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (NSSet*)findHiddenKeys {
     if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't filter settings: Linphone core not read"];
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't filter settings: Linphone core not ready"];
     }
     LinphoneManager* lm = [LinphoneManager instance];
     NSMutableSet *hiddenKeys = [NSMutableSet set];

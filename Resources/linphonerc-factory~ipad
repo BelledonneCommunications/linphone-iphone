@@ -26,11 +26,11 @@ video_jitt_comp=60
 nortp_timeout=30
 
 [sound]
-playback_dev_id=AU: Audio Unit Receiver
 ringer_dev_id=AQ: Audio Queue Device
-capture_dev_id=AU: Audio Unit Receiver
 echocancellation=0
 dtmf_player_amp=0.007
+eq_location=mic
+eq_gains=50:2:50 100:2:50
 
 [misc]
 history_max_size=30
@@ -42,7 +42,7 @@ domain=sip.linphone.org
 proxy=sip.linphone.org:5223
 password_length=6
 username_length=4
-expires=604800
+expires=1314000
 push_notification=1
 transport=tls
 sharing_server=https://www.linphone.org:444/upload.php

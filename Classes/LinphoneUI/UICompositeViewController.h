@@ -35,6 +35,7 @@
 @property (assign) BOOL fullscreen;
 @property (assign) BOOL landscapeMode;
 @property (assign) BOOL portraitMode;
+@property (assign) BOOL darkBackground;
 
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription*) description;
@@ -71,6 +72,7 @@
 - (void)setFullScreen:(BOOL) enabled;
 - (void)setStateBarHidden:(BOOL) hidden;
 - (void)setToolBarHidden:(BOOL) hidden;
+- (BOOL)currentViewSupportsLandscape;
 - (UIViewController *)getCachedController:(NSString*)name;
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;

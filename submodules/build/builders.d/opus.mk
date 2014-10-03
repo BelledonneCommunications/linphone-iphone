@@ -24,10 +24,10 @@ enable_opus?=yes
 
 libopus_configure_options=--disable-extra-programs --disable-doc 
 ifneq (,$(findstring armv7,$(host)))
-        libopus_configure_options+= --enable-fixed-point --disable-asm
+        libopus_configure_options+= --enable-fixed-point
 endif
 ifneq (,$(findstring armv7s,$(host)))
-        libopus_configure_options+= --enable-fixed-point --disable-asm
+        libopus_configure_options+= --enable-fixed-point
 endif
 
 $(BUILDER_SRC_DIR)/$(opus_dir)/configure:

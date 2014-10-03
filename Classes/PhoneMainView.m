@@ -25,7 +25,83 @@
 #import "Utils.h"
 #import "DTActionSheet.h"
 
-static PhoneMainView* phoneMainViewInstance=nil;
+
+static RootViewManager* rootViewManagerInstance = nil;
+
+@implementation RootViewManager {
+    PhoneMainView* currentViewController;
+}
+
++ (void)setupWithPortrait:(PhoneMainView*)portrait {
+    assert(rootViewManagerInstance == nil);
+    rootViewManagerInstance = [[RootViewManager alloc]initWithPortrait:portrait];
+}
+
+- (instancetype)initWithPortrait:(PhoneMainView*)portrait {
+    self = [super init];
+    if ( self ){
+        self.portraitViewController = portrait;
+        self.rotatingViewController = [[[PhoneMainView alloc] init] autorelease];
+
+        self.portraitViewController.name = @"Portrait";
+        self.rotatingViewController.name = @"Rotating";
+
+        currentViewController = portrait;
+        self.viewDescriptionStack = [NSMutableArray array];
+
+    }
+    return self;
+}
+
++ (RootViewManager *)instance {
+    if( !rootViewManagerInstance ){
+        @throw [NSException exceptionWithName:@"RootViewManager" reason:@"nil instance" userInfo:nil];
+    }
+    return rootViewManagerInstance;
+}
+
+- (PhoneMainView*)currentView {
+    return currentViewController;
+}
+
+- (PhoneMainView*)setViewControllerForDescription:(UICompositeViewDescription*)description {
+    PhoneMainView* newMainView = description.landscapeMode ? self.rotatingViewController : self.portraitViewController;
+
+    if( [LinphoneManager runningOnIpad] ) return currentViewController;
+
+    if( newMainView != currentViewController )
+    {
+        PhoneMainView* previousMainView = currentViewController;
+        UIInterfaceOrientation nextViewOrientation = newMainView.interfaceOrientation;
+        UIInterfaceOrientation previousOrientation = currentViewController.interfaceOrientation;
+
+        Linphone_err(@"Changing rootViewController: %@ -> %@", currentViewController.name, newMainView.name);
+        currentViewController = newMainView;
+        LinphoneAppDelegate* delegate = (LinphoneAppDelegate*)[UIApplication sharedApplication].delegate;
+
+        [UIView transitionWithView:delegate.window
+                          duration:0.3
+                           options:UIViewAnimationOptionTransitionFlipFromLeft|UIViewAnimationOptionAllowAnimatedContent
+                        animations:^{
+                            delegate.window.rootViewController = newMainView;
+                            // when going to landscape-enabled view, we have to get the current portrait frame and orientation,
+                            // because it could still have landscape-based size
+                            if( nextViewOrientation != previousOrientation && newMainView == self.rotatingViewController ){
+                                newMainView.view.frame = previousMainView.view.frame;
+                                [newMainView.mainViewController.view setFrame:previousMainView.mainViewController.view.frame];
+                                [newMainView willRotateToInterfaceOrientation:previousOrientation duration:0.3];
+                                [newMainView willAnimateRotationToInterfaceOrientation:previousOrientation duration:0.3];
+                                [newMainView didRotateFromInterfaceOrientation:nextViewOrientation];
+                            }
+
+                        }
+                        completion:^(BOOL finished) {
+                        }];
+    }
+    return currentViewController;
+}
+
+@end
 
 @implementation PhoneMainView
 
@@ -38,11 +114,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - Lifecycle Functions
 
 - (void)initPhoneMainView {
-    assert (!phoneMainViewInstance);
-    phoneMainViewInstance = self;
     currentView = nil;
-    viewStack = [[NSMutableArray alloc] init];
-    loadCount = 0; // For avoiding IOS 4 bug
     inhibitedEvents = [[NSMutableArray alloc] init];
 }
 
@@ -75,7 +147,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     [mainViewController release];
     [inhibitedEvents release];
-    [viewStack release];
 
     [super dealloc];
 }
@@ -84,26 +155,21 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
-    // Avoid IOS 4 bug
-    if(loadCount++ > 0)
-        return;
-    
     [super viewDidLoad];
 
     volumeView = [[MPVolumeView alloc] initWithFrame: CGRectMake(-100,-100,16,16)];
     volumeView.showsRouteButton = false;
     volumeView.userInteractionEnabled = false;
 
-    [self.view addSubview: mainViewController.view];
+    [self.view addSubview:mainViewController.view];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [mainViewController viewWillAppear:animated];
-    }   
-    
+    }
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
@@ -132,7 +198,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [mainViewController viewWillDisappear:animated];
     }
@@ -174,9 +240,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-
-    // Avoid IOS 4 bug
-    loadCount--;
 }
 
 - (void)setVolumeHidden:(BOOL)hidden {
@@ -193,14 +256,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(interfaceOrientation == self.interfaceOrientation)
-        return YES;
-    return NO;
-}
 
 - (NSUInteger)supportedInterfaceOrientations {
-    return 0;
+    if( [LinphoneManager runningOnIpad ] || [mainViewController currentViewSupportsLandscape] )
+        return UIInterfaceOrientationMaskAll;
+    else {
+        return UIInterfaceOrientationMaskPortrait;
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -225,7 +287,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    [mainViewController clearCache:viewStack];
+    [mainViewController clearCache:[RootViewManager instance].viewDescriptionStack];
 }
 
 #pragma mark - Event Functions
@@ -449,7 +511,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 + (PhoneMainView *) instance {
-    return phoneMainViewInstance;
+    return [[RootViewManager instance] currentView];
 }
 
 - (void) showTabBar:(BOOL)show {
@@ -460,18 +522,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setStateBarHidden:!show];
 }
 
-+ (BOOL)isDarkBackgroundView:(UICompositeViewDescription*)view {
-    return ( [view equal:[DialerViewController compositeViewDescription]]       ||
-             [view equal:[IncomingCallViewController compositeViewDescription]] ||
-             [view equal:[InCallViewController compositeViewDescription]]       ||
-             [view equal:[WizardViewController compositeViewDescription]]);
-}
-
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
     // In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
     // status bar style for each transition to/from these views
-    BOOL toLightStatus   = (to_view != NULL) && ![PhoneMainView isDarkBackgroundView:to_view];
+    BOOL toLightStatus   = (to_view != NULL) && ![to_view darkBackground];
     if( !toLightStatus ) {
         // black bg: white text on black background
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -502,7 +557,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription*)view push:(BOOL)push {
     BOOL force = push;
-    if(!push) {
+    NSMutableArray* viewStack = [RootViewManager instance].viewDescriptionStack;
+    if(!push ) {
         force = [viewStack count] > 1;
         [viewStack removeAllObjects];
     }
@@ -512,27 +568,32 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition force:(BOOL)force {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Change current view to %@", [view name]];
-    
-    if(force || ![view equal: currentView]) {
+
+    PhoneMainView* vc = [[RootViewManager instance] setViewControllerForDescription:view];
+
+    if(force || ![view equal:vc.currentView] || vc != self) {
         if(transition == nil)
-            transition = [PhoneMainView getTransition:currentView new:view];
+            transition = [PhoneMainView getTransition:vc.currentView new:view];
         if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
-            [mainViewController setViewTransition:transition];
+            [vc.mainViewController setViewTransition:transition];
         } else {
-            [mainViewController setViewTransition:nil];
+            [vc.mainViewController setViewTransition:nil];
         }
-        [self updateStatusBar:view];
-        [mainViewController changeView:view];
-        currentView = view;
+        [vc updateStatusBar:view];
+        [vc.mainViewController changeView:view];
+        vc->currentView = view;
     }
+
+    //[[RootViewManager instance] setViewControllerForDescription:view];
     
-    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
+    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:vc->currentView forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
     
-    return [mainViewController getCurrentViewController];
+    return [vc->mainViewController getCurrentViewController];
 }
 
 - (void)popToView:(UICompositeViewDescription*)view {
+    NSMutableArray* viewStack = [RootViewManager instance].viewDescriptionStack;
     while([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
         [viewStack removeLastObject];
     }
@@ -541,7 +602,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (UICompositeViewDescription *)firstView {
     UICompositeViewDescription *view = nil;
-    if([viewStack count]) {
+    NSArray* viewStack = [RootViewManager instance].viewDescriptionStack;
+   if([viewStack count]) {
         view = [viewStack objectAtIndex:0];
     }
     return view;
@@ -549,7 +611,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
-    if([viewStack count] > 1) {
+    NSMutableArray* viewStack = [RootViewManager instance].viewDescriptionStack;
+   if([viewStack count] > 1) {
         [viewStack removeLastObject];
         [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition] force:TRUE];
         return [mainViewController getCurrentViewController];

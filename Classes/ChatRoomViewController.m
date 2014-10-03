@@ -333,7 +333,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         [LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
     }
 
-    [tableController addChatEntry:linphone_chat_message_ref(msg)];
+    [tableController addChatEntry:msg];
     [tableController scrollToBottom:true];
     return TRUE;
 }
@@ -790,12 +790,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
 
-    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+    if(([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
+       UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         int width = endFrame.size.height;
         endFrame.size.height = endFrame.size.width;
         endFrame.size.width = width;
     }
-    
+
     // Resize chat view
     {
         CGRect viewFrame = [[self view] frame];
