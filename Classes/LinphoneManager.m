@@ -670,7 +670,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 					data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
 
 					data->notification.repeatInterval = 0;
-					data->notification.category = @"incoming_call";
+                    if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+                        data->notification.category = @"incoming_call";
+                    }
 					data->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
 					data->notification.alertAction = NSLocalizedString(@"Answer", nil);
 					data->notification.soundName = @"shortring.caf";
@@ -895,7 +897,9 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
 			notif.repeatInterval = 0;
-			notif.category       = @"incoming_msg";
+            if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+                notif.category       = @"incoming_msg";
+            }
 			notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction    = NSLocalizedString(@"Show", nil);
 			notif.soundName      = @"msg.caf";
