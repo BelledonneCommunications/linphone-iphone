@@ -111,8 +111,6 @@ $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 
 # end of switches parsing
 
-osip_dir=externals/osip
-eXosip_dir=externals/exosip
 speex_dir=externals/speex
 gsm_dir=externals/gsm
 
