@@ -425,26 +425,29 @@
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
-    LinphoneCore* lc = [LinphoneManager getLc];
-    [LinphoneLogger log:LinphoneLoggerLog format:@"%@", NSStringFromSelector(_cmd)];
-    if( [notification.category isEqualToString:@"incoming_call"]) {
-        if( [identifier isEqualToString:@"answer"] ){
-            // use the standard handler
-            [self application:application didReceiveLocalNotification:notification];
-        } else if( [identifier isEqualToString:@"decline"] ){
-            LinphoneCall* call = linphone_core_get_current_call(lc);
-            if( call ) linphone_core_decline_call(lc, call, LinphoneReasonDeclined);
-        }
-    } else if( [notification.category isEqualToString:@"incoming_msg"] ){
-        if( [identifier isEqualToString:@"reply"] ){
-            // use the standard handler
-            [self application:application didReceiveLocalNotification:notification];
-        } else if( [identifier isEqualToString:@"mark_read"] ){
-            NSString* from = [notification.userInfo objectForKey:@"from"];
-            LinphoneChatRoom* room = linphone_core_get_or_create_chat_room(lc, [from UTF8String]);
-            if( room ){
-                linphone_chat_room_mark_as_read(room);
-                [[PhoneMainView instance] updateApplicationBadgeNumber];
+    if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+
+        LinphoneCore* lc = [LinphoneManager getLc];
+        [LinphoneLogger log:LinphoneLoggerLog format:@"%@", NSStringFromSelector(_cmd)];
+        if( [notification.category isEqualToString:@"incoming_call"]) {
+            if( [identifier isEqualToString:@"answer"] ){
+                // use the standard handler
+                [self application:application didReceiveLocalNotification:notification];
+            } else if( [identifier isEqualToString:@"decline"] ){
+                LinphoneCall* call = linphone_core_get_current_call(lc);
+                if( call ) linphone_core_decline_call(lc, call, LinphoneReasonDeclined);
+            }
+        } else if( [notification.category isEqualToString:@"incoming_msg"] ){
+            if( [identifier isEqualToString:@"reply"] ){
+                // use the standard handler
+                [self application:application didReceiveLocalNotification:notification];
+            } else if( [identifier isEqualToString:@"mark_read"] ){
+                NSString* from = [notification.userInfo objectForKey:@"from"];
+                LinphoneChatRoom* room = linphone_core_get_or_create_chat_room(lc, [from UTF8String]);
+                if( room ){
+                    linphone_chat_room_mark_as_read(room);
+                    [[PhoneMainView instance] updateApplicationBadgeNumber];
+                }
             }
         }
     }
