@@ -608,7 +608,13 @@ LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *l
  * @brief Destroy a file player
  * @param obj File player to destroy
  */
-LINPHONE_PUBLIC void file_player_destroy(LinphonePlayer *obj);
+LINPHONE_PUBLIC void linphone_file_player_destroy(LinphonePlayer *obj);
+
+/**
+ * @brief Check whether Matroksa format is supported by the player
+ * @return TRUE if it is supported
+ */
+LINPHONE_PUBLIC bool_t linphone_file_player_matroska_supported(void);
 
 /**
  * LinphoneCallState enum represents the different state a call can reach into.

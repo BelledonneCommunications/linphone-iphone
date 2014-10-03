@@ -13,10 +13,9 @@ static void eof_callback(LinphonePlayer *player, void *user_data) {
 	*eof = TRUE;
 }
 
-static void playing_test(void) {
+static void play_file(const char *filename, bool_t unsupported_format) {
 	LinphoneCoreManager *lc_manager;
 	LinphonePlayer *player;
-	const char *filename = "sounds/hello_opus_h264.mkv";
 	int res, time = 0;
 	bool_t eof = FALSE;
 
@@ -28,7 +27,12 @@ static void playing_test(void) {
 	CU_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
-	CU_ASSERT_EQUAL((res = linphone_player_open(player, filename, eof_callback, &eof)), 0);
+	res = linphone_player_open(player, filename, eof_callback, &eof);
+	if(unsupported_format) {
+		CU_ASSERT_EQUAL(res, -1);
+	} else {
+		CU_ASSERT_EQUAL(res, 0);
+	}
 	if(res == -1) goto fail;
 
 	CU_ASSERT_EQUAL((res = linphone_player_start(player)), 0);
@@ -39,8 +43,12 @@ static void playing_test(void) {
 	linphone_player_close(player);
 
 	fail:
-	if(player) file_player_destroy(player);
+	if(player) linphone_file_player_destroy(player);
 	if(lc_manager) linphone_core_manager_destroy(lc_manager);
+}
+
+static void playing_test(void) {
+	play_file("sounds/hello_opus_h264.mkv", !linphone_file_player_matroska_supported());
 }
 
 test_t player_tests[] = {

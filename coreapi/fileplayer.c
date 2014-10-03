@@ -25,9 +25,13 @@ LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *sn
 	return obj;
 }
 
-void file_player_destroy(LinphonePlayer *obj) {
+void linphone_file_player_destroy(LinphonePlayer *obj) {
 	ms_file_player_free((MSFilePlayer *)obj->impl);
 	ms_free(obj);
+}
+
+bool_t linphone_file_player_matroska_supported(void) {
+	return ms_file_player_matroska_supported();
 }
 
 static int file_player_open(LinphonePlayer *obj, const char *filename) {
