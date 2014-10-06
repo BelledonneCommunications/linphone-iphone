@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
 	obj->user_data=user_data;
 	obj->cb=cb;
-	return obj->open(obj->impl,filename);
+	return obj->open(obj,filename);
 }
 
 /**
@@ -40,7 +40,7 @@ int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlay
  * @return 0 if successful, -1 otherwise
 **/
 int linphone_player_start(LinphonePlayer *obj){
-	return obj->start(obj->impl);
+	return obj->start(obj);
 }
 
 /**
@@ -49,7 +49,7 @@ int linphone_player_start(LinphonePlayer *obj){
  * @return 0 if successful, -1 otherwise
 **/
 int linphone_player_pause(LinphonePlayer *obj){
-	return obj->pause(obj->impl);
+	return obj->pause(obj);
 }
 
 /**
@@ -59,7 +59,7 @@ int linphone_player_pause(LinphonePlayer *obj){
  * @return 0 if successful, -1 otherwise
 **/
 int linphone_player_seek(LinphonePlayer *obj, int time_ms){
-	return obj->seek(obj->impl,time_ms);
+	return obj->seek(obj,time_ms);
 }
 
 /**
@@ -68,7 +68,7 @@ int linphone_player_seek(LinphonePlayer *obj, int time_ms){
  * @return the state of the player within MSPlayerClosed, MSPlayerStarted, MSPlayerPaused.
 **/
 MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
-	return obj->get_state(obj->impl);
+	return obj->get_state(obj);
 }
 
 /**
@@ -76,7 +76,7 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
  * @param obj the player.
 **/
 void linphone_player_close(LinphonePlayer *obj){
-	return obj->close(obj->impl);
+	return obj->close(obj);
 }
 
 
@@ -104,7 +104,7 @@ static bool_t call_player_check_state(LinphonePlayer *player, bool_t check_playe
 
 static void on_eof(void *user_data, MSFilter *f, unsigned int event_id, void *arg){
 	LinphonePlayer *player=(LinphonePlayer *)user_data;
-	if (player->cb) player->cb(player,user_data);
+	if (player->cb) player->cb(player,player->user_data);
 }
 
 static int call_player_open(LinphonePlayer* player, const char *filename){
@@ -146,7 +146,7 @@ static int call_player_seek(LinphonePlayer *player, int time_ms){
 static void call_player_close(LinphonePlayer *player){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	if (!call_player_check_state(player,TRUE)) return;
-	ms_filter_call_method_noarg(call->audiostream->av_player.player,MS_PLAYER_CLOSE);
+	audio_stream_close_remote_play(call->audiostream);
 	
 }
 

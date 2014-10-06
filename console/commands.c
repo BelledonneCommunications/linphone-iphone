@@ -1601,7 +1601,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 	 */
 	if ( enable_register==TRUE )
 	{
-		long int expires=0;
+		int expires=0;
 		while (1)
 		{
 			char *input=linphonec_readline("Specify register expiration time"
@@ -1613,13 +1613,8 @@ linphonec_proxy_add(LinphoneCore *lc)
 				return;
 			}
 
-			expires=strtol(input, (char **)NULL, 10);
-			if ( expires == LONG_MIN || expires == LONG_MAX )
-			{
-				linphonec_out("Invalid value: %s\n", strerror(errno));
-				free(input);
-				continue;
-			}
+			expires=atoi(input);
+			if (expires==0) expires=600;
 
 			linphone_proxy_config_set_expires(cfg, expires);
 			linphonec_out("Expiration: %d seconds\n", linphone_proxy_config_get_expires (cfg));

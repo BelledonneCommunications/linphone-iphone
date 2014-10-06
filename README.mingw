@@ -60,6 +60,8 @@ General rules for compilation
 - all other commands (configure, autogen.sh, make) must be done within the mingw shell (msys).
 In both msys and msys-git windows, change into the directory you created for sources:
 cd /c/sources
+- make sure pkg-config works by adding this env variable to your terminal:
+   export PKG_CONFIG_PATH=/usr/lib/pkgconfig
 
 Building belle-sip
 ******************

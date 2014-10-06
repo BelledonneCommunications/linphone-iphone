@@ -403,7 +403,7 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	gtk_widget_hide(conf);
 
 	button=linphone_gtk_get_widget(call_view,"terminate_call");
-	image=create_pixmap("stopcall-small.png");
+	image=create_pixmap (linphone_gtk_get_ui_config("stop_call_icon","stopcall-small.png"));
 	gtk_button_set_label(GTK_BUTTON(button),_("Hang up"));
 	gtk_button_set_image(GTK_BUTTON(button),image);
 	gtk_widget_show(image);
@@ -687,6 +687,14 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 	}
 }
 
+char *linphone_gtk_address(const LinphoneAddress *addr){
+	const char *displayname=linphone_address_get_display_name(addr);
+	if (!displayname) return linphone_address_as_string_uri_only(addr);
+	return ms_strdup(displayname);
+}
+
+
+
 void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
@@ -696,6 +704,8 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	gboolean in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
+	linphone_gtk_in_call_show_video(call);
+	
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
@@ -736,7 +746,7 @@ void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Paused call</b>"));
-
+	linphone_gtk_in_call_show_video(call);
 	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PAUSE,TRUE);
 }
 
@@ -760,13 +770,15 @@ static gboolean in_call_view_terminated(LinphoneCall *call){
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status;
+	GtkWidget *video_window;
 	gboolean in_conf;
 	guint taskid;
 	if(callview==NULL) return;
+	video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 	status=linphone_gtk_get_widget(callview,"in_call_status");
 	taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
-
+	if (video_window) gtk_widget_destroy(video_window);
 	if (status==NULL) return;
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));

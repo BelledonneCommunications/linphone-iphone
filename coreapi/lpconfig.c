@@ -40,7 +40,11 @@
 #endif /*_WIN32_WCE*/
 
 #ifdef _MSC_VER
+#ifdef WINAPI_FAMILY_PHONE_APP
+#include <stdlib.h>
+#else
 #include <Shlwapi.h>
+#endif
 #else
 #include <libgen.h>
 #endif
@@ -666,9 +670,18 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 
 static char *_lp_config_dirname(char *path) {
 #ifdef _MSC_VER
+#ifdef WINAPI_FAMILY_PHONE_APP
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	char fname[_MAX_FNAME];
+	char ext[_MAX_EXT];
+	_splitpath(path, drive, dir, fname, ext);
+	return ms_strdup_printf("%s%s", drive, dir);
+#else
 	char *dir = ms_strdup(path);
 	PathRemoveFileSpec(dir);
 	return dir;
+#endif
 #else
 	char *tmp = ms_strdup(path);
 	char *dir = ms_strdup(dirname(tmp));

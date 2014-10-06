@@ -1662,6 +1662,19 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 	}
 }
 
+void set_mic_gain_db(AudioStream *st, float gain){
+	if (st->volsend){
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply mic gain: gain control wasn't activated.");
+}
+
+void set_playback_gain_db(AudioStream *st, float gain){
+	if (st->volrecv){
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply playback gain: gain control wasn't activated.");
+}
+
+/*This function is not static because used internally in linphone-daemon project*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
 	float mic_gain=lc->sound_conf.soft_mic_lev;
 	float thres = 0;
@@ -1678,13 +1691,13 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	int spk_agc;
 
 	if (!muted)
-		linphone_core_set_mic_gain_db (lc, mic_gain);
+		set_mic_gain_db(st,mic_gain);
 	else
 		audio_stream_set_mic_gain(st,0);
 
 	recv_gain = lc->sound_conf.soft_play_lev;
 	if (recv_gain != 0) {
-		linphone_core_set_playback_gain_db (lc,recv_gain);
+		set_playback_gain_db(st,recv_gain);
 	}
 
 	if (st->volsend){
@@ -1720,10 +1733,10 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	parametrize_equalizer(lc,st);
 }
 
-static void post_configure_audio_streams(LinphoneCall*call){
+static void post_configure_audio_streams(LinphoneCall *call, bool_t muted){
 	AudioStream *st=call->audiostream;
 	LinphoneCore *lc=call->core;
-	_post_configure_audio_stream(st,lc,call->audio_muted);
+	_post_configure_audio_stream(st,lc,muted);
 	if (linphone_core_dtmf_received_has_listener(lc)){
 		audio_stream_play_received_dtmfs(call->audiostream,FALSE);
 	}
@@ -1996,10 +2009,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				captcard,
 				use_ec
 				);
-			post_configure_audio_streams(call);
-			if (muted && !send_ringbacktone){
-				audio_stream_set_mic_gain(call->audiostream,0);
-			}
+			post_configure_audio_streams(call, muted && !send_ringbacktone);
 			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
 				int pause_time=500;
 				ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
@@ -2220,7 +2230,7 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
 static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDescription *local_st_desc, SalStreamDescription *old_stream, SalStreamDescription *new_stream, MediaStream *ms){
 	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
 	if (crypto_idx >= 0) {
-		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED)
+		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
 			media_stream_set_srtp_send_key(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
 			media_stream_set_srtp_recv_key(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
@@ -2634,10 +2644,10 @@ uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCa
 	if (!stats || !call)
 		return 0;
 	memset(&rtp_stats, 0, sizeof(rtp_stats));
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL)
 		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
 #ifdef VIDEO_ENABLED
-	else
+	else if (call->videostream != NULL)
 		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
 #endif
 	return rtp_stats.outoftime;

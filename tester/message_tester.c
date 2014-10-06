@@ -281,7 +281,7 @@ static void text_message_with_privacy(void) {
 	/* make sure lime is not enabled */
 	linphone_core_set_lime(marie->lc, 0);
 	linphone_core_set_lime(pauline->lc, 0);
-
+	
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);

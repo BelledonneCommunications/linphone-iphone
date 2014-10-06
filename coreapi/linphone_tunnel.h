@@ -50,11 +50,29 @@ extern "C"
 
 typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
 
+/**
+ * Enum describing the tunnel modes.
+**/
 typedef enum _LinphoneTunnelMode {
-	LinphoneTunnelModeDisable,
-	LinphoneTunnelModeEnable,
-	LinphoneTunnelModeAuto
+	LinphoneTunnelModeDisable,	/**< The tunnel is disabled. */
+	LinphoneTunnelModeEnable,	/**< The tunnel is enabled. */
+	LinphoneTunnelModeAuto	/**< The tunnel is enabled automatically if it is required. */
 } LinphoneTunnelMode;
+
+/**
+ * @brief Convert a string into LinphoneTunnelMode enum
+ * @param string String to convert
+ * @return An LinphoneTunnelMode enum. If the passed string is NULL or
+ * does not match with any mode, the LinphoneTunnelModeDisable is returned.
+ */
+LINPHONE_PUBLIC LinphoneTunnelMode string_to_tunnel_mode(const char *string);
+
+/**
+ * @brief Convert a tunnel mode enum into string
+ * @param mode Enum to convert
+ * @return "disable", "enable" or "auto"
+ */
+LINPHONE_PUBLIC const char *tunnel_mode_to_string(LinphoneTunnelMode mode);
 
 /**
  * Create a new tunnel configuration
@@ -267,7 +285,6 @@ LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
  * @return TRUE if auto detection is enabled, FALSE otherwise.
  */
 LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
-
 
 /**
  * @}

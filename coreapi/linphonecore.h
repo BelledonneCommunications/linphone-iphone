@@ -597,6 +597,28 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
 void linphone_player_close(LinphonePlayer *obj);
 
 /**
+ * @brief Create an independent media file player.
+ * This player support WAVE and MATROSKA formats.
+ * @param lc A LinphoneCore
+ * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
+ * @param video_out Video display. If NULL, the video display set in LinphoneCore will be used
+ * @return A pointer on the new instance. NULL if faild.
+ */
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out);
+
+/**
+ * @brief Destroy a file player
+ * @param obj File player to destroy
+ */
+LINPHONE_PUBLIC void linphone_file_player_destroy(LinphonePlayer *obj);
+
+/**
+ * @brief Check whether Matroksa format is supported by the player
+ * @return TRUE if it is supported
+ */
+LINPHONE_PUBLIC bool_t linphone_file_player_matroska_supported(void);
+
+/**
  * LinphoneCallState enum represents the different state a call can reach into.
  * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
  * @ingroup call_control
@@ -2536,6 +2558,7 @@ LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(Li
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
+LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);

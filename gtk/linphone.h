@@ -48,6 +48,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
 
+#define LINPHONE_ICON "linphone.png"
+
 enum {
 	COMPLETION_HISTORY,
 	COMPLETION_LDAP
@@ -195,4 +197,6 @@ void linphone_gtk_set_configuration_uri(void);
 GtkWidget * linphone_gtk_show_config_fetching(void);
 void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState state);
 const char *linphone_gtk_get_sound_path(const char *file);
+void linphone_gtk_in_call_show_video(LinphoneCall *call);
+char *linphone_gtk_address(const LinphoneAddress *addr);/*return human readable identifier for a LinphoneAddress */
 

@@ -1630,8 +1630,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
  * Deprecated: use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
-int linphone_core_get_sip_port(LinphoneCore *lc)
-{
+int linphone_core_get_sip_port(LinphoneCore *lc){
 	LCSipTransports tr;
 	linphone_core_get_sip_transports_used(lc,&tr);
 	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
@@ -2857,6 +2856,7 @@ int linphone_core_accept_early_media(LinphoneCore* lc, LinphoneCall* call){
 
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
+	int err;
 	bool_t no_user_consent=call->params->no_user_consent;
 
 	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
@@ -2873,12 +2873,22 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 		subject="Refreshing";
 	}
 	linphone_core_notify_display_status(lc,_("Modifying call parameters..."));
-	sal_call_set_local_media_description (call->op,call->localdesc);
+	if (!lc->sip_conf.sdp_200_ack){
+		sal_call_set_local_media_description (call->op,call->localdesc);
+	} else {
+		sal_call_set_local_media_description (call->op,NULL);
+	}
 	if (call->dest_proxy && call->dest_proxy->op){
 		/*give a chance to update the contact address if connectivity has changed*/
 		sal_op_set_contact_address(call->op,sal_op_get_contact_address(call->dest_proxy->op));
 	}else sal_op_set_contact_address(call->op,NULL);
-	return sal_call_update(call->op,subject,no_user_consent);
+	err= sal_call_update(call->op,subject,no_user_consent);
+	if (lc->sip_conf.sdp_200_ack){
+		/*we are NOT offering, set local media description after sending the call so that we are ready to
+		 process the remote offer when it will arrive*/
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	return err;
 }
 
 /**
@@ -3789,9 +3799,7 @@ void linphone_core_set_mic_gain_db (LinphoneCore *lc, float gaindb){
 		ms_message("linphone_core_set_mic_gain_db(): no active call.");
 		return;
 	}
-	if (st->volsend){
-		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
-	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+	set_mic_gain_db(st,gain);
 }
 
 /**
@@ -3822,9 +3830,7 @@ void linphone_core_set_playback_gain_db (LinphoneCore *lc, float gaindb){
 		ms_message("linphone_core_set_playback_gain_db(): no active call.");
 		return;
 	}
-	if (st->volrecv){
-		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
-	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+	set_playback_gain_db(st,gain);
 }
 
 /**
@@ -4467,11 +4473,11 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
 
-inline LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+ORTP_INLINE LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
 }
 
-inline LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+ORTP_INLINE LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
 }
 
@@ -5003,15 +5009,15 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 }
 
 static MSVideoSizeDef supported_resolutions[]={
-#if !ANDROID & !TARGET_OS_IPHONE
+#if !ANDROID && !TARGET_OS_IPHONE
 	{	{ MS_VIDEO_SIZE_1080P_W, MS_VIDEO_SIZE_1080P_H }	,	"1080p"	},
 #endif
-#if !ANDROID & !TARGET_OS_MAC /*limite to most common size because mac card cannot list supported resolutions*/
+#if !ANDROID && !TARGET_OS_MAC /*limit to most common sizes because mac video API cannot list supported resolutions*/
 	{	{ MS_VIDEO_SIZE_UXGA_W, MS_VIDEO_SIZE_UXGA_H }	,	"uxga"	},
 	{	{ MS_VIDEO_SIZE_SXGA_MINUS_W, MS_VIDEO_SIZE_SXGA_MINUS_H }	,	"sxga-"	},
 #endif
 	{	{ MS_VIDEO_SIZE_720P_W, MS_VIDEO_SIZE_720P_H }	,	"720p"	},
-#if !ANDROID & !TARGET_OS_MAC
+#if !ANDROID && !TARGET_OS_MAC
 	{	{ MS_VIDEO_SIZE_XGA_W, MS_VIDEO_SIZE_XGA_H }	,	"xga"	},
 #endif
 #if !ANDROID && !TARGET_OS_IPHONE
@@ -5043,22 +5049,32 @@ const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
 static MSVideoSize video_size_get_by_name(const char *name){
 	MSVideoSizeDef *pdef=supported_resolutions;
 	MSVideoSize null_vsize={0,0};
+	MSVideoSize parsed;
 	if (!name) return null_vsize;
 	for(;pdef->name!=NULL;pdef++){
 		if (strcasecmp(name,pdef->name)==0){
 			return pdef->vsize;
 		}
 	}
+	if (sscanf(name,"%ix%i",&parsed.width,&parsed.height)==2){
+		return parsed;
+	}
 	ms_warning("Video resolution %s is not supported in linphone.",name);
 	return null_vsize;
 }
 
+/* warning: function not reentrant*/
 static const char *video_size_get_name(MSVideoSize vsize){
 	MSVideoSizeDef *pdef=supported_resolutions;
+	static char customsize[64]={0};
 	for(;pdef->name!=NULL;pdef++){
 		if (pdef->vsize.width==vsize.width && pdef->vsize.height==vsize.height){
 			return pdef->name;
 		}
+	}
+	if (vsize.width && vsize.height){
+		snprintf(customsize,sizeof(customsize)-1,"%ix%i",vsize.width,vsize.height);
+		return customsize;
 	}
 	return NULL;
 }
@@ -5108,6 +5124,7 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
  * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
 **/
 void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
+	MSVideoSize oldvsize;
 	if (vsize.width==0 && vsize.height==0){
 		/*special case to reset the forced preview size mode*/
 		lc->video_conf.preview_vsize=vsize;
@@ -5115,16 +5132,25 @@ void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 			lp_config_set_string(lc->config,"video","preview_size",NULL);
 		return;
 	}
-	if (video_size_supported(vsize)){
-		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
-		lc->video_conf.preview_vsize=vsize;
-		if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
-			toggle_video_preview(lc,FALSE);
-			toggle_video_preview(lc,TRUE);
-		}
-		if (linphone_core_ready(lc))
-			lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+	oldvsize=lc->video_conf.preview_vsize;
+	lc->video_conf.preview_vsize=vsize;
+	if (!ms_video_size_equal(oldvsize,vsize) && lc->previewstream!=NULL){
+		toggle_video_preview(lc,FALSE);
+		toggle_video_preview(lc,TRUE);
 	}
+	if (linphone_core_ready(lc))
+		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
+}
+
+/**
+ * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
+ * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
+ * @param lc the core
+ * @return a MSVideoSize
+**/
+MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
+	return lc->video_conf.preview_vsize;
 }
 
 /**
