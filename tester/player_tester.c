@@ -20,7 +20,7 @@ static const char *_get_default_video_renderer(void){
 
 static bool_t wait_for_eof(bool_t *eof, int *time,int time_refresh, int timeout) {
 	while(*time < timeout && !*eof) {
-		usleep(time_refresh * 1000U);
+		ms_usleep(time_refresh * 1000U);
 		*time += time_refresh;
 	}
 	return *time < timeout;

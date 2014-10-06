@@ -399,28 +399,28 @@ static int compress_file(FILE *input_file, FILE *output_file, z_stream *strm) {
 	int flush;
 	int ret;
 	size_t output_file_size = 0;
-
+	
 	do {
 		strm->avail_in = fread(in, 1, sizeof(in), input_file);
-        if (ferror(input_file)) {
-            deflateEnd(strm);
-            return Z_ERRNO;
-        }
-        flush = feof(input_file) ? Z_FINISH : Z_NO_FLUSH;
-        strm->next_in = in;
+		if (ferror(input_file)) {
+		    deflateEnd(strm);
+		    return Z_ERRNO;
+		}
+		flush = feof(input_file) ? Z_FINISH : Z_NO_FLUSH;
+		strm->next_in = in;
 		do {
 			strm->avail_out = sizeof(out);
-            strm->next_out = out;
+			strm->next_out = out;
 			ret = deflate(strm, flush);
 			have = sizeof(out) - strm->avail_out;
-            if (fwrite(out, 1, have, output_file) != have || ferror(output_file)) {
-                deflateEnd(strm);
-                return Z_ERRNO;
-            }
-			output_file_size += have;
+			if (fwrite(out, 1, have, output_file) != have || ferror(output_file)) {
+				deflateEnd(strm);
+				return Z_ERRNO;
+			}
+		    output_file_size += have;
 		} while (strm->avail_out == 0);
 	} while (flush != Z_FINISH);
-
+	
 	return output_file_size;
 }
 
@@ -432,9 +432,10 @@ static int compress_file(FILE *input_file, FILE *output_file, z_stream *strm) {
 static int compress_file(FILE *input_file, FILE *output_file) {
 	char buffer[131072]; /* 128kB */
 	size_t output_file_size = 0;
+	size_t bytes;
 
-	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file) > 0) {
-		if (bytes < 0) return bytes;
+	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file)) > 0) {
+		if (bytes == 0) return bytes;
 		fwrite(buffer, 1, bytes, output_file);
 		output_file_size += bytes;
 	}
@@ -454,10 +455,10 @@ static size_t prepare_log_collection_file_to_upload(const char *filename) {
 #ifdef HAVE_ZLIB
 	z_stream strm;
 	strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
-    if (ret != Z_OK) return ret;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+	ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+	if (ret != Z_OK) return ret;
 #endif
 
 	output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
