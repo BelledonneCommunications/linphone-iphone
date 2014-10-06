@@ -1464,6 +1464,14 @@ typedef enum _LinphoneGlobalState{
 
 const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 
+/**
+ * LinphoneCoreLogCollectionUploadState is used to notify if log collection upload have been succesfully delivered or not.
+ */
+typedef enum _LinphoneCoreLogCollectionUploadState {
+	LinphoneCoreLogCollectionUploadStateInProgress, /**< Delivery in progress */
+	LinphoneCoreLogCollectionUploadStateDelivered, /**< Log collection upload successfully delivered and acknowledged by remote end point */
+	LinphoneCoreLogCollectionUploadStateNotDelivered, /**< Log collection upload was not delivered */
+} LinphoneCoreLogCollectionUploadState;
 
 /**
  * Global state notification callback.
@@ -1671,6 +1679,21 @@ typedef void (*LinphoneCoreConfiguringStatusCb)(LinphoneCore *lc, LinphoneConfig
 typedef void (*LinphoneCoreNetworkReachableCb)(LinphoneCore *lc, bool_t reachable);
 
 /**
+ * Callback prototype for reporting log collection upload state change.
+ * @param[in] lc LinphoneCore object
+ * @param[in] state The state of the log collection upload
+ * @param[in] info Additional information: error message in case of error state, URL of uploaded file in case of success.
+ */
+typedef void (*LinphoneCoreLogCollectionUploadStateChangedCb)(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
+
+/**
+ * Callback prototype for reporting log collection upload progress indication.
+ * @param[in] lc LinphoneCore object
+ * @param[in] progress Percentage of the file size of the log collection already uploaded.
+ */
+typedef void (*LinphoneCoreLogCollectionUploadProgressIndicationCb)(LinphoneCore *lc, size_t progress);
+
+/**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
@@ -1700,11 +1723,13 @@ typedef struct _LinphoneCoreVTable{
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
 	DisplayUrlCb display_url; /**< @deprecated */
 	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
-	LinphoneCoreTextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
-	LinphoneCoreFileTransferRecvCb file_transfer_recv; /** Callback to store file received attached to a #LinphoneChatMessage */
-	LinphoneCoreFileTransferSendCb file_transfer_send; /** Callback to collect file chunk to be sent for a #LinphoneChatMessage */
-	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**Callback to indicate file transfer progress*/
-	LinphoneCoreNetworkReachableCb network_reachable; /** Call back to report IP network status (I.E up/down)*/
+	LinphoneCoreTextMessageReceivedCb text_received; /**< @deprecated, use #message_received instead <br> A text message has been received */
+	LinphoneCoreFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneCoreFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+	LinphoneCoreNetworkReachableCb network_reachable; /**< Callback to report IP network status (I.E up/down )*/
+	LinphoneCoreLogCollectionUploadStateChangedCb log_collection_upload_state_changed; /**< Callback to upload collected logs */
+	LinphoneCoreLogCollectionUploadProgressIndicationCb log_collection_upload_progress_indication; /**< Callback to indicate log collection upload progress */
 } LinphoneCoreVTable;
 
 /**
@@ -1751,6 +1776,35 @@ typedef void * (*LinphoneCoreWaitingCallback)(LinphoneCore *lc, void *context, L
 
 
 /* THE main API */
+
+/**
+ * Enable the linphone core log collection to upload logs on a server.
+ * @ingroup misc
+ * @param[in] enable Boolean value telling whether to enable log collection or not.
+ */
+LINPHONE_PUBLIC void linphone_core_enable_log_collection(bool_t enable);
+
+/**
+ * Set the path where the log files will be written for log collection.
+ * @ingroup misc
+ * @param[in] path The path where the log files will be written.
+ */
+LINPHONE_PUBLIC void linphone_core_set_log_collection_path(const char *path);
+
+/**
+ * Set the url of the server where to upload the collected log files.
+ * @ingroup misc
+ * @param[in] core LinphoneCore object
+ * @param[in] server_url The url of the server where to upload the collected log files.
+ */
+LINPHONE_PUBLIC void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, const char *server_url);
+
+/**
+ * Upload the log collection to the configured server url.
+ * @ingroup misc
+ * @param[in] core LinphoneCore object
+ */
+LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
 
 /**
  * Define a log handler.

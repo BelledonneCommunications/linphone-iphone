@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quality_reporting.h"
 
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <ortp/telephonyevents.h>
 #include <ortp/zrtp.h>
 #include "mediastreamer2/mediastream.h"
@@ -64,6 +66,9 @@ static const char *liblinphone_version=
 	LIBLINPHONE_VERSION
 #endif
 ;
+static OrtpLogFunc liblinphone_log_func = NULL;
+static bool_t liblinphone_log_collection_enabled = FALSE;
+static const char * liblinphone_log_collection_path = ".";
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
@@ -127,7 +132,8 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 }
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	ortp_set_log_handler(logfunc);
+	liblinphone_log_func = logfunc;
+	ortp_set_log_handler(liblinphone_log_func);
 }
 
 void linphone_core_set_log_file(FILE *file) {
@@ -141,6 +147,262 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 		sal_disable_logs();
 	} else {
 		sal_enable_logs();
+	}
+}
+
+#define LOGFILE_MAXSIZE (10 * 1024 * 1024)
+
+static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args) {
+	const char *lname="undef";
+	char *msg;
+	char *log_filename1;
+	char *log_filename2;
+	FILE *log_file;
+	struct timeval tp;
+    struct tm *lt;
+	time_t tt;
+	struct stat statbuf;
+
+	if (liblinphone_log_func != NULL) {
+		liblinphone_log_func(level, fmt, args);
+	}
+
+	ortp_gettimeofday(&tp, NULL);
+	tt = (time_t)tp.tv_sec;
+	lt = localtime((const time_t*)&tt);
+	switch(level){
+		case ORTP_DEBUG:
+			lname = "DEBUG";
+			break;
+		case ORTP_MESSAGE:
+			lname = "MESSAGE";
+			break;
+		case ORTP_WARNING:
+			lname = "WARNING";
+			break;
+		case ORTP_ERROR:
+			lname = "ERROR";
+			break;
+		case ORTP_FATAL:
+			lname = "FATAL";
+			break;
+		default:
+			ortp_fatal("Bad level !");
+	}
+	msg = ortp_strdup_vprintf(fmt, args);
+
+	log_filename1 = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+	log_filename2 = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
+	log_file = fopen(log_filename1, "a");
+	fstat(fileno(log_file), &statbuf);
+	if (statbuf.st_size > LOGFILE_MAXSIZE) {
+		fclose(log_file);
+		log_file = fopen(log_filename2, "a");
+		fstat(fileno(log_file), &statbuf);
+		if (statbuf.st_size > LOGFILE_MAXSIZE) {
+			fclose(log_file);
+			unlink(log_filename1);
+			rename(log_filename2, log_filename1);
+			log_file = fopen(log_filename2, "a");
+		}
+	}
+	fprintf(log_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s %s\n",
+		1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
+	fflush(log_file);
+	fclose(log_file);
+
+	ortp_free(log_filename1);
+	ortp_free(log_filename2);
+	ortp_free(msg);
+}
+
+void linphone_core_set_log_collection_path(const char *path) {
+	liblinphone_log_collection_path = path;
+}
+
+const char *linphone_core_get_log_collection_upload_server_url(LinphoneCore *core) {
+	return lp_config_get_string(core->config, "misc", "log_collection_upload_server_url", NULL);
+}
+
+void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, const char *server_url) {
+	lp_config_set_string(core->config, "misc", "log_collection_upload_server_url", server_url);
+}
+
+void linphone_core_enable_log_collection(bool_t enable) {
+	liblinphone_log_collection_enabled = enable;
+	if (liblinphone_log_collection_enabled == TRUE) {
+		ortp_set_log_handler(linphone_core_log_collection_handler);
+	} else {
+		ortp_set_log_handler(liblinphone_log_func);
+	}
+}
+
+static void process_io_error_upload_log_collection(void *data, const belle_sip_io_error_event_t *event) {
+	LinphoneCore *core = (LinphoneCore *)data;
+	ms_error("I/O Error during log collection upload to %s", linphone_core_get_log_collection_upload_server_url(core));
+	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "I/O Error");
+}
+
+static void process_auth_requested_upload_log_collection(void *data, belle_sip_auth_event_t *event) {
+	LinphoneCore *core = (LinphoneCore *)data;
+	ms_error("Error during log collection upload: auth requested to connect %s", linphone_core_get_log_collection_upload_server_url(core));
+	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Auth requested");
+}
+
+extern const char *multipart_boundary;
+
+/**
+ * Callback called when posting a log collection file to server (following rcs5.1 recommendation)
+ *
+ * @param[in] bh The body handler
+ * @param[in] msg The belle sip message
+ * @param[in] data The user data associated with the handler, contains the LinphoneCore object
+ * @param[in] offset The current position in the input buffer
+ * @param[in] buffer The ouput buffer where to copy the data to be uploaded
+ * @param[in,out] size The size in byte of the data requested, as output it will contain the effective copied size
+ *
+ */
+static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size) {
+	LinphoneCore *core = (LinphoneCore *)data;
+	char *buf = (char *)buffer;
+
+	/* If we've not reach the end of file yet, fill the buffer with more data */
+	if (offset < core->log_collection_upload_information->size) {
+		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+		FILE *log_file = fopen(log_filename, "r");
+		fseek(log_file, offset, SEEK_SET);
+		*size = fread(buffer, 1, *size, log_file);
+		fclose(log_file);
+		ortp_free(log_filename);
+	}
+
+	return BELLE_SIP_CONTINUE;
+}
+
+/**
+ * Callback called during upload of a log collection to server.
+ * It is just forwarding the call and some parameters to the vtable defined callback.
+ */
+static void log_collection_upload_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total) {
+	LinphoneCore *core = (LinphoneCore *)data;
+	linphone_core_notify_log_collection_upload_progress_indication(core, (size_t)(((double)offset / (double)total) * 100.0));
+}
+
+/**
+ * Callback function called when we have a response from server during the upload of the log collection to the server (rcs5.1 recommandation)
+ * Note: The first post is empty and the server shall reply a 204 (No content) message, this will trigger a new post request to the server
+ * to upload the file. The server response to this second post is processed by this same function
+ *
+ * @param[in] data The user-defined pointer associated with the request, it contains the LinphoneCore object
+ * @param[in] event The response from server
+ */
+static void process_response_from_post_file_log_collection(void *data, const belle_http_response_event_t *event) {
+	LinphoneCore *core = (LinphoneCore *)data;
+
+	/* Check the answer code */
+	if (event->response) {
+		int code = belle_http_response_get_status_code(event->response);
+		if (code == 204) { /* This is the reply to the first post to the server - an empty file */
+			/* Start uploading the file */
+			belle_http_request_listener_callbacks_t cbs = { 0 };
+			belle_http_request_listener_t *l;
+			belle_generic_uri_t *uri;
+			belle_http_request_t *req;
+			belle_sip_multipart_body_handler_t *bh;
+			char* ua;
+			char *content_type;
+			char *first_part_header;
+			belle_sip_user_body_handler_t *first_part_bh;
+
+			linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateInProgress, NULL);
+
+			/* Temporary storage for the Content-disposition header value */
+			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", core->log_collection_upload_information->name);
+
+			/* Create a user body handler to take care of the file and add the content disposition and content-type headers */
+			first_part_bh = belle_sip_user_body_handler_new(core->log_collection_upload_information->size, NULL, NULL, log_collection_upload_on_send_body, core);
+			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
+			belle_sip_free(first_part_header);
+			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(core->log_collection_upload_information->type, core->log_collection_upload_information->subtype));
+
+			/* Insert it in a multipart body handler which will manage the boundaries of multipart message */
+			bh = belle_sip_multipart_body_handler_new(log_collection_upload_on_progress, core, (belle_sip_body_handler_t *)first_part_bh);
+			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+			content_type = belle_sip_strdup_printf("multipart/form-data; boundary=%s", multipart_boundary);
+			uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
+			req = belle_http_request_create("POST", uri, belle_sip_header_create("User-Agent", ua), belle_sip_header_create("Content-type", content_type), NULL);
+			ms_free(ua);
+			belle_sip_free(content_type);
+			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(bh));
+			cbs.process_response = process_response_from_post_file_log_collection;
+			cbs.process_io_error = process_io_error_upload_log_collection;
+			cbs.process_auth_requested = process_auth_requested_upload_log_collection;
+			l = belle_http_request_listener_create_from_callbacks(&cbs, core);
+			belle_http_provider_send_request(core->http_provider, req, l);
+		}
+		if (code == 200) { /* The file has been uploaded correctly, get the server reply */
+			xmlDocPtr xmlMessageBody;
+			xmlNodePtr cur;
+			xmlChar *file_url = NULL;
+			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
+			xmlMessageBody = xmlParseDoc((const xmlChar *)body);
+			cur = xmlDocGetRootElement(xmlMessageBody);
+			if (cur != NULL) {
+				cur = cur->xmlChildrenNode;
+				while (cur != NULL) {
+					if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a type="file" attribute */
+						xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+						if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
+							cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
+							while (cur != NULL) {
+								if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
+									file_url = 	xmlGetProp(cur, (const xmlChar *)"url");
+								}
+								cur=cur->next;
+							}
+							xmlFree(typeAttribute);
+							break;
+						}
+						xmlFree(typeAttribute);
+					}
+					cur = cur->next;
+				}
+			}
+			if (file_url != NULL) {
+				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
+			}
+		}
+	}
+}
+
+void linphone_core_upload_log_collection(LinphoneCore *core) {
+	if ((core->log_collection_upload_information == NULL) && (linphone_core_get_log_collection_upload_server_url(core) != NULL) && (liblinphone_log_collection_enabled == TRUE)) {
+		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
+		belle_http_request_listener_callbacks_t cbs = { 0 };
+		belle_http_request_listener_t *l;
+		belle_generic_uri_t *uri;
+		belle_http_request_t *req;
+
+		struct stat statbuf;
+		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+		FILE *log_file = fopen(log_filename, "r");
+		fstat(fileno(log_file), &statbuf);
+		fclose(log_file);
+		ortp_free(log_filename);
+
+		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
+		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
+		core->log_collection_upload_information->type = "text";
+		core->log_collection_upload_information->subtype = "plain";
+		core->log_collection_upload_information->name = "linphone_log.txt";
+		core->log_collection_upload_information->size = statbuf.st_size;
+		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
+		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
+		cbs.process_response = process_response_from_post_file_log_collection;
+		cbs.process_io_error = process_io_error_upload_log_collection;
+		cbs.process_auth_requested = process_auth_requested_upload_log_collection;
+		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
+		belle_http_provider_send_request(core->http_provider, req, l);
 	}
 }
 
@@ -6631,6 +6893,12 @@ void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneE
 }
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
 	NOTIFY_IF_EXIST(publish_state_changed)(lc,lev,state);
+}
+void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
+	NOTIFY_IF_EXIST(log_collection_upload_state_changed)(lc, state, info);
+}
+void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t progress) {
+	NOTIFY_IF_EXIST(log_collection_upload_progress_indication)(lc, progress);
 }
 void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable) {
 	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
