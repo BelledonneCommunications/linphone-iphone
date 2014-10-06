@@ -41,14 +41,14 @@ const char *multipart_boundary=MULTIPART_BOUNDARY;
 
 static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", msg->chat_room->lc->file_transfer_server, msg, msg->chat_room);
+	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
 		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
 	}
 }
 static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", msg->chat_room->lc->file_transfer_server, msg, msg->chat_room);
+	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
 		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
 	}
@@ -148,7 +148,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 
 			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);
 
-			uri=belle_generic_uri_parse(msg->chat_room->lc->file_transfer_server);
+			uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(msg->chat_room->lc));
 
 			req=belle_http_request_create("POST",
 										  uri,
@@ -425,7 +425,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
 
-		uri=belle_generic_uri_parse(cr->lc->file_transfer_server);
+		uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(cr->lc));
 
 		req=belle_http_request_create("POST",
 				uri,
@@ -1138,7 +1138,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
  * @param msg	#LinphoneChatMessage
  */
 void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
-	ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?msg->chat_room->lc->file_transfer_server:msg->external_body_url, msg, msg->chat_room);
+	ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
 	/* TODO: here we shall call the cancel http request from bellesip API when it is available passing msg->http_request */
 	/* waiting for this API, just set to NULL the reference to the request in the message and any request */
 	msg->http_request = NULL;

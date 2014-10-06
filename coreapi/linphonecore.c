@@ -1146,8 +1146,6 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->http_verify_policy = belle_tls_verify_policy_new();
 	belle_http_provider_set_tls_verify_policy(lc->http_provider,lc->http_verify_policy);
 
-	lc->file_transfer_server = NULL;
-
 	certificates_config_read(lc);
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
@@ -5771,9 +5769,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
 	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
 
-	// Free struct variable
-	ms_free(lc->file_transfer_server);
-
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
@@ -6438,11 +6433,11 @@ bool_t linphone_core_sdp_200_ack_enabled(const LinphoneCore *lc) {
 }
 
 void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url) {
-	core->file_transfer_server=ms_strdup(server_url);
+	lp_config_set_string(core->config, "misc", "file_transfer_server_url", server_url);
 }
 
 const char * linphone_core_get_file_transfer_server(LinphoneCore *core) {
-	return core->file_transfer_server;
+	return lp_config_get_string(core->config, "misc", "file_transfer_server_url", NULL);
 }
 
 /**
