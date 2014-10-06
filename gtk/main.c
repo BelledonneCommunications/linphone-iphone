@@ -440,9 +440,9 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	return w;
 }
 
-static void entry_unmapped(GtkWidget *entry){
-	g_message("Entry is unmapped, calling unrealize to workaround chinese bug.");
-	gtk_widget_unrealize(entry);
+static void entry_unmapped(GtkWidget *widget){
+	ms_message("%s is unmapped, calling unrealize to workaround chinese bug.",G_OBJECT_TYPE_NAME(widget));
+	gtk_widget_unrealize(widget);
 }
 
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
@@ -459,10 +459,10 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 		g_error("No widget named %s found in xml interface.",name);
 	}
 	if (workaround_gtk_entry_chinese_bug){
-		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0){
+		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0 || strcmp(G_OBJECT_TYPE_NAME(w),"GtkTextView")==0){
 			if (g_object_get_data(G_OBJECT(w),"entry_bug_workaround")==NULL){
 				g_object_set_data(G_OBJECT(w),"entry_bug_workaround",GINT_TO_POINTER(1));
-				g_message("%s is a GtkEntry",name);
+				ms_message("%s is a %s",name,G_OBJECT_TYPE_NAME(w));
 				g_signal_connect(G_OBJECT(w),"unmap",(GCallback)entry_unmapped,NULL);
 			}
 		}

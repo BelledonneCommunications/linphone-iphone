@@ -379,7 +379,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	GdkColor colorb;
 	int idx;
 	GtkWidget *button;
-	GtkWidget *entry;
+	GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
 	MSList *messages;
 	GHashTable *table;
 	char *with_str;
@@ -423,7 +423,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_send_text,NULL);
-	entry = linphone_gtk_get_widget(chat_view,"text_entry");
+	
 	g_signal_connect_swapped(G_OBJECT(entry),"activate",(GCallback)linphone_gtk_send_text,NULL);
 	g_signal_connect_swapped(G_OBJECT(entry),"changed",(GCallback)linphone_gtk_compose_text,NULL);
 	g_signal_connect(G_OBJECT(notebook),"switch_page",(GCallback)linphone_gtk_notebook_tab_select,NULL);
