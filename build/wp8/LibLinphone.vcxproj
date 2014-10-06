@@ -53,8 +53,8 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR=".";UNICODE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR=".";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -200,6 +200,9 @@
     </ProjectReference>
     <ProjectReference Include="libxml2\libxml2.vcxproj">
       <Project>{5dfa07b4-0be9-46a9-ba32-fdf5a55c580b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib\zlib.vcxproj">
+      <Project>{7afac3bb-d97b-4578-b9fe-5e1d2b94ea2f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

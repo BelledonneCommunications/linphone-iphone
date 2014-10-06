@@ -55,6 +55,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TargetConditionals.h"
 #endif
 
+#ifdef HAVE_ZLIB
+#ifdef WIN32
+#include <fcntl.h>
+#include <io.h>
+#define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+#else
+#define SET_BINARY_MODE(file)
+#endif
+#include <zlib.h>
+#endif
+
 /*#define UNSTANDART_GSM_11K 1*/
 
 #define ROOT_CA_FILE PACKAGE_DATA_DIR "/linphone/rootca.pem"
@@ -264,12 +275,16 @@ extern const char *multipart_boundary;
  */
 static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size) {
 	LinphoneCore *core = (LinphoneCore *)data;
-	char *buf = (char *)buffer;
 
 	/* If we've not reach the end of file yet, fill the buffer with more data */
 	if (offset < core->log_collection_upload_information->size) {
-		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+#ifdef HAVE_ZLIB
+		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.zlib");
+		FILE *log_file = fopen(log_filename, "rb");
+#else
+		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.txt");
 		FILE *log_file = fopen(log_filename, "r");
+#endif
 		fseek(log_file, offset, SEEK_SET);
 		*size = fread(buffer, 1, *size, log_file);
 		fclose(log_file);
@@ -375,6 +390,113 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 	}
 }
 
+#ifdef HAVE_ZLIB
+
+static int compress_file(FILE *input_file, FILE *output_file, z_stream *strm) {
+	unsigned char in[131072]; /* 128kB */
+	unsigned char out[131072]; /* 128kB */
+	unsigned int have;
+	int flush;
+	int ret;
+	size_t output_file_size = 0;
+
+	do {
+		strm->avail_in = fread(in, 1, sizeof(in), input_file);
+        if (ferror(input_file)) {
+            deflateEnd(strm);
+            return Z_ERRNO;
+        }
+        flush = feof(input_file) ? Z_FINISH : Z_NO_FLUSH;
+        strm->next_in = in;
+		do {
+			strm->avail_out = sizeof(out);
+            strm->next_out = out;
+			ret = deflate(strm, flush);
+			have = sizeof(out) - strm->avail_out;
+            if (fwrite(out, 1, have, output_file) != have || ferror(output_file)) {
+                deflateEnd(strm);
+                return Z_ERRNO;
+            }
+			output_file_size += have;
+		} while (strm->avail_out == 0);
+	} while (flush != Z_FINISH);
+
+	return output_file_size;
+}
+
+#else
+
+/**
+ * If zlib is not available the two log files are simply concatenated.
+ */
+static int compress_file(FILE *input_file, FILE *output_file) {
+	char buffer[131072]; /* 128kB */
+	size_t output_file_size = 0;
+
+	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file) > 0) {
+		if (bytes < 0) return bytes;
+		fwrite(buffer, 1, bytes, output_file);
+		output_file_size += bytes;
+	}
+	return output_file_size;
+}
+
+#endif
+
+static size_t prepare_log_collection_file_to_upload(const char *filename) {
+	char *input_filename = NULL;
+	char *output_filename = NULL;
+	FILE *input_file = NULL;
+	FILE *output_file = NULL;
+	size_t output_file_size = 0;
+	int ret;
+
+#ifdef HAVE_ZLIB
+	z_stream strm;
+	strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+    if (ret != Z_OK) return ret;
+#endif
+
+	output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
+	output_file = fopen(output_filename, "a");
+	if (output_file == NULL) goto error;
+	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+	input_file = fopen(input_filename, "r");
+	if (input_file == NULL) goto error;
+#ifdef HAVE_ZLIB
+	SET_BINARY_MODE(output_file);
+	SET_BINARY_MODE(input_file);
+	ret = compress_file(input_file, output_file, &strm);
+#else
+	ret = compress_file(input_file, output_file);
+#endif
+	if (ret < 0) goto error;
+	output_file_size += ret;
+	fclose(input_file);
+	ortp_free(input_filename);
+	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
+	input_file = fopen(input_filename, "r");
+	if (input_file != NULL) {
+#ifdef HAVE_ZLIB
+		SET_BINARY_MODE(input_file);
+		ret = compress_file(input_file, output_file, &strm);
+#else
+		ret = compress_file(input_file, output_file);
+#endif
+		if (ret < 0) goto error;
+		output_file_size += ret;
+	}
+error:
+	if (input_file != NULL) fclose(input_file);
+	if (output_file != NULL) fclose(output_file);
+	if (input_filename != NULL) ortp_free(input_filename);
+	if (output_filename != NULL) ortp_free(output_filename);
+	return output_file_size;
+}
+
 void linphone_core_upload_log_collection(LinphoneCore *core) {
 	if ((core->log_collection_upload_information == NULL) && (linphone_core_get_log_collection_upload_server_url(core) != NULL) && (liblinphone_log_collection_enabled == TRUE)) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
@@ -383,19 +505,18 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
 
-		struct stat statbuf;
-		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
-		FILE *log_file = fopen(log_filename, "r");
-		fstat(fileno(log_file), &statbuf);
-		fclose(log_file);
-		ortp_free(log_filename);
-
 		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
+#ifdef HAVE_ZLIB
+		core->log_collection_upload_information->type = "application";
+		core->log_collection_upload_information->subtype = "x-deflate";
+		core->log_collection_upload_information->name = "linphone_log.zlib";
+#else
 		core->log_collection_upload_information->type = "text";
 		core->log_collection_upload_information->subtype = "plain";
 		core->log_collection_upload_information->name = "linphone_log.txt";
-		core->log_collection_upload_information->size = statbuf.st_size;
+#endif
+		core->log_collection_upload_information->size = prepare_log_collection_file_to_upload(core->log_collection_upload_information->name);
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
 		cbs.process_response = process_response_from_post_file_log_collection;
