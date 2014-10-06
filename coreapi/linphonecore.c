@@ -6764,7 +6764,7 @@ int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
  * @param interval interval in seconds. 
 **/
 void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
-	return lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
+	lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
 }
 
 int linphone_payload_type_get_type(const LinphonePayloadType *pt) {
