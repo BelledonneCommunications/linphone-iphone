@@ -74,7 +74,7 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 }
 
 static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint x, gint y, guint time, gpointer user_data){
-	//GdkAtom target_type;
+#if GTK_CHECK_VERSION(2,20,0)
 	GList *l=gdk_drag_context_list_targets(drag_context);
 	GList *elem;
 	
@@ -90,6 +90,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 		ms_warning("drag_drop no targets");
 		return FALSE;
 	}
+#endif
 	return TRUE;
 }
 

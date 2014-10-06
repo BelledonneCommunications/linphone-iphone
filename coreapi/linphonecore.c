@@ -1619,8 +1619,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
  * Deprecated: use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
-int linphone_core_get_sip_port(LinphoneCore *lc)
-{
+int linphone_core_get_sip_port(LinphoneCore *lc){
 	LCSipTransports tr;
 	linphone_core_get_sip_transports_used(lc,&tr);
 	return tr.udp_port>0 ? tr.udp_port : (tr.tcp_port > 0 ? tr.tcp_port : tr.tls_port);
