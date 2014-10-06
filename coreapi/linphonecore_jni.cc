@@ -5208,3 +5208,96 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_ErrorInfoImpl_getDetails(JNIEnv
 }
 #endif
 
+/* Linphone Player */
+class LinphonePlayerData {
+public:
+	LinphonePlayerData(jobject listener, jobject jLinphonePlayer) :
+		mListener(listener),
+		mJLinphonePlayer(jLinphonePlayer) {}
+
+	jobject mListener;
+	jobject mJLinphonePlayer;
+
+	static jmethodID endOfFileMethodID;
+
+	static void init(JNIEnv *env) {
+		jclass listenerClass = env->FindClass("org/linphone/core/LinphonePlayer#Listener");
+		endOfFileMethodID = env->GetMethodID(listenerClass, "endOfFile", "(Lorg/linphone/core/LinphonePlayer;)V");
+	}
+};
+
+jmethodID LinphonePlayerData::endOfFileMethodID = NULL;
+
+static void _eof_callback(LinphonePlayer *player, void *user_data) {
+	JNIEnv *env;
+	LinphonePlayerData *player_data = (LinphonePlayerData *)user_data;
+	jvm->AttachCurrentThread(&env, NULL);
+	if(LinphonePlayerData::endOfFileMethodID == NULL) {
+		LinphonePlayerData::init(env);
+	}
+	env->CallVoidMethod(player_data->mListener, LinphonePlayerData::endOfFileMethodID, player_data->mJLinphonePlayer);
+	jvm->DetachCurrentThread();
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_open(JNIEnv *env, jobject jPlayer, jlong ptr, jstring filename, jobject listener) {
+	LinphonePlayerData *data = NULL;
+	LinphonePlayerEofCallback cb = NULL;
+	if(listener) {
+		listener = env->NewGlobalRef(listener);
+		jPlayer = env->NewGlobalRef(jPlayer);
+		data = new LinphonePlayerData(listener, jPlayer);
+		cb = _eof_callback;
+	}
+	if(linphone_player_open((LinphonePlayer *)ptr, env->GetStringUTFChars(filename, NULL), cb, &data) == -1) {
+		if(data) {
+			delete data;
+			env->DeleteGlobalRef(listener);
+			env->DeleteGlobalRef(jPlayer);
+		}
+		return -1;
+	}
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_start(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jint)linphone_player_start((LinphonePlayer *)ptr);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_pause(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jint)linphone_player_pause((LinphonePlayer *)ptr);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_seek(JNIEnv *env, jobject jobj, jlong ptr, jint timeMs) {
+	return (jint)linphone_player_seek((LinphonePlayer *)ptr, timeMs);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_getState(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jint)linphone_player_get_state((LinphonePlayer *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphonePlayer_close(JNIEnv *env, jobject playerPtr, jlong ptr) {
+	LinphonePlayer *player = (LinphonePlayer *)ptr;
+	if(player->user_data) {
+		LinphonePlayerData *data = (LinphonePlayerData *)player->user_data;
+		env->DeleteGlobalRef(data->mListener);
+		env->DeleteGlobalRef(data->mJLinphonePlayer);
+		delete data;
+		player->user_data = NULL;
+	}
+	linphone_player_close(player);
+}
+
+JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneCore_createPlayer(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jlong)linphone_core_create_file_player((LinphoneCore *)ptr, NULL, NULL);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCore_destroyPlayer(JNIEnv *env, jobject jobj, jlong playerPtr) {
+	LinphonePlayer *player = (LinphonePlayer *)playerPtr;
+	if(player->user_data) {
+		LinphonePlayerData *data = (LinphonePlayerData *)player->user_data;
+		env->DeleteGlobalRef(data->mListener);
+		env->DeleteGlobalRef(data->mJLinphonePlayer);
+		delete data;
+	}
+	linphone_file_player_destroy(player);
+}

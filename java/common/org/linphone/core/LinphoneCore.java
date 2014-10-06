@@ -1781,4 +1781,16 @@ public interface LinphoneCore {
 	 * @return the serverUrl
 	 */
 	public String getFileTransferServer();
+	
+	/**
+	 * Create a media player
+	 * @return An object that implement LinphonePlayer
+	 */
+	public LinphonePlayer createPlayer();
+	
+	/**
+	 * Destroy a player
+	 * @param player Player to destroy
+	 */
+	public void destroyPlayer(LinphonePlayer player);
 }

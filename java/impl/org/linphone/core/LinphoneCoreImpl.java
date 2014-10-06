@@ -1279,4 +1279,20 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return getFileTransferServer(nativePtr);
 	}
 
+	private native long createPlayer(long nativePtr);
+	@Override
+	public synchronized LinphonePlayer createPlayer() {
+		long player = createPlayer(nativePtr);
+		if(player != 0) {
+			return new LinphonePlayerImpl(createPlayer(nativePtr));
+		} else {
+			return null;
+		}
+	}
+	
+	private native void destroyPlayer(long playerPtr);
+	@Override
+	public synchronized void destroyPlayer(LinphonePlayer player) {
+		
+	}
 }
