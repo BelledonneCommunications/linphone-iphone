@@ -57,15 +57,15 @@ readv '# The normal font like "Helvetica"' newregular_font
 readv '# The bold font like "Helvetica-Bold"' newbold_font
 readv '# The italic font like "Helvetica-Italic"' newitalic_font
 readv '# RGB values for new text color like "255 255 255" for white' newred newgreen newblue
-newred=$(echo $newred / 255.0 | bc)
-newgreen=$(echo $newgreen / 255.0 | bc)
-newblue=$(echo $newblue / 255.0 | bc)
+newred=$(echo $newred / 255.0 | bc -l)
+newgreen=$(echo $newgreen / 255.0 | bc -l)
+newblue=$(echo $newblue / 255.0 | bc -l)
 ################################################################################
 
 # This is default Linphone text color ("gray")
-oldred="0.35"
-oldgreen="0.39"
-oldblue="0.43"
+oldred="\"0.35"
+oldgreen="\"0.39"
+oldblue="\"0.43"
 
 if [ ! -d "$repository" ]; then
 	echo "Invalid repository '$repository': it does not exist"
