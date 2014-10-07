@@ -80,6 +80,7 @@ static const char *liblinphone_version=
 static OrtpLogFunc liblinphone_log_func = NULL;
 static bool_t liblinphone_log_collection_enabled = FALSE;
 static const char * liblinphone_log_collection_path = ".";
+static ortp_mutex_t liblinphone_log_collection_mutex;
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
@@ -143,7 +144,6 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 }
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	liblinphone_log_func = logfunc;
 	ortp_set_log_handler(liblinphone_log_func);
 }
 
@@ -204,6 +204,7 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 
 	log_filename1 = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
 	log_filename2 = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
+	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	log_file = fopen(log_filename1, "a");
 	fstat(fileno(log_file), &statbuf);
 	if (statbuf.st_size > LOGFILE_MAXSIZE) {
@@ -221,6 +222,7 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 		1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
 	fflush(log_file);
 	fclose(log_file);
+	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 
 	ortp_free(log_filename1);
 	ortp_free(log_filename2);
@@ -240,24 +242,38 @@ void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, cons
 }
 
 void linphone_core_enable_log_collection(bool_t enable) {
-	liblinphone_log_collection_enabled = enable;
-	if (liblinphone_log_collection_enabled == TRUE) {
+	if ((enable == TRUE) && (liblinphone_log_collection_enabled == FALSE)) {
+		liblinphone_log_collection_enabled = TRUE;
+		ortp_mutex_init(&liblinphone_log_collection_mutex, NULL);
+		liblinphone_log_func = ortp_logv_out;
 		ortp_set_log_handler(linphone_core_log_collection_handler);
 	} else {
+		liblinphone_log_collection_enabled = FALSE;
 		ortp_set_log_handler(liblinphone_log_func);
 	}
+}
+
+static void delete_log_collection_upload_file(void) {
+#ifdef HAVE_ZLIB
+	char *filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
+#else
+	char *filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
+#endif
+	unlink(filename);
 }
 
 static void process_io_error_upload_log_collection(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("I/O Error during log collection upload to %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "I/O Error");
+	delete_log_collection_upload_file();
 }
 
 static void process_auth_requested_upload_log_collection(void *data, belle_sip_auth_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("Error during log collection upload: auth requested to connect %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Auth requested");
+	delete_log_collection_upload_file();
 }
 
 extern const char *multipart_boundary;
@@ -386,6 +402,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			if (file_url != NULL) {
 				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
 			}
+			delete_log_collection_upload_file();
 		}
 	}
 }
@@ -426,6 +443,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	COMPRESS_FILE_PTR output_file = NULL;
 	int ret = 0;
 
+	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
 	output_file = COMPRESS_OPEN(output_filename, "a");
 	if (output_file == NULL) goto error;
@@ -448,6 +466,7 @@ error:
 	if (output_file != NULL) COMPRESS_CLOSE(output_file);
 	if (input_filename != NULL) ortp_free(input_filename);
 	if (output_filename != NULL) ortp_free(output_filename);
+	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 	return ret;
 }
 
