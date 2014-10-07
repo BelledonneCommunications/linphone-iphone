@@ -24,6 +24,12 @@ else
 	take_binary = i386
 endif
 
+ifeq ($(LINPHONE_CCACHE),ccache)
+	libvpx_configure_options+= --enable-ccache
+endif
+
+
+
 all_p=armv6-darwin-gcc    #neon Cortex-A8
 all_p+=armv7-darwin-gcc    #neon Cortex-A8
 all_p+=armv7s-darwin-gcc   #neon Cortex-A8

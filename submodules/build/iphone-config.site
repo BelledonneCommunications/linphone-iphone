@@ -51,9 +51,16 @@ COMMON_FLAGS="$COMMON_FLAGS -Dsha256=polarssl_sha256"
 # silence clang unused operators. This is temporary, we should find a way to compile 3rd party with correct flags :(
 COMMON_FLAGS="-Qunused-arguments -Wno-unknown-warning-option -Wno-unused-command-line-argument-hard-error-in-future $COMMON_FLAGS"
 
-CC="xcrun clang -std=c99 $COMMON_FLAGS"
-OBJC="xcrun clang -std=c99 $COMMON_FLAGS"
-CXX="xcrun clang++ $COMMON_FLAGS"
+# you can use ccache to speed up build, in which case just define LINPHONE_CCACHE to 'ccache'
+
+if test "$LINPHONE_CCACHE" = "ccache" ; then 
+	# ccache doesn't like some options
+	COMMON_FLAGS="$COMMON_FLAGS -Wno-variadic-macros -Wno-pointer-arith -Wno-return-type -Wno-tautological-compare -Wno-unused-function -Wno-error"
+fi
+
+CC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
+OBJC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
+CXX="xcrun $LINPHONE_CCACHE clang++ $COMMON_FLAGS"
 LD="xcrun ld -arch ${ARCH}"
 AR="xcrun ar"
 RANLIB="xcrun ranlib"

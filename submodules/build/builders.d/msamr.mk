@@ -20,6 +20,13 @@
 #
 ############################################################################
 msamr_dir?=msamr
+
+configure-options=
+ifeq ($(LINPHONE_CCACHE), ccache)
+	configure-options+= --disable-strict
+endif
+
+
 $(BUILDER_SRC_DIR)/$(msamr_dir)/configure:
 	cd $(BUILDER_SRC_DIR)/$(msamr_dir) && ./autogen.sh
 
@@ -27,7 +34,7 @@ $(BUILDER_BUILD_DIR)/$(msamr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msamr_dir)/conf
 	mkdir -p $(BUILDER_BUILD_DIR)/$(msamr_dir)
 	cd $(BUILDER_BUILD_DIR)/$(msamr_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(msamr_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
+	$(BUILDER_SRC_DIR)/$(msamr_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} ${configure-options}
 
 build-msamr: build-opencore-amr $(BUILDER_BUILD_DIR)/$(msamr_dir)/Makefile
 	cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
