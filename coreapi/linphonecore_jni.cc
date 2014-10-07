@@ -5288,7 +5288,18 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphonePlayer_close(JNIEnv *env, 
 }
 
 JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneCore_createPlayer(JNIEnv *env, jobject jobj, jlong ptr) {
-	return (jlong)linphone_core_create_file_player((LinphoneCore *)ptr, NULL, NULL);
+	MSSndCard *snd_card = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
+	if(snd_card == NULL) {
+		ms_error("No default playback sound card found");
+		return 0;
+	}
+	LinphonePlayer *player = linphone_core_create_file_player((LinphoneCore *)ptr, snd_card, NULL);
+	if(player == NULL) {
+		ms_error("Fails to create a player");
+		return 0;
+	} else {
+		return (jlong)player;
+	}
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCore_destroyPlayer(JNIEnv *env, jobject jobj, jlong playerPtr) {
