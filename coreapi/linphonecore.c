@@ -279,7 +279,7 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
 	/* If we've not reach the end of file yet, fill the buffer with more data */
 	if (offset < core->log_collection_upload_information->size) {
 #ifdef HAVE_ZLIB
-		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.zlib");
+		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
 		FILE *log_file = fopen(log_filename, "rb");
 #else
 		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.txt");
@@ -391,111 +391,73 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 }
 
 #ifdef HAVE_ZLIB
-
-static int compress_file(FILE *input_file, FILE *output_file, z_stream *strm) {
-	unsigned char in[131072]; /* 128kB */
-	unsigned char out[131072]; /* 128kB */
-	unsigned int have;
-	int flush;
-	int ret;
-	size_t output_file_size = 0;
-	
-	do {
-		strm->avail_in = fread(in, 1, sizeof(in), input_file);
-		if (ferror(input_file)) {
-		    deflateEnd(strm);
-		    return Z_ERRNO;
-		}
-		flush = feof(input_file) ? Z_FINISH : Z_NO_FLUSH;
-		strm->next_in = in;
-		do {
-			strm->avail_out = sizeof(out);
-			strm->next_out = out;
-			ret = deflate(strm, flush);
-			have = sizeof(out) - strm->avail_out;
-			if (fwrite(out, 1, have, output_file) != have || ferror(output_file)) {
-				deflateEnd(strm);
-				return Z_ERRNO;
-			}
-		    output_file_size += have;
-		} while (strm->avail_out == 0);
-	} while (flush != Z_FINISH);
-	
-	return output_file_size;
-}
-
+#define COMPRESS_FILE_PTR gzFile
+#define COMPRESS_OPEN gzopen
+#define COMPRESS_CLOSE gzclose
 #else
+#define COMPRESS_FILE_PTR FILE*
+#define COMPRESS_OPEN fopen
+#define COMPRESS_CLOSE fclose
+#endif
 
 /**
  * If zlib is not available the two log files are simply concatenated.
  */
-static int compress_file(FILE *input_file, FILE *output_file) {
+static int compress_file(FILE *input_file, COMPRESS_FILE_PTR output_file) {
 	char buffer[131072]; /* 128kB */
-	size_t output_file_size = 0;
-	size_t bytes;
+	int bytes;
 
 	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file)) > 0) {
-		if (bytes == 0) return bytes;
-		fwrite(buffer, 1, bytes, output_file);
-		output_file_size += bytes;
+		if (bytes < 0) return bytes;
+#ifdef HAVE_ZLIB
+		bytes = gzwrite(output_file, buffer, bytes);
+#else
+		bytes = fwrite(buffer, 1, bytes, output_file);
+#endif
+		if (bytes < 0) return bytes;
 	}
-	return output_file_size;
+	return 0;
 }
 
-#endif
-
-static size_t prepare_log_collection_file_to_upload(const char *filename) {
+static int prepare_log_collection_file_to_upload(const char *filename) {
 	char *input_filename = NULL;
 	char *output_filename = NULL;
 	FILE *input_file = NULL;
-	FILE *output_file = NULL;
-	size_t output_file_size = 0;
-	int ret;
-
-#ifdef HAVE_ZLIB
-	z_stream strm;
-	strm.zalloc = Z_NULL;
-	strm.zfree = Z_NULL;
-	strm.opaque = Z_NULL;
-	ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
-	if (ret != Z_OK) return ret;
-#endif
+	COMPRESS_FILE_PTR output_file = NULL;
+	int ret = 0;
 
 	output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
-	output_file = fopen(output_filename, "a");
+	output_file = COMPRESS_OPEN(output_filename, "a");
 	if (output_file == NULL) goto error;
 	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
 	input_file = fopen(input_filename, "r");
 	if (input_file == NULL) goto error;
-#ifdef HAVE_ZLIB
-	SET_BINARY_MODE(output_file);
-	SET_BINARY_MODE(input_file);
-	ret = compress_file(input_file, output_file, &strm);
-#else
 	ret = compress_file(input_file, output_file);
-#endif
 	if (ret < 0) goto error;
-	output_file_size += ret;
 	fclose(input_file);
 	ortp_free(input_filename);
 	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
 	input_file = fopen(input_filename, "r");
 	if (input_file != NULL) {
-#ifdef HAVE_ZLIB
-		SET_BINARY_MODE(input_file);
-		ret = compress_file(input_file, output_file, &strm);
-#else
 		ret = compress_file(input_file, output_file);
-#endif
 		if (ret < 0) goto error;
-		output_file_size += ret;
 	}
+
 error:
 	if (input_file != NULL) fclose(input_file);
-	if (output_file != NULL) fclose(output_file);
+	if (output_file != NULL) COMPRESS_CLOSE(output_file);
 	if (input_filename != NULL) ortp_free(input_filename);
 	if (output_filename != NULL) ortp_free(output_filename);
-	return output_file_size;
+	return ret;
+}
+
+static size_t get_size_of_file_to_upload(const char *filename) {
+	struct stat statbuf;
+	char *output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
+	FILE *output_file = fopen(output_filename, "rb");
+	fstat(fileno(output_file), &statbuf);
+	fclose(output_file);
+	return statbuf.st_size;
 }
 
 void linphone_core_upload_log_collection(LinphoneCore *core) {
@@ -510,14 +472,15 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
 #ifdef HAVE_ZLIB
 		core->log_collection_upload_information->type = "application";
-		core->log_collection_upload_information->subtype = "x-deflate";
-		core->log_collection_upload_information->name = "linphone_log.zlib";
+		core->log_collection_upload_information->subtype = "gzip";
+		core->log_collection_upload_information->name = "linphone_log.gz";
 #else
 		core->log_collection_upload_information->type = "text";
 		core->log_collection_upload_information->subtype = "plain";
 		core->log_collection_upload_information->name = "linphone_log.txt";
 #endif
-		core->log_collection_upload_information->size = prepare_log_collection_file_to_upload(core->log_collection_upload_information->name);
+		if (prepare_log_collection_file_to_upload(core->log_collection_upload_information->name) < 0) return;
+		core->log_collection_upload_information->size = get_size_of_file_to_upload(core->log_collection_upload_information->name);
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
 		cbs.process_response = process_response_from_post_file_log_collection;
