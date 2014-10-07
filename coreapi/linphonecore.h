@@ -592,6 +592,8 @@ int linphone_player_start(LinphonePlayer *obj);
 int linphone_player_pause(LinphonePlayer *obj);
 int linphone_player_seek(LinphonePlayer *obj, int time_ms);
 MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
+int linphone_player_get_duration(LinphonePlayer *obj);
+int linphone_player_get_position(LinphonePlayer *obj);
 void linphone_player_close(LinphonePlayer *obj);
 
 /**

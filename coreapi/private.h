@@ -920,6 +920,8 @@ struct _LinphonePlayer{
 	int (*pause)(struct _LinphonePlayer* player);
 	int (*seek)(struct _LinphonePlayer* player, int time_ms);
 	MSPlayerState (*get_state)(struct _LinphonePlayer* player);
+	int (*get_duration)(struct _LinphonePlayer *player);
+	int (*get_position)(struct _LinphonePlayer *player);
 	void (*close)(struct _LinphonePlayer* player);
 	LinphonePlayerEofCallback cb;
 	void *user_data;

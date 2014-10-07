@@ -72,6 +72,24 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
 }
 
 /**
+ * Get the duration of the media
+ * @param obj the player
+ * @return  The duration in milliseconds
+ */
+int linphone_player_get_duration(LinphonePlayer *obj) {
+	return obj->get_duration(obj);
+}
+
+/**
+ * Get the position of the playback
+ * @param obj the player
+ * @return Position of the playback in milliseconds
+ */
+int linphone_player_get_position(LinphonePlayer *obj) {
+	return obj->get_position(obj);
+}
+
+/**
  * Close the player.
  * @param obj the player.
 **/

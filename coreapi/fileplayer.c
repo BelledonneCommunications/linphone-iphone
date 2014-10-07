@@ -7,6 +7,8 @@ static int file_player_start(LinphonePlayer *obj);
 static int file_player_pause(LinphonePlayer *obj);
 static int file_player_seek(LinphonePlayer *obj, int time_ms);
 static MSPlayerState file_player_get_state(LinphonePlayer *obj);
+static int file_player_get_duration(LinphonePlayer *obj);
+static int file_player_get_current_position(LinphonePlayer *obj);
 static void file_player_close(LinphonePlayer *obj);
 static void file_player_eof_callback(void *user_data);
 
@@ -20,6 +22,8 @@ LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *sn
 	obj->pause = file_player_pause;
 	obj->seek = file_player_seek;
 	obj->get_state = file_player_get_state;
+	obj->get_duration = file_player_get_duration;
+	obj->get_position = file_player_get_current_position;
 	obj->close = file_player_close;
 	ms_file_player_set_eof_callback((MSFilePlayer *)obj->impl, file_player_eof_callback, obj);
 	return obj;
@@ -53,6 +57,14 @@ static int file_player_seek(LinphonePlayer *obj, int time_ms) {
 
 static MSPlayerState file_player_get_state(LinphonePlayer *obj) {
 	return ms_file_player_get_state((MSFilePlayer *)obj->impl);
+}
+
+static int file_player_get_duration(LinphonePlayer *obj) {
+	return ms_file_player_get_duration((MSFilePlayer *)obj->impl);
+}
+
+static int file_player_get_current_position(LinphonePlayer *obj) {
+	return ms_file_player_get_current_position((MSFilePlayer *)obj->impl);
 }
 
 static void file_player_close(LinphonePlayer *obj) {
