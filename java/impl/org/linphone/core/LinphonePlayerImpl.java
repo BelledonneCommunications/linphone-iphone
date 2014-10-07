@@ -44,6 +44,18 @@ public class LinphonePlayerImpl implements LinphonePlayer {
 		return LinphonePlayer.State.fromValue(getState(nativePtr));
 	}
 	
+	private native int getDuration(long nativePtr);
+	@Override
+	public synchronized int getDuration() {
+		return getDuration(nativePtr);
+	}
+	
+	private native int getCurrentPosition(long nativePtr);
+	@Override
+	public synchronized int getCurrentPosition() {
+		return getCurrentPosition(nativePtr);
+	}
+	
 	private native void close(long nativePtr);
 	@Override
 	public synchronized void close() {

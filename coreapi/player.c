@@ -85,7 +85,7 @@ int linphone_player_get_duration(LinphonePlayer *obj) {
  * @param obj the player
  * @return Position of the playback in milliseconds
  */
-int linphone_player_get_position(LinphonePlayer *obj) {
+int linphone_player_get_current_position(LinphonePlayer *obj) {
 	return obj->get_position(obj);
 }
 

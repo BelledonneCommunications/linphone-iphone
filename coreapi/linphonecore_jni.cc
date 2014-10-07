@@ -5275,6 +5275,14 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_getState(JNIEnv *en
 	return (jint)linphone_player_get_state((LinphonePlayer *)ptr);
 }
 
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_getDuration(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jint)linphone_player_get_duration((LinphonePlayer *)ptr);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphonePlayer_getCurrentPosition(JNIEnv *env, jobject jobj, jlong ptr) {
+	return (jint)linphone_player_get_current_position((LinphonePlayer *)ptr);
+}
+
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphonePlayer_close(JNIEnv *env, jobject playerPtr, jlong ptr) {
 	LinphonePlayer *player = (LinphonePlayer *)ptr;
 	if(player->user_data) {

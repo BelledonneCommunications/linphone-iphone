@@ -77,6 +77,18 @@ public interface LinphonePlayer {
 	public State getState();
 	
 	/**
+	 * Get the duration of the media
+	 * @return The duration in milliseconds
+	 */
+	public int getDuration();
+	
+	/**
+	 * Get the position of the playback
+	 * @return The position in milliseconds
+	 */
+	public int getCurrentPosition();
+	
+	/**
 	 * Close a file
 	 */
 	public void close();
