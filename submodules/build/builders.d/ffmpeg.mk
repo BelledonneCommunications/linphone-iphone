@@ -1,7 +1,7 @@
 ffmpeg_configure_options=\
 	--disable-mmx \
 	--enable-cross-compile \
-	--disable-ffprobe --disable-ffserver  --disable-avdevice \
+	--disable-ffprobe --disable-ffserver  --disable-avdevice --disable-doc \
 	--disable-avfilter  --disable-network \
 	--disable-everything  --enable-decoder=mjpeg --enable-encoder=mjpeg --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
 	--enable-decoder=h264 --disable-avformat --enable-pic\
