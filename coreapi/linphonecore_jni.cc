@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern "C" {
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/dsptools.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -58,7 +59,8 @@ extern "C" void libmswebrtc_init();
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
 
-
+/*force linking of ms_audio_diff symbol because the tester requires it.*/
+static void *audiodiff=(void*)&ms_audio_diff;
 
 #define RETURN_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
 	{ \
