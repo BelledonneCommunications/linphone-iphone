@@ -5563,7 +5563,10 @@
 				PROVISIONING_PROFILE = "384d6da1-05db-4d21-ba10-ec946478a862";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = "-Werror=objc-method-access";
+				WARNING_CFLAGS = (
+					"-Werror=objc-method-access",
+					"-Werror=incomplete-implementation",
+				);
 			};
 			name = Debug;
 		};
@@ -5632,7 +5635,10 @@
 				PROVISIONING_PROFILE = "3732314a-627f-40fe-a089-235a74464861";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = "-Werror=objc-method-access";
+				WARNING_CFLAGS = (
+					"-Werror=objc-method-access",
+					"-Werror=incomplete-implementation",
+				);
 			};
 			name = DistributionAdhoc;
 		};
@@ -5858,7 +5864,10 @@
 				PROVISIONING_PROFILE = "384d6da1-05db-4d21-ba10-ec946478a862";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = "-Werror=objc-method-access";
+				WARNING_CFLAGS = (
+					"-Werror=objc-method-access",
+					"-Werror=incomplete-implementation",
+				);
 			};
 			name = Release;
 		};
@@ -5927,7 +5936,10 @@
 				PROVISIONING_PROFILE = "b9cdf249-07ad-4301-af2d-b3867137d57b";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				WARNING_CFLAGS = "-Werror=objc-method-access";
+				WARNING_CFLAGS = (
+					"-Werror=objc-method-access",
+					"-Werror=incomplete-implementation",
+				);
 			};
 			name = Distribution;
 		};
