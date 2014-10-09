@@ -294,7 +294,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 	if (pipe_name == NULL) {
 #ifdef HAVE_READLINE
 		const char *homedir = getenv("HOME");
-		rl_readline_name = "daemon";
+		rl_readline_name = (char*)"daemon";
 		if (homedir == NULL)
 			homedir = ".";
 		mHistfile = string(homedir) + string("/.linphone_history");
