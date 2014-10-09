@@ -14,10 +14,10 @@ public class LinphonePlayerImpl implements LinphonePlayer {
 		this.nativePtr = nativePtr;
 	}
 	
-	private native int open(long nativePtr, final String filename, Listener listener, LinphonePlayer player);
+	private native int open(long nativePtr, String filename, Listener listener);
 	@Override
-	public synchronized int open(final String filename, Listener listener) {
-		return open(nativePtr, filename, listener, this);
+	public synchronized int open(String filename, Listener listener) {
+		return open(nativePtr, filename, listener);
 	}
 	
 	private native int start(long nativePtr);

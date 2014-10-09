@@ -49,7 +49,7 @@ public interface LinphonePlayer {
 	 * @param filename Name of the file to open
 	 * @return 0 on success, -1 on failure
 	 */
-	public int open(final String filename, Listener listener);
+	public int open(String filename, Listener listener);
 	
 	/**
 	 * Start playback
