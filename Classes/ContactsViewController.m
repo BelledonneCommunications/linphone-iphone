@@ -151,6 +151,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	// cannot change search bar icon nor text font from the interface builder...
+	// [_searchBar setImage:[UIImage imageNamed:@"contact_search.png" ] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+	// UITextField *searchText = [_searchBar valueForKey:@"_searchField"];
+	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
+
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 	if( use_system && !self.sysViewController){// use system contacts
 		ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
@@ -305,6 +310,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+	[self searchBar:searchBar textDidChange:nil];
+	[searchBar resignFirstResponder];
+	[searchBar setText:nil];
+}
+
 #pragma mark - ABPeoplePickerDelegate
 
 -(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
@@ -338,6 +349,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+	// set searchbar text in uppercase here
+	// searchBar.text = [searchText uppercaseString];
+
 	[ContactSelection setNameOrEmailFilter:searchText];
 	[tableController loadData];
 }
