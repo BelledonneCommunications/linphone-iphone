@@ -159,6 +159,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         CFStringRef lLabel = ABMultiValueCopyLabelAtIndex(lMap, i);
                         CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel(lLabel);
                         NSString* lNormalizedKey = [FastAddressBook normalizePhoneNumber:(NSString*)lValue];
+						lNormalizedKey = [FastAddressBook normalizeSipURI:lNormalizedKey];
                         [addressBookMap setObject:lPerson forKey:lNormalizedKey];
                         CFRelease(lValue);
                         if (lLabel) CFRelease(lLabel);
