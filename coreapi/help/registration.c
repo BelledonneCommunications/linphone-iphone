@@ -1,7 +1,7 @@
 
 /*
 linphone
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -60,9 +60,13 @@ static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyCo
 LinphoneCore *lc;
 int main(int argc, char *argv[]){
 	LinphoneCoreVTable vtable={0};
+	LinphoneProxyConfig* proxy_cfg;
+	LinphoneAddress *from;
+	LinphoneAuthInfo *info;
 
 	char* identity=NULL;
 	char* password=NULL;
+	const char* server_addr;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
@@ -79,7 +83,7 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
 	 All are optional. Here we only use the registration_state_changed callbacks
 	 in order to get notifications about the progress of the registration.
@@ -91,30 +95,28 @@ int main(int argc, char *argv[]){
 	*/
 	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
 
-	LinphoneProxyConfig* proxy_cfg;
 	/*create proxy config*/
 	proxy_cfg = linphone_proxy_config_new();
 	/*parse identity*/
-	LinphoneAddress *from = linphone_address_new(identity);
+	from = linphone_address_new(identity);
 	if (from==NULL){
 		printf("%s not a valid sip uri, must be like sip:toto@sip.linphone.org \n",identity);
 		goto end;
 	}
-		LinphoneAuthInfo *info;
-		if (password!=NULL){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
-			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-		}
+	if (password!=NULL){
+		info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
+		linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+	}
 
-		// configure proxy entries
-		linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
-		const char* server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
-		linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
-		linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
-		linphone_address_destroy(from); /*release resource*/
+	// configure proxy entries
+	linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
+	server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
+	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
+	linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
+	linphone_address_destroy(from); /*release resource*/
 
-		linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
-		linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/
+	linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
+	linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/
 
 
 	/* main loop for receiving notifications and doing background linphonecore work: */

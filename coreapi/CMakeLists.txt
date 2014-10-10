@@ -42,6 +42,8 @@ set(SOURCE_FILES
 	bellesip_sal/sal_op_registration.c
 	bellesip_sal/sal_sdp.c
 	callbacks.c
+	call_log.c
+	call_params.c
 	chat.c
 	conference.c
 	ec-calibrator.c
@@ -51,13 +53,13 @@ set(SOURCE_FILES
 	info.c
 	linphonecall.c
 	linphonecore.c
-	linphone_tunnel_stubs.c
 	linphone_tunnel_config.c
 	lpconfig.c
 	lsd.c
 	message_storage.c
 	misc.c
 	offeranswer.c
+	player.c
 	presence.c
 	proxy.c
 	quality_reporting.c
@@ -86,6 +88,8 @@ if(ENABLE_TUNNEL)
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
+else()
+	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
 endif()
 
 set(GENERATED_SOURCE_FILES
@@ -113,6 +117,12 @@ set(LIBS
 	${MS2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
+if(ENABLE_TUNNEL)
+	list(APPEND LIBS ${TUNNEL_LIBRARIES})
+endif()
+if(WIN32)
+	list(APPEND LIBS shlwapi)
+endif()
 
 if(ENABLE_STATIC)
 	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
@@ -139,7 +149,20 @@ install(TARGETS linphone
 )
 
 
-file(GLOB HEADER_FILES "*.h")
+set(HEADER_FILES
+	call_log.h
+	call_params.h
+	event.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	sipsetup.h
+	xml2lpc.h
+)
 
 install(FILES ${HEADER_FILES}
 	DESTINATION include/linphone

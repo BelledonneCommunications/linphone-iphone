@@ -31,10 +31,21 @@ public interface LinphoneContent {
 	**/
 	byte [] getData();
 	/**
-	 * Get the data size.
-	 * @return the data size.
+	 * Get the expected data size.
+	 * @return the expected data size
 	 */
-	int getSize();
+	int getExpectedSize();
+	
+	/**
+	 * Sets the expected data size
+	 */
+	void setExpectedSize(int size);
+	
+	/**
+	 * Return the size of the data field
+	 * @return the size of the data field
+	 */
+	int getRealSize();
 	
 	/**
 	 * Set the content type, for example "application"
@@ -59,4 +70,8 @@ public interface LinphoneContent {
 	 * Set the data, as a byte buffer.
 	**/
 	void setData(byte data[]);
+	
+	void setName(String name);
+	
+	String getName();
 }

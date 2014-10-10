@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef ENABLE_NLS
 #include <locale.h>
 #endif
-#define LINPHONE_ICON "linphone.png"
+
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
@@ -318,6 +318,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	g_free(secrets_file);
 	linphone_core_enable_video_capture(the_core, TRUE);
 	linphone_core_enable_video_display(the_core, TRUE);
+	linphone_core_set_native_video_window_id(the_core,-1);/*don't create the window*/
 	if (no_video) {
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
@@ -439,9 +440,9 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	return w;
 }
 
-static void entry_unmapped(GtkWidget *entry){
-	g_message("Entry is unmapped, calling unrealize to workaround chinese bug.");
-	gtk_widget_unrealize(entry);
+static void entry_unmapped(GtkWidget *widget){
+	ms_message("%s is unmapped, calling unrealize to workaround chinese bug.",G_OBJECT_TYPE_NAME(widget));
+	gtk_widget_unrealize(widget);
 }
 
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
@@ -458,10 +459,10 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 		g_error("No widget named %s found in xml interface.",name);
 	}
 	if (workaround_gtk_entry_chinese_bug){
-		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0){
+		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0 || strcmp(G_OBJECT_TYPE_NAME(w),"GtkTextView")==0){
 			if (g_object_get_data(G_OBJECT(w),"entry_bug_workaround")==NULL){
 				g_object_set_data(G_OBJECT(w),"entry_bug_workaround",GINT_TO_POINTER(1));
-				g_message("%s is a GtkEntry",name);
+				ms_message("%s is a %s",name,G_OBJECT_TYPE_NAME(w));
 				g_signal_connect(G_OBJECT(w),"unmap",(GCallback)entry_unmapped,NULL);
 			}
 		}
@@ -566,102 +567,6 @@ void linphone_gtk_show_about(){
 	gtk_widget_show(about);
 }
 
-static void set_video_window_decorations(GdkWindow *w){
-	const char *title=linphone_gtk_get_ui_config("title","Linphone");
-	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
-	char video_title[256];
-	GdkPixbuf *pbuf=create_pixbuf(icon_path);
-
-	if (!linphone_core_in_call(linphone_gtk_get_core())){
-		snprintf(video_title,sizeof(video_title),"%s video",title);
-		/* When not in call, treat the video as a normal window */
-		gdk_window_set_keep_above(w, FALSE);
-	}else{
-		LinphoneAddress *uri =
-			linphone_address_clone(linphone_core_get_current_call_remote_address(linphone_gtk_get_core()));
-		char *display_name;
-
-		linphone_address_clean(uri);
-		if (linphone_address_get_display_name(uri)!=NULL){
-			display_name=ms_strdup(linphone_address_get_display_name(uri));
-		}else{
-			display_name=linphone_address_as_string(uri);
-		}
-		snprintf(video_title,sizeof(video_title),_("Call with %s"),display_name);
-		linphone_address_destroy(uri);
-		ms_free(display_name);
-
-		/* During calls, bring up the video window, arrange so that
-		it is above all the other windows */
-		gdk_window_deiconify(w);
-		gdk_window_set_keep_above(w,TRUE);
-		/* Maybe we should have the following, but then we want to
-		have a timer that turns it off after a little while. */
-		/* gdk_window_set_urgency_hint(w,TRUE); */
-	}
-	gdk_window_set_title(w,video_title);
-	/* Refrain the video window to be closed at all times. */
-	gdk_window_set_functions(w,
-				 GDK_FUNC_RESIZE|GDK_FUNC_MOVE|
-				 GDK_FUNC_MINIMIZE|GDK_FUNC_MAXIMIZE);
-	if (pbuf){
-		GList *l=NULL;
-		l=g_list_append(l,pbuf);
-		gdk_window_set_icon_list(w,l);
-		g_list_free(l);
-		g_object_unref(G_OBJECT(pbuf));
-	}
-}
-
-static gboolean video_needs_update=FALSE;
-
-static void update_video_title(){
-	video_needs_update=TRUE;
-}
-
-static void update_video_titles(LinphoneCore *lc){
-	unsigned long id;
-	static unsigned long previd=0;
-	static unsigned long preview_previd=0;
-	id=linphone_core_get_native_video_window_id(lc);
-	if (id!=previd || video_needs_update){
-		GdkWindow *w;
-		previd=id;
-		if (id!=0){
-			ms_message("Updating window decorations");
-#ifndef WIN32
-			w=gdk_window_foreign_new((GdkNativeWindow)id);
-#else
-			w=gdk_window_foreign_new((HANDLE)id);
-#endif
-			if (w) {
-				set_video_window_decorations(w);
-				g_object_unref(G_OBJECT(w));
-			}
-			else ms_error("gdk_window_foreign_new() failed");
-			if (video_needs_update) video_needs_update=FALSE;
-		}
-	}
-	id=linphone_core_get_native_preview_window_id (lc);
-	if (id!=preview_previd ){
-		GdkWindow *w;
-		preview_previd=id;
-		if (id!=0){
-			ms_message("Updating window decorations for preview");
-#ifndef WIN32
-			w=gdk_window_foreign_new((GdkNativeWindow)id);
-#else
-			w=gdk_window_foreign_new((HANDLE)id);
-#endif
-			if (w) {
-				set_video_window_decorations(w);
-				g_object_unref(G_OBJECT(w));
-			}
-			else ms_error("gdk_window_foreign_new() failed");
-			if (video_needs_update) video_needs_update=FALSE;
-		}
-	}
-}
 
 static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	static gboolean first_time=TRUE;
@@ -677,7 +582,6 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		first_time=FALSE;
 	}
 
-	update_video_titles(lc);
 	if (addr_to_call!=NULL){
 		/*make sure we are not showing the login screen*/
 		GtkWidget *mw=linphone_gtk_get_main_window();
@@ -864,7 +768,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 
 	if( ldap && strlen(predicate) >= 3 ){ // don't search too small predicates
 		unsigned int max_res_count = linphone_ldap_contact_provider_get_max_result(ldap);
-
+		LinphoneContactSearch* search;
 		if( previous_search  &&
 			(strstr(predicate, previous_search) == predicate) && // last search contained results from this one
 			(prev_res_count != max_res_count) ){ // and we didn't reach the max result limit
@@ -879,7 +783,7 @@ static gboolean launch_contact_provider_search(void *userdata)
 		gtk_object_set_data(GTK_OBJECT(uribar), "previous_search", ms_strdup(predicate));
 
 		ms_message("launch_contact_provider_search");
-		LinphoneContactSearch* search =linphone_contact_provider_begin_search(
+		search =linphone_contact_provider_begin_search(
 					linphone_contact_provider_cast(ldap_provider),
 					predicate, on_contact_provider_search_results, uribar
 					);
@@ -928,7 +832,6 @@ void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	}
 	if (linphone_gtk_use_in_call_view() && call)
 		linphone_gtk_in_call_view_terminate(call,error);
-	update_video_title();
 }
 
 static void linphone_gtk_update_call_buttons(LinphoneCall *call){
@@ -940,6 +843,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	//bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
 	int call_list_size=ms_list_size(calls);
+	GtkWidget *conf_frame;
 
 	if (calls==NULL){
 		start_active=TRUE;
@@ -962,7 +866,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,add_call);
 
 	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
-	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 		linphone_gtk_enable_conference_button(lc,call_list_size>1);
@@ -970,7 +874,6 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 		linphone_gtk_enable_transfer_button(lc,FALSE);
 		linphone_gtk_enable_conference_button(lc,FALSE);
 	}
-	update_video_title();
 	if (call) {
 		linphone_gtk_update_video_button(call);
 	}
@@ -1000,7 +903,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 			break;
 		}
 	}
-	
+
 	if (address){
 		id=linphone_address_get_username(address);
 		if (id==NULL) id=linphone_address_get_domain(address);
@@ -1172,13 +1075,14 @@ static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint respon
 
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	GtkWidget *dialog;
+	gchar *message;
 
 	if (linphone_gtk_get_ui_config_int("subscribe_deny_all",0)){
 		linphone_core_reject_subscriber(linphone_gtk_get_core(),lf);
 		return;
 	}
 
-	gchar *message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
+	message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
 	dialog = gtk_message_dialog_new (
 				GTK_WINDOW(linphone_gtk_get_main_window()),
                                 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1540,7 +1444,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
 	if (!found) {
-		g_warning("Could not find proxy config in combo box of identities.");
+		/*ignored, this is a notification for a removed proxy config.*/
 		return;
 	}
 	switch (rs){
@@ -2001,10 +1905,11 @@ void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer us
 void linphone_gtk_create_keypad(GtkWidget *button){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
+	GtkWidget *keypad;
 	if(k!=NULL){
 		gtk_widget_destroy(k);
 	}
-	GtkWidget *keypad=linphone_gtk_create_window("keypad");
+	keypad=linphone_gtk_create_window("keypad");
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
 	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);

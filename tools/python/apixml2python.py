@@ -46,16 +46,19 @@ blacklisted_functions = [
 	'linphone_chat_message_start_file_download',	# to be handwritten because of callback
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
 	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
+	'linphone_core_add_listener',
 	'linphone_core_can_we_add_call',	# private function
+	'linphone_core_enable_log_collection',	# need to handle class properties
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_get_default_proxy',	# to be handwritten because of double pointer indirection
 	'linphone_core_get_sip_transports',	# missing LCSipTransports
 	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_publish',	# missing LinphoneContent
+	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_log_collection_path',	# need to handle class properties
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
@@ -80,6 +83,7 @@ blacklisted_functions = [
 ]
 hand_written_functions = [
 	'linphone_chat_room_send_message2',
+	'linphone_core_get_sound_devices',
 	'linphone_core_get_video_devices',
 	'linphone_core_new',
 	'linphone_core_new_with_config'

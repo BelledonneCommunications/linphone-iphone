@@ -36,7 +36,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
-dnl don't put anythingelse before AC_PROG_CC unless checking if macro still work for clang
+dnl do not put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
 
@@ -135,7 +135,7 @@ AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages]
 
 if test "$mingw_found" != "yes" ; then
 	dnl gettext macro does not work properly under mingw. And we want to use the one provided by GTK.
-	
+
 	dnl AM_GNU_GETTEXT pollutes CPPFLAGS: workaround this.
 	CPPFLAGS_save=$CPPFLAGS
 	AM_GNU_GETTEXT([external])
@@ -185,29 +185,29 @@ if test "$enable_ldap" = "true"; then
 			[AC_MSG_ERROR([You need libldap for LDAP support])]
 		)
 		AC_CHECK_HEADERS(ldap.h, [foo=bar], [AC_MSG_ERROR( [ldap.h not found] ) ] )
-		found_ldap=yes		
+		found_ldap=yes
 	fi
-	
+
 	PKG_CHECK_MODULES(SASL, [libsasl2],[found_sasl=yes],[found_sasl=no] )
-	
+
 	if test "$found_sasl" = "no"; then
 		AC_CHECK_LIB(sasl2, sasl_client_init , [SASL_LIBS="-lsasl2"],
 			[AC_MSG_ERROR([You need SASL for LDAP support] ) ]
 			)
 		AC_CHECK_HEADERS(sasl/sasl.h,foo=bar, [AC_MSG_ERROR([sasl/sasl.h not found])])
-		found_sasl=yes	
+		found_sasl=yes
 	fi
-	
+
 	AC_SUBST(LDAP_CFLAGS)
 	AC_SUBST(LDAP_LIBS)
-	
+
 	AC_SUBST(SASL_CFLAGS)
 	AC_SUBST(SASL_LIBS)
-	
+
 	if test "$found_ldap$found_sasl" = "yesyes"; then
 		AC_DEFINE(BUILD_LDAP,1,[Defined if LDAP build option enabled])
 	else
-		AC_MSG_ERROR([Can't use LDAP due to previous errors])
+		AC_MSG_ERROR([Cannot use LDAP due to previous errors])
 	fi
 
 fi
@@ -248,7 +248,7 @@ AC_ARG_ENABLE(upnp,
 )
 
 if test "$build_upnp" != "false" ; then
-	PKG_CHECK_MODULES([LIBUPNP], [libupnp], 
+	PKG_CHECK_MODULES([LIBUPNP], [libupnp],
 		[if  pkg-config --atleast-version=1.6 "libupnp < 1.7"; then
 			build_upnp=true
 		else
@@ -277,7 +277,7 @@ fi
 AM_CONDITIONAL(BUILD_TOOLS, test x$build_tools != xfalse)
 if test "$build_tools" != "false" ; then
 	build_tools=true
-	AC_DEFINE(BUILD_TOOLS, 1, [Define if tools enabled] ) 
+	AC_DEFINE(BUILD_TOOLS, 1, [Define if tools enabled] )
 fi
 
 dnl conditionnal build of gtk interface.
@@ -553,10 +553,10 @@ AC_ARG_WITH(ffmpeg,
 )
 
 if test "$video" = "true"; then
-	
+
 	if test "$enable_x11" = "true"; then
 	  	AC_CHECK_HEADERS(X11/Xlib.h)
-		if test "$build_macos" = "yes"; then 
+		if test "$build_macos" = "yes"; then
 			X11_LIBS="-L/usr/X11/lib -lX11"
 		else
 			AC_CHECK_LIB(X11,XUnmapWindow, X11_LIBS="-lX11")
@@ -644,7 +644,7 @@ AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard != xfalse)
 if test "$build_wizard" != "false" ; then
 	build_wizard=true
-	 AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] ) 
+	 AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] )
 fi
 
 AC_CHECK_HEADERS(libudev.h)
@@ -656,27 +656,42 @@ AC_CHECK_LIB(udev,udev_new)
 
 
 AC_ARG_ENABLE(strict,
-	AC_HELP_STRING([--enable-strict], [Build with stricter options (gcc only) @<:@yes@:>@]),
+	AC_HELP_STRING([--enable-strict], [Build with stricter options @<:@yes@:>@]),
 	[strictness="${enableval}"],
 	[strictness=yes]
 )
 
-STRICT_OPTIONS="-Wall"
+STRICT_OPTIONS="-Wall -Wuninitialized"
+STRICT_OPTIONS_CC="-Wdeclaration-after-statement "
+STRICT_OPTIONS_CXX=""
 
 #for clang
 
-case $CC in 
+case $CC in
 	*clang*)
-		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments"
+		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments "
+		#disabled due to wrong optimization false positive with small string
+		#(cf. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=35903)
+		STRICT_OPTIONS="$STRICT_OPTIONS -Wno-array-bounds "
 	;;
 esac
-
+# because Darwin's gcc is actually clang, we need to check it...
+case "$target_os" in
+	*darwin*)
+	STRICT_OPTIONS="$STRICT_OPTIONS -Wno-error=unknown-warning-option -Qunused-arguments -Wno-tautological-compare -Wno-unused-function "
+	#disabled due to wrong optimization false positive with small string
+	#(cf. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=35903)
+	STRICT_OPTIONS="$STRICT_OPTIONS -Wno-array-bounds "
+	;;
+esac
 if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
 AC_SUBST(STRICT_OPTIONS)
+AC_SUBST(STRICT_OPTIONS_CC)
+AC_SUBST(STRICT_OPTIONS_CXX)
 
 top_srcdir=`dirname $0`
 
@@ -783,13 +798,13 @@ if test x$enable_msg_storage != xfalse; then
 		fi
 		enable_msg_storage=false
 	fi
-	
+
 	AC_SUBST(SQLITE3_CFLAGS)
 	AC_SUBST(SQLITE3_LIBS)
 fi
 
 
-	
+
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
@@ -883,11 +898,11 @@ dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
 
-AC_PATH_PROG(DOXYGEN,doxygen,false)
-AM_CONDITIONAL(HAVE_DOXYGEN, test $DOXYGEN != false)
+AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,false)
+AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
 
-AC_CONFIG_FILES([ 
+AC_CONFIG_FILES([
 	Makefile
 	build/Makefile
 	build/macos/Makefile

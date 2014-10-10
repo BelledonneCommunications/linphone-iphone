@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.core.tutorials;
 
+import java.nio.ByteBuffer;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
@@ -216,6 +218,27 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 			RemoteProvisioningState state, String message) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void fileTransferProgressIndication(LinphoneCore lc,
+			LinphoneChatMessage message, LinphoneContent content, int progress) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
+			LinphoneContent content, byte[] buffer, int size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int fileTransferSend(LinphoneCore lc, LinphoneChatMessage message,
+			LinphoneContent content, ByteBuffer buffer, int size) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 

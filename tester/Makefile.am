@@ -21,13 +21,15 @@ liblinphonetester_la_SOURCES = tester.c \
 				flexisip_tester.c \
 				stun_tester.c \
 				remote_provisioning_tester.c \
-				quality_reporting_tester.c
+				quality_reporting_tester.c \
+				transport_tester.c \
+				player_tester.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
-AM_CFLAGS    = $(STRICT_OPTIONS) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
+AM_CFLAGS    = $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
 
 if !BUILD_IOS
 

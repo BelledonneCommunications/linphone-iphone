@@ -1,7 +1,9 @@
 [Desktop Entry]
 Name=Audio assistant
+Name[ru]=Помощник аудио
 Comment=Linphone audio assistant
 Comment[fr]=Assistant audio de Linphone.
+Comment[ru]=Помощник аудио Linphone
 Type=Application
 Exec=linphone --run-audio-assistant
 Icon=/usr/local/share/pixmaps/linphone/linphone.png

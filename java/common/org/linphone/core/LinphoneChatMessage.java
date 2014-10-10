@@ -14,21 +14,25 @@ public interface LinphoneChatMessage {
 		
 		private final String mStringValue;
 		/**
-		 * Idle
+		 * Initial state
 		 */
 		public final static State Idle = new State(0,"Idle");
 		/**
-		 * Incoming call received.
+		 * Delivery in progress
 		 */
 		public final static State InProgress = new State(1,"InProgress");
 		/**
-		 * Outgoing call initialiazed.
+		 * Message succesffully delivered an acknoleged by remote end point
 		 */
 		public final static State Delivered = new State(2,"Delivered");
 		/**
-		 * Outgoing call in progress. 
+		 * Message was not delivered
 		 */
 		public final static State NotDelivered = new State(3,"NotDelivered");
+		/**
+		 * Message was received(and acknowledged) but cannot get file from server
+		 */
+		public final static State FileTransferError = new State(4,"FileTransferError");
 		
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -153,5 +157,26 @@ public interface LinphoneChatMessage {
 	 * @return an ErrorInfo.
 	 */
 	ErrorInfo getErrorInfo();
-
+	
+	/**
+	 * Start the download of the file bundled in the message
+	 */
+	void startFileDownload(LinphoneChatMessage.StateListener listener);
+	
+	/**
+	 * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
+	 * @return a pointer to the LinphoneContent structure or NULL if not present.
+	 */
+	LinphoneContent getFileTransferInformation();
+	
+	/**
+	 * Sets data in the chat message
+	 * @param data to store in the message
+	 */
+	void setAppData(String data);
+	
+	/**
+	 * @return the data stored in the chat message if any, else null
+	 */
+	String getAppData();
 }

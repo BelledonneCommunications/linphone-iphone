@@ -58,6 +58,8 @@ extern test_suite_t flexisip_test_suite;
 extern test_suite_t stun_test_suite;
 extern test_suite_t remote_provisioning_test_suite;
 extern test_suite_t quality_reporting_test_suite;
+extern test_suite_t transport_test_suite;
+extern test_suite_t player_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -192,6 +194,9 @@ typedef struct _stats {
 
 	int number_of_LinphoneCallEncryptedOn;
 	int number_of_LinphoneCallEncryptedOff;
+	int number_of_NetworkReachableTrue;
+	int number_of_NetworkReachableFalse;
+	int number_of_player_eof;
 	LinphoneChatMessage* last_received_chat_message;
 }stats;
 
@@ -239,6 +244,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						, const LinphoneCallParams *caller_params
 						, const LinphoneCallParams *callee_params);
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
+void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
 const char *liblinphone_tester_get_subscribe_content(void);

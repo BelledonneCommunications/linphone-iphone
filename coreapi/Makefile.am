@@ -6,10 +6,10 @@ GIT_TAG=`cd $(top_srcdir) && git describe --abbrev=0`
 GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 
 ## This command is used to check if the sources are cloned in a git repo.
-## We can't only depend on the presence of the .git/ directory anymore, 
+## We can't only depend on the presence of the .git/ directory anymore,
 ## because of gits submodule handling.
 ## We now simply issue a git log on configure.ac and if the output is empty (error or file not tracked), then we are not in git.
-GITLOG=$(shell git log -1 $(top_srcdir)/configure.ac)
+GITLOG=$(shell git log -1 --pretty=format:%H $(top_srcdir)/configure.ac)
 
 ECHO=/bin/echo
 
@@ -24,7 +24,7 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h call_log.h call_params.h
 
 lib_LTLIBRARIES=liblinphone.la
 
@@ -59,12 +59,16 @@ liblinphone_la_SOURCES=\
 	lpc2xml.c \
 	remote_provisioning.c \
 	quality_reporting.c quality_reporting.h\
+	call_log.c \
+	call_params.c \
+	player.c \
+	fileplayer.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
 liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
-	
+
 liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_impl.c bellesip_sal/sal_impl.h \
 				bellesip_sal/sal_op_impl.c \
@@ -79,7 +83,7 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_op_events.c
 
 if BUILD_WIZARD
-liblinphone_la_SOURCES+=sipwizard.c 
+liblinphone_la_SOURCES+=sipwizard.c
 endif
 
 liblinphone_la_SOURCES+=linphone_tunnel_config.c
@@ -138,8 +142,9 @@ endif
 AM_CPPFLAGS=\
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir)
 
-AM_CFLAGS=\
-	$(STRICT_OPTIONS)  -DIN_LINPHONE \
+COMMON_CFLAGS=\
+	$(STRICT_OPTIONS) \
+	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
 	$(SIPSTACK_CFLAGS) \
@@ -155,15 +160,16 @@ AM_CFLAGS=\
 	$(LDAP_CFLAGS) $(SASL_CFLAGS)
 
 if BUILD_WIZARD
-AM_CFLAGS+= -DBUILD_WIZARD 
+COMMON_CFLAGS+= -DBUILD_WIZARD
 endif
 
-AM_CFLAGS+= -DUSE_BELLESIP
+COMMON_CFLAGS+= -DUSE_BELLESIP
 
-AM_CXXFLAGS=$(AM_CFLAGS)
+AM_CFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CC)
+AM_CXXFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CXX)
 
 #Make sure that we are in linphone's git tree by doing git log $(top_srcdir)/configure.ac.
-#if it is something known to git, then that will be ok to check the git describe number and make sure it is consistent with 
+#if it is something known to git, then that will be ok to check the git describe number and make sure it is consistent with
 #the PACKAGE_VERSION given in configure.ac
 
 make_gitversion_h:

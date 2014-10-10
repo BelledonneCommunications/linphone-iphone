@@ -280,9 +280,11 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	if (sd1->proto != sd2->proto) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
 		if ((sd1->crypto[i].tag != sd2->crypto[i].tag)
-			|| (sd1->crypto[i].algo != sd2->crypto[i].algo)
-			|| (strncmp(sd1->crypto[i].master_key, sd2->crypto[i].master_key, sizeof(sd1->crypto[i].master_key) - 1))) {
-			result |= SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED;
+			|| (sd1->crypto[i].algo != sd2->crypto[i].algo)){
+			result|=SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED;
+		}
+		if ((strncmp(sd1->crypto[i].master_key, sd2->crypto[i].master_key, sizeof(sd1->crypto[i].master_key) - 1))) {
+			result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
 		}
 	}
 
@@ -307,7 +309,7 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
-	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	for(i = 0; i < md1->nb_streams; ++i){
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
@@ -735,3 +737,9 @@ belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {
 	return sal->stack;
 }
 
+char* sal_op_get_public_uri(SalOp *op) {
+	if (op && op->refresher) {
+		return belle_sip_refresher_get_public_uri(op->refresher);
+	}
+	return NULL;
+}

@@ -18,7 +18,7 @@ UI_FILES=	about.ui \
 		audio_assistant.ui
 
 PIXMAPS=	\
-		stock_people.png 
+		stock_people.png
 
 LINPHONE_ICO_RC_FILE=linphone.rc
 LINPHONE_ICO_FILE=linphone.ico
@@ -54,7 +54,8 @@ linphone_SOURCES=	\
 			conference.c \
 			config-fetching.c \
 			audio_assistant.c \
-			linphone.h 
+			videowindow.c \
+			linphone.h
 if BUILD_WIZARD
 linphone_SOURCES+=	\
 			setupwizard.c
@@ -84,7 +85,7 @@ endif
 AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
-		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
+		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
 		$(TUNNEL_CFLAGS) \
 		$(SQLITE3_CFLAGS)
 

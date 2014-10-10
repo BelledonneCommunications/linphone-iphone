@@ -44,7 +44,7 @@ static GtkWidget *create_setup_signin_choice(){
 	GtkWidget *t2=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I have already a linphone.org account and I just want to use it"));
 	GtkWidget *t3=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I have already a sip account and I just want to use it"));
 	GtkWidget *t4=gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(t1),_("I want to specify a remote configuration URI"));
-	
+
 	gtk_box_pack_start (GTK_BOX (vbox), t1, TRUE, TRUE, 2);
 	gtk_box_pack_start (GTK_BOX (vbox), t2, TRUE, TRUE, 2);
 	gtk_box_pack_start (GTK_BOX (vbox), t3, TRUE, TRUE, 2);
@@ -89,14 +89,20 @@ static GtkWidget *create_linphone_account_informations_page() {
 	GtkWidget *label=gtk_label_new(_("Enter your linphone.org username"));
 
 	GdkColor color;
+	GtkWidget *labelEmpty;
+	GtkWidget *labelUsername;
+	GtkWidget *entryUsername;
+	GtkWidget *labelPassword;
+	GtkWidget *entryPassword;
+
 	gdk_color_parse ("red", &color);
-	GtkWidget *labelEmpty=gtk_label_new(NULL);
+	labelEmpty=gtk_label_new(NULL);
 	gtk_widget_modify_fg(labelEmpty, GTK_STATE_NORMAL, &color);
 
-	GtkWidget *labelUsername=gtk_label_new(_("Username:"));
-	GtkWidget *entryUsername=gtk_entry_new();
-	GtkWidget *labelPassword=gtk_label_new(_("Password:"));
-	GtkWidget *entryPassword=gtk_entry_new();
+	labelUsername=gtk_label_new(_("Username:"));
+	entryUsername=gtk_entry_new();
+	labelPassword=gtk_label_new(_("Password:"));
+	entryPassword=gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
 
 	gtk_table_attach_defaults(GTK_TABLE(vbox), label, 0, 2, 0, 1);
@@ -118,19 +124,28 @@ static GtkWidget *create_account_informations_page() {
 	GtkWidget *label=gtk_label_new(_("Enter your account informations"));
 
 	GdkColor color;
+	GtkWidget *labelEmpty;
+	GtkWidget *labelUsername;
+	GtkWidget *labelPassword;
+	GtkWidget *entryPassword;
+	GtkWidget *labelDomain;
+	GtkWidget *labelProxy;
+	GtkWidget *entryUsername;
+	GtkWidget *entryDomain;
+	GtkWidget *entryRoute;
 	gdk_color_parse ("red", &color);
-	GtkWidget *labelEmpty=gtk_label_new(NULL);
+	labelEmpty=gtk_label_new(NULL);
 	gtk_widget_modify_fg(labelEmpty, GTK_STATE_NORMAL, &color);
 
-	GtkWidget *labelUsername=gtk_label_new(_("Username*"));
-	GtkWidget *labelPassword=gtk_label_new(_("Password*"));
-	GtkWidget *entryPassword=gtk_entry_new();
+	labelUsername=gtk_label_new(_("Username*"));
+	labelPassword=gtk_label_new(_("Password*"));
+	entryPassword=gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
-	GtkWidget *labelDomain=gtk_label_new(_("Domain*"));
-	GtkWidget *labelProxy=gtk_label_new(_("Proxy"));
-	GtkWidget *entryUsername=gtk_entry_new();
-	GtkWidget *entryDomain=gtk_entry_new();
-	GtkWidget *entryRoute=gtk_entry_new();
+	labelDomain=gtk_label_new(_("Domain*"));
+	labelProxy=gtk_label_new(_("Proxy"));
+	entryUsername=gtk_entry_new();
+	entryDomain=gtk_entry_new();
+	entryRoute=gtk_entry_new();
 
 	gtk_table_attach_defaults(GTK_TABLE(vbox), label, 0, 2, 0, 1);
 	gtk_table_attach_defaults(GTK_TABLE(vbox), labelUsername, 0, 1, 1, 2);
@@ -309,19 +324,25 @@ static GtkWidget *create_account_information_page() {
 	GtkWidget *labelPassword2=gtk_label_new(_("Confirm your password: (*)"));
 	GtkWidget *entryUsername=gtk_entry_new();
 	GtkWidget *entryPassword=gtk_entry_new();
-	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
-	GtkWidget *entryEmail=gtk_entry_new();
-	GtkWidget *entryPassword2=gtk_entry_new();
-	gtk_entry_set_visibility(GTK_ENTRY(entryPassword2), FALSE);
-	GtkWidget *checkNewsletter=gtk_check_button_new_with_label("Keep me informed with linphone updates");
-
+	GtkWidget *entryEmail;
+	GtkWidget *entryPassword2;
+	GtkWidget *checkNewsletter;
+	GtkWidget *labelError;
+	GtkWidget *passwordVbox1;
+	GtkWidget *passwordVbox2;
 	GdkColor color;
+	gtk_entry_set_visibility(GTK_ENTRY(entryPassword), FALSE);
+	entryEmail=gtk_entry_new();
+	entryPassword2=gtk_entry_new();
+	gtk_entry_set_visibility(GTK_ENTRY(entryPassword2), FALSE);
+	checkNewsletter=gtk_check_button_new_with_label(_("Keep me informed with linphone updates"));
+
 	gdk_color_parse ("red", &color);
-	GtkWidget *labelError=gtk_label_new(NULL);
+	labelError=gtk_label_new(NULL);
 	gtk_widget_modify_fg(labelError, GTK_STATE_NORMAL, &color);
 
-	GtkWidget *passwordVbox1=gtk_vbox_new(FALSE,2);
-	GtkWidget *passwordVbox2=gtk_vbox_new(FALSE,2);
+	passwordVbox1=gtk_vbox_new(FALSE,2);
+	passwordVbox2=gtk_vbox_new(FALSE,2);
 	gtk_box_pack_start (GTK_BOX (passwordVbox1), labelPassword, TRUE, FALSE, 2);
 	gtk_box_pack_start (GTK_BOX (passwordVbox1), labelPassword2, TRUE, FALSE, 2);
 	gtk_box_pack_start (GTK_BOX (passwordVbox2), entryPassword, TRUE, FALSE, 2);
@@ -414,6 +435,8 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 	if (pagenum == 5) {
 		gtk_assistant_commit(GTK_ASSISTANT(assistant));
 	} else if (pagenum == gtk_assistant_get_n_pages(GTK_ASSISTANT(assistant)) - 1) {
+		LinphoneAddress *identity;
+		LinphoneAuthInfo *info;
 		// Saving the account and making it default
 		LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(assistant);
 		LinphoneProxyConfig *cfg=linphone_proxy_config_new();
@@ -424,30 +447,33 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_proxy_config_enable_publish(cfg, FALSE);
 		linphone_proxy_config_enable_register(cfg, TRUE);
 
-		LinphoneAddress *identity = linphone_address_new(creator->username);
-		LinphoneAuthInfo *info=linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password, NULL, NULL, linphone_address_get_domain(identity));
+		identity = linphone_address_new(creator->username);
+		info=linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password, NULL, NULL, linphone_address_get_domain(identity));
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		linphone_address_destroy(identity);
-        
-		// If account created on sip.linphone.org, we configure linphone to use TLS by default
-		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 && linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
-			LinphoneAddress *addr=linphone_address_new(creator->domain);
-			char *tmp;
-			linphone_address_set_transport(addr, LinphoneTransportTls);
-			tmp=linphone_address_as_string(addr);
-			linphone_proxy_config_set_server_addr(cfg,tmp);
-			linphone_proxy_config_set_route(cfg,tmp);
-			ms_free(tmp);
-			linphone_address_destroy(addr);
+
+		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 ){
+			linphone_proxy_config_enable_avpf(cfg,TRUE);
+			// If account created on sip.linphone.org, we configure linphone to use TLS by default
+			if (linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
+				LinphoneAddress *addr=linphone_address_new(creator->domain);
+				char *tmp;
+				linphone_address_set_transport(addr, LinphoneTransportTls);
+				tmp=linphone_address_as_string(addr);
+				linphone_proxy_config_set_server_addr(cfg,tmp);
+				linphone_proxy_config_set_route(cfg,tmp);
+				ms_free(tmp);
+				linphone_address_destroy(addr);
+			}
 		}
-		
+
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
 			return;
 
 		linphone_core_set_default_proxy(linphone_gtk_get_core(),cfg);
 		linphone_gtk_load_identities();
 
-		
+
 	}
 }
 
@@ -486,9 +512,9 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data){
 	else if (curpage == 2) { // Account's informations entered
 		LinphoneAccountCreator *c=linphone_gtk_assistant_get_creator(w);
 		gchar identity[128];
+		gchar proxy[128];
 		g_snprintf(identity, sizeof(identity), "sip:%s@%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"username"))), gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
 
-		gchar proxy[128];
 		g_snprintf(proxy, sizeof(proxy), "sip:%s", gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box),"domain"))));
 
 		linphone_account_creator_set_username(c, identity);
@@ -557,25 +583,35 @@ void linphone_gtk_close_assistant(void){
 }
 
 void linphone_gtk_show_assistant(void){
+	GtkWidget *w;
+	GtkWidget *p1;
+	GtkWidget *p2;
+	GtkWidget *p31;
+	GtkWidget *p32;
+	GtkWidget *p33;
+	//GtkWidget *confirm;
+	GtkWidget *validate;
+	GtkWidget *error;
+	GtkWidget *end;
 	if(the_assistant!=NULL)
 		return;
-	GtkWidget *w=the_assistant=gtk_assistant_new();
+	w=the_assistant=gtk_assistant_new();
 	gtk_window_set_resizable (GTK_WINDOW(w), FALSE);
 	gtk_window_set_title(GTK_WINDOW(w),_("SIP account configuration assistant"));
 
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));
 
-	GtkWidget *p1=create_intro();
-	GtkWidget *p2=create_setup_signin_choice();
-	GtkWidget *p31=create_account_informations_page();
-	GtkWidget *p32=create_linphone_account_informations_page();
-	GtkWidget *p33=create_account_information_page();
-	//GtkWidget *confirm=create_confirmation_page();
-	GtkWidget *validate=wait_for_activation();
-	GtkWidget *error=create_error_page();
-	GtkWidget *end=create_finish_page();
-	
+	p1=create_intro();
+	p2=create_setup_signin_choice();
+	p31=create_account_informations_page();
+	p32=create_linphone_account_informations_page();
+	p33=create_account_information_page();
+	//confirm=create_confirmation_page();
+	validate=wait_for_activation();
+	error=create_error_page();
+	end=create_finish_page();
+
 	linphone_gtk_assistant_init(w);
 	gtk_assistant_append_page(GTK_ASSISTANT(w),p1);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w),p1,GTK_ASSISTANT_PAGE_INTRO);

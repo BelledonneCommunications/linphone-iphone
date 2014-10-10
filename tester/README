@@ -1,0 +1,9 @@
+This is the test suite of liblinphone, with many tests suites for Register, Calls, Message, Presence.
+
+All thoses tests suites require a SIP server configured accordingly in order to execute. Naturally a Flexisip SIP server is used, whose configuration is put in the flexisip/ directory here.
+
+In order to invoke it, just place into the tester directory and run 
+$ flexisip --configfile flexisip/flexisip.conf
+
+The tester_hosts file contains the host-like DNS configuration file to be used by the test suite in order to resolve the virtual SIP domains used by the SIP stack.
+It is possible to run the flexisip SIP server and the test suite on the same machine by passing a new tester_hosts file where domains resolve to 127.0.0.1 to the tester, using the --dns-hosts option.

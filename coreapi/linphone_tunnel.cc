@@ -29,14 +29,15 @@
 #include "private.h"
 #include "lpconfig.h"
 
-LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
+static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
+
+LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
 
 struct _LinphoneTunnel {
 	belledonnecomm::TunnelManager *manager;
 	MSList *config_list;
-	bool_t auto_detect_enabled;
 };
 
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
@@ -45,16 +46,19 @@ extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
 	return tunnel;
 }
 
-static inline belledonnecomm::TunnelManager *bcTunnel(LinphoneTunnel *tunnel){
+belledonnecomm::TunnelManager *bcTunnel(const LinphoneTunnel *tunnel){
 	return tunnel->manager;
 }
 
-static inline _LpConfig *config(LinphoneTunnel *tunnel){
+static inline _LpConfig *config(const LinphoneTunnel *tunnel){
 	return tunnel->manager->getLinphoneCore()->config;
 }
 
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 	delete tunnel->manager;
+
+	ms_list_free_with_data(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy);
+
 	ms_free(tunnel);
 }
 
@@ -100,12 +104,12 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 			break;
 		case 3:
 			delay = atoi(pch);
-			break;	
+			break;
 		default:
 			// Abort
 			pos = 0;
 			break;
-			
+
 		}
 		++pos;
 		pch = strtok(NULL, ":");
@@ -121,12 +125,12 @@ static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str)
 	if(pos == 4) {
 		linphone_tunnel_config_set_delay(tunnel_config, delay);
 	}
-	ms_free(dstr);	
+	ms_free(dstr);
 	return tunnel_config;
 }
 
 
-static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
+static void linphone_tunnel_save_config(const LinphoneTunnel *tunnel) {
 	MSList *elem = NULL;
 	char *tmp = NULL, *old_tmp = NULL, *tc_str = NULL;
 	for(elem = tunnel->config_list; elem != NULL; elem = elem->next) {
@@ -152,12 +156,12 @@ static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
 
 static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
 	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) == -1) {
-		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
 			linphone_tunnel_config_get_port(tunnel_config));
 	} else {
-		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
-			linphone_tunnel_config_get_port(tunnel_config), 
-			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config), 
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config),
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
 			linphone_tunnel_config_get_delay(tunnel_config));
 	}
 	tunnel->config_list = ms_list_append(tunnel->config_list, tunnel_config);
@@ -209,38 +213,37 @@ void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig 
 	MSList *elem = ms_list_find(tunnel->config_list, tunnel_config);
 	if(elem != NULL) {
 		tunnel->config_list = ms_list_remove(tunnel->config_list, tunnel_config);
-		linphone_tunnel_config_destroy(tunnel_config);		
+		linphone_tunnel_config_destroy(tunnel_config);
 		linphone_tunnel_refresh_config(tunnel);
 		linphone_tunnel_save_config(tunnel);
-	}	
+	}
 }
 
-const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
+const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel){
 	return tunnel->config_list;
 }
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->cleanServers();
-	
+
 	/* Free the list */
-	ms_list_for_each(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy); 
-	tunnel->config_list = ms_list_free(tunnel->config_list);
-	
+	ms_list_free_with_data(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy);
+	tunnel->config_list = NULL;
+
 	linphone_tunnel_save_config(tunnel);
 }
 
-void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
-	tunnel->auto_detect_enabled = FALSE;
-	lp_config_set_int(config(tunnel),"tunnel","enabled",(int)enabled);
-	bcTunnel(tunnel)->enable(enabled);
+void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode){
+	lp_config_set_string(config(tunnel),"tunnel","mode", tunnel_mode_to_string(mode));
+	bcTunnel(tunnel)->setMode(mode);
 }
 
-bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
-	return bcTunnel(tunnel)->isEnabled();
+LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel){
+	return bcTunnel(tunnel)->getMode();
 }
 
-bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel){
-	return bcTunnel(tunnel)->isReady();
+bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel){
+	return bcTunnel(tunnel)->isConnected();
 }
 
 static OrtpLogFunc tunnelOrtpLogHandler=NULL;
@@ -316,17 +319,36 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->reconnect();
 }
 
-void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
-	tunnel->auto_detect_enabled = TRUE;
-	bcTunnel(tunnel)->autoDetect();
+void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable) {
+	bcTunnel(tunnel)->tunnelizeSipPackets(enable);
+	lp_config_set_int(config(tunnel), "tunnel", "sip", (enable ? TRUE : FALSE));
 }
 
-bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
-	return tunnel->auto_detect_enabled;
+bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
+	return bcTunnel(tunnel)->tunnelizeSipPacketsEnabled() ? TRUE : FALSE;
 }
 
 static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(level,fmt,args);
+}
+
+LinphoneTunnelMode string_to_tunnel_mode(const char *string) {
+	if(string != NULL) {
+		int i;
+		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
+		if(i<3) {
+			return (LinphoneTunnelMode)i;
+		} else {
+			ms_error("Invalid tunnel mode '%s'", string);
+			return LinphoneTunnelModeDisable;
+		}
+	} else {
+		return LinphoneTunnelModeDisable;
+	}
+}
+
+const char *tunnel_mode_to_string(LinphoneTunnelMode mode) {
+	return _tunnel_mode_str[mode];
 }
 
 /**
@@ -334,9 +356,28 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
  * Called internally from linphonecore at startup.
  */
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-	bool_t enabled=(bool_t)lp_config_get_int(config(tunnel),"tunnel","enabled",FALSE);
+	LinphoneTunnelMode mode = string_to_tunnel_mode(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
+	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);
-	linphone_tunnel_enable(tunnel, enabled);
+	linphone_tunnel_enable_sip(tunnel, tunnelizeSIPPackets);
+	linphone_tunnel_set_mode(tunnel, mode);
 }
 
+/* Deprecated functions */
+void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled) {
+	if(enabled) linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeEnable);
+	else linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeDisable);
+}
+
+bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel) {
+	return linphone_tunnel_get_mode(tunnel) == LinphoneTunnelModeEnable;
+}
+
+void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel) {
+	linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeAuto);
+}
+
+bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
+	return linphone_tunnel_get_mode(tunnel) == LinphoneTunnelModeAuto;
+}

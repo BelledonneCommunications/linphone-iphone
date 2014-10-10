@@ -58,7 +58,7 @@ static gboolean execute_wakeup(char *buf){
 
 static void * server_pipe_thread(void *pointer){
 	ortp_pipe_t child;
-	
+
 	do{
 		child=ortp_server_pipe_accept_client(server_pipe);
 		if (server_pipe_running && child!=(ortp_pipe_t)-1){
@@ -87,8 +87,9 @@ static void linphone_gtk_init_pipe(const char *name){
 }
 
 bool_t linphone_gtk_init_instance(const char *app_name, int option, const char *addr_to_call){
+	ortp_pipe_t p;
 	pipe_name=make_name(app_name);
-	ortp_pipe_t p=ortp_client_pipe_connect(pipe_name);
+	p=ortp_client_pipe_connect(pipe_name);
 	if (p!=(ortp_pipe_t)-1){
 		uint8_t buf[256]={0};
 		g_message("There is already a running instance.");

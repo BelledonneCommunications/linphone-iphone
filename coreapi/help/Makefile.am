@@ -1,7 +1,7 @@
 
 EXTRA_DIST=Doxyfile.in doxygen.dox
 
-SOURCES=doxygen.dox $(top_srcdir)/coreapi/help/*.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h  
+SOURCES=doxygen.dox $(top_srcdir)/coreapi/help/*.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h
 
 
 # html doc
@@ -84,6 +84,7 @@ filetransfer_LDADD=$(helloworld_LDADD)
 AM_CFLAGS=\
 	-I$(top_srcdir)/coreapi \
 	$(STRICT_OPTIONS) \
+	$(STRICT_OPTIONS_CC) \
 	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
@@ -98,4 +99,4 @@ AM_CFLAGS=\
 tutodir=$(datadir)/tutorials/linphone
 
 tuto_DATA=$(LINPHONE_TUTOS)
-endif 
+endif

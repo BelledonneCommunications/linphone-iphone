@@ -89,13 +89,10 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 }
 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state){
-	LinphoneCore *lc=lev->lc;
 	if (lev->subscription_state!=state){
 		ms_message("LinphoneEvent [%p] moving to subscription state %s",lev,linphone_subscription_state_to_string(state));
 		lev->subscription_state=state;
-		if (lc->vtable.subscription_state_changed){
-			lc->vtable.subscription_state_changed(lev->lc,lev,state);
-		}
+		linphone_core_notify_subscription_state_changed(lev->lc,lev,state);
 		if (state==LinphoneSubscriptionTerminated){
 			linphone_event_unref(lev);
 		}
@@ -103,13 +100,10 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 }
 
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state){
-	LinphoneCore *lc=lev->lc;
 	if (lev->publish_state!=state){
 		ms_message("LinphoneEvent [%p] moving to publish state %s",lev,linphone_publish_state_to_string(state));
 		lev->publish_state=state;
-		if (lc->vtable.publish_state_changed){
-			lc->vtable.publish_state_changed(lev->lc,lev,state);
-		}
+		linphone_core_notify_publish_state_changed(lev->lc,lev,state);
 		switch(state){
 			case LinphonePublishCleared:
 				linphone_event_unref(lev);

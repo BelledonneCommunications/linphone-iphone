@@ -60,7 +60,7 @@ static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml
 									, error_msg);
 }
 
-static int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
+int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
 	int status = -1;
 	FILE* f = fopen(file_path, "r");
 

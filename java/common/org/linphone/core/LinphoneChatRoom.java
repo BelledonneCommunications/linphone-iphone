@@ -33,11 +33,13 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneAddress peer address
 	 */
 	LinphoneAddress getPeerAddress();
+	
 	/**
 	* send a message to peer member of this chat room.
 	* @param  	message to be sent
 	*/
 	void sendMessage(String message);
+	
 	/**
 	 * Send a message to peer member of this chat room.
 	 * @param chat message
@@ -128,9 +130,23 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message, String url, State state, long timestamp, boolean isRead, boolean isIncoming);
+	
 	/**
 	 * Returns a back pointer to the core managing the chat room.
 	 * @return the LinphoneCore
 	 */
 	LinphoneCore getCore();
+	
+	/**
+	 * Create a message attached to a dedicated chat room with a particular content.
+	 * @param content LinphoneContent initial content.
+	 * @return a new LinphoneChatMessage
+	 */
+	LinphoneChatMessage createFileTransferMessage(LinphoneContent content);
+	
+	/**
+	 * Cancel an ongoing file transfer attached to this message (upload or download)
+	 * @param message
+	 */
+	void cancelFileTransfer(LinphoneChatMessage message);
 }

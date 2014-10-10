@@ -103,4 +103,28 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		unref(nativePtr);
 		super.finalize();
 	}
+	
+	private native void startFileDownload(long ptr, StateListener listener);
+	@Override
+	public void startFileDownload(StateListener listener) {
+		startFileDownload(nativePtr, listener);
+	}
+	
+	private native Object getFileTransferInformation(long ptr);
+	@Override
+	public LinphoneContent getFileTransferInformation() {
+		return (LinphoneContent) getFileTransferInformation(nativePtr);
+	}
+	
+	private native void setAppData(long ptr, String data);
+	@Override
+	public void setAppData(String data) {
+		setAppData(nativePtr, data);
+	}
+	
+	private native String getAppData(long ptr);
+	@Override
+	public String getAppData() {
+		return getAppData(nativePtr);
+	}
 }

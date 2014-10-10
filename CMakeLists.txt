@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(LINPHONE C CXX)
 
 
@@ -61,6 +61,13 @@ endif()
 find_package(BelleSIP REQUIRED)
 find_package(MS2 REQUIRED)
 find_package(XML2 REQUIRED)
+if(ENABLE_TUNNEL)
+	find_package(Tunnel)
+	if(NOT TUNNEL_FOUND)
+		message(WARNING "Could not find the tunnel library!")
+		set(ENABLE_TUNNEL OFF CACHE BOOL "Enable tunnel support" FORCE)
+	endif()
+endif()
 
 
 include_directories(
@@ -72,6 +79,9 @@ include_directories(
 	${MS2_INCLUDE_DIRS}
 	${XML2_INCLUDE_DIRS}
 )
+if(ENABLE_TUNNEL)
+	include_directories(${TUNNEL_INCLUDE_DIRS})
+endif()
 
 if(MSVC)
 	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
@@ -94,6 +104,9 @@ add_definitions(-DHAVE_CONFIG_H)
 
 add_subdirectory(coreapi)
 add_subdirectory(share)
+if(ENABLE_TOOLS)
+	add_subdirectory(tools)
+endif()
 
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/FindLinphone.cmake

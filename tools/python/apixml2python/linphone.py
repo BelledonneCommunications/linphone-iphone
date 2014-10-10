@@ -137,9 +137,11 @@ class ArgumentType:
 		elif self.basic_type == 'bool_t':
 			self.type_str = 'bool'
 			self.check_func = 'PyBool_Check'
-			self.convert_func = 'PyInt_AsLong'
-			self.fmt_str = 'i'
-			self.cfmt_str = '%d'
+			self.convert_func = 'PyObject_IsTrue'
+			self.convert_from_func = 'PyBool_FromLong'
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
+			self.cnativefmt_str = '%u'
 		elif self.basic_type == 'time_t':
 			self.type_str = 'DateTime'
 			self.check_func = 'PyDateTime_Check'
@@ -147,7 +149,7 @@ class ArgumentType:
 			self.convert_from_func = 'PyDateTime_From_time_t'
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
-			self.cnativefmt_str = "%ld"
+			self.cnativefmt_str = '%ld'
 		elif self.basic_type == 'MSList':
 			self.type_str = 'list of linphone.' + self.contained_type
 			self.check_func = 'PyList_Check'
@@ -207,6 +209,7 @@ class MethodDefinition:
 			if self.build_value_format == 'O':
 				body += "\tPyObject * pyresult;\n"
 			body += "\tPyObject * pyret;\n"
+			body += "\tconst char *pyret_fmt;\n"
 		if self.self_arg is not None:
 			body += "\t" + self.self_arg.get('completetype') + "native_ptr;\n"
 		for xml_method_arg in self.xml_method_args:
@@ -313,9 +316,7 @@ class MethodDefinition:
 			if len(arg_names) > 0:
 				c_function_call_code += ', '
 		c_function_call_code += ', '.join(arg_names) + ");"
-		return_from_user_data_code = ''
-		new_from_native_pointer_code = ''
-		ref_native_pointer_code = ''
+		from_native_pointer_code = ''
 		convert_from_code = ''
 		build_value_code = ''
 		result_variable = ''
@@ -324,21 +325,7 @@ class MethodDefinition:
 				stripped_return_type = strip_leading_linphone(self.return_type)
 				return_type_class = self.find_class_definition(self.return_type)
 				if return_type_class is not None:
-					if return_type_class['class_has_user_data']:
-						get_user_data_function = return_type_class['class_c_function_prefix'] + "get_user_data"
-						return_from_user_data_code = \
-"""if ((cresult != NULL) && ({func}(cresult) != NULL)) {{
-		return (PyObject *){func}(cresult);
-	}}
-""".format(func=get_user_data_function)
-					new_from_native_pointer_code = "pyresult = pylinphone_{return_type}_new_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
-					if self.self_arg is not None and return_type_class['class_refcountable']:
-						ref_function = return_type_class['class_c_function_prefix'] + "ref"
-						ref_native_pointer_code = \
-"""if (cresult != NULL) {{
-		{func}(({cast_type})cresult);
-	}}
-""".format(func=ref_function, cast_type=self.remove_const_from_complete_type(self.return_complete_type))
+					from_native_pointer_code = "pyresult = pylinphone_{return_type}_from_native_ptr(&pylinphone_{return_type}Type, cresult);\n".format(return_type=stripped_return_type)
 				else:
 					return_argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 					if return_argument_type.convert_from_func is not None:
@@ -349,19 +336,15 @@ class MethodDefinition:
 			else:
 				result_variable = 'cresult'
 		if result_variable != '':
-			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});\n".format(fmt=self.build_value_format.replace('O', 'N'), result_variable=result_variable)
+			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});".format(fmt=self.build_value_format, result_variable=result_variable)
 		body = \
 """	{c_function_call_code}
 	pylinphone_dispatch_messages();
-	{return_from_user_data_code}
-	{new_from_native_pointer_code}
-	{ref_native_pointer_code}
+	{from_native_pointer_code}
 	{convert_from_code}
 	{build_value_code}
 """.format(c_function_call_code=c_function_call_code,
-		return_from_user_data_code=return_from_user_data_code,
-		new_from_native_pointer_code=new_from_native_pointer_code,
-		ref_native_pointer_code=ref_native_pointer_code,
+		from_native_pointer_code=from_native_pointer_code,
 		convert_from_code=convert_from_code,
 		build_value_code=build_value_code)
 		return body
@@ -485,7 +468,7 @@ class NewMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s()\", __FUNCTION__);\n"
 
 	def format_c_function_call(self):
-		return "\tself->native_ptr = NULL;\n"
+		return ''
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
@@ -493,12 +476,41 @@ class NewMethodDefinition(MethodDefinition):
 	def format_return_result(self):
 		return "\treturn (PyObject *)self;"
 
-class NewFromNativePointerMethodDefinition(MethodDefinition):
+class InitMethodDefinition(MethodDefinition):
+	def __init__(self, linphone_module, class_, method_node = None):
+		MethodDefinition.__init__(self, linphone_module, class_, method_node)
+
+	def format_local_variables_definition(self):
+		return "\tpylinphone_{class_name}Object *self_obj = (pylinphone_{class_name}Object *)self;\n".format(class_name=self.class_['class_name'])
+
+	def format_arguments_parsing(self):
+		return ''
+
+	def format_enter_trace(self):
+		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s()\", __FUNCTION__);\n"
+
+	def format_c_function_call(self):
+		specific_member_initialization_code = ''
+		for member in self.class_['class_object_members']:
+			specific_member_initialization_code += "\tself_obj->{member} = NULL;\n".format(member=member)
+		return \
+"""	self_obj->native_ptr = NULL;
+	self_obj->user_data = NULL;
+{specific_member_initialization_code}
+""".format(specific_member_initialization_code=specific_member_initialization_code)
+
+	def format_return_trace(self):
+		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
+
+	def format_return_result(self):
+		return "\treturn 0;"
+
+class FromNativePointerMethodDefinition(MethodDefinition):
 	def __init__(self, linphone_module, class_):
 		MethodDefinition.__init__(self, linphone_module, class_, None)
 
 	def format_local_variables_definition(self):
-		return "\tpylinphone_{class_name}Object *self;\n".format(class_name=self.class_['class_name'])
+		return "\tpylinphone_{class_name}Object *self = NULL;\n".format(class_name=self.class_['class_name'])
 
 	def format_arguments_parsing(self):
 		return ''
@@ -507,23 +519,34 @@ class NewFromNativePointerMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s(%p)\", __FUNCTION__, native_ptr);\n"
 
 	def format_c_function_call(self):
+		get_user_data_func_call = ''
 		set_user_data_func_call = ''
 		if self.class_['class_has_user_data']:
-			set_user_data_func_call = "\t{function_prefix}set_user_data(self->native_ptr, self);\n".format(function_prefix=self.class_['class_c_function_prefix'])
+			get_user_data_func_call = "self = (pylinphone_{class_name}Object *){function_prefix}get_user_data(native_ptr);".format(class_name=self.class_['class_name'], function_prefix=self.class_['class_c_function_prefix'])
+			set_user_data_func_call = "{function_prefix}set_user_data(self->native_ptr, self);".format(function_prefix=self.class_['class_c_function_prefix'])
+		ref_native_pointer_code = ''
+		if self.class_['class_refcountable']:
+			ref_native_pointer_code = "{func}(self->native_ptr);".format(func=self.class_['class_c_function_prefix'] + "ref")
 		return \
 """	if (native_ptr == NULL) {{
 	{none_trace}
 		Py_RETURN_NONE;
 	}}
-	self = (pylinphone_{class_name}Object *)PyObject_New(pylinphone_{class_name}Object, type);
+	{get_user_data_func_call}
 	if (self == NULL) {{
-	{none_trace}
-		Py_RETURN_NONE;
+		self = (pylinphone_{class_name}Object *)PyObject_CallObject((PyObject *)&pylinphone_{class_name}Type, NULL);
+		if (self == NULL) {{
+		{none_trace}
+			Py_RETURN_NONE;
+		}}
+		self->native_ptr = ({class_cname} *)native_ptr;
+		{set_user_data_func_call}
+		{ref_native_pointer_code}
 	}}
-	self->native_ptr = ({class_cname} *)native_ptr;
-	{set_user_data_func_call}
 """.format(class_name=self.class_['class_name'], class_cname=self.class_['class_cname'],
-		none_trace=self.format_return_none_trace(), set_user_data_func_call=set_user_data_func_call)
+		none_trace=self.format_return_none_trace(),
+		get_user_data_func_call=get_user_data_func_call, set_user_data_func_call=set_user_data_func_call,
+		ref_native_pointer_code=ref_native_pointer_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s -> %p\", __FUNCTION__, self);\n"
@@ -542,14 +565,22 @@ class DeallocMethodDefinition(MethodDefinition):
 """.format(arg_type=self.class_['class_cname'], func=func)
 
 	def format_arguments_parsing(self):
-		return ''
+		# Check that the dealloc is not called a second time because of reentrancy
+		return "\tif (Py_REFCNT(self) < 0) return;\n"
 
 	def format_enter_trace(self):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s(%p [%p])\", __FUNCTION__, self, native_ptr);\n"
 
 	def format_c_function_call(self):
-		# Increment the refcount on self to prevent reentrancy in the dealloc method.
-		native_ptr_dealloc_code = "\tPy_INCREF(self);\n"
+		reset_user_data_code = ''
+		if self.class_['class_name'] != 'Core' and self.class_['class_has_user_data']:
+			reset_user_data_code += \
+"""if (native_ptr != NULL) {{
+		{function_prefix}set_user_data(native_ptr, NULL);
+	}}
+""".format(function_prefix=self.class_['class_c_function_prefix'])
+		native_ptr_dealloc_code = ''
+		specific_member_decref_code = ''
 		if self.class_['class_refcountable']:
 			native_ptr_dealloc_code += \
 """	if (native_ptr != NULL) {{
@@ -562,11 +593,16 @@ class DeallocMethodDefinition(MethodDefinition):
 		{function_prefix}destroy(native_ptr);
 	}}
 """.format(function_prefix=self.class_['class_c_function_prefix'])
+		for member in self.class_['class_object_members']:
+			specific_member_decref_code += "\tPy_XDECREF(((pylinphone_{class_name}Object *)self)->{member});\n".format(class_name=self.class_['class_name'], member=member)
 		return \
-"""{native_ptr_dealloc_code}
+"""	{reset_user_data_code}
+	{native_ptr_dealloc_code}
 	pylinphone_dispatch_messages();
+	Py_XDECREF(((pylinphone_{class_name}Object *)self)->user_data);
+{specific_member_decref_code}
 	self->ob_type->tp_free(self);
-""".format(native_ptr_dealloc_code=native_ptr_dealloc_code)
+""".format(class_name=self.class_['class_name'], reset_user_data_code=reset_user_data_code, native_ptr_dealloc_code=native_ptr_dealloc_code, specific_member_decref_code=specific_member_decref_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);"
@@ -675,21 +711,10 @@ class EventCallbackMethodDefinition(MethodDefinition):
 	def format_local_variables_definition(self):
 		common = \
 """	pylinphone_CoreObject *pylc = (pylinphone_CoreObject *)linphone_core_get_user_data(lc);
-	PyObject *func = PyDict_GetItemString(pylc->vtable_dict, "{name}");
-	PyGILState_STATE pygil_state;""".format(name=self.class_['event_name'])
+	PyObject *func;
+	PyObject *args;
+	PyGILState_STATE pygil_state;"""
 		specific = ''
-		for xml_method_arg in self.xml_method_args:
-			arg_name = 'py' + xml_method_arg.get('name')
-			arg_type = xml_method_arg.get('type')
-			arg_complete_type = xml_method_arg.get('completetype')
-			arg_contained_type = xml_method_arg.get('containedtype')
-			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
-			if argument_type.fmt_str == 'O':
-				specific += "\tPyObject * " + arg_name + " = NULL;\n"
-		return "{common}\n{specific}".format(common=common, specific=specific)
-
-	def format_arguments_parsing(self):
-		body = "\tpygil_state = PyGILState_Ensure();\n"
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -697,19 +722,15 @@ class EventCallbackMethodDefinition(MethodDefinition):
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			if argument_type.fmt_str == 'O':
-				type_class = self.find_class_definition(arg_type)
-				get_user_data_code = ''
-				new_from_native_pointer_code = "py{name} = pylinphone_{arg_type}_new_from_native_ptr(&pylinphone_{arg_type}Type, {name});".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
-				if type_class is not None and type_class['class_has_user_data']:
-					get_user_data_function = type_class['class_c_function_prefix'] + "get_user_data"
-					get_user_data_code = "py{name} = {get_user_data_function}({name});".format(name=arg_name, get_user_data_function=get_user_data_function)
-				body += \
-"""	{get_user_data_code}
-	if (py{name} == NULL) {{
-		{new_from_native_pointer_code}
-	}}
-""".format(name=arg_name, get_user_data_code=get_user_data_code, new_from_native_pointer_code=new_from_native_pointer_code)
-		return body
+				specific += "\tPyObject * py" + arg_name + " = NULL;\n"
+		return "{common}\n{specific}".format(common=common, specific=specific)
+
+	def format_arguments_parsing(self):
+		return \
+"""	if (Py_REFCNT(pylc) <= 0) return;
+	func = PyDict_GetItemString(pylc->vtable_dict, "{name}");
+	pygil_state = PyGILState_Ensure();
+""".format(name=self.class_['event_name'])
 
 	def format_enter_trace(self):
 		fmt = '%p'
@@ -730,6 +751,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "\tpylinphone_trace(1, \"[PYLINPHONE] >>> %s({fmt})\", __FUNCTION__{args});\n".format(fmt=fmt, args=args)
 
 	def format_c_function_call(self):
+		create_python_objects_code = ''
 		fmt = 'O'
 		args = ['pylc']
 		for xml_method_arg in self.xml_method_args:
@@ -743,14 +765,23 @@ class EventCallbackMethodDefinition(MethodDefinition):
 				args.append('py' + arg_name)
 			else:
 				args.append(arg_name)
+			if argument_type.fmt_str == 'O':
+				if argument_type.type_str == "bool":
+					create_python_objects_code += "\t\tpy{name} = {convert_from_func}({name});\n".format(name=arg_name, convert_from_func=argument_type.convert_from_func)
+				else:
+					type_class = self.find_class_definition(arg_type)
+					create_python_objects_code += "\t\tpy{name} = pylinphone_{arg_type}_from_native_ptr(&pylinphone_{arg_type}Type, {name});\n".format(name=arg_name, arg_type=strip_leading_linphone(arg_type))
 		args=', '.join(args)
 		return \
 """	if ((func != NULL) && PyCallable_Check(func)) {{
-		if (PyEval_CallObject(func, Py_BuildValue("{fmt}", {args})) == NULL) {{
+{create_python_objects_code}
+		args = Py_BuildValue("{fmt}", {args});
+		if (PyEval_CallObject(func, args) == NULL) {{
 			PyErr_Print();
 		}}
+		Py_DECREF(args);
 	}}
-""".format(fmt=fmt.replace('O', 'N'), args=args)
+""".format(fmt=fmt, args=args, create_python_objects_code=create_python_objects_code)
 
 	def format_return_trace(self):
 		return "\tpylinphone_trace(-1, \"[PYLINPHONE] <<< %s\", __FUNCTION__);\n"
@@ -824,9 +855,11 @@ class LinphoneModule(object):
 			c['class_type_hand_written_methods'] = []
 			c['class_instance_hand_written_methods'] = []
 			c['class_hand_written_properties'] = []
-			c['class_object_members'] = ''
+			c['class_object_members'] = []
+			c['class_object_members_code'] = ''
 			if c['class_name'] == 'Core':
-				c['class_object_members'] = "\tPyObject *vtable_dict;"
+				c['class_object_members'].append("vtable_dict")
+				c['class_object_members_code'] = "\tPyObject *vtable_dict;"
 				xml_events = xml_class.findall("./events/event")
 				for xml_event in xml_events:
 					if xml_event.get('deprecated') == 'true':
@@ -935,9 +968,14 @@ class LinphoneModule(object):
 				e.args += (c['class_name'], 'new_body')
 				raise
 			try:
-				c['new_from_native_pointer_body'] = NewFromNativePointerMethodDefinition(self, c).format()
+				c['init_body'] = InitMethodDefinition(self, c, xml_new_method).format()
 			except Exception, e:
-				e.args += (c['class_name'], 'new_from_native_pointer_body')
+				e.args += (c['class_name'], 'init_body')
+				raise
+			try:
+				c['from_native_pointer_body'] = FromNativePointerMethodDefinition(self, c).format()
+			except Exception, e:
+				e.args += (c['class_name'], 'from_native_pointer_body')
 				raise
 			try:
 				for m in c['class_type_methods']:
@@ -1041,8 +1079,8 @@ class LinphoneModule(object):
 		method_type = xml_node.tag
 		if method_type != 'classmethod' and len(xml_method_args) > 0:
 			xml_method_args = xml_method_args[1:]
+		doc += '\n'
 		if len(xml_method_args) > 0:
-			doc += "\n\nArguments:"
 			for xml_method_arg in xml_method_args:
 				arg_name = xml_method_arg.get('name')
 				arg_type = xml_method_arg.get('type')
@@ -1050,9 +1088,10 @@ class LinphoneModule(object):
 				arg_contained_type = xml_method_arg.get('containedtype')
 				argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self)
 				arg_doc = self.__format_doc_content(None, xml_method_arg.find('description'))
-				doc += '\n\t' + arg_name + ' [' + argument_type.type_str + ']'
+				doc += '\n:param ' + arg_name + ':'
 				if arg_doc != '':
-					doc += ': ' + arg_doc
+					doc += ' ' + arg_doc
+				doc += '\n:type ' + arg_name + ': ' + argument_type.type_str
 		if xml_method_return is not None:
 			return_type = xml_method_return.get('type')
 			return_complete_type = xml_method_return.get('completetype')
@@ -1060,7 +1099,8 @@ class LinphoneModule(object):
 			if return_complete_type != 'void':
 				return_doc = self.__format_doc_content(None, xml_method_return.find('description'))
 				return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
-				doc += '\n\nReturns:\n\t[' + return_argument_type.type_str + '] ' + return_doc
+				doc += '\n:returns: ' + return_doc
+				doc += '\n:rtype: ' + return_argument_type.type_str
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 

@@ -68,11 +68,15 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
-#define SAL_MEDIA_DESCRIPTION_UNCHANGED		0x00
-#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED	0x01
-#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED	0x02
-#define SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED	0x04
-#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED | SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED)
+#define SAL_MEDIA_DESCRIPTION_UNCHANGED			0x00
+#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED		(1)
+#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED		(1<<1)
+#define SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED	(1<<2)
+#define SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED	(1<<3)
+#define SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED		(1<<4)
+
+#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED |\
+						SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED |SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED | SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED)
 
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
@@ -413,7 +417,7 @@ typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
 typedef void (*SalOnCallAck)(SalOp *op);
-typedef void (*SalOnCallUpdating)(SalOp *op);/*< Called when a reINVITE/UPDATE is received*/
+typedef void (*SalOnCallUpdating)(SalOp *op, bool_t is_update);/*< Called when a reINVITE/UPDATE is received*/
 typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op);
 typedef void (*SalOnCallReleased)(SalOp *salop);
@@ -517,6 +521,10 @@ int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);
+void sal_set_supported_tags(Sal *ctx, const char* tags);
+void sal_add_supported_tag(Sal *ctx, const char* tag);
+void sal_remove_supported_tag(Sal *ctx, const char* tag);
+const char *sal_get_supported_tags(Sal *ctx);
 int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
@@ -615,7 +623,7 @@ int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);
 int sal_call_decline(SalOp *h, SalReason reason, const char *redirection /*optional*/);
-int sal_call_update(SalOp *h, const char *subject);
+int sal_call_update(SalOp *h, const char *subject, bool_t no_user_consent);
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h);
 SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 int sal_call_refer(SalOp *h, const char *refer_to);
@@ -751,5 +759,5 @@ int sal_body_has_type(const SalBody *body, const char *type, const char *subtype
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
 
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
-
+char* sal_op_get_public_uri(SalOp *sal);
 #endif
