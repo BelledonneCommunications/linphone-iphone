@@ -3487,8 +3487,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
  * @param params the specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters.
  *
 **/
-int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
-{
+int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalOp *replaced;
 	SalMediaDescription *new_md;
 	bool_t was_ringing=FALSE;
@@ -3501,11 +3500,17 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			call = (LinphoneCall*)linphone_core_get_calls(lc)->data;
 	}
 
-	if (call->state==LinphoneCallConnected){
-		/*call already accepted*/
-		return -1;
+	switch(call->state){
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+		break;
+		default:
+			ms_error("linphone_core_accept_call_with_params() call [%p] is in state [%s], operation not permitted.",
+				 call, linphone_call_state_to_string(call->state));
+			return -1;
+			break;
 	}
-
+	
 	/* check if this call is supposed to replace an already running one*/
 	replaced=sal_call_get_replaces(call->op);
 	if (replaced){
