@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */   
+ */
 
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
@@ -39,9 +39,9 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 + (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail {
     UIImage* retImage = nil;
     if (contact && ABPersonHasImageData(contact)) {
-        CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, thumbnail? 
+        CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, thumbnail?
                                                             kABPersonImageFormatThumbnail: kABPersonImageFormatOriginalSize);
-        
+
         retImage = [UIImage imageWithData:(NSData *)imgData];
         if(imgData != NULL) {
             CFRelease(imgData);
@@ -52,8 +52,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (ABRecordRef)getContact:(NSString*)address {
     @synchronized (addressBookMap){
-        return (ABRecordRef)[addressBookMap objectForKey:address];   
-    } 
+        return (ABRecordRef)[addressBookMap objectForKey:address];
+    }
 }
 
 + (BOOL)isSipURI:(NSString*)address {
@@ -78,6 +78,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
         if(tmp != NULL) {
             normalizedSipAddress = [NSString stringWithUTF8String:tmp];
+            // remove transport, if any
+            NSRange pos = [normalizedSipAddress rangeOfString:@";"];
+            if (pos.location != NSNotFound) {
+                normalizedSipAddress = [normalizedSipAddress substringToIndex:pos.location];
+            }
             ms_free(tmp);
         }
         linphone_address_destroy(linphoneAddress);
@@ -87,20 +92,20 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 + (NSString*)normalizePhoneNumber:(NSString*)address {
     NSMutableString* lNormalizedAddress = [NSMutableString stringWithString:address];
-    [lNormalizedAddress replaceOccurrencesOfString:@" " 
-                                        withString:@"" 
+    [lNormalizedAddress replaceOccurrencesOfString:@" "
+                                        withString:@""
                                            options:0
                                              range:NSMakeRange(0, [lNormalizedAddress length])];
-    [lNormalizedAddress replaceOccurrencesOfString:@"(" 
-                                        withString:@"" 
+    [lNormalizedAddress replaceOccurrencesOfString:@"("
+                                        withString:@""
                                            options:0
                                              range:NSMakeRange(0, [lNormalizedAddress length])];
-    [lNormalizedAddress replaceOccurrencesOfString:@")" 
-                                        withString:@"" 
+    [lNormalizedAddress replaceOccurrencesOfString:@")"
+                                        withString:@""
                                            options:0
                                              range:NSMakeRange(0, [lNormalizedAddress length])];
-    [lNormalizedAddress replaceOccurrencesOfString:@"-" 
-                                        withString:@"" 
+    [lNormalizedAddress replaceOccurrencesOfString:@"-"
+                                        withString:@""
                                            options:0
                                              range:NSMakeRange(0, [lNormalizedAddress length])];
     return [FastAddressBook appendCountryCodeIfPossible:lNormalizedAddress];
@@ -126,7 +131,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         addressBook = nil;
     }
     NSError *error = nil;
-        
+
     addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
     if(addressBook != NULL) {
         if(ABAddressBookGetAuthorizationStatus) {
@@ -147,7 +152,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABAddressBookRevert(addressBook);
     @synchronized (addressBookMap) {
         [addressBookMap removeAllObjects];
-        
+
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
             // Phone
@@ -168,7 +173,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     CFRelease(lMap);
                 }
             }
-            
+
             // SIP
             {
                 ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonInstantMessageProperty);
@@ -194,7 +199,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         }
                         CFRelease(lDict);
                     }
-                    CFRelease(lMap);   
+                    CFRelease(lMap);
                 }
             }
         }
