@@ -144,7 +144,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 }
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	ortp_set_log_handler(liblinphone_log_func);
+	ortp_set_log_handler(logfunc);
 }
 
 void linphone_core_set_log_file(FILE *file) {
