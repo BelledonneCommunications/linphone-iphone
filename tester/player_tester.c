@@ -59,7 +59,7 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 	CU_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 
-	player = linphone_core_create_file_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), _get_default_video_renderer());
+	player = linphone_core_create_file_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), _get_default_video_renderer(), NULL);
 	CU_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 

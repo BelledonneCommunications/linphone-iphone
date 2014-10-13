@@ -31,11 +31,11 @@ static int file_player_get_current_position(LinphonePlayer *obj);
 static void file_player_close(LinphonePlayer *obj);
 static void file_player_eof_callback(void *user_data);
 
-LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out) {
+LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id) {
 	LinphonePlayer *obj = ms_new0(LinphonePlayer, 1);
 	if(snd_card == NULL) snd_card = lc->sound_conf.play_sndcard;
 	if(video_out == NULL) video_out = linphone_core_get_video_display_filter(lc);
-	obj->impl = ms_file_player_new(snd_card, video_out);
+	obj->impl = ms_file_player_new(snd_card, video_out, window_id);
 	obj->open = file_player_open;
 	obj->start = file_player_start;
 	obj->pause = file_player_pause;
