@@ -6841,6 +6841,7 @@ void linphone_core_remove_supported_tag(LinphoneCore *lc, const char *tag){
  * The value set here is used for calls placed or received out of any proxy configured, or if the proxy config is configured with LinphoneAVPFDefault.
  * @param lc the LinphoneCore
  * @param mode the mode.
+ * @ingroup media_parameters
 **/
 void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
 	if (mode==LinphoneAVPFDefault) mode=LinphoneAVPFDisabled;
@@ -6852,6 +6853,7 @@ void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
  * Return AVPF enablement. See linphone_core_set_avpf_mode() .
  * @param lc the core
  * @return the avpf enablement mode.
+ * @ingroup media_parameters
 **/
 LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc){
 	return lc->rtp_conf.avpf_mode;
@@ -6861,6 +6863,7 @@ LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc){
  * Return the avpf report interval in seconds.
  * @param lc the LinphoneCore
  * @return the avpf report interval in seconds.
+ * @ingroup media_parameters
 **/
 int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","avpf_rr_interval",5);
@@ -6870,7 +6873,8 @@ int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
  * Set the avpf report interval in seconds.
  * This value can be overriden by the proxy config using linphone_proxy_config_set_avpf_rr_interval().
  * @param lc the core
- * @param interval interval in seconds. 
+ * @param interval interval in seconds.
+ * @ingroup media_parameters
 **/
 void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
 	lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);
