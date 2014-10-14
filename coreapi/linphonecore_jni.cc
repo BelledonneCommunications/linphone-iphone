@@ -28,6 +28,7 @@ extern "C" {
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/dsptools.h"
+#include "mediastreamer2/fileplayer.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -5294,15 +5295,18 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_close(JNIEnv *env, job
 	linphone_player_close(player);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *env, jobject jobj, jlong ptr) {
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
+	jobject window_ref = NULL;
 	MSSndCard *snd_card = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
 	if(snd_card == NULL) {
 		ms_error("No default playback sound card found");
 		return 0;
 	}
-	LinphonePlayer *player = linphone_core_create_file_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay");
+	window_ref = env->NewGlobalRef(window);
+	LinphonePlayer *player = linphone_core_create_file_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay", window_ref);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
+		if(window_ref) env->DeleteGlobalRef(window_ref);
 		return 0;
 	} else {
 		return (jlong)player;
@@ -5312,7 +5316,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *en
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_destroyPlayer(JNIEnv *env, jobject jobj, jlong playerPtr) {
 	LinphonePlayer *player = (LinphonePlayer *)playerPtr;
 	if(player->user_data) {
-		delete (LinphonePlayerData *)player->user_data;;
+		delete (LinphonePlayerData *)player->user_data;
+	}
+	MSFilePlayer *ms_player = (MSFilePlayer *)player->impl;
+	if(ms_player->window_id) {
+		env->DeleteGlobalRef((jobject)ms_player->window_id);
 	}
 	linphone_file_player_destroy(player);
 }
