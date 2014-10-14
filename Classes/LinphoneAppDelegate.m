@@ -170,7 +170,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
+
     UIApplication* app= [UIApplication sharedApplication];
     
     if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
@@ -225,15 +225,8 @@
         [[LinphoneManager instance]	startLibLinphone];
     }
     if([LinphoneManager isLcReady]) {
-        
-        
-        // Only execute one time at application start
-        if(!started) {
-            started = TRUE;
-            [self.window makeKeyAndVisible];
-            [RootViewManager setupWithPortrait:(PhoneMainView*)self.window.rootViewController];
-            [[PhoneMainView instance] startUp];
-        }
+        [self.window makeKeyAndVisible];
+        [[PhoneMainView instance] startUp];
     }
 }
 
