@@ -602,9 +602,10 @@ void linphone_player_close(LinphonePlayer *obj);
  * @param lc A LinphoneCore
  * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
  * @param video_out Video display. If NULL, the video display set in LinphoneCore will be used
+ * @param window_id Pointer on the drawing window
  * @return A pointer on the new instance. NULL if faild.
  */
-LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out);
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
 
 /**
  * @brief Destroy a file player

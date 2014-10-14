@@ -1,3 +1,21 @@
+/*
+    liblinphone_tester - liblinphone test suite
+    Copyright (C) 2013  Belledonne Communications SARL
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "liblinphone_tester.h"
 
 static const char *_get_default_video_renderer(void){
@@ -41,7 +59,7 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 	CU_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 
-	player = linphone_core_create_file_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), _get_default_video_renderer());
+	player = linphone_core_create_file_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), _get_default_video_renderer(), NULL);
 	CU_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 

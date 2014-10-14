@@ -144,7 +144,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 }
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	ortp_set_log_handler(liblinphone_log_func);
+	ortp_set_log_handler(logfunc);
 }
 
 void linphone_core_set_log_file(FILE *file) {
@@ -3487,8 +3487,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
  * @param params the specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters.
  *
 **/
-int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
-{
+int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalOp *replaced;
 	SalMediaDescription *new_md;
 	bool_t was_ringing=FALSE;
@@ -3501,11 +3500,17 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			call = (LinphoneCall*)linphone_core_get_calls(lc)->data;
 	}
 
-	if (call->state==LinphoneCallConnected){
-		/*call already accepted*/
-		return -1;
+	switch(call->state){
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+		break;
+		default:
+			ms_error("linphone_core_accept_call_with_params() call [%p] is in state [%s], operation not permitted.",
+				 call, linphone_call_state_to_string(call->state));
+			return -1;
+			break;
 	}
-
+	
 	/* check if this call is supposed to replace an already running one*/
 	replaced=sal_call_get_replaces(call->op);
 	if (replaced){
@@ -4579,26 +4584,28 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
 }
 
+static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, bool_t val) {
+	audio_stream_set_mic_gain(st,
+		(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
+	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+		audio_stream_mute_rtp(st,val);
+	}
+}
+
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-	AudioStream *st=NULL;
+	LinphoneCall *call;
+	const MSList *list;
+	const MSList *elem;
+
 	if (linphone_core_is_in_conference(lc)){
 		lc->conf_ctx.local_muted=val;
-		st=lc->conf_ctx.local_participant;
-	}else if (call==NULL){
-		ms_warning("linphone_core_mute_mic(): No current call !");
-		return;
-	}else{
-		st=call->audiostream;
-		call->audio_muted=val;
+		linphone_core_mute_audio_stream(lc, lc->conf_ctx.local_participant, val);
 	}
-	if (st!=NULL){
-		audio_stream_set_mic_gain(st,
-			(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
-		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
-			audio_stream_mute_rtp(st,val);
-		}
-
+	list = linphone_core_get_calls(lc);
+	for (elem = list; elem != NULL; elem = elem->next) {
+		call = (LinphoneCall *)elem->data;
+		call->audio_muted = val;
+		linphone_core_mute_audio_stream(lc, call->audiostream, val);
 	}
 }
 
@@ -6836,6 +6843,7 @@ void linphone_core_remove_supported_tag(LinphoneCore *lc, const char *tag){
  * The value set here is used for calls placed or received out of any proxy configured, or if the proxy config is configured with LinphoneAVPFDefault.
  * @param lc the LinphoneCore
  * @param mode the mode.
+ * @ingroup media_parameters
 **/
 void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
 	if (mode==LinphoneAVPFDefault) mode=LinphoneAVPFDisabled;
@@ -6847,6 +6855,7 @@ void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
  * Return AVPF enablement. See linphone_core_set_avpf_mode() .
  * @param lc the core
  * @return the avpf enablement mode.
+ * @ingroup media_parameters
 **/
 LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc){
 	return lc->rtp_conf.avpf_mode;
@@ -6856,6 +6865,7 @@ LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc){
  * Return the avpf report interval in seconds.
  * @param lc the LinphoneCore
  * @return the avpf report interval in seconds.
+ * @ingroup media_parameters
 **/
 int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","avpf_rr_interval",5);
@@ -6865,7 +6875,8 @@ int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc){
  * Set the avpf report interval in seconds.
  * This value can be overriden by the proxy config using linphone_proxy_config_set_avpf_rr_interval().
  * @param lc the core
- * @param interval interval in seconds. 
+ * @param interval interval in seconds.
+ * @ingroup media_parameters
 **/
 void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval){
 	lp_config_set_int(lc->config,"rtp","avpf_rr_interval",interval);

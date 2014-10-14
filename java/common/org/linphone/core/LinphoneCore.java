@@ -1786,7 +1786,7 @@ public interface LinphoneCore {
 	 * Create a media player
 	 * @return An object that implement LinphonePlayer
 	 */
-	public LinphonePlayer createPlayer();
+	public LinphonePlayer createPlayer(AndroidVideoWindowImpl window);
 	
 	/**
 	 * Destroy a player
