@@ -1011,6 +1011,13 @@ static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	return l;
 }
 
+#if defined(ANDROID)
+static int is_aac_eld_payload(const void* a, const void* b) {
+	PayloadType *pt = (PayloadType*)a;
+	return strncmp(pt->mime_type, "mpeg4-generic", strlen("mpeg4-generic"));
+}
+#endif
+
 static void codecs_config_read(LinphoneCore *lc)
 {
 	int i;
@@ -1025,6 +1032,17 @@ static void codecs_config_read(LinphoneCore *lc)
 		}
 	}
 	audio_codecs=add_missing_codecs(lc,SalAudio,audio_codecs);
+
+#if defined(ANDROID)
+	/* AAC-ELD requires hardware AEC */
+	if (lc->sound_conf.capt_sndcard &&
+		!(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)) {
+		/* Remove AAC-ELD */
+		audio_codecs = ms_list_remove_custom(audio_codecs, is_aac_eld_payload, NULL);
+		ms_message("Disable AAC-ELD (needs hardware AEC)");
+	}
+#endif
+
 	for (i=0;get_codec(lc,"video_codec",i,&pt);i++){
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
@@ -3510,7 +3528,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			return -1;
 			break;
 	}
-	
+
 	/* check if this call is supposed to replace an already running one*/
 	replaced=sal_call_get_replaces(call->op);
 	if (replaced){
