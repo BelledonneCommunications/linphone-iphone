@@ -4584,26 +4584,28 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
 }
 
+static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, bool_t val) {
+	audio_stream_set_mic_gain(st,
+		(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
+	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
+		audio_stream_mute_rtp(st,val);
+	}
+}
+
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-	AudioStream *st=NULL;
+	LinphoneCall *call;
+	const MSList *list;
+	const MSList *elem;
+
 	if (linphone_core_is_in_conference(lc)){
 		lc->conf_ctx.local_muted=val;
-		st=lc->conf_ctx.local_participant;
-	}else if (call==NULL){
-		ms_warning("linphone_core_mute_mic(): No current call !");
-		return;
-	}else{
-		st=call->audiostream;
-		call->audio_muted=val;
+		linphone_core_mute_audio_stream(lc, lc->conf_ctx.local_participant, val);
 	}
-	if (st!=NULL){
-		audio_stream_set_mic_gain(st,
-			(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
-		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
-			audio_stream_mute_rtp(st,val);
-		}
-
+	list = linphone_core_get_calls(lc);
+	for (elem = list; elem != NULL; elem = elem->next) {
+		call = (LinphoneCall *)elem->data;
+		call->audio_muted = val;
+		linphone_core_mute_audio_stream(lc, call->audiostream, val);
 	}
 }
 
