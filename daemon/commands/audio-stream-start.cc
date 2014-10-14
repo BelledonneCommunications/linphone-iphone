@@ -26,7 +26,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 		PayloadType *oldpt=rtp_profile_get_payload(default_profile,payload_type);
 		PayloadType *pt;
 		AudioStream *stream = audio_stream_new(local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
-
+		audio_stream_set_features(stream,linphone_core_get_audio_features(app->getCore()));
 		if (oldpt){
 			if (ptime>0){
 				char fmtp[256];
