@@ -639,7 +639,7 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow(op->base.root->enable_sip_update)));
 
 	if (op->base.root->session_expires!=0){
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "200"));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "600;refresher=uas"));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Supported", "timer"));
 	}
 	if (op->base.local_media){
@@ -766,9 +766,10 @@ int sal_call_accept(SalOp*h){
 	}
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow(h->base.root->enable_sip_update)));
 	if (h->base.root->session_expires!=0){
-		if (h->supports_session_timers) {
+/*		if (h->supports_session_timers) {*/
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create("Supported", "timer"));
-		}
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create( "Session-expires", "600;refresher=uac"));
+		/*}*/
 	}
 
 	if ((contact_header=sal_op_create_contact(h))) {
