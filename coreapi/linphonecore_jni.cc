@@ -5318,9 +5318,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_destroyPlayer(JNIEnv *en
 	if(player->user_data) {
 		delete (LinphonePlayerData *)player->user_data;
 	}
-	MSFilePlayer *ms_player = (MSFilePlayer *)player->impl;
-	if(ms_player->window_id) {
-		env->DeleteGlobalRef((jobject)ms_player->window_id);
-	}
+	jobject window_id = (jobject)ms_file_player_get_window_id((MSFilePlayer *)player->impl);
+	if(window_id) env->DeleteGlobalRef(window_id);
 	linphone_file_player_destroy(player);
 }
