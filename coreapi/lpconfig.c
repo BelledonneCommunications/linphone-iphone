@@ -77,6 +77,7 @@ struct _LpConfig{
 	int refcnt;
 	FILE *file;
 	char *filename;
+	char *tmpfilename;
 	MSList *sections;
 	int modified;
 	int readonly;
@@ -349,6 +350,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	if (config_filename!=NULL){
 		ms_message("Using (r/w) config information from %s", config_filename);
 		lpconfig->filename=ortp_strdup(config_filename);
+		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",config_filename);
 		lpconfig->file=fopen(config_filename,"r+");
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig,lpconfig->file);
@@ -583,7 +585,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	file=fopen(lpconfig->filename,"w");
+	file=fopen(lpconfig->tmpfilename,"w");
 	if (file==NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
@@ -591,6 +593,9 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);
 	fclose(file);
+	if (rename(lpconfig->tmpfilename,lpconfig->filename)!=0){
+		ms_error("Cannot rename %s into %s: %s",lpconfig->tmpfilename,lpconfig->filename,strerror(errno));
+	}
 	lpconfig->modified=0;
 	return 0;
 }
