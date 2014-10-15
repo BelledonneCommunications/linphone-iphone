@@ -5295,6 +5295,16 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_close(JNIEnv *env, job
 	linphone_player_close(player);
 }
 
+extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, jobject jobj, jlong playerPtr) {
+	LinphonePlayer *player = (LinphonePlayer *)playerPtr;
+	if(player->user_data) {
+		delete (LinphonePlayerData *)player->user_data;
+	}
+	jobject window_id = (jobject)ms_media_player_get_window_id((MSMediaPlayer *)player->impl);
+	if(window_id) env->DeleteGlobalRef(window_id);
+	linphone_player_destroy(player);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
 	jobject window_ref = NULL;
 	MSSndCard *snd_card = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
@@ -5311,14 +5321,4 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *en
 	} else {
 		return (jlong)player;
 	}
-}
-
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_destroyPlayer(JNIEnv *env, jobject jobj, jlong playerPtr) {
-	LinphonePlayer *player = (LinphonePlayer *)playerPtr;
-	if(player->user_data) {
-		delete (LinphonePlayerData *)player->user_data;
-	}
-	jobject window_id = (jobject)ms_media_player_get_window_id((MSMediaPlayer *)player->impl);
-	if(window_id) env->DeleteGlobalRef(window_id);
-	linphone_player_destroy(player);
 }

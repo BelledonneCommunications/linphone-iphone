@@ -1787,10 +1787,4 @@ public interface LinphoneCore {
 	 * @return An object that implement LinphonePlayer
 	 */
 	public LinphonePlayer createPlayer(AndroidVideoWindowImpl window);
-	
-	/**
-	 * Destroy a player
-	 * @param player Player to destroy
-	 */
-	public void destroyPlayer(LinphonePlayer player);
 }

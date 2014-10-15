@@ -1290,10 +1290,4 @@ class LinphoneCoreImpl implements LinphoneCore {
 			return null;
 		}
 	}
-	
-	private native void destroyPlayer(long playerPtr);
-	@Override
-	public synchronized void destroyPlayer(LinphonePlayer player) {
-		
-	}
 }
