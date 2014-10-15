@@ -599,25 +599,25 @@ void linphone_player_close(LinphonePlayer *obj);
 /**
  * @brief Create an independent media file player.
  * This player support WAVE and MATROSKA formats.
- * @param lc A LinphoneCore
+ * @param lc A LinphoneCore object
  * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
  * @param video_out Video display. If NULL, the video display set in LinphoneCore will be used
  * @param window_id Pointer on the drawing window
  * @return A pointer on the new instance. NULL if faild.
  */
-LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_file_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
 
 /**
- * @brief Destroy a file player
+ * @brief Destroy a local player
  * @param obj File player to destroy
  */
-LINPHONE_PUBLIC void linphone_file_player_destroy(LinphonePlayer *obj);
+LINPHONE_PUBLIC void linphone_local_player_destroy(LinphonePlayer *obj);
 
 /**
  * @brief Check whether Matroksa format is supported by the player
  * @return TRUE if it is supported
  */
-LINPHONE_PUBLIC bool_t linphone_file_player_matroska_supported(void);
+LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
 
 /**
  * LinphoneCallState enum represents the different state a call can reach into.

@@ -5303,7 +5303,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *en
 		return 0;
 	}
 	window_ref = env->NewGlobalRef(window);
-	LinphonePlayer *player = linphone_core_create_file_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay", window_ref);
+	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay", window_ref);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
 		if(window_ref) env->DeleteGlobalRef(window_ref);
@@ -5318,7 +5318,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_destroyPlayer(JNIEnv *en
 	if(player->user_data) {
 		delete (LinphonePlayerData *)player->user_data;
 	}
-	jobject window_id = (jobject)ms_file_player_get_window_id((MSFilePlayer *)player->impl);
+	jobject window_id = (jobject)ms_media_player_get_window_id((MSMediaPlayer *)player->impl);
 	if(window_id) env->DeleteGlobalRef(window_id);
-	linphone_file_player_destroy(player);
+	linphone_local_player_destroy(player);
 }
