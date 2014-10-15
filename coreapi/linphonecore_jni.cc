@@ -5320,5 +5320,5 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_destroyPlayer(JNIEnv *en
 	}
 	jobject window_id = (jobject)ms_media_player_get_window_id((MSMediaPlayer *)player->impl);
 	if(window_id) env->DeleteGlobalRef(window_id);
-	linphone_local_player_destroy(player);
+	linphone_player_destroy(player);
 }
