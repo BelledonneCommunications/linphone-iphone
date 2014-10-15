@@ -168,7 +168,7 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mTransportFactories.video_rtcp_func_data=this;
 	mTransportFactories.video_rtp_func=sCreateRtpTransport;
 	mTransportFactories.video_rtp_func_data=this;
-	mVTable = linphone_vtable_new();
+	mVTable = linphone_core_v_table_new();
 	mVTable->network_reachable = networkReachableCb;
 	linphone_core_add_listener(mCore, mVTable);
 }
@@ -179,7 +179,7 @@ TunnelManager::~TunnelManager(){
 	}
 	stopClient();
 	linphone_core_remove_listener(mCore, mVTable);
-	linphone_vtable_destroy(mVTable);
+	linphone_core_v_table_destroy(mVTable);
 }
 
 void TunnelManager::doRegistration(){

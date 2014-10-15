@@ -1436,7 +1436,7 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	const char *remote_provisioning_uri = NULL;
-	LinphoneCoreVTable* local_vtable= linphone_vtable_new();
+	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->config=lp_config_ref(config);
@@ -6180,7 +6180,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (liblinphone_serialize_logs == TRUE) {
 		ortp_set_log_thread_id(0);
 	}
-	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_vtable_destroy);
+	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_core_v_table_destroy);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
@@ -6916,11 +6916,11 @@ int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
 	return pt->channels;
 }
 
-LinphoneCoreVTable *linphone_vtable_new() {
+LinphoneCoreVTable *linphone_core_v_table_new() {
 	return ms_new0(LinphoneCoreVTable,1);
 }
 
-void linphone_vtable_destroy(LinphoneCoreVTable* table) {
+void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 	ms_free(table);
 }
 #define NOTIFY_IF_EXIST(function_name) \

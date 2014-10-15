@@ -226,7 +226,7 @@ static void text_message_with_credential_from_auth_cb_auth_info_requested(Linpho
 static void text_message_with_credential_from_auth_cb(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
-	LinphoneCoreVTable* vtable = linphone_vtable_new();
+	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));

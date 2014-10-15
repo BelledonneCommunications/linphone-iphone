@@ -1731,16 +1731,16 @@ typedef struct _LinphoneCoreVTable{
 } LinphoneCoreVTable;
 
 /**
- * Instantiate a vtable with all argument set to NULL
+ * Instantiate a vtable with all arguments set to NULL
  * @returns newly allocated vtable
  */
-LINPHONE_PUBLIC LinphoneCoreVTable *linphone_vtable_new();
+LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new();
 
 /**
- * destroy a vtable.
+ * Destroy a vtable.
  * @param vtable to be destroyed
  */
-LINPHONE_PUBLIC void linphone_vtable_destroy(LinphoneCoreVTable* table);
+LINPHONE_PUBLIC void linphone_core_v_table_destroy(LinphoneCoreVTable* table);
 
 /**
  * @}
@@ -1748,8 +1748,8 @@ LINPHONE_PUBLIC void linphone_vtable_destroy(LinphoneCoreVTable* table);
 
 typedef struct _LCCallbackObj
 {
-  LinphoneCoreCbFunc _func;
-  void * _user_data;
+	LinphoneCoreCbFunc _func;
+	void * _user_data;
 }LCCallbackObj;
 
 
