@@ -3152,12 +3152,14 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 	LinphoneCallParams *params;
 	const char* paulie_asserted_id ="\"Paupauche\" <sip:pauline@super.net>";
 	LinphoneAddress *paulie_asserted_id_addr = linphone_address_new(paulie_asserted_id);
+	LpConfig *marie_lp;
+	
 	params=linphone_core_create_default_call_parameters(pauline->lc);
 
 	linphone_call_params_add_custom_header(params,"P-Asserted-Identity",paulie_asserted_id);
 	/*fixme, should be able to add several time the same header linphone_call_params_add_custom_header(params,"P-Asserted-Identity","\"Paupauche\" <tel:+12345>");*/
 
-	LpConfig *marie_lp = linphone_core_get_config(marie->lc);
+	marie_lp = linphone_core_get_config(marie->lc);
 	lp_config_set_int(marie_lp,"sip","call_logs_use_asserted_id_instead_of_from",1);
 
 

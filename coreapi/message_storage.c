@@ -237,7 +237,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						msg->is_read,
 						msg->state,
 						msg->external_body_url,
-						msg->time,
+						(int64_t)msg->time,
 						msg->appdata,
 						content_id
  					);
@@ -489,7 +489,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 		uint64_t end;
 		linphone_sql_request(db, "COMMIT");
 		end=ortp_get_cur_time_ms();
-		ms_message("Migrated message timestamps to UTC in %lld ms",(end-begin));
+		ms_message("Migrated message timestamps to UTC in %lu ms",(unsigned long)(end-begin));
 	}
 }
 
