@@ -28,7 +28,7 @@ extern "C" {
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/dsptools.h"
-#include "mediastreamer2/fileplayer.h"
+#include "mediastreamer2/msmediaplayer.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"

@@ -69,7 +69,7 @@ LOCAL_SRC_FILES := \
 	call_log.c \
 	call_params.c \
 	player.c \
-	fileplayer.c
+	localplayer.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
