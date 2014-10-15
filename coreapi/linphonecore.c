@@ -1482,8 +1482,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_h264,102,"profile-level-id=42801F");
 	linphone_core_assign_payload_type(lc,&payload_type_vp8,103,NULL);
 
-	linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_x_snow,-1,NULL);
+	/* linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL); commented out to free 1 slot */
+	/* linphone_core_assign_payload_type(lc,&payload_type_x_snow,-1,NULL); commented out to free 1 slot */
 	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
 	/* linphone_core_assign_payload_type(&payload_type_h264,-1,"packetization-mode=1;profile-level-id=428014");*/
 #endif
@@ -1492,7 +1492,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_ilbc,-1,"mode=30");
 	linphone_core_assign_payload_type(lc,&payload_type_amr,-1,"octet-align=1");
 	linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
-	linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL);
+	/* linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL); commented out to free 1 slot */
 	linphone_core_assign_payload_type(lc,&payload_type_g726_16,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_24,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g726_32,-1,NULL);
@@ -1506,8 +1506,11 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_16k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_32k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_48k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; stereo=0; sprop-stereo=0");
 	linphone_core_assign_payload_type(lc,&payload_type_isac,-1,NULL);
 	linphone_core_handle_static_payloads(lc);
