@@ -54,11 +54,6 @@ static RootViewManager* rootViewManagerInstance = nil;
 }
 
 + (RootViewManager *)instance {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        PhoneMainView* portrait = (PhoneMainView*)[(LinphoneAppDelegate*)([UIApplication sharedApplication].delegate) window].rootViewController;
-        rootViewManagerInstance =[[RootViewManager alloc]initWithPortrait:portrait];
-    });
     if( !rootViewManagerInstance ){
         @throw [NSException exceptionWithName:@"RootViewManager" reason:@"nil instance" userInfo:nil];
     }
