@@ -923,10 +923,13 @@ struct _LinphonePlayer{
 	int (*get_duration)(struct _LinphonePlayer *player);
 	int (*get_position)(struct _LinphonePlayer *player);
 	void (*close)(struct _LinphonePlayer* player);
+	void (*destroy)(struct _LinphonePlayer *player);
 	LinphonePlayerEofCallback cb;
 	void *user_data;
 	void *impl;
 };
+
+void _linphone_player_destroy(LinphonePlayer *player);
 
 
 /*****************************************************************************

@@ -29,6 +29,7 @@ static MSPlayerState _local_player_get_state(LinphonePlayer *obj);
 static int _local_player_get_duration(LinphonePlayer *obj);
 static int _local_player_get_current_position(LinphonePlayer *obj);
 static void _local_player_close(LinphonePlayer *obj);
+static void _local_player_destroy(LinphonePlayer *obj);
 static void _local_player_eof_callback(void *user_data);
 
 LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id) {
@@ -44,13 +45,9 @@ LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *s
 	obj->get_duration = _local_player_get_duration;
 	obj->get_position = _local_player_get_current_position;
 	obj->close = _local_player_close;
+	obj->destroy = _local_player_destroy;
 	ms_media_player_set_eof_callback((MSMediaPlayer *)obj->impl, _local_player_eof_callback, obj);
 	return obj;
-}
-
-void linphone_local_player_destroy(LinphonePlayer *obj) {
-	ms_media_player_free((MSMediaPlayer *)obj->impl);
-	ms_free(obj);
 }
 
 bool_t linphone_local_player_matroska_supported(void) {
@@ -84,6 +81,11 @@ static int _local_player_get_duration(LinphonePlayer *obj) {
 
 static int _local_player_get_current_position(LinphonePlayer *obj) {
 	return ms_media_player_get_current_position((MSMediaPlayer *)obj->impl);
+}
+
+static void _local_player_destroy(LinphonePlayer *obj) {
+	ms_media_player_free((MSMediaPlayer *)obj->impl);
+	_linphone_player_destroy(obj);
 }
 
 static void _local_player_close(LinphonePlayer *obj) {

@@ -97,6 +97,18 @@ void linphone_player_close(LinphonePlayer *obj){
 	return obj->close(obj);
 }
 
+/**
+ * @brief Destroy a player
+ * @param obj The player
+ */
+void linphone_player_destroy(LinphonePlayer *obj) {
+	if(obj->destroy) obj->destroy(obj);
+}
+
+void _linphone_player_destroy(LinphonePlayer *player) {
+	ms_free(player);
+}
+
 
 /*
  * Call player implementation below.
@@ -169,7 +181,7 @@ static void call_player_close(LinphonePlayer *player){
 }
 
 static void on_call_destroy(void *obj, belle_sip_object_t *call_being_destroyed){
-	ms_free(obj);
+	_linphone_player_destroy(obj);
 }
 
 LinphonePlayer *linphone_call_build_player(LinphoneCall *call){

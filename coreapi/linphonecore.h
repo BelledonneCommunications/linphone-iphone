@@ -595,6 +595,7 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
 int linphone_player_get_duration(LinphonePlayer *obj);
 int linphone_player_get_current_position(LinphonePlayer *obj);
 void linphone_player_close(LinphonePlayer *obj);
+void linphone_player_destroy(LinphonePlayer *obj);
 
 /**
  * @brief Create an independent media file player.
@@ -606,12 +607,6 @@ void linphone_player_close(LinphonePlayer *obj);
  * @return A pointer on the new instance. NULL if faild.
  */
 LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
-
-/**
- * @brief Destroy a local player
- * @param obj File player to destroy
- */
-LINPHONE_PUBLIC void linphone_local_player_destroy(LinphonePlayer *obj);
 
 /**
  * @brief Check whether Matroksa format is supported by the player

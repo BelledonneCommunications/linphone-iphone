@@ -79,7 +79,7 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 	linphone_player_close(player);
 
 	fail:
-	if(player) linphone_local_player_destroy(player);
+	if(player) linphone_player_destroy(player);
 	if(lc_manager) linphone_core_manager_destroy(lc_manager);
 }
 
