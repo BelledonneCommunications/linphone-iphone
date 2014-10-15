@@ -32,7 +32,7 @@
 
 @implementation LinphoneAppDelegate
 
-@synthesize started,configURL;
+@synthesize configURL;
 @synthesize window;
 
 #pragma mark - Lifecycle Functions
@@ -40,7 +40,7 @@
 - (id)init {
     self = [super init];
     if(self != nil) {
-        self->started = FALSE;
+        self->startedInBackground = FALSE;
     }
     return self;
 }
@@ -89,6 +89,11 @@
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
     
     [self startApplication];
+    if( startedInBackground ){
+        startedInBackground = FALSE;
+        [[PhoneMainView instance] startUp];
+        [[PhoneMainView instance] updateStatusBar:nil];
+    }
     LinphoneManager* instance = [LinphoneManager instance];
     
     [instance becomeActive];
@@ -172,6 +177,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     UIApplication* app= [UIApplication sharedApplication];
+    UIApplicationState state = app.applicationState;
     
     if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
         /* iOS8 notifications can be actioned! Awesome: */
@@ -185,14 +191,14 @@
         NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
         [app registerForRemoteNotificationTypes:notifTypes];
     }
-    
 
 	LinphoneManager* instance = [LinphoneManager instance];
     BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
     BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 
+
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground)
+		&& state ==  UIApplicationStateBackground)
     {
         // we've been woken up directly to background;
         if( !start_at_boot || !background_mode ) {
@@ -207,14 +213,25 @@
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Background task for application launching expired."];
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
+
     [self startApplication];
+    // initialize UI
+    [self.window makeKeyAndVisible];
+    [RootViewManager setupWithPortrait:(PhoneMainView*)self.window.rootViewController];
+    if( state == UIApplicationStateBackground ){
+        startedInBackground = TRUE;
+    } else {
+        [[PhoneMainView instance] startUp];
+        [[PhoneMainView instance] updateStatusBar:nil];
+    }
+
+
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif){
 		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
 		[self processRemoteNotification:remoteNotif];
 	}
     if (bgStartId!=UIBackgroundTaskInvalid) [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
-    [[PhoneMainView instance] updateStatusBar:nil];
 
     return YES;
 }
@@ -223,11 +240,6 @@
     // Restart Linphone Core if needed
     if(![LinphoneManager isLcReady]) {
         [[LinphoneManager instance]	startLibLinphone];
-    }
-    if([LinphoneManager isLcReady] && !started) {
-        started = TRUE;
-        [self.window makeKeyAndVisible];
-        [[PhoneMainView instance] startUp];
     }
 }
 

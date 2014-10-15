@@ -431,26 +431,31 @@ static RootViewManager* rootViewManagerInstance = nil;
 }
 
 - (void)startUp {
-
-    if( linphone_core_get_global_state([LinphoneManager getLc]) != LinphoneGlobalOn ){
-        [self changeCurrentView: [DialerViewController compositeViewDescription]];
-    } else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
-        // Change to fist login view
-        [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
-    } else {
-        // Change to default view
-        const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
-        if(list != NULL || ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_preference"]  == true)) {
+    LinphoneCore* core = nil;
+    @try {
+        core = [LinphoneManager getLc];
+        if( linphone_core_get_global_state(core) != LinphoneGlobalOn ){
             [self changeCurrentView: [DialerViewController compositeViewDescription]];
+        } else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
+            // Change to fist login view
+            [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
         } else {
-            WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
-            if(controller != nil) {
-                [controller reset];
+            // Change to default view
+            const MSList *list = linphone_core_get_proxy_config_list(core);
+            if(list != NULL || ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_preference"]  == true)) {
+                [self changeCurrentView: [DialerViewController compositeViewDescription]];
+            } else {
+                WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+                if(controller != nil) {
+                    [controller reset];
+                }
             }
         }
+        [self updateApplicationBadgeNumber]; // Update Badge at startup
     }
-    
-    [self updateApplicationBadgeNumber]; // Update Badge at startup
+    @catch (NSException *exception) {
+        // we'll wait until the app transitions correctly
+    }
 }
 
 - (void)updateApplicationBadgeNumber {
