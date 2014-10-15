@@ -224,7 +224,8 @@
     if(![LinphoneManager isLcReady]) {
         [[LinphoneManager instance]	startLibLinphone];
     }
-    if([LinphoneManager isLcReady]) {
+    if([LinphoneManager isLcReady] && !started) {
+        started = TRUE;
         [self.window makeKeyAndVisible];
         [[PhoneMainView instance] startUp];
     }
