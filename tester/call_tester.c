@@ -215,8 +215,11 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	else {
 		LinphoneAddress* callee_from=linphone_address_clone(caller_mgr->identity);
 		linphone_address_set_port(callee_from,0); /*remove port because port is never present in from header*/
+
 		if (linphone_call_params_get_privacy(linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc))) == LinphonePrivacyNone) {
-			CU_ASSERT_TRUE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+			/*don't check in case of p asserted id*/
+			if (!lp_config_get_int(callee_mgr->lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0))
+				CU_ASSERT_TRUE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
 		} else {
 			CU_ASSERT_FALSE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
 		}
@@ -3142,6 +3145,43 @@ static void call_with_custom_supported_tags(void) {
 	}
 }
 
+static void call_log_from_taken_from_p_asserted_id(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall *c1,*c2;
+	LinphoneCallParams *params;
+	const char* paulie_asserted_id ="\"Paupauche\" <sip:pauline@super.net>";
+	LinphoneAddress *paulie_asserted_id_addr = linphone_address_new(paulie_asserted_id);
+	params=linphone_core_create_default_call_parameters(pauline->lc);
+
+	linphone_call_params_add_custom_header(params,"P-Asserted-Identity",paulie_asserted_id);
+	/*fixme, should be able to add several time the same header linphone_call_params_add_custom_header(params,"P-Asserted-Identity","\"Paupauche\" <tel:+12345>");*/
+
+	LpConfig *marie_lp = linphone_core_get_config(marie->lc);
+	lp_config_set_int(marie_lp,"sip","call_logs_use_asserted_id_instead_of_from",1);
+
+
+	CU_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
+	linphone_call_params_destroy(params);
+
+	c1=linphone_core_get_current_call(pauline->lc);
+	c2=linphone_core_get_current_call(marie->lc);
+
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+
+	/*make sure remote identity is hidden*/
+	CU_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),paulie_asserted_id_addr));
+
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -3241,7 +3281,8 @@ test_t call_tests[] = {
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
-	{ "Call with custom supported tags", call_with_custom_supported_tags }
+	{ "Call with custom supported tags", call_with_custom_supported_tags },
+	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id}
 };
 
 test_suite_t call_test_suite = {

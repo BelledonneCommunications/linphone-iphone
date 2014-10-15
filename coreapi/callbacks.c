@@ -234,9 +234,9 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call;
-	const char *from,*to;
 	char *alt_contact;
-	LinphoneAddress *from_addr, *to_addr;
+	LinphoneAddress *from_addr=NULL;
+	LinphoneAddress  *to_addr=NULL;
 	/*this mode is deprcated because probably useless*/
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
 
@@ -272,10 +272,26 @@ static void call_received(SalOp *h){
 		sal_op_release(h);
 		return;
 	}
-	from=sal_op_get_from(h);
-	to=sal_op_get_to(h);
-	from_addr=linphone_address_new(from);
-	to_addr=linphone_address_new(to);
+	/*in some situation, better to trust the network rather than the UAC*/
+	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
+		const char * p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
+		LinphoneAddress *p_asserted_id_addr;
+		if (!p_asserted_id) {
+			ms_warning("No P-Asserted-Identity header found so cannot use it for op [%p] instead of from",h);
+		} else {
+			p_asserted_id_addr = linphone_address_new(p_asserted_id);
+			if (!p_asserted_id_addr) {
+				ms_warning("Unsupported P-Asserted-Identity header for op [%p] ",h);
+			} else {
+				ms_message("Using P-Asserted-Identity [%s] instead of from [%s] for op [%p]",p_asserted_id,sal_op_get_from(h),h);
+				from_addr=p_asserted_id_addr;
+			}
+		}
+	}
+
+	if (!from_addr)
+		from_addr=linphone_address_new(sal_op_get_from(h));
+	to_addr=linphone_address_new(sal_op_get_to(h));
 
 	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_a_call_pending(lc)){
 		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
