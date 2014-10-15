@@ -1868,17 +1868,19 @@ static void audioRouteChangeListenerCallback (
 }
 
 + (int)unreadMessageCount {
-	int count = 0;
-	MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-	MSList* item = rooms;
-	while (item) {
-		LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
-		if( room ){
-			count += linphone_chat_room_get_unread_messages_count(room);
-		}
-		item = item->next;
-	}
-	return count;
+    int count = 0;
+    if( [LinphoneManager isLcReady] ){
+        MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+        MSList* item = rooms;
+        while (item) {
+            LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
+            if( room ){
+                count += linphone_chat_room_get_unread_messages_count(room);
+            }
+            item = item->next;
+        }
+    }
+    return count;
 }
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override {
