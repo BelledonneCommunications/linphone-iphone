@@ -1280,10 +1280,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return getFileTransferServer(nativePtr);
 	}
 
-	private native long createPlayer(long nativePtr, AndroidVideoWindowImpl window);
+	private native long createLocalPlayer(long nativePtr, AndroidVideoWindowImpl window);
 	@Override
-	public synchronized LinphonePlayer createPlayer(AndroidVideoWindowImpl window) {
-		long playerPtr = createPlayer(nativePtr, window);
+	public synchronized LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window) {
+		long playerPtr = createLocalPlayer(nativePtr, window);
 		if(playerPtr != 0) {
 			return new LinphonePlayerImpl(playerPtr);
 		} else {

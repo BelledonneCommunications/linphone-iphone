@@ -5305,7 +5305,7 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, j
 	linphone_player_destroy(player);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
 	jobject window_ref = NULL;
 	MSSndCard *snd_card = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
 	if(snd_card == NULL) {
