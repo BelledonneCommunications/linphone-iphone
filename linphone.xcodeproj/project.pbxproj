@@ -406,6 +406,7 @@
 		D3432A6C158A4446001C6B0B /* call_quality_indicator_3.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A61158A4446001C6B0B /* call_quality_indicator_3.png */; };
 		D3432A71158A45AF001C6B0B /* led_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A6F158A45AF001C6B0B /* led_inprogress.png */; };
 		D3432A73158A45AF001C6B0B /* led_disconnected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A70158A45AF001C6B0B /* led_disconnected.png */; };
+		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history_default.png */; };
 		D347347F1580E5F8003C7B8C /* history_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history_selected.png */; };
 		D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
@@ -667,7 +668,9 @@
 		D34BD72115C13DB70070C209 /* video_on_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F03158205A100336684 /* video_on_over.png */; };
 		D34BD72215C13DB70070C209 /* video_on_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C31A3115BD8DED008ED271 /* video_on_over_landscape.png */; };
 		D34BD72515C13DD40070C209 /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
+		D34BD72F15C13DD40070C209 /* LinphoneApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F9115824D3500336684 /* LinphoneApp.xib */; };
 		D34BD73015C13DD40070C209 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* AboutViewController.xib */; };
+		D34BD73115C13DD40070C209 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D34BD73215C13DD40070C209 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
 		D34BD73615C13DF40070C209 /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5413159853C90037DC6B /* UIChatCell.xib */; };
 		D34BD73715C13DF40070C209 /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7315A6C81A00F96BE5 /* UIChatRoomCell.xib */; };
@@ -1336,6 +1339,7 @@
 		D3F83F7E1582253100336684 /* decline_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F771582253100336684 /* decline_over.png */; };
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D3F83F8F15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
+		D3F83F9215824D3600336684 /* LinphoneApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F9115824D3500336684 /* LinphoneApp.xib */; };
 		D3F9A9DB15AEEB940045320F /* history_notification.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9DA15AEEB940045320F /* history_notification.png */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
@@ -1792,6 +1796,7 @@
 		D3432A61158A4446001C6B0B /* call_quality_indicator_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_quality_indicator_3.png; path = Resources/call_quality_indicator_3.png; sourceTree = "<group>"; };
 		D3432A6F158A45AF001C6B0B /* led_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_inprogress.png; path = Resources/led_inprogress.png; sourceTree = "<group>"; };
 		D3432A70158A45AF001C6B0B /* led_disconnected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_disconnected.png; path = Resources/led_disconnected.png; sourceTree = "<group>"; };
+		D34734791580DDF1003C7B8C /* PhoneMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		D347347C1580E5F8003C7B8C /* history_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_default.png; path = Resources/history_default.png; sourceTree = "<group>"; };
 		D347347D1580E5F8003C7B8C /* history_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_selected.png; path = Resources/history_selected.png; sourceTree = "<group>"; };
 		D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
@@ -2266,6 +2271,7 @@
 		D3F83F771582253100336684 /* decline_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = decline_over.png; path = Resources/decline_over.png; sourceTree = "<group>"; };
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
+		D3F83F9115824D3500336684 /* LinphoneApp.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LinphoneApp.xib; sourceTree = "<group>"; };
 		D3F9A9DA15AEEB940045320F /* history_notification.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_notification.png; path = Resources/history_notification.png; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
@@ -2646,6 +2652,7 @@
 				D3F26BEF15986B71005F9CAB /* IncomingCallViewController.m */,
 				D38187DC15FE347700C3EDCA /* IncomingCallViewController.xib */,
 				D3D52A711614480700DEB00A /* IncomingCallViewController~ipad.xib */,
+				D3F83F9115824D3500336684 /* LinphoneApp.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
@@ -2655,6 +2662,7 @@
 				2214EB7012F84668002A5394 /* LinphoneUI */,
 				D3F83F8C158229C500336684 /* PhoneMainView.h */,
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
+				D34734791580DDF1003C7B8C /* PhoneMainView.xib */,
 				D35E759C159460B50066B1C1 /* SettingsViewController.h */,
 				D35E759D159460B50066B1C1 /* SettingsViewController.m */,
 				D32942A31594C94200556A1C /* SettingsViewController.xib */,
@@ -3807,6 +3815,7 @@
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 				34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */,
+				D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */,
 				D347347E1580E5F8003C7B8C /* history_default.png in Resources */,
 				D347347F1580E5F8003C7B8C /* history_selected.png in Resources */,
 				D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */,
@@ -3865,6 +3874,7 @@
 				D3F83F7A1582253100336684 /* accept_over.png in Resources */,
 				D3F83F7C1582253100336684 /* decline_default.png in Resources */,
 				D3F83F7E1582253100336684 /* decline_over.png in Resources */,
+				D3F83F9215824D3600336684 /* LinphoneApp.xib in Resources */,
 				D3ED3E411585FB4A006C0DE4 /* background.png in Resources */,
 				D3ED3E451585FB8C006C0DE4 /* dialer_address_background.png in Resources */,
 				D3ED3E521585FFFD006C0DE4 /* statebar_background.png in Resources */,
@@ -4376,7 +4386,9 @@
 				D38187CE15FE346700C3EDCA /* HistoryDetailsViewController.xib in Resources */,
 				D38187D215FE346B00C3EDCA /* HistoryViewController.xib in Resources */,
 				D38187DA15FE347700C3EDCA /* IncomingCallViewController.xib in Resources */,
+				D34BD72F15C13DD40070C209 /* LinphoneApp.xib in Resources */,
 				D34BD73015C13DD40070C209 /* AboutViewController.xib in Resources */,
+				D34BD73115C13DD40070C209 /* PhoneMainView.xib in Resources */,
 				F01A77EC18ED989B00E287CA /* shortring.caf in Resources */,
 				D34BD73215C13DD40070C209 /* SettingsViewController.xib in Resources */,
 				D38187DE15FE348A00C3EDCA /* WizardViewController.xib in Resources */,
