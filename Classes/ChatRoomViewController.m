@@ -448,8 +448,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     if(fromStr && cr_from_string ) {
 
         if(strcasecmp(cr_from_string, fromStr) == 0) {
-            if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-                || [UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+            if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
                 linphone_chat_room_mark_as_read(room);
                 [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
             }

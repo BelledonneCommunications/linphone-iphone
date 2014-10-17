@@ -305,7 +305,7 @@ static RootViewManager* rootViewManagerInstance = nil;
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
 	//Only report bad credential issue
     if (state == LinphoneRegistrationFailed
-		&&[UIApplication sharedApplication].applicationState != UIApplicationStateBackground
+		&&[UIApplication sharedApplication].applicationState == UIApplicationStateBackground
 		&& linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials ) {
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
 														message:NSLocalizedString(@"Bad credentials, check your account settings", nil)
@@ -673,8 +673,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 #pragma mark - ActionSheet Functions
 
 - (void)playMessageSound {
-    if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
@@ -686,12 +685,17 @@ static RootViewManager* rootViewManagerInstance = nil;
  	LinphoneCallLog* callLog=linphone_call_get_call_log(call);
 	NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
-	if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 		if ([[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
             [[LinphoneManager instance] acceptCall:call];
-		}else{
-			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+		}else {
+            IncomingCallViewController *controller = nil;
+            if( ![currentView.name isEqualToString:[IncomingCallViewController compositeViewDescription].name]){
+                controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+            } else {
+                // controller is already presented, don't bother animating a transition
+                controller = DYNAMIC_CAST([self.mainViewController getCurrentViewController],IncomingCallViewController);
+            }
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 			if(controller != nil) {
 				[controller setCall:call];

@@ -656,8 +656,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}
 		[lCTCallCenter release];
 
-		if(	[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		   && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+		if(	[UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 
 			LinphoneCallLog* callLog=linphone_call_get_call_log(call);
 			NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
@@ -871,8 +870,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		silentPushCompletion = nil;
 	}
 
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
 
 		const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
 		char* c_address = linphone_address_as_string_uri_only(remoteAddress);
@@ -1291,8 +1289,7 @@ static BOOL libStarted = FALSE;
 		[error release];
 	}
 
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+	if ([UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
 		[self enterBackgroundMode];
 	}
