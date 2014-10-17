@@ -36,8 +36,6 @@
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg);
-#define MULTIPART_BOUNDARY "---------------------------14737809831466499882746641449"
-const char *multipart_boundary=MULTIPART_BOUNDARY;
 
 static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
@@ -128,7 +126,6 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_http_request_t *req;
 			belle_sip_multipart_body_handler_t *bh;
 			char* ua;
-			char *content_type;
 			char *first_part_header;
 			belle_sip_user_body_handler_t *first_part_bh;
 
@@ -144,19 +141,14 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
 			bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
 
+			/* create the http request: do not include the message header at this point, it is done by bellesip when setting the multipart body handler in the message */
 			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
-
-			content_type=belle_sip_strdup_printf("multipart/form-data; boundary=%s",multipart_boundary);
-
 			uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(msg->chat_room->lc));
-
 			req=belle_http_request_create("POST",
 										  uri,
 										  belle_sip_header_create("User-Agent",ua),
-										  belle_sip_header_create("Content-type",content_type),
 										  NULL);
 			ms_free(ua);
-			belle_sip_free(content_type);
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req),BELLE_SIP_BODY_HANDLER(bh));
 			cbs.process_response=linphone_chat_message_process_response_from_post_file;
 			cbs.process_io_error=process_io_error_upload;
