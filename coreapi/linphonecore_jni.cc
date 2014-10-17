@@ -2445,6 +2445,10 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getAverageQuality(	JNI
 	return (jfloat)linphone_call_get_average_quality((LinphoneCall*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getPlayer(JNIEnv *env, jobject thiz, jlong callPtr) {
+	return (jlong)linphone_call_get_player((LinphoneCall *)callPtr);
+}
+
 //LinphoneFriend
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
 																		,jobject  thiz

@@ -333,4 +333,11 @@ public interface LinphoneCall {
 	 * @return an Object.
 	 */
 	Object getUserData();
+	
+	/**
+	 * Get a call player
+	 * Call player enable to stream a media file through a call
+	 * @return A player
+	 */
+	public LinphonePlayer getPlayer();
 }
