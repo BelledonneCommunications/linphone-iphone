@@ -71,6 +71,31 @@
 
 #pragma mark - 
 
+- (LinphoneChatMessage*)getLastIncomingMessage {
+    LinphoneChatMessage* last_message = nil;
+    MSList* last_message_list = linphone_chat_room_get_history(chatRoom, 20);
+    MSList* iterator = nil;
+
+    // find last element of the list:
+    iterator = last_message_list;
+    while (iterator && iterator->next) {
+        iterator = iterator->next;
+    }
+
+    // walk the list in reverse to find the last incoming message
+    while (iterator) {
+        LinphoneChatMessage* msg = iterator->data;
+        if( !linphone_chat_message_is_outgoing(msg)){
+            last_message = msg;
+            break;
+        }
+        iterator = iterator->prev;
+    }
+    ms_list_free(last_message_list);
+
+    return last_message;
+}
+
 - (void)update {
 	NSString *displayName = nil;
     UIImage *image = nil;
@@ -104,8 +129,7 @@
     }
     [avatarImage setImage:image];
 
-    MSList* last_message_list         = linphone_chat_room_get_history(chatRoom, 1);
-    LinphoneChatMessage* last_message = last_message_list? last_message_list->data : NULL;
+    LinphoneChatMessage* last_message = [self getLastIncomingMessage];
 
     if( last_message ){
 
@@ -135,7 +159,6 @@
         [unreadMessageView setHidden:TRUE];
     }
 
-    ms_list_free(last_message_list);
 }
 
 - (void)setEditing:(BOOL)editing {
