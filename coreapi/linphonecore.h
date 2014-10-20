@@ -1603,10 +1603,10 @@ typedef void (*LinphoneCoreFileTransferSendCb)(LinphoneCore *lc, LinphoneChatMes
  * @param lc #LinphoneCore object
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent incoming content information
- * @param progress number of bytes sent/received from the begening of the transfer.
- *
+ * @param offset The number of bytes sent/received since the beginning of the transfer.
+ * @param total The total number of bytes to be sent/received.
  */
-typedef void (*LinphoneCoreFileTransferProgressIndicationCb)(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress);
+typedef void (*LinphoneCoreFileTransferProgressIndicationCb)(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 /**
  * Is composing notification callback prototype.

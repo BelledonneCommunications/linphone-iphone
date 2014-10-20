@@ -75,7 +75,7 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	/* call back given by application level */
-	linphone_core_notify_file_transfer_progress_indication(lc, chatMsg, chatMsg->file_transfer_information, (size_t)(((double)offset/(double)total)*100.0));
+	linphone_core_notify_file_transfer_progress_indication(lc, chatMsg, chatMsg->file_transfer_information, offset, total);
 	return;
 }
 

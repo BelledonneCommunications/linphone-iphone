@@ -6979,8 +6979,8 @@ void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessa
 void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size) {
 	NOTIFY_IF_EXIST(file_transfer_send)(lc,message,content,buff,size);
 }
-void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
-	NOTIFY_IF_EXIST(file_transfer_progress_indication)(lc,message,content,progress);
+void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
+	NOTIFY_IF_EXIST(file_transfer_progress_indication)(lc,message,content,offset,total);
 }
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 	NOTIFY_IF_EXIST(is_composing_received)(lc,room);
