@@ -2129,6 +2129,10 @@ static void early_media_call_with_ringing(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
 	LinphoneCall* marie_call;
+	LinphoneCallLog *marie_call_log;
+	time_t connected_time=0;
+	time_t ended_time=0;
+	int dummy=0;
 
 	lcs = ms_list_append(lcs,marie->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
@@ -2142,6 +2146,7 @@ static void early_media_call_with_ringing(void){
 	linphone_core_set_play_file(pauline->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+	marie_call_log = linphone_call_get_call_log(marie_call);
 
 	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
@@ -2159,20 +2164,25 @@ static void early_media_call_with_ringing(void){
 
 		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
+		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
+		connected_time=time(NULL);
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
 		CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
 
 		liblinphone_tester_check_rtcp(marie, pauline);
+		/*just to have a call duration !=0*/
+		wait_for_list(lcs,&dummy,1,2000);
 
 		linphone_core_terminate_all_calls(pauline->lc);
 
 		CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
-
-
+		ended_time=time(NULL);
+		CU_ASSERT_TRUE (abs (linphone_call_log_get_duration(marie_call_log) - (ended_time - connected_time)) <1 );
 		ms_list_free(lcs);
 	}
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

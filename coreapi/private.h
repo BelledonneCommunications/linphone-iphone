@@ -125,12 +125,13 @@ struct _LinphoneCallLog{
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
 	char start_date[128]; /**<Human readable string containing the start date*/
-	int duration; /**<Duration of the call in seconds*/
+	int duration; /**<Duration of the call starting in connected state in seconds*/
 	char *refkey;
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
 	bool_t video_enabled;
@@ -204,7 +205,6 @@ struct _LinphoneCall
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
-	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/

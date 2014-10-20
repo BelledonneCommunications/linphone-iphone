@@ -79,7 +79,7 @@ LINPHONE_PUBLIC const char * linphone_call_log_get_call_id(const LinphoneCallLog
 LINPHONE_PUBLIC LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
 
 /**
- * Get the duration of the call.
+ * Get the duration of the call since connected.
  * @param[in] cl LinphoneCallLog object
  * @return The duration of the call in seconds.
 **/

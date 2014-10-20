@@ -2452,8 +2452,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 			}
 		}
 		if ( (lc->sip_conf.in_call_timeout > 0)
-			 && (call->media_start_time != 0)
-			 && ((curtime - call->media_start_time) > lc->sip_conf.in_call_timeout))
+			 && (call->log->connected_date_time != 0)
+			 && ((curtime - call->log->connected_date_time) > lc->sip_conf.in_call_timeout))
 		{
 			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
 			linphone_core_terminate_call(lc,call);

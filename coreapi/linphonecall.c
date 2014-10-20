@@ -564,7 +564,6 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
 	call->state=LinphoneCallIdle;
 	call->transfer_state = LinphoneCallIdle;
-	call->media_start_time=0;
 	call->log=linphone_call_log_new(call->dir, from, to);
 	call->camera_enabled=TRUE;
 	call->current_params = linphone_call_params_new();
@@ -972,7 +971,7 @@ void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, 
 		}
 		if (cstate == LinphoneCallConnected) {
 			call->log->status=LinphoneCallSuccess;
-			call->media_start_time=time(NULL);
+			call->log->connected_date_time=time(NULL);
 		}
 
 		if (!silently)
@@ -1284,8 +1283,8 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
  * Returns call's duration in seconds.
 **/
 int linphone_call_get_duration(const LinphoneCall *call){
-	if (call->media_start_time==0) return 0;
-	return time(NULL)-call->media_start_time;
+	if (call->log->connected_date_time==0) return 0;
+	return time(NULL)-call->log->connected_date_time;
 }
 
 /**
@@ -2952,7 +2951,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 
-	call->log->duration=time(NULL)-call->log->start_date_time;
+	call->log->duration=linphone_call_get_duration(call); /*store duration since connected*/
 
 	if (call->log->status==LinphoneCallMissed){
 		char *info;
