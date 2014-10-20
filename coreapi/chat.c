@@ -1104,7 +1104,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
  * @param message #LinphoneChatMessage
  * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
  */
-void linphone_chat_message_start_file_download(LinphoneChatMessage *message, LinphoneChatMessageStateChangedCb status_cb) {
+void linphone_chat_message_start_file_download(LinphoneChatMessage *message, LinphoneChatMessageStateChangedCb status_cb, void *ud) {
 	belle_http_request_listener_callbacks_t cbs={0};
 	belle_http_request_listener_t *l;
 	belle_generic_uri_t *uri;
@@ -1129,6 +1129,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
 	belle_sip_object_data_set(BELLE_SIP_OBJECT(req),"message",(void *)message,NULL);
 	message->http_request = req; /* keep a reference on the request to be able to cancel the download */
 	message->cb = status_cb;
+	message->cb_ud = cb_ud;
 	message->state = LinphoneChatMessageStateInProgress; /* start the download, status is In Progress */
 	belle_http_provider_send_request(message->chat_room->lc->http_provider,req,l);
 }
