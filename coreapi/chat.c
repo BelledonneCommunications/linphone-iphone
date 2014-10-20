@@ -41,14 +41,14 @@ static void process_io_error_upload(void *data, const belle_sip_io_error_event_t
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
 	}
 }
 static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
 	}
 }
 
@@ -56,14 +56,14 @@ static void process_io_error_download(void *data, const belle_sip_io_error_event
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 	ms_error("I/O Error during file download %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->chat_room->lc);
+		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->cb_ud);
 	}
 }
 static void process_auth_requested_download(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 	ms_error("Error during file download : auth requested to get %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->chat_room->lc);
+		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->cb_ud);
 	}
 }
 
@@ -1135,7 +1135,7 @@ void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
 	/* waiting for this API, just set to NULL the reference to the request in the message and any request */
 	msg->http_request = NULL;
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->chat_room->lc);
+		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
 	}
 }
 
