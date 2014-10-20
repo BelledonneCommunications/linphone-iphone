@@ -366,6 +366,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [searchBar setShowsCancelButton:TRUE animated:TRUE];    
 }
 
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
+}
+
 - (void)viewDidUnload {
 	[self setToolBar:nil];
 	[super viewDidUnload];
