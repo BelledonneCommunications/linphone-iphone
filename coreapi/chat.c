@@ -127,19 +127,23 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_sip_multipart_body_handler_t *bh;
 			char* ua;
 			char *first_part_header;
-			belle_sip_user_body_handler_t *first_part_bh;
+			belle_sip_body_handler_t *first_part_bh;
 
 			/* temporary storage for the Content-disposition header value */
 			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", msg->file_transfer_information->name);
 
 			/* create a user body handler to take care of the file and add the content disposition and content-type headers */
-			first_part_bh=belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
-			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
+			if (msg->file_transfer_filepath != NULL) {
+				first_part_bh=(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath,NULL,msg);
+			} else {
+				first_part_bh=(belle_sip_body_handler_t *)belle_sip_user_body_handler_new(msg->file_transfer_information->size,NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
+			}
+			belle_sip_body_handler_add_header(first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
 			belle_sip_free(first_part_header);
-			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(msg->file_transfer_information->type, msg->file_transfer_information->subtype));
+			belle_sip_body_handler_add_header(first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(msg->file_transfer_information->type, msg->file_transfer_information->subtype));
 
 			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
-			bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,  (belle_sip_body_handler_t *)first_part_bh);
+			bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg, first_part_bh);
 
 			/* create the http request: do not include the message header at this point, it is done by bellesip when setting the multipart body handler in the message */
 			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
@@ -166,6 +170,9 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			msg->message = ms_strdup(body);
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+			if (msg->cb) {
+				msg->cb(msg, LinphoneChatMessageStateFileTransferDone, msg->cb_ud);
+			}
 			_linphone_chat_room_send_message(msg->chat_room, msg);
 		}
 	}
@@ -1076,8 +1083,6 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 }
 
 static void linphone_chat_process_response_from_get_file(void *data, const belle_http_response_event_t *event){
-	//LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-
 	/* check the answer code */
 	if (event->response){
 		int code=belle_http_response_get_status_code(event->response);
@@ -1086,6 +1091,9 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			LinphoneCore *lc = chatMsg->chat_room->lc;
 			/* file downloaded succesfully, call again the callback with size at zero */
 			linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
+			if (chatMsg->cb) {
+				chatMsg->cb(chatMsg, LinphoneChatMessageStateFileTransferDone, chatMsg->cb_ud);
+			}
 		}
 	}
 }
@@ -1286,6 +1294,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	new_message->state=msg->state;
 	new_message->storage_id=msg->storage_id;
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
+	if (msg->file_transfer_filepath) new_message->file_transfer_filepath=ms_strdup(msg->file_transfer_filepath);
 	return new_message;
 }
 
@@ -1312,6 +1321,9 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->file_transfer_information) {
 		linphone_content_uninit(msg->file_transfer_information);
 		ms_free(msg->file_transfer_information);
+	}
+	if (msg->file_transfer_filepath != NULL) {
+		ms_free(msg->file_transfer_filepath);
 	}
 	ms_message("LinphoneChatMessage [%p] destroyed.",msg);
 }
@@ -1369,6 +1381,15 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
 	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
 	msg->http_request=NULL; /* this will store the http request during file upload to the server */
+	return msg;
+}
+
+LinphoneChatMessage * linphone_chat_room_create_file_transfer_message_from_file(LinphoneChatRoom *cr, LinphoneContent *initial_content, const char *filepath) {
+	LinphoneChatMessage *msg = linphone_chat_room_create_file_transfer_message(cr, initial_content);
+	if (msg->file_transfer_filepath != NULL) {
+		ms_free(msg->file_transfer_filepath);
+	}
+	msg->file_transfer_filepath = ms_strdup(filepath);
 	return msg;
 }
 

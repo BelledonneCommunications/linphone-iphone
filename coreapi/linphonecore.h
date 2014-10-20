@@ -1297,9 +1297,10 @@ typedef struct _LinphoneChatRoom LinphoneChatRoom;
 typedef enum _LinphoneChatMessageState {
 	LinphoneChatMessageStateIdle, /**< Initial state */
 	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
-	LinphoneChatMessageStateDelivered, /**< Message succesffully delivered an acknoleged by remote end point */
+	LinphoneChatMessageStateDelivered, /**< Message successfully delivered and acknowledged by remote end point */
 	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
-	LinphoneChatMessageStateFileTransferError /**< Message was received(and acknowledged) but cannot get file from server */
+	LinphoneChatMessageStateFileTransferError, /**< Message was received(and acknowledged) but cannot get file from server */
+	LinphoneChatMessageStateFileTransferDone /**< File transfer has been completed successfully. */
 } LinphoneChatMessageState;
 
 /**
@@ -1356,6 +1357,15 @@ LINPHONE_PUBLIC void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void
  * @return a new #LinphoneChatMessage
  */
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content);
+
+/**
+ * Create a message with an attached file that will be read from the given filepath.
+ * @param[in] cr LinphoneChatRoom object
+ * @param[in] initial_content LinphoneContent object describing the file to be transfered.
+ * @param[in] filepath The path to the file to be sent.
+ * @return A new LinphoneChatMessage object.
+ */
+LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_room_create_file_transfer_message_from_file(LinphoneChatRoom *cr, LinphoneContent *initial_content, const char *filepath);
 
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
