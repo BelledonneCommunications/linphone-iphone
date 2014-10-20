@@ -116,6 +116,8 @@ typedef struct _stats {
 	int number_of_LinphoneCallIncomingEarlyMedia;
 	int number_of_LinphoneCallUpdating;
 	int number_of_LinphoneCallReleased;
+	int number_of_LinphoneCallEarlyUpdatedByRemote;
+	int number_of_LinphoneCallEarlyUpdating;
 
 	int number_of_LinphoneTransferCallOutgoingInit;
 	int number_of_LinphoneTransferCallOutgoingProgress;

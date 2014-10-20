@@ -73,6 +73,8 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 	case LinphoneCallIncomingEarlyMedia :counters->number_of_LinphoneCallIncomingEarlyMedia++;break;
 	case LinphoneCallUpdating :counters->number_of_LinphoneCallUpdating++;break;
 	case LinphoneCallReleased :counters->number_of_LinphoneCallReleased++;break;
+	case LinphoneCallEarlyUpdating: counters->number_of_LinphoneCallEarlyUpdating++;break;
+	case LinphoneCallEarlyUpdatedByRemote: counters->number_of_LinphoneCallEarlyUpdatedByRemote++;break;
 	default:
 		CU_FAIL("unexpected event");break;
 	}
@@ -1906,7 +1908,9 @@ static void call_with_file_player(void) {
 	
 	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
 	
-	/*caller uses soundcard*/
+	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(pauline->lc,NULL);
 	
 	/*callee is recording and plays file*/
 	linphone_core_use_files(pauline->lc,TRUE);
@@ -1963,8 +1967,9 @@ static void call_with_mkv_file_player(void) {
 	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
 	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", liblinphone_tester_file_prefix);
 	
-	/*caller uses soundcard*/
-	
+	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(pauline->lc,NULL);
 	/*callee is recording and plays file*/
 	linphone_core_use_files(pauline->lc,TRUE);
 	linphone_core_set_play_file(pauline->lc,hellowav); /*just to send something but we are not testing what is sent by pauline*/
@@ -1985,7 +1990,7 @@ static void call_with_mkv_file_player(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
-	CU_ASSERT_TRUE(similar>0.9);
+	CU_ASSERT_TRUE(similar>0.6);
 	CU_ASSERT_TRUE(similar<=1.0);
 	ms_free(recordpath);
 	
@@ -2185,7 +2190,6 @@ static void early_media_call_with_update_base(bool_t media_change){
 	if (media_change) {
 		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
 		disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
-
 	}
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
@@ -2216,26 +2220,23 @@ static void early_media_call_with_update_base(bool_t media_change){
 
 	linphone_call_params_set_session_name(pauline_params,UPDATED_SESSION_NAME);
 	linphone_core_update_call(pauline->lc, pauline_call, pauline_params);
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEarlyUpdating,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEarlyUpdatedByRemote,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000));
 
 	/*just to wait 2s*/
 	liblinphone_tester_check_rtcp(marie, pauline);
-	wait_for_list(lcs, &marie->stat.number_of_LinphoneCallUpdatedByRemote,100000,2000);
 
 	CU_ASSERT_STRING_EQUAL(	  linphone_call_params_get_session_name(linphone_call_get_remote_params(marie_call))
 							, UPDATED_SESSION_NAME);
 
 	linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
-
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected,1);
-
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallStreamsRunning,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallUpdating,1);
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected, 1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
 	liblinphone_tester_check_rtcp(marie, pauline);
 

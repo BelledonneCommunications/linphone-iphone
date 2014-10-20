@@ -3281,15 +3281,20 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
+	LinphoneCallState nextstate;
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
 #endif
 
 	switch(call->state){
-		case LinphoneCallIncomingEarlyMedia:
 		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallOutgoingEarlyMedia:
+			nextstate=LinphoneCallEarlyUpdating;
+			break;
 		case LinphoneCallStreamsRunning:
-			/*these states are allowed for linphone_core_update_call()*/
+			nextstate=LinphoneCallUpdating;
 			break;
 		default:
 		ms_error("linphone_core_update_call() is not allowed in [%s] state",linphone_call_state_to_string(call->state));
@@ -3297,7 +3302,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	}
 
 	if (params!=NULL){
-		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
+		linphone_call_set_state(call,nextstate,"Updating call");
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		has_video = call->params->has_video;
 
@@ -6413,6 +6418,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
  * @param lc the LinphoneCore
  * @param call the call for which the parameters are to be build, or NULL in the case where the parameters are to be used for a new outgoing call.
  * @return a new LinphoneCallParams
+ * @ingroup call_control
  */
 LinphoneCallParams *linphone_core_create_call_params(LinphoneCore *lc, LinphoneCall *call){
 	if (!call) return linphone_core_create_default_call_parameters(lc);

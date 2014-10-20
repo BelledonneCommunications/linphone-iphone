@@ -638,7 +638,9 @@ typedef enum _LinphoneCallState{
 	LinphoneCallUpdatedByRemote, /**<The call's parameters change is requested by remote end, used for example when video is added by remote */
 	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
 	LinphoneCallUpdating, /**<A call update has been initiated by us */
-	LinphoneCallReleased /**< The call object is no more retained by the core */
+	LinphoneCallReleased, /**< The call object is no more retained by the core */
+	LinphoneCallEarlyUpdatedByRemote, /*<The call is updated by remote while not yet answered (early dialog SIP UPDATE received).*/
+	LinphoneCallEarlyUpdating /*<We are updating the call while not yet answered (early dialog SIP UPDATE sent)*/
 } LinphoneCallState;
 
 LINPHONE_PUBLIC	const char *linphone_call_state_to_string(LinphoneCallState cs);

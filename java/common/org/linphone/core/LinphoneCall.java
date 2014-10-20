@@ -119,6 +119,15 @@ public interface LinphoneCall {
 		 */
 		public static final State CallReleased = new State(18,"Released");
 
+		/**
+		 * The call is updated by remote while not yet answered (SIP UPDATE in early dialog received)
+		 */
+		public static final State CallEarlyUpdatedByRemote = new State(19,"EarlyUpdatedByRemote");
+
+		/**
+		 * We are updating the call while not yet answered (SIP UPDATE in early dialog sent)
+		**/
+		public static final State CallEarlyUpdating = new State(20,"EarlyUpdating");
 		
 		private State(int value,String stringValue) {
 			mValue = value;
