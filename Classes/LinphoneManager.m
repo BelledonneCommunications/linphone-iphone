@@ -1337,6 +1337,10 @@ static BOOL libStarted = FALSE;
 										 ,configDb
 										 ,self /* user_data */);
 
+
+	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
+	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"enable_log_collect"]);
+
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
@@ -1862,6 +1866,18 @@ static void audioRouteChangeListenerCallback (
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsPath = [paths objectAtIndex:0];
 	return [documentsPath stringByAppendingPathComponent:file];
+}
+
++ (NSString*)cacheDirectory {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *cachePath = [paths objectAtIndex:0];
+	BOOL isDir = NO;
+	NSError *error;
+	// cache directory must be created if not existing
+	if (! [[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
+		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:NO attributes:nil error:&error];
+	}
+	return cachePath;
 }
 
 + (int)unreadMessageCount {

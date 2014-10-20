@@ -37,6 +37,7 @@ start_at_boot_preference=1
 backgroundmode_preference=1
 autoanswer_notif_preference=1
 voiceproc_preference=1
+enable_log_collect=0
 
 [default_values]
 reg_expires=600
