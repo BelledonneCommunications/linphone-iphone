@@ -56,6 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef HAVE_ZLIB
+#define COMPRESSED_LOG_COLLECTION_FILENAME "linphone_log.gz"
 #ifdef WIN32
 #include <fcntl.h>
 #include <io.h>
@@ -64,6 +65,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SET_BINARY_MODE(file)
 #endif
 #include <zlib.h>
+#else
+#define COMPRESSED_LOG_COLLECTION_FILENAME "linphone_log.txt"
 #endif
 
 /*#define UNSTANDART_GSM_11K 1*/
@@ -254,12 +257,9 @@ void linphone_core_enable_log_collection(bool_t enable) {
 }
 
 static void delete_log_collection_upload_file(void) {
-#ifdef HAVE_ZLIB
-	char *filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
-#else
-	char *filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
-#endif
+	char *filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, COMPRESSED_LOG_COLLECTION_FILENAME);
 	unlink(filename);
+	ms_free(filename);
 }
 
 static void process_io_error_upload_log_collection(void *data, const belle_sip_io_error_event_t *event) {
@@ -292,17 +292,16 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
 
 	/* If we've not reach the end of file yet, fill the buffer with more data */
 	if (offset < core->log_collection_upload_information->size) {
+		char *log_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, COMPRESSED_LOG_COLLECTION_FILENAME);
 #ifdef HAVE_ZLIB
-		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.gz");
 		FILE *log_file = fopen(log_filename, "rb");
 #else
-		char *log_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone_log.txt");
 		FILE *log_file = fopen(log_filename, "r");
 #endif
 		fseek(log_file, offset, SEEK_SET);
 		*size = fread(buffer, 1, *size, log_file);
 		fclose(log_file);
-		ortp_free(log_filename);
+		ms_free(log_filename);
 	}
 
 	return BELLE_SIP_CONTINUE;
@@ -439,17 +438,17 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	int ret = 0;
 
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
-	output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
+	output_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
 	output_file = COMPRESS_OPEN(output_filename, "a");
 	if (output_file == NULL) goto error;
-	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
+	input_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone1.log");
 	input_file = fopen(input_filename, "r");
 	if (input_file == NULL) goto error;
 	ret = compress_file(input_file, output_file);
 	if (ret < 0) goto error;
 	fclose(input_file);
-	ortp_free(input_filename);
-	input_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
+	ms_free(input_filename);
+	input_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, "linphone2.log");
 	input_file = fopen(input_filename, "r");
 	if (input_file != NULL) {
 		ret = compress_file(input_file, output_file);
@@ -459,18 +458,19 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 error:
 	if (input_file != NULL) fclose(input_file);
 	if (output_file != NULL) COMPRESS_CLOSE(output_file);
-	if (input_filename != NULL) ortp_free(input_filename);
-	if (output_filename != NULL) ortp_free(output_filename);
+	if (input_filename != NULL) ms_free(input_filename);
+	if (output_filename != NULL) ms_free(output_filename);
 	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 	return ret;
 }
 
 static size_t get_size_of_file_to_upload(const char *filename) {
 	struct stat statbuf;
-	char *output_filename = ortp_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
+	char *output_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path, filename);
 	FILE *output_file = fopen(output_filename, "rb");
 	fstat(fileno(output_file), &statbuf);
 	fclose(output_file);
+	ms_free(output_filename);
 	return statbuf.st_size;
 }
 
@@ -487,12 +487,11 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 #ifdef HAVE_ZLIB
 		core->log_collection_upload_information->type = "application";
 		core->log_collection_upload_information->subtype = "gzip";
-		core->log_collection_upload_information->name = "linphone_log.gz";
 #else
 		core->log_collection_upload_information->type = "text";
 		core->log_collection_upload_information->subtype = "plain";
-		core->log_collection_upload_information->name = "linphone_log.txt";
 #endif
+		core->log_collection_upload_information->name = COMPRESSED_LOG_COLLECTION_FILENAME;
 		if (prepare_log_collection_file_to_upload(core->log_collection_upload_information->name) < 0) return;
 		core->log_collection_upload_information->size = get_size_of_file_to_upload(core->log_collection_upload_information->name);
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
@@ -503,6 +502,12 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
 		belle_http_provider_send_request(core->http_provider, req, l);
 	}
+}
+
+char * linphone_core_compress_log_collection(LinphoneCore *core) {
+	if (liblinphone_log_collection_enabled == FALSE) return NULL;
+	if (prepare_log_collection_file_to_upload(COMPRESSED_LOG_COLLECTION_FILENAME) < 0) return NULL;
+	return ms_strdup_printf("%s/%s", liblinphone_log_collection_path, COMPRESSED_LOG_COLLECTION_FILENAME);
 }
 
 /**

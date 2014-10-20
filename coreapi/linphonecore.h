@@ -1815,6 +1815,14 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_upload_server_url(Linphone
 LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
 
 /**
+ * Compress the log collection in a single file.
+ * @ingroup misc
+ * @param[in] core LinphoneCore object
+ * @return The path of the compressed log collection file (to be freed calling ms_free()).
+ */
+LINPHONE_PUBLIC char * linphone_core_compress_log_collection(LinphoneCore *core);
+
+/**
  * Define a log handler.
  *
  * @ingroup misc
