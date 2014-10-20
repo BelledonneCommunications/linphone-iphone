@@ -348,12 +348,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return false;
 }
 
+#pragma mark - searchBar delegate
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
 	// set searchbar text in uppercase here
 	// searchBar.text = [searchText uppercaseString];
 
 	[ContactSelection setNameOrEmailFilter:searchText];
 	[tableController loadData];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:FALSE animated:TRUE];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:TRUE animated:TRUE];    
 }
 
 - (void)viewDidUnload {
