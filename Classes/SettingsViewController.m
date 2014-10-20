@@ -802,16 +802,37 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneLogger log:LinphoneLoggerError format:@"Trying to email attachment but mandatory field is missing"];
 		return;
 	}
-	MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
-	picker.mailComposeDelegate = self;
 
-	[picker setSubject:NSLocalizedString(@"Linphone Logs",nil)];
-	[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
-	[picker setMessageBody:NSLocalizedString(@"Linphone logs", nil) isHTML:NO];
-	[picker addAttachmentData:attachment mimeType:type fileName:attachmentName];
+#if TARGET_IPHONE_SIMULATOR
+	UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
+													message:NSLocalizedString(@"Simulator cannot send emails. To test this feature, please use a real device.",nil)
+												   delegate:nil
+										  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+										  otherButtonTitles:nil];
+	[error show];
+	[error release];
+#else
+	if ([MFMailComposeViewController canSendMail] == YES) {
+		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+		picker.mailComposeDelegate = self;
 
-	[self presentViewController:picker animated:true completion:nil];
-	[picker release];
+		[picker setSubject:NSLocalizedString(@"Linphone Logs",nil)];
+		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
+		[picker setMessageBody:NSLocalizedString(@"Linphone logs", nil) isHTML:NO];
+		[picker addAttachmentData:attachment mimeType:type fileName:attachmentName];
+
+		[self presentViewController:picker animated:true completion:nil];
+		[picker release];
+	} else {
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
+														message:NSLocalizedString(@"Your device is not configured to send emails. Please configure mail application prior to send logs.",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil];
+		[error show];
+		[error release];
+	}
+#endif
 }
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
