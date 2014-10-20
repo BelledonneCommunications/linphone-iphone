@@ -1129,7 +1129,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
 	belle_sip_object_data_set(BELLE_SIP_OBJECT(req),"message",(void *)message,NULL);
 	message->http_request = req; /* keep a reference on the request to be able to cancel the download */
 	message->cb = status_cb;
-	message->cb_ud = cb_ud;
+	message->cb_ud = ud;
 	message->state = LinphoneChatMessageStateInProgress; /* start the download, status is In Progress */
 	belle_http_provider_send_request(message->chat_room->lc->http_provider,req,l);
 }
