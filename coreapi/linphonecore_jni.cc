@@ -2911,7 +2911,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_startFileDownload
 	jobject listener = env->NewGlobalRef(jlistener);
 	LinphoneChatMessage * message = (LinphoneChatMessage *)ptr;
 	message->cb_ud = listener;
-	linphone_chat_message_start_file_download(message, chat_room_impl_callback);
+	linphone_chat_message_start_file_download(message, chat_room_impl_callback, NULL);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
