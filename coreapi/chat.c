@@ -1075,10 +1075,17 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 			body_size = message->file_transfer_information->size;
 		}
 
-		belle_sip_message_set_body_handler(
-			(belle_sip_message_t*)event->response,
-			(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
-		);
+		if (message->file_transfer_filepath == NULL) {
+			belle_sip_message_set_body_handler(
+				(belle_sip_message_t*)event->response,
+				(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
+			);
+		} else {
+			belle_sip_message_set_body_handler(
+				(belle_sip_message_t *)event->response,
+				(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message)
+			);
+		}
 	}
 }
 
@@ -1362,6 +1369,18 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
 }
 
 
+/**
+ * Set the path to the file to read from or write to during the file transfer.
+ * @param[in] msg LinphoneChatMessage object
+ * @param[in] filepath The path to the file to use for the file transfer.
+ */
+void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath) {
+	if (msg->file_transfer_filepath != NULL) {
+		ms_free(msg->file_transfer_filepath);
+	}
+	msg->file_transfer_filepath = ms_strdup(filepath);
+}
+
 
 /**
  * Create a message attached to a dedicated chat room with a particular content. Use #linphone_chat_room_send_message2 to initiate the transfer
@@ -1382,15 +1401,6 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
 	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
 	msg->http_request=NULL; /* this will store the http request during file upload to the server */
-	return msg;
-}
-
-LinphoneChatMessage * linphone_chat_room_create_file_transfer_message_from_file(LinphoneChatRoom *cr, LinphoneContent *initial_content, const char *filepath) {
-	LinphoneChatMessage *msg = linphone_chat_room_create_file_transfer_message(cr, initial_content);
-	if (msg->file_transfer_filepath != NULL) {
-		ms_free(msg->file_transfer_filepath);
-	}
-	msg->file_transfer_filepath = ms_strdup(filepath);
 	return msg;
 }
 
