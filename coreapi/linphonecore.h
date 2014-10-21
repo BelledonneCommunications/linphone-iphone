@@ -3044,6 +3044,8 @@ LINPHONE_PUBLIC void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFM
 
 LINPHONE_PUBLIC LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore *lc);
 
+LINPHONE_PUBLIC void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval);
+
 LINPHONE_PUBLIC int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc);
 
 #ifdef __cplusplus
