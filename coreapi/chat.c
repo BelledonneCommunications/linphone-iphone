@@ -1381,6 +1381,15 @@ void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, 
 	msg->file_transfer_filepath = ms_strdup(filepath);
 }
 
+/**
+ * Get the path to the file to read from or write to during the file transfer.
+ * @param[in] msg LinphoneChatMessage object
+ * @return The path to the file to use for the file transfer.
+ */
+const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
+	return msg->file_transfer_filepath;
+}
+
 
 /**
  * Create a message attached to a dedicated chat room with a particular content. Use #linphone_chat_room_send_message2 to initiate the transfer
