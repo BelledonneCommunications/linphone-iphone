@@ -1703,7 +1703,7 @@ static void audioRouteChangeListenerCallback (
 #pragma mark - Call Functions
 
 - (void)acceptCall:(LinphoneCall *)call {
-	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
+	LinphoneCallParams* lcallParams = linphone_core_create_call_params(theLinphoneCore,call);
 	if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
 		bool low_bandwidth = self.network == network_2g;
 		if(low_bandwidth) {
@@ -1711,12 +1711,6 @@ static void audioRouteChangeListenerCallback (
 		}
 		linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
 	}
-
-	// workaround for video policy not correctly updated for automatic accept
-	BOOL video = linphone_call_params_video_enabled(lcallParams);
-	const LinphoneVideoPolicy* policy = linphone_core_get_video_policy(theLinphoneCore);
-	video &= policy->automatically_accept;
-	linphone_call_params_enable_video(lcallParams, video);
 
 	linphone_core_accept_call_with_params(theLinphoneCore,call, lcallParams);
 }
