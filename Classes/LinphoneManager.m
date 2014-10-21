@@ -1332,14 +1332,15 @@ static BOOL libStarted = FALSE;
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
     }
 
+	/*must be done before creating linphone core to get its traces too*/
+	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
+	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"enable_log_collect"]);
 
 	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
 										 ,configDb
 										 ,self /* user_data */);
 
 
-	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"enable_log_collect"]);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
