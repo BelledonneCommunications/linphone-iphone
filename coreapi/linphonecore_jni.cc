@@ -812,9 +812,10 @@ public:
 		env->CallVoidMethod(lcData->listener, lcData->configuringStateId, lcData->core, env->CallStaticObjectMethod(lcData->configuringStateClass,lcData->configuringStateFromIntId,(jint)status), message ? env->NewStringUTF(message) : NULL);
 	}
 
-	static void fileTransferProgressIndication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
+	static void fileTransferProgressIndication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
 		JNIEnv *env = 0;
 		jobject jmsg;
+		size_t progress = (offset * 100) / total;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
 			ms_error("cannot attach VM");
