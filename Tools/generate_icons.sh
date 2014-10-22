@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # tag_missing_resources.sh
 #
@@ -47,9 +47,10 @@ fi
 
 resources=$(dirname $0)/../Resources/
 
-for file in $(find $resources -name "$icon_prefix*.png"); do
+for file in $(find $(dirname $0)/.. -name "$icon_prefix*.png" -or -name "iTunesArtwork*" ); do
 	dimension=$(identify $file | cut -d' ' -f3 | cut -d x -f1)
-	convert $logo -resize ${dimension}x${dimension} $resources/$(basename $file)
+	echo "Resizing to dimension ${dimension}x${dimension} for $(basename $file)"
+	convert $logo -resize ${dimension}x${dimension} $file
 done
 
 echo "**********************
