@@ -338,8 +338,8 @@ static void parseEnum(Project *proj, XmlNode node){
 	list<XmlNode>::iterator it;
 	int value = 0;
 	for (it=enumValues.begin();it!=enumValues.end();++it){
-		XmlNode initializer = (*it).getChild("initializer");
-		if (initializer) value=atoi(initializer.getText().c_str());
+		string initializer = (*it).getChild("initializer").getText();
+		if (initializer!="") value=atoi(initializer.c_str());
 		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText(),value);
 		cf->setHelp((*it).getChild("detaileddescription").getChild("para").getText());
 		klass->addConstField(cf);
