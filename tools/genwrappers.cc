@@ -339,7 +339,7 @@ static void parseEnum(Project *proj, XmlNode node){
 	int value = 0;
 	for (it=enumValues.begin();it!=enumValues.end();++it){
 		string initializer = (*it).getChild("initializer").getText();
-		if (initializer!="") value=atoi(initializer.c_str());
+		if (initializer.length() > 1) value=atoi(initializer.substr(1).c_str());
 		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText(),value);
 		cf->setHelp((*it).getChild("detaileddescription").getChild("para").getText());
 		klass->addConstField(cf);
