@@ -5301,6 +5301,10 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_close(JNIEnv *env, job
 
 extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, jobject jobj, jlong playerPtr) {
 	LinphonePlayer *player = (LinphonePlayer *)playerPtr;
+	if(player == NULL) {
+		ms_error("Cannot destroy the LinphonePlayerImpl object. Native pointer is NULL");
+		return;
+	}
 	if(player->user_data) {
 		delete (LinphonePlayerData *)player->user_data;
 	}
