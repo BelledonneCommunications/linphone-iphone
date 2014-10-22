@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <string.h>
+#include <stdlib.h>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
@@ -335,11 +336,14 @@ static void parseEnum(Project *proj, XmlNode node){
 	klass->setHelp(node.getChild("detaileddescription").getChild("para").getText());
 	list<XmlNode> enumValues=node.getChildren("enumvalue");
 	list<XmlNode>::iterator it;
+	int value = 0;
 	for (it=enumValues.begin();it!=enumValues.end();++it){
-		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText());
+		XmlNode initializer = (*it).getChild("initializer");
+		if (initializer) value=atoi(initializer.getText().c_str());
+		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText(),value);
 		cf->setHelp((*it).getChild("detaileddescription").getChild("para").getText());
 		klass->addConstField(cf);
-		
+		value++;
 	}
 	
 }
