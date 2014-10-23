@@ -31,7 +31,7 @@
 
 NSTimer *callQualityTimer;
 NSTimer *callSecurityTimer;
-
+int messagesUnreadCount;
 
 #pragma mark - Lifecycle Functions
 
@@ -97,15 +97,23 @@ NSTimer *callSecurityTimer;
 						name:kLinphoneNotifyReceived
 						object:nil];
 
+	[[NSNotificationCenter defaultCenter]	addObserver:self
+											selector:@selector(callUpdate:)
+											name:kLinphoneCallUpdate
+											object:nil];
+
+
 	[callQualityImage setHidden: true];
 	[callSecurityImage setHidden: true];
-	self.voicemailCount.hidden = true;
 
 	// Update to default state
 	LinphoneProxyConfig* config = NULL;
-	if([LinphoneManager isLcReady])
+	if([LinphoneManager isLcReady]) {
 		linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+		messagesUnreadCount = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
+	}
 	[self proxyConfigUpdate: config];
+	[self updateVoicemail];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -122,6 +130,10 @@ NSTimer *callSecurityTimer;
 	[[NSNotificationCenter defaultCenter]	removeObserver:self
 						name:kLinphoneNotifyReceived
 						object:nil];
+	[[NSNotificationCenter defaultCenter]	removeObserver:self
+						name:kLinphoneCallUpdate
+						object:nil];
+
 	if(callQualityTimer != nil) {
 		[callQualityTimer invalidate];
 		callQualityTimer = nil;
@@ -161,18 +173,35 @@ NSTimer *callSecurityTimer;
 		return;
 	}
 
-	int unreadCount = 0;
-	sscanf(body, "voice-message: %d", &unreadCount);
+	sscanf(body, "voice-message: %d", &messagesUnreadCount);
 
-	[LinphoneLogger log:LinphoneLoggerLog format:@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", unreadCount];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount];
 
-	if (unreadCount > 0) {
-		self.voicemailCount.hidden = FALSE;
-		self.voicemailCount.text = [NSString stringWithFormat:NSLocalizedString(@"%d unread messages", @"%d"), unreadCount];
+	// save in lpconfig for future
+	lp_config_set_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", messagesUnreadCount);
+
+	[self updateVoicemail];
+}
+
+- (void) updateVoicemail {
+	if (messagesUnreadCount > 0) {
+		self.voicemailCount.hidden = (linphone_core_get_calls([LinphoneManager getLc]) != NULL);
+		self.voicemailCount.text = [[NSString stringWithFormat:NSLocalizedString(@"%d unread messages", @"%d"), messagesUnreadCount] uppercaseString];
 	} else {
 		self.voicemailCount.hidden = TRUE;
 	}
 }
+
+- (void) callUpdate:(NSNotification*) notif {
+//	LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+//	LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+
+	bool isOnCall = [LinphoneManager isLcReady] && (linphone_core_get_calls_nb([LinphoneManager getLc]) > 0);
+
+	//show voicemail only when there is no call
+	[self updateVoicemail];
+}
+
 
 #pragma mark -
 
@@ -244,6 +273,7 @@ NSTimer *callSecurityTimer;
 		return;
 	}
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+
 	if(list == NULL) {
 		if(securitySheet) {
 			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
