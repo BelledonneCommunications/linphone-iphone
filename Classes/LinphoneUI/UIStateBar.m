@@ -110,7 +110,7 @@ int messagesUnreadCount;
     LinphoneProxyConfig* config = NULL;
     linphone_core_get_default_proxy([LinphoneManager getLc], &config);
     messagesUnreadCount = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
-    
+
     [self proxyConfigUpdate: config];
 	[self updateVoicemail];
 }
@@ -192,12 +192,7 @@ int messagesUnreadCount;
 }
 
 - (void) callUpdate:(NSNotification*) notif {
-//	LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
-//	LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-
-	bool isOnCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) > 0);
-
-	//show voicemail only when there is no call
+	//show voice mail only when there is no call
 	[self updateVoicemail];
 }
 

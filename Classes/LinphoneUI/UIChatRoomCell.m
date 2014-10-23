@@ -45,7 +45,7 @@
 
 static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
-static const CGFloat CELL_MAX_WIDTH = 320.0f;
+//static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
@@ -144,8 +144,8 @@ static UIFont *CELL_FONT = nil;
         __block LinphoneChatMessage *achat = chat;
         [[LinphoneManager instance].photoLibrary assetForURL:imageUrl resultBlock:^(ALAsset *asset) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
-                UIImage* image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
                 if(achat == self->chat) { //Avoid glitch and scrolling
+					UIImage* image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [messageImageView setImage:image];
                         [messageImageView setFullImageUrl:asset];

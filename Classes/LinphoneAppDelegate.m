@@ -137,7 +137,9 @@
     localRingNotifAction.identifier = @"incoming_msg";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
-    
+
+	[mark_read release];
+	[reply release];
     return localRingNotifAction;
 }
 
@@ -163,7 +165,10 @@
     localRingNotifAction.identifier = @"incoming_call";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
-    
+
+	[Decline release];
+	[Answer release];
+
     return localRingNotifAction;
 }
 

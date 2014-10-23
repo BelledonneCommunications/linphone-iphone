@@ -71,6 +71,7 @@
 {
 	[super setDelegate:nil];
 	self.actionSheetDelegate = nil;
+	[super dealloc];
 }
 
 - (NSInteger)addButtonWithTitle:(NSString *)title block:(DTActionSheetBlock)block

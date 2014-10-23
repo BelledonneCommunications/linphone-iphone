@@ -99,7 +99,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 		}
 		CFRelease(lDict);
 	}
-    CFRelease(personSipAddresses);
+	CFRelease(personSipAddresses);
 	return match;
 }
 
