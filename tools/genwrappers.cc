@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <string.h>
-#include <stdlib.h>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
@@ -339,7 +338,19 @@ static void parseEnum(Project *proj, XmlNode node){
 	int value = 0;
 	for (it=enumValues.begin();it!=enumValues.end();++it){
 		string initializer = (*it).getChild("initializer").getText();
-		if (initializer.length() > 1) value=atoi(initializer.substr(1).c_str());
+		if ((initializer.length() > 1) && (initializer.at(0) == '=')) {
+			std::stringstream ss;
+			if ((initializer.length() > 2) && (initializer.at(1) == '0')) {
+				if ((initializer.length() > 3) && (initializer.at(2) == 'x')) {
+					ss << std::hex << initializer.substr(3);
+				} else {
+					ss << std::oct << initializer.substr(2);
+				}
+			} else {
+				ss << std::dec << initializer.substr(1);
+			}
+			ss >> value;
+		}
 		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText(),value);
 		cf->setHelp((*it).getChild("detaileddescription").getChild("para").getText());
 		klass->addConstField(cf);
