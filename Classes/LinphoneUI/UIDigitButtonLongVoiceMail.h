@@ -26,4 +26,10 @@
 @interface UIDigitButtonLongVoiceMail : UIDigitButton {
 }
 
+/* Returns TRUE if voice mail is configured in LinphoneCore */
+- (BOOL) voiceMailEnabled;
+
+/*! Automatically chooses the right icon depending on voice mail configured or not */
+- (void) refreshUI;
+
 @end

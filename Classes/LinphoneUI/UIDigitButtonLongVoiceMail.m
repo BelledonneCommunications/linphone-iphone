@@ -29,17 +29,32 @@
 }
 
 - (void)onLongTouch {
+	if ([self voiceMailEnabled]) {
+		LinphoneManager *lm = [LinphoneManager instance];
+		[lm call:[lm lpConfigStringForKey:@"voice_mail_uri"] displayName:NSLocalizedString(@"Voice mail",nil) transfer:FALSE];
+	}
+}
+
+- (BOOL) voiceMailEnabled {
 	if(![LinphoneManager isLcReady]) {
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Cannot call voice mail: Linphone core not ready"];
-		return;
+		return FALSE;
 	}
-	LinphoneManager* lm = [LinphoneManager instance];
 
-	NSString * voiceMailUri = [lm lpConfigStringForKey:@"voice_mail_uri" withDefault:NULL];
-	
-	if (voiceMailUri != NULL) {
-		[lm call:voiceMailUri displayName:NSLocalizedString(@"Voice mail",nil) transfer:FALSE];
+	NSString * voiceMailUri = [[LinphoneManager instance] lpConfigStringForKey:@"voice_mail_uri" withDefault:NULL];
+
+	return (voiceMailUri != NULL);
+}
+
+- (void)refreshUI {
+	NSMutableString *name = [[NSMutableString alloc] initWithString:@"numpad_one_"];
+
+	if ([self voiceMailEnabled]) {
+		[name appendString:@"voicemail_"];
 	}
+
+	[self setImage:[UIImage imageNamed:[name stringByAppendingString:@"default.png"]] forState: UIControlStateNormal];
+	[self setImage:[UIImage imageNamed:[name stringByAppendingString:@"over.png"]] forState: UIControlStateHighlighted];
 }
 
 @end
