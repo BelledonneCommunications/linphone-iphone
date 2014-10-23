@@ -67,7 +67,7 @@ static XMLRPCConnectionManager *sharedInstance = nil;
 }
 
 - (int)numberOfActiveConnections {
-    return [myConnections count];
+    return (int)[myConnections count];
 }
 
 #pragma mark -
