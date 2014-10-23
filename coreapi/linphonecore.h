@@ -1818,6 +1818,13 @@ LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
 LINPHONE_PUBLIC char * linphone_core_compress_log_collection(LinphoneCore *core);
 
 /**
+ * Reset the log collection by removing the log files.
+ * @ingroup misc
+ * @param[in] core LinphoneCore object
+ */
+LINPHONE_PUBLIC void linphone_core_reset_log_collection(LinphoneCore *core);
+
+/**
  * Define a log handler.
  *
  * @ingroup misc

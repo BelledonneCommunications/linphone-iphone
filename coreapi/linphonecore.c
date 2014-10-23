@@ -516,6 +516,19 @@ char * linphone_core_compress_log_collection(LinphoneCore *core) {
 	return ms_strdup_printf("%s/%s", liblinphone_log_collection_path ? liblinphone_log_collection_path : ".", COMPRESSED_LOG_COLLECTION_FILENAME);
 }
 
+void linphone_core_reset_log_collection(LinphoneCore *core) {
+	char *filename;
+	ortp_mutex_lock(&liblinphone_log_collection_mutex);
+	delete_log_collection_upload_file();
+	filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path ? liblinphone_log_collection_path : ".", "linphone1.log");
+	unlink(filename);
+	ms_free(filename);
+	filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path ? liblinphone_log_collection_path : ".", "linphone2.log");
+	unlink(filename);
+	ms_free(filename);
+	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
+}
+
 /**
  * Enable logs in supplied FILE*.
  *
