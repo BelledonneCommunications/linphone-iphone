@@ -118,26 +118,25 @@
     }
 }
 
-- (UIUserNotificationCategory*)newMessageNotificationCategory {
+- (UIUserNotificationCategory*)getMessageNotificationCategory {
     
-    UIMutableUserNotificationAction* reply = [[UIMutableUserNotificationAction alloc] init];
+    UIMutableUserNotificationAction* reply = [[[UIMutableUserNotificationAction alloc] init] autorelease];
     reply.identifier = @"reply";
     reply.title = NSLocalizedString(@"Reply", nil);
     reply.activationMode = UIUserNotificationActivationModeForeground;
     reply.destructive = NO;
     reply.authenticationRequired = YES;
     
-    UIMutableUserNotificationAction* mark_read = [[UIMutableUserNotificationAction alloc] init];
+    UIMutableUserNotificationAction* mark_read = [[[UIMutableUserNotificationAction alloc] init] autorelease];
     mark_read.identifier = @"mark_read";
     mark_read.title = NSLocalizedString(@"Mark Read", nil);
     mark_read.activationMode = UIUserNotificationActivationModeBackground;
     mark_read.destructive = NO;
     mark_read.authenticationRequired = NO;
     
-    
     NSArray* localRingActions = @[mark_read, reply];
     
-    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
+    UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
     localRingNotifAction.identifier = @"incoming_msg";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
@@ -145,25 +144,25 @@
     return localRingNotifAction;
 }
 
-- (UIUserNotificationCategory*)newCallNotificationCategory {
-    UIMutableUserNotificationAction* Answer = [[UIMutableUserNotificationAction alloc] init];
-    Answer.identifier = @"answer";
-    Answer.title = NSLocalizedString(@"Answer", nil);
-    Answer.activationMode = UIUserNotificationActivationModeForeground;
-    Answer.destructive = NO;
-    Answer.authenticationRequired = YES;
+- (UIUserNotificationCategory*)getCallNotificationCategory {
+    UIMutableUserNotificationAction* answer = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    answer.identifier = @"answer";
+    answer.title = NSLocalizedString(@"Answer", nil);
+    answer.activationMode = UIUserNotificationActivationModeForeground;
+    answer.destructive = NO;
+    answer.authenticationRequired = YES;
     
-    UIMutableUserNotificationAction* Decline = [[UIMutableUserNotificationAction alloc] init];
-    Decline.identifier = @"decline";
-    Decline.title = NSLocalizedString(@"Decline", nil);
-    Decline.activationMode = UIUserNotificationActivationModeBackground;
-    Decline.destructive = YES;
-    Decline.authenticationRequired = NO;
+    UIMutableUserNotificationAction* decline = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    decline.identifier = @"decline";
+    decline.title = NSLocalizedString(@"Decline", nil);
+    decline.activationMode = UIUserNotificationActivationModeBackground;
+    decline.destructive = YES;
+    decline.authenticationRequired = NO;
     
     
-    NSArray* localRingActions = @[Decline, Answer];
+    NSArray* localRingActions = @[decline, answer];
     
-    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
+    UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
     localRingNotifAction.identifier = @"incoming_call";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
@@ -182,7 +181,7 @@
         /* iOS8 notifications can be actioned! Awesome: */
         UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
        
-        NSSet* categories = [NSSet setWithObjects:[self newCallNotificationCategory], [self newMessageNotificationCategory], nil];
+        NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
         UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
         [app registerUserNotificationSettings:userSettings];
         [app registerForRemoteNotifications];
