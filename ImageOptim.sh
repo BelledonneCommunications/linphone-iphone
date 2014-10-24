@@ -12,7 +12,7 @@ fi
 
 CONVERT=$(which convert)
 CONVERTFILTER="-sharpen 1x0.0 -filter Catrom"
-OPTIPNG=/opt/local/bin/optipng
+OPTIPNG=$(which optipng)
 CMDS="${CONVERT} ${OPTIPNG}"
 for i in $CMDS; do
     command -v $i > /dev/null && continue || { echo "$i command not found"; exit 1; }
