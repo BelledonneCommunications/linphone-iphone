@@ -10,7 +10,7 @@ if [ "$CONFIGURATION" == "Debug" ]; then
     exit 0
 fi
 
-CONVERT=/opt/local/bin/convert
+CONVERT=$(which convert)
 CONVERTFILTER="-sharpen 1x0.0 -filter Catrom"
 OPTIPNG=/opt/local/bin/optipng
 CMDS="${CONVERT} ${OPTIPNG}"
