@@ -1955,7 +1955,9 @@ static void call_with_mkv_file_player(void) {
 	char hellowav[256];
 	char *recordpath;
 	double similar;
-	
+
+	ortp_set_log_level_mask(ORTP_ERROR | ORTP_FATAL | ORTP_MESSAGE | ORTP_WARNING);
+
 	if (!is_format_supported(marie->lc,"mkv")){
 		ms_warning("Test skipped, no mkv support.");
 		goto end;
@@ -1968,8 +1970,8 @@ static void call_with_mkv_file_player(void) {
 	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", liblinphone_tester_file_prefix);
 	
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
-	linphone_core_use_files(pauline->lc,TRUE);
-	linphone_core_set_play_file(pauline->lc,NULL);
+	linphone_core_use_files(marie->lc,TRUE);
+	linphone_core_set_play_file(marie->lc,NULL);
 	/*callee is recording and plays file*/
 	linphone_core_use_files(pauline->lc,TRUE);
 	linphone_core_set_play_file(pauline->lc,hellowav); /*just to send something but we are not testing what is sent by pauline*/
@@ -1982,8 +1984,9 @@ static void call_with_mkv_file_player(void) {
 	if (player){
 		CU_ASSERT_TRUE(linphone_player_open(player,hellomkv,on_eof,marie)==0);
 		CU_ASSERT_TRUE(linphone_player_start(player)==0);
+		CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
+		linphone_player_close(player);
 	}
-	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
 	
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(marie->lc);
