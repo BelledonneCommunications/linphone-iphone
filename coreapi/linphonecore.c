@@ -173,7 +173,7 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	char *log_filename2;
 	FILE *log_file;
 	struct timeval tp;
-    struct tm *lt;
+	struct tm *lt;
 	time_t tt;
 	struct stat statbuf;
 
@@ -251,6 +251,11 @@ void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, cons
 }
 
 void linphone_core_enable_log_collection(bool_t enable) {
+	/* at first call of this function, set liblinphone_log_func to the current
+	 * ortp log function */
+	if( liblinphone_log_func == NULL ){
+		liblinphone_log_func = ortp_logv_out;
+	}
 	if ((enable == TRUE) && (liblinphone_log_collection_enabled == FALSE)) {
 		liblinphone_log_collection_enabled = TRUE;
 		ortp_mutex_init(&liblinphone_log_collection_mutex, NULL);
