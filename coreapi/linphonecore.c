@@ -1218,7 +1218,7 @@ void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* alg
  * See linphone_core_set_adaptive_rate_algorithm().
 **/
 const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
-	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Stateful");
+	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Simple");
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
