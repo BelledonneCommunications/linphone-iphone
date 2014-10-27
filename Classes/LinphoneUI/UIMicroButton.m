@@ -24,28 +24,15 @@
 @implementation UIMicroButton
 
 - (void)onOn {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle mic button: Linphone core not ready"];
-        return;
-    }
 	linphone_core_mute_mic([LinphoneManager getLc], false);
 }
 
 - (void)onOff {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle mic button: Linphone core not ready"];
-        return;
-    }
 	linphone_core_mute_mic([LinphoneManager getLc], true);
 }
 
 - (bool)onUpdate {
-	if([LinphoneManager isLcReady]) {
-		return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
-	} else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update mic button: Linphone core not ready"];
-		return true;
-	}
+    return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
 }
 
 - (void)dealloc {

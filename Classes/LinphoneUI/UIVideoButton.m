@@ -52,11 +52,6 @@
 }
 
 - (void)onOn {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button: Linphone core not ready"];
-        return;
-    }
-    
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
@@ -79,11 +74,6 @@
 }
 
 - (void)onOff {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button: Linphone core not ready"];
-        return;
-    }
-    
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
@@ -104,56 +94,51 @@
 }
 
 - (bool)onUpdate {
-    if([LinphoneManager isLcReady]) {
-        bool val = false;
+    bool val = false;
 #ifdef VIDEO_ENABLED
-        if(linphone_core_video_enabled([LinphoneManager getLc])) {
-            LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-            if (currentCall) {
-                LinphoneCallState state = linphone_call_get_state(currentCall);
-                switch (state) {
-                    case LinphoneCallUpdating:
-                    {
-                        [self setEnabled:FALSE];
-                        break;
-                    }
-                    case LinphoneCallStreamsRunning:
-                    {
-                        [waitView stopAnimating];
-                        [self setEnabled:TRUE];
-                        if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-                            val = true;
-                        }
-                        break;
-                    }
-                        
-                    default:
-                    {
-                        // Disable button if the call is not running
-                        [self setEnabled:FALSE];
-                        [waitView stopAnimating];
-                        break;
-                    }
-
+    if(linphone_core_video_enabled([LinphoneManager getLc])) {
+        LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (currentCall) {
+            LinphoneCallState state = linphone_call_get_state(currentCall);
+            switch (state) {
+                case LinphoneCallUpdating:
+                {
+                    [self setEnabled:FALSE];
+                    break;
                 }
-            } else {
-                // Disable button if there is no call
-                [self setEnabled:FALSE];
-                [waitView stopAnimating];
+                case LinphoneCallStreamsRunning:
+                {
+                    [waitView stopAnimating];
+                    [self setEnabled:TRUE];
+                    if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
+                        val = true;
+                    }
+                    break;
+                }
+
+                default:
+                {
+                    // Disable button if the call is not running
+                    [self setEnabled:FALSE];
+                    [waitView stopAnimating];
+                    break;
+                }
+
             }
         } else {
-            // Disable button if video is not enabled
+            // Disable button if there is no call
             [self setEnabled:FALSE];
             [waitView stopAnimating];
         }
-#else //VIDEO_ENABLED
-        [self setEnabled:FALSE];
-#endif //VIDEO_ENABLED
-        return val;
     } else {
-		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update video button: Linphone core not ready"];
-		return false;
-	}
+        // Disable button if video is not enabled
+        [self setEnabled:FALSE];
+        [waitView stopAnimating];
+    }
+#else //VIDEO_ENABLED
+    [self setEnabled:FALSE];
+#endif //VIDEO_ENABLED
+    return val;
 }
 
 - (void)dealloc {

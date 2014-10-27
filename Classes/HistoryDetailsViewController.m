@@ -183,9 +183,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-    if(![LinphoneManager isLcReady]) {
-        return;
-    }
 
     // Look for the call log
     callLog = NULL;

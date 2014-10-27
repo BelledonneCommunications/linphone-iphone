@@ -36,11 +36,6 @@
 }
 
 - (BOOL) voiceMailEnabled {
-	if(![LinphoneManager isLcReady]) {
-		[LinphoneLogger log:LinphoneLoggerWarning format:@"Cannot call voice mail: Linphone core not ready"];
-		return FALSE;
-	}
-
 	NSString * voiceMailUri = [[LinphoneManager instance] lpConfigStringForKey:@"voice_mail_uri" withDefault:NULL];
 
 	return (voiceMailUri != NULL);

@@ -56,13 +56,11 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
 	Linphone_log(@"%@", NSStringFromSelector(_cmd));
-	if(![LinphoneManager isLcReady]) return;
 	[[LinphoneManager instance] enterBackgroundMode];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     Linphone_log(@"%@", NSStringFromSelector(_cmd));
-    if(![LinphoneManager isLcReady]) return;
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
 	
@@ -87,7 +85,6 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     Linphone_log(@"%@", NSStringFromSelector(_cmd));
 
-    [self startApplication];
     if( startedInBackground ){
         startedInBackground = FALSE;
         [[PhoneMainView instance] startUp];
@@ -211,16 +208,13 @@
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-    [self startApplication];
+    [[LinphoneManager instance]	startLibLinphone];
     // initialize UI
     [self.window makeKeyAndVisible];
     [RootViewManager setupWithPortrait:(PhoneMainView*)self.window.rootViewController];
-    if( state == UIApplicationStateBackground ){
-        startedInBackground = TRUE;
-    } else {
-        [[PhoneMainView instance] startUp];
-        [[PhoneMainView instance] updateStatusBar:nil];
-    }
+    [[PhoneMainView instance] startUp];
+    [[PhoneMainView instance] updateStatusBar:nil];
+
 
 
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -231,13 +225,6 @@
     if (bgStartId!=UIBackgroundTaskInvalid) [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 
     return YES;
-}
-
-- (void)startApplication {
-    // Restart Linphone Core if needed
-    if(![LinphoneManager isLcReady]) {
-        [[LinphoneManager instance]	startLibLinphone];
-    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -257,14 +244,11 @@
         [confirmation show];
         [confirmation release];
     } else {
-        [self startApplication];
-        if([LinphoneManager isLcReady]) {
-            if([[url scheme] isEqualToString:@"sip"]) {
-                // Go to Dialer view
-                DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
-                if(controller != nil) {
-                    [controller setAddress:[url absoluteString]];
-                }
+        if([[url scheme] isEqualToString:@"sip"]) {
+            // Go to Dialer view
+            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+            if(controller != nil) {
+                [controller setAddress:[url absoluteString]];
             }
         }
     }
@@ -386,11 +370,6 @@
 		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
 		return;
 	}
-
-    // check that linphone is still running
-    if( ![LinphoneManager isLcReady] )
-        [lm startLibLinphone];
-
 
     // save the completion handler for later execution.
     // 2 outcomes:
@@ -522,37 +501,20 @@
 {
     if ((alertView.tag == 1) && (buttonIndex==1))  {
         [self showWaitingIndicator];
-        if([LinphoneManager isLcReady]) {
-            [self attemptRemoteConfiguration];
-        } else {
-            [[LinphoneManager instance] startLibLinphone];
-            [self performSelector:@selector(attemptRemoteConfiguration) withObject:NULL afterDelay:5.0];
-        }
+        [self attemptRemoteConfiguration];
     }
-    
 }
 
 - (void)attemptRemoteConfiguration {
 
-    if ([LinphoneManager isLcReady]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(ConfigurationStateUpdateEvent:)
-                                                     name:kLinphoneConfiguringStateUpdate
-                                                   object:nil];
-        linphone_core_set_provisioning_uri([LinphoneManager getLc] , [configURL UTF8String]);
-        [[LinphoneManager instance] destroyLibLinphone];
-        [[LinphoneManager instance] startLibLinphone];
-    } else {
-        [_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
-        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure",nil)
-                                                        message:NSLocalizedString(@"Linphone is not ready.",nil)
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"OK",nil)
-                                              otherButtonTitles:nil];
-        [error show];
-        [error release];
-        
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(ConfigurationStateUpdateEvent:)
+                                                 name:kLinphoneConfiguringStateUpdate
+                                               object:nil];
+    linphone_core_set_provisioning_uri([LinphoneManager getLc] , [configURL UTF8String]);
+    [[LinphoneManager instance] destroyLibLinphone];
+    [[LinphoneManager instance] startLibLinphone];
+
 }
 
 

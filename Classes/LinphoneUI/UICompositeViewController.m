@@ -271,12 +271,10 @@
 #pragma mark - Event Functions
 
 - (void)orientationDidChange:(NSNotification*)notif {
-    if([LinphoneManager isLcReady]) {
-        // Update rotation
-        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
-        if(currentOrientation != correctOrientation) {
-            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
-        }
+    // Update rotation
+    UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+    if(currentOrientation != correctOrientation) {
+        [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
     }
 }
 

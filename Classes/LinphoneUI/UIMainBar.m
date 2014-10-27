@@ -250,11 +250,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 
 - (void)update:(BOOL)appear{
     [self updateView:[[PhoneMainView instance] firstView]];
-    if([LinphoneManager isLcReady]) {
-        [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
-    } else {
-        [self updateMissedCall:0 appear:TRUE];
-    }
+    [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
     [self updateUnreadMessage:appear];
 }
 

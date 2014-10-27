@@ -138,7 +138,7 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "h264", 90000, @"h264_preference"},
 	{ "vp8", 90000, @"vp8_preference"},
     { "mpeg4-generic", 16000, @"aaceld_16k_preference"},
-	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
+    { "mpeg4-generic", 22050, @"aaceld_22k_preference"},
     { "mpeg4-generic", 32000, @"aaceld_32k_preference"},
     { "mpeg4-generic", 44100, @"aaceld_44k_preference"},
 	{ "mpeg4-generic", 48000, @"aaceld_48k_preference"},
@@ -1409,45 +1409,39 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 }
 
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid {
-	//first, make sure this callid is not already involved in a call
-	if ([LinphoneManager isLcReady]) {
-		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-		MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
-		if (call != NULL) {
-			LinphoneCallAppData* data = linphone_call_get_user_pointer((LinphoneCall*)call->data);
-			if ( data->timer )
-				[data->timer invalidate];
-			data->timer = nil;
-			return;
-		}
-	}
+    //first, make sure this callid is not already involved in a call
+    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+    MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+    if (call != NULL) {
+        LinphoneCallAppData* data = linphone_call_get_user_pointer((LinphoneCall*)call->data);
+        if ( data->timer )
+            [data->timer invalidate];
+        data->timer = nil;
+        return;
+    }
 }
 
 - (void)acceptCallForCallId:(NSString*)callid {
-	//first, make sure this callid is not already involved in a call
-	if ([LinphoneManager isLcReady]) {
-		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-		MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
-		if (call != NULL) {
-			[self acceptCall:(LinphoneCall*)call->data];
-			return;
-		};
-	}
+    //first, make sure this callid is not already involved in a call
+    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+    MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+    if (call != NULL) {
+        [self acceptCall:(LinphoneCall*)call->data];
+        return;
+    };
 }
 
 - (void)enableAutoAnswerForCallId:(NSString*) callid {
-	//first, make sure this callid is not already involved in a call
-	if ([LinphoneManager isLcReady]) {
-		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-		if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
-			[LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handled",callid];
-			return;
-		};
-	}
-	if ([pendindCallIdFromRemoteNotif count] > 10 /*max number of pending notif*/)
-		[pendindCallIdFromRemoteNotif removeObjectAtIndex:0];
-	[pendindCallIdFromRemoteNotif addObject:callid];
+    //first, make sure this callid is not already involved in a call
+    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+    if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handled",callid];
+        return;
+    };
+    if ([pendindCallIdFromRemoteNotif count] > 10 /*max number of pending notif*/)
+        [pendindCallIdFromRemoteNotif removeObjectAtIndex:0];
 
+    [pendindCallIdFromRemoteNotif addObject:callid];
 }
 
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId {
@@ -1549,7 +1543,6 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 			linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 			return YES;
 		}
-		[self destroyLibLinphone];
 		return NO;
 
 	} else
@@ -1817,18 +1810,16 @@ static void audioRouteChangeListenerCallback (
 		pushNotificationToken = nil;
 	}
 
-	if(apushNotificationToken != nil) {
-		pushNotificationToken = [apushNotificationToken retain];
-	}
-	if([LinphoneManager isLcReady]) {
-		LinphoneProxyConfig *cfg=nil;
-		linphone_core_get_default_proxy(theLinphoneCore, &cfg);
-		if (cfg) {
-			linphone_proxy_config_edit(cfg);
-			[self addPushTokenToProxyConfig: cfg];
-			linphone_proxy_config_done(cfg);
-		}
-	}
+    if(apushNotificationToken != nil) {
+        pushNotificationToken = [apushNotificationToken retain];
+    }
+    LinphoneProxyConfig *cfg=nil;
+    linphone_core_get_default_proxy(theLinphoneCore, &cfg);
+    if (cfg) {
+        linphone_proxy_config_edit(cfg);
+        [self addPushTokenToProxyConfig: cfg];
+        linphone_proxy_config_done(cfg);
+    }
 }
 
 - (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
@@ -1875,22 +1866,21 @@ static void audioRouteChangeListenerCallback (
 	if (! [[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
 		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:NO attributes:nil error:&error];
 	}
-	return cachePath;
+    return cachePath;
 }
 
 + (int)unreadMessageCount {
     int count = 0;
-    if( [LinphoneManager isLcReady] ){
-        MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-        MSList* item = rooms;
-        while (item) {
-            LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
-            if( room ){
-                count += linphone_chat_room_get_unread_messages_count(room);
-            }
-            item = item->next;
+    MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+    MSList* item = rooms;
+    while (item) {
+        LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
+        if( room ){
+            count += linphone_chat_room_get_unread_messages_count(room);
         }
+        item = item->next;
     }
+
     return count;
 }
 

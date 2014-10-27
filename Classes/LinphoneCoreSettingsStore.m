@@ -496,7 +496,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 }
 
 - (BOOL)synchronize {
-	if (![LinphoneManager isLcReady]) return YES;
 	LinphoneCore *lc=[LinphoneManager getLc];
 
 	BOOL account_changed;

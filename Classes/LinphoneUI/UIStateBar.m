@@ -106,13 +106,12 @@ int messagesUnreadCount;
 	[callQualityImage setHidden: true];
 	[callSecurityImage setHidden: true];
 
-	// Update to default state
-	LinphoneProxyConfig* config = NULL;
-	if([LinphoneManager isLcReady]) {
-		linphone_core_get_default_proxy([LinphoneManager getLc], &config);
-		messagesUnreadCount = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
-	}
-	[self proxyConfigUpdate: config];
+    // Update to default state
+    LinphoneProxyConfig* config = NULL;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    messagesUnreadCount = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
+    
+    [self proxyConfigUpdate: config];
 	[self updateVoicemail];
 }
 
@@ -154,7 +153,7 @@ int messagesUnreadCount;
 }
 
 - (void) globalStateUpdate:(NSNotification*) notif {
-	if ([LinphoneManager isLcReady]) [self registrationUpdate:notif];
+	[self registrationUpdate:notif];
 }
 
 - (void) notifyReceived:(NSNotification*) notif {
@@ -196,7 +195,7 @@ int messagesUnreadCount;
 //	LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
 //	LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
 
-	bool isOnCall = [LinphoneManager isLcReady] && (linphone_core_get_calls_nb([LinphoneManager getLc]) > 0);
+	bool isOnCall = (linphone_core_get_calls_nb([LinphoneManager getLc]) > 0);
 
 	//show voicemail only when there is no call
 	[self updateVoicemail];
@@ -216,7 +215,7 @@ int messagesUnreadCount;
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
-		if(![LinphoneManager isLcReady] || linphone_core_is_network_reachable([LinphoneManager getLc]))
+		if(linphone_core_is_network_reachable([LinphoneManager getLc]))
 			message = NSLocalizedString(@"No SIP account configured", nil);
 		else
 			message = NSLocalizedString(@"Network down", nil);
@@ -268,10 +267,6 @@ int messagesUnreadCount;
 	BOOL pending = false;
 	BOOL security = true;
 
-	if(![LinphoneManager isLcReady]) {
-		[callSecurityImage setHidden:true];
-		return;
-	}
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
 
 	if(list == NULL) {
@@ -308,22 +303,20 @@ int messagesUnreadCount;
 
 - (void)callQualityUpdate {
 	UIImage *image = nil;
-	if([LinphoneManager isLcReady]) {
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-		if(call != NULL) {
-			//FIXME double check call state before computing, may cause core dump
-			float quality = linphone_call_get_average_quality(call);
-			if(quality < 1) {
-				image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
-			} else if (quality < 2) {
-				image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
-			} else if (quality < 3) {
-				image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
-			} else {
-				image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
-			}
-		}
-	}
+    LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+    if(call != NULL) {
+        //FIXME double check call state before computing, may cause core dump
+        float quality = linphone_call_get_average_quality(call);
+        if(quality < 1) {
+            image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
+        } else if (quality < 2) {
+            image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
+        } else if (quality < 3) {
+            image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
+        } else {
+            image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
+        }
+    }
 	if(image != nil) {
 		[callQualityImage setHidden:false];
 		[callQualityImage setImage:image];
@@ -336,7 +329,7 @@ int messagesUnreadCount;
 #pragma mark - Action Functions
 
 - (IBAction)doSecurityClick:(id)sender {
-	if([LinphoneManager isLcReady] && linphone_core_get_calls_nb([LinphoneManager getLc])) {
+	if(linphone_core_get_calls_nb([LinphoneManager getLc])) {
 		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 		if(call != NULL) {
 			LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));

@@ -99,10 +99,6 @@
 #pragma mark - UIToggleButtonDelegate Functions
 
 - (void)onOn {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause button: Linphone core not ready"];
-        return;
-    }
     switch (type) {
         case UIPauseButtonType_Call:
         {
@@ -135,10 +131,6 @@
 }
 
 - (void)onOff {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause button: Linphone core not ready"];
-        return;
-    }
     switch (type) {
         case UIPauseButtonType_Call:
         {
@@ -172,52 +164,49 @@
 - (bool)onUpdate {
     bool ret = false;
     // TODO: disable pause on not running call
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore *lc = [LinphoneManager getLc];
-        switch (type) {
-            case UIPauseButtonType_Call:
-            {
-                if (call != nil) {
-                    LinphoneCallState state = linphone_call_get_state(call);
-                    if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
-                        ret = true;
-                    }
-                    [self setEnabled:TRUE];
-                } else {
-                    [self setEnabled:FALSE];
+    LinphoneCore *lc = [LinphoneManager getLc];
+    switch (type) {
+        case UIPauseButtonType_Call:
+        {
+            if (call != nil) {
+                LinphoneCallState state = linphone_call_get_state(call);
+                if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
+                    ret = true;
                 }
-                break;
+                [self setEnabled:TRUE];
+            } else {
+                [self setEnabled:FALSE];
             }
-            case UIPauseButtonType_Conference:
-            {
-                if(linphone_core_get_conference_size(lc) > 0) {
-                    if (!linphone_core_is_in_conference(lc)) {
-                            ret = true;
-                    }
-                    [self setEnabled:TRUE];
-                } else {
-                    [self setEnabled:FALSE];
-                }
-                break;
-            }
-            case UIPauseButtonType_CurrentCall:
-            {
-                LinphoneCall* currentCall = [UIPauseButton getCall];
-                if (currentCall != nil) {
-                    LinphoneCallState state = linphone_call_get_state(currentCall);
-                    if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
-                        ret = true;
-                    }
-                    [self setEnabled:TRUE];
-                } else {
-                    [self setEnabled:FALSE];
-                }
-                break;
-            }
+            break;
         }
-    } else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update pause button: Linphone core not ready"];
+        case UIPauseButtonType_Conference:
+        {
+            if(linphone_core_get_conference_size(lc) > 0) {
+                if (!linphone_core_is_in_conference(lc)) {
+                    ret = true;
+                }
+                [self setEnabled:TRUE];
+            } else {
+                [self setEnabled:FALSE];
+            }
+            break;
+        }
+        case UIPauseButtonType_CurrentCall:
+        {
+            LinphoneCall* currentCall = [UIPauseButton getCall];
+            if (currentCall != nil) {
+                LinphoneCallState state = linphone_call_get_state(currentCall);
+                if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
+                    ret = true;
+                }
+                [self setEnabled:TRUE];
+            } else {
+                [self setEnabled:FALSE];
+            }
+            break;
+        }
     }
+
     return ret;
 }
 

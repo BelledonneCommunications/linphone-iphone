@@ -170,10 +170,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(textComposeEvent:)
                                                  name:kLinphoneTextComposeEvent
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(coreUpdateEvent:)
-                                                 name:kLinphoneCoreUpdate
-                                               object:nil];
 	if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
@@ -214,9 +210,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                     object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:UITextViewTextDidChangeNotification
-												  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneCoreUpdate
 												  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneTextComposeEvent
@@ -312,10 +305,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl withInternalURL:(NSURL*)internalUrl {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Linphone core not ready"];
-        return FALSE;
-    }
     if(chatRoom == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: No chatroom"];
         return FALSE;
@@ -426,12 +415,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 
 #pragma mark - Event Functions
-
-- (void)coreUpdateEvent:(NSNotification*)notif {
-    if(![LinphoneManager isLcReady]) {
-        chatRoom = NULL;
-    }
-}
 
 - (void)textReceivedEvent:(NSNotification *)notif {
     LinphoneAddress * from    = [[[notif userInfo] objectForKey:@"from_address"] pointerValue];
