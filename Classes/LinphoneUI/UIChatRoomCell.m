@@ -105,6 +105,18 @@ static UIFont *CELL_FONT = nil;
 	
 }
 
++ (NSString*)decodeTextMessage:(const char*)text {
+    NSString* decoded = [NSString stringWithUTF8String:text];
+    if( decoded == nil ){
+        // couldn't decode the string as UTF8, do a lossy conversion
+        decoded = [NSString stringWithCString:text encoding:NSASCIIStringEncoding];
+        if( decoded == nil ){
+            decoded = @"(invalid string)";
+        }
+    }
+    return decoded;
+}
+
 - (void)update {
     if(chat == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
@@ -151,15 +163,19 @@ static UIFont *CELL_FONT = nil;
     } else {
         // simple text message
         [messageText setHidden:FALSE];
-        if (text ){
+        if ( text ){
+            NSString* nstext = [UIChatRoomCell decodeTextMessage:text];
+
             /* We need to use an attributed string here so that data detector don't mess
              * with the text style. See http://stackoverflow.com/a/20669356 */
+
             NSAttributedString* attr_text = [[NSAttributedString alloc]
-                                             initWithString:[NSString stringWithUTF8String:text]
+                                             initWithString:nstext
                                              attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
                                                           NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
             messageText.attributedText = attr_text;
             [attr_text release];
+
         } else {
             messageText.text = @"";
         }
@@ -225,7 +241,7 @@ static UIFont *CELL_FONT = nil;
     CGSize messageSize;
     const char* url  = linphone_chat_message_get_external_body_url(chat);
     const char* text = linphone_chat_message_get_text(chat);
-    NSString* messageText = text ? [NSString stringWithUTF8String:text] : @"";
+    NSString* messageText = text ? [UIChatRoomCell decodeTextMessage:text] : @"";
     if(url == nil) {
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
