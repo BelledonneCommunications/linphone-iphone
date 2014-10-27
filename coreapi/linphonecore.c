@@ -1035,15 +1035,6 @@ static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
 	return l;
 }
 
-#if defined(ANDROID)
-static int is_aac_eld_not_16k_payload(const void* _pt, const void* unused) {
-	PayloadType *pt = (PayloadType*)_pt;
-	if (pt->clock_rate == 16000)
-		return 1;
-	return strncmp(pt->mime_type, "mpeg4-generic", strlen("mpeg4-generic"));
-}
-#endif
-
 static void codecs_config_read(LinphoneCore *lc)
 {
 	int i;
@@ -1058,16 +1049,6 @@ static void codecs_config_read(LinphoneCore *lc)
 		}
 	}
 	audio_codecs=add_missing_codecs(lc,SalAudio,audio_codecs);
-
-#if defined(ANDROID)
-	/* AAC-ELD requires hardware AEC or 16kHz sample rate */
-	if (lc->sound_conf.capt_sndcard &&
-		!(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)) {
-		/* Remove AAC-ELD */
-		audio_codecs = ms_list_remove_custom(audio_codecs, is_aac_eld_not_16k_payload, NULL);
-		ms_message("Disable AAC-ELD (needs hardware AEC)");
-	}
-#endif
 
 	for (i=0;get_codec(lc,"video_codec",i,&pt);i++){
 		if (pt){
