@@ -84,7 +84,6 @@ void RGB2HSL(float r, float g, float b, float* outH, float* outS, float* outL)
     
     h = 0;
     s = 0;
-    l = 0;
     
     v = MAX(r, g);
     v = MAX(v, b);

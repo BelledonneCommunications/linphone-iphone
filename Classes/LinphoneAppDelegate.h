@@ -27,7 +27,6 @@
     @private
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL startedInBackground;
-	int savedMaxCall;
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo;
