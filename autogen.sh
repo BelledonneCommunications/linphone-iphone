@@ -22,6 +22,7 @@ if test -f /opt/local/bin/glibtoolize ; then
 else
         LIBTOOLIZE=libtoolize
 fi
+
 if test -d /opt/local/share/aclocal ; then
         ACLOCAL_ARGS="-I /opt/local/share/aclocal"
 fi
@@ -30,13 +31,7 @@ if test -d /share/aclocal ; then
         ACLOCAL_ARGS="$ACLOCAL_ARGS -I /share/aclocal"
 fi
 
-if test -f /opt/local/bin/intltoolize ; then
-	#darwin
-	INTLTOOLIZE=/opt/local/bin/intltoolize
-else
-	#on mingw, it is important to invoke intltoolize with an absolute path to avoid a bug
-	INTLTOOLIZE=/usr/bin/intltoolize
-fi
+INTLTOOLIZE=$(which intltoolize)
 
 echo "Generating build scripts in linphone..."
 set -x
