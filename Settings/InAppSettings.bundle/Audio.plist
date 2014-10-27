@@ -64,9 +64,39 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
+			<string>aaceld_16k_preference</string>
+			<key>Title</key>
+			<string>AAC-ELD 16kHz</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
 			<string>aaceld_22k_preference</string>
 			<key>Title</key>
 			<string>AAC-ELD 22kHz</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>aaceld_32k_preference</string>
+			<key>Title</key>
+			<string>AAC-ELD 32kHz</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>aaceld_44k_preference</string>
+			<key>Title</key>
+			<string>AAC-ELD 44kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -76,9 +106,9 @@
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
-			<string>aaceld_44k_preference</string>
+			<string>aaceld_48k_preference</string>
 			<key>Title</key>
-			<string>AAC-ELD 44kHz</string>
+			<string>AAC-ELD 48kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
