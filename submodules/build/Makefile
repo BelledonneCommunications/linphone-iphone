@@ -87,24 +87,19 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
 armv7-%:
 	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
-armv7s-%:
-	make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
-
 simu-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
 
 
 build-% clean-% veryclean-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $@
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@
 
-# sends the target after 'broadcast_' to all sub-architectures (armv7, armv7s, simulator)
+# sends the target after 'broadcast_' to all sub-architectures (armv7, simulator)
 broadcast_%:
 	@echo "Broadcasting target '$*' to all sub-architectures"
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
@@ -127,7 +122,7 @@ zipres:
 
 help:
 	@echo "(please read the README file first)"
-	@echo "Available architectures: armv7, armv7s, simu"
+	@echo "Available architectures: armv7, simu"
 	@echo "Available targets:"
 	@echo ""
 	@echo "   * all       : builds all architectures and creates the liblinphone sdk"
@@ -142,7 +137,6 @@ help:
 	@echo "   *        veryclean-[package] : completely clean the package for all architectures"
 	@echo ""
 	@echo "   *      armv7-build-[package] : builds a package for the armv7 architecture"
-	@echo "   *     armv7s-build-[package] : builds a package for the armv7s architecture"
 	@echo "   *       simu-build-[package] : builds a package for the simulator architecture"
 	@echo ""
 	@echo "   *     [arch]-clean-[package] : clean the package for the selected architecture"
