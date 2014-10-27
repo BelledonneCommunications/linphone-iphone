@@ -100,7 +100,11 @@ unsigned long get_native_handle(GdkWindow *gdkw){
 #elif defined(WIN32)
 	return (unsigned long)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+#	ifdef HAVE_GTK_OSX /*let's assume the use of gtk-osx implies the use of gtk-quartz.*/
+		return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+#	else
+		return (unsigned long)GDK_WINDOW_XID(gdkw);
+#	endif
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;
