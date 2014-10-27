@@ -39,18 +39,19 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
 
  #### Using HomeBrew
 
- ```sh
-brew install automake intltool libtool pkg-config coreutils \
-yasm nasm wget imagemagick gettext gtk+ speex ffmpeg pygtk
-brew link gettext --force
+	```sh
+	brew install automake intltool libtool pkg-config coreutils \
+	yasm nasm wget imagemagick gettext gtk+ speex ffmpeg pygtk
+	brew link gettext --force
+ 
+	-- gtk-mac-integration is not available in main repository or Brew yet.
 
-# Yet gtk-mac-integration is not available in main repository
-wget https://raw.githubusercontent.com/guitorri/homebrew/794cb6f68dd92cffc60da86fc4b900bc9ce571ef/Library/Formula/gtk-mac-integration.rb
-sudo mv gtk-mac-integration.rb /usr/local/Library/Formula/
-brew install gtk-mac-integration
- ```
+	wget https://gist.github.com/Gui13/cdcad37faa6b8ffa0588/raw/bf2277d45e261ad48ae1344c4c97f2684974ed87/gtk-mac-integration.rb
+	mv gtk-mac-integration.rb /usr/local/Library/Formula/
+	brew install gtk-mac-integration
 
- ### Building Linphone
+
+### Building Linphone
 
 The next pieces need to be compiled manually.
 
