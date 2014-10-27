@@ -98,7 +98,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
         if([tableView style] == UITableViewStyleGrouped) {
             NSIndexPath *path = [tableView indexPathForCell:cell];
             if(path) {
-                int count = [tableView numberOfRowsInSection:[path section]];
+                NSInteger count = [tableView numberOfRowsInSection:[path section]];
                 // Set Position for background view
                 if([path row] == 0) {
                     if([path row] == (count - 1)) {

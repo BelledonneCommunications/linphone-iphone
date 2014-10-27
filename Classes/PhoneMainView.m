@@ -318,7 +318,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 }
 
 - (void)onGlobalStateChanged:(NSNotification*)notif {
-    LinphoneGlobalState state = [[[notif userInfo] valueForKey:@"state"] integerValue];
+    LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
     static BOOL already_shown = FALSE;
     if( state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned ){
         LinphoneProxyConfig* conf = NULL;

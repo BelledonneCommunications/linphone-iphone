@@ -119,7 +119,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 	}
 
 	// If the whole fuzzy was found, returns 0. Otherwise returns number of characters left.
-	return (within_sentence != NULL ? 0 : fuzzy_word + strlen(fuzzy_word) - c);
+	return (int)(within_sentence != NULL ? 0 : fuzzy_word + strlen(fuzzy_word) - c);
 }
 
 - (void)loadData {

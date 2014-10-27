@@ -377,7 +377,7 @@
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [self.topViewController viewWillDisappear:animated];
         UIViewController *nextView = nil;
-        int count = [self.viewControllers count];
+        NSInteger count = [self.viewControllers count];
         if(count > 1) {
             nextView = [self.viewControllers objectAtIndex:count - 2];
         }

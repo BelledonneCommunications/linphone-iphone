@@ -104,7 +104,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
-    [cell setChatRoom:(LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row])];
+    [cell setChatRoom:(LinphoneChatRoom*)ms_list_nth_data(data, (int)[indexPath row])];
     
     return cell;
 }
@@ -114,7 +114,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
+    LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, (int)[indexPath row]);
     
     // Go to ChatRoom view
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
@@ -135,7 +135,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
 
-        LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, [indexPath row]);
+        LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, (int)[indexPath row]);
         linphone_chat_room_delete_history(chatRoom);
         linphone_chat_room_destroy(chatRoom);
         data = linphone_core_get_chat_rooms([LinphoneManager getLc]);

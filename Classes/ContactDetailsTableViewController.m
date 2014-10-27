@@ -850,7 +850,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
-            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
             CFRelease(lMap);
@@ -858,7 +858,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
-            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
             CFRelease(lMap);
@@ -866,7 +866,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
-            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonEmailProperty, lMap, nil);
             CFRelease(lMap);

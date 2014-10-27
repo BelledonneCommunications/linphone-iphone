@@ -459,7 +459,7 @@ exit_dbmigration:
 							   @"start_at_boot_preference"  :@YES};
 	BOOL shouldSync        = FALSE;
 
-	Linphone_log(@"%d user prefs", [defaults_keys count]);
+	Linphone_log(@"%lu user prefs", (unsigned long)[defaults_keys count]);
 
 	for( NSString* userpref in values ){
 		if( [defaults_keys containsObject:userpref] ){
@@ -1015,7 +1015,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
 				linphone_proxy_config_expires(proxy, 0);
 			} else if (proxy){
-				int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
+				NSInteger defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
 				if (defaultExpire>=0)
 					linphone_proxy_config_expires(proxy, defaultExpire);
 				//else keep default value from linphonecore
@@ -1997,7 +1997,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString *)section {
 	if (!key) return;
-	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], value );
+	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], (int)value );
 }
 
 - (NSInteger)lpConfigIntForKey:(NSString*)key {
