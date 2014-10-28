@@ -100,13 +100,11 @@ The next pieces need to be compiled manually.
  sudo make install
  ```
 
-* (Optional) Install zrtpcpp, for unbreakable call encryption
+* (Optional) Install zrtp, for unbreakable call encryption
 
  ```sh
- sudo port install cmake
- git clone https://github.com/wernerd/ZRTPCPP.git
- cd ZRTPCPP
- cmake -DCORE_LIB=true -DSDES=false CMAKE_INSTALL_NAME_DIR=/usr/local/lib/ -DCMAKE_C_FLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5" -DCMAKE_CXX_FLAGS="-arch i386 -arch x86_64 --stdlib=libstdc++ -std=c++11 -lstdc++ -mmacosx-version-min=10.5"  -DCMAKE_C_COMPILER=`xcrun --find clang` -DCMAKE_CXX_COMPILER=`xcrun --find clang` .
+ git clone git://git.linphone.org:bzrtp
+ cd bzrtp && ./autogen.sh && ./configure --prefix=/opt/local && make
  sudo make install
  ```
 
