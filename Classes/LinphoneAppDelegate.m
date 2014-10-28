@@ -138,8 +138,6 @@
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
 
-	[mark_read release];
-	[reply release];
     return localRingNotifAction;
 }
 
@@ -166,8 +164,6 @@
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
 
-	[decline release];
-	[answer release];
     return localRingNotifAction;
 }
 
