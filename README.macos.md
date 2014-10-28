@@ -43,12 +43,20 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
 	brew install automake intltool libtool pkg-config coreutils \
 	yasm nasm wget imagemagick gettext gtk+ speex ffmpeg pygtk
 	brew link gettext --force
- 
-	-- gtk-mac-integration is not available in main repository or Brew yet.
 
+	# then you have to install antlr3 from a tap.
+	wget https://gist.githubusercontent.com/Gui13/f5cf103f50d34c28c7be/raw/f50242f5e0c3a6d25ed7fca1462bce3a7b738971/antlr3.rb
+	mv antlr3.rb /usr/local/Library/Formula/
+	brew install antlr3
+
+	brew tap marekjelen/gtk
+	brew install gtk+-quartz
+
+	# gtk-mac-integration is not available in main repository or Brew yet.
 	wget https://gist.github.com/Gui13/cdcad37faa6b8ffa0588/raw/bf2277d45e261ad48ae1344c4c97f2684974ed87/gtk-mac-integration.rb
 	mv gtk-mac-integration.rb /usr/local/Library/Formula/
 	brew install gtk-mac-integration
+	```
 
 
 ### Building Linphone
