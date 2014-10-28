@@ -46,15 +46,15 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
         myIdentifier = [NSString stringByGeneratingUUID];
 #endif
         myData = [[NSMutableData alloc] init];
-        
+
         myConnection = [[NSURLConnection alloc] initWithRequest: [request request] delegate: self];
-        
+
 #if ! __has_feature(objc_arc)
         myDelegate = [delegate retain];
 #else
         myDelegate = delegate;
 #endif
-        
+
         if (myConnection) {
             NSLog(@"The connection, %@, has been established!", myIdentifier);
         } else {
@@ -65,7 +65,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
             return nil;
         }
     }
-    
+
     return self;
 }
 
@@ -78,10 +78,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 #else
     NSData *data = [NSURLConnection sendSynchronousRequest: [request request] returningResponse: &response error: error];
 #endif
-    
+
     if (response) {
         NSInteger statusCode = [response statusCode];
-        
+
         if ((statusCode < 400) && data) {
 #if ! __has_feature(objc_arc)
             return [[[XMLRPCResponse alloc] initWithData: data] autorelease];
@@ -90,7 +90,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 #endif
         }
     }
-    
+
     return nil;
 }
 
@@ -118,7 +118,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
 #pragma mark -
 
-- (void)dealloc {    
+- (void)dealloc {
 #if ! __has_feature(objc_arc)
     [myManager release];
     [myRequest release];
@@ -126,7 +126,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
     [myData release];
     [myConnection release];
     [myDelegate release];
-    
+
     [super dealloc];
 #endif
 }
@@ -139,17 +139,17 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
 - (void)connection: (NSURLConnection *)connection didReceiveResponse: (NSURLResponse *)response {
     if([response respondsToSelector: @selector(statusCode)]) {
-        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-        
+        long statusCode = [(NSHTTPURLResponse *)response statusCode];
+
         if(statusCode >= 400) {
             NSError *error = [NSError errorWithDomain: @"HTTP" code: statusCode userInfo: nil];
-            
+
             [myDelegate request: myRequest didFailWithError: error];
         } else if (statusCode == 304) {
             [myManager closeConnectionForIdentifier: myIdentifier];
         }
     }
-    
+
     [myData setLength: 0];
 }
 
@@ -173,11 +173,11 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 #else
     XMLRPCRequest *request = myRequest;
 #endif
-    
+
     NSLog(@"The connection, %@, failed with the following error: %@", myIdentifier, [error localizedDescription]);
-    
+
     [myDelegate request: request didFailWithError: error];
-    
+
     [myManager closeConnectionForIdentifier: myIdentifier];
 }
 
@@ -204,10 +204,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
         XMLRPCResponse *response = [[XMLRPCResponse alloc] initWithData: myData];
         XMLRPCRequest *request = myRequest;
 #endif
-        
+
         [myDelegate request: request didReceiveResponse: response];
     }
-    
+
     [myManager closeConnectionForIdentifier: myIdentifier];
 }
 

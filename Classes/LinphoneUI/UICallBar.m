@@ -335,10 +335,10 @@
     }
     
     switch(state) {
-        LinphoneCallEnd:
-        LinphoneCallError:
-        LinphoneCallIncoming:
-        LinphoneCallOutgoing:
+        case LinphoneCallEnd:
+        case LinphoneCallError:
+        case LinphoneCallIncoming:
+        case LinphoneCallOutgoing:
             [self hidePad:TRUE];
             [self hideOptions:TRUE];
             [self hideRoutes:TRUE];

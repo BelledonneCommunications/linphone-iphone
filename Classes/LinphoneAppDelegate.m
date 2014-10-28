@@ -166,9 +166,8 @@
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
 
-	[Decline release];
-	[Answer release];
-
+	[decline release];
+	[answer release];
     return localRingNotifAction;
 }
 
@@ -329,7 +328,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    Linphone_log(@"%@ - state = %ld", NSStringFromSelector(_cmd), application.applicationState);
+    Linphone_log(@"%@ - state = %d", NSStringFromSelector(_cmd), application.applicationState);
 
     [self fixRing];
 

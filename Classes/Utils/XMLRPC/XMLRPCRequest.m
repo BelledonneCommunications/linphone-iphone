@@ -12,13 +12,13 @@
         } else {
             myRequest = [[NSMutableURLRequest alloc] init];
         }
-        
+
         myXMLEncoder = encoder;
 #if ! __has_feature(objc_arc)
         [myXMLEncoder retain];
 #endif
     }
-    
+
     return self;
 }
 
@@ -75,11 +75,11 @@
 
 - (void)setMethod: (NSString *)method withParameter: (id)parameter {
     NSArray *parameters = nil;
-    
+
     if (parameter) {
         parameters = [NSArray arrayWithObject: parameter];
     }
-    
+
     [myXMLEncoder setMethod: method withParameters: parameters];
 }
 
@@ -107,41 +107,41 @@
 
 - (NSURLRequest *)request {
     NSData *content = [[self body] dataUsingEncoding: NSUTF8StringEncoding];
-    NSNumber *contentLength = [NSNumber numberWithInteger:[content length]];
-    
+    NSNumber *contentLength = [NSNumber numberWithLong: [content length]];
+
     if (!myRequest) {
         return nil;
     }
-    
+
     [myRequest setHTTPMethod: @"POST"];
-    
+
     if (![myRequest valueForHTTPHeaderField: @"Content-Type"]) {
         [myRequest addValue: @"text/xml" forHTTPHeaderField: @"Content-Type"];
     } else {
         [myRequest setValue: @"text/xml" forHTTPHeaderField: @"Content-Type"];
     }
-    
+
     if (![myRequest valueForHTTPHeaderField: @"Content-Length"]) {
         [myRequest addValue: [contentLength stringValue] forHTTPHeaderField: @"Content-Length"];
     } else {
         [myRequest setValue: [contentLength stringValue] forHTTPHeaderField: @"Content-Length"];
     }
-    
+
     if (![myRequest valueForHTTPHeaderField: @"Accept"]) {
         [myRequest addValue: @"text/xml" forHTTPHeaderField: @"Accept"];
     } else {
         [myRequest setValue: @"text/xml" forHTTPHeaderField: @"Accept"];
     }
-    
+
     if (![self userAgent]) {
       NSString *userAgent = [[NSUserDefaults standardUserDefaults] objectForKey:@"UserAgent"];
       if (userAgent) {
         [self setUserAgent:userAgent];
       }
     }
-    
+
     [myRequest setHTTPBody: content];
-    
+
     return (NSURLRequest *)myRequest;
 }
 
@@ -157,7 +157,7 @@
 #if ! __has_feature(objc_arc)
     [myRequest release];
     [myXMLEncoder release];
-    
+
     [super dealloc];
 #endif
 }

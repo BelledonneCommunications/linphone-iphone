@@ -11,7 +11,7 @@ static XMLRPCConnectionManager *sharedInstance = nil;
     if (self) {
         myConnections = [[NSMutableDictionary alloc] init];
     }
-    
+
     return self;
 }
 
@@ -21,11 +21,11 @@ static XMLRPCConnectionManager *sharedInstance = nil;
     @synchronized(self) {
         if (!sharedInstance) {
             sharedInstance = [super allocWithZone: zone];
-            
+
             return sharedInstance;
         }
     }
-    
+
     return nil;
 }
 
@@ -37,7 +37,7 @@ static XMLRPCConnectionManager *sharedInstance = nil;
             sharedInstance = [[self alloc] init];
         }
     }
-    
+
     return sharedInstance;
 }
 
@@ -50,13 +50,13 @@ static XMLRPCConnectionManager *sharedInstance = nil;
 #else
     NSString *identifier = [newConnection identifier];
 #endif
-    
+
     [myConnections setObject: newConnection forKey: identifier];
-    
+
 #if ! __has_feature(objc_arc)
     [newConnection release];
 #endif
-    
+
     return identifier;
 }
 
@@ -66,8 +66,8 @@ static XMLRPCConnectionManager *sharedInstance = nil;
     return [myConnections allKeys];
 }
 
-- (int)numberOfActiveConnections {
-    return (int)[myConnections count];
+- (long)numberOfActiveConnections {
+    return [myConnections count];
 }
 
 #pragma mark -
@@ -80,17 +80,17 @@ static XMLRPCConnectionManager *sharedInstance = nil;
 
 - (void)closeConnectionForIdentifier: (NSString *)identifier {
     XMLRPCConnection *selectedConnection = [self connectionForIdentifier: identifier];
-    
+
     if (selectedConnection) {
         [selectedConnection cancel];
-        
+
         [myConnections removeObjectForKey: identifier];
     }
 }
 
 - (void)closeConnections {
     [[myConnections allValues] makeObjectsPerformSelector: @selector(cancel)];
-    
+
     [myConnections removeAllObjects];
 }
 
@@ -98,7 +98,7 @@ static XMLRPCConnectionManager *sharedInstance = nil;
 
 - (void)finalize {
     [self closeConnections];
-    
+
     [super finalize];
 }
 

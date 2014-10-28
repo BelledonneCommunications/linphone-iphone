@@ -13,7 +13,7 @@ You must first install both Xcode with iPhone OS SDK and [HomeBrew](brew.sh) or 
 ```sh
 brew install automake intltool libtool pkg-config coreutils yasm nasm wget imagemagick
 # then you have to install antlr3 from a tap.
-wget https://gist.github.com/Gui13/f5cf103f50d34c28c7be/raw/5d1abaa11bacf7256aac9cb42e2f569a0b775d86/antlr3.rb
+wget https://gist.githubusercontent.com/Gui13/f5cf103f50d34c28c7be/raw/f50242f5e0c3a6d25ed7fca1462bce3a7b738971/antlr3.rb
 mv antlr3.rb /usr/local/Library/Formula/
 brew install antlr3
 ```
