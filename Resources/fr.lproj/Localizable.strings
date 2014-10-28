@@ -307,3 +307,8 @@
 "Warning" = "Attention";
 "Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?" = "Lancer l'Assistant va effacer vos réglages. Êtes-vous sûr de vouloir cela?";
 "Launch Wizard" = "Lancer l'assistant";
+
+
+/* Accessibility */
+"Firstname" = "Prénom";
+"Lastname" = "Nom";

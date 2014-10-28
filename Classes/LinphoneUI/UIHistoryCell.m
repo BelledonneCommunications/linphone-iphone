@@ -93,6 +93,19 @@
 
 #pragma mark - 
 
+- (NSString *)accessibilityValue {
+    // TODO: localize?
+    BOOL incoming = linphone_call_log_get_dir(callLog) == LinphoneCallIncoming;
+    BOOL missed = linphone_call_log_get_status(callLog) == LinphoneCallMissed;
+
+    NSString* call_type = @"Outgoing";
+    if( incoming ){
+        call_type = missed?@"Missed" : @"Incoming";
+    }
+
+    return [NSString stringWithFormat:@"%@ from %@", call_type, addressLabel.text];
+}
+
 - (void)update {
     if(callLog == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update history cell: null callLog"];

@@ -674,7 +674,6 @@
 		D34BD73615C13DF40070C209 /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5413159853C90037DC6B /* UIChatCell.xib */; };
 		D34BD73715C13DF40070C209 /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7315A6C81A00F96BE5 /* UIChatRoomCell.xib */; };
 		D34BD73815C13DF40070C209 /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */; };
-		D34BD73A15C13DF40070C209 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
 		D34BD73D15C13DF40070C209 /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D31AC4AF158A29C600C2638B /* UIHistoryCell.xib */; };
 		D34BD73F15C13DF40070C209 /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35498201587716B000081D8 /* UIStateBar.xib */; };
 		D34BD74015C13E110070C209 /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
@@ -902,7 +901,6 @@
 		D3998D0516031937009DD22C /* background_alt.png in Resources */ = {isa = PBXBuildFile; fileRef = D3998D0316031937009DD22C /* background_alt.png */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A55FBD15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
-		D3A55FBF15877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
 		D3A74E5915C68162001500B9 /* toolsbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74E5815C68162001500B9 /* toolsbar_background.png */; };
 		D3A74E5A15C68162001500B9 /* toolsbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74E5815C68162001500B9 /* toolsbar_background.png */; };
 		D3A74EB215C69392001500B9 /* add_call_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74E5E15C69391001500B9 /* add_call_default~ipad.png */; };
@@ -1359,6 +1357,8 @@
 		F0818E7F17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
 		F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
 		F0818E8117FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
+		F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
+		F088488B19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
 		F08F118519C09C6B007D70C2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B3318C0CF7000C4D7FE /* XCTest.framework */; };
 		F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -1959,7 +1959,6 @@
 		D3998D0316031937009DD22C /* background_alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background_alt.png; path = Resources/background_alt.png; sourceTree = "<group>"; };
 		D3A55FBA15877E5E003FD403 /* UIContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactCell.h; sourceTree = "<group>"; };
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
-		D3A55FBE15877E69003FD403 /* UIContactCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactCell.xib; sourceTree = "<group>"; };
 		D3A74E5815C68162001500B9 /* toolsbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = toolsbar_background.png; path = Resources/toolsbar_background.png; sourceTree = "<group>"; };
 		D3A74E5E15C69391001500B9 /* add_call_default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "add_call_default~ipad.png"; path = "Resources/add_call_default~ipad.png"; sourceTree = "<group>"; };
 		D3A74E5F15C69391001500B9 /* add_call_disabled~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "add_call_disabled~ipad.png"; path = "Resources/add_call_disabled~ipad.png"; sourceTree = "<group>"; };
@@ -2288,6 +2287,8 @@
 		F0818E7B17FC5160005A3330 /* linphone_icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_120.png; path = Resources/linphone_icon_120.png; sourceTree = "<group>"; };
 		F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_76.png; path = Resources/linphone_icon_76.png; sourceTree = "<group>"; };
 		F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_152.png; path = Resources/linphone_icon_152.png; sourceTree = "<group>"; };
+		F088488C19FF8C41007FFCF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIContactCell.xib; sourceTree = "<group>"; };
+		F088488F19FF8C44007FFCF3 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
 		F08F118419C09C6A007D70C2 /* LinphoneTester Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LinphoneTester Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F08F118A19C09C6B007D70C2 /* LinphoneTester Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LinphoneTester Tests-Info.plist"; sourceTree = "<group>"; };
 		F08F118C19C09C6B007D70C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2718,7 +2719,7 @@
 				D38187F315FE354000C3EDCA /* UIConferenceHeader.xib */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
-				D3A55FBE15877E69003FD403 /* UIContactCell.xib */,
+				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
 				D3E8F68315ADE0570065A226 /* UIContactDetailsFooter.h */,
 				D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */,
 				D38187F715FE354700C3EDCA /* UIContactDetailsFooter.xib */,
@@ -3899,7 +3900,7 @@
 				D354981A15876FE7000081D8 /* list_details_default.png in Resources */,
 				D354981C15876FE7000081D8 /* list_details_over.png in Resources */,
 				D35498231587716B000081D8 /* UIStateBar.xib in Resources */,
-				D3A55FBF15877E69003FD403 /* UIContactCell.xib in Resources */,
+				F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */,
 				D38187E115FE349700C3EDCA /* UICallBar.xib in Resources */,
 				D31C9C90158A1C1000756B45 /* call_status_incoming.png in Resources */,
 				D31C9C92158A1C1000756B45 /* call_status_missed.png in Resources */,
@@ -4351,7 +4352,7 @@
 				D34BD73715C13DF40070C209 /* UIChatRoomCell.xib in Resources */,
 				D34BD73815C13DF40070C209 /* UICompositeViewController.xib in Resources */,
 				D38187F115FE354000C3EDCA /* UIConferenceHeader.xib in Resources */,
-				D34BD73A15C13DF40070C209 /* UIContactCell.xib in Resources */,
+				F088488B19FF8C41007FFCF3 /* UIContactCell.xib in Resources */,
 				D38187F515FE354700C3EDCA /* UIContactDetailsFooter.xib in Resources */,
 				D381881615FE3F7F00C3EDCA /* UIContactDetailsHeader.xib in Resources */,
 				D34BD73D15C13DF40070C209 /* UIHistoryCell.xib in Resources */,
@@ -5477,6 +5478,15 @@
 				F095484A1883F56E00E8A69B /* ru */,
 			);
 			name = "IncomingCallViewController~ipad.xib";
+			sourceTree = "<group>";
+		};
+		F088488D19FF8C41007FFCF3 /* UIContactCell.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F088488C19FF8C41007FFCF3 /* Base */,
+				F088488F19FF8C44007FFCF3 /* fr */,
+			);
+			name = UIContactCell.xib;
 			sourceTree = "<group>";
 		};
 		F08F118B19C09C6B007D70C2 /* InfoPlist.strings */ = {
