@@ -2627,7 +2627,14 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MS
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
-LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
+LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
+
+/**
+ * Get the name of the current preferred video size for sending.
+ * @param[in] lc #LinphoneCore object.
+ * @returns A string containing the name of the current preferred video size (to be freed with ms_free()).
+ */
+LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);
 LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);

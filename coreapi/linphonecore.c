@@ -5577,8 +5577,12 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
  *
  * @ingroup media_parameters
 **/
-MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc){
+MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc){
 	return lc->video_conf.vsize;
+}
+
+char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc) {
+	return ms_strdup(video_size_get_name(lc->video_conf.vsize));
 }
 
 /**
