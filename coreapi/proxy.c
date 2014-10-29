@@ -881,8 +881,11 @@ static bool_t is_a_phone_number(const char *username){
 		    *p==')' ||
 			*p=='(' ||
 			*p=='/' ||
-			*p=='+') continue;
-		else return FALSE;
+			*p=='+' ||
+			(unsigned char)*p== 0xca // non-breakable space (iOS uses it to format contacts phone number)
+			)
+			continue;
+		return FALSE;
 	}
 	return TRUE;
 }
