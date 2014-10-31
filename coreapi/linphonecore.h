@@ -1780,12 +1780,18 @@ typedef void * (*LinphoneCoreWaitingCallback)(LinphoneCore *lc, void *context, L
 
 /* THE main API */
 
+typedef enum _LinphoneLogCollectionState {
+	LinphoneLogCollectionDisabled,
+	LinphoneLogCollectionEnabled,
+	LinphoneLogCollectionEnabledWithoutPreviousLogHandler
+} LinphoneLogCollectionState;
+
 /**
  * Enable the linphone core log collection to upload logs on a server.
  * @ingroup misc
- * @param[in] enable Boolean value telling whether to enable log collection or not.
+ * @param[in] state LinphoneLogCollectionState value telling whether to enable log collection or not.
  */
-LINPHONE_PUBLIC void linphone_core_enable_log_collection(bool_t enable);
+LINPHONE_PUBLIC void linphone_core_enable_log_collection(LinphoneLogCollectionState state);
 
 /**
  * Set the path where the log files will be written for log collection.

@@ -250,16 +250,20 @@ void linphone_core_set_log_collection_upload_server_url(LinphoneCore *core, cons
 	lp_config_set_string(core->config, "misc", "log_collection_upload_server_url", server_url);
 }
 
-void linphone_core_enable_log_collection(bool_t enable) {
+void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	/* at first call of this function, set liblinphone_log_func to the current
 	 * ortp log function */
 	if( liblinphone_log_func == NULL ){
 		liblinphone_log_func = ortp_logv_out;
 	}
-	if ((enable == TRUE) && (liblinphone_log_collection_enabled == FALSE)) {
+	if ((state != LinphoneLogCollectionDisabled) && (liblinphone_log_collection_enabled == FALSE)) {
 		liblinphone_log_collection_enabled = TRUE;
 		ortp_mutex_init(&liblinphone_log_collection_mutex, NULL);
-		liblinphone_log_func = ortp_logv_out;
+		if (state == LinphoneLogCollectionEnabledWithoutPreviousLogHandler) {
+			liblinphone_log_func = NULL;
+		} else {
+			liblinphone_log_func = ortp_logv_out;
+		}
 		ortp_set_log_handler(linphone_core_log_collection_handler);
 	} else {
 		liblinphone_log_collection_enabled = FALSE;
