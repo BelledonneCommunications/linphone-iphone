@@ -11,12 +11,12 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
  	- belle-sip>=1.3.0
 	- speex>=1.2.0 (including libspeexdsp part)
 	- libxml2
-	
+
 	+ if you want the gtk/glade interface:
 		- libgtk >=2.16.0
 	+ if you want video support:
 		- libvpx (VP8 codec)
-		- libavcodec (ffmpeg) 
+		- libavcodec (ffmpeg)
 		- libswscale (part of ffmpeg too) for better scaling performance
 		- libxv (x11 video extension)
 		- libgl1-mesa (OpenGL API -- GLX development files)
@@ -31,7 +31,7 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 	+ if you want uPnP support (optional):
 		- libupnp (version 1.6 branch (not patched with 18-url-upnpstrings.patch))
 
-	Here is the command line to get these dependencies installed for Ubuntu && Debian 
+	Here is the command line to get these dependencies installed for Ubuntu && Debian
 
 	$ sudo apt-get install libtool intltool libgtk2.0-dev libspeexdsp-dev \
 libavcodec-dev libswscale-dev libx11-dev libxv-dev libgl1-mesa-dev \
@@ -43,22 +43,19 @@ libsoup2.4-dev libsqlite3-dev libupnp4-dev
 
 	+ Install srtp (optional) for call encryption :
 		$ git clone git://git.linphone.org/srtp.git
- 		$ cd srtp && autoconf && ./configure && make
- 		$ sudo make install
+		$ cd srtp && autoconf && ./configure && make
+		$ sudo make install
 
-	+ Install zrtpcpp (optional), for unbreakable call encryption
- 		$ sudo apt-get install cmake
-		$ git clone https://github.com/wernerd/ZRTPCPP.git
-		$ cd ZRTPCPP 
-		$ cmake -DCORE_LIB=true -DSDES=false . && make
- 		$ sudo make install
-		If you get this error: "cc1plus: error: unrecognized command line option ‘-std=c++11’", edit CMakeLists.txt and replace c++11 by c++0x .
+	+ Install zrtp (optional), for unbreakable call encryption
+		$ git clone git://git.linphone.org:bzrtp
+		$ cd bzrtp && ./autogen.sh && ./configure && make
+		$ sudo make install
 
 - Compile linphone
 
  $ ./autogen.sh
- $ ./configure 
- $ make && sudo make install 
+ $ ./configure
+ $ make && sudo make install
  $ sudo ldconfig
 
 
@@ -71,10 +68,10 @@ For macOS X, see README.macos
 
 Here is a short description of the content of the source tree.
 
-- oRTP/ is a poweful implementation of the RTP protocol. See the oRTP/README for more details. 
+- oRTP/ is a poweful implementation of the RTP protocol. See the oRTP/README for more details.
 	It is used by the mediastreamer to send and receive streams to the network.
 
-- mediastreamer2/ is one of the important part of linphone. It is a framework library for audio 
+- mediastreamer2/ is one of the important part of linphone. It is a framework library for audio
 	and video processing. It contains several objects for grabing audio and video and outputing
 	it (through rtp, to file).
 	It contains also codec objects to compress audio and video streams.
@@ -89,6 +86,6 @@ Here is a short description of the content of the source tree.
 	* linphonec.c is the main file for the console version of linphone.
 	* sipomatic.c / sipomatic.h contains the code for sipomatic, the test program that auto-answer to linphone calls.
 	* shell.c (program name: linphonecsh) is a small utilities to send interactive commands to a running linphonec daemon.
-		
+
 - share/ contains translation, documentation, rings and hello sound files.
 

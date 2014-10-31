@@ -1781,4 +1781,10 @@ public interface LinphoneCore {
 	 * @return the serverUrl
 	 */
 	public String getFileTransferServer();
+	
+	/**
+	 * Create a media player
+	 * @return An object that implement LinphonePlayer
+	 */
+	public LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window);
 }

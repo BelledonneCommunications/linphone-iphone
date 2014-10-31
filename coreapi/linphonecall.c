@@ -564,7 +564,6 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
 	call->state=LinphoneCallIdle;
 	call->transfer_state = LinphoneCallIdle;
-	call->media_start_time=0;
 	call->log=linphone_call_log_new(call->dir, from, to);
 	call->camera_enabled=TRUE;
 	call->current_params = linphone_call_params_new();
@@ -793,7 +792,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 	/*set video support */
 	md=sal_call_get_remote_media_description(op);
-	call->params->has_video = lc->video_policy.automatically_accept;
+	call->params->has_video = linphone_core_video_enabled(lc) && lc->video_policy.automatically_accept;
 	if (md) {
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
@@ -924,6 +923,10 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallUpdating";
 		case LinphoneCallReleased:
 			return "LinphoneCallReleased";
+		case LinphoneCallEarlyUpdatedByRemote:
+			return "LinphoneCallEarlyUpdatedByRemote";
+		case LinphoneCallEarlyUpdating:
+			return "LinphoneCallEarlyUpdating";
 	}
 	return "undefined state";
 }
@@ -968,7 +971,7 @@ void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, 
 		}
 		if (cstate == LinphoneCallConnected) {
 			call->log->status=LinphoneCallSuccess;
-			call->media_start_time=time(NULL);
+			call->log->connected_date_time=time(NULL);
 		}
 
 		if (!silently)
@@ -1280,8 +1283,8 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
  * Returns call's duration in seconds.
 **/
 int linphone_call_get_duration(const LinphoneCall *call){
-	if (call->media_start_time==0) return 0;
-	return time(NULL)-call->media_start_time;
+	if (call->log->connected_date_time==0) return 0;
+	return time(NULL)-call->log->connected_date_time;
 }
 
 /**
@@ -2176,7 +2179,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		   call, linphone_core_get_upload_bandwidth(lc),linphone_core_get_download_bandwidth(lc));
 
 	if (call->audiostream!=NULL) {
-		linphone_call_start_audio_stream(call,cname,all_inputs_muted,send_ringbacktone,use_arc);
+		linphone_call_start_audio_stream(call,cname,all_inputs_muted||call->audio_muted,send_ringbacktone,use_arc);
 	}
 	call->current_params->has_video=FALSE;
 	if (call->videostream!=NULL) {
@@ -2950,7 +2953,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 void linphone_call_log_completed(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 
-	call->log->duration=time(NULL)-call->log->start_date_time;
+	call->log->duration=linphone_call_get_duration(call); /*store duration since connected*/
 
 	if (call->log->status==LinphoneCallMissed){
 		char *info;

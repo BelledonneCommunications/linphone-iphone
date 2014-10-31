@@ -234,9 +234,9 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call;
-	const char *from,*to;
 	char *alt_contact;
-	LinphoneAddress *from_addr, *to_addr;
+	LinphoneAddress *from_addr=NULL;
+	LinphoneAddress  *to_addr=NULL;
 	/*this mode is deprcated because probably useless*/
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
 
@@ -272,10 +272,26 @@ static void call_received(SalOp *h){
 		sal_op_release(h);
 		return;
 	}
-	from=sal_op_get_from(h);
-	to=sal_op_get_to(h);
-	from_addr=linphone_address_new(from);
-	to_addr=linphone_address_new(to);
+	/*in some situation, better to trust the network rather than the UAC*/
+	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
+		const char * p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
+		LinphoneAddress *p_asserted_id_addr;
+		if (!p_asserted_id) {
+			ms_warning("No P-Asserted-Identity header found so cannot use it for op [%p] instead of from",h);
+		} else {
+			p_asserted_id_addr = linphone_address_new(p_asserted_id);
+			if (!p_asserted_id_addr) {
+				ms_warning("Unsupported P-Asserted-Identity header for op [%p] ",h);
+			} else {
+				ms_message("Using P-Asserted-Identity [%s] instead of from [%s] for op [%p]",p_asserted_id,sal_op_get_from(h),h);
+				from_addr=p_asserted_id_addr;
+			}
+		}
+	}
+
+	if (!from_addr)
+		from_addr=linphone_address_new(sal_op_get_from(h));
+	to_addr=linphone_address_new(sal_op_get_to(h));
 
 	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_a_call_pending(lc)){
 		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
@@ -395,6 +411,7 @@ static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	SalMediaDescription *md;
+	bool_t update_state=TRUE;
 
 	if (call==NULL){
 		ms_warning("No call to accept.");
@@ -417,12 +434,21 @@ static void call_accepted(SalOp *op){
 	if (md) /*make sure re-invite will not propose video again*/
 		call->params->has_video &= linphone_core_media_description_contains_video_stream(md);
 
-	if (call->state==LinphoneCallOutgoingProgress ||
-		call->state==LinphoneCallOutgoingRinging ||
-		call->state==LinphoneCallOutgoingEarlyMedia){
-		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
-		if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
+	switch (call->state){
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallOutgoingEarlyMedia:
+			linphone_call_set_state(call,LinphoneCallConnected,"Connected");
+			if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
+		break;
+		case LinphoneCallEarlyUpdating:
+			linphone_call_set_state(call,call->prevstate,"Early update accepted");
+			update_state=FALSE;
+		break;
+		default:
+		break;
 	}
+	
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
@@ -435,7 +461,7 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_core_update_streams (lc,call,md);
-			linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
+			if (update_state) linphone_call_set_state(call,LinphoneCallPaused,"Call paused");
 			if (call->refer_pending)
 				linphone_core_start_refered_call(lc,call,NULL);
 		}else if (sal_media_description_has_dir(md,SalStreamRecvOnly)){
@@ -448,7 +474,7 @@ static void call_accepted(SalOp *op){
 				ms_free(msg);
 			}
 			linphone_core_update_streams (lc,call,md);
-			linphone_call_set_state(call,LinphoneCallPausedByRemote,"Call paused by remote");
+			if (update_state) linphone_call_set_state(call,LinphoneCallPausedByRemote,"Call paused by remote");
 		}else{
 			if (call->state!=LinphoneCallUpdating){
 				if (call->state==LinphoneCallResuming){
@@ -469,8 +495,7 @@ static void call_accepted(SalOp *op){
 			linphone_call_fix_call_parameters(call);
 			if (!call->current_params->in_conference)
 				lc->current_call=call;
-			if (call->prevstate != LinphoneCallIncomingEarlyMedia) /*don't change state in aswer to a SIP UPDATE in early media*/
-				linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
+			if (update_state) linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
 	}else{
 		/*send a bye*/
@@ -554,7 +579,8 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		if (rmd==NULL)
 			call->expect_media_in_ack=TRUE;
 	} else if (is_update){ /*SIP UPDATE case, can occur in early states*/
-		_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
+		linphone_call_set_state(call, LinphoneCallEarlyUpdatedByRemote, "EarlyUpdatedByRemote");
+		_linphone_core_accept_call_update(lc,call,NULL,call->prevstate,linphone_call_state_to_string(call->prevstate));
 	}
 }
 
@@ -611,6 +637,8 @@ static void call_updating(SalOp *op, bool_t is_update){
 		case LinphoneCallRefered:
 		case LinphoneCallError:
 		case LinphoneCallReleased:
+		case LinphoneCallEarlyUpdatedByRemote:
+		case LinphoneCallEarlyUpdating:
 			ms_warning("Receiving reINVITE or UPDATE while in state [%s], should not happen.",linphone_call_state_to_string(call->state));
 		break;
 	}

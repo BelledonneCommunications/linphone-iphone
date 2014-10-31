@@ -294,7 +294,7 @@ private:
 
 class ConstField{
 public:
-	ConstField(Type *type, const string &name, const string &value="") : mType(type), mName(name), mValue(value){
+	ConstField(Type *type, const string &name, int value) : mType(type), mName(name), mValue(value){
 	}
 	void setHelp(const string & help){
 		mHelp=help;
@@ -308,7 +308,7 @@ public:
 	Type *getType()const{
 		return mType;
 	}
-	const string &getValue()const{
+	int getValue()const{
 		return mValue;
 	}
 	static string getCommonPrefix(list<ConstField *> fields){
@@ -338,7 +338,7 @@ public:
 private:
 	Type *mType;
 	string mName;
-	string mValue;
+	int mValue;
 	string mHelp;
 };
 

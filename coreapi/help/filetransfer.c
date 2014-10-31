@@ -48,11 +48,11 @@ static void stop(int signum){
 /**
  * function invoked to report file transfer progress.
  * */
-static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
+static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
 	const LinphoneAddress* from_address = linphone_chat_message_get_from(message);
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
-	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)progress
+	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)((offset *100)/total)
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
 																	, content->type
 																	, content->subtype
@@ -132,7 +132,7 @@ static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneCha
 	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
 	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
 
-	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed);
+	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed, NULL);
 
 }
 

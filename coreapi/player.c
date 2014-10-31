@@ -72,11 +72,41 @@ MSPlayerState linphone_player_get_state(LinphonePlayer *obj){
 }
 
 /**
+ * Get the duration of the media
+ * @param obj the player
+ * @return  The duration in milliseconds
+ */
+int linphone_player_get_duration(LinphonePlayer *obj) {
+	return obj->get_duration(obj);
+}
+
+/**
+ * Get the position of the playback
+ * @param obj the player
+ * @return Position of the playback in milliseconds
+ */
+int linphone_player_get_current_position(LinphonePlayer *obj) {
+	return obj->get_position(obj);
+}
+
+/**
  * Close the player.
  * @param obj the player.
 **/
 void linphone_player_close(LinphonePlayer *obj){
 	return obj->close(obj);
+}
+
+/**
+ * @brief Destroy a player
+ * @param obj The player
+ */
+void linphone_player_destroy(LinphonePlayer *obj) {
+	if(obj->destroy) obj->destroy(obj);
+}
+
+void _linphone_player_destroy(LinphonePlayer *player) {
+	ms_free(player);
 }
 
 
@@ -151,7 +181,7 @@ static void call_player_close(LinphonePlayer *player){
 }
 
 static void on_call_destroy(void *obj, belle_sip_object_t *call_being_destroyed){
-	ms_free(obj);
+	_linphone_player_destroy(obj);
 }
 
 LinphonePlayer *linphone_call_build_player(LinphoneCall *call){

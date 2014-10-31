@@ -250,7 +250,19 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt){
-	return linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
+	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
+	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
+		&& lc->sound_conf.capt_sndcard 
+		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
+		&& linphone_core_echo_cancellation_enabled(lc)
+		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
+		&& strcasecmp(pt->mime_type,"opus")!=0
+		&& ms_filter_lookup_by_name("MSWebRTCAEC")!=NULL){
+		ms_warning("Payload type %s/%i cannot be used because software echo cancellation is required but is unable to operate at this rate.",
+			   pt->mime_type,pt->clock_rate);
+		ret=FALSE;
+	}
+	return ret;
 }
 
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
@@ -966,6 +978,8 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			else if (strcasecmp(name,"DTMF")==0) ret|=AUDIO_STREAM_FEATURE_DTMF;
 			else if (strcasecmp(name,"DTMF_ECHO")==0) ret|=AUDIO_STREAM_FEATURE_DTMF_ECHO;
 			else if (strcasecmp(name,"MIXED_RECORDING")==0) ret|=AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+			else if (strcasecmp(name,"LOCAL_PLAYING")==0) ret|=AUDIO_STREAM_FEATURE_LOCAL_PLAYING;
+			else if (strcasecmp(name,"REMOTE_PLAYING")==0) ret|=AUDIO_STREAM_FEATURE_REMOTE_PLAYING;
 			else if (strcasecmp(name,"ALL")==0) ret|=AUDIO_STREAM_FEATURE_ALL;
 			else if (strcasecmp(name,"NONE")==0) ret=0;
 			else ms_error("Unsupported audio feature %s requested in config file.",name);

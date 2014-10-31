@@ -21,10 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 #ifdef MSG_STORAGE_ENABLED
+#ifndef PRIu64
+#define PRIu64 "I64u"
+#endif
 
 #include "sqlite3.h"
 
-static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
+static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
 	MSList* transients = cr->transient_messages;
 	LinphoneChatMessage* chat;
 	while( transients ){
@@ -225,7 +228,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 
 		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
+		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i);",
 						local_contact,
 						peer,
 						msg->dir,
@@ -234,7 +237,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						msg->is_read,
 						msg->state,
 						msg->external_body_url,
-						msg->time,
+						(int64_t)msg->time,
 						msg->appdata,
 						content_id
  					);
@@ -250,8 +253,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i) AND utc = %i;",
-								  msg->state,msg->storage_id,msg->time);
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i);",
+								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 	}
@@ -459,7 +462,7 @@ static int migrate_messages_timestamp(void* data,int argc, char** argv, char** c
 	time_t new_time = parse_time_from_db(argv[1]);
 	if( new_time ){
 		/* replace 'time' by -1 and set 'utc' to the timestamp */
-		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%i,time='-1' WHERE id=%i;", new_time, atoi(argv[0]));
+		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", new_time, atoi(argv[0]));
 		if( buf) {
 			linphone_sql_request((sqlite3*)data, buf);
 			sqlite3_free(buf);
@@ -486,7 +489,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 		uint64_t end;
 		linphone_sql_request(db, "COMMIT");
 		end=ortp_get_cur_time_ms();
-		ms_message("Migrated message timestamps to UTC in %i ms",(int)(end-begin));
+		ms_message("Migrated message timestamps to UTC in %lu ms",(unsigned long)(end-begin));
 	}
 }
 

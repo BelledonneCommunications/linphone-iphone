@@ -49,7 +49,9 @@
 #include <libgen.h>
 #endif
 
-
+#ifdef WIN32
+#define RENAME_REQUIRES_NONEXISTENT_NEW_PATH 1
+#endif
 
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
@@ -77,6 +79,7 @@ struct _LpConfig{
 	int refcnt;
 	FILE *file;
 	char *filename;
+	char *tmpfilename;
 	MSList *sections;
 	int modified;
 	int readonly;
@@ -349,22 +352,34 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	if (config_filename!=NULL){
 		ms_message("Using (r/w) config information from %s", config_filename);
 		lpconfig->filename=ortp_strdup(config_filename);
-		lpconfig->file=fopen(config_filename,"r+");
+		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",config_filename);
+		
+#if !defined(WIN32)
+		{
+			struct stat fileStat;
+			if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
+				/* make existing configuration files non-group/world-accessible */
+				if (chmod(config_filename, S_IRUSR | S_IWUSR) == -1) {
+					ms_warning("unable to correct permissions on "
+						"configuration file: %s", strerror(errno));
+				}
+			}
+		}
+#endif /*WIN32*/
+		/*open with r+ to check if we can write on it later*/
+		lpconfig->file=fopen(lpconfig->filename,"r+");
+#ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
+		if (lpconfig->file==NULL){
+			lpconfig->file=fopen(lpconfig->tmpfilename,"r+");
+			if (lpconfig->file){
+				ms_warning("Could not open %s but %s works, app may have crashed during last sync.",lpconfig->filename,lpconfig->tmpfilename);
+			}
+		}
+#endif
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
-#if !defined(WIN32)
-			{
-				struct stat fileStat;
-				if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
-					/* make existing configuration files non-group/world-accessible */
-					if (chmod(config_filename, S_IRUSR | S_IWUSR) == -1) {
-						ms_warning("unable to correct permissions on "
-							"configuration file: %s", strerror(errno));
-					}
-				}
-			}
-#endif /*WIN32*/
+
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
 		}
@@ -396,6 +411,7 @@ void lp_item_set_value(LpItem *item, const char *value){
 
 static void _lp_config_destroy(LpConfig *lpconfig){
 	if (lpconfig->filename!=NULL) ortp_free(lpconfig->filename);
+	if (lpconfig->tmpfilename) ortp_free(lpconfig->tmpfilename);
 	ms_list_for_each(lpconfig->sections,(void (*)(void*))lp_section_destroy);
 	ms_list_free(lpconfig->sections);
 	free(lpconfig);
@@ -583,7 +599,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif
-	file=fopen(lpconfig->filename,"w");
+	file=fopen(lpconfig->tmpfilename,"w");
 	if (file==NULL){
 		ms_warning("Could not write %s ! Maybe it is read-only. Configuration will not be saved.",lpconfig->filename);
 		lpconfig->readonly=1;
@@ -591,6 +607,16 @@ int lp_config_sync(LpConfig *lpconfig){
 	}
 	ms_list_for_each2(lpconfig->sections,(void (*)(void *,void*))lp_section_write,(void *)file);
 	fclose(file);
+#ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
+	/* On windows, rename() does not accept that the newpath is an existing file, while it is accepted on Unix.
+	 * As a result, we are forced to first delete the linphonerc file, and then rename.*/
+	if (remove(lpconfig->filename)!=0){
+		ms_error("Cannot remove %s: %s",lpconfig->filename, strerror(errno));
+	}
+#endif
+	if (rename(lpconfig->tmpfilename,lpconfig->filename)!=0){
+		ms_error("Cannot rename %s into %s: %s",lpconfig->tmpfilename,lpconfig->filename,strerror(errno));
+	}
 	lpconfig->modified=0;
 	return 0;
 }

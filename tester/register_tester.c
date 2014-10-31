@@ -36,7 +36,7 @@ static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL);
 	
 	if (with_auth) {
-		LinphoneCoreVTable* vtable = linphone_vtable_new();
+		LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 		vtable->auth_info_requested=auth_info_requested;
 		linphone_core_add_listener(mgr->lc,vtable);
 	}
@@ -314,7 +314,7 @@ static void ha1_authenticated_register(){
 
 static void authenticated_register_with_no_initial_credentials(){
 	LinphoneCoreManager *mgr;
-	LinphoneCoreVTable* vtable = linphone_vtable_new();
+	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 	stats* counters;
 	char route[256];
 	

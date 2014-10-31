@@ -75,22 +75,33 @@ static void sdp_process(SalOp *h){
 static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
-	belle_sip_error_code error = BELLE_SIP_OK;
+	belle_sip_error_code error = BELLE_SIP_BUFFER_OVERFLOW;
 	size_t length = 0;
-	char buff[2048];
 
 	if (session_desc) {
+		size_t bufLen = 2048;
+		size_t hardlimit = 16*1024; /* 16k SDP limit seems reasonable */
+		char* buff = belle_sip_malloc(bufLen);
 		content_type = belle_sip_header_content_type_create("application","sdp");
-		error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,sizeof(buff),&length);
-		if (error != BELLE_SIP_OK) {
-			ms_error("Buffer too small or sdp too big");
+
+		/* try to marshal the description. This could go higher than 2k so we iterate */
+		while( error != BELLE_SIP_OK && bufLen <= hardlimit && buff != NULL){
+ 			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
+			if( error != BELLE_SIP_OK ){
+				bufLen *= 2;
+				buff = belle_sip_realloc(buff,bufLen);
+			}
+		}
+		/* give up if hard limit reached */
+		if (error != BELLE_SIP_OK || buff == NULL) {
+			ms_error("Buffer too small (%d) or not enough memory, giving up SDP", (int)bufLen);
 			return -1;
 		}
 
-		content_length= belle_sip_header_content_length_create(length);
+		content_length = belle_sip_header_content_length_create(length);
 		belle_sip_message_add_header(msg,BELLE_SIP_HEADER(content_type));
 		belle_sip_message_add_header(msg,BELLE_SIP_HEADER(content_length));
-		belle_sip_message_set_body(msg,buff,length);
+		belle_sip_message_assign_body(msg,buff,length);
 		return 0;
 	} else {
 		return -1;
@@ -639,7 +650,7 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow(op->base.root->enable_sip_update)));
 
 	if (op->base.root->session_expires!=0){
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "200"));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "600;refresher=uas"));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Supported", "timer"));
 	}
 	if (op->base.local_media){
@@ -766,9 +777,10 @@ int sal_call_accept(SalOp*h){
 	}
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow(h->base.root->enable_sip_update)));
 	if (h->base.root->session_expires!=0){
-		if (h->supports_session_timers) {
+/*		if (h->supports_session_timers) {*/
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create("Supported", "timer"));
-		}
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create( "Session-expires", "600;refresher=uac"));
+		/*}*/
 	}
 
 	if ((contact_header=sal_op_create_contact(h))) {

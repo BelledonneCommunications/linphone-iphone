@@ -70,6 +70,7 @@ LOCAL_SRC_FILES := \
 	call_params.c \
 	lime.c \
 	player.c
+	localplayer.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
@@ -266,6 +267,9 @@ LOCAL_MODULE := liblinphone
 LOCAL_MODULE_FILENAME := liblinphone-$(TARGET_ARCH_ABI)
 
 include $(BUILD_SHARED_LIBRARY)
+
+LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
+LOCAL_CFLAGS += -Wdeclaration-after-statement
 
 $(call import-module,android/cpufeatures)
 

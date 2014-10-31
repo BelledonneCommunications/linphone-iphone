@@ -116,6 +116,8 @@ typedef struct _stats {
 	int number_of_LinphoneCallIncomingEarlyMedia;
 	int number_of_LinphoneCallUpdating;
 	int number_of_LinphoneCallReleased;
+	int number_of_LinphoneCallEarlyUpdatedByRemote;
+	int number_of_LinphoneCallEarlyUpdating;
 
 	int number_of_LinphoneTransferCallOutgoingInit;
 	int number_of_LinphoneTransferCallOutgoingProgress;
@@ -224,7 +226,7 @@ void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const Linph
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
 void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
 void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
-void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress);
+void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);

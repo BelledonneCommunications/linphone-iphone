@@ -73,3 +73,6 @@ tools/xml2lpc_test
 coreapi/help/filetransfer
 tester/receive_file.dump
 tester/tmp.db
+.DS_Store
+Linphone.app
+*.dmg

@@ -63,7 +63,7 @@ liblinphone_la_SOURCES=\
 	call_log.c \
 	call_params.c \
 	player.c \
-	fileplayer.c \
+	localplayer.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

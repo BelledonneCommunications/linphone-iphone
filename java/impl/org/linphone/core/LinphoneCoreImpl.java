@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 
 import android.content.Context;
@@ -1279,4 +1280,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return getFileTransferServer(nativePtr);
 	}
 
+	private native long createLocalPlayer(long nativePtr, AndroidVideoWindowImpl window);
+	@Override
+	public synchronized LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window) {
+		long playerPtr = createLocalPlayer(nativePtr, window);
+		if(playerPtr != 0) {
+			return new LinphonePlayerImpl(playerPtr);
+		} else {
+			return null;
+		}
+	}
 }

@@ -281,6 +281,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 
 	cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
 	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
+	cl->connected_date_time=0;
 	return cl;
 }
 

@@ -125,12 +125,13 @@ struct _LinphoneCallLog{
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
 	char start_date[128]; /**<Human readable string containing the start date*/
-	int duration; /**<Duration of the call in seconds*/
+	int duration; /**<Duration of the call starting in connected state in seconds*/
 	char *refkey;
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
 	bool_t video_enabled;
@@ -171,6 +172,7 @@ struct _LinphoneChatMessage {
 	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
 	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
 	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
+	char *file_transfer_filepath;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -203,7 +205,6 @@ struct _LinphoneCall
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
-	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
@@ -769,6 +770,7 @@ struct _LinphoneCore
 	bool_t lime;
 	char *file_transfer_server;
 	const char **supported_formats;
+	LinphoneContent *log_collection_upload_information;
 };
 
 
@@ -921,11 +923,16 @@ struct _LinphonePlayer{
 	int (*pause)(struct _LinphonePlayer* player);
 	int (*seek)(struct _LinphonePlayer* player, int time_ms);
 	MSPlayerState (*get_state)(struct _LinphonePlayer* player);
+	int (*get_duration)(struct _LinphonePlayer *player);
+	int (*get_position)(struct _LinphonePlayer *player);
 	void (*close)(struct _LinphonePlayer* player);
+	void (*destroy)(struct _LinphonePlayer *player);
 	LinphonePlayerEofCallback cb;
 	void *user_data;
 	void *impl;
 };
+
+void _linphone_player_destroy(LinphonePlayer *player);
 
 
 /*****************************************************************************
@@ -1003,7 +1010,7 @@ void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRo
 void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
 void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
-void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress);
+void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /*
@@ -1020,6 +1027,8 @@ void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable);
 void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
+void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
+void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t progress);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
