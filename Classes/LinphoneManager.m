@@ -955,6 +955,10 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 
 #pragma mark - Network Functions
 
+- (SCNetworkReachabilityRef) getProxyReachability {
+	return proxyReachability;
+}
+
 + (void)kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -987,6 +991,14 @@ static void showNetworkFlags(SCNetworkReachabilityFlags flags){
 		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsIsDirect"];
 	if (flags & kSCNetworkReachabilityFlagsIsWWAN)
 		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsIsWWAN"];
+}
+
+static void networkReachabilityNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	LinphoneManager *mgr = [LinphoneManager instance];
+	SCNetworkReachabilityFlags flags;
+	if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
+		networkReachabilityCallBack([mgr getProxyReachability],flags,nil);
+	}
 }
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx){
@@ -1069,6 +1081,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		proxyReachability = nil;
 	}
 
+	// This notification is used to detect SSID change (switch of Wifi network). The ReachabilityCallback is
+	// not triggered when switching between 2 private Wifi... 
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+									NULL,
+									networkReachabilityNotification,
+									CFSTR("com.apple.system.config.network_change"),
+									NULL,
+									CFNotificationSuspensionBehaviorDeliverImmediately);
+
 	proxyReachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)&zeroAddress);
 
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
@@ -1079,6 +1100,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register schedule reachability cb: %s", SCErrorString(SCError())];
 		return;
 	}
+	
 	// this check is to know network connectivity right now without waiting for a change. Don'nt remove it unless you have good reason. Jehan
 	SCNetworkReachabilityFlags flags;
 	if (SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
