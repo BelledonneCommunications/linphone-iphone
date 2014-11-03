@@ -25,7 +25,7 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null)
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
