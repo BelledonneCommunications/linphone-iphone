@@ -708,7 +708,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 - (void)batteryLevelChanged:(NSNotification*)notif {
     float level = [UIDevice currentDevice].batteryLevel;
     UIDeviceBatteryState state = [UIDevice currentDevice].batteryState;
-    [LinphoneLogger log:LinphoneLoggerLog format:@"Battery state:%d level:%.2f", state, level];
+    [LinphoneLogger log:LinphoneLoggerDebug format:@"Battery state:%d level:%.2f", state, level];
     
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
