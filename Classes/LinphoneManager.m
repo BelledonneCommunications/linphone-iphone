@@ -35,6 +35,8 @@
 #include "linphone/lpconfig.h"
 #include "mediastreamer2/mscommon.h"
 
+#import "LinphoneIOSVersion.h"
+
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
 static void audioRouteChangeListenerCallback (
@@ -1170,7 +1172,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	NSString *chatDBFileName      = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 	const char* lRootCa           = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone", linphone_core_get_version());
+	linphone_core_set_user_agent(theLinphoneCore, [[[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"] stringByAppendingString:@"Iphone"] UTF8String], LINPHONE_IOS_VERSION);
 
 	[_contactSipField release];
 	_contactSipField = [[self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"] retain];

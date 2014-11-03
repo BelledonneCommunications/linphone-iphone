@@ -3647,6 +3647,7 @@
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "linphone" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
+				63DCC71D1A07B08E00916627 /* Run Script */,
 				D33CF34715D3985000CD4B85 /* ShellScript */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
@@ -3668,6 +3669,7 @@
 			buildConfigurationList = 22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-no-gpl-thirdparties" */;
 			buildPhases = (
 				22D8F11E147548E2008C97DB /* Resources */,
+				63DCC71E1A07B44100916627 /* ShellScript */,
 				D33CF35115D3AC9800CD4B85 /* ShellScript */,
 				22D8F143147548E2008C97DB /* Sources */,
 				22D8F15A147548E2008C97DB /* Frameworks */,
@@ -4923,6 +4925,33 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		63DCC71D1A07B08E00916627 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = $SRCROOT/Tools/git_version.sh;
+		};
+		63DCC71E1A07B44100916627 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = $SRCROOT/Tools/git_version.sh;
+		};
 		D33CF34715D3985000CD4B85 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -6259,7 +6288,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b16cf102-d1d6-44ea-80ce-ef7337931580";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -6307,7 +6336,7 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b16cf102-d1d6-44ea-80ce-ef7337931580";
+				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
@@ -6356,7 +6385,7 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b16cf102-d1d6-44ea-80ce-ef7337931580";
+				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
@@ -6405,7 +6434,7 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "b16cf102-d1d6-44ea-80ce-ef7337931580";
+				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
