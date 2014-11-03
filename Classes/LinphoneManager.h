@@ -106,7 +106,7 @@ typedef struct _LinphoneManagerSounds {
 @interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
-
+	
 @private
 	NSTimer* mIterateTimer;
     NSMutableArray*  pendindCallIdFromRemoteNotif;
@@ -131,7 +131,6 @@ typedef struct _LinphoneManagerSounds {
 + (NSSet *)unsupportedCodecs;
 + (NSString *)getUserAgent;
 + (int)unreadMessageCount;
-
 
 - (void)resetLinphoneCore;
 - (void)startLibLinphone;
@@ -186,6 +185,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
+@property (assign) NSString* SSID;
 @property (readonly) sqlite3* database;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;

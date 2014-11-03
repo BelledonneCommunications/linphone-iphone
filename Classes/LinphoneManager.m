@@ -27,6 +27,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreTelephony/CTCallCenter.h>
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 #import "LinphoneManager.h"
 #import "LinphoneCoreSettingsStore.h"
@@ -974,6 +975,21 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 	});
 }
 
++ (NSString*)getCurrentWifiSSID {
+#if TARGET_IPHONE_SIMULATOR
+	return @"Sim_err_SSID_NotSupported";
+#else
+	NSString *data = nil;
+	CFDictionaryRef dict = CNCopyCurrentNetworkInfo((CFStringRef)@"en0");
+	if(dict) {
+		[LinphoneLogger log:LinphoneLoggerDebug format:@"AP Wifi: %@", dict];
+		data = [NSString stringWithString:(NSString*) CFDictionaryGetValue(dict, @"SSID")];
+		CFRelease(dict);
+	}
+	return data;
+#endif
+}
+
 static void showNetworkFlags(SCNetworkReachabilityFlags flags){
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Network connection flags:"];
 	if (flags==0) [LinphoneLogger logc:LinphoneLoggerLog format:"no flags."];
@@ -998,6 +1014,14 @@ static void showNetworkFlags(SCNetworkReachabilityFlags flags){
 static void networkReachabilityNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 	LinphoneManager *mgr = [LinphoneManager instance];
 	SCNetworkReachabilityFlags flags;
+
+	// for an unknown reason, we are receiving multiple time the notification, so
+	// we will skip each time the SSID did not change
+	NSString *newSSID = [LinphoneManager getCurrentWifiSSID];
+	if ([newSSID compare:mgr.SSID] == NSOrderedSame) return;
+
+	mgr.SSID = [newSSID retain];
+
 	if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
 		networkReachabilityCallBack([mgr getProxyReachability],flags,nil);
 	}
@@ -1084,13 +1108,20 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 
 	// This notification is used to detect SSID change (switch of Wifi network). The ReachabilityCallback is
-	// not triggered when switching between 2 private Wifi... 
+	// not triggered when switching between 2 private Wifi...
+	// Since we cannot be sure we were already observer, remove ourself each time... to be improved
+	_SSID = [[LinphoneManager getCurrentWifiSSID] retain];
+	CFNotificationCenterRemoveObserver(
+									   CFNotificationCenterGetDarwinNotifyCenter(),
+									   self,
+									   CFSTR("com.apple.system.config.network_change"),
+									   NULL);
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
-									NULL,
-									networkReachabilityNotification,
-									CFSTR("com.apple.system.config.network_change"),
-									NULL,
-									CFNotificationSuspensionBehaviorDeliverImmediately);
+										self,
+										networkReachabilityNotification,
+										CFSTR("com.apple.system.config.network_change"),
+										NULL,
+										CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	proxyReachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)&zeroAddress);
 
