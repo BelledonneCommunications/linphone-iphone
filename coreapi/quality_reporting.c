@@ -386,7 +386,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 	if (local_desc != NULL) {
 		/*since this function might be called for video stream AFTER it has been uninitialized, local description might
 		be invalid. In any other case, IP/port should be always filled and valid*/
-		if (local_desc->rtp_addr != NULL && strlen(local_desc->rtp_addr) > 0) {
+		if (strlen(local_desc->rtp_addr) > 0) {
 			call->log->reporting.reports[stats_type]->info.local_addr.port = local_desc->rtp_port;
 			STR_REASSIGN(call->log->reporting.reports[stats_type]->info.local_addr.ip, ms_strdup(local_desc->rtp_addr));
 		}
@@ -397,7 +397,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 		call->log->reporting.reports[stats_type]->info.remote_addr.port = remote_desc->rtp_port;
 
 		/*for IP it can be not set if we are using a direct route*/
-		if (remote_desc->rtp_addr != NULL && strlen(remote_desc->rtp_addr) > 0) {
+		if (strlen(remote_desc->rtp_addr) > 0) {
 			STR_REASSIGN(call->log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(remote_desc->rtp_addr));
 		} else {
 			STR_REASSIGN(call->log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(sal_call_get_remote_media_description(call->op)->addr));
