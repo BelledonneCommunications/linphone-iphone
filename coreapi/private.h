@@ -102,7 +102,7 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
-	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/ 
+	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
 };
@@ -464,17 +464,17 @@ struct _LinphoneProxyConfig
 	LinphoneRegistrationState state;
 	SalOp *publish_op;
 	LinphoneAVPFMode avpf_mode;
-	
+
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t publish;
 	bool_t dial_escape_plus;
-	
+
 	bool_t send_publish;
 	bool_t quality_reporting_enabled;
 	uint8_t avpf_rr_interval;
 	uint8_t quality_reporting_interval;
-	
+
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
@@ -1026,7 +1026,7 @@ void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, 
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
-void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t progress);
+void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
