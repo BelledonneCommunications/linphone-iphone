@@ -22,6 +22,7 @@ liblinphonetester_la_SOURCES = tester.c \
 				stun_tester.c \
 				remote_provisioning_tester.c \
 				quality_reporting_tester.c \
+				log_collection_tester.c \
 				transport_tester.c \
 				player_tester.c
 

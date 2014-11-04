@@ -454,7 +454,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	output_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path ? liblinphone_log_collection_path : ".", filename);
-	output_file = COMPRESS_OPEN(output_filename, "a");
+	output_file = COMPRESS_OPEN(output_filename, "w");
 	if (output_file == NULL) goto error;
 	input_filename = ms_strdup_printf("%s/%s", liblinphone_log_collection_path ? liblinphone_log_collection_path : ".", "linphone1.log");
 	input_file = fopen(input_filename, "r");

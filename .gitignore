@@ -76,3 +76,5 @@ tester/tmp.db
 .DS_Store
 Linphone.app
 *.dmg
+tester/linphone*.log
+tester/linphone_log.txt

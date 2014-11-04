@@ -100,6 +100,7 @@
     <ClCompile Include="..\..\..\tester\message_tester.c" />
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\quality_reporting_tester.c" />
+    <ClCompile Include="..\..\..\tester\log_collection_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
     <ClCompile Include="..\..\..\tester\remote_provisioning_tester.c" />
     <ClCompile Include="..\..\..\tester\setup_tester.c" />

@@ -58,6 +58,7 @@ extern test_suite_t flexisip_test_suite;
 extern test_suite_t stun_test_suite;
 extern test_suite_t remote_provisioning_test_suite;
 extern test_suite_t quality_reporting_test_suite;
+extern test_suite_t log_collection_test_suite;
 extern test_suite_t transport_test_suite;
 extern test_suite_t player_test_suite;
 
