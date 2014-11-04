@@ -1447,7 +1447,7 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	const char *remote_provisioning_uri = NULL;
-	const char *aac_ftmp162248, *aac_ftmp3244;
+	const char *aac_fmtp162248, *aac_fmtp3244;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
@@ -1504,11 +1504,11 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	 * for the mpeg4-generic mime type, setting this flag to 1 will break compatibility with other clients. */
 	if( lp_config_get_int(lc->config, "misc", "aac_use_sbr", FALSE) ) {
 		ms_message("Using SBR for AAC");
-		aac_ftmp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5 SBR-enabled=1;";
-		aac_ftmp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5 SBR-enabled=1;";
+		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
+		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
 	} else {
-		aac_ftmp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
-		aac_ftmp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
+		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
+		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
 	}
 
 
@@ -1530,11 +1530,11 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_16k,-1,aac_ftmp162248);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,aac_ftmp162248);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_32k,-1,aac_ftmp3244);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,aac_ftmp3244);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_48k,-1,aac_ftmp162248);
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_16k,-1,aac_fmtp162248);
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,aac_fmtp162248);
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_32k,-1,aac_fmtp3244);
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,aac_fmtp3244);
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_48k,-1,aac_fmtp162248);
 	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; stereo=0; sprop-stereo=0");
 	linphone_core_assign_payload_type(lc,&payload_type_isac,-1,NULL);
 	linphone_core_handle_static_payloads(lc);
