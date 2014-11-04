@@ -117,8 +117,9 @@ void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadTyp
 			ms_error("Cannot set an explicit bitrate for codec %s/%i, because it is not VBR.",pt->mime_type,pt->clock_rate);
 			return;
 		}
+	} else {
+		ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
 	}
-	ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
 }
 
 
