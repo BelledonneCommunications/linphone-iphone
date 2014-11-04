@@ -1694,7 +1694,7 @@ typedef void (*LinphoneCoreLogCollectionUploadStateChangedCb)(LinphoneCore *lc, 
  * @param[in] lc LinphoneCore object
  * @param[in] progress Percentage of the file size of the log collection already uploaded.
  */
-typedef void (*LinphoneCoreLogCollectionUploadProgressIndicationCb)(LinphoneCore *lc, size_t progress);
+typedef void (*LinphoneCoreLogCollectionUploadProgressIndicationCb)(LinphoneCore *lc, size_t offset, size_t total);
 
 /**
  * This structure holds all callbacks that the application should implement.

@@ -328,7 +328,7 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
  */
 static void log_collection_upload_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total) {
 	LinphoneCore *core = (LinphoneCore *)data;
-	linphone_core_notify_log_collection_upload_progress_indication(core, (size_t)(((double)offset / (double)total) * 100.0));
+	linphone_core_notify_log_collection_upload_progress_indication(core, offset, total);
 }
 
 /**
@@ -7067,8 +7067,8 @@ void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent 
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
 	NOTIFY_IF_EXIST(log_collection_upload_state_changed)(lc, state, info);
 }
-void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t progress) {
-	NOTIFY_IF_EXIST(log_collection_upload_progress_indication)(lc, progress);
+void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total) {
+	NOTIFY_IF_EXIST(log_collection_upload_progress_indication)(lc, offset, total);
 }
 void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable) {
 	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
