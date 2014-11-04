@@ -1787,6 +1787,13 @@ typedef enum _LinphoneLogCollectionState {
 } LinphoneLogCollectionState;
 
 /**
+ * Tells whether the linphone core log collection is enabled.
+ * @ingroup misc
+ * @returns The state of the linphone core log collection.
+ */
+LINPHONE_PUBLIC LinphoneLogCollectionState linphone_core_log_collection_enabled(void);
+
+/**
  * Enable the linphone core log collection to upload logs on a server.
  * @ingroup misc
  * @param[in] state LinphoneLogCollectionState value telling whether to enable log collection or not.
@@ -1794,11 +1801,46 @@ typedef enum _LinphoneLogCollectionState {
 LINPHONE_PUBLIC void linphone_core_enable_log_collection(LinphoneLogCollectionState state);
 
 /**
+ * Get the path where the log files will be written for log collection.
+ * @ingroup misc
+ * @returns The path where the log files will be written.
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_log_collection_path(void);
+
+/**
  * Set the path where the log files will be written for log collection.
  * @ingroup misc
  * @param[in] path The path where the log files will be written.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_collection_path(const char *path);
+
+/**
+ * Get the prefix of the filenames that will be used for log collection.
+ * @ingroup misc
+ * @returns The prefix of the filenames used for log collection.
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_log_collection_prefix(void);
+
+/**
+ * Set the prefix of the filenames that will be used for log collection.
+ * @ingroup misc
+ * @param[in] prefix The prefix to use for the filenames for log collection.
+ */
+LINPHONE_PUBLIC void linphone_core_set_log_collection_prefix(const char *prefix);
+
+/**
+ * Get the max file size in bytes of the files used for log collection.
+ * @ingroup misc
+ * @returns The max file size in bytes of the files used for log collection.
+ */
+LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
+
+/**
+ * Set the max file size in bytes of the files used for log collection.
+ * @ingroup misc
+ * @param[in] size The max file size in bytes of the files used for log collection.
+ */
+LINPHONE_PUBLIC void linphone_core_set_log_collection_max_file_size(int size);
 
 /**
  * Set the url of the server where to upload the collected log files.
