@@ -4606,7 +4606,10 @@ const char * linphone_core_get_ringback(const LinphoneCore *lc){
 }
 
 /**
- * Enables or disable echo cancellation. Value is saved an used for subsequent calls
+ * Enables or disable echo cancellation. Value is saved and used for subsequent calls.
+ * This actually controls software echo cancellation. If hardware echo cancellation is available, it will be always used and activated for calls, regardless
+ * of the value passed to this function.
+ * When hardware echo cancellation is available, the software one is of course not activated.
  *
  * @ingroup media_parameters
 **/
