@@ -26,9 +26,11 @@
 extern char *strptime(char*, char*, struct tm*);
 
 LinphoneCoreManager* setup(bool_t enable_logs)  {
-	linphone_core_enable_log_collection(enable_logs);
 	LinphoneCoreManager *marie;
 	int timeout_ms = 3000;
+	
+	linphone_core_enable_log_collection(enable_logs);
+	
 
 	// linphone_core_set_log_collection_size(10);
 	marie = linphone_core_manager_new( "marie_rc");
