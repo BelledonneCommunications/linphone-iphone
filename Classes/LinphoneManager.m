@@ -165,7 +165,6 @@ struct codec_name_pref_table codec_pref_table[]={
 																 codec_pref_table[i].name,
 																 codec_pref_table[i].rate,
 																 LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS);
-
 		if( (available == NULL)
 		   // these two codecs should not be hidden, even if not supported
 		   && ![codec_pref_table[i].prefname isEqualToString:@"h264_preference"]
@@ -1969,18 +1968,16 @@ static void audioRouteChangeListenerCallback (
 - (void)configureVbrCodecs{
 	PayloadType *pt;
 	int bitrate=lp_config_get_int(configDb,"audio","codec_bitrate_limit",kLinphoneAudioVbrCodecDefaultBitrate);/*default value is in linphonerc or linphonerc-factory*/
-	pt=linphone_core_find_payload_type(theLinphoneCore, "opus", 48000, -1);
-	if (pt){
-		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
-	}
-	pt=linphone_core_find_payload_type(theLinphoneCore, "mpeg4-generic", 44100, -1);
-	if (pt){
-		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
-	}
-	pt=linphone_core_find_payload_type(theLinphoneCore, "mpeg4-generic", 22050, -1);
-	if (pt){
-		linphone_core_set_payload_type_bitrate(theLinphoneCore,pt,bitrate);
-	}
+    const MSList *audio_codecs = linphone_core_get_audio_codecs(theLinphoneCore);
+    const MSList* codec = audio_codecs;
+    while (codec) {
+        pt = codec->data;
+        if( linphone_core_payload_type_is_vbr(theLinphoneCore, pt) ) {
+            linphone_core_set_payload_type_bitrate(theLinphoneCore, pt, bitrate);
+        }
+
+        codec = codec->next;
+    }
 }
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg {
