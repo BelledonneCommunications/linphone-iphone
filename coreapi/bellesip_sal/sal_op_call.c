@@ -330,7 +330,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
 	bool_t release_call=FALSE;
-	
+
 	if (client_transaction) {
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(client_transaction));
@@ -484,15 +484,15 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				ms_warning("replace header already set");
 			}
 
-			process_sdp_for_invite(op,req);
-
-			if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
-				if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
-					op->auto_answer_asked=TRUE;
-					ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+			if (process_sdp_for_invite(op,req) == 0) {
+				if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
+					if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
+						op->auto_answer_asked=TRUE;
+						ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+					}
 				}
+				op->base.root->callbacks.call_received(op);
 			}
-			op->base.root->callbacks.call_received(op);
 			break;
 		} /* else same behavior as for EARLY state*/
 	}
