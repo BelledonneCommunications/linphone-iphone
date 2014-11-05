@@ -6282,6 +6282,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->rec_file!=NULL){
 		ms_free(lc->rec_file);
 	}
+	if (lc->chat_db_file){
+		ms_free(lc->chat_db_file);
+	}
 	if(lc->presence_model){
 		linphone_presence_model_unref(lc->presence_model);
 	}
