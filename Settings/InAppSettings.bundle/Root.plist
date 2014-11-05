@@ -154,7 +154,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Advanced account</string>
+			<string>More options</string>
 			<key>Key</key>
 			<string>advanced_account_preference</string>
 			<key>DefaultValue</key>

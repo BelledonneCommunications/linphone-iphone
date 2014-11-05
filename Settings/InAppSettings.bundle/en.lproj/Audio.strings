@@ -46,8 +46,8 @@
 /* Adaptive rate control */
 "Adaptive rate control" = "Adaptive rate control";
 
-/* Codec bitrate limit */
-"Codec bitrate limit" = "Codec bitrate limit";
+/* Network bitrate limit */
+"Network bitrate limit" = "Network bitrate limit";
 
 /* Voice processing */
 "Enable Voice Processing"="Enable Voice Processing";
