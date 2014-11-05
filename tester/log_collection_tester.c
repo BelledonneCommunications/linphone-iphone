@@ -23,7 +23,9 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+#ifndef __APPLE__
 extern char *strptime(char*, char*, struct tm*);
+#endif
 
 LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
