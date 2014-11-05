@@ -1837,6 +1837,10 @@ LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
 
 /**
  * Set the max file size in bytes of the files used for log collection.
+ * Warning: this function should only not be used to change size
+ * dynamically but instead only before calling @see
+ * linphone_core_enable_log_collection. If you increase max size
+  * on runtime, logs chronological order COULD be broken.
  * @ingroup misc
  * @param[in] size The max file size in bytes of the files used for log collection.
  */
@@ -1860,17 +1864,15 @@ LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
 /**
  * Compress the log collection in a single file.
  * @ingroup misc
- * @param[in] core LinphoneCore object
  * @return The path of the compressed log collection file (to be freed calling ms_free()).
  */
-LINPHONE_PUBLIC char * linphone_core_compress_log_collection(LinphoneCore *core);
+LINPHONE_PUBLIC char * linphone_core_compress_log_collection();
 
 /**
  * Reset the log collection by removing the log files.
  * @ingroup misc
- * @param[in] core LinphoneCore object
  */
-LINPHONE_PUBLIC void linphone_core_reset_log_collection(LinphoneCore *core);
+LINPHONE_PUBLIC void linphone_core_reset_log_collection();
 
 /**
  * Define a log handler.

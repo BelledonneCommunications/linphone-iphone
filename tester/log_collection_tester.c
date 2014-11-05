@@ -27,25 +27,21 @@ extern char *strptime(char*, char*, struct tm*);
 
 LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
-	int timeout_ms = 3000;
-	
-	linphone_core_enable_log_collection(enable_logs);
-	
+	int timeout = 300;
 
-	// linphone_core_set_log_collection_size(10);
+	linphone_core_enable_log_collection(enable_logs);
+
 	marie = linphone_core_manager_new( "marie_rc");
 	// wait a few seconds to generate some traffic
-	while (timeout_ms > 0){
-		linphone_core_iterate(marie->lc);
-		ms_usleep(100000); //100 ms sleep
-		timeout_ms -= 100;
-		// Generate some logs
-		ms_message("Time left: %d", timeout_ms);
+	while (--timeout){
+		// Generate some logs - error logs because we must ensure that
+		// even if user did not enable logs, we will see them
+		ms_error("(test error)Timeout in %d...", timeout);
 	}
 	return marie;
 }
 
-time_t check_file(char * filepath, bool_t remove_file)  {
+time_t check_file(char * filepath)  {
 	time_t time_curr = -1;
 	if (filepath != NULL) {
 		int line_count = 0;
@@ -60,7 +56,7 @@ time_t check_file(char * filepath, bool_t remove_file)  {
 
 		// 2) check file contents
 		while (getline(&line, &line_size, file) != -1) {
-			// a) there should be at least 100 lines
+			// a) there should be at least 25 lines
 			++line_count;
 
 			// b) logs should be ordered by date (format: 2014-11-04 15:22:12:606)
@@ -74,37 +70,25 @@ time_t check_file(char * filepath, bool_t remove_file)  {
 				}
 			}
 		}
-		CU_ASSERT(line_count > 100);
+		CU_ASSERT(line_count > 25);
 		free(line);
 		fclose(file);
-		if (remove_file)  {
-			remove(filepath);
-		}
 		ms_free(filepath);
 	}
 	// return latest time in file
 	return time_curr;
 }
 
-static OrtpLogLevel old_log_level;
-// static LinphoneLogCollectionState old_collection_state;
+static LinphoneLogCollectionState old_collection_state;
 static int collect_init()  {
-	old_log_level = ortp_get_log_level_mask();
-	// old_collection_state = liblinphone_log_collection_enabled;
-	// CU_ASSERT_FALSE("Fixme: // old_collection_state = liblinphone_log_collection_enabled;");
-
-	// if we want some logs, we must force them... even if user dont want to!
-	linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+	old_collection_state = linphone_core_log_collection_enabled();
 	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
-
 	return 0;
 }
 
 static int collect_cleanup()  {
-	linphone_core_set_log_level(old_log_level);
-	// liblinphone_log_collection_enabled = old_collection_state;
-	// CU_ASSERT_FALSE("Fixme: // liblinphone_log_collection_enabled = old_collection_state;");
-
+	linphone_core_enable_log_collection(old_collection_state);
+	linphone_core_reset_log_collection();
 	return 0;
 }
 
@@ -118,16 +102,37 @@ static void collect_files_filled() {
 	LinphoneCoreManager* marie = setup(TRUE);
 	char * filepath = linphone_core_compress_log_collection(marie->lc);
 	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath, FALSE));
+	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
 	linphone_core_manager_destroy(marie);
 }
 
 static void collect_files_small_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	// linphone_core_set_log_collection_size(10);
-	char * filepath= linphone_core_compress_log_collection(marie->lc);
+	char * filepath;
+	linphone_core_set_log_collection_max_file_size(1000);
+	filepath = linphone_core_compress_log_collection(marie->lc);
 	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath, TRUE));
+	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
+	linphone_core_manager_destroy(marie);
+}
+
+static void collect_files_changing_size()  {
+	LinphoneCoreManager* marie = setup(TRUE);
+	char * filepath;
+	int waiting = 100;
+
+	filepath = linphone_core_compress_log_collection(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL(filepath);
+	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
+
+	linphone_core_set_log_collection_max_file_size(1000);
+	// Generate some logs
+	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+
+	filepath = linphone_core_compress_log_collection(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL(filepath);
+	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
+
 	linphone_core_manager_destroy(marie);
 }
 
@@ -135,6 +140,7 @@ test_t log_collection_tests[] = {
 	{ "No file when disabled", collect_files_disabled},
 	{ "Collect files filled when enabled", collect_files_filled},
 	{ "Logs collected into small file", collect_files_small_size},
+	{ "Logs collected when decreasing max size", collect_files_changing_size},
 };
 
 test_suite_t log_collection_test_suite = {

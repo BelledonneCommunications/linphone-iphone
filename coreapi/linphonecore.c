@@ -295,6 +295,8 @@ LinphoneLogCollectionState linphone_core_log_collection_enabled(void) {
 }
 
 void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
+	if (liblinphone_log_collection_state == state) return;
+
 	/* at first call of this function, set liblinphone_log_func to the current
 	 * ortp log function */
 	if( liblinphone_log_func == NULL ){
@@ -576,7 +578,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 	}
 }
 
-char * linphone_core_compress_log_collection(LinphoneCore *core) {
+char * linphone_core_compress_log_collection() {
 	char *filename = NULL;
 	if (liblinphone_log_collection_state == LinphoneLogCollectionDisabled) return NULL;
 	filename = ms_strdup_printf("%s_log.%s",
@@ -593,7 +595,7 @@ char * linphone_core_compress_log_collection(LinphoneCore *core) {
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
 }
 
-void linphone_core_reset_log_collection(LinphoneCore *core) {
+void linphone_core_reset_log_collection() {
 	char *filename;
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	delete_log_collection_upload_file();
