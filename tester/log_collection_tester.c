@@ -17,15 +17,15 @@
 */
 
 #include <stdio.h>
+#ifndef __USE_XOPEN
+	/*on Debian OS, time.h does declare strptime only if __USE_XOPEN is declared */
+	#define __USE_XOPEN
+#endif
 #include <time.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-
-#ifndef __APPLE__
-extern char *strptime(char*, char*, struct tm*);
-#endif
 
 LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
