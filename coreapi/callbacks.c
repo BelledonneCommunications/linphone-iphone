@@ -448,7 +448,7 @@ static void call_accepted(SalOp *op){
 		default:
 		break;
 	}
-	
+
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
@@ -498,9 +498,21 @@ static void call_accepted(SalOp *op){
 			if (update_state) linphone_call_set_state(call, LinphoneCallStreamsRunning, "Streams running");
 		}
 	}else{
-		/*send a bye*/
-		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
-		linphone_core_abort_call(lc,call,_("Incompatible, check codecs or security settings..."));
+		switch (call->prevstate){
+			/*send a bye only in case of outgoing state*/
+			case LinphoneCallOutgoingInit:
+			case LinphoneCallOutgoingProgress:
+			case LinphoneCallOutgoingRinging:
+			case LinphoneCallOutgoingEarlyMedia:
+				ms_error("Incompatible SDP offer received in 200 OK, need to abort the call");
+				linphone_core_abort_call(lc,call,_("Incompatible, check codecs or security settings..."));
+				break;
+			/*otherwise we are able to resume previous state*/
+			default:
+				ms_message("Incompatible SDP offer received in 200 OK, restoring previous state[%s]",linphone_call_state_to_string(call->prevstate));
+				linphone_call_set_state(call,call->prevstate,_("Incompatible media parameters."));
+				break;
+		}
 	}
 }
 

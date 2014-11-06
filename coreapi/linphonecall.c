@@ -1879,11 +1879,14 @@ static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *ca
 	OrtpRtcpXrConfiguration currentconfig;
 	const SalStreamDescription *localstream;
 	const SalStreamDescription *remotestream;
+	SalMediaDescription *remotedesc = sal_call_get_remote_media_description(call->op);
+
+	if (!remotedesc) return;
 
 	localstream = sal_media_description_find_best_stream(call->localdesc, type);
 	if (!localstream) return;
 	localconfig = &localstream->rtcp_xr;
-	remotestream = sal_media_description_find_best_stream(sal_call_get_remote_media_description(call->op), type);
+	remotestream = sal_media_description_find_best_stream(remotedesc, type);
 	if (!remotestream) return;
 	remoteconfig = &remotestream->rtcp_xr;
 

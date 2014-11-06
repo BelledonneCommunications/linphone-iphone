@@ -639,6 +639,12 @@ bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
+/* Call test API */
+/*willingly fails to parse SDP from received packets (INVITE and/or ACK) if value=true */
+/* First version: for all new SalOp created (eg. each incoming or outgoing call). Do not forget to reset previous value when you are done!*/
+void sal_default_enable_sdp_removal(Sal* h, bool_t enable) ;
+/* Second version: for a specific call*/
+void sal_call_enable_sdp_removal(SalOp *h, bool_t enable) ;
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

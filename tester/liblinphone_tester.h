@@ -212,6 +212,11 @@ typedef struct _LinphoneCoreManager {
 	bool_t decline_subscribe;
 } LinphoneCoreManager;
 
+typedef struct _LinphoneCallTestParams {
+	LinphoneCallParams *base;
+	bool_t sdp_removal;
+} LinphoneCallTestParams;
+
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);
@@ -246,6 +251,11 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
 						, const LinphoneCallParams *caller_params
 						, const LinphoneCallParams *callee_params);
+bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
+				,LinphoneCoreManager* callee_mgr
+				,const LinphoneCallTestParams *caller_test_params
+				,const LinphoneCallTestParams *callee_test_params);
+
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 stats * get_stats(LinphoneCore *lc);

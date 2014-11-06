@@ -953,7 +953,7 @@ static void make_supported_header(Sal *sal){
 	char *alltags=NULL;
 	size_t buflen=64;
 	size_t written=0;
-	
+
 	if (sal->supported){
 		belle_sip_object_unref(sal->supported);
 		sal->supported=NULL;
@@ -1003,7 +1003,7 @@ void sal_add_supported_tag(Sal *ctx, const char* tag){
 		ctx->supported_tags=ms_list_append(ctx->supported_tags,ms_strdup(tag));
 		make_supported_header(ctx);
 	}
-	
+
 }
 
 void sal_remove_supported_tag(Sal *ctx, const char* tag){
@@ -1101,3 +1101,7 @@ void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
 	ctx->enable_sip_update=value;
 }
 
+void sal_default_enable_sdp_removal(Sal *sal, bool_t enable)  {
+	if (enable) ms_message("Enabling SDP removal feature by default for all new SalOp in Sal[%p]!", sal);
+	sal->default_sdp_removal = enable;
+}

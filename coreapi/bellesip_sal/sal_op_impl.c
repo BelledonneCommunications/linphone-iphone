@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
 
-
 /*create an operation */
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new0(SalOp,1);
@@ -26,6 +25,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->type=SalOpUnknown;
 	op->privacy=SalPrivacyNone;
 	op->manual_refresher=FALSE;/*tells that requests with expiry (SUBSCRIBE, PUBLISH) will be automatically refreshed*/
+	op->sdp_removal=sal->default_sdp_removal;
 	sal_op_ref(op);
 	return op;
 }
@@ -770,3 +770,7 @@ void sal_op_stop_refreshing(SalOp *op){
 	}
 }
 
+void sal_call_enable_sdp_removal(SalOp *h, bool_t enable)  {
+	if (enable) ms_message("Enabling SDP removal feature for SalOp[%p]!", h);
+	h->sdp_removal = enable;
+}

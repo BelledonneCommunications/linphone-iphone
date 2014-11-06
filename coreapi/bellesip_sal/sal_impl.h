@@ -53,6 +53,7 @@ struct Sal{
 	bool_t enable_test_features;
 	bool_t no_initial_route;
 	bool_t enable_sip_update; /*true by default*/
+	bool_t default_sdp_removal;
 };
 
 typedef enum SalOpState {
@@ -107,6 +108,7 @@ struct SalOp{
 	bool_t call_released;
 	bool_t manual_refresher;
 	bool_t has_auth_pending;
+	bool_t sdp_removal; /* do not add SDP in outgoing INVITE and remove it from incoming INVITE */
 	int auth_requests; /*number of auth requested for this op*/
 };
 
