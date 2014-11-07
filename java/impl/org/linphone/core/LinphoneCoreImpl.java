@@ -268,6 +268,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return logs;
 	}
 	public synchronized void destroy() {
+		setAndroidPowerManager(null);
 		delete(nativePtr);
 		nativePtr=0;
 	}

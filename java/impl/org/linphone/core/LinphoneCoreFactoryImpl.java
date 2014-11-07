@@ -98,7 +98,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
 			MediastreamerAndroidContext.setContext(context);
-			return new LinphoneCoreImpl(listener);
+			LinphoneCore lc = new LinphoneCoreImpl(listener);
+			if(context!=null) lc.setContext(context);
+			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
 		}
