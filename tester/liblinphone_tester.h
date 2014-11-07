@@ -76,6 +76,7 @@ extern void liblinphone_tester_uninit(void);
 extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
 extern void liblinphone_tester_set_fileprefix(const char* file_prefix);
 extern void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix);
+extern int liblinphone_tester_ipv6_available(void);
 
 #ifdef __cplusplus
 };

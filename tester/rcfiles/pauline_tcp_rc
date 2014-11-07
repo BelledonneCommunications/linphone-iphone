@@ -1,6 +1,6 @@
 [sip]
 sip_port=-1
-sip_tcp_port=-1
+sip_tcp_port=12002
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0

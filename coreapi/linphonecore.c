@@ -2295,9 +2295,11 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 	if (lc->sip_conf.ipv6_enabled!=val){
 		lc->sip_conf.ipv6_enabled=val;
 		if (lc->sal){
-			/* we need to restart eXosip */
+			/* we need to update the sip stack */
 			apply_transports(lc);
 		}
+		/*update the localip immediately for the network monitor to avoid to "discover" later that we switched to ipv6*/
+		linphone_core_get_local_ip(lc,AF_UNSPEC,NULL,lc->localip);
 	}
 }
 

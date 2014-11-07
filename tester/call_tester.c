@@ -336,6 +336,31 @@ static void simple_call(void) {
 	}
 }
 
+static void direct_call_over_ipv6(){
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	if (liblinphone_tester_ipv6_available()){
+		marie = linphone_core_manager_new( "marie_rc");
+		pauline = linphone_core_manager_new( "pauline_tcp_rc");
+		linphone_core_enable_ipv6(marie->lc,TRUE);
+		linphone_core_enable_ipv6(pauline->lc,TRUE);
+		linphone_core_set_default_proxy_config(marie->lc,NULL);
+		linphone_core_invite(marie->lc,"sip:[::1]:12002;transport=tcp");
+		
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallOutgoingRinging,1));
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
+		linphone_core_accept_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
+		
+		liblinphone_tester_check_rtcp(marie,pauline);
+		end_call(marie,pauline);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	}else ms_warning("Test skipped, no ipv6 available");
+}
+
 static void call_outbound_with_multiple_proxy() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_rc", FALSE);
 	LinphoneCoreManager* marie   = linphone_core_manager_new2( "marie_rc", FALSE);
@@ -3354,6 +3379,7 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
+	{ "Direct call over IPv6", direct_call_over_ipv6},
 	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
 	{ "Audio call recording", audio_call_recording_test },
 #if 0 /* not yet activated because not implemented */

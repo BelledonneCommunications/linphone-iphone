@@ -481,7 +481,7 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
  * @ingroup initializing
 **/
 enum _LinphoneIceState{
-	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call or stream*/
 	LinphoneIceStateFailed, /**< ICE processing has failed */
 	LinphoneIceStateInProgress, /**< ICE process is in progress */
 	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
@@ -730,6 +730,7 @@ LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_fac
 LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
 LINPHONE_PUBLIC LinphonePlayer * linphone_call_get_player(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
 
 /**
  * Return TRUE if this call is currently part of a conference

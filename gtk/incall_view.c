@@ -426,7 +426,9 @@ void linphone_gtk_update_video_button(LinphoneCall *call){
 	GtkWidget *conf_frame;
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	gboolean has_video=linphone_call_params_video_enabled(params);
+	gboolean button_sensitive=FALSE;
 	if (call_view==NULL) return;
+	
 	button=linphone_gtk_get_widget(call_view,"video_button");
 
 	gtk_button_set_image(GTK_BUTTON(button),
@@ -436,12 +438,20 @@ void linphone_gtk_update_video_button(LinphoneCall *call){
 		gtk_widget_set_sensitive(button,FALSE);
 		return;
 	}
+	switch(linphone_call_get_state(call)){
+		case LinphoneCallStreamsRunning:
+			button_sensitive=!linphone_call_media_in_progress(call);
+		break;
+		default:
+			button_sensitive=FALSE;
+		break;
+	}
+	gtk_widget_set_sensitive(button,button_sensitive);
 	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button),"signal_connected"))==0){
 		g_signal_connect(G_OBJECT(button),"clicked",(GCallback)video_button_clicked,call);
 		g_object_set_data(G_OBJECT(button),"signal_connected",GINT_TO_POINTER(1));
 	}
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"conf_frame");
-	gtk_widget_set_sensitive(button,linphone_call_get_state(call)==LinphoneCallStreamsRunning);
 	if(conf_frame!=NULL){
 		gtk_widget_set_sensitive(button,FALSE);
 	}

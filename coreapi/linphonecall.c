@@ -2532,6 +2532,27 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	return stats;
 }
 
+static bool_t ice_in_progress(LinphoneCallStats *stats){
+	return stats->ice_state==LinphoneIceStateInProgress;
+}
+
+/**
+ * Indicates whether an operation is in progress at the media side.
+ * It can a bad idea to initiate signaling operations (adding video, pausing the call, removing video, changing video parameters) while
+ * the media is busy in establishing the connection (typically ICE connectivity checks). It can result in failures generating loss of time
+ * in future operations in the call.
+ * Applications are invited to check this function after each call state change to decide whether certain operations are permitted or not.
+ * @param call the call
+ * @return TRUE if media is busy in establishing the connection, FALSE otherwise.
+**/
+bool_t linphone_call_media_in_progress(LinphoneCall *call){
+	bool_t ret=FALSE;
+	if (ice_in_progress(&call->stats[LINPHONE_CALL_STATS_AUDIO]) || ice_in_progress(&call->stats[LINPHONE_CALL_STATS_VIDEO]))
+		ret=TRUE;
+	/*TODO: could check zrtp state, upnp state*/
+	return ret;
+}
+
 /**
  * Get the local loss rate since last report
  * @return The sender loss rate
