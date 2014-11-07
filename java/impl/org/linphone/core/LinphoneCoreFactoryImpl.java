@@ -48,13 +48,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 		// FFMPEG (audio/video)
 		if (Version.isX86()) {
-			loadOptionalLibrary("avutil-linphone-x86");
-			loadOptionalLibrary("swscale-linphone-x86");
-			loadOptionalLibrary("avcodec-linphone-x86");
+			loadOptionalLibrary("ffmpeg-linphone-x86");
 		} else if (Version.isArmv7()) {
-			loadOptionalLibrary("avutil-linphone-arm");
-			loadOptionalLibrary("swscale-linphone-arm");
-			loadOptionalLibrary("avcodec-linphone-arm");
+			loadOptionalLibrary("ffmpeg-linphone-arm");
 		}
 
 		//Main library
