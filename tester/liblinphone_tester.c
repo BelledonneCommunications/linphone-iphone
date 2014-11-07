@@ -80,6 +80,7 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
+	(*env)->DeleteLocalRef(env,cls);
 }
 
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
