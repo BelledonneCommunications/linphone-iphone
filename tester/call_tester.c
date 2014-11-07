@@ -1354,7 +1354,7 @@ static void call_with_declined_video_base(bool_t using_policy) {
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
-	LinphoneCallTestParams caller_test_params, callee_test_params;
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
@@ -1405,7 +1405,7 @@ static void call_with_declined_video_using_policy(void) {
 }
 
 static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy) {
-	LinphoneCallTestParams caller_test_params, callee_test_params;
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
@@ -1837,7 +1837,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+2,3000));
 
 	CU_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
-	CU_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3)
+	CU_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3);
 
 	/*
 	 * FIXME: check_ice cannot work as it is today because there is no current call for the party that hosts the conference
