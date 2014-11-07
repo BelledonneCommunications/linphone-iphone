@@ -3447,9 +3447,9 @@ test_t call_tests[] = {
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE without SDP",incoming_invite_without_sdp},
-	{ "Outgoing INVITE without SDP",outgoing_invite_without_sdp},
-	{ "Incoming REINVITE without SDP in ACK",incoming_reinvite_without_ack_sdp},
-	{ "Outgoing REINVITE without SDP in ACK",outgoing_reinvite_without_ack_sdp},
+	{ "Outgoing INVITE without ACK SDP",outgoing_invite_without_sdp},
+	{ "Incoming REINVITE without SDP",incoming_reinvite_without_ack_sdp},
+	{ "Outgoing REINVITE without ACK SDP",outgoing_reinvite_without_ack_sdp},
 };
 
 test_suite_t call_test_suite = {
