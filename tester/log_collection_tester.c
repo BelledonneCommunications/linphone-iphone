@@ -72,7 +72,7 @@ time_t check_file(char * filepath)  {
 				}
 			}
 		}
-		CU_ASSERT(line_count > 25);
+		CU_ASSERT_TRUE(line_count > 25);
 		free(line);
 		fclose(file);
 		ms_free(filepath);
@@ -111,7 +111,7 @@ static void collect_files_filled() {
 static void collect_files_small_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
 	char * filepath;
-	linphone_core_set_log_collection_max_file_size(1000);
+	linphone_core_set_log_collection_max_file_size(5000);
 	filepath = linphone_core_compress_log_collection(marie->lc);
 	CU_ASSERT_PTR_NOT_NULL(filepath);
 	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
@@ -127,7 +127,7 @@ static void collect_files_changing_size()  {
 	CU_ASSERT_PTR_NOT_NULL(filepath);
 	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
 
-	linphone_core_set_log_collection_max_file_size(1000);
+	linphone_core_set_log_collection_max_file_size(5000);
 	// Generate some logs
 	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
 
