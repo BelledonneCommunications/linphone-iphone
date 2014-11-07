@@ -317,13 +317,31 @@ static void simple_call(void) {
 	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
+	const LinphoneAddress *from;
+	LinphoneCall *pauline_call;
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
-	CU_ASSERT_TRUE(call(pauline,marie));
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+	/*check that display name is correctly propagated in From */
+	if (pauline_call){
+		from=linphone_call_get_remote_address(linphone_core_get_current_call(pauline->lc));
+		CU_ASSERT_PTR_NOT_NULL(from);
+		if (from){
+			const char *dname=linphone_address_get_display_name(from);
+			CU_ASSERT_PTR_NOT_NULL(dname);
+			if (dname){
+				CU_ASSERT_STRING_EQUAL(dname, "Super Marie");
+			}
+		}
+	}
+	
+	
 	liblinphone_tester_check_rtcp(marie,pauline);
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
