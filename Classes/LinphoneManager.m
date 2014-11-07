@@ -1845,9 +1845,14 @@ static void audioRouteChangeListenerCallback (
 		linphone_address_destroy(linphoneAddress);
 	}
 	if (call) {
-		LinphoneCallAppData* data = [[LinphoneCallAppData alloc] init];
-		data->videoRequested = linphone_call_params_video_enabled(lcallParams); /* will be used later to notify user if video was not activated because of the linphone core*/
-		linphone_call_set_user_pointer(call, data);
+		// The LinphoneCallAppData object should be set on call creation with callback
+		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
+		// We are NOT responsible for creating the AppData. 
+		LinphoneCallAppData* data=(LinphoneCallAppData*)linphone_call_get_user_pointer(call);
+		if (data==nil)
+			[LinphoneLogger log:LinphoneLoggerError format:@"New call instanciated but app data was not set. Expect it to crash."];
+		/* will be used later to notify user if video was not activated because of the linphone core*/
+		data->videoRequested = linphone_call_params_video_enabled(lcallParams);
 	}
 	linphone_call_params_destroy(lcallParams);
 }
