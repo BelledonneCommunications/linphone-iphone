@@ -339,7 +339,8 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if(contactDetailsDelegate != nil) {
-        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+		//add a mini delay to have the text updated BEFORE notifying the selector
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0.1];
     }
     return YES;
 }
@@ -363,7 +364,8 @@
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Not valid UIEditableTableViewCell"];
     }
     if(contactDetailsDelegate != nil) {
-        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+		//add a mini delay to have the text updated BEFORE notifying the selector
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0.1];
     }
     return TRUE;
 }
