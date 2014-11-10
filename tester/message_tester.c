@@ -953,7 +953,9 @@ message_tester_copy_file(const char *from, const char *to)
 }
 
 static int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
-	CU_ASSERT_EQUAL(argc, 0);
+	CU_ASSERT_EQUAL(argc, 1);
+	CU_ASSERT_STRING_EQUAL(cNames[0], "COUNT(*)"); // count of non updated messages should be 0
+	CU_ASSERT_STRING_EQUAL(argv[0], "0"); // count of non updated messages should be 0
 	return 0;
 }
 
@@ -978,7 +980,7 @@ static void message_storage_migration() {
 	CU_ASSERT(ms_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage
-	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT * FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
+	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
 
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
