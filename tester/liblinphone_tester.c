@@ -115,24 +115,6 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 }
 #endif /* __QNX__ */
 
-int liblinphone_tester_ipv6_available(void){
-	struct addrinfo *ai=belle_sip_ip_address_to_addrinfo(AF_INET6,"2a01:e00::2",53);
-	if (ai){
-		struct sockaddr_storage ss;
-		struct addrinfo src;
-		socklen_t slen=sizeof(ss);
-		char localip[128];
-		int port=0;
-		belle_sip_get_src_addr_for(ai->ai_addr,ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
-		src.ai_addr=(struct sockaddr*) &ss;
-		src.ai_addrlen=slen;
-		belle_sip_addrinfo_to_ip(&src,localip, sizeof(localip),&port);
-		freeaddrinfo(ai);
-		return strcmp(localip,"::1")!=0;
-	}
-	return FALSE;
-}
-
 void helper(const char *name) {
 	liblinphone_tester_fprintf(stderr,"%s --help\n"
 			"\t\t\t--verbose\n"
