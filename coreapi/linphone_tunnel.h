@@ -60,7 +60,7 @@ typedef enum _LinphoneTunnelMode {
 } LinphoneTunnelMode;
 
 /**
- * @brief Convert a string into LinphoneTunnelMode enum
+ * Convert a string into LinphoneTunnelMode enum
  * @param string String to convert
  * @return An LinphoneTunnelMode enum. If the passed string is NULL or
  * does not match with any mode, the LinphoneTunnelModeDisable is returned.
@@ -68,7 +68,7 @@ typedef enum _LinphoneTunnelMode {
 LINPHONE_PUBLIC LinphoneTunnelMode string_to_tunnel_mode(const char *string);
 
 /**
- * @brief Convert a tunnel mode enum into string
+ * Convert a tunnel mode enum into string
  * @param mode Enum to convert
  * @return "disable", "enable" or "auto"
  */
@@ -80,170 +80,166 @@ LINPHONE_PUBLIC const char *tunnel_mode_to_string(LinphoneTunnelMode mode);
 LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_tunnel_config_new(void);
 
 /**
- * Set address of server.
- *
- * @param tunnel configuration object
- * @param host tunnel server ip address
+ * Set the IP address or hostname of the tunnel server.
+ * @param tunnel LinphoneTunnelConfig object
+ * @param host The tunnel server IP address or hostname
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_set_host(LinphoneTunnelConfig *tunnel, const char *host);
 
 /**
- * Get address of server.
- *
- * @param tunnel configuration object
+ * Get the IP address or hostname of the tunnel server.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The tunnel server IP address or hostname
  */
 LINPHONE_PUBLIC const char *linphone_tunnel_config_get_host(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Set tls port of server.
- *
- * @param tunnel configuration object
- * @param port tunnel server tls port, recommended value is 443
+ * @param tunnel LinphoneTunnelConfig object
+ * @param port The tunnel server TLS port, recommended value is 443
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunnel, int port);
 
 /**
- * Get tls port of server.
- *
- * @param tunnel configuration object
+ * Get the TLS port of the tunnel server.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The TLS port of the tunnel server
  */
 LINPHONE_PUBLIC int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel);
 
 /**
- * Set the remote port on the tunnel server side used to test udp reachability.
- *
- * @param tunnel configuration object
- * @param remote_udp_mirror_port remote port on the tunnel server side used to test udp reachability, set to -1 to disable the feature
+ * Set the remote port on the tunnel server side used to test UDP reachability.
+ * This is used when the mode is set auto, to detect whether the tunnel has to be enabled or not.
+ * @param tunnel LinphoneTunnelConfig object
+ * @param remote_udp_mirror_port The remote port on the tunnel server side used to test UDP reachability, set to -1 to disable the feature
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_set_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel, int remote_udp_mirror_port);
 
 /**
- * Get the remote port on the tunnel server side used to test udp reachability.
- *
- * @param tunnel configuration object
+ * Get the remote port on the tunnel server side used to test UDP reachability.
+ * This is used when the mode is set auto, to detect whether the tunnel has to be enabled or not.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The remote port on the tunnel server side used to test UDP reachability
  */
 LINPHONE_PUBLIC int linphone_tunnel_config_get_remote_udp_mirror_port(const LinphoneTunnelConfig *tunnel);
 
 /**
- * Set the udp packet round trip delay in ms for a tunnel configuration.
- *
- * @param tunnel configuration object
- * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
+ * Set the UDP packet round trip delay in ms for a tunnel configuration.
+ * @param tunnel LinphoneTunnelConfig object
+ * @param delay The UDP packet round trip delay in ms considered as acceptable (recommended value is 1000 ms).
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunnel, int delay);
 
 /**
- * Get the udp packet round trip delay in ms for a tunnel configuration.
- *
- * @param tunnel configuration object
+ * Get the UDP packet round trip delay in ms for a tunnel configuration.
+ * @param tunnel LinphoneTunnelConfig object
+ * @return The UDP packet round trip delay in ms.
  */
 LINPHONE_PUBLIC int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Destroy a tunnel configuration
- *
- * @param tunnel configuration object
+ * @param tunnel LinphoneTunnelConfig object
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
 
 /**
- * Add tunnel server configuration
- *
- * @param tunnel object
- * @param tunnel_config object
+ * Add a tunnel server configuration.
+ * @param tunnel LinphoneTunnel object
+ * @param tunnel_config LinphoneTunnelConfig object
  */
 LINPHONE_PUBLIC void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
 
 /**
- * @brief Remove tunnel server configuration
- * @param tunnel object
- * @param tunnel_config object
+ * Remove a tunnel server configuration.
+ * @param tunnel LinphoneTunnel object
+ * @param tunnel_config LinphoneTunnelConfig object
  */
 LINPHONE_PUBLIC void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
 
 /**
- * @brief Get added servers
- * @param  tunnel A LinphoneTunnel object
- * @return A list of LinphoneTunnelConfig objects
+ * Get added servers
+ * @param tunnel LinphoneTunnel object
+ * @return \mslist{LinphoneTunnelConfig}
  */
 LINPHONE_PUBLIC const MSList *linphone_tunnel_get_servers(const LinphoneTunnel *tunnel);
 
 /**
- * @brief Removes all tunnel server address previously entered with addServer()
- * @param  tunnel A LinphoneTunnel object
+ * Remove all tunnel server addresses previously entered with linphone_tunnel_add_server()
+ * @param tunnel LinphoneTunnel object
 **/
 LINPHONE_PUBLIC void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
 
 /**
- * @brief Set tunnel mode
+ * Set the tunnel mode.
  * The tunnel mode can be 'enable', 'disable' or 'auto'
  * If the mode is set to 'auto', the tunnel manager will try to established an RTP session
  * with the tunnel server on the UdpMirrorPort. If the connection fail, the tunnel is automatically
  * activated whereas the tunnel is automatically disabled if the connection succeed.
- * @param  tunnel object
- * @param mode See #LinphoneTunnelMode
+ * @param tunnel LinphoneTunnel object
+ * @param mode The desired LinphoneTunnelMode
 **/
 LINPHONE_PUBLIC void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode);
 
 /**
- * @brief Get the tunnel mode
- * @param  tunnel A LinphoneTunnel object
- * @return Return a #LinphoneTunnelMode enumeration
+ * Get the tunnel mode
+ * @param tunnel LinphoneTunnel object
+ * @return The current LinphoneTunnelMode
 **/
 LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel);
 
 /**
- * @brief Check whether the tunnel is connected
- * @param  tunnel LinphoneTunnel object
- * @return True if the tunnel is connected
+ * Check whether the tunnel is connected
+ * @param tunnel LinphoneTunnel object
+ * @return A boolean value telling if the tunnel is connected
 **/
 LINPHONE_PUBLIC bool_t linphone_tunnel_connected(const LinphoneTunnel *tunnel);
 
 /**
- * @param  tunnel object
- * Forces reconnection to the tunnel server.
+ * Force reconnection to the tunnel server.
  * This method is useful when the device switches from wifi to Edge/3G or vice versa. In most cases the tunnel client socket
  * won't be notified promptly that its connection is now zombie, so it is recommended to call this method that will cause
  * the lost connection to be closed and new connection to be issued.
+ * @param tunnel LinphoneTunnel object
 **/
 LINPHONE_PUBLIC void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 
 /**
- * @brief Set whether SIP packets must be directly sent to a UA or pass through the tunnel
- * @param tunnel Tunnel to configure
+ * Set whether SIP packets must be directly sent to a UA or pass through the tunnel
+ * @param tunnel LinphoneTunnel object
  * @param enable If true, SIP packets shall pass through the tunnel
  */
 LINPHONE_PUBLIC void linphone_tunnel_enable_sip(LinphoneTunnel *tunnel, bool_t enable);
 
 /**
- * @brief Check whether tunnel is set to transport SIP packets
- * @param tunnel Tunnel to check
- * @return True, SIP packets shall pass through through tunnel
+ * Check whether tunnel is set to transport SIP packets
+ * @param tunnel LinphoneTunnel object
+ * @return A boolean value telling whether SIP packets shall pass through the tunnel
  */
 LINPHONE_PUBLIC bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel);
 
 /**
  * Set an optional http proxy to go through when connecting to tunnel server.
  * @param tunnel LinphoneTunnel object
- * @param host Http proxy host.
- * @param port http proxy port.
- * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
- * @param passwd optional http proxy password. Use NULL if not needed.
+ * @param host http proxy host
+ * @param port http proxy port
+ * @param username Optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
+ * @param passwd Optional http proxy password. Use NULL if not needed.
  **/
 LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, int port, const char* username,const char* passwd);
 
 /**
  * Retrieve optional http proxy configuration previously set with linphone_tunnel_set_http_proxy().
  * @param tunnel LinphoneTunnel object
- * @param host Http proxy host.
- * @param port http proxy port.
- * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
- * @param passwd optional http proxy password. Use NULL if not needed.
+ * @param host http proxy host
+ * @param port http proxy port
+ * @param username Optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
+ * @param passwd Optional http proxy password. Use NULL if not needed.
  **/
 LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd);
 
 /**
- * @brief Set authentication info for the http proxy
+ * Set authentication info for the http proxy
  * @param tunnel LinphoneTunnel object
  * @param username User name
  * @param passwd Password
@@ -251,38 +247,37 @@ LINPHONE_PUBLIC void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const 
 LINPHONE_PUBLIC void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
 /**
- * @deprecated Replaced by linphone_tunnel_set_mode()
- * @brief Sets whether tunneling of SIP and RTP is required.
- * @param  tunnel object
+ * Sets whether tunneling of SIP and RTP is required.
+ * @param tunnel object
  * @param enabled If true enter in tunneled mode, if false exits from tunneled mode.
  * The TunnelManager takes care of refreshing SIP registration when switching on or off the tunneled mode.
- *
+ * @deprecated Replaced by linphone_tunnel_set_mode()
 **/
 LINPHONE_PUBLIC void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
 
 /**
- * @deprecated Replaced by linphone_tunnel_get_mode()
- * @brief Check whether tunnel is enabled
- * @param  tunnel Tunnel object
+ * Check whether tunnel is enabled
+ * @param tunnel Tunnel object
  * @return Returns a boolean indicating whether tunneled operation is enabled.
+ * @deprecated Replaced by linphone_tunnel_get_mode()
 **/
 LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(const LinphoneTunnel *tunnel);
 
 /**
- * @deprecated Replaced by linphone_tunnel_set_mode(LinphoneTunnelModeAuto)
- * @brief Start tunnel need detection.
+ * Start tunnel need detection.
  * @param  tunnel object
- * In auto detect mode, the tunnel manager try to establish a real time rtp cummunication with the tunnel server on  specified port.
- * <br>In case of success, the tunnel is automatically turned off. Otherwise, if no udp commmunication is feasible, tunnel mode is turned on.
+ * In auto detect mode, the tunnel manager try to establish a real time rtp communication with the tunnel server on  specified port.
+ * <br>In case of success, the tunnel is automatically turned off. Otherwise, if no udp communication is feasible, tunnel mode is turned on.
  * <br> Call this method each time to run the auto detection algorithm
+ * @deprecated Replaced by linphone_tunnel_set_mode(LinphoneTunnelModeAuto)
  */
 LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 
 /**
- * @deprecated Replaced by linphone_tunnel_get_mode()
- * @brief Tells whether tunnel auto detection is enabled.
+ * Tell whether tunnel auto detection is enabled.
  * @param[in] tunnel LinphoneTunnel object.
  * @return TRUE if auto detection is enabled, FALSE otherwise.
+ * @deprecated Replaced by linphone_tunnel_get_mode()
  */
 LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
 
