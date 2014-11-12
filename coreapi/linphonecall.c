@@ -1042,10 +1042,14 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->transfer_target){
 		linphone_call_unref(obj->transfer_target);
 	}
-	if (obj->log)
+	if (obj->log) {
 		linphone_call_log_unref(obj->log);
+	}
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
+	}
+	if (obj->dtmfs_timer) {
+		linphone_call_cancel_dtmfs(obj);
 	}
 	linphone_call_params_unref(obj->params);
 	linphone_call_params_unref(obj->current_params);
