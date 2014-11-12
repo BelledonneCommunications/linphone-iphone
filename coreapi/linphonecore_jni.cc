@@ -5326,7 +5326,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEn
 		return 0;
 	}
 	window_ref = env->NewGlobalRef(window);
-	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay", window_ref);
+	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, NULL, "MSAndroidDisplay", (unsigned long)window_ref);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
 		if(window_ref) env->DeleteGlobalRef(window_ref);

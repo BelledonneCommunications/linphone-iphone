@@ -18,23 +18,23 @@
 
 #include "liblinphone_tester.h"
 
-static const char *_get_default_video_renderer(void){
-#ifdef WIN32
-	return "MSDrawDibDisplay";
-#elif defined(ANDROID)
-	return "MSAndroidDisplay";
-#elif __APPLE__ && !defined(__ios)
-	return "MSOSXGLDisplay";
-#elif defined (HAVE_XV)
-	return "MSX11Video";
-#elif defined(HAVE_GL)
-	return "MSGLXVideo";
-#elif defined(__ios)
-	return "IOSDisplay";
-#else
-	return "MSVideoOut";
-#endif
-}
+//static const char *_get_default_video_renderer(void){
+//#ifdef WIN32
+//	return "MSDrawDibDisplay";
+//#elif defined(ANDROID)
+//	return "MSAndroidDisplay";
+//#elif __APPLE__ && !defined(__ios)
+//	return "MSOSXGLDisplay";
+//#elif defined (HAVE_XV)
+//	return "MSX11Video";
+//#elif defined(HAVE_GL)
+//	return "MSGLXVideo";
+//#elif defined(__ios)
+//	return "IOSDisplay";
+//#else
+//	return "MSVideoOut";
+//#endif
+//}
 
 static bool_t wait_for_eof(bool_t *eof, int *time,int time_refresh, int timeout) {
 	while(*time < timeout && !*eof) {
@@ -59,7 +59,7 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 	CU_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 
-	player = linphone_core_create_local_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), _get_default_video_renderer(), NULL);
+	player = linphone_core_create_local_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), "MSX11Video", 0);
 	CU_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
@@ -84,7 +84,7 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 }
 
 static void playing_test(void) {
-	play_file("sounds/hello_opus_h264.mkv", !linphone_local_player_matroska_supported());
+	play_file("/home/francois/Téléchargements/test_linphone.mkv", !linphone_local_player_matroska_supported());
 }
 
 test_t player_tests[] = {
