@@ -65,11 +65,13 @@ time_t check_file(char * filepath)  {
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
 				memcpy(date, line, 23);
+				#ifndef ANDROID
 				if (strptime(date, "%Y-%m-%d %H:%M:%S", &tm_curr) != NULL) {
 					time_curr = mktime(&tm_curr);
 					CU_ASSERT_TRUE(time_curr >= time_prev);
 					time_prev = time_curr;
 				}
+				#endif
 			}
 		}
 		CU_ASSERT_TRUE(line_count > 25);
@@ -78,7 +80,12 @@ time_t check_file(char * filepath)  {
 		ms_free(filepath);
 	}
 	// return latest time in file
+	#ifdef ANDROID
+	ms_warning("fix me: Use mktime function on android");
+	return ms_time(0); //should be fixed
+	#else
 	return time_curr;
+	#endif
 }
 
 static LinphoneLogCollectionState old_collection_state;
