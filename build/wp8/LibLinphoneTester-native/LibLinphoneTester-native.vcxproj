@@ -107,6 +107,8 @@
     <ClCompile Include="..\..\..\tester\stun_tester.c" />
     <ClCompile Include="..\..\..\tester\tester.c" />
     <ClCompile Include="..\..\..\tester\transport_tester.c" />
+    <ClCompile Include="..\..\..\tester\dtmf_tester.c" />
+
     <ClCompile Include="linphone-tester-native.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>

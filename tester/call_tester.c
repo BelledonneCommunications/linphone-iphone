@@ -340,8 +340,8 @@ static void simple_call(void) {
 			}
 		}
 	}
-	
-	
+
+
 	liblinphone_tester_check_rtcp(marie,pauline);
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
@@ -365,13 +365,13 @@ static void direct_call_over_ipv6(){
 		linphone_core_enable_ipv6(pauline->lc,TRUE);
 		linphone_core_set_default_proxy_config(marie->lc,NULL);
 		linphone_core_invite(marie->lc,"sip:[::1]:12002;transport=tcp");
-		
+
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallOutgoingRinging,1));
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
 		linphone_core_accept_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
-		
+
 		liblinphone_tester_check_rtcp(marie,pauline);
 		end_call(marie,pauline);
 		linphone_core_manager_destroy(marie);

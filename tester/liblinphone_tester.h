@@ -61,6 +61,7 @@ extern test_suite_t quality_reporting_test_suite;
 extern test_suite_t log_collection_test_suite;
 extern test_suite_t transport_test_suite;
 extern test_suite_t player_test_suite;
+extern test_suite_t dtmf_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -202,6 +203,8 @@ typedef struct _stats {
 	int number_of_NetworkReachableFalse;
 	int number_of_player_eof;
 	LinphoneChatMessage* last_received_chat_message;
+
+	char * dtmf_list_received;
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -242,6 +245,7 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
 void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
+void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 
 LinphoneAddress * create_linphone_address(const char * domain);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);

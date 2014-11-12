@@ -225,6 +225,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.configuring_status=linphone_configuration_status;
 	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
 	mgr->v_table.network_reachable=network_reachable;
+	mgr->v_table.dtmf_received=dtmf_received;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
@@ -387,11 +388,10 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&flexisip_test_suite);
 	add_test_suite(&remote_provisioning_test_suite);
 	add_test_suite(&quality_reporting_test_suite);
-#ifndef ANDROID
 	add_test_suite(&log_collection_test_suite);
-#endif
 	add_test_suite(&transport_test_suite);
 	add_test_suite(&player_test_suite);
+	add_test_suite(&dtmf_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

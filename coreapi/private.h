@@ -239,6 +239,9 @@ struct _LinphoneCall
 	int localdesc_changed;/*not a boolean, contains a mask representing changes*/
 	LinphonePlayer *player;
 
+	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
+	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
+
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;

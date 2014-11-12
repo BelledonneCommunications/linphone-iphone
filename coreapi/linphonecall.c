@@ -979,6 +979,11 @@ void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, 
 
 		linphone_reporting_call_state_updated(call);
 
+		/*cancelling DTMF sequence, if any*/
+		if (cstate!=LinphoneCallStreamsRunning&&call->dtmfs_timer!=NULL){
+			linphone_call_cancel_dtmfs(call);
+		}
+
 		if (cstate==LinphoneCallReleased){
 			if (call->op!=NULL) {
 				/*transfer the last error so that it can be obtained even in Released state*/
@@ -3123,4 +3128,77 @@ void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *
 	if (params) cp=linphone_call_params_copy(params);
 	if (call->params) linphone_call_params_unref(call->params);
 	call->params=cp;
+}
+
+static int send_dtmf_handler(void *data, unsigned int revents){
+	LinphoneCall *call = (LinphoneCall*)data;
+	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
+	if (linphone_core_get_use_rfc2833_for_dtmf(call->core)!=0 || linphone_core_get_use_info_for_dtmf(call->core)==0)
+	{
+		/* In Band DTMF */
+		if (call->audiostream!=NULL){
+			audio_stream_send_dtmf(call->audiostream,*call->dtmf_sequence);
+		}
+		else
+		{
+			ms_error("Cannot send RFC2833 DTMF when we are not in communication.");
+			return FALSE;
+		}
+	}
+	if (linphone_core_get_use_info_for_dtmf(call->core)!=0){
+		/* Out of Band DTMF (use INFO method) */
+		sal_call_send_dtmf(call->op,*call->dtmf_sequence);
+	}
+
+	/*this check is needed because linphone_call_send_dtmf does not set the timer since its a single character*/
+	if (call->dtmfs_timer!=NULL) {
+		memmove(call->dtmf_sequence, call->dtmf_sequence+1, strlen(call->dtmf_sequence));
+	}
+	/* continue only if the dtmf sequence is not empty*/
+	if (call->dtmf_sequence!=NULL&&*call->dtmf_sequence!='\0') {
+		return TRUE;
+	} else {
+		linphone_call_cancel_dtmfs(call);
+		return FALSE;
+	}
+}
+int linphone_call_send_dtmf(LinphoneCall *call,char dtmf){
+	if (call==NULL){
+		ms_warning("linphone_call_send_dtmf(): invalid call, canceling DTMF.");
+		return -1;
+	}
+	call->dtmf_sequence = &dtmf;
+	send_dtmf_handler(call,0);
+	call->dtmf_sequence = NULL;
+	return 0;
+}
+
+int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs) {
+	if (call==NULL){
+		ms_warning("linphone_call_send_dtmfs(): invalid call, canceling DTMF sequence.");
+		return -1;
+	}
+	if (call->dtmfs_timer!=NULL){
+		ms_warning("linphone_call_send_dtmfs(): a DTMF sequence is already in place, canceling DTMF sequence.");
+		return -2;
+	}
+	if (dtmfs != NULL) {
+		int delay_ms = lp_config_get_int(call->core->config,"net","dtmf_delay_ms",200);
+		call->dtmf_sequence = ms_strdup(dtmfs);
+		call->dtmfs_timer = sal_create_timer(call->core->sal, send_dtmf_handler, call, delay_ms, "DTMF sequence timer");
+	}
+	return 0;
+}
+
+void linphone_call_cancel_dtmfs(LinphoneCall *call) {
+	/*nothing to do*/
+	if (!call || !call->dtmfs_timer) return;
+
+	sal_cancel_timer(call->core->sal, call->dtmfs_timer);
+	belle_sip_object_unref(call->dtmfs_timer);
+	call->dtmfs_timer = NULL;
+	if (call->dtmf_sequence != NULL) {
+		ms_free(call->dtmf_sequence);
+		call->dtmf_sequence = NULL;
+	}
 }

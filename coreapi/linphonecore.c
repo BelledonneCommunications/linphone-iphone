@@ -4780,38 +4780,10 @@ bool_t linphone_core_agc_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.agc;
 }
 
-/**
- * Send the specified dtmf.
- *
- * @ingroup media_parameters
- * This function only works during calls. The dtmf is automatically played to the user.
- * @param lc The LinphoneCore object
- * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
- *
-**/
 void linphone_core_send_dtmf(LinphoneCore *lc, char dtmf)
 {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call==NULL){
-		ms_warning("linphone_core_send_dtmf(): no active call");
-		return;
-	}
-	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
-	if (linphone_core_get_use_rfc2833_for_dtmf(lc)!=0 || linphone_core_get_use_info_for_dtmf(lc)==0)
-	{
-		/* In Band DTMF */
-		if (call->audiostream!=NULL){
-			audio_stream_send_dtmf(call->audiostream,dtmf);
-		}
-		else
-		{
-			ms_error("we cannot send RFC2833 dtmf when we are not in communication");
-		}
-	}
-	if (linphone_core_get_use_info_for_dtmf(lc)!=0){
-		/* Out of Band DTMF (use INFO method) */
-		sal_call_send_dtmf(call->op,dtmf);
-	}
+	linphone_call_send_dtmf(call, dtmf);
 }
 
 void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){

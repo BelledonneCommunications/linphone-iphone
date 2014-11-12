@@ -731,6 +731,37 @@ LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
 LINPHONE_PUBLIC LinphonePlayer * linphone_call_get_player(LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
+/**
+ * Send the specified dtmf.
+ *
+ * The dtmf is automatically played to the user.
+ * @param call The LinphoneCall object
+ * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
+ * @returns 0 if successful, -1 on error.
+**/
+LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
+
+/**
+ * Send a list of dtmf.
+ *
+ * The dtmfs are automatically sent to remote, separated by some needed customizable delay.
+ * Sending is canceled if the call state changes to something not LinphoneCallStreamsRunning.
+ * @param call The LinphoneCall object
+ * @param dtmfs A dtmf sequence such as '123#123123'
+ * @returns -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
+**/
+LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
+
+/**
+ * Stop current DTMF sequence sending.
+ *
+ * Please note that some DTMF could be already sent,
+ * depending on when this function call is delayed from #linphone_call_send_dtmfs. This
+ * function will be automatically called if call state change to anything but LinphoneCallStreamsRunning.
+ *
+ * @param call The LinphoneCall object
+**/
+LINPHONE_PUBLIC	void linphone_call_cancel_dtmfs(LinphoneCall *call);
 
 /**
  * Return TRUE if this call is currently part of a conference
@@ -2049,6 +2080,16 @@ LINPHONE_PUBLIC LinphoneCallParams *linphone_core_create_call_params(LinphoneCor
 
 LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
+/**
+ * Send the specified dtmf.
+ *
+ * @ingroup media_parameters
+ * @deprecated Use #linphone_call_send_dtmf instead.
+ * This function only works during calls. The dtmf is automatically played to the user.
+ * @param lc The LinphoneCore object
+ * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
+ *
+**/
 LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
 LINPHONE_PUBLIC	int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
