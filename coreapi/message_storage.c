@@ -469,7 +469,7 @@ static int migrate_messages_timestamp(void* data,int argc, char** argv, char** c
 	time_t new_time = parse_time_from_db(argv[1]);
 	if( new_time ){
 		/* replace 'time' by -1 and set 'utc' to the timestamp */
-		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", new_time, atoi(argv[0]));
+		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", (int64_t)new_time, atoi(argv[0]));
 		if( buf) {
 			linphone_sql_request((sqlite3*)data, buf);
 			sqlite3_free(buf);
