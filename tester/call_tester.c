@@ -367,10 +367,12 @@ static void direct_call_over_ipv6(){
 		linphone_core_enable_ipv6(marie->lc,TRUE);
 		linphone_core_enable_ipv6(pauline->lc,TRUE);
 		linphone_core_set_default_proxy_config(marie->lc,NULL);
-		/*wait for register in v6 mode
+		/*wait for register in v6 mode, however sip2.linphone.org has an ipv6 address but doesn't listen to it*/
+#if 0
 		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 2, 2000));
 		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 2, 2000));
-		*/
+#endif
+	
 		linphone_core_get_sip_transports_used(pauline->lc,&pauline_transports);
 		linphone_address_set_port(pauline_dest,pauline_transports.tcp_port);
 		linphone_core_invite_address(marie->lc,pauline_dest);
