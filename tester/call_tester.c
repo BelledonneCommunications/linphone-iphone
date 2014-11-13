@@ -359,12 +359,21 @@ static void direct_call_over_ipv6(){
 	LinphoneCoreManager* pauline;
 
 	if (liblinphone_tester_ipv6_available()){
+		LCSipTransports pauline_transports;
+		LinphoneAddress* pauline_dest = linphone_address_new("sip:[::1];transport=tcp");
 		marie = linphone_core_manager_new( "marie_rc");
 		pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
 		linphone_core_enable_ipv6(marie->lc,TRUE);
 		linphone_core_enable_ipv6(pauline->lc,TRUE);
 		linphone_core_set_default_proxy_config(marie->lc,NULL);
-		linphone_core_invite(marie->lc,"sip:[::1]:12002;transport=tcp");
+		/*wait for register in v6 mode
+		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 2, 2000));
+		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 2, 2000));
+		*/
+		linphone_core_get_sip_transports_used(pauline->lc,&pauline_transports);
+		linphone_address_set_port(pauline_dest,pauline_transports.tcp_port);
+		linphone_core_invite_address(marie->lc,pauline_dest);
 
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallOutgoingRinging,1));
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
@@ -376,6 +385,7 @@ static void direct_call_over_ipv6(){
 		end_call(marie,pauline);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
+		linphone_address_destroy(pauline_dest);
 	}else ms_warning("Test skipped, no ipv6 available");
 }
 
