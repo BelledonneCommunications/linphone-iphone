@@ -505,9 +505,10 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 }
 
 void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
-	if (msg->message)
-		//legacy API
+	if (msg->message){
+		/*legacy API*/
 		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
+	}
 	linphone_core_notify_message_received(lc, cr,msg);
 	cr->remote_is_composing = LinphoneIsComposingIdle;
 	linphone_core_notify_is_composing_received(cr->lc, cr);
@@ -516,20 +517,13 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg){
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
-	char *cleanfrom;
-	char *from;
 	LinphoneChatMessage* msg;
 	const SalCustomHeader *ch;
 
 	addr=linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	cr=linphone_core_get_chat_room(lc,addr);
-	cleanfrom=linphone_address_as_string(addr);
-	from=linphone_address_as_string_uri_only(addr);
-	if (cr==NULL){
-		/* create a new chat room */
-		cr=linphone_core_create_chat_room(lc,cleanfrom);
-	}
+	
 	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
 		xmlChar *file_url = NULL;
 		xmlDocPtr xmlMessageBody;
@@ -537,8 +531,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 
 		msg = linphone_chat_room_create_message(cr, NULL); /* create a message with empty body */
 		msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
-		msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-		memset(msg->file_transfer_information, 0, sizeof(*(msg->file_transfer_information)));
+		msg->file_transfer_information = ms_new0(LinphoneContent,1);
 
 		/* parse the message body to get all informations from it */
 		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
@@ -615,8 +608,6 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
 	linphone_chat_message_unref(msg);
-	ms_free(cleanfrom);
-	ms_free(from);
 }
 
 static int linphone_chat_room_remote_refresh_composing_expired(void *data, unsigned int revents) {
@@ -1033,7 +1024,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 
 
 static LinphoneContent* linphone_chat_create_file_transfer_information_from_headers(const belle_sip_message_t* message ){
-	LinphoneContent *content = ms_malloc0(sizeof(LinphoneContent));
+	LinphoneContent *content = ms_new0(LinphoneContent,1);
 
 	belle_sip_header_content_length_t* content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(message, "Content-Length"));
 	belle_sip_header_content_type_t* content_type_hdr = BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(message, "Content-Type"));
@@ -1402,8 +1393,7 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message = NULL;
-	msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-	memset(msg->file_transfer_information, 0, sizeof(LinphoneContent));
+	msg->file_transfer_information = ms_new0(LinphoneContent,1);
 	linphone_content_copy(msg->file_transfer_information, initial_content);
 	msg->dir=LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
