@@ -189,6 +189,15 @@ LINPHONE_PUBLIC void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTu
 LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_get_mode(const LinphoneTunnel *tunnel);
 
 /**
+ * Returns whether the tunnel is activated. If mode is set to auto, this gives indication whether the automatic detection determined
+ * that tunnel was necessary or not.
+ * @param tunnel the tunnel
+ * @return TRUE if tunnel is in use, FALSE otherwise.
+**/
+LINPHONE_PUBLIC bool_t linphone_tunnel_get_activated(const LinphoneTunnel *tunnel);
+
+
+/**
  * Check whether the tunnel is connected
  * @param tunnel LinphoneTunnel object
  * @return A boolean value telling if the tunnel is connected

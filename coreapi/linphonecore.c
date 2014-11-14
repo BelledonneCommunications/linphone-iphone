@@ -2151,7 +2151,7 @@ static bool_t transports_unchanged(const LCSipTransports * tr1, const LCSipTrans
 		tr2->tls_port==tr1->tls_port;
 }
 
-static int apply_transports(LinphoneCore *lc){
+int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
 	LCSipTransports *tr=&lc->sip_conf.transports;
@@ -2165,20 +2165,26 @@ static int apply_transports(LinphoneCore *lc){
 		anyaddr="0.0.0.0";
 
 	sal_unlisten_ports(sal);
-	if (tr->udp_port!=0){
-		if (sal_listen_port (sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
-			transport_error(lc,"udp",tr->udp_port);
+	if (lc->tunnel && linphone_tunnel_sip_enabled(lc->tunnel) && linphone_tunnel_get_activated(lc->tunnel)){
+		if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,TRUE)!=0){
+			transport_error(lc,"udp+tunnel",tr->udp_port);
 		}
-	}
-	if (tr->tcp_port!=0){
-		if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
-			transport_error(lc,"tcp",tr->tcp_port);
+	}else{
+		if (tr->udp_port!=0){
+			if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
+				transport_error(lc,"udp",tr->udp_port);
+			}
 		}
-	}
-	if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
-		if (tr->tls_port!=0){
-			if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,TRUE)!=0){
-				transport_error(lc,"tls",tr->tls_port);
+		if (tr->tcp_port!=0){
+			if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
+				transport_error(lc,"tcp",tr->tcp_port);
+			}
+		}
+		if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
+			if (tr->tls_port!=0){
+				if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,FALSE)!=0){
+					transport_error(lc,"tls",tr->tls_port);
+				}
 			}
 		}
 	}
@@ -2231,7 +2237,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 	}
 
 	if (lc->sal==NULL) return 0;
-	return apply_transports(lc);
+	return _linphone_core_apply_transports(lc);
 }
 
 /**
@@ -2296,7 +2302,7 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 		lc->sip_conf.ipv6_enabled=val;
 		if (lc->sal){
 			/* we need to update the sip stack */
-			apply_transports(lc);
+			_linphone_core_apply_transports(lc);
 		}
 		/*update the localip immediately for the network monitor to avoid to "discover" later that we switched to ipv6*/
 		linphone_core_get_local_ip(lc,AF_UNSPEC,NULL,lc->localip);
@@ -6830,7 +6836,7 @@ void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp){
 	sal_set_dscp(lc->sal,dscp);
 	if (linphone_core_ready(lc)){
 		lp_config_set_int_hex(lc->config,"sip","dscp",dscp);
-		apply_transports(lc);
+		_linphone_core_apply_transports(lc);
 	}
 }
 

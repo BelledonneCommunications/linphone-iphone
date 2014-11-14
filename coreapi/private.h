@@ -414,7 +414,7 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
 void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, const char *message,bool_t silently);
-
+int _linphone_core_apply_transports(LinphoneCore *lc);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);

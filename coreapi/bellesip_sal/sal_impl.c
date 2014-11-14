@@ -554,19 +554,24 @@ int sal_transport_available(Sal *sal, SalTransport t){
 	return FALSE;
 }
 
-int sal_add_listen_port(Sal *ctx, SalAddress* addr){
+static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 	int result;
-	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack,
+	belle_sip_listening_point_t* lp;
+	if (is_tunneled){
+		if (sal_address_get_transport(addr)!=SalTransportUDP){
+			ms_error("Tunneled mode is only available for UDP kind of transports.");
+			return -1;
+		}
+		lp = belle_sip_tunnel_listening_point_new(ctx->stack, ctx->tunnel_client);
+		if (!lp){
+			ms_error("Could not create tunnel listening point.");
+			return -1;
+		}
+	}else{
+		lp = belle_sip_stack_create_listening_point(ctx->stack,
 									sal_address_get_domain(addr),
 									sal_address_get_port(addr),
 									sal_transport_to_string(sal_address_get_transport(addr)));
-	if (sal_address_get_port(addr)==-1 && lp==NULL){
-		int random_port=(0xDFFF&ortp_random())+1024;
-		ms_warning("This version of belle-sip doesn't support random port, choosing one here.");
-		lp = belle_sip_stack_create_listening_point(ctx->stack,
-						sal_address_get_domain(addr),
-						random_port,
-						sal_transport_to_string(sal_address_get_transport(addr)));
 	}
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
@@ -578,13 +583,13 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	return result;
 }
 
-int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure) {
+int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_tunneled) {
 	SalAddress* sal_addr = sal_address_new(NULL);
 	int result;
 	sal_address_set_domain(sal_addr,addr);
 	sal_address_set_port(sal_addr,port);
 	sal_address_set_transport(sal_addr,tr);
-	result = sal_add_listen_port(ctx,sal_addr);
+	result = sal_add_listen_port(ctx, sal_addr, is_tunneled);
 	sal_address_destroy(sal_addr);
 	return result;
 }
@@ -646,43 +651,15 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 		}
 	}
 }
-int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
+int sal_set_tunnel(Sal *ctx, void *tunnelclient) {
 #ifdef TUNNEL_ENABLED
-	belle_sip_listening_point_t *lp_udp = NULL;
-	if(ctx->lp_tunnel != NULL) {
-		ortp_error("sal_enable_tunnel(): tunnel is already enabled");
-		return -1;
-	}
-	while((lp_udp = belle_sip_provider_get_listening_point(ctx->prov, "udp")) != NULL) {
-		belle_sip_object_ref(lp_udp);
-		belle_sip_provider_remove_listening_point(ctx->prov, lp_udp);
-		ctx->udp_listening_points = ms_list_append(ctx->udp_listening_points, lp_udp);
-	}
-	ctx->lp_tunnel = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
-	if(ctx->lp_tunnel == NULL) return -1;
-	belle_sip_listening_point_set_keep_alive(ctx->lp_tunnel, ctx->keep_alive);
-	belle_sip_provider_add_listening_point(ctx->prov, ctx->lp_tunnel);
-	belle_sip_object_ref(ctx->lp_tunnel);
+	ctx->tunnel_client=tunnelclient;
 	return 0;
 #else
-	return 0;
+	return -1;
 #endif
 }
-void sal_disable_tunnel(Sal *ctx) {
-#ifdef TUNNEL_ENABLED
-	MSList *it;
-	if(ctx->lp_tunnel) {
-		belle_sip_provider_remove_listening_point(ctx->prov, ctx->lp_tunnel);
-		belle_sip_object_unref(ctx->lp_tunnel);
-		ctx->lp_tunnel = NULL;
-		for(it=ctx->udp_listening_points; it!=NULL; it=it->next) {
-			belle_sip_provider_add_listening_point(ctx->prov, (belle_sip_listening_point_t *)it->data);
-		}
-		ms_list_free_with_data(ctx->udp_listening_points, belle_sip_object_unref);
-		ctx->udp_listening_points = NULL;
-	}
-#endif
-}
+
 /**
  * returns keepalive period in ms
  * 0 desactiaved

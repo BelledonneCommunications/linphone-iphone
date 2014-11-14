@@ -2975,7 +2975,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 
 	linphone_call_handle_stream_events(call,0);
 	linphone_call_handle_stream_events(call,1);
-	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )
+	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed && call->audiostream!=NULL
+		&& call->audiostream->ms.state==MSStreamStarted && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)
 		linphone_core_disconnected(call->core,call);

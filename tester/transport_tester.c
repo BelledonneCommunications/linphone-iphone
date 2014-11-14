@@ -61,7 +61,6 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 }
 static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption) {
 	if (linphone_core_tunnel_available()){
-		char *tmp_char;
 		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
 		LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCall *pauline_call;
@@ -81,28 +80,23 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
 			LinphoneTunnelConfig *config = linphone_tunnel_config_new();
 
-			/*tunnel works only in UDP mode*/
-			linphone_proxy_config_edit(proxy);
-			linphone_address_set_transport(server_addr, LinphoneTransportUdp);
-			linphone_address_set_transport(route, LinphoneTransportUdp);
-			tmp_char = linphone_address_as_string(server_addr);
-			linphone_proxy_config_set_server_addr(proxy, tmp_char);
-			ms_free(tmp_char);
-			tmp_char = linphone_address_as_string(route);
-			linphone_proxy_config_set_route(proxy, tmp_char);
-			ms_free(tmp_char);
 			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
 			linphone_tunnel_config_set_port(config, 443);
 			linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
 			linphone_tunnel_add_server(tunnel, config);
 			linphone_tunnel_set_mode(tunnel, tunnel_mode);
 			linphone_tunnel_enable_sip(tunnel, with_sip);
-			linphone_proxy_config_done(proxy);
 
-			/*enabling the tunnel cause another REGISTER to be made*/
-			CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,2));
+			/*
+			 * Enabling the tunnel with sip cause another REGISTER to be made.
+			 * In automatic mode, the udp test should conclude (assuming we have a normal network), that no 
+			 * tunnel is needed. Thus the number of registrations should stay to 1.
+			 * The library is missing a notification of "tunnel connectivity test finished" to enable the 
+			 * full testing of the automatic mode.
+			 */
 
-			if(tunnel_mode == LinphoneTunnelModeEnable) {
+			if(tunnel_mode == LinphoneTunnelModeEnable && with_sip) {
+				CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,2));
 				/* Ensure that we did use the tunnel. If so, we should see contact changed from:
 				Contact: <sip:pauline@192.168.0.201>;.[...]
 				To:

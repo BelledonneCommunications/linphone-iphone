@@ -65,7 +65,7 @@ typedef enum {
 	SalTransportUDP, /*UDP*/
 	SalTransportTCP, /*TCP*/
 	SalTransportTLS, /*TLS*/
-	SalTransportDTLS /*DTLS*/
+	SalTransportDTLS, /*DTLS*/
 }SalTransport;
 
 #define SAL_MEDIA_DESCRIPTION_UNCHANGED			0x00
@@ -516,7 +516,7 @@ void sal_signing_key_delete(SalSigningKey *key);
 
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
-int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
+int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_tunneled);
 int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 int sal_transport_available(Sal *ctx, SalTransport t);
@@ -533,8 +533,7 @@ void sal_append_stack_string_to_user_agent(Sal *ctx);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
-int sal_enable_tunnel(Sal *ctx, void *tunnelclient);
-void sal_disable_tunnel(Sal *ctx);
+int sal_set_tunnel(Sal *ctx, void *tunnelclient);
 /*Default value is true*/
 void sal_enable_sip_update_method(Sal *ctx,bool_t value);
 
