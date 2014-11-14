@@ -1136,7 +1136,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
  * Cancel an ongoing file transfer attached to this message.(upload or download)
  * @param msg	#LinphoneChatMessage
  */
-void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
+void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
 	/* TODO: here we shall call the cancel http request from bellesip API when it is available passing msg->http_request */
 	/* waiting for this API, just set to NULL the reference to the request in the message and any request */
