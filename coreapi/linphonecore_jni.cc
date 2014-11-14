@@ -2685,8 +2685,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferM
 	return (jlong) message;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr, jlong message) {
-	linphone_chat_room_cancel_file_transfer((LinphoneChatMessage *)message);
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr) {
+	linphone_chat_message_cancel_file_transfer((LinphoneChatMessage *)ptr);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneChatMessageImpl_getFileTransferInformation(JNIEnv* env, jobject  thiz, jlong ptr) {
