@@ -667,7 +667,7 @@ static void file_transfer_message_upload_cancelled(void) {
 
 	/*wait for file to be 50% uploaded and cancel the transfer */
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer, 50));
-	linphone_chat_room_cancel_file_transfer(message);
+	linphone_chat_message_cancel_file_transfer(message);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 
@@ -729,7 +729,7 @@ static void file_transfer_message_download_cancelled(void) {
 		/* wait for file to be 50% downloaded */
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 		/* and cancel the transfer */
-		linphone_chat_room_cancel_file_transfer(marie->stat.last_received_chat_message);
+		linphone_chat_message_cancel_file_transfer(marie->stat.last_received_chat_message);
 	}
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
