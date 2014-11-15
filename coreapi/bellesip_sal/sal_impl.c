@@ -558,6 +558,7 @@ static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 	int result;
 	belle_sip_listening_point_t* lp;
 	if (is_tunneled){
+#ifdef TUNNEL_ENABLED
 		if (sal_address_get_transport(addr)!=SalTransportUDP){
 			ms_error("Tunneled mode is only available for UDP kind of transports.");
 			return -1;
@@ -567,6 +568,10 @@ static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 			ms_error("Could not create tunnel listening point.");
 			return -1;
 		}
+#else
+		ms_error("No tunnel support in library.");
+		return -1;
+#endif
 	}else{
 		lp = belle_sip_stack_create_listening_point(ctx->stack,
 									sal_address_get_domain(addr),
