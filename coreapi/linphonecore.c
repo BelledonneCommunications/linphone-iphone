@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <ortp/telephonyevents.h>
-#include <ortp/zrtp.h>
+#include <mediastreamer2/zrtp.h>
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
@@ -6761,7 +6761,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 		case LinphoneMediaEncryptionSRTP:
 			return media_stream_srtp_supported();
 		case LinphoneMediaEncryptionZRTP:
-			return ortp_zrtp_available();
+			return ms_zrtp_available();
 		case LinphoneMediaEncryptionNone:
 			return TRUE;
 	}
@@ -6778,7 +6778,7 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 			ret=-1;
 		}else type="srtp";
 	}else if (menc == LinphoneMediaEncryptionZRTP){
-		if (!ortp_zrtp_available()){
+		if (!ms_zrtp_available()){
 			ms_warning("ZRTP not supported by library.");
 			type="none";
 			ret=-1;

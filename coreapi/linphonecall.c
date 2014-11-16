@@ -183,7 +183,7 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 	{
 		const LinphoneCallParams *params=linphone_call_get_current_params(call);
 		if (params->has_video) {
-			OrtpZrtpParams params;
+			MSZrtpParams params;
 			ms_message("Trying to enable encryption on video stream");
 			params.zid_file=NULL; //unused
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
@@ -219,9 +219,9 @@ void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t 
 		ms_error("linphone_call_set_authentication_token_verified(): No zrtp context.");
 	}
 	if (!call->auth_token_verified && verified){
-		ortp_zrtp_sas_verified(call->audiostream->ms.sessions.zrtp_context);
+		ms_zrtp_sas_verified(call->audiostream->ms.sessions.zrtp_context);
 	}else if (call->auth_token_verified && !verified){
-		ortp_zrtp_sas_reset_verified(call->audiostream->ms.sessions.zrtp_context);
+		ms_zrtp_sas_reset_verified(call->audiostream->ms.sessions.zrtp_context);
 	}
 	call->auth_token_verified=verified;
 	propagate_encryption_changed(call);
@@ -2001,8 +2001,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
 				if (crypto_idx >= 0) {
-					media_stream_set_srtp_recv_key(&call->audiostream->ms,stream->crypto[0].algo,stream->crypto[0].master_key);
-					media_stream_set_srtp_send_key(&call->audiostream->ms,stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+					media_stream_set_srtp_recv_key(&call->audiostream->ms,stream->crypto[0].algo,stream->crypto[0].master_key, TRUE);
+					media_stream_set_srtp_send_key(&call->audiostream->ms,stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key, TRUE);
 				} else {
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
 				}
@@ -2123,8 +2123,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
 					if (crypto_idx >= 0) {
-						media_stream_set_srtp_recv_key(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key);
-						media_stream_set_srtp_send_key(&call->videostream->ms,vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+						media_stream_set_srtp_recv_key(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key, TRUE);
+						media_stream_set_srtp_send_key(&call->videostream->ms,vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key, TRUE);
 					}
 				}
 				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
@@ -2204,15 +2204,15 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 
 	if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) {
-		OrtpZrtpParams params;
-		memset(&params,0,sizeof(OrtpZrtpParams));
+		MSZrtpParams params;
+		memset(&params,0,sizeof(MSZrtpParams));
 		/*call->current_params.media_encryption will be set later when zrtp is activated*/
 		params.zid_file=lc->zrtp_secrets_cache;
 		audio_stream_enable_zrtp(call->audiostream,&params);
 #if VIDEO_ENABLED
 		if (media_stream_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
 			/*audio stream is already encrypted and video stream is active*/
-			memset(&params,0,sizeof(OrtpZrtpParams));
+			memset(&params,0,sizeof(MSZrtpParams));
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 		}
 #endif
@@ -2244,9 +2244,9 @@ static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDes
 	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
 	if (crypto_idx >= 0) {
 		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
-			media_stream_set_srtp_send_key(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+			media_stream_set_srtp_send_key(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key, TRUE);
 		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
-			media_stream_set_srtp_recv_key(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
+			media_stream_set_srtp_recv_key(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key,TRUE);
 		}
 		return TRUE;
 	} else {
