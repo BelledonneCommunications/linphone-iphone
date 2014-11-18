@@ -46,6 +46,7 @@ set(SOURCE_FILES
 	call_params.c
 	chat.c
 	conference.c
+	content.c
 	ec-calibrator.c
 	enum.c
 	event.c
@@ -152,6 +153,7 @@ install(TARGETS linphone
 set(HEADER_FILES
 	call_log.h
 	call_params.h
+	content.h
 	event.h
 	linphonecore.h
 	linphonecore_utils.h

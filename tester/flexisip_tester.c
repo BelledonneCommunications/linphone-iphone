@@ -27,7 +27,7 @@ static void subscribe_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires=  600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -35,12 +35,13 @@ static void subscribe_forking(void) {
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,pauline2->lc);
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)liblinphone_tester_get_subscribe_content();
-	content.size=strlen(liblinphone_tester_get_subscribe_content());
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_data(content, belle_sip_strdup(liblinphone_tester_get_subscribe_content()));
+	linphone_content_set_size(content, strlen(liblinphone_tester_get_subscribe_content()));
 	
-	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,&content);
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
@@ -51,7 +52,8 @@ static void subscribe_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
 
 	linphone_event_terminate(lev);
-	
+
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(pauline2);

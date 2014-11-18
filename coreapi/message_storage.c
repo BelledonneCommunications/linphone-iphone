@@ -54,18 +54,15 @@ static int callback_content(void *data, int argc, char **argv, char **colName) {
 	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
 
 	if (message->file_transfer_information) {
-		linphone_content_uninit(message->file_transfer_information);
-		ms_free(message->file_transfer_information);
+		linphone_content_unref(message->file_transfer_information);
 		message->file_transfer_information = NULL;
 	}
-	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
-
-	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
-	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
-	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
-	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
-	message->file_transfer_information->size = (size_t) atoi(argv[5]);
+	message->file_transfer_information = linphone_content_new();
+	if (argv[1]) linphone_content_set_type(message->file_transfer_information, argv[1]);
+	if (argv[2]) linphone_content_set_subtype(message->file_transfer_information, argv[2]);
+	if (argv[3]) linphone_content_set_name(message->file_transfer_information, argv[3]);
+	if (argv[4]) linphone_content_set_encoding(message->file_transfer_information, argv[4]);
+	linphone_content_set_size(message->file_transfer_information, (size_t)atoi(argv[5]));
 
 	return 0;
 }
@@ -199,11 +196,11 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 	if (lc->db) {
 		LinphoneContent *content = msg->file_transfer_information;
 		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
-						content->type,
-						content->subtype,
-						content->name,
-						content->encoding,
-						content->size,
+						linphone_content_get_type(content),
+						linphone_content_get_subtype(content),
+						linphone_content_get_name(content),
+						linphone_content_get_encoding(content),
+						linphone_content_get_size(content),
 						NULL
  					);
 		linphone_sql_request(lc->db, buf);

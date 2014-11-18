@@ -124,8 +124,8 @@ void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *me
 	int progress = (int)((offset * 100)/total);
 	ms_message(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", progress
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
-																	, content->type
-																	, content->subtype
+																	, linphone_content_get_type(content)
+																	, linphone_content_get_subtype(content)
 																	,(linphone_chat_message_is_outgoing(message)?"to":"from")
 																	, address);
 	counters->progress_of_LinphoneFileTransfer = progress;
@@ -396,7 +396,7 @@ static void file_transfer_message(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* message;
-	LinphoneContent content;
+	LinphoneContent* content;
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -417,12 +417,12 @@ static void file_transfer_message(void) {
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 	/* create a file transfer message */
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=sizeof(big_file); /*total size to be transfered*/
-	content.name = "bigfile.txt";
-	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	content = linphone_core_create_content(pauline->lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
+	message = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	{
 		int dummy=0;
 		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
@@ -440,6 +440,7 @@ static void file_transfer_message(void) {
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
 
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -451,7 +452,7 @@ static void small_file_transfer_message(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* message;
-	LinphoneContent content;
+	LinphoneContent* content;
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -472,12 +473,12 @@ static void small_file_transfer_message(void) {
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	ms_free(to);
 	/* create a file transfer message */
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=SMALL_FILE_SIZE; /*total size to be transfered*/
-	content.name = "bigfile.txt";
-	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	content = linphone_core_create_content(pauline->lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,SMALL_FILE_SIZE); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
+	message = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	{
 		int dummy=0;
 		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
@@ -495,6 +496,7 @@ static void small_file_transfer_message(void) {
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
 
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -504,7 +506,7 @@ static void file_transfer_message_io_error_upload(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* message;
-	LinphoneContent content;
+	LinphoneContent* content;
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -526,12 +528,12 @@ static void file_transfer_message_io_error_upload(void) {
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 
 	/* create a file transfer message */
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=sizeof(big_file); /*total size to be transfered*/
-	content.name = "bigfile.txt";
-	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	content = linphone_core_create_content(pauline->lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
+	message = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	{
 		int dummy=0;
 		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
@@ -554,6 +556,7 @@ static void file_transfer_message_io_error_upload(void) {
 	linphone_core_refresh_registers(pauline->lc); /*to make sure registration is back in registered and so it can be later unregistered*/
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneRegistrationOk,pauline->stat.number_of_LinphoneRegistrationOk+1));
 
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -629,7 +632,7 @@ static void file_transfer_message_upload_cancelled(void) {
 	char* to;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessage* message;
-	LinphoneContent content;
+	LinphoneContent* content;
 	const char* big_file_content="big file"; /* setting dummy file content to something */
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -651,12 +654,12 @@ static void file_transfer_message_upload_cancelled(void) {
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
 
 	/* create a file transfer message */
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=sizeof(big_file); /*total size to be transfered*/
-	content.name = "bigfile.txt";
-	message = linphone_chat_room_create_file_transfer_message(chat_room, &content);
+	content = linphone_core_create_content(pauline->lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
+	message = linphone_chat_room_create_file_transfer_message(chat_room, content);
 	{
 		int dummy=0;
 		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
@@ -674,6 +677,7 @@ static void file_transfer_message_upload_cancelled(void) {
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
 
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -829,12 +833,13 @@ static void info_message_with_args(bool_t with_content) {
 	info=linphone_core_create_info_message(marie->lc);
 	linphone_info_message_add_header(info,"Weather","still bad");
 	if (with_content) {
-		LinphoneContent ct={0};
-		ct.type="application";
-		ct.subtype="somexml";
-		ct.data=(void*)info_content;
-		ct.size=strlen(info_content);
-		linphone_info_message_set_content(info,&ct);
+		LinphoneContent* ct=linphone_core_create_content(marie->lc);
+		linphone_content_set_type(ct,"application");
+		linphone_content_set_subtype(ct,"somexml");
+		linphone_content_set_data(ct,belle_sip_strdup(info_content));
+		linphone_content_set_size(ct,strlen(info_content));
+		linphone_info_message_set_content(info,ct);
+		linphone_content_unref(ct);
 	}
 	{
 		int dummy=0;
@@ -858,13 +863,13 @@ static void info_message_with_args(bool_t with_content) {
 	if (with_content){
 		CU_ASSERT_PTR_NOT_NULL(content);
 		if (content) {
-			CU_ASSERT_PTR_NOT_NULL(content->data);
-			CU_ASSERT_PTR_NOT_NULL(content->type);
-			CU_ASSERT_PTR_NOT_NULL(content->subtype);
-			if (content->type) CU_ASSERT_TRUE(strcmp(content->type,"application")==0);
-			if (content->subtype) CU_ASSERT_TRUE(strcmp(content->subtype,"somexml")==0);
-			if (content->data)CU_ASSERT_TRUE(strcmp((const char*)content->data,info_content)==0);
-			CU_ASSERT_EQUAL(content->size,strlen(info_content));
+			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_data(content));
+			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_type(content));
+			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
+			if (linphone_content_get_type(content)) CU_ASSERT_TRUE(strcmp(linphone_content_get_type(content),"application")==0);
+			if (linphone_content_get_subtype(content)) CU_ASSERT_TRUE(strcmp(linphone_content_get_subtype(content),"somexml")==0);
+			if (linphone_content_get_data(content))CU_ASSERT_TRUE(strcmp((const char*)linphone_content_get_data(content),info_content)==0);
+			CU_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content));
 		}
 	}
 	linphone_core_manager_destroy(marie);

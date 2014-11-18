@@ -354,7 +354,7 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
 	LinphoneCore *core = (LinphoneCore *)data;
 
 	/* If we've not reach the end of file yet, fill the buffer with more data */
-	if (offset < core->log_collection_upload_information->size) {
+	if (offset < linphone_content_get_size(core->log_collection_upload_information)) {
 		char *log_filename = ms_strdup_printf("%s/%s_log.%s",
 			liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
@@ -410,13 +410,14 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateInProgress, NULL);
 
 			/* Temporary storage for the Content-disposition header value */
-			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", core->log_collection_upload_information->name);
+			first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", linphone_content_get_name(core->log_collection_upload_information));
 
 			/* Create a user body handler to take care of the file and add the content disposition and content-type headers */
-			first_part_bh = belle_sip_user_body_handler_new(core->log_collection_upload_information->size, NULL, NULL, log_collection_upload_on_send_body, core);
+			first_part_bh = belle_sip_user_body_handler_new(linphone_content_get_size(core->log_collection_upload_information), NULL, NULL, log_collection_upload_on_send_body, core);
 			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
 			belle_sip_free(first_part_header);
-			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(core->log_collection_upload_information->type, core->log_collection_upload_information->subtype));
+			belle_sip_body_handler_add_header((belle_sip_body_handler_t *)first_part_bh,
+				(belle_sip_header_t *)belle_sip_header_content_type_create(linphone_content_get_type(core->log_collection_upload_information), linphone_content_get_subtype(core->log_collection_upload_information)));
 
 			/* Insert it in a multipart body handler which will manage the boundaries of multipart message */
 			bh = belle_sip_multipart_body_handler_new(log_collection_upload_on_progress, core, (belle_sip_body_handler_t *)first_part_bh);
@@ -553,6 +554,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		belle_http_request_listener_t *l;
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
+		char *name;
 
 		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
@@ -560,14 +562,15 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		core->log_collection_upload_information->type = "application";
 		core->log_collection_upload_information->subtype = "gzip";
 #else
-		core->log_collection_upload_information->type = "text";
-		core->log_collection_upload_information->subtype = "plain";
+		linphone_content_set_type(core->log_collection_upload_information, "text");
+		linphone_content_set_subtype(core->log_collection_upload_information,"plain");
 #endif
-		core->log_collection_upload_information->name = ms_strdup_printf("%s_log.%s",
+		name = ms_strdup_printf("%s_log.%s",
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
-		if (prepare_log_collection_file_to_upload(core->log_collection_upload_information->name) < 0) return;
-		core->log_collection_upload_information->size = get_size_of_file_to_upload(core->log_collection_upload_information->name);
+		linphone_content_set_name(core->log_collection_upload_information, name);
+		if (prepare_log_collection_file_to_upload(name) < 0) return;
+		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
 		cbs.process_response = process_response_from_post_file_log_collection;
@@ -575,6 +578,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		cbs.process_auth_requested = process_auth_requested_upload_log_collection;
 		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
 		belle_http_provider_send_request(core->http_provider, req, l);
+		ms_free(name);
 	}
 }
 

@@ -127,26 +127,6 @@ typedef struct SalAddress LinphoneAddress;
 typedef struct belle_sip_dict LinphoneDictionary;
 
 /**
- * The LinphoneContent struct holds data that can be embedded in a signaling message.
- * @ingroup misc
-**/
-struct _LinphoneContent{
-	char *type; /**<mime type for the data, for example "application"*/
-	char *subtype; /**<mime subtype for the data, for example "html"*/
-	void *data; /**<the actual data buffer, usually a string. Null when provided by callbacks #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferRecvCb*/
-	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.
-				When provided by callback #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferRecvCb, it states the total number of bytes of the transfered file*/
-	char *encoding; /**<The encoding of the data buffer, for example "gzip"*/
-	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
-};
-
-/**
- * Alias to the LinphoneContent struct.
- * @ingroup misc
-**/
-typedef struct _LinphoneContent LinphoneContent;
-
-/**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
  * @ingroup call_control
 **/
@@ -386,15 +366,17 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 
 
 #ifdef IN_LINPHONE
-#include "linphonefriend.h"
-#include "event.h"
 #include "call_log.h"
 #include "call_params.h"
+#include "content.h"
+#include "event.h"
+#include "linphonefriend.h"
 #else
-#include "linphone/linphonefriend.h"
-#include "linphone/event.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
+#include "linphone/content.h"
+#include "linphone/event.h"
+#include "linphone/linphonefriend.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);

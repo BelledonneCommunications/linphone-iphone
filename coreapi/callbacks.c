@@ -1208,14 +1208,13 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, const SalBody *body){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneContent content={0};
 
 	if (lev==NULL) {
 		/*out of subscribe notify */
 		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	{
-		const LinphoneContent *ct=linphone_content_from_sal_body(&content,body);
+		LinphoneContent *ct=linphone_content_from_sal_body(body);
 		if (ct) linphone_core_notify_notify_received(lc,lev,eventname,ct);
 	}
 	if (st!=SalSubscribeNone){

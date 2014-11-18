@@ -115,6 +115,7 @@
     <ClCompile Include="..\..\coreapi\callbacks.c" />
     <ClCompile Include="..\..\coreapi\chat.c" />
     <ClCompile Include="..\..\coreapi\conference.c" />
+    <ClCompile Include="..\..\coreapi\content.c" />
     <ClCompile Include="..\..\coreapi\ec-calibrator.c" />
     <ClCompile Include="..\..\coreapi\enum.c" />
     <ClCompile Include="..\..\coreapi\event.c" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\coreapi\bellesip_sal\sal_impl.h" />
+    <ClInclude Include="..\..\coreapi\content.h" />
     <ClInclude Include="..\..\coreapi\enum.h" />
     <ClInclude Include="..\..\coreapi\event.h" />
     <ClInclude Include="..\..\coreapi\linphonecore.h" />

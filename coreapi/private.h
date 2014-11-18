@@ -887,10 +887,9 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
-void linphone_content_uninit(LinphoneContent * obj);
-void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref);
-LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
+LinphoneContent * linphone_content_new(void);
+LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
@@ -902,8 +901,19 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
+LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+struct _LinphoneContent {
+	belle_sip_object_t base;
+	void *user_data;
+	struct _LinphoneContentPrivate lcp;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneContent);
+
+
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *
@@ -986,6 +996,7 @@ BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
+BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig)

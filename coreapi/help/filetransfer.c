@@ -54,8 +54,8 @@ static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMess
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
 	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)((offset *100)/total)
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
-																	, content->type
-																	, content->subtype
+																	, linphone_content_get_type(content)
+																	, linphone_content_get_subtype(content)
 																	,(linphone_chat_message_is_outgoing(message)?"to":"from")
 																	, address);
 	free(address);
@@ -131,7 +131,7 @@ static void linphone_file_transfer_state_changed(LinphoneChatMessage* msg,Linpho
  */
 static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
-	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
+	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", linphone_content_get_name(file_transfer_info), (long int)linphone_content_get_size(file_transfer_info));
 
 	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed, NULL);
 
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]){
 	int i;
 	const char* big_file_content="big file";
 	LinphoneChatRoom* chat_room;
-	LinphoneContent content;
+	LinphoneContent* content;
 	LinphoneChatMessage* chat_message;
 
 	/*seting dummy file content to something*/
@@ -189,14 +189,14 @@ int main(int argc, char *argv[]){
 	/*Next step is to create a chat room*/
 	chat_room = linphone_core_create_chat_room(lc,dest_friend);
 
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=sizeof(big_file); /*total size to be transfered*/
-	content.name = "bigfile.txt";
+	content = linphone_core_create_content(lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
 
 	/*now create a chat message with custom content*/
-	chat_message = linphone_chat_room_create_file_transfer_message(chat_room,&content);
+	chat_message = linphone_chat_room_create_file_transfer_message(chat_room,content);
 	if (chat_message == NULL) {
 		printf("returned message is null\n");
 	}
@@ -212,6 +212,7 @@ int main(int argc, char *argv[]){
 
 
 	printf("Shutting down...\n");
+	linphone_content_unref(content);
 	linphone_chat_room_destroy(chat_room);
 	linphone_core_destroy(lc);
 	printf("Exited\n");
