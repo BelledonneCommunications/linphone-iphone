@@ -704,24 +704,37 @@ static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mi
 #endif
 
 static void call_failed_because_of_codecs(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCall* out_call;
+	int begin,leaked_objects;
+	
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+	
+	{
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+		LinphoneCall* out_call;
 
-	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
-	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-	out_call = linphone_core_invite(pauline->lc,"marie");
-	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
+		out_call = linphone_core_invite(pauline->lc,"marie");
+		linphone_call_ref(out_call);
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
-	/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
+		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
+		CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
+		CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable);
+		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
+		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0);
 
-	linphone_call_unref(out_call);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
+		linphone_call_unref(out_call);
+		linphone_core_manager_destroy(marie);
+		linphone_core_manager_destroy(pauline);
+	}
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
 }
 
 static void call_with_dns_time_out(void) {
@@ -2041,8 +2054,6 @@ static void call_with_mkv_file_player(void) {
 	char hellowav[256];
 	char *recordpath;
 	double similar;
-
-	ortp_set_log_level_mask(ORTP_ERROR | ORTP_FATAL | ORTP_MESSAGE | ORTP_WARNING);
 
 	if (!is_format_supported(marie->lc,"mkv")){
 		ms_warning("Test skipped, no mkv support.");

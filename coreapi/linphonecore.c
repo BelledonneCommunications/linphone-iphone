@@ -1299,6 +1299,7 @@ bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
  */
 void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.download_bw=bw;
+	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","download_bw",bw);
 }
 
@@ -1315,6 +1316,7 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
  */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
+	linphone_core_update_allocated_audio_bandwidth(lc);
 	if (linphone_core_ready(lc)) lp_config_set_int(lc->config,"net","upload_bw",bw);
 }
 
@@ -1821,6 +1823,7 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
 	if (lc->codecs_conf.audio_codecs!=NULL) ms_list_free(lc->codecs_conf.audio_codecs);
 	lc->codecs_conf.audio_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
+	linphone_core_update_allocated_audio_bandwidth(lc);
 	return 0;
 }
 
@@ -3216,21 +3219,8 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	char *barmesg;
 	char *tmp;
 	LinphoneAddress *from_parsed;
-	SalMediaDescription *md;
 	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
 	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
-
-	linphone_call_make_local_media_description(lc,call);
-	sal_call_set_local_media_description(call->op,call->localdesc);
-	md=sal_call_get_final_media_description(call->op);
-	if (md){
-		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
-			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
-			linphone_call_set_state_base(call, LinphoneCallError, NULL,TRUE);
-			linphone_call_unref(call);
-			return;
-		}
-	}
 
 	from_parsed=linphone_address_new(sal_op_get_from(call->op));
 	linphone_address_clean(from_parsed);
@@ -6395,11 +6385,17 @@ bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 	return FALSE;
 }
 
+static void notify_soundcard_usage(LinphoneCore *lc, bool_t used){
+	MSSndCard *card=lc->sound_conf.capt_sndcard;
+	if (card && ms_snd_card_get_capabilities(card) & MS_SND_CARD_CAP_IS_SLOW){
+		ms_snd_card_set_usage_hint(card,used);
+	}
+}
 
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
 {
-	if(linphone_core_can_we_add_call(lc))
-	{
+	if (linphone_core_can_we_add_call(lc)){
+		if (lc->calls==NULL) notify_soundcard_usage(lc,TRUE);
 		lc->calls = ms_list_append(lc->calls,call);
 		return 0;
 	}
@@ -6422,6 +6418,7 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	lc->calls = the_calls;
+	if (lc->calls==NULL) notify_soundcard_usage(lc,FALSE);
 	return 0;
 }
 

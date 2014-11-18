@@ -86,6 +86,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt,
 	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
 		_linphone_core_codec_config_write(lc);
+		linphone_core_update_allocated_audio_bandwidth(lc);
 		return 0;
 	}
 	ms_error("Enabling codec not in audio or video list of PayloadType !");
@@ -113,6 +114,7 @@ void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadTyp
 		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
 			pt->normal_bitrate=bitrate*1000;
 			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
+			linphone_core_update_allocated_audio_bandwidth(lc);
 		}else{
 			ms_error("Cannot set an explicit bitrate for codec %s/%i, because it is not VBR.",pt->mime_type,pt->clock_rate);
 			return;
@@ -189,7 +191,6 @@ int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePaylo
 		return get_audio_payload_bandwidth(lc,pt,maxbw);
 	}else if (pt->type==PAYLOAD_VIDEO){
 		int video_bw;
-		linphone_core_update_allocated_audio_bandwidth(lc);
 		if (maxbw<=0) {
 			video_bw=1500; /*default bitrate for video stream when no bandwidth limit is set, around 1.5 Mbit/s*/
 		}else{
@@ -700,7 +701,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 	}
 }
 
-void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
 {
 	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
@@ -821,7 +822,7 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 		call->videostream->ms.ice_check_list=NULL;
 }
 
-void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	bool_t ice_restarted = FALSE;
 

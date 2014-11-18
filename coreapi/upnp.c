@@ -840,6 +840,8 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 				linphone_core_proceed_with_invite_if_ready(lc, call, NULL);
 				break;
 			case LinphoneCallIdle:
+				linphone_call_update_local_media_description_from_ice_or_upnp(call);
+				sal_call_set_local_media_description(call->op,call->localdesc);
 				linphone_core_notify_incoming_call(lc, call);
 				break;
 			default:

@@ -224,7 +224,8 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 			|| call->state==LinphoneCallOutgoingInit
 			|| call->state==LinphoneCallOutgoingProgress
 			|| call->state==LinphoneCallOutgoingEarlyMedia
-			|| call->state==LinphoneCallOutgoingRinging){
+			|| call->state==LinphoneCallOutgoingRinging
+			|| call->state==LinphoneCallIdle){ /*case of an incoming call for which ICE candidate gathering is pending.*/
 			return TRUE;
 		}
 	}
@@ -239,6 +240,7 @@ static void call_received(SalOp *h){
 	LinphoneAddress  *to_addr=NULL;
 	/*this mode is deprcated because probably useless*/
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
+	SalMediaDescription *md;
 
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
@@ -301,8 +303,19 @@ static void call_received(SalOp *h){
 		linphone_address_destroy(to_addr);
 		return;
 	}
-
+	
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
+	
+	linphone_call_make_local_media_description(lc,call);
+	sal_call_set_local_media_description(call->op,call->localdesc);
+	md=sal_call_get_final_media_description(call->op);
+	if (md){
+		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
+			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
+			linphone_call_unref(call);
+			return;
+		}
+	}
 
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
@@ -372,6 +385,10 @@ static void call_ringing(SalOp *h){
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
 		linphone_core_stop_dtmf_stream(lc);
+		if (call->state==LinphoneCallOutgoingEarlyMedia){
+			/*already doing early media */
+			return;
+		}
 		if (lc->ringstream!=NULL) return;/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
@@ -422,7 +439,7 @@ static void call_accepted(SalOp *op){
 
 	/* Handle remote ICE attributes if any. */
 	if (call->ice_session != NULL) {
-		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+		linphone_call_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
 	}
 #ifdef BUILD_UPNP
 	if (call->upnp_session != NULL) {

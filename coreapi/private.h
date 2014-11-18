@@ -188,8 +188,7 @@ typedef struct _PortConfig{
 	int rtcp_port;
 }PortConfig;
 
-struct _LinphoneCall
-{
+struct _LinphoneCall{
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneCore *core;
@@ -377,8 +376,9 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
-void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
-void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
+void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
@@ -413,7 +413,6 @@ void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
-void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, const char *message,bool_t silently);
 int _linphone_core_apply_transports(LinphoneCore *lc);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 

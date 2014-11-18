@@ -381,6 +381,19 @@ void linphone_call_increment_local_media_description(LinphoneCall *call){
 	md->session_ver++;
 }
 
+void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call){
+	if (call->ice_session != NULL) {
+		_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+		linphone_core_update_ice_state_in_call_stats(call);
+	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
+		linphone_core_update_upnp_state_in_call_stats(call);
+	}
+#endif  //BUILD_UPNP
+}
+
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;
@@ -463,18 +476,9 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	setup_rtcp_xr(call, md);
 
 	update_media_description_from_stun(md,&call->ac,&call->vc);
-	if (call->ice_session != NULL) {
-		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
-		linphone_core_update_ice_state_in_call_stats(call);
-	}
-#ifdef BUILD_UPNP
-	if(call->upnp_session != NULL) {
-		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
-		linphone_core_update_upnp_state_in_call_stats(call);
-	}
-#endif  //BUILD_UPNP
-	linphone_address_destroy(addr);
 	call->localdesc=md;
+	linphone_call_update_local_media_description_from_ice_or_upnp(call);
+	linphone_address_destroy(addr);
 	if (old_md){
 		call->localdesc_changed=sal_media_description_equals(md,old_md);
 		sal_media_description_unref(old_md);
@@ -840,7 +844,50 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	return call;
 }
 
-/* this function is called internally to get rid of a call.
+/*
+ * Frees the media resources of the call.
+ * This has to be done at the earliest, unlike signaling resources that sometimes need to be kept a bit more longer.
+ * It is called by linphone_call_set_terminated() (for termination of calls signaled to the application), or directly by the destructor of LinphoneCall
+ * (_linphone_call_destroy) if the call was never notified to the application.
+ */
+void linphone_call_free_media_resources(LinphoneCall *call){
+	linphone_call_stop_media_streams(call);
+	ms_media_stream_sessions_uninit(&call->sessions[0]);
+	ms_media_stream_sessions_uninit(&call->sessions[1]);
+	linphone_call_delete_upnp_session(call);
+	linphone_call_delete_ice_session(call);
+	linphone_call_stats_uninit(&call->stats[0]);
+	linphone_call_stats_uninit(&call->stats[1]);
+}
+
+/*
+ * Called internally when reaching the Released state, to perform cleanups to break circular references.
+**/
+static void linphone_call_set_released(LinphoneCall *call){
+	if (call->op!=NULL) {
+		/*transfer the last error so that it can be obtained even in Released state*/
+		if (call->non_op_error.reason==SalReasonNone){
+			const SalErrorInfo *ei=sal_op_get_error_info(call->op);
+			sal_error_info_set(&call->non_op_error,ei->reason,ei->protocol_code,ei->status_string,ei->warnings);
+		}
+		/* so that we cannot have anymore upcalls for SAL
+			concerning this call*/
+		sal_op_release(call->op);
+		call->op=NULL;
+	}
+	/*it is necessary to reset pointers to other call to prevent circular references that would result in memory never freed.*/
+	if (call->referer){
+		linphone_call_unref(call->referer);
+		call->referer=NULL;
+	}
+	if (call->transfer_target){
+		linphone_call_unref(call->transfer_target);
+		call->transfer_target=NULL;
+	}
+	linphone_call_unref(call);
+}
+
+/* this function is called internally to get rid of a call that was notified to the application, because it reached the end or error state.
  It performs the following tasks:
  - remove the call from the internal list of calls
  - update the call logs accordingly
@@ -849,16 +896,8 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 static void linphone_call_set_terminated(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 
-	linphone_call_stop_media_streams(call);
-	ms_media_stream_sessions_uninit(&call->sessions[0]);
-	ms_media_stream_sessions_uninit(&call->sessions[1]);
-	linphone_call_delete_upnp_session(call);
-	linphone_call_delete_ice_session(call);
-	linphone_core_update_allocated_audio_bandwidth(lc);
-	linphone_call_stats_uninit(&call->stats[0]);
-	linphone_call_stats_uninit(&call->stats[1]);
+	linphone_call_free_media_resources(call);
 	linphone_call_log_completed(call);
-
 
 	if (call == lc->current_call){
 		ms_message("Resetting the current call");
@@ -868,7 +907,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (linphone_core_del_call(lc,call) != 0){
 		ms_error("Could not remove the call from the list !!!");
 	}
-
 	linphone_core_conference_check_uninit(lc);
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
@@ -931,11 +969,7 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 	return "undefined state";
 }
 
-void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message) {
-	linphone_call_set_state_base(call, cstate, message,FALSE);
-}
-
-void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, const char *message,bool_t silently){
+void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message){
 	LinphoneCore *lc=call->core;
 
 	if (call->state!=cstate){
@@ -974,45 +1008,24 @@ void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, 
 			call->log->connected_date_time=time(NULL);
 		}
 
-		if (!silently)
-			linphone_core_notify_call_state_changed(lc,call,cstate,message);
-
+		linphone_core_notify_call_state_changed(lc,call,cstate,message);
 		linphone_reporting_call_state_updated(call);
-
+		
 		/*cancelling DTMF sequence, if any*/
-		if (cstate!=LinphoneCallStreamsRunning&&call->dtmfs_timer!=NULL){
+		if (cstate!=LinphoneCallStreamsRunning && call->dtmfs_timer!=NULL){
 			linphone_call_cancel_dtmfs(call);
 		}
-
 		if (cstate==LinphoneCallReleased){
-			if (call->op!=NULL) {
-				/*transfer the last error so that it can be obtained even in Released state*/
-				if (call->non_op_error.reason==SalReasonNone){
-					const SalErrorInfo *ei=sal_op_get_error_info(call->op);
-					sal_error_info_set(&call->non_op_error,ei->reason,ei->protocol_code,ei->status_string,ei->warnings);
-				}
-				/* so that we cannot have anymore upcalls for SAL
-				 concerning this call*/
-				sal_op_release(call->op);
-				call->op=NULL;
-			}
-			/*it is necessary to reset pointers to other call to prevent circular references that would result in memory never freed.*/
-			if (call->referer){
-				linphone_call_unref(call->referer);
-				call->referer=NULL;
-			}
-			if (call->transfer_target){
-				linphone_call_unref(call->transfer_target);
-				call->transfer_target=NULL;
-			}
-			linphone_call_unref(call);
+			linphone_call_set_released(call);
 		}
 	}
 }
 
-static void linphone_call_destroy(LinphoneCall *obj)
-{
+static void linphone_call_destroy(LinphoneCall *obj){
 	ms_message("Call [%p] freed.",obj);
+	if (obj->audiostream || obj->videostream){
+		linphone_call_free_media_resources(obj);
+	}
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
@@ -1031,9 +1044,11 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	if (obj->ping_op) {
 		sal_op_release(obj->ping_op);
+		obj->ping_op=NULL;
 	}
 	if (obj->refer_to){
 		ms_free(obj->refer_to);
+		obj->refer_to=NULL;
 	}
 	if (obj->referer){
 		linphone_call_unref(obj->referer);
@@ -1041,20 +1056,30 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	if (obj->transfer_target){
 		linphone_call_unref(obj->transfer_target);
+		obj->transfer_target=NULL;
 	}
 	if (obj->log) {
 		linphone_call_log_unref(obj->log);
+		obj->log=NULL;
 	}
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
+		obj->auth_token=NULL;
 	}
 	if (obj->dtmfs_timer) {
 		linphone_call_cancel_dtmfs(obj);
 	}
-	linphone_call_params_unref(obj->params);
-	linphone_call_params_unref(obj->current_params);
+	if (obj->params){
+		linphone_call_params_unref(obj->params);
+		obj->params=NULL;
+	}
+	if (obj->current_params){
+		linphone_call_params_unref(obj->current_params);
+		obj->current_params=NULL;
+	}
 	if (obj->remote_params != NULL) {
 		linphone_call_params_unref(obj->remote_params);
+		obj->remote_params=NULL;
 	}
 	sal_error_info_reset(&obj->non_op_error);
 }
@@ -1497,7 +1522,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 		if (has_video) _linphone_call_prepare_ice_for_stream(call,1,TRUE);
 		/*start ICE gathering*/
 		if (incoming_offer)
-			linphone_core_update_ice_from_remote_media_description(call,remote); /*this may delete the ice session*/
+			linphone_call_update_ice_from_remote_media_description(call,remote); /*this may delete the ice session*/
 		if (call->ice_session && !ice_session_candidates_gathered(call->ice_session)){
 			if (call->audiostream->ms.state==MSStreamInitialized)
 				audio_stream_prepare_sound(call->audiostream, NULL, NULL);
@@ -2839,6 +2864,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				break;
 			case LinphoneCallIdle:
 				linphone_call_stop_media_streams_for_ice_gathering(call);
+				linphone_call_update_local_media_description_from_ice_or_upnp(call);
+				sal_call_set_local_media_description(call->op,call->localdesc);
 				linphone_core_notify_incoming_call(call->core, call);
 				break;
 			default:
