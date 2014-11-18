@@ -1228,14 +1228,19 @@ static bool_t notify_actions_supported() {
 }
 
 static NotifyNotification* build_notification(const char *title, const char *body) {
-	const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
-	GdkPixbuf *pbuf = create_pixbuf(icon_path);
 	NotifyNotification *n = notify_notification_new(title, body, NULL
 #ifdef HAVE_NOTIFY1
 		,NULL
 #endif
 	);
-	notify_notification_set_icon_from_pixbuf(n, pbuf);
+#ifndef HAVE_NOTIFY1
+	{
+		const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
+		GdkPixbuf *pbuf = create_pixbuf(icon_path);
+		/*with notify1, this function makes the notification crash the app with obscure dbus glib critical errors*/
+		notify_notification_set_icon_from_pixbuf(n, pbuf);
+	}
+#endif
 	return n;
 }
 
