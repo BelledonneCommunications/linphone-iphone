@@ -160,14 +160,13 @@ int messagesUnreadCount;
 	const LinphoneContent * content = [[notif.userInfo objectForKey: @"content"] pointerValue];
 
 	if ((content == NULL)
-		|| (strcmp("application", content->type) != 0)
-		|| (strcmp("simple-message-summary", content->subtype) != 0)
-		|| (content->data == NULL)) {
+		|| (strcmp("application", linphone_content_get_type(content)) != 0)
+		|| (strcmp("simple-message-summary", linphone_content_get_subtype(content)) != 0)
+		|| (linphone_content_get_data(content) == NULL)) {
 		return;
 	}
-
-	const char * body = (const char*) content->data;
-	if ((body = strstr(body, "voice-message: ")) == NULL) {
+    const char* body = linphone_content_get_data(content);
+    if ((body = strstr(body, "voice-message: ")) == NULL) {
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it."];
 		return;
 	}
