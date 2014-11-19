@@ -62,9 +62,10 @@ MEDIASTREAMER_PLUGINS := msilbc \
 						msamr \
 						mssilk \
 						msx264 \
-#						mswebrtc \ # we need to update it to be compatible with aarch64
 						msopenh264 \
 						msbcg729
+# TODO: add mswebrtc when it is commatible again
+
 
 SUBMODULES_LIST := polarssl
 
