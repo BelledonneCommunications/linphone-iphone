@@ -22,10 +22,13 @@
 
 opencore-amr_dir?=externals/opencore-amr
 
-$(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure.ac
-	cd $(BUILDER_SRC_DIR)/$(opencore-amr_dir) && autoreconf
+$(BUILDER_SRC_DIR)/$(opencore-amr_dir)/autoreconf.stamp: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure.ac
+	cd $(BUILDER_SRC_DIR)/$(opencore-amr_dir) \
+	&& libtoolize --copy --force \
+	&& aclocal -I m4 \
+	&& automake --add-missing --force-missing --copy && autoreconf && touch autoreconf.stamp
 
-$(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure
+$(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(opencore-amr_dir)/autoreconf.stamp
 	mkdir -p $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)
 	cd $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/ \
 	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
