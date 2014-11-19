@@ -26,8 +26,8 @@ endif
 ifneq (,$(findstring armv7-,$(host)))
 	ARCH=armv7
 endif
-ifneq (,$(findstring armv7s-,$(host)))
-	ARCH=armv7s
+ifneq (,$(findstring aarch64-,$(host)))
+	ARCH=arm64
 endif
 
 openh264_dir?=externals/openh264

@@ -56,9 +56,42 @@ LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
-all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729 build-mswebrtc build-msopenh264
+# list of the submodules to build, the order is important
+MEDIASTREAMER_PLUGINS := msilbc \
+						libilbc \
+						msamr \
+						mssilk \
+						msx264 \
+#						mswebrtc \ # we need to update it to be compatible with aarch64
+						msopenh264 \
+						msbcg729
 
-# setup the switches that might trigger a linphone reconfiguration
+SUBMODULES_LIST := polarssl
+
+ifeq ($(enable_tunnel),yes)
+SUBMODULES_LIST += tunnel
+endif
+
+SUBMODULES_LIST += libantlr \
+					cunit \
+					belle-sip \
+					srtp \
+					speex \
+					libgsm \
+					libvpx \
+					libxml2 \
+					bzrtp \
+					ffmpeg \
+					opus
+
+# build linphone (which depends on submodules) and then the plugins
+all: build-linphone $(addprefix build-,$(MEDIASTREAMER_PLUGINS))
+
+
+
+####################################################################
+# setup the switches that might trigger a linphone recompilation
+####################################################################
 
 enable_gpl_third_parties?=yes
 enable_ffmpeg?=yes
@@ -101,7 +134,6 @@ endif
 SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
 
 mode_switch_check: $(SWITCHES)
-
 #generic rule to force recompilation of linphone if some options require it
 $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
@@ -109,58 +141,49 @@ $(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	touch $@
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
-# end of switches parsing
+####################################################################
+# Base rules:
+####################################################################
 
-speex_dir=externals/speex
-gsm_dir=externals/gsm
 
-MSILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/msilbc
-MSILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/msilbc
-
-LIBILBC_SRC_DIR:=$(BUILDER_SRC_DIR)/libilbc-rfc3951
-LIBILBC_BUILD_DIR:=$(BUILDER_BUILD_DIR)/libilbc-rfc3951
-
-ifneq (,$(findstring arm,$(host)))
-	#SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
-	CFLAGS := $(CFLAGS) -marm
-	SPEEX_CONFIGURE_OPTION := --disable-float-api --enable-arm5e-asm --enable-fixed-point
-endif
-
-ifneq (,$(findstring armv7,$(host)))
-	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm
-endif
-
-clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
-clean: clean-linphone clean-msbcg729
+clean-makefile: clean-makefile-linphone
+clean: clean-linphone
 init:
 	mkdir -p $(prefix)/include
 	mkdir -p $(prefix)/lib/pkgconfig
 
-veryclean: veryclean-linphone veryclean-msbcg729
+veryclean: veryclean-linphone 
 	rm -rf $(BUILDER_BUILD_DIR)
 
-# list of the submodules to build, the order is important
-MS_MODULES      := msilbc libilbc msamr mssilk msx264 mswebrtc msopenh264
-SUBMODULES_LIST := polarssl
+list-packages:
+	@echo "Submodules:"
+	@echo "$(addprefix \nbuild-,$(SUBMODULES_LIST))"
+	@echo "\nPlugins: "
+	@echo "$(addprefix \nbuild-,$(MEDIASTREAMER_PLUGINS))"
 
-ifeq ($(enable_tunnel),yes)
-SUBMODULES_LIST += tunnel
-endif
+####################################################################
+# Linphone compilation
+####################################################################
 
-SUBMODULES_LIST += libantlr cunit belle-sip srtp speex libgsm libvpx libxml2 bzrtp ffmpeg opus
+build-submodules: $(addprefix build-,$(SUBMODULES_LIST))
 
-.NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
-	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
-	mkdir -p $(prefix)/share/linphone/tutorials && cp -f $(LINPHONE_SRC_DIR)/coreapi/help/*.c $(prefix)/share/linphone/tutorials/
+.NOTPARALLEL build-linphone: init build-submodules mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
+	cd $(LINPHONE_BUILD_DIR) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig \
+    CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+    make newdate \
+    && make \
+    && make install
+	mkdir -p $(prefix)/share/linphone/tutorials \&& cp -f $(LINPHONE_SRC_DIR)/coreapi/help/*.c $(prefix)/share/linphone/tutorials/
 
-clean-linphone: $(addprefix clean-,$(SUBMODULES_LIST)) $(addprefix clean-,$(MS_MODULES))
+clean-linphone: $(addprefix clean-,$(SUBMODULES_LIST)) $(addprefix clean-,$(MEDIASTREAMER_PLUGINS))
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: $(addprefix veryclean-,$(SUBMODULES_LIST)) $(addprefix veryclean-,$(MS_MODULES))
+veryclean-linphone: $(addprefix veryclean-,$(SUBMODULES_LIST)) $(addprefix veryclean-,$(MEDIASTREAMER_PLUGINS))
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: $(addprefix clean-makefile-,$(SUBMODULES_LIST)) $(addprefix clean-makefile-,$(MS_MODULES))
+clean-makefile-linphone: $(addprefix clean-makefile-,$(SUBMODULES_LIST)) $(addprefix clean-makefile-,$(MEDIASTREAMER_PLUGINS))
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -188,105 +211,12 @@ clean-makefile-liblinphone:
 clean-liblinphone:
 	 cd  $(LINPHONE_BUILD_DIR) && make clean
 
-#speex
 
-$(BUILDER_SRC_DIR)/$(speex_dir)/configure:
-	 cd $(BUILDER_SRC_DIR)/$(speex_dir) && ./autogen.sh
-
-$(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile: $(BUILDER_SRC_DIR)/$(speex_dir)/configure
-	mkdir -p $(BUILDER_BUILD_DIR)/$(speex_dir)
-	cd $(BUILDER_BUILD_DIR)/$(speex_dir)/\
-	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) CFLAGS="$(CFLAGS) -O2" \
-	$(BUILDER_SRC_DIR)/$(speex_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-ogg  $(SPEEX_CONFIGURE_OPTION)
-
-build-speex: $(BUILDER_BUILD_DIR)/$(speex_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make  && make install
-
-clean-speex:
-	cd  $(BUILDER_BUILD_DIR)/$(speex_dir)  && make clean
-
-veryclean-speex:
-#	-cd $(BUILDER_BUILD_DIR)/$(speex_dir) && make distclean
-	-rm -f $(BUILDER_SRC_DIR)/$(speex_dir)/configure
-
-clean-makefile-speex:
-	cd $(BUILDER_BUILD_DIR)/$(speex_dir) && rm -f Makefile
-
-
-#GSM
-
-build-libgsm:
-	cp -rf $(BUILDER_SRC_DIR)/$(gsm_dir) $(BUILDER_BUILD_DIR)/$(gsm_dir)
-	rm -rf $(BUILDER_BUILD_DIR)/$(gsm_dir)/gsm/.git
-	rm -f $(prefix)/lib/libgsm.a
-	rm -rf $(prefix)/include/gsm
-	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
-	&& mkdir -p $(prefix)/include/gsm \
-	&& host_alias=$(host)  . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&&  make -j1 CC="$${CC}" INSTALL_ROOT=$(prefix)  GSM_INSTALL_INC=$(prefix)/include/gsm  install
-
-clean-libgsm:
-	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
-	&& make clean
-
-veryclean-libgsm:
-	 -cd $(BUILDER_BUILD_DIR)/$(gsm_dir) \
-	&& make uninstall
-
-
-
-# msilbc  plugin
-
-$(MSILBC_SRC_DIR)/configure:
-	cd $(MSILBC_SRC_DIR) && ./autogen.sh
-
-$(MSILBC_BUILD_DIR)/Makefile: $(MSILBC_SRC_DIR)/configure
-	mkdir -p $(MSILBC_BUILD_DIR)
-	cd $(MSILBC_BUILD_DIR) && \
-	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(MSILBC_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) $(library_mode)
-
-build-msilbc: build-libilbc $(MSILBC_BUILD_DIR)/Makefile
-	cd $(MSILBC_BUILD_DIR) && make  && make install
-
-clean-msilbc:
-	cd  $(MSILBC_BUILD_DIR) && make  clean
-
-veryclean-msilbc:
-#	-cd $(MSILBC_BUILD_DIR) && make distclean
-	-cd $(MSILBC_SRC_DIR) && rm configure
-
-clean-makefile-msilbc:
-	cd $(MSILBC_BUILD_DIR) && rm -f Makefile
-
-# libilbc
-
-$(LIBILBC_SRC_DIR)/configure:
-	cd $(LIBILBC_SRC_DIR) && ./autogen.sh
-
-$(LIBILBC_BUILD_DIR)/Makefile: $(LIBILBC_SRC_DIR)/configure
-	mkdir -p $(LIBILBC_BUILD_DIR)
-	cd $(LIBILBC_BUILD_DIR) && \
-	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(LIBILBC_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) $(library_mode)
-
-build-libilbc: $(LIBILBC_BUILD_DIR)/Makefile
-	cd $(LIBILBC_BUILD_DIR) && make  && make install
-
-clean-libilbc:
-	cd  $(LIBILBC_BUILD_DIR) && make clean
-
-veryclean-libilbc:
-	-cd $(LIBILBC_BUILD_DIR) && make distclean
-
-clean-makefile-libilbc:
-	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
-
-#openssl
-#srtp
-#zrtp
 include builders.d/*.mk
-#sdk generation and distribution
+
+####################################################################
+# sdk generation and distribution
+####################################################################
 
 multi-arch:
 	arm_archives=`find $(prefix) -name *.a` ;\
@@ -294,24 +224,20 @@ multi-arch:
 	cp -rf $(prefix)/include  $(prefix)/../apple-darwin/. ; \
 	cp -rf $(prefix)/share  $(prefix)/../apple-darwin/. ; \
 	for archive in $$arm_archives ; do \
-	        i386_path=`echo $$archive | sed -e "s/armv7/i386/"` ;\
-	        armv6_path=`echo $$archive | sed -e "s/armv7/armv6/"` ;\
-        	if  test ! -f "$$armv6_path"; then \
-			armv6_path= ; \
+		i386_path=`echo $$archive | sed -e "s/armv7/i386/"` ;\
+		arm64_path=`echo $$archive | sed -e "s/armv7/aarch64/"` ;\
+		if  test ! -f "$$arm64_path"; then \
+			arm64_path= ; \
 		fi; \
-	        armv7s_path=`echo $$archive | sed -e "s/armv7/armv7s/"` ;\
-        	if  test ! -f "$$armv7s_path"; then \
-			armv7s_path= ; \
-		fi; \
-        	destpath=`echo $$archive | sed -e "s/-debug//"` ;\
-        	destpath=`echo $$destpath | sed -e "s/armv7-//"` ;\
-        	if test -f "$$i386_path"; then \
-                	echo "Mixing $$archive into $$destpath"; \
-                	mkdir -p `dirname $$destpath` ; \
-                	lipo -create $$archive $$armv7s_path $$armv6_path $$i386_path -output $$destpath; \
-        	else \
-                	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
-        	fi \
+		destpath=`echo $$archive | sed -e "s/-debug//"` ;\
+		destpath=`echo $$destpath | sed -e "s/armv7-//"` ;\
+		if test -f "$$i386_path"; then \
+			echo "Mixing $$archive into $$destpath"; \
+			mkdir -p `dirname $$destpath` ; \
+			lipo -create $$archive $$arm64_path $$i386_path -output $$destpath; \
+		else \
+			echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
+		fi \
 	done
 	if ! test -f $(prefix)/../apple-darwin/lib/libtunnel.a ; then \
 		cp -f $(BUILDER_SRC_DIR)/../submodules/binaries/libdummy.a $(prefix)/../apple-darwin/lib/libtunnel.a ; \
@@ -329,6 +255,7 @@ delivery-sdk: multi-arch
 	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3
 
 download-sdk:
+	@echo "Downloading the latest binary SDK"
 	cd $(BUILDER_SRC_DIR)/../
 	rm -fr liblinphone-iphone-sdk-latest*
 	wget http://linphone.org/snapshots/ios/liblinphone-iphone-sdk-latest.zip

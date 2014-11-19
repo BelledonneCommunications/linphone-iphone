@@ -10,22 +10,17 @@ if test "${host_alias}" = "i386-apple-darwin" ; then
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=i386"
 	MCPU=""
 	CLANG_TARGET_SPECIFIER=mios-simulator-version-min
-elif test "${host_alias}" = "armv6-apple-darwin" ; then 
-	ARCH=armv6
-	PLATFORM=OS
-	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
-	MCPU="-mcpu=arm1176jzf-s"
 elif test "${host_alias}" = "armv7-apple-darwin" ; then 
 	ARCH=armv7
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 	MCPU="-mcpu=cortex-a8"
-elif test "${host_alias}" = "armv7s-apple-darwin" ; then 
-	ARCH=armv7s
+elif test "${host_alias}" = "aarch64-apple-darwin" ; then 
+	ARCH=arm64
 	PLATFORM=OS
-	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
+	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"
 else 
-	echo "bad host ${host_alias} must be either i386-apple-darwin or armv[6,7,7s]-apple-darwin"
+	echo "bad host ${host_alias} must be either i386-apple-darwin or arm[v7,64]-apple-darwin"
 	exit
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"

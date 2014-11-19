@@ -87,19 +87,27 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
 armv7-%:
 	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
+arm64-%:
+	make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* V=1 VERBOSE=1
+
 simu-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
 
+arm64:
+	make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) V=1 VERBOSE=1
 
-build-% clean-% veryclean-%:
-	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@
 
-# sends the target after 'broadcast_' to all sub-architectures (armv7, simulator)
+# sends the target after 'broadcast_' to all sub-architectures (armv7, simu, arm64)
 broadcast_%:
 	@echo "Broadcasting target '$*' to all sub-architectures"
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* 
+
+build-% clean-% veryclean-%:
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@ 
 
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
@@ -115,6 +123,9 @@ clean: broadcast_clean
 
 veryclean: broadcast_veryclean
 
+list-packages:
+	@make -f builder-iphone-os.mk list-packages
+
 
 zipres:
 	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork
@@ -129,8 +140,11 @@ help:
 	@echo "   * ipa       : builds all, creates the SDK, then builds an IPA of the Linphone-iphone application"
 	@echo "   * clean     : clean all packages for all architectures"
 	@echo "   * veryclean : completely clean all packages for all architectures"
+	@echo "   * zipres    : creates a tar.gz file with all the resources (images)"
 	@echo ""
 	@echo "=== Advanced usage ==="
+	@echo ""
+	@echo "   *              list-packages : lists the packages that you can build"
 	@echo ""
 	@echo "   *            build-[package] : builds the package for all architectures"
 	@echo "   *            clean-[package] : clean the package for all architectures"

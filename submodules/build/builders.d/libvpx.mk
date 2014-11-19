@@ -19,6 +19,8 @@ else ifneq (,$(findstring armv7s,$(host)))
 else ifneq (,$(findstring armv7,$(host)))
 	libvpx_configure_options+= --target=armv7-darwin-gcc
 	take_binary = armv7
+else ifneq (,$(findstring aarch64,$(host)))
+	libvpx_configure_options+= --target=arm64-darwin-gcc
 else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
 	take_binary = i386
@@ -30,9 +32,7 @@ endif
 
 
 
-all_p=armv6-darwin-gcc    #neon Cortex-A8
 all_p+=armv7-darwin-gcc    #neon Cortex-A8
-all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
 ifeq ($(force_non_binary_libvpx),1)
 take_binary=
@@ -45,7 +45,7 @@ $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
 	&& touch $@
 
 
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
