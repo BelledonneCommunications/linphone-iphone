@@ -72,6 +72,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (NSString*)normalizeSipURI:(NSString*)address {
+    // replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace 
+    address = [[address componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@" "];
     NSString *normalizedSipAddress = nil;
 	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [address UTF8String]);
     if(linphoneAddress != NULL) {
