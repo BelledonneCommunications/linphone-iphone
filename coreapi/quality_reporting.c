@@ -331,8 +331,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		append_to_buffer(&buffer, &size, &offset, "\r\n");
 	}
 
-	linphone_content_set_data(content, buffer);
-	linphone_content_set_size(content, strlen(buffer));
+	linphone_content_set_buffer(content, buffer, strlen(buffer));
 
 	if (call->log->reporting.on_report_sent != NULL){
 		call->log->reporting.on_report_sent(

@@ -836,8 +836,7 @@ static void info_message_with_args(bool_t with_content) {
 		LinphoneContent* ct=linphone_core_create_content(marie->lc);
 		linphone_content_set_type(ct,"application");
 		linphone_content_set_subtype(ct,"somexml");
-		linphone_content_set_data(ct,belle_sip_strdup(info_content));
-		linphone_content_set_size(ct,strlen(info_content));
+		linphone_content_set_buffer(ct,info_content,strlen(info_content));
 		linphone_info_message_set_content(info,ct);
 		linphone_content_unref(ct);
 	}
@@ -863,12 +862,12 @@ static void info_message_with_args(bool_t with_content) {
 	if (with_content){
 		CU_ASSERT_PTR_NOT_NULL(content);
 		if (content) {
-			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_data(content));
+			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_buffer(content));
 			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_type(content));
 			CU_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
 			if (linphone_content_get_type(content)) CU_ASSERT_TRUE(strcmp(linphone_content_get_type(content),"application")==0);
 			if (linphone_content_get_subtype(content)) CU_ASSERT_TRUE(strcmp(linphone_content_get_subtype(content),"somexml")==0);
-			if (linphone_content_get_data(content))CU_ASSERT_TRUE(strcmp((const char*)linphone_content_get_data(content),info_content)==0);
+			if (linphone_content_get_buffer(content))CU_ASSERT_TRUE(strcmp((const char*)linphone_content_get_buffer(content),info_content)==0);
 			CU_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content));
 		}
 	}

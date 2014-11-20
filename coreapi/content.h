@@ -150,26 +150,26 @@ LINPHONE_PUBLIC void linphone_content_set_subtype(LinphoneContent *content, cons
  * @param[in] content LinphoneContent object.
  * @return The content data buffer.
  */
-LINPHONE_PUBLIC void * linphone_content_get_data(const LinphoneContent *content);
+LINPHONE_PUBLIC void * linphone_content_get_buffer(const LinphoneContent *content);
 
 /**
  * Set the content data buffer, usually a string.
  * @param[in] content LinphoneContent object.
  * @param[in] data The content data buffer.
  */
-LINPHONE_PUBLIC void linphone_content_set_data(LinphoneContent *content, void *data);
+LINPHONE_PUBLIC void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, size_t size);
 
 /**
- * Get the content data size, excluding null character despite null character is always set for convenience.
+ * Get the content data buffer size, excluding null character despite null character is always set for convenience.
  * @param[in] content LinphoneContent object.
- * @return The content data size.
+ * @return The content data buffer size.
  */
 LINPHONE_PUBLIC size_t linphone_content_get_size(const LinphoneContent *content);
 
 /**
  * Set the content data size, excluding null character despite null character is always set for convenience.
  * @param[in] content LinphoneContent object
- * @param[in] size The content data size.
+ * @param[in] size The content data buffer size.
  */
 LINPHONE_PUBLIC void linphone_content_set_size(LinphoneContent *content, size_t size);
 

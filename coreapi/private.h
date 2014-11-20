@@ -909,6 +909,7 @@ struct _LinphoneContent {
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneContentPrivate lcp;
+	bool_t owned_fields;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneContent);

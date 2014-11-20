@@ -38,8 +38,7 @@ static void subscribe_forking(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_data(content, belle_sip_strdup(liblinphone_tester_get_subscribe_content()));
-	linphone_content_set_size(content, strlen(liblinphone_tester_get_subscribe_content()));
+	linphone_content_set_buffer(content, liblinphone_tester_get_subscribe_content(), strlen(liblinphone_tester_get_subscribe_content()));
 	
 	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	
