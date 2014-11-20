@@ -19,6 +19,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol UIButtonShrinkable : UIButton
+@interface UIButtonShrinkable : UIButton
 
 @end

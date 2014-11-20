@@ -18,7 +18,6 @@
  */          
 
 #import "AboutViewController.h"
-#include "ConsoleViewController.h"
 #import "LinphoneManager.h"
 #include "linphone/lpconfig.h"
 

@@ -740,9 +740,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
     }
 #endif
-    if([key isEqual:@"console_button"]) {
-        [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
-    } else if([key isEqual:@"wizard_button"]) {
+    if([key isEqual:@"wizard_button"]) {
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning",nil)
                                                         message:NSLocalizedString(@"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?",nil)
                                                        delegate:self

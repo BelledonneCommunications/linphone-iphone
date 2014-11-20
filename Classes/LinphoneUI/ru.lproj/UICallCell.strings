@@ -1,0 +1,129 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Имя контакта"; ObjectID = "17"; */
+"17.accessibilityLabel" = "Имя контакта";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "17"; */
+"17.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Статус звонка"; ObjectID = "18"; */
+"18.accessibilityLabel" = "Статус звонка";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Продолжительность"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Продолжительность";
+
+/* Class = "IBUILabel"; text = "12:34"; ObjectID = "19"; */
+"19.text" = "12:34";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Аватар контакта"; ObjectID = "29"; */
+"29.accessibilityLabel" = "Аватар контакта";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Развернуть"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Развернуть";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Пауза"; ObjectID = "47"; */
+"47.accessibilityLabel" = "Пауза";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Удалить"; ObjectID = "49"; */
+"49.accessibilityLabel" = "Удалить";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Аудио кодек"; ObjectID = "84"; */
+"84.accessibilityLabel" = "Аудио кодек";
+
+/* Class = "IBUILabel"; text = "SILK"; ObjectID = "84"; */
+"84.text" = "SILK";
+
+/* Class = "IBUILabel"; text = "Кодек:"; ObjectID = "85"; */
+"85.text" = "Кодек:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Скорость загрузки аудио потока"; ObjectID = "90"; */
+"90.accessibilityLabel" = "Скорость загрузки аудио потока";
+
+/* Class = "IBUILabel"; text = "2 KB/s"; ObjectID = "90"; */
+"90.text" = "2 KB/s";
+
+/* Class = "IBUILabel"; text = "Скорость закачки:"; ObjectID = "91"; */
+"91.text" = "Скорость закачки:";
+
+/* Class = "IBUILabel"; text = "Скорость скачивания:"; ObjectID = "93"; */
+"93.text" = "Скорость скачивания:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Скорость скачивания аудио потока"; ObjectID = "94"; */
+"94.accessibilityLabel" = "Скорость скачивания аудио потока";
+
+/* Class = "IBUILabel"; text = "10.0 KB/s"; ObjectID = "94"; */
+"94.text" = "10.0 KB/s";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Аудио настройки"; ObjectID = "95"; */
+"95.accessibilityLabel" = "Аудио настройки";
+
+/* Class = "IBUILabel"; text = "Аудио"; ObjectID = "95"; */
+"95.text" = "Аудио";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Аудио статус подключения ICE"; ObjectID = "97"; */
+"97.accessibilityLabel" = "Аудио статус подключения ICE";
+
+/* Class = "IBUILabel"; text = "not activated"; ObjectID = "97"; */
+"97.text" = "not activated";
+
+/* Class = "IBUILabel"; text = "Подключение ICE:"; ObjectID = "98"; */
+"98.text" = "Подключение ICE:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Видео настройки"; ObjectID = "101"; */
+"101.accessibilityLabel" = "Видео настройки";
+
+/* Class = "IBUILabel"; text = "Видео"; ObjectID = "101"; */
+"101.text" = "Видео";
+
+/* Class = "IBUILabel"; text = "Кодек:"; ObjectID = "105"; */
+"105.text" = "Кодек:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Видео кодек"; ObjectID = "106"; */
+"106.accessibilityLabel" = "Видео кодек";
+
+/* Class = "IBUILabel"; text = "SILK"; ObjectID = "106"; */
+"106.text" = "SILK";
+
+/* Class = "IBUILabel"; text = "Скорость закачки:"; ObjectID = "107"; */
+"107.text" = "Скорость закачки:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Скорость загрузки видео потока"; ObjectID = "108"; */
+"108.accessibilityLabel" = "Скорость загрузки видео потока";
+
+/* Class = "IBUILabel"; text = "2 KB/s"; ObjectID = "108"; */
+"108.text" = "2 KB/s";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Скорость скачивания видео потока"; ObjectID = "109"; */
+"109.accessibilityLabel" = "Скорость скачивания видео потока";
+
+/* Class = "IBUILabel"; text = "10.0 KB/s"; ObjectID = "109"; */
+"109.text" = "10.0 KB/s";
+
+/* Class = "IBUILabel"; text = "Скорость скачивания:"; ObjectID = "110"; */
+"110.text" = "Скорость скачивания:";
+
+/* Class = "IBUILabel"; text = "Подключение ICE:"; ObjectID = "111"; */
+"111.text" = "Подключение ICE:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Видео статус подключения ICE"; ObjectID = "112"; */
+"112.accessibilityLabel" = "Видео статус подключения ICE";
+
+/* Class = "IBUILabel"; text = "not activated"; ObjectID = "112"; */
+"112.text" = "not activated";
+
+/* Class = "IBUILabel"; text = "Size sent:"; ObjectID = "6PM-O1-cYd"; */
+"6PM-O1-cYd.text" = "Size sent:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Video upload bandwidth"; ObjectID = "CCZ-g0-5g1"; */
+"CCZ-g0-5g1.accessibilityLabel" = "Video upload bandwidth";
+
+/* Class = "IBUILabel"; text = "320x240"; ObjectID = "CCZ-g0-5g1"; */
+"CCZ-g0-5g1.text" = "320x240";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Video upload bandwidth"; ObjectID = "RxS-YG-dqM"; */
+"RxS-YG-dqM.accessibilityLabel" = "Video upload bandwidth";
+
+/* Class = "IBUILabel"; text = "320x240"; ObjectID = "RxS-YG-dqM"; */
+"RxS-YG-dqM.text" = "320x240";
+
+/* Class = "IBUILabel"; text = "Size received:"; ObjectID = "nNJ-4U-pl2"; */
+"nNJ-4U-pl2.text" = "Size received:";

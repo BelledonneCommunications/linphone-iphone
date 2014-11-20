@@ -24,7 +24,6 @@
 #import "CoreTelephony/CTCallCenter.h"
 #import "CoreTelephony/CTCall.h"
 
-#import "ConsoleViewController.h"
 #import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"

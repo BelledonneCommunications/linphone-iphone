@@ -1,0 +1,129 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Nom du contact"; ObjectID = "17"; */
+"17.accessibilityLabel" = "Nom du contact";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "17"; */
+"17.text" = "0102030405";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "État de l'appel"; ObjectID = "18"; */
+"18.accessibilityLabel" = "État de l'appel";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Durée"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Durée";
+
+/* Class = "IBUILabel"; text = "12:34"; ObjectID = "19"; */
+"19.text" = "12:34";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Avatar du contact"; ObjectID = "29"; */
+"29.accessibilityLabel" = "Avatar du contact";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Agrandir"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Agrandir";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Pause"; ObjectID = "47"; */
+"47.accessibilityLabel" = "Pause";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Supprimer"; ObjectID = "49"; */
+"49.accessibilityLabel" = "Supprimer";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Codec audio"; ObjectID = "84"; */
+"84.accessibilityLabel" = "Codec audio";
+
+/* Class = "IBUILabel"; text = "SILK"; ObjectID = "84"; */
+"84.text" = "SILK";
+
+/* Class = "IBUILabel"; text = "Codec:"; ObjectID = "85"; */
+"85.text" = "Codec:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Bande passante montante de l'audio"; ObjectID = "90"; */
+"90.accessibilityLabel" = "Bande passante montante de l'audio";
+
+/* Class = "IBUILabel"; text = "2 KB/s"; ObjectID = "90"; */
+"90.text" = "2 KB/s";
+
+/* Class = "IBUILabel"; text = "Débit montant:"; ObjectID = "91"; */
+"91.text" = "Débit montant:";
+
+/* Class = "IBUILabel"; text = "Débit descendant:"; ObjectID = "93"; */
+"93.text" = "Débit descendant:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Bande passante montante de la vidéo"; ObjectID = "94"; */
+"94.accessibilityLabel" = "Bande passante montante de la vidéo";
+
+/* Class = "IBUILabel"; text = "10.0 KB/s"; ObjectID = "94"; */
+"94.text" = "10.0 KB/s";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Section audio"; ObjectID = "95"; */
+"95.accessibilityLabel" = "Section audio";
+
+/* Class = "IBUILabel"; text = "Audio"; ObjectID = "95"; */
+"95.text" = "Audio";
+
+/* Class = "IBUILabel"; accessibilityLabel = "État de la connectivité ICE de la audio"; ObjectID = "97"; */
+"97.accessibilityLabel" = "État de la connectivité ICE de la audio";
+
+/* Class = "IBUILabel"; text = "not activated"; ObjectID = "97"; */
+"97.text" = "not activated";
+
+/* Class = "IBUILabel"; text = "Connectivité ICE:"; ObjectID = "98"; */
+"98.text" = "Connectivité ICE:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Section vidéo"; ObjectID = "101"; */
+"101.accessibilityLabel" = "Section vidéo";
+
+/* Class = "IBUILabel"; text = "Vidéo"; ObjectID = "101"; */
+"101.text" = "Vidéo";
+
+/* Class = "IBUILabel"; text = "Codec:"; ObjectID = "105"; */
+"105.text" = "Codec:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Codec vidéo"; ObjectID = "106"; */
+"106.accessibilityLabel" = "Codec vidéo";
+
+/* Class = "IBUILabel"; text = "SILK"; ObjectID = "106"; */
+"106.text" = "SILK";
+
+/* Class = "IBUILabel"; text = "Débit montant:"; ObjectID = "107"; */
+"107.text" = "Débit montant:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Bande passante montante de la vidéo"; ObjectID = "108"; */
+"108.accessibilityLabel" = "Bande passante montante de la vidéo";
+
+/* Class = "IBUILabel"; text = "2 KB/s"; ObjectID = "108"; */
+"108.text" = "2 KB/s";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Bande passante descendante de l'audio"; ObjectID = "109"; */
+"109.accessibilityLabel" = "Bande passante descendante de l'audio";
+
+/* Class = "IBUILabel"; text = "10.0 KB/s"; ObjectID = "109"; */
+"109.text" = "10.0 KB/s";
+
+/* Class = "IBUILabel"; text = "Débit descendant:"; ObjectID = "110"; */
+"110.text" = "Débit descendant:";
+
+/* Class = "IBUILabel"; text = "Connectivité ICE:"; ObjectID = "111"; */
+"111.text" = "Connectivité ICE:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "État de la connectivité ICE de la vidéo"; ObjectID = "112"; */
+"112.accessibilityLabel" = "État de la connectivité ICE de la vidéo";
+
+/* Class = "IBUILabel"; text = "not activated"; ObjectID = "112"; */
+"112.text" = "not activated";
+
+/* Class = "IBUILabel"; text = "Taille envoyée:"; ObjectID = "6PM-O1-cYd"; */
+"6PM-O1-cYd.text" = "Taille envoyée:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Video upload bandwidth"; ObjectID = "CCZ-g0-5g1"; */
+"CCZ-g0-5g1.accessibilityLabel" = "Video upload bandwidth";
+
+/* Class = "IBUILabel"; text = "320x240"; ObjectID = "CCZ-g0-5g1"; */
+"CCZ-g0-5g1.text" = "320x240";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Video upload bandwidth"; ObjectID = "RxS-YG-dqM"; */
+"RxS-YG-dqM.accessibilityLabel" = "Video upload bandwidth";
+
+/* Class = "IBUILabel"; text = "320x240"; ObjectID = "RxS-YG-dqM"; */
+"RxS-YG-dqM.text" = "320x240";
+
+/* Class = "IBUILabel"; text = "Taille reçue:"; ObjectID = "nNJ-4U-pl2"; */
+"nNJ-4U-pl2.text" = "Taille reçue:";
