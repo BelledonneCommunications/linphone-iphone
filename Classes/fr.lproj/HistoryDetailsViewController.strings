@@ -48,10 +48,10 @@
 "37.normalTitle" = "Call";
 
 /* Class = "IBUIButton"; accessibilityLabel = "Ajouter au contact"; ObjectID = "50"; */
-"50.accessibilityLabel" = "Ajouter au contactaaaaatasrietiarnsetaisetaietai";
+"50.accessibilityLabel" = "Ajouter au contact";
 
 /* Class = "IBUIButton"; normalTitle = "Ajouter aux contacts"; ObjectID = "50"; */
-"50.normalTitle" = "Ajouter aux contactasaaaaisrternaisteaist";
+"50.normalTitle" = "Ajouter aux contacts";
 
 /* Class = "IBUILabel"; text = "Adresse:"; ObjectID = "55"; */
 "55.text" = "Adresse:";
