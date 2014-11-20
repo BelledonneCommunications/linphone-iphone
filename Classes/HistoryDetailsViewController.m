@@ -113,6 +113,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
     [HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
     [HistoryDetailsViewController adaptSize:plainAddressHeaderLabel field:plainAddressLabel];
+	[addContactButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     [callButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     [messageButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
 }

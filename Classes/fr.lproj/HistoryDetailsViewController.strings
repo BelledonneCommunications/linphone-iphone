@@ -1,0 +1,69 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Retour"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Retour";
+
+/* Class = "IBUIButton"; normalTitle = "Retour"; ObjectID = "9"; */
+"9.normalTitle" = "Retour";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Avatar du contact"; ObjectID = "23"; */
+"23.accessibilityLabel" = "Avatar du contact";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Nom du contact"; ObjectID = "25"; */
+"25.accessibilityLabel" = "Nom du contact";
+
+/* Class = "IBUILabel"; text = "Contact1"; ObjectID = "25"; */
+"25.text" = "Contact1";
+
+/* Class = "IBUILabel"; text = "Date:"; ObjectID = "27"; */
+"27.text" = "Date:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Date de l'appel"; ObjectID = "28"; */
+"28.accessibilityLabel" = "Date de l'appel";
+
+/* Class = "IBUILabel"; text = "11/11/2011 at 10:01"; ObjectID = "28"; */
+"28.text" = "11/11/2011 at 10:01";
+
+/* Class = "IBUILabel"; text = "Durée:"; ObjectID = "31"; */
+"31.text" = "Durée:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Durée de l'appel"; ObjectID = "32"; */
+"32.accessibilityLabel" = "Durée de l'appel";
+
+/* Class = "IBUILabel"; text = "9:05"; ObjectID = "32"; */
+"32.text" = "9:05";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Type d'appel"; ObjectID = "35"; */
+"35.accessibilityLabel" = "Type d'appel";
+
+/* Class = "IBUILabel"; text = "outgoing call"; ObjectID = "35"; */
+"35.text" = "outgoing call";
+
+/* Class = "IBUILabel"; text = "Type:"; ObjectID = "36"; */
+"36.text" = "Type:";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Rappeler"; ObjectID = "37"; */
+"37.accessibilityLabel" = "Rappeler";
+
+/* Class = "IBUIButton"; normalTitle = "Call"; ObjectID = "37"; */
+"37.normalTitle" = "Call";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Ajouter au contact"; ObjectID = "50"; */
+"50.accessibilityLabel" = "Ajouter au contact";
+
+/* Class = "IBUIButton"; normalTitle = "Ajouter aux contacts"; ObjectID = "50"; */
+"50.normalTitle" = "Ajouter aux contacts";
+
+/* Class = "IBUILabel"; text = "Adresse:"; ObjectID = "55"; */
+"55.text" = "Adresse:";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Adresse"; ObjectID = "56"; */
+"56.accessibilityLabel" = "Adresse";
+
+/* Class = "IBUILabel"; text = "0102030405"; ObjectID = "56"; */
+"56.text" = "0102030405";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Envoyer un message"; ObjectID = "59"; */
+"59.accessibilityLabel" = "Envoyer un message";
+
+/* Class = "IBUIButton"; normalTitle = "Envoyer un message"; ObjectID = "59"; */
+"59.normalTitle" = "Envoyer un message";
