@@ -331,6 +331,7 @@
 		7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0913E830B800EFC6DC /* libvpx.a */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
+		F01223B51A1DEFCE008D16BA /* stream_regulator.c in Sources */ = {isa = PBXBuildFile; fileRef = F01223AF1A1DEFB8008D16BA /* stream_regulator.c */; };
 		F02538E91979481D002C30F3 /* vp8rtpfmt.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538E71979481D002C30F3 /* vp8rtpfmt.c */; };
 		F02538EA1979481D002C30F3 /* vp8rtpfmt.h in Headers */ = {isa = PBXBuildFile; fileRef = F02538E81979481D002C30F3 /* vp8rtpfmt.h */; };
 		F02538ED19794847002C30F3 /* g711.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538EB19794847002C30F3 /* g711.c */; };
@@ -731,6 +732,8 @@
 		70E542F013E147CE002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = liblinphone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F01223AF1A1DEFB8008D16BA /* stream_regulator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stream_regulator.c; sourceTree = "<group>"; };
+		F01223B01A1DEFB8008D16BA /* stream_regulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream_regulator.h; sourceTree = "<group>"; };
 		F02538E71979481D002C30F3 /* vp8rtpfmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vp8rtpfmt.c; sourceTree = "<group>"; };
 		F02538E81979481D002C30F3 /* vp8rtpfmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vp8rtpfmt.h; sourceTree = "<group>"; };
 		F02538EB19794847002C30F3 /* g711.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g711.c; sourceTree = "<group>"; };
@@ -1172,6 +1175,8 @@
 				223CA82116D9268D00EF1BEC /* _kiss_fft_guts.h */,
 				223CA82216D9268D00EF1BEC /* dsptools.c */,
 				223CA82316D9268D00EF1BEC /* ffmpeg-priv.h */,
+				F01223AF1A1DEFB8008D16BA /* stream_regulator.c */,
+				F01223B01A1DEFB8008D16BA /* stream_regulator.h */,
 				223CA82416D9268D00EF1BEC /* g711common.h */,
 				223CA82516D9268D00EF1BEC /* g722.h */,
 				223CA82616D9268D00EF1BEC /* g722_decode.c */,
@@ -1655,6 +1660,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					F0ED99531A16464D00A788CE = {
+						DevelopmentTeam = Z2V957B3D6;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "liblinphone" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1820,6 +1830,7 @@
 				22C8D0A91769F8FF00DAFB4E /* msiounit.m in Sources */,
 				22C8D0AA1769F8FF00DAFB4E /* msresample.c in Sources */,
 				22C8D0AB1769F8FF00DAFB4E /* msspeex.c in Sources */,
+				F01223B51A1DEFCE008D16BA /* stream_regulator.c in Sources */,
 				22C8D0AC1769F8FF00DAFB4E /* msvolume.c in Sources */,
 				22C8D0AD1769F8FF00DAFB4E /* tonedetector.c in Sources */,
 				22C8D0AE1769F8FF00DAFB4E /* ulaw.c in Sources */,
@@ -2773,6 +2784,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2815,7 +2828,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/externals/speex",
 				);
-				INFOPLIST_FILE = "mediastream-tester-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-tester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2824,6 +2837,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "mediastream-tester";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -2834,6 +2848,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2874,7 +2890,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/externals/speex",
 				);
-				INFOPLIST_FILE = "mediastream-tester-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-tester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2884,6 +2900,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -2895,6 +2912,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2935,7 +2954,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/externals/speex",
 				);
-				INFOPLIST_FILE = "mediastream-tester-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-tester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2945,6 +2964,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
