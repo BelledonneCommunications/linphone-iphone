@@ -3,17 +3,16 @@
 speex_dir=externals/speex
 
 
-ifneq (,$(findstring arm,$(host)))
-	#SPEEX_CONFIGURE_OPTION := --enable-fixed-point --disable-float-api
+ifeq (,$(findstring i386,$(host)))
 	CFLAGS := $(CFLAGS) -marm
-	SPEEX_CONFIGURE_OPTION := --disable-float-api --enable-arm5e-asm --enable-fixed-point
+	SPEEX_CONFIGURE_OPTION := --disable-float-api --enable-fixed-point
 endif
 
 ifneq (,$(findstring armv7,$(host)))
-	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm
+	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm --enable-arm5e-asm
 endif
 ifneq (,$(findstring aarch64,$(host)))
-	SPEEX_CONFIGURE_OPTION += --disable-armv7neon-asm
+	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm
 endif
 
 ifeq ($(enable_debug),yes)
