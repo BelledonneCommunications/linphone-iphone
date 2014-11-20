@@ -72,7 +72,7 @@ for PNG in $PNGS; do
     fi
 
     echo "Optimizing ${BASENAME} and ${BASENAME}@2x ..."
-    $OPTIPNG -quiet $DIR/$RETINAFILE > /dev/null
+    $OPTIPNG $DIR/$RETINAFILE > /dev/null
     $OPTIPNG -quiet $DIR/$STANDARDFILE > /dev/null
 
 done
