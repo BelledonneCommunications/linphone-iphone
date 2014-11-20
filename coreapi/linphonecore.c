@@ -1502,7 +1502,6 @@ static void linphone_core_start(LinphoneCore * lc) {
 	misc_config_read(lc);
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
-	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) {
 		linphone_tunnel_configure(lc->tunnel);
 	}
@@ -1629,6 +1628,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
+
+#ifdef TUNNEL_ENABLED
+	lc->tunnel=linphone_core_tunnel_new(lc);
+#endif
 
 	lc->network_last_check = 0;
 	lc->network_last_status = FALSE;
