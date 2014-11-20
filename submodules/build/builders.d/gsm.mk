@@ -6,7 +6,7 @@ gsm_dir?=externals/gsm
 
 build-libgsm:
 	cp -rf $(BUILDER_SRC_DIR)/$(gsm_dir) $(BUILDER_BUILD_DIR)/$(gsm_dir)
-	rm -rf $(BUILDER_BUILD_DIR)/$(gsm_dir)/gsm/.git
+	rm -rf $(BUILDER_BUILD_DIR)/$(gsm_dir)/gsm/.git $(BUILDER_BUILD_DIR)/$(gsm_dir)/.git
 	rm -f $(prefix)/lib/libgsm.a
 	rm -rf $(prefix)/include/gsm
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
