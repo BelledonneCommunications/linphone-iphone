@@ -112,6 +112,9 @@ build-% clean-% veryclean-%:
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
 
+libs:
+	make -f builder-iphone-os.mk multi-arch
+
 download-sdk:
 	make -f builder-iphone-os.mk download-sdk
 
@@ -156,5 +159,5 @@ help:
 	@echo "   *     [arch]-clean-[package] : clean the package for the selected architecture"
 	@echo "   * [arch]-veryclean-[package] : completely clean the package for the selected architecture"
 	@echo ""
-	@echo "   * sdk : re-add all generated libraries to the SDK. Use this only after a full build."
-
+	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
+	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"

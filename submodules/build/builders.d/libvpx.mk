@@ -6,6 +6,11 @@ libvpx_configure_options=\
 	--enable-realtime-only --enable-spatial-resampling \
 	--enable-vp8 --enable-multithread --disable-vp9 
 
+
+ifeq ($(enable_debug),yes)
+	libvpx_configure_options += --enable-debug
+endif
+
 take_binary=
 
 # force take binary, it seems libvpx was fixed since http://git.chromium.org/gitweb/?p=webm/libvpx.git;a=commit;h=33df6d1fc1d268b4901b74b4141f83594266f041
@@ -21,6 +26,7 @@ else ifneq (,$(findstring armv7,$(host)))
 	take_binary = armv7
 else ifneq (,$(findstring aarch64,$(host)))
 	libvpx_configure_options+= --target=arm64-darwin-gcc
+	take_binary = arm64
 else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
 	take_binary = i386
