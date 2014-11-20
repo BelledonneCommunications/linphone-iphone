@@ -37,7 +37,7 @@
         self->call = acall;
         image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
         address = [@"Unknown" retain];
-        [self update];
+		[self update];
     }
     return self;
 }
@@ -180,7 +180,12 @@
         [UICallCell adaptSize:videoDownloadBandwidthHeaderLabel field:videoDownloadBandwidthLabel];
         [UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
         [UICallCell adaptSize:videoIceConnectivityHeaderLabel field:videoIceConnectivityLabel];
-        
+
+		if ([LinphoneManager runningOnIpad]) {
+			[LinphoneUtils adjustFontSize:self.audioStatsView mult:2.22];
+			[LinphoneUtils adjustFontSize:self.videoStatsView mult:2.22];
+		}
+		
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillEnterForeground:)
                                                      name:UIApplicationWillEnterForegroundNotification
