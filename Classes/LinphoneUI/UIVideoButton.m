@@ -101,9 +101,6 @@
 
 #ifdef VIDEO_ENABLED
     LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-    if( linphone_call_media_in_progress(currentCall) ){
-        // YAYA WE PREVENT TRANSITION DUE TO PROGRESS
-    }
     if( linphone_core_video_enabled([LinphoneManager getLc])
        && currentCall
        && !linphone_call_media_in_progress(currentCall)
