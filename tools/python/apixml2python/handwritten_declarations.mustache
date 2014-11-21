@@ -13,3 +13,6 @@ MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj);
 PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs);
 time_t PyDateTime_As_time_t(PyObject *obj);
 PyObject * PyDateTime_From_time_t(time_t t);
+
+static PyObject * pylinphone_Content_get_buffer(PyObject *self, void *closure);
+static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *closure);

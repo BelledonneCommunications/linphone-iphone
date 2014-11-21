@@ -38,6 +38,32 @@ def compute_event_name(s):
 	return event_name
 
 
+class HandWrittenCode:
+	def __init__(self, _class, name, func_list):
+		self._class = _class
+		self.name = name
+		self.func_list = func_list
+
+class HandWrittenInstanceMethod(HandWrittenCode):
+	def __init__(self, _class, name, cfunction):
+		HandWrittenCode.__init__(self, _class, name, [cfunction])
+
+class HandWrittenClassMethod(HandWrittenCode):
+	def __init__(self, _class, name, cfunction):
+		HandWrittenCode.__init__(self, _class, name, [cfunction])
+
+class HandWrittenProperty(HandWrittenCode):
+	def __init__(self, _class, name, getter_cfunction = None, setter_cfunction = None):
+		func_list = []
+		if getter_cfunction is not None:
+			func_list.append(getter_cfunction)
+		if setter_cfunction is not None:
+			func_list.append(setter_cfunction)
+		HandWrittenCode.__init__(self, _class, name, func_list)
+		self.getter_cfunction = getter_cfunction
+		self.setter_cfunction = setter_cfunction
+
+
 class ArgumentType:
 	def __init__(self, basic_type, complete_type, contained_type, linphone_module):
 		self.basic_type = basic_type
@@ -308,7 +334,7 @@ class MethodDefinition:
 				arg_names.append(arg_name + "_native_obj")
 			else:
 				arg_names.append(arg_name)
-		if self.return_type != 'void':
+		if self.return_complete_type != 'void':
 			c_function_call_code += "cresult = "
 		c_function_call_code += self.method_node.get('name') + "("
 		if self.self_arg is not None:
@@ -806,12 +832,15 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 
 class LinphoneModule(object):
-	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_functions):
+	def __init__(self, tree, blacklisted_classes, blacklisted_events, blacklisted_functions, hand_written_codes):
 		self.internal_instance_method_names = ['destroy', 'ref', 'unref']
 		self.internal_property_names = ['user_data']
 		self.mslist_types = Set([])
 		self.enums = []
 		self.enum_names = []
+		hand_written_functions = []
+		for hand_written_code in hand_written_codes:
+			hand_written_functions += hand_written_code.func_list
 		xml_enums = tree.findall("./enums/enum")
 		for xml_enum in xml_enums:
 			if xml_enum.get('deprecated') == 'true':
@@ -872,6 +901,31 @@ class LinphoneModule(object):
 					ev['event_name'] = compute_event_name(ev['event_cname'])
 					ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
 					self.events.append(ev)
+			for hand_written_code in hand_written_codes:
+				if hand_written_code._class == c['class_name']:
+					if isinstance(hand_written_code, HandWrittenClassMethod):
+						print "HandWrittenClassMethod"
+						m = {}
+						m['method_name'] = hand_written_code.name
+						c['class_type_hand_written_methods'].append(m)
+					elif isinstance(hand_written_code, HandWrittenInstanceMethod):
+						print "HandWrittenInstanceMethod"
+						m = {}
+						m['method_name'] = hand_written_code.name
+						c['class_instance_hand_written_methods'].append(m)
+					elif isinstance(hand_written_code, HandWrittenProperty):
+						print "HandWrittenProperty"
+						p = {}
+						p['property_name'] = hand_written_code.name
+						if hand_written_code.getter_cfunction is None:
+							p['getter_reference'] = 'NULL'
+						else:
+							p['getter_reference'] = '(getter)pylinphone_' + c['class_name'] + '_get_' + p['property_name']
+						if hand_written_code.setter_cfunction is None:
+							p['setter_reference'] = 'NULL'
+						else:
+							p['setter_reference'] = '(setter)pylinphone_' + c['class_name'] + '_set_' + p['property_name']
+						c['class_hand_written_properties'].append(p)
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
 				if xml_type_method.get('deprecated') == 'true':
@@ -881,9 +935,7 @@ class LinphoneModule(object):
 					continue
 				m = {}
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
-				if method_name in hand_written_functions:
-					c['class_type_hand_written_methods'].append(m)
-				else:
+				if method_name not in hand_written_functions:
 					m['method_xml_node'] = xml_type_method
 					c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
@@ -898,9 +950,7 @@ class LinphoneModule(object):
 					continue
 				m = {}
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
-				if method_name in hand_written_functions:
-					c['class_instance_hand_written_methods'].append(m)
-				else:
+				if method_name not in hand_written_functions:
 					m['method_xml_node'] = xml_instance_method
 					c['class_instance_methods'].append(m)
 			c['class_properties'] = []
@@ -915,45 +965,31 @@ class LinphoneModule(object):
 				p['property_name'] = property_name
 				xml_property_getter = xml_property.find("./getter")
 				xml_property_setter = xml_property.find("./setter")
-				handwritten_property = False
 				if xml_property_getter is not None:
-					if xml_property_getter.get('name') in blacklisted_functions or xml_property_getter.get('deprecated') == 'true':
+					if xml_property_getter.get('name') in blacklisted_functions or xml_property_getter.get('name') in hand_written_functions or xml_property_getter.get('deprecated') == 'true':
 						continue
-					elif xml_property_getter.get('name') in hand_written_functions:
-						handwritten_property = True
 				if xml_property_setter is not None:
-					if xml_property_setter.get('name') in blacklisted_functions or xml_property_setter.get('deprecated') == 'true':
+					if xml_property_setter.get('name') in blacklisted_functions or xml_property_setter.get('name') in hand_written_functions or xml_property_setter.get('deprecated') == 'true':
 						continue
-					elif xml_property_setter.get('name') in hand_written_functions:
-						handwritten_property = True
-				if handwritten_property:
-					p['getter_reference'] = 'NULL'
-					p['setter_reference'] = 'NULL'
-					if xml_property_getter is not None:
-						p['getter_reference'] = '(getter)pylinphone_' + c['class_name'] + '_get_' + p['property_name']
-					if xml_property_setter is not None:
-						p['setter_reference'] = '(setter)pylinphone_' + c['class_name'] + '_set_' + p['property_name']
-					c['class_hand_written_properties'].append(p)
+				if xml_property_getter is not None:
+					xml_property_getter.set('property_name', property_name)
+					p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
+					p['getter_xml_node'] = xml_property_getter
+					p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
+					p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
+					p['getter_definition_end'] = "}"
 				else:
-					if xml_property_getter is not None:
-						xml_property_getter.set('property_name', property_name)
-						p['getter_name'] = xml_property_getter.get('name').replace(c['class_c_function_prefix'], '')
-						p['getter_xml_node'] = xml_property_getter
-						p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
-						p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
-						p['getter_definition_end'] = "}"
-					else:
-						p['getter_reference'] = "NULL"
-					if xml_property_setter is not None:
-						xml_property_setter.set('property_name', property_name)
-						p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
-						p['setter_xml_node'] = xml_property_setter
-						p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
-						p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
-						p['setter_definition_end'] = "}"
-					else:
-						p['setter_reference'] = "NULL"
-					c['class_properties'].append(p)
+					p['getter_reference'] = "NULL"
+				if xml_property_setter is not None:
+					xml_property_setter.set('property_name', property_name)
+					p['setter_name'] = xml_property_setter.get('name').replace(c['class_c_function_prefix'], '')
+					p['setter_xml_node'] = xml_property_setter
+					p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
+					p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
+					p['setter_definition_end'] = "}"
+				else:
+					p['setter_reference'] = "NULL"
+				c['class_properties'].append(p)
 			self.classes.append(c)
 		# Format events definitions
 		for ev in self.events:

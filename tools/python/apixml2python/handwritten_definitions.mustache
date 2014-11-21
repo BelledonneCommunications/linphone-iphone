@@ -526,3 +526,58 @@ static PyMethodDef pylinphone_PayloadTypeType_ModuleMethods[] = {
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
+
+
+static PyObject * pylinphone_Content_get_buffer(PyObject *self, void *closure) {
+	void * cbuffer;
+	size_t csize;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const char *pyret_fmt;
+	const LinphoneContent *native_ptr;
+	native_ptr = pylinphone_Content_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Content instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cbuffer = linphone_content_get_buffer(native_ptr);
+	csize = linphone_content_get_size(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyresult = PyByteArray_FromStringAndSize((const char *)cbuffer, csize);
+	pyret = Py_BuildValue("O", pyresult);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *closure) {
+	LinphoneContent *native_ptr;
+	void * _buffer;
+	size_t _size;
+	LinphonePresenceModel * _presence_native_ptr = NULL;
+	native_ptr = pylinphone_Content_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Content instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'buffer' attribute.");
+		return -1;
+	}
+	if ((value != Py_None) && !PyByteArray_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'buffer' attribute value must be a ByteArray instance.");
+		return -1;
+	}
+
+	_buffer = PyByteArray_AsString(value);
+	_size = PyByteArray_Size(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, self, native_ptr, value, _buffer);
+	linphone_content_set_buffer(native_ptr, _buffer, _size);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
