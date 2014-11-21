@@ -293,6 +293,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[alertview release];
 }
 
++ (BOOL)hasSipPrefix:(NSString*)str {
+    return [str hasPrefix:@"sip:"] || [str hasPrefix:@"sips:"];
+}
+
 - (void)synchronizeAccount {
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LpConfig*   conf = linphone_core_get_config(lc);
@@ -352,9 +356,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if( isWifiOnly && [LinphoneManager instance].connectivity == wwan ) expire = 0;
 
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
-		} else {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
+			proxyAddress = domain;
+        }
+
+        if( ![LinphoneCoreSettingsStore hasSipPrefix:proxyAddress] ) {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress];
 		}
 
 		char* proxy = ms_strdup([proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
