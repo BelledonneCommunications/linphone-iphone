@@ -20,11 +20,14 @@
 #import "UIVideoButton.h"
 #include "LinphoneManager.h"
 
-@implementation UIVideoButton
+@implementation UIVideoButton {
+    BOOL last_update_state;
+}
 
 @synthesize waitView;
 
 - (void)initUIVideoButton {
+    last_update_state = FALSE;
 }
 
 - (id)init{
@@ -94,51 +97,30 @@
 }
 
 - (bool)onUpdate {
-    bool val = false;
+    bool video_enabled = false;
+
 #ifdef VIDEO_ENABLED
-    if(linphone_core_video_enabled([LinphoneManager getLc])) {
-        LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (currentCall) {
-            LinphoneCallState state = linphone_call_get_state(currentCall);
-            switch (state) {
-                case LinphoneCallUpdating:
-                {
-                    [self setEnabled:FALSE];
-                    break;
-                }
-                case LinphoneCallStreamsRunning:
-                {
-                    [waitView stopAnimating];
-                    [self setEnabled:TRUE];
-                    if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-                        val = true;
-                    }
-                    break;
-                }
-
-                default:
-                {
-                    // Disable button if the call is not running
-                    [self setEnabled:FALSE];
-                    [waitView stopAnimating];
-                    break;
-                }
-
-            }
-        } else {
-            // Disable button if there is no call
-            [self setEnabled:FALSE];
-            [waitView stopAnimating];
-        }
-    } else {
-        // Disable button if video is not enabled
-        [self setEnabled:FALSE];
-        [waitView stopAnimating];
+    LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
+    if( linphone_call_media_in_progress(currentCall) ){
+        // YAYA WE PREVENT TRANSITION DUE TO PROGRESS
     }
-#else //VIDEO_ENABLED
-    [self setEnabled:FALSE];
+    if( linphone_core_video_enabled([LinphoneManager getLc])
+       && currentCall
+       && !linphone_call_media_in_progress(currentCall)
+       && linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
+        video_enabled = TRUE;
+    }
 #endif //VIDEO_ENABLED
-    return val;
+
+    [self setEnabled:video_enabled];
+    if( last_update_state != video_enabled )
+        [waitView stopAnimating];
+    if( video_enabled ){
+        video_enabled = linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall));
+    }
+    last_update_state = video_enabled;
+
+    return video_enabled;
 }
 
 - (void)dealloc {
