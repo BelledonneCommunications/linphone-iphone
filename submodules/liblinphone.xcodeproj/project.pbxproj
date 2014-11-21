@@ -332,6 +332,7 @@
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
 		F01223B51A1DEFCE008D16BA /* stream_regulator.c in Sources */ = {isa = PBXBuildFile; fileRef = F01223AF1A1DEFB8008D16BA /* stream_regulator.c */; };
+		F01223BD1A1E4827008D16BA /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F01223BC1A1E4827008D16BA /* sounds */; };
 		F02538E91979481D002C30F3 /* vp8rtpfmt.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538E71979481D002C30F3 /* vp8rtpfmt.c */; };
 		F02538EA1979481D002C30F3 /* vp8rtpfmt.h in Headers */ = {isa = PBXBuildFile; fileRef = F02538E81979481D002C30F3 /* vp8rtpfmt.h */; };
 		F02538ED19794847002C30F3 /* g711.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538EB19794847002C30F3 /* g711.c */; };
@@ -734,6 +735,7 @@
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F01223AF1A1DEFB8008D16BA /* stream_regulator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stream_regulator.c; sourceTree = "<group>"; };
 		F01223B01A1DEFB8008D16BA /* stream_regulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream_regulator.h; sourceTree = "<group>"; };
+		F01223BC1A1E4827008D16BA /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sounds; sourceTree = "<group>"; };
 		F02538E71979481D002C30F3 /* vp8rtpfmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vp8rtpfmt.c; sourceTree = "<group>"; };
 		F02538E81979481D002C30F3 /* vp8rtpfmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vp8rtpfmt.h; sourceTree = "<group>"; };
 		F02538EB19794847002C30F3 /* g711.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g711.c; sourceTree = "<group>"; };
@@ -1263,6 +1265,7 @@
 		F0ED99161A1645C200A788CE /* tester */ = {
 			isa = PBXGroup;
 			children = (
+				F01223BC1A1E4827008D16BA /* sounds */,
 				F0ED99171A1645C200A788CE /* Makefile.am */,
 				F0ED99181A1645C200A788CE /* Makefile.in */,
 				F0ED991A1A1645C200A788CE /* mediastreamer2_adaptive_tester.c */,
@@ -1730,6 +1733,7 @@
 				F0ED99841A16464D00A788CE /* InfoPlist.strings in Resources */,
 				F0ED99871A16464D00A788CE /* punch_16000_stereo.wav in Resources */,
 				F0ED99881A16464D00A788CE /* nylon_48000_mono.wav in Resources */,
+				F01223BD1A1E4827008D16BA /* sounds in Resources */,
 				F0ED99891A16464D00A788CE /* hello8000.wav in Resources */,
 				F0497F141A1C9EA000B67112 /* MainWindow.xib in Resources */,
 				F0ED998A1A16464D00A788CE /* laserrocket_16000_mono.wav in Resources */,
