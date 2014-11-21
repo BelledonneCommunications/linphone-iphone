@@ -84,13 +84,13 @@ static void play_file(const char *filename, bool_t unsupported_format) {
 }
 
 static void playing_test(void) {
-	const char *filename = ms_strdup_printf("%s/sounds/hello_opus_h264.mkv", liblinphone_tester_file_prefix);
+	char *filename = ms_strdup_printf("%s/sounds/hello_opus_h264.mkv", liblinphone_tester_file_prefix);
 	play_file(filename, !linphone_local_player_matroska_supported());
 	ms_free(filename);
 }
 
 test_t player_tests[] = {
-	{	"Playing"	,	playing_test	}
+	{	"Local MKV file"	,	playing_test	}
 };
 
 test_suite_t player_test_suite = {
