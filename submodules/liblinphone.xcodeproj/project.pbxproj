@@ -333,6 +333,10 @@
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
 		F01223B51A1DEFCE008D16BA /* stream_regulator.c in Sources */ = {isa = PBXBuildFile; fileRef = F01223AF1A1DEFB8008D16BA /* stream_regulator.c */; };
 		F01223BD1A1E4827008D16BA /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F01223BC1A1E4827008D16BA /* sounds */; };
+		F01223D91A1F29AB008D16BA /* mediastream_tester_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F01223D81A1F29AB008D16BA /* mediastream_tester_Tests.m */; };
+		F01223E41A1F29D6008D16BA /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F01223E11A1F29D6008D16BA /* DTObjectBlockExecutor.m */; };
+		F01223E51A1F29D6008D16BA /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = F01223E31A1F29D6008D16BA /* NSObject+DTRuntime.m */; };
+		F01223EC1A1F3476008D16BA /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2E0177ACF5700C40726 /* nowebcamCIF.jpg */; };
 		F02538E91979481D002C30F3 /* vp8rtpfmt.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538E71979481D002C30F3 /* vp8rtpfmt.c */; };
 		F02538EA1979481D002C30F3 /* vp8rtpfmt.h in Headers */ = {isa = PBXBuildFile; fileRef = F02538E81979481D002C30F3 /* vp8rtpfmt.h */; };
 		F02538ED19794847002C30F3 /* g711.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538EB19794847002C30F3 /* g711.c */; };
@@ -485,6 +489,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 225D64FA1521C009008B2E81;
 			remoteInfo = libortp;
+		};
+		F01223DA1A1F29AB008D16BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F0ED99531A16464D00A788CE;
+			remoteInfo = "mediastream-tester";
 		};
 		F0ED99551A16464D00A788CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -736,6 +747,13 @@
 		F01223AF1A1DEFB8008D16BA /* stream_regulator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stream_regulator.c; sourceTree = "<group>"; };
 		F01223B01A1DEFB8008D16BA /* stream_regulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream_regulator.h; sourceTree = "<group>"; };
 		F01223BC1A1E4827008D16BA /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sounds; sourceTree = "<group>"; };
+		F01223D41A1F29AB008D16BA /* mediastream-tester Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mediastream-tester Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F01223D71A1F29AB008D16BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F01223D81A1F29AB008D16BA /* mediastream_tester_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mediastream_tester_Tests.m; sourceTree = "<group>"; };
+		F01223E01A1F29D6008D16BA /* DTObjectBlockExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTObjectBlockExecutor.h; sourceTree = "<group>"; };
+		F01223E11A1F29D6008D16BA /* DTObjectBlockExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTObjectBlockExecutor.m; sourceTree = "<group>"; };
+		F01223E21A1F29D6008D16BA /* NSObject+DTRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+DTRuntime.h"; sourceTree = "<group>"; };
+		F01223E31A1F29D6008D16BA /* NSObject+DTRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+DTRuntime.m"; sourceTree = "<group>"; };
 		F02538E71979481D002C30F3 /* vp8rtpfmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vp8rtpfmt.c; sourceTree = "<group>"; };
 		F02538E81979481D002C30F3 /* vp8rtpfmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vp8rtpfmt.h; sourceTree = "<group>"; };
 		F02538EB19794847002C30F3 /* g711.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g711.c; sourceTree = "<group>"; };
@@ -847,6 +865,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F01223D11A1F29AB008D16BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0ED99671A16464D00A788CE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -891,6 +916,7 @@
 				225D65C51521C009008B2E81 /* libortp.a */,
 				22C8D0E91769F8FF00DAFB4E /* libmediastreamer_voip.a */,
 				F0ED999F1A16464D00A788CE /* mediastream-tester.app */,
+				F01223D41A1F29AB008D16BA /* mediastream-tester Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -899,6 +925,7 @@
 			isa = PBXGroup;
 			children = (
 				F0ED99521A1645CD00A788CE /* Frameworks */,
+				F01223D51A1F29AB008D16BA /* mediastream-tester Tests */,
 				222CA4CF11F6CF2000621220 /* mediastreamer2 */,
 				222CA4CE11F6CF1900621220 /* oRTP */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
@@ -1260,6 +1287,27 @@
 				AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		F01223D51A1F29AB008D16BA /* mediastream-tester Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F01223D81A1F29AB008D16BA /* mediastream_tester_Tests.m */,
+				F01223E01A1F29D6008D16BA /* DTObjectBlockExecutor.h */,
+				F01223E11A1F29D6008D16BA /* DTObjectBlockExecutor.m */,
+				F01223E21A1F29D6008D16BA /* NSObject+DTRuntime.h */,
+				F01223E31A1F29D6008D16BA /* NSObject+DTRuntime.m */,
+				F01223D61A1F29AB008D16BA /* Supporting Files */,
+			);
+			path = "mediastream-tester Tests";
+			sourceTree = "<group>";
+		};
+		F01223D61A1F29AB008D16BA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F01223D71A1F29AB008D16BA /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F0ED99161A1645C200A788CE /* tester */ = {
@@ -1637,6 +1685,24 @@
 			productReference = 22DD19BE13A8D7FA0018ECD4 /* mediastream.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F01223D31A1F29AB008D16BA /* mediastream-tester Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F01223DF1A1F29AB008D16BA /* Build configuration list for PBXNativeTarget "mediastream-tester Tests" */;
+			buildPhases = (
+				F01223D01A1F29AB008D16BA /* Sources */,
+				F01223D11A1F29AB008D16BA /* Frameworks */,
+				F01223D21A1F29AB008D16BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F01223DB1A1F29AB008D16BA /* PBXTargetDependency */,
+			);
+			name = "mediastream-tester Tests";
+			productName = "mediastream-tester Tests";
+			productReference = F01223D41A1F29AB008D16BA /* mediastream-tester Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F0ED99531A16464D00A788CE /* mediastream-tester */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0ED999B1A16464D00A788CE /* Build configuration list for PBXNativeTarget "mediastream-tester" */;
@@ -1664,6 +1730,10 @@
 			attributes = {
 				LastUpgradeCheck = 0610;
 				TargetAttributes = {
+					F01223D31A1F29AB008D16BA = {
+						CreatedOnToolsVersion = 6.1;
+						TestTargetID = F0ED99531A16464D00A788CE;
+					};
 					F0ED99531A16464D00A788CE = {
 						DevelopmentTeam = Z2V957B3D6;
 					};
@@ -1690,6 +1760,7 @@
 				225D64FA1521C009008B2E81 /* libortp */,
 				22C8D0401769F8FF00DAFB4E /* libmediastreamer_voip */,
 				F0ED99531A16464D00A788CE /* mediastream-tester */,
+				F01223D31A1F29AB008D16BA /* mediastream-tester Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1721,6 +1792,14 @@
 				F0ED99421A1645C200A788CE /* arpeggio_8000_mono.wav in Resources */,
 				F0ED99451A1645C200A788CE /* hello16000-1s.wav in Resources */,
 				F0ED994F1A1645C200A788CE /* owl_44100_mono.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F01223D21A1F29AB008D16BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F01223EC1A1F3476008D16BA /* nowebcamCIF.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1899,6 +1978,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F01223D01A1F29AB008D16BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F01223D91A1F29AB008D16BA /* mediastream_tester_Tests.m in Sources */,
+				F01223E41A1F29D6008D16BA /* DTObjectBlockExecutor.m in Sources */,
+				F01223E51A1F29D6008D16BA /* NSObject+DTRuntime.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F0ED99581A16464D00A788CE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1943,6 +2032,11 @@
 			isa = PBXTargetDependency;
 			target = 225D64FA1521C009008B2E81 /* libortp */;
 			targetProxy = 22C8D0421769F8FF00DAFB4E /* PBXContainerItemProxy */;
+		};
+		F01223DB1A1F29AB008D16BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F0ED99531A16464D00A788CE /* mediastream-tester */;
+			targetProxy = F01223DA1A1F29AB008D16BA /* PBXContainerItemProxy */;
 		};
 		F0ED99541A16464D00A788CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2784,6 +2878,152 @@
 			};
 			name = Release;
 		};
+		F01223DC1A1F29AB008D16BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					linphone/mediastreamer2/build/iphone,
+					linphone/mediastreamer2/include,
+					linphone/oRTP/include,
+					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
+				);
+				INFOPLIST_FILE = "mediastream-tester Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mediastream-tester.app/mediastream-tester";
+			};
+			name = Debug;
+		};
+		F01223DD1A1F29AB008D16BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					linphone/mediastreamer2/build/iphone,
+					linphone/mediastreamer2/include,
+					linphone/oRTP/include,
+					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
+				);
+				INFOPLIST_FILE = "mediastream-tester Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mediastream-tester.app/mediastream-tester";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F01223DE1A1F29AB008D16BA /* DistributionAdhoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					linphone/mediastreamer2/build/iphone,
+					linphone/mediastreamer2/include,
+					linphone/oRTP/include,
+					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/include",
+				);
+				INFOPLIST_FILE = "mediastream-tester Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mediastream-tester.app/mediastream-tester";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = DistributionAdhoc;
+		};
 		F0ED999C1A16464D00A788CE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3028,6 +3268,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		F01223DF1A1F29AB008D16BA /* Build configuration list for PBXNativeTarget "mediastream-tester Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F01223DC1A1F29AB008D16BA /* Debug */,
+				F01223DD1A1F29AB008D16BA /* Release */,
+				F01223DE1A1F29AB008D16BA /* DistributionAdhoc */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		F0ED999B1A16464D00A788CE /* Build configuration list for PBXNativeTarget "mediastream-tester" */ = {
 			isa = XCConfigurationList;
