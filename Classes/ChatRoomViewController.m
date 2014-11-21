@@ -403,13 +403,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         newTableFrame.size.height += newComposingFrame.size.height;
         newComposingFrame.origin.y = keyboardFrame.origin.y;
     }
+    composingVisible = visible;
     [UIView animateWithDuration:delay
                      animations:^{
                          self.tableController.tableView.frame = newTableFrame;
                          self.composeIndicatorView.frame      = newComposingFrame;
                      }
                      completion:^(BOOL finished) {
-                         composingVisible = visible;
                          [self.tableController scrollToBottom:TRUE];
                      }];
 }
