@@ -25,8 +25,19 @@
     return skipped_suites;
 }
 
++ (NSString*)safeifyTestString:(NSString*)testString{
+    NSArray* invalidChars= @[@"[", @"]", @" ", @"-", @"."];
+    NSString* safeString = testString;
+
+    for (NSString* c in invalidChars) {
+        safeString = [safeString stringByReplacingOccurrencesOfString:c withString:@"_"];
+    }
+    return safeString;
+}
+
 + (void)initialize {
     mediastreamer2_tester_init();
+    ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 
     int count = mediastreamer2_tester_nb_test_suites();
     for (int i=0; i<count; i++) {
@@ -41,9 +52,10 @@
             if( [[mediastream_tester_Tests skippedSuites] containsObject:sSuite] ) continue;
 
             // prepend test_ so that it gets found by introspection
-            NSString* safesTest    = [sTest stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-            NSString* safesSuite   = [sSuite stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            NSString* safesTest    = [self safeifyTestString:sTest];
+            NSString* safesSuite   = [self safeifyTestString:sSuite];
             NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
+            NSLog(@"Adding test: %@", selectorName);
             [mediastream_tester_Tests addInstanceMethodWithSelectorName:selectorName block:^(mediastream_tester_Tests* myself) {
                 [myself testForSuite:sSuite andTest:sTest];
             }];
