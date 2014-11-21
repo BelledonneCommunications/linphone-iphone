@@ -205,6 +205,7 @@ typedef struct _stats {
 	LinphoneChatMessage* last_received_chat_message;
 
 	char * dtmf_list_received;
+	int dtmf_count;
 }stats;
 
 typedef struct _LinphoneCoreManager {
