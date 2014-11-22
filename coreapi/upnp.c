@@ -145,7 +145,7 @@ char * linphone_upnp_format_device_id(const char *device_id) {
 	if(device_id == NULL) {
 		return ret;
 	}
-	ret = ms_new(char, UPNP_UUID_LEN + 1);
+	ret = ms_new0(char, UPNP_UUID_LEN + 1);
 	tmp = ret;
 	if(linphone_upnp_strncmpi(device_id, "uuid:", linphone_upnp_str_min(device_id, "uuid:")) == 0) {
 		device_id += strlen("uuid:");

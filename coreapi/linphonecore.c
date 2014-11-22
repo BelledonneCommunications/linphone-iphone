@@ -1529,7 +1529,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	const char *aac_fmtp162248, *aac_fmtp3244;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
-	memset (lc, 0, sizeof (LinphoneCore));
+
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
@@ -1679,7 +1679,7 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 
 LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata)
 {
-	LinphoneCore *core = ms_new(LinphoneCore, 1);
+	LinphoneCore *core = ms_new0(LinphoneCore, 1);
 	linphone_core_init(core, vtable, config, userdata);
 	return core;
 }
@@ -6640,7 +6640,7 @@ typedef struct Hook{
 }Hook;
 
 static Hook *hook_new(LinphoneCoreIterateHook hook, void *hook_data){
-	Hook *h=ms_new(Hook,1);
+	Hook *h=ms_new0(Hook,1);
 	h->fun=hook;
 	h->data=hook_data;
 	return h;
