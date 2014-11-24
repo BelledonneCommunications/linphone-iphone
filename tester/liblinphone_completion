@@ -21,7 +21,7 @@
 # source this file in your .rc file
 
 _liblinphone_complete() {
-	local completions command_require_argument latest_arg available_tasks has_not_set_suite suite_name
+	local completions command_require_argument prev_arg latest_arg available_tasks has_not_set_suite suite_name
 	# these commands expect an argument
 	command_require_argument=(--list-tests --config --domain --auth-domain --dns-hosts --suite --test)
 
@@ -34,22 +34,27 @@ _liblinphone_complete() {
 		set -- "${args[@]}" #convert them to arguments (eg $1,$#,$@,etc.)
 	fi
 	#skip program name
+	program=$1
 	shift
 
 
 	# if user required help, do not complete anything
 	if ! grep -q -- "--help" <<< "$@"; then
-
 		# retrieve the last argument
 		latest_arg=""
+		prev_arg=""
+		latest_is_empty=0
 		for arg in "$@"; do
 			if [ ! -z "$arg" ]; then
+				prev_arg="$latest_arg"
 				latest_arg="$arg"
+			else
+				latest_is_empty=1
 			fi
 		done
 
 		# get the tasks available, from --help
-		available_tasks="$(liblinphone_tester 2>&1 --help | sed -nE "s/.*--([^ ]*).*/--\\1/p")"
+		available_tasks="$($program 2>&1 --help | sed -nE "s/.*--([^ ]*).*/--\\1/p")"
 		# remove all already provided tasks (it's useless to provide them twice)
 		if [[ ! -z "$@" ]]; then
 			current_tasks=$(echo $@ | grep -Eo -- "--([^ ])*" | tr '\n' '|' | sed 's/|/$|/g')--$
@@ -63,16 +68,22 @@ _liblinphone_complete() {
 			available_tasks=$(echo "$available_tasks" | grep -v -- --test)
 		fi
 
-		# if latest arg does not start with '--', it is a custom value; just output all available commands
-		if ! grep -q -- '^--' <<< "$latest_arg"; then
-			completions="$available_tasks"
+		# if latest arg does not start with '--', it is a custom value
+		if [ $latest_is_empty = 0 ] && ! grep -q -- '^--' <<< "$latest_arg"; then
+			# echo "yes!$prev_arg $has_not_set_suite"
+			if [ "$prev_arg" = "--test" ] && [ $has_not_set_suite = 0 ]; then
+				suite_name=$(echo $@ | sed -nE 's/.*--suite ([^ ]*) .*/\1/p')
+				completions="$($program --list-tests "$suite_name" | grep "^$latest_arg")"
+			elif [ "$prev_arg" = "--suite" ] || [ "$prev_arg" = "--list-tests" ]; then
+				completions="$($program --list-suites)"
+			fi
 		elif [ "$latest_arg" = "--test" ]; then
 			if [ $has_not_set_suite = 0 ]; then
 				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) .*/\1/p')
-				completions="$(liblinphone_tester --list-tests "$suite_name")"
+				completions="$($program --list-tests "$suite_name")"
 			fi
 		elif [ "$latest_arg" = "--suite" ] || [ "$latest_arg" = "--list-tests" ]; then
-			completions="$(liblinphone_tester --list-suites)"
+			completions="$($program --list-suites)"
 		# we are waiting for a custom value, so do not hint anything
 		elif grep -q -- " $latest_arg " <<< "$command_require_argument"; then
 			completions=""
