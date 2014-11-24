@@ -115,6 +115,15 @@ void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, s
 	((char *)content->lcp.data)[size] = '\0';
 }
 
+char * linphone_content_get_string_buffer(const LinphoneContent *content) {
+	return (char *)content->lcp.data;
+}
+
+void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer) {
+	content->lcp.size = strlen(buffer);
+	content->lcp.data = belle_sip_strdup(buffer);
+}
+
 size_t linphone_content_get_size(const LinphoneContent *content) {
 	return content->lcp.size;
 }

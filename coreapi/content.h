@@ -155,9 +155,24 @@ LINPHONE_PUBLIC void * linphone_content_get_buffer(const LinphoneContent *conten
 /**
  * Set the content data buffer, usually a string.
  * @param[in] content LinphoneContent object.
- * @param[in] data The content data buffer.
+ * @param[in] buffer The content data buffer.
+ * @param[in] size The size of the content data buffer.
  */
 LINPHONE_PUBLIC void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, size_t size);
+
+/**
+ * Get the string content data buffer.
+ * @param[in] content LinphoneContent object
+ * @return The string content data buffer.
+ */
+LINPHONE_PUBLIC char * linphone_content_get_string_buffer(const LinphoneContent *content);
+
+/**
+ * Set the string content data buffer.
+ * @param[in] content LinphoneContent object.
+ * @param[in] buffer The string content data buffer.
+ */
+LINPHONE_PUBLIC void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer);
 
 /**
  * Get the content data buffer size, excluding null character despite null character is always set for convenience.
