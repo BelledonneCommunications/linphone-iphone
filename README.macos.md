@@ -44,7 +44,7 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
 
         # then you have to install some dependencies from a tap.
         brew tap Gui13/linphone
-        brew install gtk+-quartz gtk-mac-integration
+        brew install antlr3.2 libantlr3.4c mattintosh4/gtk-mac-integration/gtk-mac-integration
 
 ### Building Linphone
 
