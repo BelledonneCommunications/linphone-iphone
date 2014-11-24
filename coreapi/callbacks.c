@@ -303,9 +303,9 @@ static void call_received(SalOp *h){
 		linphone_address_destroy(to_addr);
 		return;
 	}
-	
+
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
-	
+
 	linphone_call_make_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
@@ -1170,14 +1170,15 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	}
 
 	chat_msg->state=chatStatusSal2Linphone(status);
-	linphone_chat_message_store_state(chat_msg);
+	linphone_chat_message_update_state(chat_msg);
+
 	if (chat_msg && chat_msg->cb) {
 		ms_message("Notifying text delivery with status %i",chat_msg->state);
 		chat_msg->cb(chat_msg
 			,chat_msg->state
 			,chat_msg->cb_ud);
 	}
-	if (status != SalTextDeliveryInProgress) { /*don't release op if progress*/
+	if (status != SalTextDeliveryInProgress) { /*only release op if not in progress*/
 		linphone_chat_message_destroy(chat_msg);
 	}
 }

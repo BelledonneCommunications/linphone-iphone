@@ -494,6 +494,17 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	linphone_chat_message_unref(msg);
 }
 
+void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg ) {
+	linphone_chat_message_store_state(chat_msg);
+
+	if( chat_msg->state == LinphoneChatMessageStateDelivered
+			|| chat_msg->state == LinphoneChatMessageStateNotDelivered ){
+		// message is not transient anymore, we can remove it from our transient list and unref it :
+		chat_msg->chat_room->transient_messages = ms_list_remove(chat_msg->chat_room->transient_messages, chat_msg);
+		linphone_chat_message_unref(chat_msg);
+	}
+}
+
 /**
  * Send a message to peer member of this chat room.
  * @deprecated linphone_chat_room_send_message2() gives more control on the message expedition.
@@ -523,7 +534,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	addr=linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	cr=linphone_core_get_chat_room(lc,addr);
-	
+
 	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
 		xmlChar *file_url = NULL;
 		xmlDocPtr xmlMessageBody;
