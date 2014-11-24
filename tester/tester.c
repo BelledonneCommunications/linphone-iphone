@@ -109,36 +109,59 @@ void reset_counters( stats* counters) {
 
 static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
 	LinphoneCore* lc;
-	char filepath[256]={0};
-	char ringpath[256]={0};
-	char ringbackpath[256]={0};
-	char rootcapath[256]={0};
-	char dnsuserhostspath[256]={0};
-	char nowebcampath[256]={0};
+	LpConfig* config = NULL;
+	char *filepath         = NULL;
+	char *ringpath         = NULL;
+	char *ringbackpath     = NULL;
+	char *rootcapath       = NULL;
+	char *dnsuserhostspath = NULL;
+	char *nowebcampath     = NULL;
 
 	if (path==NULL) path=".";
 
 	if (file){
-		sprintf(filepath, "%s/%s", path, file);
+		filepath = ms_strdup_printf("%s/%s", path, file);
 		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
+		config = lp_config_new_with_factory(NULL,filepath);
 	}
 
-	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL, user_data);
+
+	// setup dynamic-path assets
+	ringpath         = ms_strdup_printf("%s/sounds/oldphone.wav",path);
+	ringbackpath     = ms_strdup_printf("%s/sounds/ringback.wav", path);
+	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
+	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
+	dnsuserhostspath = ms_strdup_printf( "%s/%s", path, userhostsfile);
+
+
+	if( config != NULL ) {
+		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
+		lp_config_set_string(config, "sound", "local_ring" , ringpath);
+		lp_config_set_string(config, "sip",   "root_ca"    , rootcapath);
+		lc = linphone_core_new_with_config(v_table, config, user_data);
+	} else {
+		lc = linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL, user_data);
+
+		linphone_core_set_ring(lc, ringpath);
+		linphone_core_set_ringback(lc, ringbackpath);
+		linphone_core_set_root_ca(lc,rootcapath);
+	}
 
 	sal_enable_test_features(lc->sal,TRUE);
-	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cafile.pem", path);
-	linphone_core_set_root_ca(lc,rootcapath);
-
-	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
-
-	snprintf(ringpath,sizeof(ringpath), "%s/sounds/oldphone.wav",path);
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/ringback.wav", path);
-	linphone_core_set_ring(lc, ringpath);
-	linphone_core_set_ringback(lc, ringbackpath);
-
-	snprintf(nowebcampath, sizeof(nowebcampath), "%s/images/nowebcamCIF.jpg", path);
 	linphone_core_set_static_picture(lc,nowebcampath);
+
+
+	ms_free(ringpath);
+	ms_free(ringbackpath);
+	ms_free(nowebcampath);
+	ms_free(rootcapath);
+	ms_free(dnsuserhostspath);
+
+	if( filepath ) ms_free(filepath);
+
+	if( config ) lp_config_unref(config);
+
 	return lc;
 }
 
