@@ -361,9 +361,13 @@ static void direct_call_over_ipv6(){
 	if (liblinphone_tester_ipv6_available()){
 		LCSipTransports pauline_transports;
 		LinphoneAddress* pauline_dest = linphone_address_new("sip:[::1];transport=tcp");
+		char hellopath[256];
 		marie = linphone_core_manager_new( "marie_rc");
 		pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
+		/*use playfile for callee to avoid locking on capture card*/
+		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+		linphone_core_set_play_file(pauline->lc,hellopath);
 		linphone_core_use_files (pauline->lc,TRUE);
 
 		linphone_core_enable_ipv6(marie->lc,TRUE);
