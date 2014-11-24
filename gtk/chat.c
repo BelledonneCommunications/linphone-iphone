@@ -276,7 +276,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 	}
 }
 
-static void on_chat_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *user_pointer){
+static void on_chat_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state){
 	update_chat_state_message(state,msg);
 }
 
@@ -300,8 +300,11 @@ void linphone_gtk_send_text(){
 	entered=gtk_entry_get_text(GTK_ENTRY(entry));
 	if (strlen(entered)>0) {
 		LinphoneChatMessage *msg;
+		LinphoneChatMessageCbs *cbs;
 		msg=linphone_chat_room_create_message(cr,entered);
-		linphone_chat_room_send_message2(cr,msg,on_chat_state_changed,NULL);
+		cbs=linphone_chat_message_get_callbacks(msg);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs,on_chat_state_changed);
+		linphone_chat_room_send_chat_message(cr,msg);
 		linphone_gtk_push_text(w,linphone_chat_message_get_from(msg),
 				TRUE,cr,msg,FALSE);
 
