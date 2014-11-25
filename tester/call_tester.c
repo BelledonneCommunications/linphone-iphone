@@ -378,7 +378,7 @@ static void direct_call_over_ipv6(){
 		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 2, 2000));
 		CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 2, 2000));
 #endif
-	
+
 		linphone_core_get_sip_transports_used(pauline->lc,&pauline_transports);
 		linphone_address_set_port(pauline_dest,pauline_transports.tcp_port);
 		linphone_core_invite_address(marie->lc,pauline_dest);
@@ -709,10 +709,10 @@ static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mi
 
 static void call_failed_because_of_codecs(void) {
 	int begin,leaked_objects;
-	
+
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
-	
+
 	{
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1145,12 +1145,11 @@ static void call_paused_resumed_with_loss(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_pauline;
 	const rtp_stats_t * stats;
-
+	float loss_percentage;
 
 	OrtpNetworkSimulatorParams params={0};
 	params.enabled=TRUE;
 	params.loss_rate=25;
-
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 	call_pauline = linphone_core_get_current_call(pauline->lc);
@@ -1159,25 +1158,28 @@ static void call_paused_resumed_with_loss(void) {
 
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 4000);
 
+	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
 
 	/*stay in pause a little while in order to generate traffic*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
 
 	linphone_core_resume_call(pauline->lc,call_pauline);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 6000);
 
 	/*since stats are NOT totally reset during pause, the stats->packet_recv is computed from
 	the start of call. This test ensures that the loss rate is consistent during the entire call.*/
 	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
-	CU_ASSERT_TRUE(((stats->cum_packet_loss * 100.f / stats->packet_recv) / params.loss_rate) > .5f);
+	loss_percentage = stats->cum_packet_loss * 100.f / stats->packet_recv;
+	CU_ASSERT_TRUE(.75 * params.loss_rate < loss_percentage);
+	CU_ASSERT_TRUE(loss_percentage < 1.25 * params.loss_rate);
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
