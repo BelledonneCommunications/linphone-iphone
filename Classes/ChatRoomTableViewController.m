@@ -170,7 +170,7 @@
         cell = [[[UIChatRoomCell alloc] initWithIdentifier:kCellId] autorelease];
     }
 
-    LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, [indexPath row]);
+    LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
     [cell setChatMessage:chat];
     [cell setChatRoomDelegate:chatRoomDelegate];
     return cell;
@@ -182,7 +182,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
-        LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, [indexPath row]);
+        LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
         if( chat ){
 
             linphone_chat_room_delete_message(chatRoom, chat);
@@ -204,7 +204,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LinphoneChatMessage* message = ms_list_nth_data(self->messageList, [indexPath row]);
+    LinphoneChatMessage* message = ms_list_nth_data(self->messageList, (int)[indexPath row]);
     return [UIChatRoomCell height:message width:[self.view frame].size.width];
 }
 

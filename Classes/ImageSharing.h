@@ -35,7 +35,7 @@
 @private
     NSInteger totalBytesExpectedToRead;
     id<ImageSharingDelegate> delegate;
-    int statusCode;
+    NSInteger statusCode;
 }
 
 + (id)newImageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;

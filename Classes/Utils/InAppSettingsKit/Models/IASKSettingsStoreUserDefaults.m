@@ -53,7 +53,7 @@
 }
 
 - (int)integerForKey:(NSString*)key {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
+    return (int)[[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 
 - (id)objectForKey:(NSString*)key {

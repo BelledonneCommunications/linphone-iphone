@@ -36,7 +36,7 @@
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
         return self;
     } else {
-        const float *colors = CGColorGetComponents(cgColor);
+        const CGFloat *colors = CGColorGetComponents(cgColor);
         rgbaR = colors[0];
         rgbaG = colors[1];
         rgbaB = colors[2];
@@ -64,7 +64,7 @@
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
         return self;
     } else {
-        const float *colors = CGColorGetComponents(cgColor);
+        const CGFloat *colors = CGColorGetComponents(cgColor);
         rgbaR = colors[0];
         rgbaG = colors[1];
         rgbaB = colors[2];

@@ -748,9 +748,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             [tableController.view setFrame:tableFrame];
 
             // Scroll to bottom
-            int lastSection = [tableController.tableView numberOfSections] - 1;
+            NSInteger lastSection = [tableController.tableView numberOfSections] - 1;
             if(lastSection >= 0) {
-                int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+                NSInteger lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
                 if(lastRow >=0) {
                     [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
                                                      atScrollPosition:UITableViewScrollPositionBottom
@@ -810,9 +810,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         }
 
         // Scroll
-        int lastSection = [tableController.tableView numberOfSections] - 1;
+        NSInteger lastSection = [tableController.tableView numberOfSections] - 1;
         if(lastSection >= 0) {
-            int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+            NSInteger lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
             if(lastRow >=0) {
                 [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
                                                  atScrollPosition:UITableViewScrollPositionBottom

@@ -1057,7 +1057,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			} else if (proxy){
 				NSInteger defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
 				if (defaultExpire>=0)
-					linphone_proxy_config_expires(proxy, defaultExpire);
+					linphone_proxy_config_expires(proxy, (int)defaultExpire);
 				//else keep default value from linphonecore
 			}
 

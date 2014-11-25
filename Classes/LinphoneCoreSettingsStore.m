@@ -484,14 +484,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		bool range = [match rangeAtIndex:2].length > 0;
 		if(!range) {
 			NSRange rangeMinPort = [match rangeAtIndex:1];
-			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] intValue]];
 			*maxPort = *minPort;
 			return TRUE;
 		} else {
 			NSRange rangeMinPort = [match rangeAtIndex:1];
-			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] intValue]];
 			NSRange rangeMaxPort = [match rangeAtIndex:4];
-			*maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] integerValue]];
+			*maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] intValue]];
 			if(*minPort > *maxPort) {
 				*minPort = *maxPort;
 			}

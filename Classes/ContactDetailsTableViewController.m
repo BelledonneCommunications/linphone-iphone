@@ -141,7 +141,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     [contactDetailsDelegate onModification:nil];
 }
 
-- (NSMutableArray*)getSectionData:(int)section {
+- (NSMutableArray*)getSectionData:(NSInteger)section {
     if(contactSections[section] == ContactSections_Number) {
         return [dataCache objectAtIndex:0];
     } else if(contactSections[section] == ContactSections_Sip) {
