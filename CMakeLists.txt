@@ -30,6 +30,8 @@ set(LINPHONE_MICRO_VERSION "0")
 set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
 set(LINPHONE_SO_VERSION "6")
 
+set(LINPHONE_ALL_LANGS "cs de es fr he hu it ja nb_NO nl pl pt_BR ru sr sv zh_CN zh_TW")
+
 
 include(CMakeDependentOption)
 
@@ -88,6 +90,7 @@ if(MSVC)
 endif()
 
 
+set(GETTEXT_PACKAGE "linphone")
 if(ENABLE_RELATIVE_PREFIX)
 	set(LINPHONE_DATA_DIR ".")
 else()
@@ -104,6 +107,10 @@ add_definitions(-DHAVE_CONFIG_H)
 
 add_subdirectory(coreapi)
 add_subdirectory(share)
+if(ENABLE_GTK_UI)
+	add_subdirectory(gtk)
+	add_subdirectory(pixmaps)
+endif()
 if(ENABLE_TOOLS)
 	add_subdirectory(tools)
 endif()
