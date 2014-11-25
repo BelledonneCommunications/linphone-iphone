@@ -1158,7 +1158,6 @@ static void call_paused_resumed_with_loss(void) {
 
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 4000);
 
-	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
