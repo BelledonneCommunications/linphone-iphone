@@ -323,7 +323,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    Linphone_log(@"%@ - state = %ld", NSStringFromSelector(_cmd), application.applicationState);
+    Linphone_log(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
 
     [self fixRing];
 
