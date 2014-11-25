@@ -162,10 +162,10 @@ int messagesUnreadCount;
 	if ((content == NULL)
 		|| (strcmp("application", linphone_content_get_type(content)) != 0)
 		|| (strcmp("simple-message-summary", linphone_content_get_subtype(content)) != 0)
-		|| (linphone_content_get_data(content) == NULL)) {
+		|| (linphone_content_get_buffer(content) == NULL)) {
 		return;
 	}
-    const char* body = linphone_content_get_data(content);
+    const char* body = linphone_content_get_buffer(content);
     if ((body = strstr(body, "voice-message: ")) == NULL) {
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it."];
 		return;
