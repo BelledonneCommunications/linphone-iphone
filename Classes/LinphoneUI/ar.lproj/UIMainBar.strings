@@ -1,39 +1,39 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Chat"; ObjectID = "5"; */
-"5.accessibilityLabel" = "Chat";
+/* Class = "IBUIButton"; accessibilityLabel = "محادثة"; ObjectID = "5"; */
+"5.accessibilityLabel" = "محادثة";
 
-/* Class = "IBUIButton"; normalTitle = "Chat"; ObjectID = "5"; */
-"5.normalTitle" = "Chat";
+/* Class = "IBUIButton"; normalTitle = "محادثة"; ObjectID = "5"; */
+"5.normalTitle" = "محادثة";
 
-/* Class = "IBUIButton"; accessibilityLabel = "History"; ObjectID = "6"; */
-"6.accessibilityLabel" = "History";
+/* Class = "IBUIButton"; accessibilityLabel = "التاريخ"; ObjectID = "6"; */
+"6.accessibilityLabel" = "التاريخ";
 
-/* Class = "IBUIButton"; normalTitle = "History"; ObjectID = "6"; */
-"6.normalTitle" = "History";
+/* Class = "IBUIButton"; normalTitle = "التاريخ"; ObjectID = "6"; */
+"6.normalTitle" = "التاريخ";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Dialer"; ObjectID = "7"; */
-"7.accessibilityLabel" = "Dialer";
+/* Class = "IBUIButton"; accessibilityLabel = "لوحة المفاتيح"; ObjectID = "7"; */
+"7.accessibilityLabel" = "لوحة المفاتيح";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Contacts"; ObjectID = "8"; */
-"8.accessibilityLabel" = "Contacts";
+/* Class = "IBUIButton"; accessibilityLabel = "جهات الاتصال"; ObjectID = "8"; */
+"8.accessibilityLabel" = "جهات الاتصال";
 
-/* Class = "IBUIButton"; normalTitle = "Contacts"; ObjectID = "8"; */
-"8.normalTitle" = "Contacts";
+/* Class = "IBUIButton"; normalTitle = "جهات الاتصال"; ObjectID = "8"; */
+"8.normalTitle" = "جهات الاتصال";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Settings"; ObjectID = "9"; */
-"9.accessibilityLabel" = "Settings";
+/* Class = "IBUIButton"; accessibilityLabel = "الخيارات"; ObjectID = "9"; */
+"9.accessibilityLabel" = "الخيارات";
 
-/* Class = "IBUIButton"; normalTitle = "Settings"; ObjectID = "9"; */
-"9.normalTitle" = "Settings";
+/* Class = "IBUIButton"; normalTitle = "الخيارات"; ObjectID = "9"; */
+"9.normalTitle" = "الخيارات";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Missed call(s)"; ObjectID = "34"; */
-"34.accessibilityLabel" = "Missed call(s)";
+/* Class = "IBUILabel"; accessibilityLabel = "اتصال (أو اتصالات) فائتة"; ObjectID = "34"; */
+"34.accessibilityLabel" = "اتصال (أو اتصالات) فائتة";
 
 /* Class = "IBUILabel"; text = "99"; ObjectID = "34"; */
 "34.text" = "99";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Missed message(s)"; ObjectID = "38"; */
-"38.accessibilityLabel" = "Missed message(s)";
+/* Class = "IBUILabel"; accessibilityLabel = "رسالة (أو رسائل) فائتة"; ObjectID = "38"; */
+"38.accessibilityLabel" = "رسالة (أو رسائل) فائتة";
 
 /* Class = "IBUILabel"; text = "99"; ObjectID = "38"; */
 "38.text" = "99";

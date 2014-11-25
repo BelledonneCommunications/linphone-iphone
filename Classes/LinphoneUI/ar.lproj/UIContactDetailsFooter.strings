@@ -1,6 +1,6 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Remove"; ObjectID = "5"; */
-"5.accessibilityLabel" = "Remove";
+/* Class = "IBUIButton"; accessibilityLabel = "حذف"; ObjectID = "5"; */
+"5.accessibilityLabel" = "حذف";
 
-/* Class = "IBUIButton"; normalTitle = "Remove Contact"; ObjectID = "5"; */
-"5.normalTitle" = "Remove Contact";
+/* Class = "IBUIButton"; normalTitle = "حذف جهة الاتصال هذه"; ObjectID = "5"; */
+"5.normalTitle" = "حذف جهة الاتصال هذه";

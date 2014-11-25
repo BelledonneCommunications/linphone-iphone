@@ -1,42 +1,39 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "9"; */
-"9.accessibilityLabel" = "Back";
+/* Class = "IBUIButton"; accessibilityLabel = "الرجوع"; ObjectID = "9"; */
+"9.accessibilityLabel" = "الرجوع";
 
-/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "9"; */
-"9.normalTitle" = "Back";
+/* Class = "IBUIButton"; normalTitle = "الرجوع"; ObjectID = "9"; */
+"9.normalTitle" = "الرجوع";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Edit"; ObjectID = "10"; */
-"10.accessibilityLabel" = "Edit";
+/* Class = "IBUIButton"; accessibilityLabel = "تحرير"; ObjectID = "10"; */
+"10.accessibilityLabel" = "تحرير";
 
-/* Class = "IBUIButton"; normalTitle = "Edit"; ObjectID = "10"; */
-"10.normalTitle" = "Edit";
+/* Class = "IBUIButton"; normalTitle = "تحرير"; ObjectID = "10"; */
+"10.normalTitle" = "تحرير";
 
-/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "10"; */
-"10.selectedTitle" = "Ok";
+/* Class = "IBUIButton"; selectedTitle = "موافق"; ObjectID = "10"; */
+"10.selectedTitle" = "موافق";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Send"; ObjectID = "15"; */
-"15.accessibilityLabel" = "Send";
+/* Class = "IBUIButton"; accessibilityLabel = "إرسال"; ObjectID = "15"; */
+"15.accessibilityLabel" = "إرسال";
 
-/* Class = "IBUIButton"; normalTitle = "Send"; ObjectID = "15"; */
-"15.normalTitle" = "Send";
+/* Class = "IBUIButton"; normalTitle = "إرسال"; ObjectID = "15"; */
+"15.normalTitle" = "إرسال";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "40"; */
-"40.accessibilityLabel" = "Contact's name";
+/* Class = "IBUILabel"; accessibilityLabel = "إسم جهة الاتصال"; ObjectID = "40"; */
+"40.accessibilityLabel" = "إسم جهة الاتصال";
 
-/* Class = "IBUILabel"; text = "Contact1"; ObjectID = "40"; */
-"40.text" = "Contact1";
+/* Class = "IBUILabel"; text = "جهة الاتصال 1"; ObjectID = "40"; */
+"40.text" = "جهة الاتصال 1";
 
-/* Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "41"; */
-"41.accessibilityLabel" = "Contact's avatar";
+/* Class = "IBUIImageView"; accessibilityLabel = "صورة جهة الاتصال"; ObjectID = "41"; */
+"41.accessibilityLabel" = "صورة جهة الاتصال";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Send picture"; ObjectID = "73"; */
-"73.accessibilityLabel" = "Send picture";
+/* Class = "IBUIButton"; accessibilityLabel = "إرسال الصورة"; ObjectID = "73"; */
+"73.accessibilityLabel" = "إرسال الصورة";
 
-/* Class = "IBUIProgressView"; accessibilityLabel = "Upload or download progression"; ObjectID = "74"; */
-"74.accessibilityLabel" = "Upload or download progression";
+/* Class = "IBUIProgressView"; accessibilityLabel = "يجري التنزيل أو الرفع"; ObjectID = "74"; */
+"74.accessibilityLabel" = "يجري التنزيل أو الرفع";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Cancel"; ObjectID = "75"; */
-"75.accessibilityLabel" = "Cancel";
-
-/* Class = "IBUILabel"; text = "%@ is composing..."; ObjectID = "fpY-Fv-ht2"; */
-"fpY-Fv-ht2.text" = "%@ is composing...";
+/* Class = "IBUIButton"; accessibilityLabel = "إلغاء"; ObjectID = "75"; */
+"75.accessibilityLabel" = "إلغاء";

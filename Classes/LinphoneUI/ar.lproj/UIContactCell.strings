@@ -1,12 +1,12 @@
 
-/* Class = "IBUILabel"; accessibilityLabel = "Firstname"; ObjectID = "6"; */
-"6.accessibilityLabel" = "Firstname";
+/* Class = "IBUILabel"; accessibilityLabel = "الإسم"; ObjectID = "6"; */
+"6.accessibilityLabel" = "الإسم";
 
-/* Class = "IBUILabel"; text = "John"; ObjectID = "6"; */
-"6.text" = "John";
+/* Class = "IBUILabel"; text = "زيد"; ObjectID = "6"; */
+"6.text" = "زيد";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Lastname"; ObjectID = "10"; */
-"10.accessibilityLabel" = "Lastname";
+/* Class = "IBUILabel"; accessibilityLabel = "اللقب"; ObjectID = "10"; */
+"10.accessibilityLabel" = "اللقب";
 
-/* Class = "IBUILabel"; text = "Doe"; ObjectID = "10"; */
-"10.text" = "Doe";
+/* Class = "IBUILabel"; text = "عمرو"; ObjectID = "10"; */
+"10.text" = "عمرو";

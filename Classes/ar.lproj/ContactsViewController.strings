@@ -1,24 +1,24 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "All contacts filter"; ObjectID = "4"; */
-"4.accessibilityLabel" = "All contacts filter";
+/* Class = "IBUIButton"; accessibilityLabel = "عرض جميع جهات الاتصال"; ObjectID = "4"; */
+"4.accessibilityLabel" = "عرض جميع جهات الاتصال";
 
-/* Class = "IBUIButton"; normalTitle = "All"; ObjectID = "4"; */
-"4.normalTitle" = "All";
+/* Class = "IBUIButton"; normalTitle = "الكل"; ObjectID = "4"; */
+"4.normalTitle" = "الكل";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Linphone contacts filter"; ObjectID = "5"; */
-"5.accessibilityLabel" = "Linphone contacts filter";
+/* Class = "IBUIButton"; accessibilityLabel = "عرض جهات اتصال لاينفون فقط"; ObjectID = "5"; */
+"5.accessibilityLabel" = "عرض جهات اتصال لاينفون فقط";
 
-/* Class = "IBUIButton"; normalTitle = "Linphone"; ObjectID = "5"; */
-"5.normalTitle" = "Linphone";
+/* Class = "IBUIButton"; normalTitle = "لاينفون"; ObjectID = "5"; */
+"5.normalTitle" = "لاينفون";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Add contact"; ObjectID = "6"; */
-"6.accessibilityLabel" = "Add contact";
+/* Class = "IBUIButton"; accessibilityLabel = "إضافة جهة الاتصال"; ObjectID = "6"; */
+"6.accessibilityLabel" = "إضافة جهة الاتصال";
 
-/* Class = "IBUIButton"; normalTitle = "Add contact"; ObjectID = "6"; */
-"6.normalTitle" = "Add contact";
+/* Class = "IBUIButton"; normalTitle = "إضافة جهة الاتصال"; ObjectID = "6"; */
+"6.normalTitle" = "إضافة جهة الاتصال";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "87"; */
-"87.accessibilityLabel" = "Back";
+/* Class = "IBUIButton"; accessibilityLabel = "الرجوع"; ObjectID = "87"; */
+"87.accessibilityLabel" = "الرجوع";
 
-/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "87"; */
-"87.normalTitle" = "Back";
+/* Class = "IBUIButton"; normalTitle = "الرجوع"; ObjectID = "87"; */
+"87.normalTitle" = "الرجوع";

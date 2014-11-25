@@ -1,6 +1,6 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "8"; */
-"8.accessibilityLabel" = "Back";
+/* Class = "IBUIButton"; accessibilityLabel = "الرجوع"; ObjectID = "8"; */
+"8.accessibilityLabel" = "الرجوع";
 
-/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "8"; */
-"8.normalTitle" = "Back";
+/* Class = "IBUIButton"; normalTitle = "الرجوع"; ObjectID = "8"; */
+"8.normalTitle" = "الرجوع";

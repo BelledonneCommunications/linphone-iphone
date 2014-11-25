@@ -1,42 +1,42 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Decline"; ObjectID = "6"; */
-"6.accessibilityLabel" = "Decline";
+/* Class = "IBUIButton"; accessibilityLabel = "رفض"; ObjectID = "6"; */
+"6.accessibilityLabel" = "رفض";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Accept"; ObjectID = "7"; */
-"7.accessibilityLabel" = "Accept";
+/* Class = "IBUIButton"; accessibilityLabel = "السماح"; ObjectID = "7"; */
+"7.accessibilityLabel" = "السماح";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "9"; */
-"9.accessibilityLabel" = "Contact's name";
+/* Class = "IBUILabel"; accessibilityLabel = "إسم جهة الاتصال"; ObjectID = "9"; */
+"9.accessibilityLabel" = "إسم جهة الاتصال";
 
 /* Class = "IBUILabel"; text = "0102030405"; ObjectID = "9"; */
 "9.text" = "0102030405";
 
-/* Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "19"; */
-"19.accessibilityLabel" = "Contact's avatar";
+/* Class = "IBUIImageView"; accessibilityLabel = "صورة جهة الاتصال"; ObjectID = "19"; */
+"19.accessibilityLabel" = "صورة جهة الاتصال";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Incoming call"; ObjectID = "31"; */
-"31.accessibilityLabel" = "Incoming call";
+/* Class = "IBUILabel"; accessibilityLabel = "المكالمة الواردة"; ObjectID = "31"; */
+"31.accessibilityLabel" = "المكالمة الواردة";
 
-/* Class = "IBUILabel"; text = "Incoming call"; ObjectID = "31"; */
-"31.text" = "Incoming call";
+/* Class = "IBUILabel"; text = "المكالمة الواردة"; ObjectID = "31"; */
+"31.text" = "المكالمة الواردة";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Accept"; ObjectID = "64"; */
-"64.accessibilityLabel" = "Accept";
+/* Class = "IBUIButton"; accessibilityLabel = "السماح"; ObjectID = "64"; */
+"64.accessibilityLabel" = "السماح";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Decline"; ObjectID = "65"; */
-"65.accessibilityLabel" = "Decline";
+/* Class = "IBUIButton"; accessibilityLabel = "رفض"; ObjectID = "65"; */
+"65.accessibilityLabel" = "رفض";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Incoming call"; ObjectID = "67"; */
-"67.accessibilityLabel" = "Incoming call";
+/* Class = "IBUILabel"; accessibilityLabel = "المكالمة الواردة"; ObjectID = "67"; */
+"67.accessibilityLabel" = "المكالمة الواردة";
 
-/* Class = "IBUILabel"; text = "Incoming call"; ObjectID = "67"; */
-"67.text" = "Incoming call";
+/* Class = "IBUILabel"; text = "المكالمة الواردة"; ObjectID = "67"; */
+"67.text" = "المكالمة الواردة";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "69"; */
-"69.accessibilityLabel" = "Contact's name";
+/* Class = "IBUILabel"; accessibilityLabel = "إسم جهة الاتصال"; ObjectID = "69"; */
+"69.accessibilityLabel" = "إسم جهة الاتصال";
 
 /* Class = "IBUILabel"; text = "0102030405"; ObjectID = "69"; */
 "69.text" = "0102030405";
 
-/* Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "71"; */
-"71.accessibilityLabel" = "Contact's avatar";
+/* Class = "IBUIImageView"; accessibilityLabel = "صورة جهة الاتصال"; ObjectID = "71"; */
+"71.accessibilityLabel" = "صورة جهة الاتصال";

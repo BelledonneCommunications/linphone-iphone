@@ -1,204 +1,174 @@
 
-/* Class = "IBUIImageView"; accessibilityLabel = "Linphone setup assistant icon"; ObjectID = "19"; */
-"19.accessibilityLabel" = "Linphone setup assistant icon";
+/* Class = "IBUIImageView"; accessibilityLabel = "أيقونة مرشد تهيئة الحساب"; ObjectID = "19"; */
+"19.accessibilityLabel" = "أيقونة مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "This assistant will help you to use a SIP account for your calls."; ObjectID = "22"; */
-"22.text" = "This assistant will help you to use a SIP account for your calls.";
+/* Class = "IBUILabel"; text = "سيساعدك هذا المرشد في استخدام حسابك SIP من أجل مكالماتك."; ObjectID = "22"; */
+"22.text" = "سيساعدك هذا المرشد في استخدام حسابك SIP من أجل مكالماتك.";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Create linphone.org account"; ObjectID = "36"; */
-"36.accessibilityLabel" = "Create linphone.org account";
+/* Class = "IBUIButton"; accessibilityLabel = "إنشاء حساب في linphone.org"; ObjectID = "36"; */
+"36.accessibilityLabel" = "إنشاء حساب في linphone.org";
 
-/* Class = "IBUIButton"; normalTitle = "Create an account on linphone.org"; ObjectID = "36"; */
-"36.normalTitle" = "Create an account on linphone.org";
+/* Class = "IBUIButton"; normalTitle = "إنشاء حساب في linphone.org"; ObjectID = "36"; */
+"36.normalTitle" = "إنشاء حساب في linphone.org";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in linphone.org account"; ObjectID = "38"; */
-"38.accessibilityLabel" = "Sign in linphone.org account";
+/* Class = "IBUIButton"; accessibilityLabel = "التسجيل في حساب linphone.org"; ObjectID = "38"; */
+"38.accessibilityLabel" = "التسجيل في حساب linphone.org";
 
-/* Class = "IBUIButton"; normalTitle = "I have already a linphone.org account"; ObjectID = "38"; */
-"38.normalTitle" = "I have already a linphone.org account";
+/* Class = "IBUIButton"; normalTitle = "أتوفر على حساب في linphone.org"; ObjectID = "38"; */
+"38.normalTitle" = "أتوفر على حساب في linphone.org";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "39"; */
-"39.accessibilityLabel" = "Sign in SIP account";
+/* Class = "IBUIButton"; accessibilityLabel = "التسجيل في حساب SIP"; ObjectID = "39"; */
+"39.accessibilityLabel" = "التسجيل في حساب SIP";
 
-/* Class = "IBUIButton"; normalTitle = "I have already a SIP account"; ObjectID = "39"; */
-"39.normalTitle" = "I have already a SIP account";
+/* Class = "IBUIButton"; normalTitle = "أتوفر على حساب SIP"; ObjectID = "39"; */
+"39.normalTitle" = "أتوفر على حساب SIP";
 
-/* Class = "IBUILabel"; text = "Enter your username and password with your SIP domain."; ObjectID = "58"; */
-"58.text" = "Enter your username and password with your SIP domain.";
+/* Class = "IBUILabel"; text = "ادخل إسم المستخدم وكلمة السر وكذا نطاق SIP."; ObjectID = "58"; */
+"58.text" = "ادخل إسم المستخدم وكلمة السر وكذا نطاق SIP.";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "59"; */
-"59.accessibilityLabel" = "Username";
+/* Class = "IBUITextField"; accessibilityLabel = "إسم المستخدم"; ObjectID = "59"; */
+"59.accessibilityLabel" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "59"; */
-"59.placeholder" = "Username";
+/* Class = "IBUITextField"; placeholder = "إسم المستخدم"; ObjectID = "59"; */
+"59.placeholder" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "60"; */
-"60.accessibilityLabel" = "Password";
+/* Class = "IBUITextField"; accessibilityLabel = "كلمة السر"; ObjectID = "60"; */
+"60.accessibilityLabel" = "كلمة السر";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "60"; */
-"60.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "60"; */
+"60.placeholder" = "كلمة السر";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Domain"; ObjectID = "61"; */
-"61.accessibilityLabel" = "Domain";
+/* Class = "IBUITextField"; accessibilityLabel = "النطاق"; ObjectID = "61"; */
+"61.accessibilityLabel" = "النطاق";
 
-/* Class = "IBUITextField"; placeholder = "Domain"; ObjectID = "61"; */
-"61.placeholder" = "Domain";
+/* Class = "IBUITextField"; placeholder = "النطاق"; ObjectID = "61"; */
+"61.placeholder" = "النطاق";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "62"; */
-"62.accessibilityLabel" = "Sign in";
+/* Class = "IBUIButton"; accessibilityLabel = "S'التسجيل"; ObjectID = "62"; */
+"62.accessibilityLabel" = "التسجيل";
 
-/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "62"; */
-"62.normalTitle" = "Sign in";
+/* Class = "IBUIButton"; normalTitle = "S'التسجيل"; ObjectID = "62"; */
+"62.normalTitle" = "التسجيل";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "64"; */
-"64.accessibilityLabel" = "Sign in";
+/* Class = "IBUIButton"; accessibilityLabel = "التسجيل"; ObjectID = "64"; */
+"64.accessibilityLabel" = "التسجيل";
 
-/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "64"; */
-"64.normalTitle" = "Sign in";
+/* Class = "IBUIButton"; normalTitle = "التسجيل"; ObjectID = "64"; */
+"64.normalTitle" = "التسجيل";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "66"; */
-"66.accessibilityLabel" = "Password";
+/* Class = "IBUITextField"; accessibilityLabel = "كلمة السر"; ObjectID = "66"; */
+"66.accessibilityLabel" = "كلمة السر";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "66"; */
-"66.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "66"; */
+"66.placeholder" = "كلمة السر";
 
-/* Class = "IBUILabel"; text = "Enter your username and password of your linphone.org account."; ObjectID = "67"; */
-"67.text" = "Enter your username and password of your linphone.org account.";
+/* Class = "IBUILabel"; text = "ادخل إسم المستخدم وكلمة السر لحسابك في linphone.org"; ObjectID = "67"; */
+"67.text" = "ادخل إسم المستخدم وكلمة السر لحسابك في linphone.org";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "68"; */
-"68.accessibilityLabel" = "Username";
+/* Class = "IBUITextField"; accessibilityLabel = "إسم المستخدم"; ObjectID = "68"; */
+"68.accessibilityLabel" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "68"; */
-"68.placeholder" = "Username";
+/* Class = "IBUITextField"; placeholder = "إسم المستخدم"; ObjectID = "68"; */
+"68.placeholder" = "إسم المستخدم";
 
-/* Class = "IBUILabel"; text = "Enter your username and password with your email address."; ObjectID = "73"; */
-"73.text" = "Enter your username and password with your email address.";
+/* Class = "IBUILabel"; text = "ادخل إسم المستخدم وكلمة السر وعنوان بريدك الإلكتروني."; ObjectID = "73"; */
+"73.text" = "ادخل إسم المستخدم وكلمة السر وعنوان بريدك الإلكتروني.";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "74"; */
-"74.accessibilityLabel" = "Username";
+/* Class = "IBUITextField"; accessibilityLabel = "إسم المستخدم"; ObjectID = "74"; */
+"74.accessibilityLabel" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "74"; */
-"74.placeholder" = "Username";
+/* Class = "IBUITextField"; placeholder = "إسم المستخدم"; ObjectID = "74"; */
+"74.placeholder" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "75"; */
-"75.accessibilityLabel" = "Password";
+/* Class = "IBUITextField"; accessibilityLabel = "كلمة السر"; ObjectID = "75"; */
+"75.accessibilityLabel" = "كلمة السر";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "75"; */
-"75.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "75"; */
+"75.placeholder" = "كلمة السر";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password again"; ObjectID = "76"; */
-"76.accessibilityLabel" = "Password again";
+/* Class = "IBUITextField"; accessibilityLabel = "كلمة السر مرة أخرى"; ObjectID = "76"; */
+"76.accessibilityLabel" = "كلمة السر مرة أخرى";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "76"; */
-"76.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "76"; */
+"76.placeholder" = "كلمة السر";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Register"; ObjectID = "77"; */
-"77.accessibilityLabel" = "Register";
+/* Class = "IBUIButton"; accessibilityLabel = "S'enregistrer"; ObjectID = "77"; */
+"77.accessibilityLabel" = "التسجيل";
 
-/* Class = "IBUIButton"; normalTitle = "Register"; ObjectID = "77"; */
-"77.normalTitle" = "Register";
+/* Class = "IBUIButton"; normalTitle = "التسجيل"; ObjectID = "77"; */
+"77.normalTitle" = "التسجيل";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Email"; ObjectID = "79"; */
-"79.accessibilityLabel" = "Email";
+/* Class = "IBUITextField"; accessibilityLabel = "البريد الإلكتروني"; ObjectID = "79"; */
+"79.accessibilityLabel" = "البريد الإلكتروني";
 
-/* Class = "IBUITextField"; placeholder = "Email"; ObjectID = "79"; */
-"79.placeholder" = "Email";
+/* Class = "IBUITextField"; placeholder = "البريد الإلكتروني"; ObjectID = "79"; */
+"79.placeholder" = "البريد الإلكتروني";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Check validation"; ObjectID = "103"; */
-"103.accessibilityLabel" = "Check validation";
+/* Class = "IBUIButton"; accessibilityLabel = "تحقق من التأكيد"; ObjectID = "103"; */
+"103.accessibilityLabel" = "تحقق من التأكيد";
 
-/* Class = "IBUIButton"; normalTitle = "Check validation"; ObjectID = "103"; */
-"103.normalTitle" = "Check validation";
+/* Class = "IBUIButton"; normalTitle = "تحقق من التأكيد"; ObjectID = "103"; */
+"103.normalTitle" = "تحقق من التأكيد";
 
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "104"; */
-"104.placeholder" = "Username";
+/* Class = "IBUITextField"; placeholder = "إسم المستخدم"; ObjectID = "104"; */
+"104.placeholder" = "إسم المستخدم";
 
-/* Class = "IBUILabel"; text = "Your account is created. Please check your mails in order to validate your account."; ObjectID = "105"; */
-"105.text" = "Your account is created. Please check your mails in order to validate your account.";
+/* Class = "IBUILabel"; text = "أُنشِيء الحساب. افتح علبة البريد الإلكتروني لتأكيده."; ObjectID = "105"; */
+"105.text" = "أُنشِيء الحساب. افتح علبة البريد الإلكتروني لتأكيده.";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "106"; */
-"106.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "106"; */
+"106.placeholder" = "كلمة السر";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "117"; */
-"117.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "117"; */
+"117.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "117"; */
-"117.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "117"; */
+"117.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "122"; */
-"122.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "122"; */
+"122.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "122"; */
-"122.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "122"; */
+"122.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "123"; */
-"123.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "123"; */
+"123.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "123"; */
-"123.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "123"; */
+"123.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "124"; */
-"124.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "124"; */
+"124.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "124"; */
-"124.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "124"; */
+"124.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "126"; */
-"126.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "126"; */
+"126.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "126"; */
-"126.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "126"; */
+"126.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "127"; */
-"127.accessibilityLabel" = "Account setup assistant";
+/* Class = "IBUILabel"; accessibilityLabel = "مرشد تهيئة الحساب"; ObjectID = "127"; */
+"127.accessibilityLabel" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "127"; */
-"127.text" = "Account setup assistant";
+/* Class = "IBUILabel"; text = "مرشد تهيئة الحساب"; ObjectID = "127"; */
+"127.text" = "مرشد تهيئة الحساب";
 
-/* Class = "IBUIImageView"; accessibilityLabel = "Linphone setup assistant icon"; ObjectID = "128"; */
-"128.accessibilityLabel" = "Linphone setup assistant icon";
+/* Class = "IBUIImageView"; accessibilityLabel = "أيقونة مرشد تهيئة الحساب"; ObjectID = "128"; */
+"128.accessibilityLabel" = "أيقونة مرشد تهيئة الحساب";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "ClH-fT-a8N"; */
-"ClH-fT-a8N.accessibilityLabel" = "Password";
+/* Class = "IBUIButton"; accessibilityLabel = "تسجيل الدخول إلى حساب SIP"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.accessibilityLabel" = "تسجيل الدخول إلى حساب SIP";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "ClH-fT-a8N"; */
-"ClH-fT-a8N.placeholder" = "Password";
+/* Class = "IBUIButton"; normalTitle = "التهيئة عن بعد"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.normalTitle" = "التهيئة عن بعد";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "Kbn-dL-C5h"; */
-"Kbn-dL-C5h.accessibilityLabel" = "Sign in SIP account";
+/* Class = "IBUILabel"; text = "تفاصيل حرف غير صالح"; ObjectID = "W9Y-Z9-Rmz"; */
+"W9Y-Z9-Rmz.text" = "تفاصيل حرف غير صالح";
 
-/* Class = "IBUIButton"; normalTitle = "Remote Provisioning"; ObjectID = "Kbn-dL-C5h"; */
-"Kbn-dL-C5h.normalTitle" = "Remote Provisioning";
+/* Class = "IBUILabel"; text = "هذه الإعدادات ترِدُ من الملف المَجلُوب من :\n%@"; ObjectID = "bBb-47-pCq"; */
+"bBb-47-pCq.text" = "هذه الإعدادات ترِدُ من الملف المَجلُوب من :\n%@";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "MyR-eX-QTa"; */
-"MyR-eX-QTa.accessibilityLabel" = "Username";
-
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "MyR-eX-QTa"; */
-"MyR-eX-QTa.placeholder" = "Username";
-
-/* Class = "IBUILabel"; text = "These parameters were retrieved from a remote provisioning profile."; ObjectID = "RHE-hi-dfB"; */
-"RHE-hi-dfB.text" = "These parameters were retrieved from a remote provisioning profile.";
-
-/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "YKJ-nv-RUT"; */
-"YKJ-nv-RUT.accessibilityLabel" = "Account setup assistant";
-
-/* Class = "IBUILabel"; text = "Provisioned account"; ObjectID = "YKJ-nv-RUT"; */
-"YKJ-nv-RUT.text" = "Provisioned account";
-
-/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "dGS-GB-Sgb"; */
-"dGS-GB-Sgb.accessibilityLabel" = "Sign in";
-
-/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "dGS-GB-Sgb"; */
-"dGS-GB-Sgb.normalTitle" = "Sign in";
-
-/* Class = "IBUILabel"; text = "Enter your username and password"; ObjectID = "pU9-SC-9uY"; */
-"pU9-SC-9uY.text" = "Enter your username and password";
-
-/* Class = "IBUILabel"; text = "Invalid character:"; ObjectID = "uHm-NE-GLV"; */
-"uHm-NE-GLV.text" = "Invalid character:";
-
-/* Class = "IBUITextField"; accessibilityLabel = "Domain"; ObjectID = "wRB-Sh-K8J"; */
-"wRB-Sh-K8J.accessibilityLabel" = "Domain";
-
-/* Class = "IBUITextField"; placeholder = "Domain"; ObjectID = "wRB-Sh-K8J"; */
-"wRB-Sh-K8J.placeholder" = "Domain";
+/* Class = "IBUILabel"; text = "حرف غير صالح :"; ObjectID = "uHm-NE-GLV"; */
+"uHm-NE-GLV.text" = "حرف غير صالح :";

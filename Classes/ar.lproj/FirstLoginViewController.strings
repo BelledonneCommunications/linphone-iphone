@@ -1,18 +1,18 @@
 
-/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "6"; */
-"6.accessibilityLabel" = "Username";
+/* Class = "IBUITextField"; accessibilityLabel = "إسم المستخدم"; ObjectID = "6"; */
+"6.accessibilityLabel" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "6"; */
-"6.placeholder" = "Username";
+/* Class = "IBUITextField"; placeholder = "إسم المستخدم"; ObjectID = "6"; */
+"6.placeholder" = "إسم المستخدم";
 
-/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "8"; */
-"8.accessibilityLabel" = "Password";
+/* Class = "IBUITextField"; accessibilityLabel = "كلمة السر"; ObjectID = "8"; */
+"8.accessibilityLabel" = "كلمة السر";
 
-/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "8"; */
-"8.placeholder" = "Password";
+/* Class = "IBUITextField"; placeholder = "كلمة السر"; ObjectID = "8"; */
+"8.placeholder" = "كلمة السر";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Login"; ObjectID = "64"; */
-"64.accessibilityLabel" = "Login";
+/* Class = "IBUIButton"; accessibilityLabel = "التسجيل"; ObjectID = "64"; */
+"64.accessibilityLabel" = "التسجيل";
 
-/* Class = "IBUIButton"; normalTitle = "Login"; ObjectID = "64"; */
-"64.normalTitle" = "Login";
+/* Class = "IBUIButton"; normalTitle = "التسجيل"; ObjectID = "64"; */
+"64.normalTitle" = "التسجيل";

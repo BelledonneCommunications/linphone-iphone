@@ -1,36 +1,36 @@
 
-/* Class = "IBUIButton"; accessibilityLabel = "Start"; ObjectID = "16"; */
-"16.accessibilityLabel" = "Start";
+/* Class = "IBUIButton"; accessibilityLabel = "البدء"; ObjectID = "16"; */
+"16.accessibilityLabel" = "البدء";
 
-/* Class = "IBUIButton"; normalTitle = "Start"; ObjectID = "16"; */
-"16.normalTitle" = "Start";
+/* Class = "IBUIButton"; normalTitle = "البدء"; ObjectID = "16"; */
+"16.normalTitle" = "البدء";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "17"; */
-"17.accessibilityLabel" = "Back";
+/* Class = "IBUIButton"; accessibilityLabel = "الرجوع"; ObjectID = "17"; */
+"17.accessibilityLabel" = "الرجوع";
 
-/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "17"; */
-"17.normalTitle" = "Back";
+/* Class = "IBUIButton"; normalTitle = "الرجوع"; ObjectID = "17"; */
+"17.normalTitle" = "الرجوع";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Cancel"; ObjectID = "18"; */
-"18.accessibilityLabel" = "Cancel";
+/* Class = "IBUIButton"; accessibilityLabel = "إلغاء"; ObjectID = "18"; */
+"18.accessibilityLabel" = "إلغاء";
 
-/* Class = "IBUIButton"; normalTitle = "Cancel"; ObjectID = "18"; */
-"18.normalTitle" = "Cancel";
+/* Class = "IBUIButton"; normalTitle = "إلغاء"; ObjectID = "18"; */
+"18.normalTitle" = "إلغاء";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Cancel"; ObjectID = "122"; */
-"122.accessibilityLabel" = "Cancel";
+/* Class = "IBUIButton"; accessibilityLabel = "إلغاء"; ObjectID = "122"; */
+"122.accessibilityLabel" = "إلغاء";
 
-/* Class = "IBUIButton"; normalTitle = "Cancel"; ObjectID = "122"; */
-"122.normalTitle" = "Cancel";
+/* Class = "IBUIButton"; normalTitle = "إلغاء"; ObjectID = "122"; */
+"122.normalTitle" = "إلغاء";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Start"; ObjectID = "123"; */
-"123.accessibilityLabel" = "Start";
+/* Class = "IBUIButton"; accessibilityLabel = "البدء"; ObjectID = "123"; */
+"123.accessibilityLabel" = "البدء";
 
-/* Class = "IBUIButton"; normalTitle = "Start"; ObjectID = "123"; */
-"123.normalTitle" = "Start";
+/* Class = "IBUIButton"; normalTitle = "البدء"; ObjectID = "123"; */
+"123.normalTitle" = "البدء";
 
-/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "124"; */
-"124.accessibilityLabel" = "Back";
+/* Class = "IBUIButton"; accessibilityLabel = "الرجوع"; ObjectID = "124"; */
+"124.accessibilityLabel" = "الرجوع";
 
-/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "124"; */
-"124.normalTitle" = "Back";
+/* Class = "IBUIButton"; normalTitle = "الرجوع"; ObjectID = "124"; */
+"124.normalTitle" = "الرجوع";
