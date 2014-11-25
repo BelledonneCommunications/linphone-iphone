@@ -3095,6 +3095,7 @@ static void record_call(const char *filename, bool_t enableVideo) {
 			end_call(marie, pauline);
 			CU_ASSERT_EQUAL(access(filepath, F_OK), 0);
 		}
+		remove(filepath);
 		ms_free(filepath);
 	}
 	linphone_core_manager_destroy(marie);
