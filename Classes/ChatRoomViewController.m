@@ -716,62 +716,62 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark - Keyboard Event Functions
 
 - (void)keyboardWillHide:(NSNotification *)notif {
-    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    //CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView beginAnimations:@"resize" context:nil];
-    [UIView setAnimationDuration:duration];
-    [UIView setAnimationCurve:curve];
-    [UIView setAnimationBeginsFromCurrentState:TRUE];
-    CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
+    [UIView animateWithDuration:duration
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+        CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
 
-    // Resize chat view
-    {
-        CGRect chatFrame = [[self chatView] frame];
-        chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
-        [[self chatView] setFrame:chatFrame];
-    }
+        // Resize chat view
+        {
+            CGRect chatFrame = [[self chatView] frame];
+            chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
+            [[self chatView] setFrame:chatFrame];
+        }
 
-    // Move header view
-    {
-        CGRect headerFrame = [headerView frame];
-        headerFrame.origin.y = 0;
-        [headerView setFrame:headerFrame];
-        [headerView setAlpha:1.0];
-    }
+        // Move header view back into place (was hidden before)
+        {
+            CGRect headerFrame = [headerView frame];
+            headerFrame.origin.y = 0;
+            [headerView setFrame:headerFrame];
+            [headerView setAlpha:1.0];
+        }
 
-    // Resize & Move table view
-    {
-        CGRect tableFrame = [tableController.view frame];
-        tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-        double diff = tableFrame.size.height;
-        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-        diff = tableFrame.size.height - diff;
-        [tableController.view setFrame:tableFrame];
+        // Resize & Move table view
+        {
+            CGRect tableFrame = [tableController.view frame];
+            tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+            double diff = tableFrame.size.height;
+            tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+            diff = tableFrame.size.height - diff;
+            [tableController.view setFrame:tableFrame];
 
-        // Always stay at bottom
-        CGPoint contentPt = [tableController.tableView contentOffset];
-        contentPt.y -= diff;
-        if(contentPt.y + tableFrame.size.height > tableController.tableView.contentSize.height)
-             contentPt.y += diff;
-        [tableController.tableView setContentOffset:contentPt animated:FALSE];
-    }
+            // Scroll to bottom
+            int lastSection = [tableController.tableView numberOfSections] - 1;
+            if(lastSection >= 0) {
+                int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+                if(lastRow >=0) {
+                    [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+                                                     atScrollPosition:UITableViewScrollPositionBottom
+                                                             animated:FALSE];
+                }
+            }
+        }
 
-    [UIView commitAnimations];
+    } completion:^(BOOL finished) {}];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notif {
-    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
 
-    [UIView beginAnimations:@"resize" context:nil];
-    [UIView setAnimationDuration:duration];
-    [UIView setAnimationCurve:curve];
-    [UIView setAnimationBeginsFromCurrentState:TRUE];
+    [UIView animateWithDuration:duration
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+
+        CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
     if(([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
        UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
@@ -780,46 +780,47 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         endFrame.size.width = width;
     }
 
-    // Resize chat view
-    {
-        CGRect viewFrame = [[self view] frame];
-        CGRect rect = [PhoneMainView instance].view.bounds;
-        CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
-        CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
-        float diff = (rect.size.height - gPos.y - endFrame.size.height);
-        if(diff > 0) diff = 0;
-        CGRect chatFrame = [[self chatView] frame];
-        chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
-        [[self chatView] setFrame:chatFrame];
-    }
-
-    // Move header view
-    {
-        CGRect headerFrame = [headerView frame];
-        headerFrame.origin.y = -headerFrame.size.height;
-        [headerView setFrame:headerFrame];
-        [headerView setAlpha:0.0];
-    }
-
-    // Resize & Move table view
-    {
-        CGRect tableFrame = [tableController.view frame];
-        tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-        [tableController.view setFrame:tableFrame];
-    }
-
-    // Scroll
-    int lastSection = [tableController.tableView numberOfSections] - 1;
-    if(lastSection >= 0) {
-        int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
-        if(lastRow >=0) {
-            [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
-                                             atScrollPosition:UITableViewScrollPositionBottom
-                                                     animated:TRUE];
+        // Resize chat view
+        {
+            CGRect viewFrame = [[self view] frame];
+            CGRect rect = [PhoneMainView instance].view.bounds;
+            CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
+            CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+            float diff = (rect.size.height - gPos.y - endFrame.size.height);
+            if(diff > 0) diff = 0;
+            CGRect chatFrame = [[self chatView] frame];
+            chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
+            [[self chatView] setFrame:chatFrame];
         }
-    }
-    [UIView commitAnimations];
+
+        // Move header view
+        {
+            CGRect headerFrame = [headerView frame];
+            headerFrame.origin.y = -headerFrame.size.height;
+            [headerView setFrame:headerFrame];
+            [headerView setAlpha:0.0];
+        }
+
+        // Resize & Move table view
+        {
+            CGRect tableFrame = [tableController.view frame];
+            tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+            tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+            [tableController.view setFrame:tableFrame];
+        }
+
+        // Scroll
+        int lastSection = [tableController.tableView numberOfSections] - 1;
+        if(lastSection >= 0) {
+            int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+            if(lastRow >=0) {
+                [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+                                                 atScrollPosition:UITableViewScrollPositionBottom
+                                                         animated:FALSE];
+            }
+        }
+
+    } completion:^(BOOL finished) {}];
 }
 
 @end
