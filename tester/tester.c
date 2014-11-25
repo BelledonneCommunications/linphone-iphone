@@ -17,7 +17,7 @@
  */
 
 #include <stdio.h>
-#include "CUnit/Basic.h"
+#include "CUnit/TestRun.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -40,6 +40,7 @@ const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
+int liblinphone_tester_use_log_file=0;
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
@@ -140,7 +141,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 		lp_config_set_string(config, "sip",   "root_ca"    , rootcapath);
 		lc = linphone_core_new_with_config(v_table, config, user_data);
 	} else {
-		lc = linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL, user_data);
+		lc = linphone_core_new(v_table,NULL,(filepath!=NULL&&filepath[0]!='\0') ? filepath : NULL, user_data);
 
 		linphone_core_set_ring(lc, ringpath);
 		linphone_core_set_ringback(lc, ringbackpath);
@@ -422,6 +423,56 @@ void liblinphone_tester_uninit(void) {
 	}
 }
 
+/*derivated from cunit*/
+static void test_complete_message_handler(const CU_pTest pTest,
+                                                const CU_pSuite pSuite,
+                                                const CU_pFailureRecord pFailureList) {
+    int i;
+    CU_pFailureRecord pFailure = pFailureList;
+	if (pFailure) {
+		if (liblinphone_tester_use_log_file) ms_warning("Suite [%s], Test [%s] had failures:", pSuite->pName, pTest->pName);
+		liblinphone_tester_fprintf(stdout,"\nSuite [%s], Test [%s] had failures:", pSuite->pName, pTest->pName);
+	} else {
+		if (liblinphone_tester_use_log_file) ms_warning(" passed");
+		liblinphone_tester_fprintf(stdout," passed");
+	}
+      for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
+    	  if (liblinphone_tester_use_log_file) ms_warning("\n    %d. %s:%u  - %s", i,
+            (NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+            pFailure->uiLineNumber,
+            (NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+    	  liblinphone_tester_fprintf(stdout,"\n    %d. %s:%u  - %s", i,
+            (NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+            pFailure->uiLineNumber,
+            (NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+      }
+ }
+
+
+static void test_all_tests_complete_message_handler(const CU_pFailureRecord pFailure) {
+  if (liblinphone_tester_use_log_file) ms_warning("\n\n %s",CU_get_run_results_string());
+  liblinphone_tester_fprintf(stdout,"\n\n %s",CU_get_run_results_string());
+}
+
+static void test_suite_init_failure_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite initialization failed for [%s].", pSuite->pName);
+    liblinphone_tester_fprintf(stdout,"Suite initialization failed for [%s].", pSuite->pName);
+}
+
+static void test_suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite cleanup failed for '%s'.", pSuite->pName);
+	liblinphone_tester_fprintf(stdout,"Suite cleanup failed for [%s].", pSuite->pName);
+}
+
+static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s] Test [%s]", pSuite->pName,pTest->pName);
+	liblinphone_tester_fprintf(stdout,"\nSuite [%s] Test [%s]\n", pSuite->pName,pTest->pName);
+}
+static void test_suite_start_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s]", pSuite->pName);
+	liblinphone_tester_fprintf(stdout,"\nSuite [%s]", pSuite->pName);
+}
+
 int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) {
 	int i;
 	int ret;
@@ -433,6 +484,14 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		run_test_suite(test_suite[i]);
 	}
 
+	CU_set_test_start_handler(test_start_message_handler);
+	CU_set_test_complete_handler(test_complete_message_handler);
+	CU_set_all_test_complete_handler(test_all_tests_complete_message_handler);
+	CU_set_suite_init_failure_handler(test_suite_init_failure_message_handler);
+	CU_set_suite_cleanup_failure_handler(test_suite_cleanup_failure_message_handler);
+	CU_set_suite_start_handler(test_suite_start_message_handler);
+
+
 #if !HAVE_CU_GET_SUITE
 	if( suite_name ){
 		ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
@@ -440,7 +499,6 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 #else
 	if (suite_name){
 		CU_pSuite suite;
-		CU_basic_set_mode(CU_BRM_VERBOSE);
 		suite=CU_get_suite(suite_name);
 		if (!suite) {
 			ms_error("Could not find suite '%s'. Available suites are:", suite_name);
@@ -454,11 +512,11 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 				liblinphone_tester_list_suite_tests(suite->pName);
 				return -2;
 			} else {
-				CU_ErrorCode err= CU_basic_run_test(suite, test);
+				CU_ErrorCode err= CU_run_test(suite, test);
 				if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
 			}
 		} else {
-			CU_basic_run_suite(suite);
+			CU_run_suite(suite);
 		}
 	}
 	else
@@ -473,8 +531,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 #endif
 		{
 			/* Run all tests using the CUnit Basic interface */
-			CU_basic_set_mode(CU_BRM_VERBOSE);
-			CU_basic_run_tests();
+			CU_run_all_tests();
 		}
 	}
 
@@ -483,7 +540,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
-		printf("\n");
+		liblinphone_tester_fprintf(stdout,"\n");
 	}
 
 	CU_cleanup_registry();
