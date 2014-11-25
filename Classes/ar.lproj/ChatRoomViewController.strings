@@ -1,0 +1,42 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Back";
+
+/* Class = "IBUIButton"; normalTitle = "Back"; ObjectID = "9"; */
+"9.normalTitle" = "Back";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Edit"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Edit";
+
+/* Class = "IBUIButton"; normalTitle = "Edit"; ObjectID = "10"; */
+"10.normalTitle" = "Edit";
+
+/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "10"; */
+"10.selectedTitle" = "Ok";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Send"; ObjectID = "15"; */
+"15.accessibilityLabel" = "Send";
+
+/* Class = "IBUIButton"; normalTitle = "Send"; ObjectID = "15"; */
+"15.normalTitle" = "Send";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "40"; */
+"40.accessibilityLabel" = "Contact's name";
+
+/* Class = "IBUILabel"; text = "Contact1"; ObjectID = "40"; */
+"40.text" = "Contact1";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "41"; */
+"41.accessibilityLabel" = "Contact's avatar";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Send picture"; ObjectID = "73"; */
+"73.accessibilityLabel" = "Send picture";
+
+/* Class = "IBUIProgressView"; accessibilityLabel = "Upload or download progression"; ObjectID = "74"; */
+"74.accessibilityLabel" = "Upload or download progression";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Cancel"; ObjectID = "75"; */
+"75.accessibilityLabel" = "Cancel";
+
+/* Class = "IBUILabel"; text = "%@ is composing..."; ObjectID = "fpY-Fv-ht2"; */
+"fpY-Fv-ht2.text" = "%@ is composing...";

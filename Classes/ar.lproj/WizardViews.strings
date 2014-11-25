@@ -1,0 +1,204 @@
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Linphone setup assistant icon"; ObjectID = "19"; */
+"19.accessibilityLabel" = "Linphone setup assistant icon";
+
+/* Class = "IBUILabel"; text = "This assistant will help you to use a SIP account for your calls."; ObjectID = "22"; */
+"22.text" = "This assistant will help you to use a SIP account for your calls.";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Create linphone.org account"; ObjectID = "36"; */
+"36.accessibilityLabel" = "Create linphone.org account";
+
+/* Class = "IBUIButton"; normalTitle = "Create an account on linphone.org"; ObjectID = "36"; */
+"36.normalTitle" = "Create an account on linphone.org";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in linphone.org account"; ObjectID = "38"; */
+"38.accessibilityLabel" = "Sign in linphone.org account";
+
+/* Class = "IBUIButton"; normalTitle = "I have already a linphone.org account"; ObjectID = "38"; */
+"38.normalTitle" = "I have already a linphone.org account";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "39"; */
+"39.accessibilityLabel" = "Sign in SIP account";
+
+/* Class = "IBUIButton"; normalTitle = "I have already a SIP account"; ObjectID = "39"; */
+"39.normalTitle" = "I have already a SIP account";
+
+/* Class = "IBUILabel"; text = "Enter your username and password with your SIP domain."; ObjectID = "58"; */
+"58.text" = "Enter your username and password with your SIP domain.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "59"; */
+"59.accessibilityLabel" = "Username";
+
+/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "59"; */
+"59.placeholder" = "Username";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "60"; */
+"60.accessibilityLabel" = "Password";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "60"; */
+"60.placeholder" = "Password";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Domain"; ObjectID = "61"; */
+"61.accessibilityLabel" = "Domain";
+
+/* Class = "IBUITextField"; placeholder = "Domain"; ObjectID = "61"; */
+"61.placeholder" = "Domain";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "62"; */
+"62.accessibilityLabel" = "Sign in";
+
+/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "62"; */
+"62.normalTitle" = "Sign in";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "64"; */
+"64.accessibilityLabel" = "Sign in";
+
+/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "64"; */
+"64.normalTitle" = "Sign in";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "66"; */
+"66.accessibilityLabel" = "Password";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "66"; */
+"66.placeholder" = "Password";
+
+/* Class = "IBUILabel"; text = "Enter your username and password of your linphone.org account."; ObjectID = "67"; */
+"67.text" = "Enter your username and password of your linphone.org account.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "68"; */
+"68.accessibilityLabel" = "Username";
+
+/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "68"; */
+"68.placeholder" = "Username";
+
+/* Class = "IBUILabel"; text = "Enter your username and password with your email address."; ObjectID = "73"; */
+"73.text" = "Enter your username and password with your email address.";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "74"; */
+"74.accessibilityLabel" = "Username";
+
+/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "74"; */
+"74.placeholder" = "Username";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "75"; */
+"75.accessibilityLabel" = "Password";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "75"; */
+"75.placeholder" = "Password";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Password again"; ObjectID = "76"; */
+"76.accessibilityLabel" = "Password again";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "76"; */
+"76.placeholder" = "Password";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Register"; ObjectID = "77"; */
+"77.accessibilityLabel" = "Register";
+
+/* Class = "IBUIButton"; normalTitle = "Register"; ObjectID = "77"; */
+"77.normalTitle" = "Register";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Email"; ObjectID = "79"; */
+"79.accessibilityLabel" = "Email";
+
+/* Class = "IBUITextField"; placeholder = "Email"; ObjectID = "79"; */
+"79.placeholder" = "Email";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Check validation"; ObjectID = "103"; */
+"103.accessibilityLabel" = "Check validation";
+
+/* Class = "IBUIButton"; normalTitle = "Check validation"; ObjectID = "103"; */
+"103.normalTitle" = "Check validation";
+
+/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "104"; */
+"104.placeholder" = "Username";
+
+/* Class = "IBUILabel"; text = "Your account is created. Please check your mails in order to validate your account."; ObjectID = "105"; */
+"105.text" = "Your account is created. Please check your mails in order to validate your account.";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "106"; */
+"106.placeholder" = "Password";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "117"; */
+"117.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "117"; */
+"117.text" = "Account setup assistant";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "122"; */
+"122.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "122"; */
+"122.text" = "Account setup assistant";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "123"; */
+"123.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "123"; */
+"123.text" = "Account setup assistant";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "124"; */
+"124.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "124"; */
+"124.text" = "Account setup assistant";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "126"; */
+"126.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "126"; */
+"126.text" = "Account setup assistant";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "127"; */
+"127.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Account setup assistant"; ObjectID = "127"; */
+"127.text" = "Account setup assistant";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Linphone setup assistant icon"; ObjectID = "128"; */
+"128.accessibilityLabel" = "Linphone setup assistant icon";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Password"; ObjectID = "ClH-fT-a8N"; */
+"ClH-fT-a8N.accessibilityLabel" = "Password";
+
+/* Class = "IBUITextField"; placeholder = "Password"; ObjectID = "ClH-fT-a8N"; */
+"ClH-fT-a8N.placeholder" = "Password";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in SIP account"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.accessibilityLabel" = "Sign in SIP account";
+
+/* Class = "IBUIButton"; normalTitle = "Remote Provisioning"; ObjectID = "Kbn-dL-C5h"; */
+"Kbn-dL-C5h.normalTitle" = "Remote Provisioning";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Username"; ObjectID = "MyR-eX-QTa"; */
+"MyR-eX-QTa.accessibilityLabel" = "Username";
+
+/* Class = "IBUITextField"; placeholder = "Username"; ObjectID = "MyR-eX-QTa"; */
+"MyR-eX-QTa.placeholder" = "Username";
+
+/* Class = "IBUILabel"; text = "These parameters were retrieved from a remote provisioning profile."; ObjectID = "RHE-hi-dfB"; */
+"RHE-hi-dfB.text" = "These parameters were retrieved from a remote provisioning profile.";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Account setup assistant"; ObjectID = "YKJ-nv-RUT"; */
+"YKJ-nv-RUT.accessibilityLabel" = "Account setup assistant";
+
+/* Class = "IBUILabel"; text = "Provisioned account"; ObjectID = "YKJ-nv-RUT"; */
+"YKJ-nv-RUT.text" = "Provisioned account";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sign in"; ObjectID = "dGS-GB-Sgb"; */
+"dGS-GB-Sgb.accessibilityLabel" = "Sign in";
+
+/* Class = "IBUIButton"; normalTitle = "Sign in"; ObjectID = "dGS-GB-Sgb"; */
+"dGS-GB-Sgb.normalTitle" = "Sign in";
+
+/* Class = "IBUILabel"; text = "Enter your username and password"; ObjectID = "pU9-SC-9uY"; */
+"pU9-SC-9uY.text" = "Enter your username and password";
+
+/* Class = "IBUILabel"; text = "Invalid character:"; ObjectID = "uHm-NE-GLV"; */
+"uHm-NE-GLV.text" = "Invalid character:";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Domain"; ObjectID = "wRB-Sh-K8J"; */
+"wRB-Sh-K8J.accessibilityLabel" = "Domain";
+
+/* Class = "IBUITextField"; placeholder = "Domain"; ObjectID = "wRB-Sh-K8J"; */
+"wRB-Sh-K8J.placeholder" = "Domain";

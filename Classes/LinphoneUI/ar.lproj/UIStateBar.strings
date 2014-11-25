@@ -1,0 +1,24 @@
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Registration state"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Registration state";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Registration state"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Registration state";
+
+/* Class = "IBUILabel"; text = "CARAMBA"; ObjectID = "6"; */
+"6.text" = "CARAMBA";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Call quality"; ObjectID = "13"; */
+"13.accessibilityLabel" = "Call quality";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Security state"; ObjectID = "17"; */
+"17.accessibilityLabel" = "Security state";
+
+/* Class = "IBUILabel"; text = "CARAMBA"; ObjectID = "23"; */
+"23.text" = "CARAMBA";
+
+/* Class = "IBUILabel"; text = "VOICEMAIL MSGS"; ObjectID = "P9M-sM-t2B"; */
+"P9M-sM-t2B.text" = "VOICEMAIL MSGS";
+
+/* Class = "IBUILabel"; text = "VOICEMAIL MSGS"; ObjectID = "jEB-96-YxX"; */
+"jEB-96-YxX.text" = "VOICEMAIL MSGS";

@@ -1,0 +1,57 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Dialer"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Dialer";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Chat"; ObjectID = "7"; */
+"7.accessibilityLabel" = "Chat";
+
+/* Class = "IBUIButton"; normalTitle = "Chat"; ObjectID = "7"; */
+"7.normalTitle" = "Chat";
+
+/* Class = "IBUIButton"; accessibilityLabel = "History"; ObjectID = "8"; */
+"8.accessibilityLabel" = "History";
+
+/* Class = "IBUIButton"; normalTitle = "History"; ObjectID = "8"; */
+"8.normalTitle" = "History";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Contacts"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Contacts";
+
+/* Class = "IBUIButton"; normalTitle = "Contacts"; ObjectID = "9"; */
+"9.normalTitle" = "Contacts";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Settings"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Settings";
+
+/* Class = "IBUIButton"; normalTitle = "Settings"; ObjectID = "10"; */
+"10.normalTitle" = "Settings";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Missed call(s)"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Missed call(s)";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "11"; */
+"11.text" = "99";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Missed message(s)"; ObjectID = "14"; */
+"14.accessibilityLabel" = "Missed message(s)";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "14"; */
+"14.text" = "99";
+
+/* Class = "IBUIButton"; normalTitle = "Settings"; ObjectID = "30"; */
+"30.normalTitle" = "Settings";
+
+/* Class = "IBUIButton"; normalTitle = "Contacts"; ObjectID = "31"; */
+"31.normalTitle" = "Contacts";
+
+/* Class = "IBUIButton"; normalTitle = "History"; ObjectID = "32"; */
+"32.normalTitle" = "History";
+
+/* Class = "IBUIButton"; normalTitle = "Chat"; ObjectID = "33"; */
+"33.normalTitle" = "Chat";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "38"; */
+"38.text" = "99";
+
+/* Class = "IBUILabel"; text = "99"; ObjectID = "39"; */
+"39.text" = "99";

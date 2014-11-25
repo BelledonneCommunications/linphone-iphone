@@ -1,0 +1,9 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Contact name"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Contact name";
+
+/* Class = "IBUILabel"; text = "John"; ObjectID = "5"; */
+"5.text" = "John";
+
+/* Class = "IBUIImageView"; accessibilityLabel = "Call type"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Call type";

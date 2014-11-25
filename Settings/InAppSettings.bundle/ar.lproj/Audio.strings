@@ -1,0 +1,63 @@
+/* Codecs */
+"Codecs" = "المراميز";
+
+/* AMR */
+"AMR" = "AMR";
+
+/* Speex 16Khz */
+"Speex 16Khz" = "Speex 16Khz";
+
+/* Speex 8Khz */
+"Speex 8Khz" = "Speex 8Khz";
+
+/* Silk 24Khz */
+"Silk 24Khz" = "Silk 24Khz";
+
+/* Silk 16Khz */
+"Silk 16Khz" = "Silk 16Khz";
+
+/* G722 */
+"G722" = "G722";
+
+/* G729 */
+"G729" = "G729";
+
+/* GSM */
+"GSM" = "GSM";
+
+/* ILBC */
+"ILBC" = "ILBC";
+
+/* PCMU */
+"PCMU" = "PCMU";
+
+/* PCMA */
+"PCMA" = "PCMA";
+
+/* Advanced */
+"Advanced" = "متقدم";
+
+/* Playback gain */
+"Playback gain" = "كسب الإخراج";
+
+/* Microphone gain */
+"Microphone gain" = "كسب الميكروفون";
+
+/* Adaptive rate control */
+"Adaptive rate control" = "التحكم في الصبيب";
+
+/* Network bitrate limit */
+"Network bitrate limit" = "حد صبيب الشبكة";
+
+/* Voice processing */
+"Enable Voice Processing"="حسِّن الصوت ب VoIP";
+
+/* Bass Boost / equalizer */
+"Enable Bass Boost"="فعِّل رفع الجهير";
+
+/* Adaptative */
+"Adaptive rate algorithm"="ملائمة الصبيب";
+
+"Simple"="بسيط";
+
+"Stateful"="جليل";

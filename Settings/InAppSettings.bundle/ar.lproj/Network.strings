@@ -1,0 +1,65 @@
+/* Wifi only */
+"Wifi only" = "Wifi فقط";
+
+/* Edge optimization */
+"Edge optimization" = "تحسين Edge";
+
+/* Stun Server */
+"Stun Server" = "خادم Stun";
+
+/* ICE */
+"ICE" = "ICE";
+
+/* Random Port */
+"Random Port" = "منفذ عشوائي";
+
+/* Port */
+"Port" = "المنفذ";
+
+/* Audio Port(s) */
+"Audio Port(s)" = "منفذ (أو منافذ) الصوت";
+
+/* Video Port(s) */
+"Video Port(s)" = "منفذ (أو منافذ) الفيديو";
+
+/* Transport */
+"Transport" = "النقل";
+
+/* Media Encryption */
+"Media Encryption" = "وسيط التعمية";
+
+/* Push Notifications */
+"Push Notification" = "إشعارات التنبيه";
+
+/* Transport */
+"Transport" = "النقل";
+
+/* UDP */
+"UDP" = "UDP";
+
+/* TCP */
+"TCP" = "TCP";
+
+/* TLS */
+"TLS" = "TLS";
+
+/* None */
+"None" = "بدون";
+
+/* SRTP */
+"SRTP" = "SRTP";
+
+/* ZRTP */
+"ZRTP" = "ZRTP";
+
+/* Limits */
+"Limits" = "الحدود";
+
+/* Upload bandwidth */
+"Upload bandwidth" = "صبيب الرفع";
+
+/* Download bandwidth */
+"Download bandwidth" = "صبيب التنزيل";
+
+/* IPv6 */
+"Use IPv6" = "استخدم IPv6";

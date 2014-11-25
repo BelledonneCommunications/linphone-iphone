@@ -1,0 +1,314 @@
+/* No comment provided by engineer. */
+" (Aborted)" = " (مُلغى)";
+
+/* No comment provided by engineer. */
+" (Declined)" = " (مرفوض)";
+
+/* No comment provided by engineer. */
+" (Missed)" = " (فائت)";
+
+/* No comment provided by engineer. */
+"%@\nReason was: %@" = "%1$@\nالسبب هو : %2$@";
+
+/* No comment provided by engineer. */
+"'%@' not registered" = "'%@' ليس مسجلا";
+
+/* No comment provided by engineer. */
+"'%@' would like to enable video" = "'%@' يريد تفعيل الفيديو";
+
+/* No comment provided by engineer. */
+"About" = "حول";
+
+/* No comment provided by engineer. */
+"Accept" = "السماح";
+
+/* No comment provided by engineer. */
+"Account creation issue" = "مشكلة في إنشاء الحساب";
+
+/* No comment provided by engineer. */
+"Account validation issue" = "مشكلة في تأكيد الحساب";
+
+/* No comment provided by engineer. */
+"Address book" = "الدليل";
+
+/* No comment provided by engineer. */
+"Alert" = "إنذار";
+
+/* No comment provided by engineer. */
+"Answer" = "إجابة";
+
+/* No comment provided by engineer. */
+"Average" = "متوسطة";
+
+/* No comment provided by engineer. */
+"Bad credentials, check your account settings" = "خلل في التحقق من الهوية، تحقق من إعدادات الحساب";
+
+/* No comment provided by engineer. */
+"Battery is running low. Stop video ?" = "مستوى البطارية منخفض، هل تريد توقيف الفيديو ؟";
+
+/* No comment provided by engineer. */
+"Call failed" = "فَشِل الاتصال";
+
+/* No comment provided by engineer. */
+"Camera" = "الكاميرا";
+
+/* No comment provided by engineer. */
+"Can't create the account. Please try again." = "لم يستطع إنشاء الحساب. يُرجى الإعادة مرة أخرى.";
+
+/* No comment provided by engineer. */
+"Cancel" = "إلغاء";
+
+/* No comment provided by engineer. */
+"Cannot call %@" = "لم يتمكن من الاتصال ب %@";
+
+/* No comment provided by engineer. */
+"Cannot make call" = "لم يتمكن من الاتصال";
+
+/* No comment provided by engineer. */
+"Cannot transfer file from remote contact" = "تعذَّر إرسال الملف من طرف جهة الاتصال";
+
+/* No comment provided by engineer. */
+"Cannot transfer file to remote contact" = "تعذَّر إرسال الملف إلى جهة الاتصال";
+
+/* No comment provided by engineer. */
+"Cannot write image to photo library" = "تعذَّر حفظ الصورة في ألبوم الصور";
+
+/* No comment provided by engineer. */
+"Check error(s)" = "خطأ (أو أخطاء) في التحقق";
+
+/* No comment provided by engineer. */
+"Check issue" = "مشكلة في التحقق";
+
+/* No comment provided by engineer. */
+"Choose the image size" = "اختر حجم الصورة";
+
+/* No comment provided by engineer. */
+"Communication issue" = "مشكلة في الاتصال";
+
+/* No comment provided by engineer. */
+"Communication issue (%@)" = "مشكلة في الاتصال (%@)";
+
+/* No comment provided by engineer. */
+"Confirm the following SAS with the peer:\n%s" = "أكِّد SAS التالي مع المتصل : \n%s";
+
+/* No comment provided by engineer. */
+"Continue" = "استمر";
+
+/* No comment provided by engineer. */
+"Continue video" = "استمر بالفيديو";
+
+/* No comment provided by engineer. */
+"Decline" = "ارفض";
+
+/* ICE has established a direct connection to the remote host */
+"Direct connection" = "اتصال مباشر";
+
+/* No comment provided by engineer. */
+"Dismiss" = "تجاهل";
+
+/* No comment provided by engineer. */
+"Either configure a SIP proxy server from settings prior to place a call or use a valid SIP address (I.E sip:john@example.net)" = "يُرجى إدخال عنوان الوسيط SIP في الخيارات أو إدخال عنوان SIP لإجراء الاتصال (مثلا sip:john@example.net)";
+
+/* No comment provided by engineer. */
+"Either configure a SIP proxy server from settings prior to send a message or use a valid SIP address (I.E sip:john@example.net)" = "يُرجى إدخال عنوان الوسيط SIP في الخيارات أو إدخال عنوان SIP قبل إرسال الرسالة (مثلا sip:john@example.net)";
+
+/* No comment provided by engineer. */
+"Enter your password" = "ادخل كلمة السر";
+
+/* No comment provided by engineer. */
+"Enter your username" = "ادخل إسم المستخدم";
+
+/* ICE processing has failed */
+"Failed" = "فشِل";
+
+/* No comment provided by engineer. */
+"First name" = "الإسم";
+
+/* No comment provided by engineer. */
+"GNU General Public License V2 " = "الإصدار 2 من رخصة جْنُو العمومية ";
+
+/* No comment provided by engineer. */
+"http://www.linphone.org" = "http://www.linphone.org";
+
+/* No comment provided by engineer. */
+"IC_MSG" = "مكالمة واردة من %@";
+
+/* No comment provided by engineer. */
+"IM_MSG" = "رسالة واردة من %@";
+
+/* ICE process is in progress */
+"In progress" = "تجري المعالجة";
+
+/* No comment provided by engineer. */
+"Incoming call" = "مكالمة واردة";
+
+/* No comment provided by engineer. */
+"Invalid SIP address" = "عنوان SIP غير صحيح";
+
+/* No comment provided by engineer. */
+"Last name" = "اللقب";
+
+/* No comment provided by engineer. */
+"Low bandwidth" = "ضعف سعة القناة";
+
+/* No comment provided by engineer. */
+"Maximum" = "الأقصى";
+
+/* No comment provided by engineer. */
+"Minimum" = "الأدنى";
+
+/* ICE has established a connection to the remote host through one or several NATs */
+"NAT(s) connection" = "اتصال ب NAT";
+
+/* No comment provided by engineer. */
+"Network down" = "لا وجود للشبكة";
+
+/* No comment provided by engineer. */
+"Network Error" = "خطأ في الشبكة";
+
+/* No comment provided by engineer. */
+"No codec" = "لا وجود لمرماز";
+
+/* No comment provided by engineer. */
+"No microphone" = "لا وجود لميكروفون";
+
+/* No comment provided by engineer. */
+"No SIP account configured" = "لم يُهيَّأ حساب SIP";
+
+/* ICE has not been activated for this call */
+"Not activated" = "غير مُفعَّل";
+
+/* No comment provided by engineer. */
+"Not registered" = "غير مُسجَّل";
+
+/* No comment provided by engineer. */
+"Ok" = "موافق";
+
+/* No comment provided by engineer. */
+"Outgoing call" = "مكالمة صادرة";
+
+/* No comment provided by engineer. */
+"Phone number" = "رقم الهاتف";
+
+/* No comment provided by engineer. */
+"Phone numbers" = "أرقام الهاتف";
+
+/* No comment provided by engineer. */
+"Photo library" = "ألبوم الصور";
+
+/* No comment provided by engineer. */
+"Illegal character in username: %@" = "حرف (أو حروف) ممنوعة في إسم المستخدم : %@";
+
+/* No comment provided by engineer. */
+"Please enter a domain.\n" = "أدخل إسم النطاق.\n";
+
+/* No comment provided by engineer. */
+"Please enter a username.\n" = "أدخل إسم المستخدم.\n";
+
+/* No comment provided by engineer. */
+"Please make sure your device is connected to the internet and double check your SIP account configuration in the settings." = "تحقق من اتصالك بالإنترنت وتأكد مرة أخرى من إعدادات حسابك SIP في الإعدادات.";
+
+/* No comment provided by engineer. */
+"Please terminate GSM call" = "يُرجى إنهاء المكالمة GSM";
+
+/* No comment provided by engineer. */
+"Registered" = "مُسجَّل";
+
+/* No comment provided by engineer. */
+"Registration failed" = "فشِل التسجيل";
+
+/* No comment provided by engineer. */
+"Registration failure" = "فشلٌ في التسجيل";
+
+/* No comment provided by engineer. */
+"Registration in progress" = "يجري التسجيل";
+
+/* ICE has established a connection through a relay */
+"Relay connection" = "اتصال مُبدَّل";
+
+/* No comment provided by engineer. */
+"Remove" = "إزالة";
+
+/* No comment provided by engineer. */
+"Remove trust in the peer?" = "إزالة الثقة في المتصل ؟";
+
+/* No comment provided by engineer. */
+"Select picture source" = "اختر مصدر الصورة";
+
+/* */
+"Settings" = "الإعدادات";
+
+/* No comment provided by engineer. */
+"Show" = "أظهِر";
+
+/* No comment provided by engineer. */
+"SIP address" = "عنوان SIP";
+
+/* No comment provided by engineer. */
+"SIP addresses" = "عناوين SIP";
+
+/* No comment provided by engineer. */
+"SIP server unreachable" = "انعدام الوصول إلى خادم SIP";
+
+/* No comment provided by engineer. */
+"Stop video" = "أوقِف الفيديو";
+
+/* No comment provided by engineer. */
+"The email is invalid.\n" = "عنوان البريد الالكتروني هذا غير صحيح.\n";
+
+/* No comment provided by engineer. */
+"The password is too short (minimum %d characters).\n" = "كلمة السر قصيرة جدا (يجب أن تحوي %d حروف على الأقل).";
+
+/* No comment provided by engineer. */
+"The passwords are different.\n" = "كلمتا السر غير متطابقتين.\n";
+
+/* No comment provided by engineer. */
+"The username is too short (minimum %d characters).\n" = "إسم المستخدم قصير جدا (يجب أن تحوي %d حروف على الأقل).";
+
+/* No comment provided by engineer. */
+"There is no network connection available, enable WIFI or WWAN prior to place a call" = "لا وجود لأي اتصال بالشبكة، فعِّل WiFi أو WWAN قبل إجراء أي اتصال";
+
+/* No comment provided by engineer. */
+"Transfer error" = "خطأ في النقل";
+
+/* No comment provided by engineer. */
+"Unknown" = "مجهول";
+
+/* No comment provided by engineer. */
+"Unknown error" = "خطأ مجهول";
+
+/* No comment provided by engineer. */
+"Username already exists" = "إسم المستخدم موجود بالفعل";
+
+/* No comment provided by engineer. */
+"Video cannot be activated because of low bandwidth condition, only audio is available" = "تعذَّر تفعيل الفيديو لأن سعة القناة ضئيلة، الصوت هو المتاح فقط. ";
+
+/* No comment provided by engineer. */
+"You missed a call from %@" = "اتصال فائت من %@ ";
+
+/* No comment provided by engineer. */
+"You must authorize the application to have access to address book.\nToggle the application in Settings > Privacy > Contacts" = "يجب عليك السماح للتطبيق بالوصول إلى جهات الاتصال.\nفعِّل ذلك في الإعدادات، ثم الخصوصية، ثم جهات الاتصال.";
+
+/* No comment provided by engineer. */
+"You need to plug a microphone to your device to use this application." = "يجب ربط ميكروفون بهذا الجهاز لتشغيل هذا التطبيق.";
+
+/* No comment provided by engineer. */
+"Your account is not validate yet." = "لم يُأكَّد حسابك بعد.";
+
+/* No comment provided by engineer. */
+"© 2010-2012 Belledonne Communications " = "© 2010-2012 Belledonne Communications ";
+
+/* Placeholder for the address in DialerView */
+"Enter an address" = "أدخل عنوانا";
+"%@ is composing..." = "%@ يكتب...";
+"Resend" = "أعِد الإرسال";
+
+/* Alert view for Wizard in Settings */
+"Warning" = "انتباه";
+"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?" = "سيغير تشغيل المرشد إعداداتك الحالية.\n هل تريد ذلك فعلا ؟";
+"Launch Wizard" = "شغِّل المرشد";
+
+
+/* Accessibility */
+"Firstname" = "الإسم";
+"Lastname" = "اللقب";

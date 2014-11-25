@@ -1,0 +1,12 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Firstname"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Firstname";
+
+/* Class = "IBUILabel"; text = "John"; ObjectID = "6"; */
+"6.text" = "John";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Lastname"; ObjectID = "10"; */
+"10.accessibilityLabel" = "Lastname";
+
+/* Class = "IBUILabel"; text = "Doe"; ObjectID = "10"; */
+"10.text" = "Doe";

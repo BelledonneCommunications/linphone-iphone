@@ -1,0 +1,21 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Contact name"; ObjectID = "20"; */
+"20.accessibilityLabel" = "Contact name";
+
+/* Class = "IBUILabel"; text = "John"; ObjectID = "20"; */
+"20.text" = "John";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Message"; ObjectID = "21"; */
+"21.accessibilityLabel" = "Message";
+
+/* Class = "IBUILabel"; text = "This is a message"; ObjectID = "21"; */
+"21.text" = "This is a message";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Delete"; ObjectID = "32"; */
+"32.accessibilityLabel" = "Delete";
+
+/* Class = "IBUILabel"; accessibilityLabel = "Unread message number"; ObjectID = "41"; */
+"41.accessibilityLabel" = "Unread message number";
+
+/* Class = "IBUILabel"; text = "3"; ObjectID = "41"; */
+"41.text" = "3";

@@ -1,0 +1,9 @@
+
+/* Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Contact's name";
+
+/* Class = "IBUILabel"; text = "Contact1"; ObjectID = "8"; */
+"8.text" = "Contact1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Contact's avatar"; ObjectID = "22"; */
+"22.accessibilityLabel" = "Contact's avatar";

@@ -1,0 +1,21 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "Edit"; ObjectID = "9"; */
+"9.accessibilityLabel" = "Edit";
+
+/* Class = "IBUIButton"; normalTitle = "Edit"; ObjectID = "9"; */
+"9.normalTitle" = "Edit";
+
+/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "9"; */
+"9.selectedTitle" = "Ok";
+
+/* Class = "IBUIButton"; accessibilityLabel = "New Discussion"; ObjectID = "10"; */
+"10.accessibilityLabel" = "New Discussion";
+
+/* Class = "IBUIButton"; normalTitle = "New discussion"; ObjectID = "10"; */
+"10.normalTitle" = "New discussion";
+
+/* Class = "IBUITextField"; accessibilityLabel = "Enter a address"; ObjectID = "25"; */
+"25.accessibilityLabel" = "Enter a address";
+
+/* Class = "IBUITextField"; placeholder = "To:"; ObjectID = "25"; */
+"25.placeholder" = "To:";

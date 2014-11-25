@@ -1,0 +1,17 @@
+/* Prefix */
+"Prefix" = "البادئة";
+
+/* Substitue + by 00 */
+"Substitue + by 00" = "استبدل + ب 00";
+
+/* Send inband DTMFs */
+"Send inband DTMFs" = "إرسال DTMF مع التدفق";
+
+/* Send SIP INFO DTMFs */
+"Send SIP INFO DTMFs" = "إرسال DTMF ك SIP INFO";
+
+/* Incoming call timeout */
+"Incoming call timeout" = "مهلة  محاولة الاتصال";
+
+/* In call timeout */
+"In call timeout" = "المدة القصوى للمكالمة";

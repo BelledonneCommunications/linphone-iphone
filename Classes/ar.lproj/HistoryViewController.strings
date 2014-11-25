@@ -1,0 +1,27 @@
+
+/* Class = "IBUIButton"; accessibilityLabel = "All contacts filter"; ObjectID = "4"; */
+"4.accessibilityLabel" = "All contacts filter";
+
+/* Class = "IBUIButton"; normalTitle = "All"; ObjectID = "4"; */
+"4.normalTitle" = "All";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Missed contacts filter"; ObjectID = "5"; */
+"5.accessibilityLabel" = "Missed contacts filter";
+
+/* Class = "IBUIButton"; normalTitle = "Missed"; ObjectID = "5"; */
+"5.normalTitle" = "Missed";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Edit"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Edit";
+
+/* Class = "IBUIButton"; normalTitle = "Edit"; ObjectID = "6"; */
+"6.normalTitle" = "Edit";
+
+/* Class = "IBUIButton"; selectedTitle = "Ok"; ObjectID = "6"; */
+"6.selectedTitle" = "Ok";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Delete all"; ObjectID = "35"; */
+"35.accessibilityLabel" = "Delete all";
+
+/* Class = "IBUIButton"; normalTitle = "Delete all"; ObjectID = "35"; */
+"35.normalTitle" = "Delete all";

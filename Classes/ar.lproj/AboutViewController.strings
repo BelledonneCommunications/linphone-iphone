@@ -1,0 +1,18 @@
+
+/* Class = "IBUILabel"; text = "Linphone"; ObjectID = "56"; */
+"56.text" = "Linphone";
+
+/* Class = "IBUILabel"; text = "http://www.linphone.org"; ObjectID = "57"; */
+"57.text" = "http://www.linphone.org";
+
+/* Class = "IBUILabel"; text = "© 2010-2012 Belledonne Communications "; ObjectID = "58"; */
+"58.text" = "© 2010-2012 Belledonne Communications ";
+
+/* Class = "IBUILabel"; text = "GNU General Public License V2 "; ObjectID = "61"; */
+"61.text" = "GNU General Public License V2 ";
+
+/* Class = "IBUILabel"; text = "Linphone iPhone 1.0"; ObjectID = "65"; */
+"65.text" = "Linphone iPhone 1.0";
+
+/* Class = "IBUILabel"; text = "Linphone Core 1.0"; ObjectID = "66"; */
+"66.text" = "Linphone Core 1.0";

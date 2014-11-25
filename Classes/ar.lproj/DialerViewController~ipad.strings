@@ -1,0 +1,63 @@
+
+/* Class = "IBUITextField"; accessibilityLabel = "Enter a address"; ObjectID = "6"; */
+"6.accessibilityLabel" = "Enter a address";
+
+/* Class = "IBUITextField"; placeholder = "Enter SIP address or phone number..."; ObjectID = "6"; */
+"6.placeholder" = "Enter SIP address or phone number...";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Star"; ObjectID = "8"; */
+"8.accessibilityLabel" = "Star";
+
+/* Class = "IBUIButton"; accessibilityLabel = "6"; ObjectID = "9"; */
+"9.accessibilityLabel" = "6";
+
+/* Class = "IBUIButton"; accessibilityLabel = "0"; ObjectID = "10"; */
+"10.accessibilityLabel" = "0";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Sharp"; ObjectID = "11"; */
+"11.accessibilityLabel" = "Sharp";
+
+/* Class = "IBUIButton"; accessibilityLabel = "9"; ObjectID = "12"; */
+"12.accessibilityLabel" = "9";
+
+/* Class = "IBUIButton"; accessibilityLabel = "8"; ObjectID = "13"; */
+"13.accessibilityLabel" = "8";
+
+/* Class = "IBUIButton"; accessibilityLabel = "7"; ObjectID = "14"; */
+"14.accessibilityLabel" = "7";
+
+/* Class = "IBUIButton"; accessibilityLabel = "4"; ObjectID = "15"; */
+"15.accessibilityLabel" = "4";
+
+/* Class = "IBUIButton"; accessibilityLabel = "5"; ObjectID = "16"; */
+"16.accessibilityLabel" = "5";
+
+/* Class = "IBUIButton"; accessibilityLabel = "3"; ObjectID = "17"; */
+"17.accessibilityLabel" = "3";
+
+/* Class = "IBUIButton"; accessibilityLabel = "2"; ObjectID = "18"; */
+"18.accessibilityLabel" = "2";
+
+/* Class = "IBUIButton"; accessibilityLabel = "1"; ObjectID = "19"; */
+"19.accessibilityLabel" = "1";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Transfer Call"; ObjectID = "20"; */
+"20.accessibilityLabel" = "Transfer Call";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Call"; ObjectID = "21"; */
+"21.accessibilityLabel" = "Call";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "22"; */
+"22.accessibilityLabel" = "Back";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Add call"; ObjectID = "23"; */
+"23.accessibilityLabel" = "Add call";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Add to Contact"; ObjectID = "24"; */
+"24.accessibilityLabel" = "Add to Contact";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Backscape"; ObjectID = "25"; */
+"25.accessibilityLabel" = "Backscape";
+
+/* Class = "IBUIButton"; accessibilityLabel = "Switch camera"; ObjectID = "71"; */
+"71.accessibilityLabel" = "Switch camera";

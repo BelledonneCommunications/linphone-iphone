@@ -1,0 +1,62 @@
+/* SIP account */
+"SIP account" = "حساب SIP";
+
+/* Wizard */
+"Wizard" = "المرشد";
+
+/* User name */
+"User name" = "إسم المستخدم";
+
+/* User name */
+"User ID" = "مُعرِّف المستخدم";
+
+/* Password */
+"Password" = "كلمة السر";
+
+/* Domain */
+"Domain" = "النطاق";
+
+/* Proxy */
+"Proxy" = "الوسيط";
+
+/* Outbound proxy */
+"Outbound proxy" = "وسيط الخروج";
+
+/* Settings */
+"Settings" = "الإعدادات";
+
+/* Enable video */
+"Enable video" = "تفعيل الفيديو";
+
+/* Audio */
+"Audio" = "الصوت";
+
+/* Video */
+"Video" = "الفيديو";
+
+/* Call */
+"Call" = "الاتصال";
+
+/* Network */
+"Network" = "الشبكة";
+
+/* Advanced */
+"Advanced" = "متقدم";
+
+/*  */
+"" = "";
+
+/* About */
+"About" = "حول التطبيق";
+
+/* Quit */
+"Quit" = "الخروج";
+
+/* Release */
+"Release" = "استئناف";
+
+/* Clear cache */
+"Clear cache" = "إفراغ المخبأ";
+
+/* More options */
+"More options" = "الخيارات الأخرى";

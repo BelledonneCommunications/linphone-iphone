@@ -1,0 +1,27 @@
+/* Automatically start video */
+"Automatically start" = "تشغيل تلقائي";
+
+/* Automatically accept video */
+"Automatically accept" = "قبول تلقائي";
+
+/* Show self view */
+"Show self view" = "رؤية نفسك";
+
+/* Show preview */
+"Show preview" = "فعِّل المعاينة";
+
+/* Preferred video size */
+"Preferred video size" = "حجم الفيديو المفضَّل";
+
+/* Codecs */
+"Codecs" = "المراميز";
+
+/* mpeg4 */
+"mpeg4" = "mpeg4";
+
+/* h264 */
+"h264" = "h264";
+
+/* VP8 */
+"VP8" = "VP8";
+
