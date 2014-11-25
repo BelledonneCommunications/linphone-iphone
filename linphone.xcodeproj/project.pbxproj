@@ -1624,8 +1624,6 @@
 		F095482E1883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/WizardViewController.xib; sourceTree = "<group>"; };
 		F095482F1883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/WizardViewController~ipad.xib"; sourceTree = "<group>"; };
 		F09548301883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/WizardViews.xib; sourceTree = "<group>"; };
-<<<<<<< HEAD
-=======
 		F09548311883F1EB00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatRoomViewController.strings; sourceTree = "<group>"; };
 		F09548321883F20A00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/ChatRoomViewController.strings; sourceTree = "<group>"; };
 		F09548331883F25C00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatViewController.strings; sourceTree = "<group>"; };
