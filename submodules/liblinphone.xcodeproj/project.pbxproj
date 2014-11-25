@@ -353,6 +353,8 @@
 		F0497F141A1C9EA000B67112 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C8177AC70900C40726 /* MainWindow.xib */; };
 		F0497F161A1C9F8700B67112 /* mediastream-tester-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F0497F151A1C9F8700B67112 /* mediastream-tester-Info.plist */; };
 		F04D51EE1A08E638004DD530 /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = F04D51ED1A08E638004DD530 /* common.c */; };
+		F0BA0A8D1A24D4C900F68203 /* mediastreamer2_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F0ED99201A1645C200A788CE /* mediastreamer2_tester.c */; };
+		F0BA0A8E1A24D4DE00F68203 /* nowebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 223CA84016D9268D00EF1BEC /* nowebcam.c */; };
 		F0ED99131A16456500A788CE /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0ED99121A16456500A788CE /* libcunit.a */; };
 		F0ED99361A1645C200A788CE /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99171A1645C200A788CE /* Makefile.am */; };
 		F0ED99371A1645C200A788CE /* Makefile.in in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99181A1645C200A788CE /* Makefile.in */; };
@@ -1983,8 +1985,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F01223D91A1F29AB008D16BA /* mediastream_tester_Tests.m in Sources */,
+				F0BA0A8E1A24D4DE00F68203 /* nowebcam.c in Sources */,
 				F01223E41A1F29D6008D16BA /* DTObjectBlockExecutor.m in Sources */,
 				F01223E51A1F29D6008D16BA /* NSObject+DTRuntime.m in Sources */,
+				F0BA0A8D1A24D4C900F68203 /* mediastreamer2_tester.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2596,7 +2600,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2821,7 +2825,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -2869,7 +2873,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2896,6 +2900,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2907,6 +2912,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					HAVE_FUN_avcodec_get_context_defaults3,
+					HAVE_FUN_avcodec_open2,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2924,7 +2931,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mediastream-tester.app/mediastream-tester";
 			};
@@ -2948,6 +2955,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -2995,6 +3003,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3079,7 +3088,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -3141,7 +3150,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";
@@ -3205,7 +3214,7 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";
@@ -3277,6 +3286,7 @@
 				F01223DE1A1F29AB008D16BA /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F0ED999B1A16464D00A788CE /* Build configuration list for PBXNativeTarget "mediastream-tester" */ = {
 			isa = XCConfigurationList;
