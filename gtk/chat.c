@@ -474,8 +474,9 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 }
 
 void linphone_gtk_chat_destroyed(GtkWidget *w){
+	/*
 	LinphoneChatRoom *cr=(LinphoneChatRoom*)g_object_get_data(G_OBJECT(w),"cr");
-	linphone_chat_room_destroy(cr);
+	*/
 }
 
 
