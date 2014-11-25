@@ -21,10 +21,7 @@
 # source this file in your .rc file
 
 _liblinphone_complete() {
-	local completions command_require_argument prev_arg latest_arg available_tasks has_not_set_suite suite_name
-	# these commands expect an argument
-	command_require_argument=(--list-tests --config --domain --auth-domain --dns-hosts --suite --test)
-
+	local completions command_requiring_argument prev_arg latest_arg available_tasks has_not_set_suite suite_name
 
 	if [ -n "$BASH_VERSION" ]; then
 		set -- "${COMP_WORDS[@]}" #convert them to arguments (eg $1,$#,$@,etc.)
@@ -36,7 +33,6 @@ _liblinphone_complete() {
 	#skip program name
 	program=$1
 	shift
-
 
 	# if user required help, do not complete anything
 	if ! grep -q -- "--help" <<< "$@"; then
@@ -55,6 +51,10 @@ _liblinphone_complete() {
 
 		# get the tasks available, from --help
 		available_tasks="$($program 2>&1 --help | sed -nE "s/.*--([^ ]*).*/--\\1/p")"
+
+		# these commands expect an argument
+		command_requiring_argument="$($program 2>&1 --help | sed -nE "s/.*--(.*) <.*/--\\1/p")"
+
 		# remove all already provided tasks (it's useless to provide them twice)
 		if [[ ! -z "$@" ]]; then
 			current_tasks=$(echo $@ | grep -Eo -- "--([^ ])*" | tr '\n' '|' | sed 's/|/$|/g')--$
@@ -85,26 +85,29 @@ _liblinphone_complete() {
 		elif [ "$latest_arg" = "--suite" ] || [ "$latest_arg" = "--list-tests" ]; then
 			completions="$($program --list-suites)"
 		# we are waiting for a custom value, so do not hint anything
-		elif grep -q -- " $latest_arg " <<< "$command_require_argument"; then
+		elif grep -q -- "^$latest_arg$" <<< "$command_requiring_argument"; then
 			completions=""
 		else
 			completions="$available_tasks"
 		fi
 	fi
 
-	if [ -n "$BASH_VERSION" ]; then
-		# COMPREPLY=( $(echo $completions | sed 's/ /\\ /g' )) #| sed -e 's/^/"/g' -e  's/$/"/g' | tr '\n' ' ') )
-		IFS=$'\n'
-		COMPREPLY=($(compgen -W "${completions}" -- ${COMP_WORDS[COMP_CWORD]}))
-	elif [ -n "$ZSH_VERSION" ]; then
-		reply=( "${(ps:\n:)completions}" )
+	if [ ! -z "$completions"  ]; then
+		if [ -n "$BASH_VERSION" ]; then
+			IFS=$'\n'  #if that even necessary?
+			COMPREPLY=($(compgen -W "${completions}" -- ${COMP_WORDS[COMP_CWORD]}))
+		elif [ -n "$ZSH_VERSION" ]; then
+			reply=( "${(ps:\n:)completions}" )
+		fi
 	fi
 }
 
-if [ -n "$BASH_VERSION" ]; then
-	complete -F _liblinphone_complete liblinphone_tester
-elif [ -n "$ZSH_VERSION" ]; then
-	compctl -K _liblinphone_complete liblinphone_tester
-else
-	echo "Your shell might be not supported! Only bash and zsh tested."
-fi
+for tester in liblinphone_tester mediastreamer2_tester belle_sip_tester; do
+	if [ -n "$BASH_VERSION" ]; then
+		complete -F _liblinphone_complete $tester
+	elif [ -n "$ZSH_VERSION" ]; then
+		compctl -K _liblinphone_complete $tester
+	else
+		echo "Your shell might be not supported! Only bash and zsh tested."
+	fi
+done
