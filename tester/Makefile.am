@@ -44,7 +44,7 @@ endif
 
 
 test: liblinphone_tester
-	./liblinphone_tester  --config $(abs_srcdir)
+	./liblinphone_tester  --config $(abs_srcdir) $(TEST_OPTIONS)
 
 else !BUILD_CUNIT_TESTS
 
