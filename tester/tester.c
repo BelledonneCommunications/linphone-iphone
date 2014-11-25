@@ -552,7 +552,8 @@ int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
 	va_list args;
 	va_start(args, format);
 #ifndef ANDROID
-	result = vprintf(format,args);
+	result = vfprintf(stream,format,args);
+	fflush(stream);
 #else
 	/*used by liblinphone tester to retrieve suite list*/
 	result = 0;
