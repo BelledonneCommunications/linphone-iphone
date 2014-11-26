@@ -371,7 +371,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 
 	if (startm<0) startm=0;
 
-	if (endm>0&&endm>=startm){
+	if ((endm>0&&endm>=startm) || (startm == 0 && endm == 0) ){
 		buf2=ms_strdup_printf("%s LIMIT %i ",buf,endm+1-startm);
 		ms_free(buf);
 		buf = buf2;

@@ -1045,6 +1045,10 @@ static void history_messages_count() {
 		CU_ASSERT_EQUAL(ms_list_size(messages), 10);
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
+		messages=linphone_chat_room_get_history(chatroom,1);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 1);
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+
 		messages=linphone_chat_room_get_history(chatroom,0);
 		CU_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270);
 		CU_ASSERT_EQUAL(ms_list_size(messages), 1270);
