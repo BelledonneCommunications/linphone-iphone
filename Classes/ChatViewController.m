@@ -67,7 +67,6 @@
     if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
-    [tableController loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
