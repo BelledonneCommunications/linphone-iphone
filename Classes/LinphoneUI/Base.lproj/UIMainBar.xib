@@ -205,11 +205,28 @@
                         <constraint firstAttribute="width" constant="21" id="tMw-Sg-MKB"/>
                     </constraints>
                 </view>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_left.png" translatesAutoresizingMaskIntoConstraints="NO" id="f0B-Rk-Uez">
+                    <rect key="frame" x="-47" y="-70" width="47" height="147"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="147" id="Ce2-oh-cXP"/>
+                        <constraint firstAttribute="width" constant="47" id="hvC-cr-MbF"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="if3-GT-4eC">
+                    <rect key="frame" x="320" y="-70" width="47" height="147"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="47" id="Ez5-zh-daE"/>
+                        <constraint firstAttribute="height" constant="147" id="liI-Np-MjS"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" red="0.0" green="1" blue="0.19194547549999999" alpha="0.0" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="4" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="23R-LR-WSH"/>
+                <constraint firstAttribute="bottom" secondItem="f0B-Rk-Uez" secondAttribute="bottom" id="5jk-rI-3ek"/>
+                <constraint firstAttribute="bottom" secondItem="if3-GT-4eC" secondAttribute="bottom" id="BMD-5G-aiP"/>
                 <constraint firstItem="32" firstAttribute="trailing" secondItem="6" secondAttribute="trailing" id="KAR-Oc-g9D"/>
+                <constraint firstItem="if3-GT-4eC" firstAttribute="leading" secondItem="9" secondAttribute="trailing" id="Npd-ac-VuD"/>
                 <constraint firstItem="7" firstAttribute="leading" secondItem="8" secondAttribute="trailing" id="P0e-Vb-oo3"/>
                 <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" id="Q0Q-KR-hwu"/>
                 <constraint firstItem="5" firstAttribute="top" secondItem="37" secondAttribute="top" id="QTf-I4-aYm"/>
@@ -217,6 +234,7 @@
                 <constraint firstItem="8" firstAttribute="leading" secondItem="6" secondAttribute="trailing" id="Tim-pC-QPd"/>
                 <constraint firstAttribute="bottom" secondItem="5" secondAttribute="bottom" id="UNn-fP-Bhi"/>
                 <constraint firstAttribute="bottom" secondItem="8" secondAttribute="bottom" id="ZXj-CV-9DA"/>
+                <constraint firstItem="6" firstAttribute="leading" secondItem="f0B-Rk-Uez" secondAttribute="trailing" id="buH-90-U2H"/>
                 <constraint firstAttribute="trailing" secondItem="4" secondAttribute="trailing" id="bz1-ui-hrk"/>
                 <constraint firstItem="6" firstAttribute="top" secondItem="32" secondAttribute="top" id="dEI-FQ-VES"/>
                 <constraint firstAttribute="centerX" secondItem="4" secondAttribute="centerX" id="jmU-VM-s9L"/>
@@ -229,7 +247,7 @@
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="659" y="457.5"/>
+            <point key="canvasLocation" x="873" y="798.5"/>
         </view>
     </objects>
     <resources>
@@ -241,6 +259,8 @@
         <image name="contacts_selected.png" width="128" height="154"/>
         <image name="dialer_default.png" width="128" height="154"/>
         <image name="dialer_over.png" width="128" height="154"/>
+        <image name="dialer_padding_left.png" width="94" height="294"/>
+        <image name="dialer_padding_right.png" width="94" height="294"/>
         <image name="dialer_selected.png" width="128" height="154"/>
         <image name="history_default.png" width="128" height="154"/>
         <image name="history_notification.png" width="43" height="43"/>

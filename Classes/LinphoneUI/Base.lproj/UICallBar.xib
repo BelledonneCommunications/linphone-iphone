@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallBar">
@@ -306,13 +306,13 @@
                     <rect key="frame" x="0.0" y="325" width="320" height="135"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" image="callbar_left_padding.png" id="146" userLabel="leftPadding">
-                            <rect key="frame" x="-44" y="-8" width="44" height="90"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="incall_padding_right.png" id="145" userLabel="rightPadding">
+                            <rect key="frame" x="320" y="-11" width="47" height="146"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="callbar_right_padding.png" id="145" userLabel="rightPadding">
-                            <rect key="frame" x="320" y="-8" width="44" height="90"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="incall_padding_left.png" id="ft8-yH-2Ta" userLabel="leftPadding">
+                            <rect key="frame" x="-47" y="-11" width="47" height="146"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         </imageView>
                         <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="12" userLabel="videoButton" customClass="UIVideoButton">
                             <rect key="frame" x="0.0" y="0.0" width="80" height="67"/>
@@ -727,13 +727,13 @@
                     <rect key="frame" x="0.0" y="238" width="480" height="82"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" image="callbar_left_padding.png" id="143" userLabel="leftPadding">
-                            <rect key="frame" x="-44" y="-8" width="44" height="90"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" image="incall_padding_left_landscape.png" id="143" userLabel="leftPadding">
+                            <rect key="frame" x="-251" y="-23" width="128" height="105"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="callbar_right_padding.png" id="144" userLabel="rightPadding">
-                            <rect key="frame" x="480" y="-8" width="44" height="90"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="incall_padding_right_landscape.png" id="144" userLabel="rightPadding">
+                            <rect key="frame" x="480" y="-23" width="128" height="105"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>
                         <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="113" userLabel="videoButton" customClass="UIVideoButton">
                             <rect key="frame" x="65" y="0.0" width="65" height="82"/>
@@ -902,11 +902,10 @@
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="295" y="-146"/>
         </view>
     </objects>
     <resources>
-        <image name="callbar_left_padding.png" width="88" height="180"/>
-        <image name="callbar_right_padding.png" width="88" height="180"/>
         <image name="conference_default.png" width="209" height="136"/>
         <image name="conference_default_landscape.png" width="130" height="163"/>
         <image name="conference_over.png" width="209" height="136"/>
@@ -923,6 +922,10 @@
         <image name="hangup_default_landscape.png" width="180" height="163"/>
         <image name="hangup_over.png" width="222" height="136"/>
         <image name="hangup_over_landscape.png" width="180" height="163"/>
+        <image name="incall_padding_left.png" width="94" height="292"/>
+        <image name="incall_padding_left_landscape.png" width="256" height="210"/>
+        <image name="incall_padding_right.png" width="94" height="292"/>
+        <image name="incall_padding_right_landscape.png" width="256" height="210"/>
         <image name="micro_off_default.png" width="160" height="134"/>
         <image name="micro_off_default_landscape.png" width="130" height="163"/>
         <image name="micro_off_disabled.png" width="160" height="134"/>
