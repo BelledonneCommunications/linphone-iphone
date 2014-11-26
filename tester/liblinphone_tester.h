@@ -206,6 +206,10 @@ typedef struct _stats {
 
 	char * dtmf_list_received;
 	int dtmf_count;
+
+	int number_of_rtcp_sent;
+	int number_of_rtcp_received;
+
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -247,6 +251,7 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
 void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
+void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 LinphoneAddress * create_linphone_address(const char * domain);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);

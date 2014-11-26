@@ -79,6 +79,16 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 		CU_FAIL("unexpected event");break;
 	}
 }
+
+void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *lstats) {
+	stats* counters = get_stats(lc);
+	if (lstats->updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
+		counters->number_of_rtcp_received++;
+	} else if (lstats->updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
+		counters->number_of_rtcp_sent++;
+	}
+}
+
 void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -1140,51 +1150,56 @@ static void call_paused_resumed(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+#define CHECK_CURRENT_LOSS_RATE() \
+	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
+	/*wait for an RTCP packet to have an accurate cumulative lost value*/ \
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_rtcp_sent, rtcp_count_current+1, 10000)); \
+	stats = rtp_session_get_stats(call_pauline->audiostream->ms.sessions.rtp_session); \
+	loss_percentage = stats->cum_packet_loss * 100.f / (stats->packet_recv + stats->cum_packet_loss); \
+	CU_ASSERT_TRUE(.75 * params.loss_rate < loss_percentage); \
+	CU_ASSERT_TRUE(loss_percentage < 1.25 * params.loss_rate)
+
 static void call_paused_resumed_with_loss(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_pauline;
 	const rtp_stats_t * stats;
 	float loss_percentage;
+	int rtcp_count_current;
 
 	OrtpNetworkSimulatorParams params={0};
 	params.enabled=TRUE;
-	params.loss_rate=25;
+	params.loss_rate=20;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 	call_pauline = linphone_core_get_current_call(pauline->lc);
 	rtp_session_enable_network_simulation(call_pauline->audiostream->ms.sessions.rtp_session,&params);
-	rtp_session_enable_network_simulation(call_pauline->videostream->ms.sessions.rtp_session,&params);
 
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 4000);
+	/*generate some traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 6000);
+	CHECK_CURRENT_LOSS_RATE();
 
+	/*pause call*/
 	linphone_core_pause_call(pauline->lc,call_pauline);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
-
 	/*stay in pause a little while in order to generate traffic*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+	CHECK_CURRENT_LOSS_RATE();
 
+	/*resume*/
 	linphone_core_resume_call(pauline->lc,call_pauline);
-
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 6000);
 
 	/*since stats are NOT totally reset during pause, the stats->packet_recv is computed from
 	the start of call. This test ensures that the loss rate is consistent during the entire call.*/
-	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
-	loss_percentage = stats->cum_packet_loss * 100.f / stats->packet_recv;
-	CU_ASSERT_TRUE(.75 * params.loss_rate < loss_percentage);
-	CU_ASSERT_TRUE(loss_percentage < 1.25 * params.loss_rate);
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
+	CHECK_CURRENT_LOSS_RATE();
+	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
