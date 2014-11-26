@@ -112,10 +112,7 @@ The libvpx build isn't able to produce dual architecture files. To workaround th
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, :
 
-        # HomeBrew
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/usr/local && make
-        # MacPorts
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/opt/local && make
+        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
 * Install on the system
 
