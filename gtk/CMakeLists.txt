@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-find_package(GTK2 2.10 REQUIRED gtk)
+find_package(GTK2 2.18 REQUIRED gtk)
 
 set(UI_FILES
 	about.ui

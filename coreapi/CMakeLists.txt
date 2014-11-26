@@ -65,6 +65,7 @@ set(SOURCE_FILES
 	linphonefriend.h
 	linphone_tunnel_config.c
 	linphone_tunnel.h
+	localplayer.c
 	lpconfig.c
 	lpconfig.h
 	lsd.c
@@ -84,7 +85,8 @@ set(SOURCE_FILES
 	sipsetup.h
 	xml2lpc.c
 	xml2lpc.h
-	xml.c)
+	xml.c
+)
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
 		linphone_tunnel.cc
