@@ -1026,7 +1026,7 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 	NSString *newSSID = [LinphoneManager getCurrentWifiSSID];
 	if ([newSSID compare:mgr.SSID] == NSOrderedSame) return;
 
-	mgr.SSID = [newSSID retain];
+	mgr.SSID = newSSID;
 
 	if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
 		networkReachabilityCallBack([mgr getProxyReachability],flags,nil);

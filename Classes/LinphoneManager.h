@@ -185,7 +185,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
-@property (assign) NSString* SSID;
+@property (retain, nonatomic) NSString* SSID;
 @property (readonly) sqlite3* database;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
