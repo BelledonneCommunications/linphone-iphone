@@ -73,7 +73,7 @@ _liblinphone_complete() {
 			# echo "yes!$prev_arg $has_not_set_suite"
 			if [ "$prev_arg" = "--test" ] && [ $has_not_set_suite = 0 ]; then
 				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) (--.*)$/\1/p' |sed "s@\\\\@@g")
-				completions="$($program --list-tests $suite_name | grep "^$latest_arg")"
+				completions="$($program --list-tests $suite_name)"
 			elif [ "$prev_arg" = "--suite" ] || [ "$prev_arg" = "--list-tests" ]; then
 				completions="$($program --list-suites)"
 			fi
