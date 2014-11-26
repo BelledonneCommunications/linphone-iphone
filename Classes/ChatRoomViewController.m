@@ -42,6 +42,7 @@
 @synthesize messageBackgroundImage;
 @synthesize transferBackgroundImage;
 @synthesize listTapGestureRecognizer;
+@synthesize listSwipeGestureRecognizer;
 @synthesize pictureButton;
 @synthesize imageTransferProgressBar;
 @synthesize cancelTransferButton;
@@ -57,6 +58,7 @@
         self->chatRoom = NULL;
         self->imageSharing = NULL;
         self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
+        self.listSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
         self->imageQualities = [[OrderedDictionary alloc] initWithObjectsAndKeys:
                                 [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -80,6 +82,7 @@
     [transferBackgroundImage release];
 
     [listTapGestureRecognizer release];
+    [listSwipeGestureRecognizer release];
 
 	[transferView release];
 	[pictureButton release];
@@ -138,6 +141,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     [tableController.tableView addGestureRecognizer:listTapGestureRecognizer];
     [listTapGestureRecognizer setEnabled:FALSE];
+
+    listSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [tableController.tableView addGestureRecognizer:listSwipeGestureRecognizer];
+    listSwipeGestureRecognizer.enabled = TRUE;
 
     [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
     [tableController.tableView setBackgroundView:nil];
@@ -532,6 +539,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (IBAction)onListTap:(id)sender {
     [messageField resignFirstResponder];
 }
+- (IBAction)onListSwipe:(id)sender {
+    [self onBackClick:sender];
+}
 
 - (IBAction)onMessageChange:(id)sender {
     if([[messageField text] length] > 0) {
@@ -742,9 +752,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         {
             CGRect tableFrame = [tableController.view frame];
             tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-            double diff = tableFrame.size.height;
             tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-            diff = tableFrame.size.height - diff;
             [tableController.view setFrame:tableFrame];
 
             // Scroll to bottom
