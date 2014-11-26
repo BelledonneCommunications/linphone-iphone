@@ -300,12 +300,14 @@ static UIFont *CELL_FONT = nil;
         CGRect messageFrame = [bubbleView frame];
         messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
         if(!is_outgoing) { // Inverted
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_incoming"]];
+            UIImage* image = [UIImage imageNamed:@"chat_bubble_incoming"];
+            image = [image resizableImageWithCapInsets:UIEdgeInsetsMake(26, 32, 34, 56)];
+            [backgroundImage setImage:image];
             messageFrame.origin.y += 5;
         } else {
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_outgoing"]];
+            UIImage* image = [UIImage imageNamed:@"chat_bubble_outgoing"];
+            image = [image resizableImageWithCapInsets:UIEdgeInsetsMake(14, 15, 25, 40)];
+            [backgroundImage setImage:image];
             messageFrame.origin.y -= 5;
         }
         [bubbleView setFrame:messageFrame];
