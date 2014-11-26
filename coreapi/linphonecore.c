@@ -6395,6 +6395,7 @@ bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 static void notify_soundcard_usage(LinphoneCore *lc, bool_t used){
 	MSSndCard *card=lc->sound_conf.capt_sndcard;
 	if (card && ms_snd_card_get_capabilities(card) & MS_SND_CARD_CAP_IS_SLOW){
+		ms_message("Notifying soundcard that we don't need it anymore for calls.");
 		ms_snd_card_set_usage_hint(card,used);
 	}
 }
