@@ -671,15 +671,20 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 				// Create a new local notification
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
-					data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
+
+                    // iOS8 doesn't need the timer trick for the local notification.
+                    if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+                        data->notification.soundName = @"ring.caf";
+                        data->notification.category = @"incoming_call";
+                    } else {
+                        data->notification.soundName = @"shortring.caf";
+                        data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
+                    }
 
 					data->notification.repeatInterval = 0;
-                    if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
-                        data->notification.category = @"incoming_call";
-                    }
+
 					data->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
 					data->notification.alertAction = NSLocalizedString(@"Answer", nil);
-					data->notification.soundName = @"shortring.caf";
 					data->notification.userInfo = @{@"callId": callId, @"timer":[NSNumber numberWithInt:1] };
 					data->notification.applicationIconBadgeNumber = 1;
 
@@ -692,7 +697,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 							incallBgTask=0;
 						}];
 
-						[[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+                        if( data->timer ){
+                            [[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+                        }
 					}
 
 				}
