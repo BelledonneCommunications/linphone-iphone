@@ -1024,6 +1024,59 @@ static void message_storage_migration() {
 	remove(tmp_db);
 }
 
+static void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, int expected ){
+	MSList* messages = linphone_chat_room_get_history_range(chatroom, x, y);
+	int size = ms_list_size(messages);
+	if( expected != size ){
+		ms_warning("History retrieved from %d to %d returned %d records, but expected %d", x, y, size, expected);
+	}
+	CU_ASSERT_EQUAL(size, expected);
+
+	ms_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
+
+}
+
+static void history_range_full_test(){
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
+	LinphoneChatRoom *chatroom;
+	char src_db[256];
+	char tmp_db[256];
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", liblinphone_tester_file_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", liblinphone_tester_writable_dir_prefix);
+
+	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
+
+	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+
+	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
+	CU_ASSERT_PTR_NOT_NULL(chatroom);
+	if (chatroom){
+		// We have 20 tests to perform to fully qualify the function, here they are:
+		history_message_count_helper(chatroom, 0, 0, 1);
+		history_message_count_helper(chatroom, -1, 0, 1);
+		history_message_count_helper(chatroom, 0, -1, 1270);
+		history_message_count_helper(chatroom, 1, 3, 3);
+		history_message_count_helper(chatroom, 3, 1, 1270-3);
+		history_message_count_helper(chatroom, 10, 10, 1);
+		history_message_count_helper(chatroom, -1, -1, 1270);
+		history_message_count_helper(chatroom, -1, -2, 1270);
+		history_message_count_helper(chatroom, -2, -1, 1270);
+		history_message_count_helper(chatroom, 3, -1, 1270-3);
+		history_message_count_helper(chatroom, 1, -3, 1270-1);
+		history_message_count_helper(chatroom, 2, -2, 1270-2);
+		history_message_count_helper(chatroom, 2, 0, 1270-2);
+		history_message_count_helper(chatroom, 0, 2, 3);
+		history_message_count_helper(chatroom, -1, 3, 4);
+		history_message_count_helper(chatroom, -2, 2, 3);
+		history_message_count_helper(chatroom, -3, 1, 2);
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_address_destroy(jehan_addr);
+	remove(tmp_db);
+}
+
+
 static void history_messages_count() {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
@@ -1107,6 +1160,7 @@ test_t message_tests[] = {
 #ifdef MSG_STORAGE_ENABLED
 	,{ "Database migration", message_storage_migration }
 	,{ "History count", history_messages_count }
+	,{ "History range", history_range_full_test }
 #endif
 };
 
