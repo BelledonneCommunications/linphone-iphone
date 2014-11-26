@@ -14,6 +14,7 @@
                 <outlet property="fourButton" destination="69" id="77"/>
                 <outlet property="hangupButton" destination="7" id="29"/>
                 <outlet property="landscapeView" destination="100" id="137"/>
+                <outlet property="leftPadding" destination="ft8-yH-2Ta" id="zp9-XP-bDv"/>
                 <outlet property="microButton" destination="11" id="14"/>
                 <outlet property="nineButton" destination="66" id="78"/>
                 <outlet property="oneButton" destination="73" id="79"/>
@@ -24,6 +25,7 @@
                 <outlet property="padView" destination="31" id="45"/>
                 <outlet property="pauseButton" destination="8" id="15"/>
                 <outlet property="portraitView" destination="4" id="138"/>
+                <outlet property="rightPadding" destination="145" id="cgI-HK-3gA"/>
                 <outlet property="routesBluetoothButton" destination="174" id="203"/>
                 <outlet property="routesButton" destination="164" id="202"/>
                 <outlet property="routesReceiverButton" destination="169" id="204"/>
@@ -306,13 +308,13 @@
                     <rect key="frame" x="0.0" y="325" width="320" height="135"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="incall_padding_right.png" id="145" userLabel="rightPadding">
-                            <rect key="frame" x="320" y="-11" width="47" height="146"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        </imageView>
-                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="incall_padding_left.png" id="ft8-yH-2Ta" userLabel="leftPadding">
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" tag="60" contentMode="scaleToFill" image="incall_padding_left.png" id="ft8-yH-2Ta" userLabel="leftPadding">
                             <rect key="frame" x="-47" y="-11" width="47" height="146"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" tag="61" contentMode="scaleToFill" image="incall_padding_right.png" id="145" userLabel="rightPadding">
+                            <rect key="frame" x="320" y="-11" width="47" height="146"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>
                         <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="12" userLabel="videoButton" customClass="UIVideoButton">
                             <rect key="frame" x="0.0" y="0.0" width="80" height="67"/>
@@ -727,12 +729,12 @@
                     <rect key="frame" x="0.0" y="238" width="480" height="82"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" image="incall_padding_left_landscape.png" id="143" userLabel="leftPadding">
-                            <rect key="frame" x="-251" y="-23" width="128" height="105"/>
+                        <imageView userInteractionEnabled="NO" tag="60" contentMode="scaleToFill" image="incall_padding_left_landscape.png" id="143" userLabel="leftPadding">
+                            <rect key="frame" x="-128" y="-24" width="128" height="106"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" tag="101" contentMode="scaleToFill" image="incall_padding_right_landscape.png" id="144" userLabel="rightPadding">
-                            <rect key="frame" x="480" y="-23" width="128" height="105"/>
+                        <imageView userInteractionEnabled="NO" tag="61" contentMode="scaleToFill" image="incall_padding_right_landscape.png" id="144" userLabel="rightPadding">
+                            <rect key="frame" x="480" y="-24" width="128" height="106"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>
                         <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="113" userLabel="videoButton" customClass="UIVideoButton">

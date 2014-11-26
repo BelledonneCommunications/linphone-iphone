@@ -48,6 +48,10 @@
 @property (nonatomic, retain) IBOutlet UIButton*        optionsTransferButton;
 @property (nonatomic, retain) IBOutlet UIToggleButton*  dialerButton;
 
+@property (nonatomic, retain) IBOutlet UIImageView*         leftPadding;
+@property (nonatomic, retain) IBOutlet UIImageView*         rightPadding;
+
+
 @property (nonatomic, retain) IBOutlet UIDigitButton* oneButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* twoButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* threeButton;
