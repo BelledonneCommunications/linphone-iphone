@@ -115,6 +115,8 @@
 	<string>linphone_splashscreen</string>
 	<key>UILaunchImageFile~iphone</key>
 	<string>linphone_splashscreen</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>MainStoryboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
