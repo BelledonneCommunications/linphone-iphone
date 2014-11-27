@@ -452,7 +452,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		linphone_address_destroy(identity);
 
-		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0 ){
+		if (strcmp(creator->domain, "sip:sip.linphone.org") == 0) {
 			linphone_proxy_config_enable_avpf(cfg,TRUE);
 			// If account created on sip.linphone.org, we configure linphone to use TLS by default
 			if (linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)) {
@@ -465,6 +465,8 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 				ms_free(tmp);
 				linphone_address_destroy(addr);
 			}
+			linphone_core_set_stun_server(linphone_gtk_get_core(), "stun.linphone.org");
+			linphone_core_set_firewall_policy(linphone_gtk_get_core(), LinphonePolicyUseIce);
 		}
 
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
