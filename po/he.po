@@ -4,14 +4,15 @@
 # 
 # Translators:
 # Eli Zaretskii <eliz@gnu.org>, 2012
+# GenghisKhan <genghiskhan@gmx.ca>, 2014
 # GenghisKhan <genghiskhan@gmx.ca>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-19 10:39+0100\n"
-"PO-Revision-Date: 2014-11-19 10:08+0000\n"
-"Last-Translator: Cqnqrd <gautier.pelloux@gmail.com>\n"
+"PO-Revision-Date: 2014-11-24 10:22+0000\n"
+"Last-Translator: GenghisKhan <genghiskhan@gmx.ca>\n"
 "Language-Team: Hebrew (http://www.transifex.com/projects/p/linphone-gtk/language/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -151,7 +152,7 @@ msgstr "‫%s מעוניין להוסיפך אל רשימת אנשי הקשר ש
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr ""
+msgstr "אנא הזן סיסמה עבור משתמש <i>%s</i>\nבמתחם <i>%s</i>:"
 
 #: ../gtk/main.c:1283
 msgid "Call error"
@@ -754,15 +755,15 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:99
 msgid "Too low"
-msgstr ""
+msgstr "נמוך מדי"
 
 #: ../gtk/audio_assistant.c:100
 msgid "Good"
-msgstr ""
+msgstr "טוב"
 
 #: ../gtk/audio_assistant.c:101
 msgid "Too loud"
-msgstr ""
+msgstr "חזק מדי"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
@@ -772,7 +773,7 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
-msgstr ""
+msgstr "התקן לכידה"
 
 #: ../gtk/audio_assistant.c:329
 msgid "Recorded volume"
@@ -780,15 +781,15 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:333
 msgid "No voice"
-msgstr ""
+msgstr "אין קול"
 
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
-msgstr ""
+msgstr "התקן השמעה"
 
 #: ../gtk/audio_assistant.c:370
 msgid "Play three beeps"
-msgstr ""
+msgstr "נגן שלושה צפצופים"
 
 #: ../gtk/audio_assistant.c:403
 msgid "Press the record button and say some words"
@@ -800,7 +801,7 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
-msgstr ""
+msgstr "הבא נתחיל את Linphone עכשיו"
 
 #: ../gtk/audio_assistant.c:496
 msgid "Audio Assistant"
@@ -1096,7 +1097,7 @@ msgstr "ניתוב (רשות):"
 
 #: ../gtk/sip_account.ui.h:11
 msgid "Transport"
-msgstr ""
+msgstr "טרנספורט"
 
 #: ../gtk/sip_account.ui.h:12
 msgid "Register"
@@ -1108,7 +1109,7 @@ msgstr "פרסם מידע נוכחות"
 
 #: ../gtk/sip_account.ui.h:14
 msgid "Enable AVPF"
-msgstr ""
+msgstr "אפשר AVPF"
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
@@ -1466,7 +1467,7 @@ msgstr "נא להמתין"
 
 #: ../gtk/dscp_settings.ui.h:1
 msgid "DSCP settings"
-msgstr ""
+msgstr "אפשרויות DSCP"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
@@ -1667,7 +1668,7 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:19
 msgid "<b>Search</b>"
-msgstr ""
+msgstr "<b>חיפוש</b>"
 
 #: ../gtk/ldap.ui.h:20
 msgid "Timeout for search:"
@@ -1683,7 +1684,7 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:23
 msgid "<b>Miscellaneous</b>"
-msgstr ""
+msgstr "<b>שונות</b>"
 
 #: ../gtk/ldap.ui.h:24
 msgid "ANONYMOUS"
