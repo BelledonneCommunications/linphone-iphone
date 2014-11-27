@@ -364,7 +364,7 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	MSList *ret;
-	char *buf;
+	char *buf,*buf2;
 	char *peer;
 	uint64_t begin,end;
 	int buf_max_size = 512;
@@ -378,17 +378,24 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	buf=ms_malloc(buf_max_size);
 	buf=sqlite3_snprintf(buf_max_size-1,buf,"SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC",peer);
 
+
 	if (startm<0) startm=0;
 
 	if (endm>0&&endm>=startm){
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT %i ",buf,endm+1-startm);
+		buf2=ms_strdup_printf("%s LIMIT %i ",buf,endm+1-startm);
+		ms_free(buf);
+		buf = buf2;
 	}else if(startm>0){
-		ms_message("%s(): end is lower than start (%d < %d). No end assumed.",__FUNCTION__,endm,startm);
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT -1",buf);
+		ms_message("%s(): end is lower than start (%d < %d). Assuming no end limit.",__FUNCTION__,endm,startm);
+		buf2=ms_strdup_printf("%s LIMIT -1",buf);
+		ms_free(buf);
+		buf = buf2;
 	}
 
 	if (startm>0){
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s OFFSET %i ",buf,startm);
+		buf2=ms_strdup_printf("%s OFFSET %i ",buf,startm);
+		ms_free(buf);
+		buf = buf2;
 	}
 
 	begin=ortp_get_cur_time_ms();
@@ -403,7 +410,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 }
 
 MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
-	return linphone_chat_room_get_history_range(cr, 0, nb_message);
+	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
 
@@ -462,7 +469,7 @@ static int migrate_messages_timestamp(void* data,int argc, char** argv, char** c
 	time_t new_time = parse_time_from_db(argv[1]);
 	if( new_time ){
 		/* replace 'time' by -1 and set 'utc' to the timestamp */
-		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", new_time, atoi(argv[0]));
+		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", (int64_t)new_time, atoi(argv[0]));
 		if( buf) {
 			linphone_sql_request((sqlite3*)data, buf);
 			sqlite3_free(buf);

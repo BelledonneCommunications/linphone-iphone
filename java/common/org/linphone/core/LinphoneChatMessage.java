@@ -164,6 +164,10 @@ public interface LinphoneChatMessage {
 	void startFileDownload(LinphoneChatMessage.StateListener listener);
 	
 	/**
+	 * 	Cancel an ongoing file transfer attached to this message.(upload or download).
+	 */
+	void cancelFileTransfer();
+	/**
 	 * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
 	 * @return a pointer to the LinphoneContent structure or NULL if not present.
 	 */
@@ -179,4 +183,5 @@ public interface LinphoneChatMessage {
 	 * @return the data stored in the chat message if any, else null
 	 */
 	String getAppData();
+
 }

@@ -58,7 +58,9 @@ blacklisted_functions = [
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
 	'linphone_core_set_log_collection_path',	# need to handle class properties
+	'linphone_core_set_log_collection_prefix',	# need to handle class properties
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function

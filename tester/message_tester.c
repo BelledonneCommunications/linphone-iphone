@@ -734,7 +734,7 @@ static void file_transfer_message_upload_cancelled(void) {
 
 	/*wait for file to be 50% uploaded and cancel the transfer */
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer, 50));
-	linphone_chat_room_cancel_file_transfer(message);
+	linphone_chat_message_cancel_file_transfer(message);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 
@@ -800,7 +800,7 @@ static void file_transfer_message_download_cancelled(void) {
 		/* wait for file to be 50% downloaded */
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 		/* and cancel the transfer */
-		linphone_chat_room_cancel_file_transfer(marie->stat.last_received_chat_message);
+		linphone_chat_message_cancel_file_transfer(marie->stat.last_received_chat_message);
 	}
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
@@ -1253,7 +1253,9 @@ message_tester_copy_file(const char *from, const char *to)
 }
 
 static int check_no_strange_time(void* data,int argc, char** argv,char** cNames) {
-	CU_ASSERT_EQUAL(argc, 0);
+	CU_ASSERT_EQUAL(argc, 1);
+	CU_ASSERT_STRING_EQUAL(cNames[0], "COUNT(*)"); // count of non updated messages should be 0
+	CU_ASSERT_STRING_EQUAL(argv[0], "0"); // count of non updated messages should be 0
 	return 0;
 }
 
@@ -1278,7 +1280,7 @@ static void message_storage_migration() {
 	CU_ASSERT(ms_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage
-	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT * FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
+	CU_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK );
 
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
@@ -1301,25 +1303,37 @@ static void history_messages_count() {
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	CU_ASSERT_PTR_NOT_NULL(chatroom);
 	if (chatroom){
-		MSList *history=linphone_chat_room_get_history(chatroom,0);
+		messages=linphone_chat_room_get_history(chatroom,10);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 10);
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+
+		messages=linphone_chat_room_get_history(chatroom,0);
 		CU_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270);
-		CU_ASSERT_EQUAL(ms_list_size(history), linphone_chat_room_get_history_size(chatroom));
+		CU_ASSERT_EQUAL(ms_list_size(messages), 1270);
 		/*check the second most recent message*/
-		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)history->next->data), "Fore and aft follow each other.");
+		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest message only and check its content*/
 		messages=linphone_chat_room_get_history_range(chatroom, 42, 42);
 		CU_ASSERT_EQUAL(ms_list_size(messages), 1);
 		CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->data), "If you open yourself to the Tao is intangible and evasive, yet prefers to keep us at the mercy of the kingdom, then all of the streams of hundreds of valleys because of its limitless possibilities.");
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset without limit*/
-		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 1265, -1)), 1270-1265);
+		messages = linphone_chat_room_get_history_range(chatroom, 1265, -1);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 1270-1265);
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test limit without offset*/
-		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 0, 5)), 6);
+		messages = linphone_chat_room_get_history_range(chatroom, 0, 5);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 6);
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test invalid start*/
-		CU_ASSERT_EQUAL(ms_list_size(linphone_chat_room_get_history_range(chatroom, 1265, 1260)), 1270-1265);
+		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
+		CU_ASSERT_EQUAL(ms_list_size(messages), 1270-1265);
+		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 #include "offeranswer.h"
 
-static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
+static int extract_sdp(SalOp* op,belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
 
 /*used for calls terminated before creation of a dialog*/
 static void call_set_released(SalOp* op){
@@ -41,7 +41,12 @@ static void sdp_process(SalOp *h){
 	ms_message("Doing SDP offer/answer process of type %s",h->sdp_offering ? "outgoing" : "incoming");
 	if (h->result){
 		sal_media_description_unref(h->result);
+		h->result = NULL;
 	}
+
+	/* if SDP was invalid */
+	if (h->base.remote_media == NULL) return;
+
 	h->result=sal_media_description_new();
 	if (h->sdp_offering){
 		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
@@ -162,13 +167,14 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 		sal_media_description_unref(op->base.remote_media);
 		op->base.remote_media=NULL;
 	}
-	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
+	if (extract_sdp(op,BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
 		if (sdp){
 			op->base.remote_media=sal_media_description_new();
 			sdp_to_media_description(sdp,op->base.remote_media);
-			if (op->base.local_media) sdp_process(op);
 		}/*if no sdp in response, what can we do ?*/
 	}
+	/* process sdp in any case to reset result media description*/
+	if (op->base.local_media) sdp_process(op);
 }
 
 static void cancelling_invite(SalOp* op ){
@@ -330,7 +336,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
 	bool_t release_call=FALSE;
-	
+
 	if (client_transaction) {
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(client_transaction));
@@ -378,8 +384,16 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
  * If body was present is not a SDP or parsing of SDP failed, -1 is returned and SalReason is set appropriately.
  *
 **/
-static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
+static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
 	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
+
+	if (op&&op->sdp_removal){
+		ms_error("Removed willingly SDP because sal_call_enable_sdp_removal was set to TRUE.");
+		*session_desc=NULL;
+		*error=SalReasonNotAcceptable;
+		return -1;
+	}
+
 	if (content_type){
 		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
 			&& strcmp("sdp",belle_sip_header_content_type_get_subtype(content_type))==0) {
@@ -409,7 +423,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	int err=0;
 	SalReason reason;
-	if (extract_sdp(BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
+	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
 			op->sdp_offering=FALSE;
 			op->base.remote_media=sal_media_description_new();
@@ -484,15 +498,15 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				ms_warning("replace header already set");
 			}
 
-			process_sdp_for_invite(op,req);
-
-			if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
-				if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
-					op->auto_answer_asked=TRUE;
-					ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+			if (process_sdp_for_invite(op,req) == 0) {
+				if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
+					if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
+						op->auto_answer_asked=TRUE;
+						ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+					}
 				}
+				op->base.root->callbacks.call_received(op);
 			}
-			op->base.root->callbacks.call_received(op);
 			break;
 		} /* else same behavior as for EARLY state*/
 	}
@@ -532,7 +546,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		if (strcmp("ACK",method)==0) {
 			if (op->sdp_offering){
 				SalReason reason;
-				if (extract_sdp(BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
+				if (extract_sdp(op,BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
 					if (sdp){
 						if (op->base.remote_media)
 							sal_media_description_unref(op->base.remote_media);

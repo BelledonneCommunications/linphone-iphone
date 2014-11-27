@@ -80,6 +80,7 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
+	(*env)->DeleteLocalRef(env,cls);
 }
 
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
@@ -113,8 +114,6 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 	ortp_qnx_log_handler("liblinphone_tester", lev, fmt, args);
 }
 #endif /* __QNX__ */
-
-
 
 void helper(const char *name) {
 	liblinphone_tester_fprintf(stderr,"%s --help\n"

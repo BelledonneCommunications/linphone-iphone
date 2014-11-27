@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
 
-
 /*create an operation */
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new0(SalOp,1);
@@ -26,6 +25,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->type=SalOpUnknown;
 	op->privacy=SalPrivacyNone;
 	op->manual_refresher=FALSE;/*tells that requests with expiry (SUBSCRIBE, PUBLISH) will be automatically refreshed*/
+	op->sdp_removal=sal->default_sdp_removal;
 	sal_op_ref(op);
 	return op;
 }
@@ -285,6 +285,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		const MSList *elem=sal_op_get_route_addresses(op);
 		const char *transport;
 		const char *method=belle_sip_request_get_method(request);
+		belle_sip_listening_point_t *udplp=belle_sip_provider_get_listening_point(prov,"UDP");
 
 		if (elem) {
 			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
@@ -297,7 +298,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			/*compatibility mode: by default it should be udp as not explicitely set and if no udp listening point is available, then use
 			 * the first available transport*/
 			if (!belle_sip_uri_is_secure(next_hop_uri)){
-				if (belle_sip_provider_get_listening_point(prov,"UDP")==0){
+				if (udplp==NULL){
 					if (belle_sip_provider_get_listening_point(prov,"TCP")!=NULL){
 						transport="tcp";
 					}else if (belle_sip_provider_get_listening_point(prov,"TLS")!=NULL ){
@@ -309,6 +310,13 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 					belle_sip_uri_set_transport_param(next_hop_uri,transport);
 				}
 			}
+		}else{
+#ifdef TUNNEL_ENABLED
+			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(udplp,belle_sip_tunnel_listening_point_t)){
+				/* our tunnel mode only supports UDP. Force transport to be set to UDP */
+				belle_sip_uri_set_transport_param(next_hop_uri,"udp");
+			}
+#endif
 		}
 		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport &&
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
@@ -770,3 +778,7 @@ void sal_op_stop_refreshing(SalOp *op){
 	}
 }
 
+void sal_call_enable_sdp_removal(SalOp *h, bool_t enable)  {
+	if (enable) ms_message("Enabling SDP removal feature for SalOp[%p]!", h);
+	h->sdp_removal = enable;
+}

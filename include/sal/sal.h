@@ -65,7 +65,7 @@ typedef enum {
 	SalTransportUDP, /*UDP*/
 	SalTransportTCP, /*TCP*/
 	SalTransportTLS, /*TLS*/
-	SalTransportDTLS /*DTLS*/
+	SalTransportDTLS, /*DTLS*/
 }SalTransport;
 
 #define SAL_MEDIA_DESCRIPTION_UNCHANGED			0x00
@@ -516,7 +516,7 @@ void sal_signing_key_delete(SalSigningKey *key);
 
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
-int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
+int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_tunneled);
 int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 int sal_transport_available(Sal *ctx, SalTransport t);
@@ -533,8 +533,7 @@ void sal_append_stack_string_to_user_agent(Sal *ctx);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
-int sal_enable_tunnel(Sal *ctx, void *tunnelclient);
-void sal_disable_tunnel(Sal *ctx);
+int sal_set_tunnel(Sal *ctx, void *tunnelclient);
 /*Default value is true*/
 void sal_enable_sip_update_method(Sal *ctx,bool_t value);
 
@@ -639,6 +638,12 @@ bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
+/* Call test API */
+/*willingly fails to parse SDP from received packets (INVITE and/or ACK) if value=true */
+/* First version: for all new SalOp created (eg. each incoming or outgoing call). Do not forget to reset previous value when you are done!*/
+void sal_default_enable_sdp_removal(Sal* h, bool_t enable) ;
+/* Second version: for a specific call*/
+void sal_call_enable_sdp_removal(SalOp *h, bool_t enable) ;
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

@@ -14,8 +14,10 @@ common_SRC_FILES := \
 	tester.c \
 	remote_provisioning_tester.c \
 	quality_reporting_tester.c \
+	log_collection_tester.c \
 	transport_tester.c \
-	player_tester.c
+	player_tester.c \
+	dtmf_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \

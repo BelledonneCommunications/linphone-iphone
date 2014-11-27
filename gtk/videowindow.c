@@ -74,7 +74,7 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 }
 
 static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint x, gint y, guint time, gpointer user_data){
-#if GTK_CHECK_VERSION(2,20,0)
+#if GTK_CHECK_VERSION(2,21,0)
 	GList *l=gdk_drag_context_list_targets(drag_context);
 	GList *elem;
 	

@@ -106,6 +106,7 @@ void TunnelManager::startClient() {
 	}
 	mTunnelClient->setHttpProxy(mHttpProxyHost.c_str(), mHttpProxyPort, mHttpUserName.c_str(), mHttpPasswd.c_str());
 	mTunnelClient->start();
+	sal_set_tunnel(mCore->sal, mTunnelClient);
 }
 
 bool TunnelManager::isConnected() const {
@@ -185,12 +186,13 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		ms_message("TunnelManager: tunnel is connected");
 		if(mState == connecting) {
 			linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
+			mState = ready;
 			if(mTunnelizeSipPackets) {
 				doUnregistration();
-				sal_enable_tunnel(mCore->sal, mTunnelClient);
+				_linphone_core_apply_transports(mCore);
 				doRegistration();
 			}
-			mState = ready;
+			
 		}
 	} else {
 		ms_error("TunnelManager: tunnel has been disconnected");
@@ -219,17 +221,15 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 	case LinphoneTunnelModeDisable:
 		if(mState == ready) {
 			linphone_core_set_rtp_transport_factories(mCore,NULL);
-			if(mTunnelizeSipPackets) {
-				doUnregistration();
-				sal_disable_tunnel(mCore->sal);
-			}
-			delete mTunnelClient;
-			mTunnelClient=NULL;
-			if(mTunnelizeSipPackets) {
-				doRegistration();
-			}
 			mState = disabled;
 			mMode = mode;
+			if(mTunnelizeSipPackets) {
+				doUnregistration();
+				_linphone_core_apply_transports(mCore);
+			}
+			sal_set_tunnel(mCore->sal,NULL);
+			delete mTunnelClient;
+			mTunnelClient=NULL;
 		} else {
 			ms_error("TunnelManager: could not change mode. Bad state");
 		}
@@ -385,6 +385,18 @@ bool TunnelManager::startAutoDetection() {
 	return true;
 }
 
+bool TunnelManager::isActivated() const{
+	switch(getMode()){
+		case LinphoneTunnelModeAuto:
+			return !mState==disabled;
+		case LinphoneTunnelModeDisable:
+			return false;
+		case LinphoneTunnelModeEnable:
+			return true;
+	}
+	return false;
+}
+
 void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd) {
 	mHttpUserName=username?username:"";
 	mHttpPasswd=passwd?passwd:"";
@@ -392,7 +404,7 @@ void TunnelManager::setHttpProxyAuthInfo(const char* username,const char* passwd
 }
 
 void TunnelManager::tunnelizeSipPackets(bool enable){
-		mTunnelizeSipPackets = enable;
+	mTunnelizeSipPackets = enable;
 }
 
 bool TunnelManager::tunnelizeSipPacketsEnabled() const {

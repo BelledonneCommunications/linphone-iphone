@@ -258,9 +258,7 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 ifeq ($(_BUILD_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
-	libavcodec-linphone \
-	libswscale-linphone \
-	libavutil-linphone
+	libffmpeg-linphone
 endif
 
 LOCAL_MODULE := liblinphone

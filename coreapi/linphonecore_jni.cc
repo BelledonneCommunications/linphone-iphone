@@ -2685,8 +2685,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferM
 	return (jlong) message;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr, jlong message) {
-	linphone_chat_room_cancel_file_transfer((LinphoneChatMessage *)message);
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr) {
+	linphone_chat_message_cancel_file_transfer((LinphoneChatMessage *)ptr);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneChatMessageImpl_getFileTransferInformation(JNIEnv* env, jobject  thiz, jlong ptr) {
@@ -5320,13 +5320,8 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, j
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
 	jobject window_ref = NULL;
-	MSSndCard *snd_card = ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
-	if(snd_card == NULL) {
-		ms_error("No default playback sound card found");
-		return 0;
-	}
 	window_ref = env->NewGlobalRef(window);
-	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, snd_card, "MSAndroidDisplay", window_ref);
+	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, NULL, "MSAndroidDisplay", (unsigned long)window_ref);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
 		if(window_ref) env->DeleteGlobalRef(window_ref);

@@ -34,7 +34,7 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
         sudo port install gtk-osx-application -python27
         sudo port install hicolor-icon-theme
 
- #### Using HomeBrew
+#### Using HomeBrew
 
         brew install automake intltool libtool pkg-config coreutils \
         yasm nasm wget imagemagick gettext gtk+ speex ffmpeg pygtk
@@ -112,25 +112,24 @@ The next pieces need to be compiled manually.
 The libvpx build isn't able to produce dual architecture files. To workaround this, configure libvpx twice and use lipo to create a dual architecture `libvpx.a`.
 
 * (Optional, proprietary extension only) Compile and install the tunnel library
-
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, do:
 
         ./configure --prefix=/opt/local && make && sudo make install
 
 * Compile Linphone
-
  If you got the source code from git, run `./autogen.sh` first.
+ Then or otherwise, :
 
- Then or otherwise, do:
-
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
+        # HomeBrew
+        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/usr/local && make
+        # MacPorts
+        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/opt/local && make
 
 * Install on the system
 
         sudo make install
-
-You are done.
+ You are done.
 
 ### Generate portable bundle
 

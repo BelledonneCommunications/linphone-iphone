@@ -142,6 +142,7 @@ namespace belledonnecomm {
 		 */
 		bool isConnected() const;
 
+		bool isActivated() const;
 	private:
 		enum State {
 			disabled,
@@ -199,10 +200,6 @@ namespace belledonnecomm {
 		LinphoneRtpTransportFactories mTransportFactories;
 		Mutex mMutex;
 		std::queue<Event> mEvq;
-#ifndef USE_BELLESIP
-		TunnelSocket *mSipSocket;
-		eXosip_transport_hooks_t mExosipTransport;
-#endif
 	};
 
 /**

@@ -597,9 +597,10 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 }
 
 void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
-	if (msg->message)
-		//legacy API
+	if (msg->message){
+		/*legacy API*/
 		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
+	}
 	linphone_core_notify_message_received(lc, cr,msg);
 	cr->remote_is_composing = LinphoneIsComposingIdle;
 	linphone_core_notify_is_composing_received(cr->lc, cr);
@@ -627,8 +628,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 
 		msg = linphone_chat_room_create_message(cr, NULL); /* create a message with empty body */
 		msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
-		msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-		memset(msg->file_transfer_information, 0, sizeof(*(msg->file_transfer_information)));
+		msg->file_transfer_information = ms_new0(LinphoneContent,1);
 
 		/* parse the message body to get all informations from it */
 		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
@@ -1147,7 +1147,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 
 
 static LinphoneContent* linphone_chat_create_file_transfer_information_from_headers(const belle_sip_message_t* message ){
-	LinphoneContent *content = ms_malloc0(sizeof(LinphoneContent));
+	LinphoneContent *content = ms_new0(LinphoneContent,1);
 
 	belle_sip_header_content_length_t* content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(message, "Content-Length"));
 	belle_sip_header_content_type_t* content_type_hdr = BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(message, "Content-Type"));
@@ -1263,7 +1263,7 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
  * Cancel an ongoing file transfer attached to this message.(upload or download)
  * @param msg	#LinphoneChatMessage
  */
-void linphone_chat_room_cancel_file_transfer(LinphoneChatMessage *msg) {
+void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
 	/* TODO: here we shall call the cancel http request from bellesip API when it is available passing msg->http_request */
 	/* waiting for this API, just set to NULL the reference to the request in the message and any request */
@@ -1520,8 +1520,7 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message = NULL;
-	msg->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-	memset(msg->file_transfer_information, 0, sizeof(LinphoneContent));
+	msg->file_transfer_information = ms_new0(LinphoneContent,1);
 	linphone_content_copy(msg->file_transfer_information, initial_content);
 	msg->dir=LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
