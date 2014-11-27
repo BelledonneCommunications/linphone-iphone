@@ -2021,6 +2021,7 @@ static void call_with_file_player(void) {
 	char hellopath[256];
 	char *recordpath = create_filepath(liblinphone_tester_writable_dir_prefix, "record", "wav");
 	double similar;
+	const double threshold = 0.9;
 
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
@@ -2051,9 +2052,9 @@ static void call_with_file_player(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL)==0);
-	CU_ASSERT_TRUE(similar>0.4);
+	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
-	if(similar > 0.4 && similar <=1.0) {
+	if(similar > threshold && similar <=1.0) {
 		remove(recordpath);
 	}
 	linphone_core_manager_destroy(marie);
@@ -2077,6 +2078,7 @@ static void call_with_mkv_file_player(void) {
 	char hellowav[256];
 	char *recordpath;
 	double similar;
+	const double threshold = 0.9;
 
 	if (!is_format_supported(marie->lc,"mkv")){
 		ms_warning("Test skipped, no mkv support.");
@@ -2113,8 +2115,11 @@ static void call_with_mkv_file_player(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
-	CU_ASSERT_TRUE(similar>0.6);
+	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
+	if(similar>threshold && similar<=1.0) {
+		remove(recordpath);
+	}
 	ms_free(recordpath);
 
 end:
