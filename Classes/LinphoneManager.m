@@ -38,6 +38,8 @@
 
 #import "LinphoneIOSVersion.h"
 
+#import <AVFoundation/AVAudioPlayer.h>
+
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
 static void audioRouteChangeListenerCallback (
@@ -99,6 +101,12 @@ NSString *const kLinphoneInternalChatDBFilename = @"linphone_chats.db";
 	[super dealloc];
 }
 @end
+
+
+@interface LinphoneManager ()
+@property (retain, nonatomic) AVAudioPlayer* messagePlayer;
+@end
+
 @implementation LinphoneManager
 
 @synthesize connectivity;
@@ -247,26 +255,13 @@ struct codec_name_pref_table codec_pref_table[]={
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
 		}
 
-		// Sounds
-		{
-			NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
-			sounds.call = 0;
-			OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
-			if(status != 0){
-				[LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
-			}
-		}
-		{
-			NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
-			sounds.message = 0;
-			OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.message);
-			if(status != 0){
-				[LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
-			}
-		}
-		sounds.vibrate = kSystemSoundID_Vibrate;
 
-		logs = [[NSMutableArray alloc] init];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
+        self.messagePlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil] autorelease];
+
+        sounds.vibrate = kSystemSoundID_Vibrate;
+        
+        logs = [[NSMutableArray alloc] init];
 		database = NULL;
 		speakerEnabled = FALSE;
 		bluetoothEnabled = FALSE;
@@ -294,13 +289,6 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 - (void)dealloc {
-	if(sounds.call) {
-		AudioServicesDisposeSystemSoundID(sounds.call);
-	}
-	if(sounds.message) {
-		AudioServicesDisposeSystemSoundID(sounds.message);
-	}
-
 	[fastAddressBook release];
 	[logs release];
 
@@ -1519,6 +1507,14 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 
 	return YES;
+}
+
+- (void)playMessageSound {
+    BOOL success = [self.messagePlayer play];
+    if( !success ){
+        Linphone_err(@"Could not play the message sound");
+    }
+    AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 }
 
 static int comp_call_state_paused  (const LinphoneCall* call, const void* param) {

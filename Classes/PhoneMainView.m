@@ -675,8 +675,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 - (void)playMessageSound {
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
-            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
-            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
+            [[LinphoneManager instance] playMessageSound];
         }
     }
 }

@@ -98,8 +98,6 @@ struct NetworkReachabilityContext {
 @end
 
 typedef struct _LinphoneManagerSounds {
-    SystemSoundID call;
-    SystemSoundID message;
     SystemSoundID vibrate;
 } LinphoneManagerSounds;
 
@@ -132,6 +130,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)getUserAgent;
 + (int)unreadMessageCount;
 
+- (void)playMessageSound;
 - (void)resetLinphoneCore;
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
