@@ -391,7 +391,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
 	end=ortp_get_cur_time_ms();
-	ms_debug("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	ms_free(buf);
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;
