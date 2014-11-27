@@ -104,6 +104,8 @@ if(MSVC)
 	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
 endif()
 
+add_definitions(-DIN_LINPHONE)
+
 
 set(GETTEXT_PACKAGE "linphone")
 if(ENABLE_RELATIVE_PREFIX)
