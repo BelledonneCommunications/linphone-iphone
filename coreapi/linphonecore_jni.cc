@@ -2726,11 +2726,15 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_store(JNIEnv*  en
 	linphone_chat_message_store((LinphoneChatMessage*)ptr);
 }
 
-extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNIEnv*  env
+extern "C" jbyteArray Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	jstring jvalue =env->NewStringUTF(linphone_chat_message_get_text((LinphoneChatMessage*)ptr));
-	return jvalue;
+	const char *message = linphone_chat_message_get_text((LinphoneChatMessage*)ptr);
+	size_t length = strlen(message);
+	jbyteArray array = env->NewByteArray(length);
+	env->SetByteArrayRegion(array, 0, length, (const jbyte*)message);
+
+	return array;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getReason(JNIEnv*  env
