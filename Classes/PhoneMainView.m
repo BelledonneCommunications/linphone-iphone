@@ -462,21 +462,25 @@ static RootViewManager* rootViewManagerInstance = nil;
 }
 
 + (CATransition*)getBackwardTransition {
+    BOOL RTL = [LinphoneManager langageDirectionIsRTL];
+    NSString* transition = RTL? kCATransitionFromRight : kCATransitionFromLeft;
     CATransition* trans = [CATransition animation];
     [trans setType:kCATransitionPush];
     [trans setDuration:0.35];
     [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-    [trans setSubtype:kCATransitionFromLeft];
+    [trans setSubtype:transition];
     
     return trans;
 }
 
 + (CATransition*)getForwardTransition {
+    BOOL RTL = [LinphoneManager langageDirectionIsRTL];
+    NSString* transition = RTL? kCATransitionFromLeft : kCATransitionFromRight;
     CATransition* trans = [CATransition animation];
     [trans setType:kCATransitionPush];
     [trans setDuration:0.35];
     [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-    [trans setSubtype:kCATransitionFromRight];
+    [trans setSubtype:transition];
     
     return trans;
 }
@@ -507,7 +511,7 @@ static RootViewManager* rootViewManagerInstance = nil;
             left = true;
         }
     } 
-    
+
     if(left) {
         return [PhoneMainView getBackwardTransition];
     } else {

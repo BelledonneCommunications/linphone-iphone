@@ -245,6 +245,15 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 #endif
 
++ (BOOL)langageDirectionIsRTL {
+    static NSLocaleLanguageDirection dir = NSLocaleLanguageDirectionLeftToRight;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dir = [NSLocale characterDirectionForLanguage:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]];
+    });
+    return dir == NSLocaleLanguageDirectionRightToLeft;
+}
+
 #pragma mark - Lifecycle Functions
 
 - (id)init {

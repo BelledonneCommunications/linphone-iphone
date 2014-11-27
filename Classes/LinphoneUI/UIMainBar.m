@@ -102,6 +102,22 @@ static NSString * const kDisappearAnimation = @"disappear";
                                                object:nil];
 }
 
+- (void)flipImageForButton:(UIButton*)button {
+    UIControlState states[] = { UIControlStateNormal, UIControlStateDisabled, UIControlStateSelected, UIControlStateHighlighted, -1 };
+    UIControlState *state = states;
+
+    while (*state != -1) {
+        UIImage* bgImage = [button backgroundImageForState:*state];
+
+        UIImage* flippedImage = [UIImage imageWithCGImage:bgImage.CGImage
+                                                    scale:bgImage.scale
+                                              orientation:UIImageOrientationUpMirrored];
+        [button setBackgroundImage:flippedImage forState:*state];
+        state++;
+    }
+}
+
+
 - (void)viewDidLoad {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
@@ -175,6 +191,14 @@ static NSString * const kDisappearAnimation = @"disappear";
         [LinphoneUtils buttonFixStatesForTabs:chatButton];
         [LinphoneUtils buttonFixStatesForTabs:chatButtonLandscape];
     }
+    if ([LinphoneManager langageDirectionIsRTL]){
+        [self flipImageForButton:historyButton];
+        [self flipImageForButton:settingsButton];
+        [self flipImageForButton:dialerButton];
+        [self flipImageForButton:chatButton];
+        [self flipImageForButton:contactsButton];
+    }
+
 
     [super viewDidLoad]; // Have to be after due to TPMultiLayoutViewController
 }
@@ -199,6 +223,8 @@ static NSString * const kDisappearAnimation = @"disappear";
     [historyNotificationView setHidden:TRUE];
     [self update:FALSE];
 }
+
+
 
 
 #pragma mark - Event Functions
