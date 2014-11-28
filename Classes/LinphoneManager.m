@@ -966,15 +966,58 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 }
 
 + (void)kickOffNetworkConnection {
-	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
+    static BOOL in_progress = FALSE;
+    if( in_progress ){
+        Linphone_warn(@"Connection kickoff already in progress");
+        return;
+    }
+    in_progress = TRUE;
+	/* start a new thread to avoid blocking the main ui in case of peer host failure */
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        static int sleep_us = 10000;
+        static int timeout_s = 5;
+        BOOL timeout_reached = FALSE;
+        int loop = 0;
 		CFWriteStreamRef writeStream;
 		CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
-		CFWriteStreamOpen (writeStream);
+		BOOL res = CFWriteStreamOpen (writeStream);
 		const char* buff="hello";
-		CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+        time_t start = time(NULL);
+        time_t loop_time;
+
+        if( res == FALSE ){
+            Linphone_log(@"Could not open write stream, backing off");
+            CFRelease(writeStream);
+            in_progress = FALSE;
+            return;
+        }
+
+        // check stream status and handle timeout
+        CFStreamStatus status = CFWriteStreamGetStatus(writeStream);
+        while (status != kCFStreamStatusOpen && status != kCFStreamStatusError ) {
+            usleep(sleep_us);
+            status = CFWriteStreamGetStatus(writeStream);
+            loop_time = time(NULL);
+            if( loop_time - start >= timeout_s){
+                timeout_reached = TRUE;
+                break;
+            }
+            loop++;
+        }
+
+
+        if (status == kCFStreamStatusOpen ) {
+            CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+        } else if( !timeout_reached ){
+            CFErrorRef error = CFWriteStreamCopyError(writeStream);
+            Linphone_dbg(@"CFStreamError: %@", error);
+            CFRelease(error);
+        } else if( timeout_reached ){
+            Linphone_log(@"CFStream timeout reached");
+        }
 		CFWriteStreamClose (writeStream);
 		CFRelease(writeStream);
+        in_progress = FALSE;
 	});
 }
 
