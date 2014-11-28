@@ -41,9 +41,9 @@ option(ENABLE_DATE "Use build date in internal version number." NO)
 option(ENABLE_GTK_UI "Turn on or off compilation of gtk interface." YES)
 option(ENABLE_LDAP "Enable LDAP support." NO)
 option(ENABLE_MSG_STORAGE "Turn on compilation of message storage." YES)
-option(ENABLE_NOTIFY "Enable libnotify support." YES)
+cmake_dependent_option(ENABLE_NOTIFY "Enable libnotify support." YES "ENABLE_GTK_UI" NO)
 option(ENABLE_RELATIVE_PREFIX "Find resources relatively to the installation directory." NO)
-option(ENABLE_TOOLS "Turn on or off compilation of console interface" YES)
+option(ENABLE_TOOLS "Turn on or off compilation of tools." YES)
 option(ENABLE_TUNNEL "Turn on compilation of tunnel support." NO)
 option(ENABLE_TUTORIALS "Enable compilation of tutorials." YES)
 option(ENABLE_UNIT_TESTS "Enable compilation of unit tests." YES)
@@ -52,13 +52,14 @@ option(ENABLE_VIDEO "Build with video support." YES)
 cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_PREFIX_PATH}/share/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/share/cmake/Modules")
 
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 
 if(MSVC)
-	list(APPEND CMAKE_REQUIRED_INCLUDES ${CMAKE_PREFIX_PATH}/include/MSVC)
+	list(APPEND CMAKE_REQUIRED_INCLUDES "${CMAKE_PREFIX_PATH}/include/MSVC")
 endif()
 
 find_package(BelleSIP REQUIRED)
@@ -82,7 +83,16 @@ if(ENABLE_TUNNEL)
 	find_package(Tunnel)
 	if(NOT TUNNEL_FOUND)
 		message(WARNING "Could not find the tunnel library!")
-		set(ENABLE_TUNNEL OFF CACHE BOOL "Enable tunnel support" FORCE)
+		set(ENABLE_TUNNEL OFF CACHE BOOL "Enable tunnel support." FORCE)
+	endif()
+endif()
+if(ENABLE_NOTIFY)
+	find_package(Notify)
+	if(NOTIFY_FOUND)
+		set(HAVE_NOTIFY4 1)
+	else()
+		message(WARNING "Could not find the notify library!")
+		set(ENABLE_NOTIFY OFF CACHE BOOL "Enable libnotify support." FORCE)
 	endif()
 endif()
 
@@ -157,7 +167,7 @@ if(ENABLE_UNIT_TESTS)
 endif()
 
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/FindLinphone.cmake
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLinphone.cmake
 	DESTINATION share/cmake/Modules
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
