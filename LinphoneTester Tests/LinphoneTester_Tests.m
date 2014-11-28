@@ -57,6 +57,13 @@ void LSLog(NSString* fmt, ...){
 	return skipped_suites;
 }
 
+
++ (NSString*)safeifyTestString:(NSString*)testString{
+    NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
+    return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
+}
+
+
 + (void)initialize {
     liblinphone_tester_init();
 
@@ -72,10 +79,9 @@ void LSLog(NSString* fmt, ...){
 			NSString* sTest  = [NSString stringWithUTF8String:test];
 
 			if( [[LinphoneTester_Tests skippedSuites] containsObject:sSuite] ) continue;
-
-			// prepend test_ so that it gets found by introspection
-            NSString* safesTest    = [sTest stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-            NSString* safesSuite   = [sSuite stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            // prepend test_ so that it gets found by introspection
+            NSString* safesTest    = [self safeifyTestString:sTest];
+            NSString* safesSuite   = [self safeifyTestString:sSuite];
             NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
 			[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName block:^(LinphoneTester_Tests* myself) {
 				[myself testForSuite:sSuite andTest:sTest];
