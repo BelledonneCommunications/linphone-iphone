@@ -21,12 +21,37 @@
 ############################################################################
 
 install(FILES archived-rootca.pem
-		RENAME rootca.pem
-        DESTINATION share/linphone
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+	RENAME rootca.pem
+	DESTINATION ${PACKAGE_DATA_DIR}/linphone
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
 
-install(FILES ringback.wav
-        DESTINATION share/sounds/linphone
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+set(SOUND_FILES
+	hello16000.wav
+	hello8000.wav
+	incoming_chat.wav
+	ringback.wav
+)
+
+install(FILES ${SOUND_FILES}
+	DESTINATION ${PACKAGE_SOUND_DIR}
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
+
+if(ENABLE_GTK_UI)
+	set(prefix "${CMAKE_INSTALL_PREFIX}")
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/audio-assistant.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/audio-assistant.desktop)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/linphone.desktop.in ${CMAKE_CURRENT_BINARY_DIR}/linphone.desktop)
+
+	set(FREEDESKTOP_FILES
+		${CMAKE_CURRENT_BINARY_DIR}/audio-assistant.desktop
+		${CMAKE_CURRENT_BINARY_DIR}/linphone.desktop
+	)
+
+	install(FILES ${FREEDESKTOP_FILES}
+		DESTINATION ${PACKAGE_FREEDESKTOP_DIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+	)
+endif()
 
 add_subdirectory(rings)
