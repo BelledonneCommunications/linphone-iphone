@@ -3,15 +3,17 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Cqnqrd <gautier.pelloux@gmail.com>, 2014
+# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
+# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
+# Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
 # Simon Morlat <simon.morlat@linphone.org>, 2001
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-19 10:39+0100\n"
-"PO-Revision-Date: 2014-11-19 18:33+0000\n"
-"Last-Translator: Cqnqrd <gautier.pelloux@gmail.com>\n"
+"PO-Revision-Date: 2014-11-27 15:47+0000\n"
+"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -67,7 +69,7 @@ msgstr[1] "%i secondes"
 #: ../gtk/calllogs.c:335 ../gtk/calllogs.c:341
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
-msgstr ""
+msgstr "<big><b>%s</b></big>\t%s"
 
 #: ../gtk/calllogs.c:337
 #, c-format
@@ -81,7 +83,7 @@ msgstr "<small><i>%s</i>\t<i>Qualité: %s</i></small>\n%s\t%s\t"
 msgid ""
 "<small><i>%s</i></small>\t\n"
 "%s"
-msgstr ""
+msgstr "<small><i>%s</i></small>\t\n%s"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
@@ -233,7 +235,7 @@ msgstr "Appeler"
 
 #: ../gtk/friendlist.c:726
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: ../gtk/friendlist.c:756
 #, c-format
@@ -483,7 +485,7 @@ msgstr "Mot de passe: (*)"
 
 #: ../gtk/setupwizard.c:322
 msgid "Email: (*)"
-msgstr ""
+msgstr "Email : (*)"
 
 #: ../gtk/setupwizard.c:324
 msgid "Confirm your password: (*)"
@@ -491,7 +493,7 @@ msgstr "Confirmez votre mot de passe: (*)"
 
 #: ../gtk/setupwizard.c:338
 msgid "Keep me informed with linphone updates"
-msgstr ""
+msgstr "Me tenir informer des mises à jour de Linphone "
 
 #: ../gtk/setupwizard.c:394
 msgid ""
@@ -617,12 +619,12 @@ msgstr ""
 #: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
 msgid "%ix%i @ %f fps"
-msgstr ""
+msgstr "%ix%i @ %f fps"
 
 #: ../gtk/incall_view.c:304
 #, c-format
 msgid "%.3f seconds"
-msgstr ""
+msgstr "%.3f secondes"
 
 #: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12
 msgid "Hang up"
@@ -727,7 +729,7 @@ msgstr "Pause"
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr ""
+msgstr "<small><i>Enregistrement dans\n%s %s</i></small>"
 
 #: ../gtk/incall_view.c:948
 msgid "(Paused)"
@@ -750,19 +752,19 @@ msgstr "Le chargement de la configuration depuis %s a échoué."
 
 #: ../gtk/audio_assistant.c:98
 msgid "No voice detected"
-msgstr ""
+msgstr "Voix non détectée"
 
 #: ../gtk/audio_assistant.c:99
 msgid "Too low"
-msgstr ""
+msgstr "Trop bas"
 
 #: ../gtk/audio_assistant.c:100
 msgid "Good"
-msgstr ""
+msgstr "Bien"
 
 #: ../gtk/audio_assistant.c:101
 msgid "Too loud"
-msgstr ""
+msgstr "Trop bruyant"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
@@ -872,11 +874,11 @@ msgstr "En ligne"
 
 #: ../gtk/main.ui.h:19
 msgid "ADSL"
-msgstr ""
+msgstr "ADSL"
 
 #: ../gtk/main.ui.h:20
 msgid "Fiber Channel"
-msgstr ""
+msgstr "Fibre optique"
 
 #: ../gtk/main.ui.h:21
 msgid "Default"
@@ -884,7 +886,7 @@ msgstr "Par défaut"
 
 #: ../gtk/main.ui.h:22
 msgid "_Options"
-msgstr ""
+msgstr "_Options"
 
 #: ../gtk/main.ui.h:23
 msgid "Set configuration URI"
@@ -968,7 +970,7 @@ msgstr "Me connecter automatiquement"
 
 #: ../gtk/main.ui.h:44 ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr ""
+msgstr "ID utilisateur"
 
 #: ../gtk/main.ui.h:45
 msgid "Login information"
@@ -988,7 +990,7 @@ msgstr "A propos de linphone"
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
+msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
@@ -1008,7 +1010,7 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1032,7 +1034,7 @@ msgstr "Fenêtre de débogage de linphone"
 
 #: ../gtk/log.ui.h:2
 msgid "Scroll to end"
-msgstr ""
+msgstr "Défiler jusqu'à la fin"
 
 #: ../gtk/password.ui.h:1
 msgid "Linphone - Authentication required"
@@ -1068,7 +1070,7 @@ msgstr "De la forme sip:<username>@<domain>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "sip:"
-msgstr ""
+msgstr "sip:"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "SIP Proxy address:"
@@ -1116,11 +1118,11 @@ msgstr "Configurer un compte SIP"
 
 #: ../gtk/parameters.ui.h:1
 msgid "anonymous"
-msgstr ""
+msgstr "anonyme"
 
 #: ../gtk/parameters.ui.h:2
 msgid "GSSAPI"
-msgstr ""
+msgstr "GSSAPI"
 
 #: ../gtk/parameters.ui.h:3
 msgid "SASL"
@@ -1140,7 +1142,7 @@ msgstr "camera par défaut"
 
 #: ../gtk/parameters.ui.h:7
 msgid "CIF"
-msgstr ""
+msgstr "CIF"
 
 #: ../gtk/parameters.ui.h:8
 msgid "Audio codecs"
@@ -1152,19 +1154,19 @@ msgstr "Codecs vidéo"
 
 #: ../gtk/parameters.ui.h:10 ../gtk/keypad.ui.h:5
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
 msgid "SIP (UDP)"
-msgstr ""
+msgstr "SIP (UDP)"
 
 #: ../gtk/parameters.ui.h:12
 msgid "SIP (TCP)"
-msgstr ""
+msgstr "SIP (TCP)"
 
 #: ../gtk/parameters.ui.h:13
 msgid "SIP (TLS)"
-msgstr ""
+msgstr "SIP (TLS)"
 
 #: ../gtk/parameters.ui.h:14
 msgid "Settings"
@@ -1192,11 +1194,11 @@ msgstr "Type d'encryption media"
 
 #: ../gtk/parameters.ui.h:20
 msgid "Video RTP/UDP:"
-msgstr ""
+msgstr "Vidéo RTP / UDP :"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Audio RTP/UDP:"
-msgstr ""
+msgstr "Audio RTP / UDP :"
 
 #: ../gtk/parameters.ui.h:22
 msgid "Fixed"
@@ -1204,11 +1206,11 @@ msgstr "Fixe"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Media encryption is mandatory"
-msgstr ""
+msgstr "Le chiffrement media est obligatoire"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Tunnel"
-msgstr ""
+msgstr "Tunnel"
 
 #: ../gtk/parameters.ui.h:25
 msgid "DSCP fields"
@@ -1216,11 +1218,11 @@ msgstr "Champs DSCP"
 
 #: ../gtk/parameters.ui.h:26
 msgid "SIP/TCP port"
-msgstr ""
+msgstr "Port SIP / TCP"
 
 #: ../gtk/parameters.ui.h:27
 msgid "SIP/UDP port"
-msgstr ""
+msgstr "Port SIP / UDP"
 
 #: ../gtk/parameters.ui.h:28
 msgid "<b>Network protocol and ports</b>"
@@ -1268,7 +1270,7 @@ msgstr "Sonnerie:"
 
 #: ../gtk/parameters.ui.h:39
 msgid "ALSA special device (optional):"
-msgstr ""
+msgstr "Appareil ALSA spécifique (optionnel) :"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Capture device:"
@@ -1402,7 +1404,7 @@ msgstr "<b>Gestion de la bande passante</b>"
 
 #: ../gtk/parameters.ui.h:72
 msgid "Codecs"
-msgstr ""
+msgstr "Codecs"
 
 #: ../gtk/parameters.ui.h:73
 msgid "<b>Language</b>"
@@ -1430,7 +1432,7 @@ msgstr "Méthode d'authentification:"
 
 #: ../gtk/parameters.ui.h:80
 msgid "label"
-msgstr ""
+msgstr "label"
 
 #: ../gtk/parameters.ui.h:81
 msgid "<b>LDAP Account setup</b>"
@@ -1438,7 +1440,7 @@ msgstr "<b>Configuration LDAP</b>"
 
 #: ../gtk/parameters.ui.h:82
 msgid "LDAP"
-msgstr ""
+msgstr "LDAP"
 
 #: ../gtk/parameters.ui.h:83
 msgid "Done"
@@ -1470,15 +1472,15 @@ msgstr "Réglages DSCP"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
-msgstr ""
+msgstr "SIP"
 
 #: ../gtk/dscp_settings.ui.h:3
 msgid "Audio RTP stream"
-msgstr ""
+msgstr "Flux RTP audio"
 
 #: ../gtk/dscp_settings.ui.h:4
 msgid "Video RTP stream"
-msgstr ""
+msgstr "Flux RTP vidéo"
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
@@ -1542,7 +1544,7 @@ msgstr "Hôte"
 
 #: ../gtk/tunnel_config.ui.h:3
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
@@ -1554,63 +1556,63 @@ msgstr "<b>Configuration d'un proxy http (optionel)</b>"
 
 #: ../gtk/keypad.ui.h:1
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: ../gtk/keypad.ui.h:2
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: ../gtk/keypad.ui.h:3
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ../gtk/keypad.ui.h:4
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: ../gtk/keypad.ui.h:6
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: ../gtk/keypad.ui.h:7
 msgid "8"
-msgstr ""
+msgstr "8"
 
 #: ../gtk/keypad.ui.h:8
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: ../gtk/keypad.ui.h:9
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: ../gtk/keypad.ui.h:10
 msgid "6"
-msgstr ""
+msgstr "6"
 
 #: ../gtk/keypad.ui.h:11
 msgid "5"
-msgstr ""
+msgstr "5"
 
 #: ../gtk/keypad.ui.h:12
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: ../gtk/keypad.ui.h:13
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: ../gtk/keypad.ui.h:14
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #: ../gtk/keypad.ui.h:15
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: ../gtk/keypad.ui.h:16
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
@@ -1634,11 +1636,11 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:10
 msgid "Authname"
-msgstr ""
+msgstr "Nom d'authentification"
 
 #: ../gtk/ldap.ui.h:11
 msgid "Realm"
-msgstr ""
+msgstr "Realm"
 
 #: ../gtk/ldap.ui.h:12
 msgid "<b>SASL</b>"
@@ -1646,16 +1648,16 @@ msgstr "<b>SASL</b>"
 
 #: ../gtk/ldap.ui.h:13
 msgid "Base object:"
-msgstr ""
+msgstr "Object de base :"
 
 #: ../gtk/ldap.ui.h:15
 #, no-c-format
 msgid "Filter (%s for name):"
-msgstr ""
+msgstr "Filtre (nom avec %s) : "
 
 #: ../gtk/ldap.ui.h:16
 msgid "Name Attribute:"
-msgstr ""
+msgstr "Attribut nom :"
 
 #: ../gtk/ldap.ui.h:17
 msgid "SIP address attribute:"
@@ -1687,19 +1689,19 @@ msgstr "<b>Divers</b>"
 
 #: ../gtk/ldap.ui.h:24
 msgid "ANONYMOUS"
-msgstr ""
+msgstr "ANONYME"
 
 #: ../gtk/ldap.ui.h:25
 msgid "SIMPLE"
-msgstr ""
+msgstr "SIMPLE"
 
 #: ../gtk/ldap.ui.h:26
 msgid "DIGEST-MD5"
-msgstr ""
+msgstr "DIGEST-MD5"
 
 #: ../gtk/ldap.ui.h:27
 msgid "NTLM"
-msgstr ""
+msgstr "NTLM"
 
 #: ../gtk/config-uri.ui.h:1
 msgid "Specifying a remote configuration URI"
@@ -1713,7 +1715,7 @@ msgstr "Cette boite de dialogue vous permet de spécifier une addresse http ou h
 
 #: ../gtk/config-uri.ui.h:4
 msgid "https://"
-msgstr ""
+msgstr "https://"
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1762,7 +1764,7 @@ msgstr "et sollicite un décrochage automatique."
 
 #: ../coreapi/linphonecore.c:3234
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../coreapi/linphonecore.c:3352
 msgid "Modifying call parameters..."
@@ -1790,7 +1792,7 @@ msgstr "Découverte STUN en cours"
 
 #: ../coreapi/misc.c:619
 msgid "ICE local candidates gathering in progress..."
-msgstr ""
+msgstr "Collection des candidats locaux ICE en cours..."
 
 #: ../coreapi/friend.c:33
 msgid "Online"
@@ -1894,7 +1896,7 @@ msgstr "Appel répondu par %s."
 
 #: ../coreapi/callbacks.c:525
 msgid "Incompatible, check codecs or security settings..."
-msgstr ""
+msgstr "Incompatible, vérfiez les codecs ou les paramètres de sécurité..."
 
 #: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:826
 msgid "Incompatible media parameters."
@@ -1912,7 +1914,7 @@ msgstr "L'appel a été mis en attente."
 #. reINVITE and in-dialogs UPDATE go here
 #: ../coreapi/callbacks.c:602
 msgid "Call is updated by remote."
-msgstr ""
+msgstr "L'appel est modifié par la partie distante."
 
 #: ../coreapi/callbacks.c:705
 msgid "Call terminated."
@@ -1937,7 +1939,7 @@ msgstr "Appel décliné."
 
 #: ../coreapi/callbacks.c:752
 msgid "Request timeout."
-msgstr ""
+msgstr "Délai d'attente de la requête dépassé."
 
 #: ../coreapi/callbacks.c:780
 msgid "Redirected"
@@ -1968,7 +1970,7 @@ msgstr "Echec de l'enregistrement sur %s: %s"
 
 #: ../coreapi/callbacks.c:942
 msgid "Service unavailable, retrying"
-msgstr ""
+msgstr "Service indisponible, nouvelle tentative"
 
 #: ../coreapi/linphonecall.c:174
 #, c-format
