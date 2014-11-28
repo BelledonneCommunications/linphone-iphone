@@ -204,7 +204,7 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
 	belle_sip_header_address_t* origin_address;
-	belle_sip_header_address_t* address;
+	belle_sip_header_address_t* address=NULL;
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to;
 	belle_sip_response_t* resp;
@@ -266,8 +266,14 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	}
 
 	if (!op->base.from_address)  {
-		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
-														,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		if (belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)))
+			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		else if ((belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(from_header))))
+			address=belle_sip_header_address_create2(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+					,belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		else
+			ms_error("Cannot not find from uri from request [%p]",req);
 		sal_op_set_from_address(op,(SalAddress*)address);
 		belle_sip_object_unref(address);
 	}
@@ -278,8 +284,15 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 
 	if (!op->base.to_address) {
 		to=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_to_t);
-		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
-												,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		if (belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)))
+			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
+					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		else if ((belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(to))))
+			address=belle_sip_header_address_create2(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
+					,belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		else
+			ms_error("Cannot not find to uri from request [%p]",req);
+
 		sal_op_set_to_address(op,(SalAddress*)address);
 		belle_sip_object_unref(address);
 	}

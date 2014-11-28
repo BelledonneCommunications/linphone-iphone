@@ -2801,6 +2801,10 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	LinphoneProxyConfig *found_noreg_cfg=NULL;
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
 
+	if (linphone_address_get_domain(uri) == NULL) {
+		ms_message("cannot seach for proxy for uri [%p] if no domain set. returning default",uri);
+		return default_cfg;
+	}
 	/*return default proxy if it is matching the destination uri*/
 	if (default_cfg){
 		const char *domain=linphone_proxy_config_get_domain(default_cfg);

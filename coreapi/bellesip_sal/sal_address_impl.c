@@ -39,10 +39,13 @@ SalAddress * sal_address_clone(const SalAddress *addr){
 const char *sal_address_get_scheme(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
+	belle_generic_uri_t* generic_uri = belle_sip_header_address_get_absolute_uri(header_addr);
 	if (uri) {
 		if (belle_sip_uri_is_secure(uri)) return "sips";
 		else return "sip";
-	} else
+	} else if (generic_uri)
+		return belle_generic_uri_get_scheme(generic_uri);
+	else
 		return NULL;
 }
 
@@ -142,10 +145,21 @@ char *sal_address_as_string(const SalAddress *addr){
 
 char *sal_address_as_string_uri_only(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
-	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
+	belle_sip_uri_t* sip_uri = belle_sip_header_address_get_uri(header_addr);
+	belle_generic_uri_t* absolute_uri = belle_sip_header_address_get_absolute_uri(header_addr);
 	char tmp[1024]={0};
 	size_t off=0;
-	belle_sip_object_marshal((belle_sip_object_t*)uri,tmp,sizeof(tmp),&off);
+	belle_sip_object_t* uri;
+
+	if (sip_uri) {
+		uri=(belle_sip_object_t*)sip_uri;
+	} else if (absolute_uri) {
+		uri=(belle_sip_object_t*)absolute_uri;
+	} else {
+		ms_error("Cannot generate string for addr [%p] with null uri",addr);
+		return NULL;
+	}
+	belle_sip_object_marshal(uri,tmp,sizeof(tmp),&off);
 	return ms_strdup(tmp);
 }
 
