@@ -20,8 +20,24 @@
 #
 ############################################################################
 
-install(FILES archived-rootca.pem
-	RENAME rootca.pem
+if(APPLE)
+	find_program(OPENSSL_PROGRAM openssl)
+	find_program(SED_PROGRAM sed)
+	execute_process(
+		COMMAND ${OPENSSL_PROGRAM} version -d
+		OUTPUT_VARIABLE OPENSSL_VERSION
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		COMMAND ${SED_PROGRAM} "s/OPENSSLDIR: \"\(.*\)\"/\1/" "${OPENSSL_VERSION}"
+		OUTPUT_VARIABLE HTTPS_CA_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} -DHTTPS_CA_DIR=${HTTPS_CA_DIR} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/rootca.cmake)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rootca.pem
 	DESTINATION ${PACKAGE_DATA_DIR}/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

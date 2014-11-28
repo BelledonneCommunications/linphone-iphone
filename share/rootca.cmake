@@ -1,5 +1,5 @@
 ############################################################################
-# gitversion.cmake
+# rootca.cmake
 # Copyright (C) 2014  Belledonne Communications, Grenoble France
 #
 ############################################################################
@@ -20,20 +20,21 @@
 #
 ############################################################################
 
-if(GIT_EXECUTABLE)
-	execute_process(
-		COMMAND ${GIT_EXECUTABLE} describe --always
-		WORKING_DIRECTORY ${WORK_DIR}
-		OUTPUT_VARIABLE GIT_REVISION
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"${GIT_REVISION}\""
-		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
-	)
+if(HTTPS_CA_DIR)
+	set(ENV{HTTPS_CA_DIR} "${HTTPS_CA_DIR}")
+endif()
+
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E remove "fresh-rootca.pem"
+	WORKING_DIRECTORY ${OUTPUT_DIR}
+)
+execute_process(
+	COMMAND "../scripts/mk-ca-bundle.pl" "${OUTPUT_DIR}/fresh-rootca.pem"
+	WORKING_DIRECTORY ${WORK_DIR}
+)
+if(EXISTS "${OUTPUT_DIR}/fresh-rootca.pem")
+	file(RENAME "${OUTPUT_DIR}/fresh-rootca.pem" "${OUTPUT_DIR}/rootca.pem")
 else()
-	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E echo "#define LIBLINPHONE_GIT_VERSION \"unknown\""
-		OUTPUT_FILE ${OUTPUT_DIR}/liblinphone_gitversion.h
-	)
+	file(COPY "${WORK_DIR}/archived-rootca.pem" DESTINATION "${OUTPUT_DIR}")
+	file(RENAME "${OUTPUT_DIR}/archived-rootca.pem" "${OUTPUT_DIR}/rootca.pem")
 endif()
