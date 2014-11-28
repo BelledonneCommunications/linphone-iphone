@@ -1558,7 +1558,7 @@ typedef enum _LinphoneCoreLogCollectionUploadState {
  * @param gstate the global state
  * @param message informational message.
  */
-typedef void (*LinphoneCoreGlobalStateChangedCb )(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+typedef void (*LinphoneCoreGlobalStateChangedCb)(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 /**
  * Call state notification callback.
  * @param lc the LinphoneCore
@@ -1809,6 +1809,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNetworkReachableCb network_reachable; /**< Callback to report IP network status (I.E up/down )*/
 	LinphoneCoreLogCollectionUploadStateChangedCb log_collection_upload_state_changed; /**< Callback to upload collected logs */
 	LinphoneCoreLogCollectionUploadProgressIndicationCb log_collection_upload_progress_indication; /**< Callback to indicate log collection upload progress */
+	void *user_data;
 } LinphoneCoreVTable;
 
 /**
@@ -1816,6 +1817,28 @@ typedef struct _LinphoneCoreVTable{
  * @returns newly allocated vtable
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new();
+
+/**
+ * Sets a user data pointer in the vtable.
+ * @param table the vtable
+ * @param data the user data to attach
+ */
+LINPHONE_PUBLIC void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data);
+
+/**
+ * Gets a user data pointer in the vtable.
+ * @param table the vtable
+ * @returns the data attached to the vtable
+ */
+LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table);
+
+/**
+ * Gets the current VTable.
+ * This is meant only to be called from a callback to be able to get the user_data associated with the vtable that called the callback.
+ * @param lc the linphonecore
+ * @returns the vtable that called the last callback 
+ */
+LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc);
 
 /**
  * Destroy a vtable.

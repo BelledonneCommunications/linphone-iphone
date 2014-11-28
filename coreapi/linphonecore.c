@@ -7025,16 +7025,34 @@ LinphoneCoreVTable *linphone_core_v_table_new() {
 	return ms_new0(LinphoneCoreVTable,1);
 }
 
+void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) {
+	if (table->user_data) {
+		ms_free(table->user_data);
+	}
+	table->user_data = data;
+}
+
+void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
+	return table->user_data;
+}
+
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
+	if (table->user_data) {
+		ms_free(table->user_data);
+	}
 	ms_free(table);
 }
+
+LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
+	return lc->current_vtable;
+}
+ 
 #define NOTIFY_IF_EXIST(function_name) \
 	MSList* iterator; \
 	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\
 	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next) \
-			if (((LinphoneCoreVTable*)(iterator->data))->function_name)\
+			if ((lc->current_vtable=((LinphoneCoreVTable*)(iterator->data)))->function_name)\
 				((LinphoneCoreVTable*)(iterator->data))->function_name
-
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
 	NOTIFY_IF_EXIST(global_state_changed)(lc,gstate,message);
 }

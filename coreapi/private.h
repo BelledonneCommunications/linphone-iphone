@@ -784,6 +784,7 @@ struct _LinphoneCore
 	LinphoneReason chat_deny_code;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
+	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
 };
 
 
