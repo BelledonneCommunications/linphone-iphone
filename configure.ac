@@ -1015,7 +1015,20 @@ dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
 
-AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,false)
+AC_ARG_ENABLE(doxygen,
+	[AS_HELP_STRING([--disable-documentation], [Disable documentation generation using doxygen (default=no)])],
+	[case "${enableval}" in
+		yes)	documentation_enabled=yes;;
+		no)		documentation_enabled=no;;
+		*)		AC_MSG_ERROR("Bad value for --disable-documentation");;
+	esac],
+	[documentation_enabled=yes]
+)
+if test "$documentation_enabled" = "yes" ; then
+	AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,false)
+else
+	DOXYGEN=false
+fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
 
