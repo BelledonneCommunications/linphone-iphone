@@ -187,13 +187,12 @@ static RootViewManager* rootViewManagerInstance = nil;
                                              selector:@selector(onGlobalStateChanged:)
                                                  name:kLinphoneGlobalStateUpdate
                                                object:nil];
+    [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
-	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
-    
-    batteryTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(batteryLevelChanged:) userInfo:nil repeats:TRUE];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -221,7 +220,6 @@ static RootViewManager* rootViewManagerInstance = nil;
                                                object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
     
-    [batteryTimer invalidate];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

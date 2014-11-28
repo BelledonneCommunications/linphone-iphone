@@ -61,7 +61,6 @@
 @interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
     @private
     NSMutableArray *inhibitedEvents;
-    NSTimer *batteryTimer;
 }
 
 @property (nonatomic, retain) IBOutlet UIView *statusBarBG;
