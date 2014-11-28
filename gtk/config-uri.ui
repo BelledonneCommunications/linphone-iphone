@@ -77,7 +77,7 @@ Please enter or modify the configuration URI below. After clicking OK, Linphone 
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
-            <property name="text" translatable="yes">https://</property>
+            <property name="text" translatable="no">https://</property>
             <property name="primary_icon_activatable">False</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>

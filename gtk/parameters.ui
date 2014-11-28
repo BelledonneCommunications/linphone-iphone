@@ -2538,7 +2538,7 @@
                               <object class="GtkLabel" id="ldap_server">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">label</property>
+                                <property name="label" translatable="no">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -2550,7 +2550,7 @@
                               <object class="GtkLabel" id="ldap_auth_method">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">label</property>
+                                <property name="label" translatable="no">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -2564,7 +2564,7 @@
                               <object class="GtkLabel" id="ldap_username">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">label</property>
+                                <property name="label" translatable="no">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>

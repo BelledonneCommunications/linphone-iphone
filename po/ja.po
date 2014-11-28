@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Alexander, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 10:39+0100\n"
+"POT-Creation-Date: 2014-11-28 10:55+0100\n"
 "PO-Revision-Date: 2014-11-28 09:19+0000\n"
 "Last-Translator: Alexander\n"
-"Language-Team: Japanese (http://www.transifex.com/projects/p/linphone-gtk/language/ja/)\n"
+"Language-Team: Japanese (http://www.transifex.com/projects/p/linphone-gtk/"
+"language/ja/)\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
@@ -61,24 +62,19 @@ msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "%i 秒"
 
-#: ../gtk/calllogs.c:335 ../gtk/calllogs.c:341
-#, c-format
-msgid "<big><b>%s</b></big>\t%s"
-msgstr "<big><b>%s</b></big>⇥%s"
-
 #: ../gtk/calllogs.c:337
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr "<small><i>%s</i>⇥<i>品質: %s</i></small>\n%s⇥%s⇥"
+msgstr ""
+"<small><i>%s</i>⇥<i>品質: %s</i></small>\n"
+"%s⇥%s⇥"
 
-#: ../gtk/calllogs.c:343
+#: ../gtk/calllogs.c:341
 #, c-format
-msgid ""
-"<small><i>%s</i></small>\t\n"
-"%s"
-msgstr "<small><i>%s</i></small>⇥\n%s"
+msgid "<big><b>%s</b></big>\t%s"
+msgstr "<big><b>%s</b></big>⇥%s"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
@@ -93,7 +89,7 @@ msgstr "自分"
 msgid "Couldn't find pixmap file: %s"
 msgstr "pixmapファイルが見つかりません %s"
 
-#: ../gtk/chat.c:364 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "無効なSIP接続です！"
 
@@ -123,9 +119,11 @@ msgstr "着信呼び出しが設定されている場合自動的に応答する
 
 #: ../gtk/main.c:149
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
-msgstr "作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。例:c:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+"作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。"
+"例:c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:156
 msgid "Configuration file"
@@ -139,9 +137,14 @@ msgstr "オーディオアシスタントを実行"
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s が連絡相手にあなたを追加しようとしています。\nあなたのステータスを参照させるか、もしくは連絡先リストに追加することができます。\nあなたが拒否すると、この人は一時的にブラックリストへ登録されます。"
+msgstr ""
+"%s が連絡相手にあなたを追加しようとしています。\n"
+"あなたのステータスを参照させるか、もしくは連絡先リストに追加することができま"
+"す。\n"
+"あなたが拒否すると、この人は一時的にブラックリストへ登録されます。"
 
 #: ../gtk/main.c:1162
 #, c-format
@@ -154,7 +157,7 @@ msgstr ""
 msgid "Call error"
 msgstr "呼出エラー"
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3744
+#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3747
 msgid "Call ended"
 msgstr "呼出終了"
 
@@ -379,7 +382,9 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "%s よりも新しいバージョンが利用可能です。\nダウンロードするために、ブラウザを開きますか？"
+msgstr ""
+"%s よりも新しいバージョンが利用可能です。\n"
+"ダウンロードするために、ブラウザを開きますか？"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -412,10 +417,13 @@ msgid_plural "Found %i contacts"
 msgstr[0] "%i 件発見"
 
 #: ../gtk/setupwizard.c:34
+#, fuzzy
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr "ようこそ！\nこのアシスタントは、あなたのSIPアカウントを使用するのに役立ちます。"
+msgstr ""
+"ようこそ！\n"
+"このアシスタントは、あなたのSIPアカウントを使用するのに役立ちます。"
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -501,43 +509,44 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:413
 msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
+"Please validate your account by clicking on the link we just sent you by "
+"email.\n"
 "Then come back here and press Next button."
 msgstr ""
 
-#: ../gtk/setupwizard.c:600
+#: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:618
+#: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
 msgstr "アカウント設定アシスタントへようこそ"
 
-#: ../gtk/setupwizard.c:623
+#: ../gtk/setupwizard.c:625
 msgid "Account setup assistant"
 msgstr "アカウント設定アシスタント"
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:638
+#: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:647
+#: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:652
+#: ../gtk/setupwizard.c:654
 msgid "Error"
 msgstr "エラー"
 
-#: ../gtk/setupwizard.c:656 ../gtk/audio_assistant.c:527
+#: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:527
 msgid "Terminating"
 msgstr ""
 
@@ -689,11 +698,6 @@ msgstr ""
 msgid "<b>Paused call</b>"
 msgstr ""
 
-#: ../gtk/incall_view.c:771
-#, c-format
-msgid "%02i::%02i::%02i"
-msgstr "%02i::%02i::%02i"
-
 #: ../gtk/incall_view.c:794
 msgid "<b>Call ended.</b>"
 msgstr ""
@@ -761,10 +765,13 @@ msgid "Too loud"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:318
+#, fuzzy
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
+"ようこそ！\n"
+"このアシスタントは、あなたのSIPアカウントを使用するのに役立ちます。"
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -971,7 +978,8 @@ msgid "Login information"
 msgstr "ログイン情報"
 
 #: ../gtk/main.ui.h:46
-msgid "<b>Welcome !</b>"
+#, fuzzy
+msgid "<b>Welcome!</b>"
 msgstr "<b>ようこそ</b>"
 
 #: ../gtk/main.ui.h:47
@@ -979,11 +987,13 @@ msgid "Delete"
 msgstr "削除"
 
 #: ../gtk/about.ui.h:1
-msgid "About linphone"
+#, fuzzy
+msgid "About Linphone"
 msgstr "linphoneについて"
 
 #: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications,2010\n"
+#, fuzzy
+msgid "(C) Belledonne Communications, 2010\n"
 msgstr "(C) Belledonne Communications,2010\n"
 
 #: ../gtk/about.ui.h:4
@@ -1004,7 +1014,19 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1146,7 +1168,7 @@ msgstr "オーディオのコーデック"
 msgid "Video codecs"
 msgstr "ビデオのコーデック"
 
-#: ../gtk/parameters.ui.h:10 ../gtk/keypad.ui.h:5
+#: ../gtk/parameters.ui.h:10
 msgid "C"
 msgstr ""
 
@@ -1425,18 +1447,14 @@ msgid "Authentication method:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:80
-msgid "label"
-msgstr "ラベル"
-
-#: ../gtk/parameters.ui.h:81
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:81
 msgid "LDAP"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:83
+#: ../gtk/parameters.ui.h:82
 msgid "Done"
 msgstr ""
 
@@ -1548,66 +1566,6 @@ msgstr ""
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr ""
 
-#: ../gtk/keypad.ui.h:1
-msgid "D"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:2
-msgid "#"
-msgstr "#"
-
-#: ../gtk/keypad.ui.h:3
-msgid "0"
-msgstr "0"
-
-#: ../gtk/keypad.ui.h:4
-msgid "*"
-msgstr "*"
-
-#: ../gtk/keypad.ui.h:6
-msgid "9"
-msgstr "9"
-
-#: ../gtk/keypad.ui.h:7
-msgid "8"
-msgstr "8"
-
-#: ../gtk/keypad.ui.h:8
-msgid "7"
-msgstr "7"
-
-#: ../gtk/keypad.ui.h:9
-msgid "B"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:10
-msgid "6"
-msgstr "6"
-
-#: ../gtk/keypad.ui.h:11
-msgid "5"
-msgstr "5"
-
-#: ../gtk/keypad.ui.h:12
-msgid "4"
-msgstr "4"
-
-#: ../gtk/keypad.ui.h:13
-msgid "A"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:14
-msgid "3"
-msgstr "3"
-
-#: ../gtk/keypad.ui.h:15
-msgid "2"
-msgstr "2"
-
-#: ../gtk/keypad.ui.h:16
-msgid "1"
-msgstr "1"
-
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
 msgstr ""
@@ -1703,13 +1661,12 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
-
-#: ../gtk/config-uri.ui.h:4
-msgid "https://"
-msgstr "https://"
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1719,64 +1676,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1511
+#: ../coreapi/linphonecore.c:1510
 msgid "Ready"
 msgstr "準備"
 
-#: ../coreapi/linphonecore.c:2470
+#: ../coreapi/linphonecore.c:2473
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2635
+#: ../coreapi/linphonecore.c:2638
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2637
+#: ../coreapi/linphonecore.c:2640
 msgid "Could not resolve this number."
 msgstr ""
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2919
+#: ../coreapi/linphonecore.c:2922
 msgid "Contacting"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2924
+#: ../coreapi/linphonecore.c:2927
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3074
+#: ../coreapi/linphonecore.c:3077
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3233
+#: ../coreapi/linphonecore.c:3236
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3234
+#: ../coreapi/linphonecore.c:3237
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3234
-msgid "."
-msgstr "."
-
-#: ../coreapi/linphonecore.c:3352
+#: ../coreapi/linphonecore.c:3355
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3700
+#: ../coreapi/linphonecore.c:3703
 msgid "Connected."
 msgstr "接続しました。"
 
-#: ../coreapi/linphonecore.c:3725
+#: ../coreapi/linphonecore.c:3728
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3915
+#: ../coreapi/linphonecore.c:3918
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3919
+#: ../coreapi/linphonecore.c:3922
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1837,7 +1790,8 @@ msgid "Vacation"
 msgstr "休暇中"
 
 #: ../coreapi/friend.c:68
-msgid "Unknown-bug"
+#, fuzzy
+msgid "Unknown status"
 msgstr "不明なバグ"
 
 #: ../coreapi/proxy.c:319
@@ -1976,3 +1930,58 @@ msgstr ""
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] ""
+
+#~ msgid "https://"
+#~ msgstr "https://"
+
+#~ msgid "label"
+#~ msgstr "ラベル"
+
+#~ msgid "#"
+#~ msgstr "#"
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "9"
+#~ msgstr "9"
+
+#~ msgid "8"
+#~ msgstr "8"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "6"
+#~ msgstr "6"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid ""
+#~ "<small><i>%s</i></small>\t\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<small><i>%s</i></small>⇥\n"
+#~ "%s"
+
+#~ msgid "%02i::%02i::%02i"
+#~ msgstr "%02i::%02i::%02i"
+
+#~ msgid "."
+#~ msgstr "."

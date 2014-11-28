@@ -1,20 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-19 10:39+0100\n"
+"POT-Creation-Date: 2014-11-28 10:55+0100\n"
 "PO-Revision-Date: 2014-11-19 10:16+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/linphone-gtk/language/it/)\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/linphone-gtk/"
+"language/it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
@@ -62,11 +63,6 @@ msgid_plural "%i seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../gtk/calllogs.c:335 ../gtk/calllogs.c:341
-#, c-format
-msgid "<big><b>%s</b></big>\t%s"
-msgstr ""
-
 #: ../gtk/calllogs.c:337
 #, c-format
 msgid ""
@@ -74,11 +70,9 @@ msgid ""
 "%s\t%s\t"
 msgstr ""
 
-#: ../gtk/calllogs.c:343
+#: ../gtk/calllogs.c:341
 #, c-format
-msgid ""
-"<small><i>%s</i></small>\t\n"
-"%s"
+msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
@@ -94,7 +88,7 @@ msgstr ""
 msgid "Couldn't find pixmap file: %s"
 msgstr ""
 
-#: ../gtk/chat.c:364 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "Contatto SIP non valido"
 
@@ -124,8 +118,8 @@ msgstr ""
 
 #: ../gtk/main.c:149
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
 msgstr ""
 
 #: ../gtk/main.c:156
@@ -140,9 +134,13 @@ msgstr ""
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s voui aggiungere il tuo contatto alla sua listaVoui permettere che lui veda il tuo stato o aggiungerlo alla tua lista dei contatti Se rispondi no questo utente sarà momentaneamente bloccato."
+msgstr ""
+"%s voui aggiungere il tuo contatto alla sua listaVoui permettere che lui "
+"veda il tuo stato o aggiungerlo alla tua lista dei contatti Se rispondi no "
+"questo utente sarà momentaneamente bloccato."
 
 #: ../gtk/main.c:1162
 #, c-format
@@ -155,7 +153,7 @@ msgstr ""
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3744
+#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3747
 msgid "Call ended"
 msgstr "Chiamata terminata"
 
@@ -380,7 +378,9 @@ msgstr ""
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "Una versione più recente è disponibile da %s.\nVuoi aprire un browser per eseguire il download ?"
+msgstr ""
+"Una versione più recente è disponibile da %s.\n"
+"Vuoi aprire un browser per eseguire il download ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -414,10 +414,13 @@ msgstr[0] "Trovato %i contatto"
 msgstr[1] "Trovato %i contatti"
 
 #: ../gtk/setupwizard.c:34
+#, fuzzy
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr "Benvenuti !\nLa procedura vi aiutera a configurare un account SIP."
+msgstr ""
+"Benvenuti !\n"
+"La procedura vi aiutera a configurare un account SIP."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -503,43 +506,44 @@ msgstr "Grazie. Il tuo account è configurato e pronto all'uso"
 
 #: ../gtk/setupwizard.c:413
 msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
+"Please validate your account by clicking on the link we just sent you by "
+"email.\n"
 "Then come back here and press Next button."
 msgstr ""
 
-#: ../gtk/setupwizard.c:600
+#: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:618
+#: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
 msgstr "Benvenuto nel configuratore di account"
 
-#: ../gtk/setupwizard.c:623
+#: ../gtk/setupwizard.c:625
 msgid "Account setup assistant"
 msgstr "Configuratore di account"
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:638
+#: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:647
+#: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:652
+#: ../gtk/setupwizard.c:654
 msgid "Error"
 msgstr ""
 
-#: ../gtk/setupwizard.c:656 ../gtk/audio_assistant.c:527
+#: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:527
 msgid "Terminating"
 msgstr ""
 
@@ -691,11 +695,6 @@ msgstr ""
 msgid "<b>Paused call</b>"
 msgstr ""
 
-#: ../gtk/incall_view.c:771
-#, c-format
-msgid "%02i::%02i::%02i"
-msgstr ""
-
 #: ../gtk/incall_view.c:794
 msgid "<b>Call ended.</b>"
 msgstr "<b>Chiamata terminata.</b>"
@@ -763,10 +762,13 @@ msgid "Too loud"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:318
+#, fuzzy
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
+"Benvenuti !\n"
+"La procedura vi aiutera a configurare un account SIP."
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -973,7 +975,8 @@ msgid "Login information"
 msgstr "Credenziali di accesso"
 
 #: ../gtk/main.ui.h:46
-msgid "<b>Welcome !</b>"
+#, fuzzy
+msgid "<b>Welcome!</b>"
 msgstr "<b>Benvenuto !</b>"
 
 #: ../gtk/main.ui.h:47
@@ -981,11 +984,12 @@ msgid "Delete"
 msgstr ""
 
 #: ../gtk/about.ui.h:1
-msgid "About linphone"
+#, fuzzy
+msgid "About Linphone"
 msgstr "Info Linphone"
 
 #: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications,2010\n"
+msgid "(C) Belledonne Communications, 2010\n"
 msgstr ""
 
 #: ../gtk/about.ui.h:4
@@ -1148,7 +1152,7 @@ msgstr ""
 msgid "Video codecs"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:10 ../gtk/keypad.ui.h:5
+#: ../gtk/parameters.ui.h:10
 msgid "C"
 msgstr "C"
 
@@ -1310,7 +1314,8 @@ msgstr "Impostazioni multimediali"
 
 #: ../gtk/parameters.ui.h:50
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr "questa sezione definisce il tuo indirizzo SIP se non hai account attivi"
+msgstr ""
+"questa sezione definisce il tuo indirizzo SIP se non hai account attivi"
 
 #: ../gtk/parameters.ui.h:51
 msgid "Your display name (eg: John Doe):"
@@ -1427,18 +1432,14 @@ msgid "Authentication method:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:80
-msgid "label"
-msgstr "etichetta"
-
-#: ../gtk/parameters.ui.h:81
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:81
 msgid "LDAP"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:83
+#: ../gtk/parameters.ui.h:82
 msgid "Done"
 msgstr "Fatto"
 
@@ -1550,66 +1551,6 @@ msgstr ""
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr ""
 
-#: ../gtk/keypad.ui.h:1
-msgid "D"
-msgstr "D"
-
-#: ../gtk/keypad.ui.h:2
-msgid "#"
-msgstr "#"
-
-#: ../gtk/keypad.ui.h:3
-msgid "0"
-msgstr "0"
-
-#: ../gtk/keypad.ui.h:4
-msgid "*"
-msgstr "*"
-
-#: ../gtk/keypad.ui.h:6
-msgid "9"
-msgstr "9"
-
-#: ../gtk/keypad.ui.h:7
-msgid "8"
-msgstr "8"
-
-#: ../gtk/keypad.ui.h:8
-msgid "7"
-msgstr "7"
-
-#: ../gtk/keypad.ui.h:9
-msgid "B"
-msgstr "B"
-
-#: ../gtk/keypad.ui.h:10
-msgid "6"
-msgstr "6"
-
-#: ../gtk/keypad.ui.h:11
-msgid "5"
-msgstr "5"
-
-#: ../gtk/keypad.ui.h:12
-msgid "4"
-msgstr "4"
-
-#: ../gtk/keypad.ui.h:13
-msgid "A"
-msgstr "A"
-
-#: ../gtk/keypad.ui.h:14
-msgid "3"
-msgstr "3"
-
-#: ../gtk/keypad.ui.h:15
-msgid "2"
-msgstr "2"
-
-#: ../gtk/keypad.ui.h:16
-msgid "1"
-msgstr "1"
-
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
 msgstr ""
@@ -1705,12 +1646,11 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
-msgstr ""
-
-#: ../gtk/config-uri.ui.h:4
-msgid "https://"
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1721,64 +1661,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1511
+#: ../coreapi/linphonecore.c:1510
 msgid "Ready"
 msgstr "Pronto"
 
-#: ../coreapi/linphonecore.c:2470
+#: ../coreapi/linphonecore.c:2473
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2635
+#: ../coreapi/linphonecore.c:2638
 msgid "Looking for telephone number destination..."
 msgstr "Ricerca numero destinazione..."
 
-#: ../coreapi/linphonecore.c:2637
+#: ../coreapi/linphonecore.c:2640
 msgid "Could not resolve this number."
 msgstr "Impossibile risolvere il numero."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2919
+#: ../coreapi/linphonecore.c:2922
 msgid "Contacting"
 msgstr "In connessione"
 
-#: ../coreapi/linphonecore.c:2924
+#: ../coreapi/linphonecore.c:2927
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3074
+#: ../coreapi/linphonecore.c:3077
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3233
+#: ../coreapi/linphonecore.c:3236
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3234
+#: ../coreapi/linphonecore.c:3237
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3234
-msgid "."
-msgstr ""
-
-#: ../coreapi/linphonecore.c:3352
+#: ../coreapi/linphonecore.c:3355
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3700
+#: ../coreapi/linphonecore.c:3703
 msgid "Connected."
 msgstr "Connessione"
 
-#: ../coreapi/linphonecore.c:3725
+#: ../coreapi/linphonecore.c:3728
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3915
+#: ../coreapi/linphonecore.c:3918
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3919
+#: ../coreapi/linphonecore.c:3922
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1839,20 +1775,25 @@ msgid "Vacation"
 msgstr ""
 
 #: ../coreapi/friend.c:68
-msgid "Unknown-bug"
+#, fuzzy
+msgid "Unknown status"
 msgstr "Bug-sconosciuto"
 
 #: ../coreapi/proxy.c:319
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr "L'indirizzo sip proxy utilizzato è invalido, deve iniziare con  \"sip:\" seguito dall' hostaname."
+msgstr ""
+"L'indirizzo sip proxy utilizzato è invalido, deve iniziare con  \"sip:\" "
+"seguito dall' hostaname."
 
 #: ../coreapi/proxy.c:325
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr "L'identità sip utilizza è invalida.\nDovrebbre essere sip:username@proxydomain, esempio: sip:alice@example.net"
+msgstr ""
+"L'identità sip utilizza è invalida.\n"
+"Dovrebbre essere sip:username@proxydomain, esempio: sip:alice@example.net"
 
 #: ../coreapi/proxy.c:1377
 #, c-format
@@ -1979,3 +1920,51 @@ msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "label"
+#~ msgstr "etichetta"
+
+#~ msgid "D"
+#~ msgstr "D"
+
+#~ msgid "#"
+#~ msgstr "#"
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "9"
+#~ msgstr "9"
+
+#~ msgid "8"
+#~ msgstr "8"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "B"
+#~ msgstr "B"
+
+#~ msgid "6"
+#~ msgstr "6"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "A"
+#~ msgstr "A"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "1"
+#~ msgstr "1"
