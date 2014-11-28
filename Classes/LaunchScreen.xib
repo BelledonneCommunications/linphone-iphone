@@ -11,23 +11,97 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="linphone_splashscreen-Portrait.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZNA-uh-Joz" userLabel="splashPortrait">
-                    <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="background-launch.png" translatesAutoresizingMaskIntoConstraints="NO" id="sxt-rJ-Xjr">
+                    <rect key="frame" x="0.0" y="53" width="480" height="374"/>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="pz0-nR-x0f" userLabel="logo">
+                    <rect key="frame" x="10" y="70" width="460" height="340"/>
+                    <constraints>
+                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="500" id="jhC-bn-LAU"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="500" id="zP0-FQ-B8L"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="strech-top.png" translatesAutoresizingMaskIntoConstraints="NO" id="Mkx-Sj-OCT">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="54"/>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="strech-bottom.png" translatesAutoresizingMaskIntoConstraints="NO" id="hjO-N8-axw">
+                    <rect key="frame" x="0.0" y="426" width="480" height="54"/>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="corner-left-bottom.png" translatesAutoresizingMaskIntoConstraints="NO" id="fMp-hm-0u4">
+                    <rect key="frame" x="0.0" y="426" width="187" height="54"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="54" id="j0e-1d-CxT"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="187" id="pSC-Ql-eUO"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="corner-left-top.png" translatesAutoresizingMaskIntoConstraints="NO" id="Nah-ag-b2G">
+                    <rect key="frame" x="0.0" y="0.0" width="187" height="54"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="54" id="DfB-0A-Y2w"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="187" id="In0-Wf-9ye"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="corner-right-bottom.png" translatesAutoresizingMaskIntoConstraints="NO" id="mmR-OO-GHS">
+                    <rect key="frame" x="293" y="426" width="187" height="54"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="187" id="3Ub-mh-okF"/>
+                        <constraint firstAttribute="height" constant="54" id="Cvy-bX-Kmw"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="corner-right-top.png" translatesAutoresizingMaskIntoConstraints="NO" id="U5z-uv-4XA">
+                    <rect key="frame" x="293" y="0.0" width="187" height="54"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="54" id="JvO-A4-MZ3"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="187" id="Vsa-Cw-3na"/>
+                    </constraints>
                 </imageView>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="ZNA-uh-Joz" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="3EA-Ma-qIp"/>
-                <constraint firstAttribute="bottom" secondItem="ZNA-uh-Joz" secondAttribute="bottom" id="80c-Eb-lFq"/>
-                <constraint firstAttribute="trailing" secondItem="ZNA-uh-Joz" secondAttribute="trailing" id="GV3-Vq-Nen"/>
-                <constraint firstItem="ZNA-uh-Joz" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="flp-SB-pcz"/>
+                <constraint firstItem="Nah-ag-b2G" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="0Ua-U9-3jR"/>
+                <constraint firstAttribute="trailing" secondItem="Mkx-Sj-OCT" secondAttribute="trailing" id="0bE-cG-4eb"/>
+                <constraint firstAttribute="centerY" secondItem="pz0-nR-x0f" secondAttribute="centerY" id="5Fc-zB-W6p"/>
+                <constraint firstItem="hjO-N8-axw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="5wh-4L-kum"/>
+                <constraint firstAttribute="trailing" secondItem="hjO-N8-axw" secondAttribute="trailing" id="6xB-GZ-ab2"/>
+                <constraint firstAttribute="centerY" secondItem="sxt-rJ-Xjr" secondAttribute="centerY" id="Fci-Yk-YE8"/>
+                <constraint firstAttribute="centerX" secondItem="sxt-rJ-Xjr" secondAttribute="centerX" id="HZV-eE-fyd"/>
+                <constraint firstItem="fMp-hm-0u4" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="JHk-2I-TEf"/>
+                <constraint firstAttribute="trailing" secondItem="sxt-rJ-Xjr" secondAttribute="trailing" id="N4R-bA-EGz"/>
+                <constraint firstItem="pz0-nR-x0f" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="70" id="O8w-6s-Ilj"/>
+                <constraint firstItem="pz0-nR-x0f" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="OAc-b0-w4Y"/>
+                <constraint firstItem="sxt-rJ-Xjr" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="SSn-fs-hBd"/>
+                <constraint firstAttribute="bottom" secondItem="mmR-OO-GHS" secondAttribute="bottom" id="UuR-5E-cSP"/>
+                <constraint firstItem="Mkx-Sj-OCT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="YM1-yZ-AWI"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="pz0-nR-x0f" secondAttribute="bottom" constant="70" id="csL-0B-XBe"/>
+                <constraint firstItem="Mkx-Sj-OCT" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="frD-O4-NkM"/>
+                <constraint firstAttribute="bottom" secondItem="hjO-N8-axw" secondAttribute="bottom" id="jy1-Ed-AK2"/>
+                <constraint firstAttribute="centerX" secondItem="hjO-N8-axw" secondAttribute="centerX" id="mF7-u0-az0"/>
+                <constraint firstAttribute="centerX" secondItem="Mkx-Sj-OCT" secondAttribute="centerX" id="mFQ-Ep-iyz"/>
+                <constraint firstAttribute="trailing" secondItem="U5z-uv-4XA" secondAttribute="trailing" id="nf2-Bd-6fl"/>
+                <constraint firstItem="sxt-rJ-Xjr" firstAttribute="top" secondItem="Nah-ag-b2G" secondAttribute="bottom" constant="-1" id="pml-hI-aZZ"/>
+                <constraint firstItem="Mkx-Sj-OCT" firstAttribute="height" secondItem="U5z-uv-4XA" secondAttribute="height" id="qke-PJ-6Iy"/>
+                <constraint firstAttribute="centerX" secondItem="pz0-nR-x0f" secondAttribute="centerX" id="sIh-Bg-0MZ"/>
+                <constraint firstItem="fMp-hm-0u4" firstAttribute="top" secondItem="sxt-rJ-Xjr" secondAttribute="bottom" constant="-1" id="tso-TD-8RN"/>
+                <constraint firstItem="U5z-uv-4XA" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="txE-Z5-fPI"/>
+                <constraint firstItem="Nah-ag-b2G" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="vdc-ri-iKX"/>
+                <constraint firstAttribute="bottom" secondItem="fMp-hm-0u4" secondAttribute="bottom" id="wW6-W6-PtF"/>
+                <constraint firstAttribute="trailing" secondItem="mmR-OO-GHS" secondAttribute="trailing" id="zHx-QB-MaY"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="pz0-nR-x0f" secondAttribute="trailing" constant="10" id="zvX-0I-um7"/>
+                <constraint firstItem="mmR-OO-GHS" firstAttribute="height" secondItem="hjO-N8-axw" secondAttribute="height" id="zyn-hq-BJe"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="404" y="445"/>
+            <point key="canvasLocation" x="561.5" y="471.5"/>
         </view>
     </objects>
     <resources>
-        <image name="linphone_splashscreen-Portrait.png" width="768" height="1004"/>
+        <image name="background-launch.png" width="1536" height="1580"/>
+        <image name="corner-left-bottom.png" width="748" height="215"/>
+        <image name="corner-left-top.png" width="748" height="215"/>
+        <image name="corner-right-bottom.png" width="748" height="215"/>
+        <image name="corner-right-top.png" width="748" height="215"/>
+        <image name="logo.png" width="958" height="801"/>
+        <image name="strech-bottom.png" width="40" height="215"/>
+        <image name="strech-top.png" width="40" height="215"/>
     </resources>
 </document>
