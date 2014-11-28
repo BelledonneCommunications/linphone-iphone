@@ -2104,7 +2104,12 @@ static void call_with_mkv_file_player(void) {
 	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 	CU_ASSERT_PTR_NOT_NULL(player);
 	if (player){
-		CU_ASSERT_TRUE(linphone_player_open(player,hellomkv,on_eof,marie)==0);
+		int res = linphone_player_open(player,hellomkv,on_eof,marie);
+		if(!ms_filter_codec_supported("opus")) {
+			CU_ASSERT_EQUAL(res, -1);
+			goto end;
+		}
+		CU_ASSERT_EQUAL(res, 0);
 		CU_ASSERT_TRUE(linphone_player_start(player)==0);
 		CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
 		linphone_player_close(player);
