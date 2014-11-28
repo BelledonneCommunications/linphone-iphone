@@ -206,17 +206,17 @@
                     </constraints>
                 </view>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_left.png" translatesAutoresizingMaskIntoConstraints="NO" id="f0B-Rk-Uez">
-                    <rect key="frame" x="-47" y="-70" width="47" height="147"/>
+                    <rect key="frame" x="-47" y="-8" width="47" height="85"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="147" id="Ce2-oh-cXP"/>
+                        <constraint firstAttribute="height" constant="85" id="Ce2-oh-cXP"/>
                         <constraint firstAttribute="width" constant="47" id="hvC-cr-MbF"/>
                     </constraints>
                 </imageView>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="if3-GT-4eC">
-                    <rect key="frame" x="320" y="-70" width="47" height="147"/>
+                    <rect key="frame" x="320" y="-8" width="47" height="85"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="47" id="Ez5-zh-daE"/>
-                        <constraint firstAttribute="height" constant="147" id="liI-Np-MjS"/>
+                        <constraint firstAttribute="height" constant="85" id="liI-Np-MjS"/>
                     </constraints>
                 </imageView>
             </subviews>
@@ -247,7 +247,7 @@
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="873" y="798.5"/>
+            <point key="canvasLocation" x="988" y="613.5"/>
         </view>
     </objects>
     <resources>
@@ -259,8 +259,8 @@
         <image name="contacts_selected.png" width="128" height="154"/>
         <image name="dialer_default.png" width="128" height="154"/>
         <image name="dialer_over.png" width="128" height="154"/>
-        <image name="dialer_padding_left.png" width="94" height="294"/>
-        <image name="dialer_padding_right.png" width="94" height="294"/>
+        <image name="dialer_padding_left.png" width="94" height="170"/>
+        <image name="dialer_padding_right.png" width="94" height="170"/>
         <image name="dialer_selected.png" width="128" height="154"/>
         <image name="history_default.png" width="128" height="154"/>
         <image name="history_notification.png" width="43" height="43"/>
