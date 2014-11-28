@@ -426,12 +426,17 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         ABPropertyID property = [self propertyIDForSection:contactSections[section]];
         if( property != kABInvalidPropertyType ){
             ABMultiValueRef lMap = ABRecordCopyValue(contact, property);
-            NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            CFTypeRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+            NSInteger index      = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            CFTypeRef valueRef   = ABMultiValueCopyValueAtIndex(lMap, index);
+            CFTypeRef toRelease  = valueRef;
+            if (property == kABPersonInstantMessageProperty ) {
+                // when we query the instanteMsg property we get a dictionary instead of a value
+                valueRef = CFDictionaryGetValue(valueRef, kABPersonInstantMessageUsernameKey);
+            }
             if(![(NSString*) valueRef length]) {
                 [self removeEntry:tableview path:[NSIndexPath indexPathForRow:row inSection:section] animated:animated];
             }
-            CFRelease(valueRef);
+            CFRelease(toRelease);
             CFRelease(lMap);
 
         }
