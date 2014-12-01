@@ -49,6 +49,7 @@ void LSLog(NSString* fmt, ...){
     static char * bundle = NULL;
     static char * documents = NULL;
     liblinphone_tester_init();
+
     NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString* documentPath = [paths objectAtIndex:0];
@@ -57,6 +58,9 @@ void LSLog(NSString* fmt, ...){
 
     LSLog(@"Bundle path: %@", bundlePath);
     LSLog(@"Document path: %@", documentPath);
+
+    liblinphone_tester_set_fileprefix(bundle);
+    liblinphone_tester_set_writable_dir_prefix(documents);
 
     int count = liblinphone_tester_nb_test_suites();
 
