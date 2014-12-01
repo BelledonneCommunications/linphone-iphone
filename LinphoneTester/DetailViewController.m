@@ -54,6 +54,7 @@ static NSString* const kAllTestsName = @"Run All tests";
         
         // Update the view.
         [self configureView];
+        [self.tableView reloadData];
     }
 
     if (self.masterPopoverController != nil) {
@@ -64,6 +65,7 @@ static NSString* const kAllTestsName = @"Run All tests";
 - (void)configureView
 {
     const char* suite = [self.detailItem UTF8String];
+    if( suite == NULL ) return;
     NSString* nssuite = [NSString stringWithUTF8String:suite];
     int count = liblinphone_tester_nb_tests(suite);
     _tests = [[NSMutableArray alloc] initWithCapacity:count];
