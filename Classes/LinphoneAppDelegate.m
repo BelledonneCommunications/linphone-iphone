@@ -232,8 +232,9 @@
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     NSString *scheme = [[url scheme] lowercaseString];
-    if ([scheme isEqualToString:@"linphone-config-http"] || [scheme isEqualToString:@"linphone-config-https"]) {
-        configURL = [[NSString alloc] initWithString:[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config-" withString:@""]];
+    if ([scheme isEqualToString:@"linphone-config"] || [scheme isEqualToString:@"linphone-config"]) {
+        NSString* encodedURL = [[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config://" withString:@""];
+        self.configURL = [encodedURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         UIAlertView* confirmation = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Remote configuration",nil)
                                                         message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?",nil)
                                                        delegate:self
