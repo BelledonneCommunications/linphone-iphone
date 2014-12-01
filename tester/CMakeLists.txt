@@ -21,6 +21,7 @@
 ############################################################################
 
 set(SOURCE_FILES
+	accountmanager.c
 	call_tester.c
 	dtmf_tester.c
 	eventapi_tester.c
