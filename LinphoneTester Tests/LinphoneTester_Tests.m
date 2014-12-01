@@ -12,14 +12,11 @@
 #import "NSObject+DTRuntime.h"
 
 @interface LinphoneTester_Tests : XCTestCase
-
+@property (retain, nonatomic) NSString* bundlePath;
+@property (retain, nonatomic) NSString* documentPath;
 @end
 
-@implementation LinphoneTester_Tests {
-	NSString* bundlePath;
-	NSString* documentPath;
-}
-
+@implementation LinphoneTester_Tests
 
 static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list args) {
     NSString* log = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:fmt] arguments:args];
@@ -40,14 +37,14 @@ void LSLog(NSString* fmt, ...){
 - (id)init {
 	self = [super init];
 	if( self ){
-		bundlePath = [[NSBundle mainBundle] bundlePath];
+		self.bundlePath = [[NSBundle mainBundle] bundlePath];
 		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-		documentPath = [paths objectAtIndex:0];
-		LSLog(@"Bundle path: %@", bundlePath);
-		LSLog(@"Document path: %@", documentPath);
+		self.documentPath = [paths objectAtIndex:0];
+		LSLog(@"Bundle path: %@", self.bundlePath);
+		LSLog(@"Document path: %@", self.documentPath);
 
-		liblinphone_tester_set_fileprefix([bundlePath UTF8String]);
-		liblinphone_tester_set_writable_dir_prefix( ms_strdup([documentPath UTF8String]) );
+		liblinphone_tester_set_fileprefix([self.bundlePath UTF8String]);
+		liblinphone_tester_set_writable_dir_prefix( [self.documentPath UTF8String] );
 	}
 	return self;
 }

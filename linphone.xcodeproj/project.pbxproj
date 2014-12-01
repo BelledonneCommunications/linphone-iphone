@@ -771,6 +771,13 @@
 		F0C1F9141A28781F009402C9 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90A1A28781F009402C9 /* logo.png */; };
 		F0C1F9151A28781F009402C9 /* strech-bottom.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90B1A28781F009402C9 /* strech-bottom.png */; };
 		F0C1F9161A28781F009402C9 /* strech-top.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90C1A28781F009402C9 /* strech-top.png */; };
+		F0C1F91D1A2CA345009402C9 /* local_tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C40193630CA00974404 /* local_tester_hosts */; };
+		F0C1F91E1A2CA352009402C9 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C41193630CA00974404 /* marie_xml */; };
+		F0C1F91F1A2CA354009402C9 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C42193630CA00974404 /* tester_hosts */; };
+		F0C1F9201A2CA358009402C9 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3719362C1500974404 /* rcfiles */; };
+		F0C1F9211A2CA35A009402C9 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
+		F0C1F9221A2CA35C009402C9 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
+		F0C1F9231A2CA35E009402C9 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BC1939FE37006ABAB5 /* test_failed.png */; };
 		F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BD1939FE37006ABAB5 /* test_inprogress.png */; };
@@ -3675,7 +3682,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F08F119A19C09D88007D70C2 /* flexisip in Resources */,
+				F0C1F91D1A2CA345009402C9 /* local_tester_hosts in Resources */,
+				F0C1F9211A2CA35A009402C9 /* sounds in Resources */,
 				F08F118D19C09C6B007D70C2 /* InfoPlist.strings in Resources */,
+				F0C1F9231A2CA35E009402C9 /* certificates in Resources */,
+				F0C1F9221A2CA35C009402C9 /* images in Resources */,
+				F0C1F9201A2CA358009402C9 /* rcfiles in Resources */,
+				F0C1F91F1A2CA354009402C9 /* tester_hosts in Resources */,
+				F0C1F91E1A2CA352009402C9 /* marie_xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
