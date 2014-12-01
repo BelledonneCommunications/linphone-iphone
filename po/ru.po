@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-28 10:55+0100\n"
-"PO-Revision-Date: 2014-11-19 10:13+0000\n"
+"POT-Creation-Date: 2014-12-01 14:27+0100\n"
+"PO-Revision-Date: 2014-12-01 13:28+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ru/)\n"
@@ -169,11 +169,11 @@ msgstr ""
 msgid "Call error"
 msgstr "Ошибка звонка"
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3747
+#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3751
 msgid "Call ended"
 msgstr "Звонок окончен"
 
-#: ../gtk/main.c:1289
+#: ../gtk/main.c:1289 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Входящий звонок"
 
@@ -435,13 +435,10 @@ msgstr[1] "Найдено %i контакта"
 msgstr[2] "Найдено %i контактов"
 
 #: ../gtk/setupwizard.c:34
-#, fuzzy
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
-"Добро пожаловать!\n"
-"Этот помощник поможет вам использовать учётную запись SIP для ваших звонков."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -657,7 +654,7 @@ msgstr "%ix%i @ %f кадр/сек"
 msgid "%.3f seconds"
 msgstr "%.3f секунд"
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:232
 msgid "Hang up"
 msgstr "Повесить трубку"
 
@@ -795,13 +792,10 @@ msgid "Too loud"
 msgstr "Слишком громко"
 
 #: ../gtk/audio_assistant.c:318
-#, fuzzy
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
-"Добро пожаловать!\n"
-"Этот помощник поможет вам сконфигурировать настройки аудио для linphone"
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -1008,23 +1002,20 @@ msgid "Login information"
 msgstr "Информация для входа"
 
 #: ../gtk/main.ui.h:46
-#, fuzzy
 msgid "<b>Welcome!</b>"
-msgstr "<b>Добро пожаловать!</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:47
 msgid "Delete"
 msgstr "Удалить"
 
 #: ../gtk/about.ui.h:1
-#, fuzzy
 msgid "About Linphone"
-msgstr "Про linphone"
+msgstr ""
 
 #: ../gtk/about.ui.h:2
-#, fuzzy
 msgid "(C) Belledonne Communications, 2010\n"
-msgstr "(C) Belledonne Communications,2010\n"
+msgstr ""
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
@@ -1732,44 +1723,44 @@ msgid "Could not resolve this number."
 msgstr "Не получилось принять решение по этому номеру."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2922
+#: ../coreapi/linphonecore.c:2926
 msgid "Contacting"
 msgstr "Соединение"
 
-#: ../coreapi/linphonecore.c:2927
+#: ../coreapi/linphonecore.c:2931
 msgid "Could not call"
 msgstr "Невозможно позвонить"
 
-#: ../coreapi/linphonecore.c:3077
+#: ../coreapi/linphonecore.c:3081
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 "К сожалению, мы достигли максимального количества одновременных звонков"
 
-#: ../coreapi/linphonecore.c:3236
+#: ../coreapi/linphonecore.c:3240
 msgid "is contacting you"
 msgstr "контактирует с вами"
 
-#: ../coreapi/linphonecore.c:3237
+#: ../coreapi/linphonecore.c:3241
 msgid " and asked autoanswer."
 msgstr "и спросил автоматический ответ."
 
-#: ../coreapi/linphonecore.c:3355
+#: ../coreapi/linphonecore.c:3359
 msgid "Modifying call parameters..."
 msgstr "Изменение параметров звонка..."
 
-#: ../coreapi/linphonecore.c:3703
+#: ../coreapi/linphonecore.c:3707
 msgid "Connected."
 msgstr "Соединён."
 
-#: ../coreapi/linphonecore.c:3728
+#: ../coreapi/linphonecore.c:3732
 msgid "Call aborted"
 msgstr "Звонок отменён"
 
-#: ../coreapi/linphonecore.c:3918
+#: ../coreapi/linphonecore.c:3922
 msgid "Could not pause the call"
 msgstr "Невозможно приостановить звонок"
 
-#: ../coreapi/linphonecore.c:3922
+#: ../coreapi/linphonecore.c:3926
 msgid "Pausing the current call..."
 msgstr "Приостановка текущего звонка..."
 
@@ -1830,9 +1821,8 @@ msgid "Vacation"
 msgstr "Отдых"
 
 #: ../coreapi/friend.c:68
-#, fuzzy
 msgid "Unknown status"
-msgstr "Неизвестная ошибка"
+msgstr ""
 
 #: ../coreapi/proxy.c:319
 msgid ""
@@ -1978,66 +1968,33 @@ msgstr[0] "У вас %i пропущенный вызов."
 msgstr[1] "У вас %i пропущенных вызова."
 msgstr[2] "У вас %i пропущенных вызов."
 
-#~ msgid "https://"
-#~ msgstr "https://"
+#: ../coreapi/call_log.c:209
+msgid "aborted"
+msgstr ""
 
-#~ msgid "label"
-#~ msgstr "метка"
+#: ../coreapi/call_log.c:212
+msgid "completed"
+msgstr ""
 
-#~ msgid "D"
-#~ msgstr "D"
+#: ../coreapi/call_log.c:215
+msgid "missed"
+msgstr ""
 
-#~ msgid "#"
-#~ msgstr "#"
+#: ../coreapi/call_log.c:220
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
 
-#~ msgid "0"
-#~ msgstr "0"
+#: ../coreapi/call_log.c:221
+msgid "Outgoing call"
+msgstr ""
 
-#~ msgid "*"
-#~ msgstr "*"
-
-#~ msgid "9"
-#~ msgstr "9"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "7"
-#~ msgstr "7"
-
-#~ msgid "B"
-#~ msgstr "B"
-
-#~ msgid "6"
-#~ msgstr "6"
-
-#~ msgid "5"
-#~ msgstr "5"
-
-#~ msgid "4"
-#~ msgstr "4"
-
-#~ msgid "A"
-#~ msgstr "A"
-
-#~ msgid "3"
-#~ msgstr "3"
-
-#~ msgid "2"
-#~ msgstr "2"
-
-#~ msgid "1"
-#~ msgstr "1"
-
-#~ msgid ""
-#~ "<small><i>%s</i></small>\t\n"
-#~ "%s"
-#~ msgstr ""
-#~ "<small><i>%s</i></small>\t\n"
-#~ "%s"
-
-#~ msgid "%02i::%02i::%02i"
-#~ msgstr "%02i::%02i::%02i"
-
-#~ msgid "."
-#~ msgstr "."
+#: ../gtk/videowindow.c:66
+#, c-format
+msgid "Cannot play %s."
+msgstr ""

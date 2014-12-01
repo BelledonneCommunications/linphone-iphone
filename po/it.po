@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-28 10:55+0100\n"
-"PO-Revision-Date: 2014-11-19 10:16+0000\n"
+"POT-Creation-Date: 2014-12-01 14:27+0100\n"
+"PO-Revision-Date: 2014-12-01 13:28+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/it/)\n"
@@ -153,11 +153,11 @@ msgstr ""
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3747
+#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3751
 msgid "Call ended"
 msgstr "Chiamata terminata"
 
-#: ../gtk/main.c:1289
+#: ../gtk/main.c:1289 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Chimata in entrata"
 
@@ -414,13 +414,10 @@ msgstr[0] "Trovato %i contatto"
 msgstr[1] "Trovato %i contatti"
 
 #: ../gtk/setupwizard.c:34
-#, fuzzy
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
-"Benvenuti !\n"
-"La procedura vi aiutera a configurare un account SIP."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -626,7 +623,7 @@ msgstr ""
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:232
 msgid "Hang up"
 msgstr ""
 
@@ -762,13 +759,10 @@ msgid "Too loud"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:318
-#, fuzzy
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
-"Benvenuti !\n"
-"La procedura vi aiutera a configurare un account SIP."
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -975,18 +969,16 @@ msgid "Login information"
 msgstr "Credenziali di accesso"
 
 #: ../gtk/main.ui.h:46
-#, fuzzy
 msgid "<b>Welcome!</b>"
-msgstr "<b>Benvenuto !</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:47
 msgid "Delete"
 msgstr ""
 
 #: ../gtk/about.ui.h:1
-#, fuzzy
 msgid "About Linphone"
-msgstr "Info Linphone"
+msgstr ""
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications, 2010\n"
@@ -1678,43 +1670,43 @@ msgid "Could not resolve this number."
 msgstr "Impossibile risolvere il numero."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2922
+#: ../coreapi/linphonecore.c:2926
 msgid "Contacting"
 msgstr "In connessione"
 
-#: ../coreapi/linphonecore.c:2927
+#: ../coreapi/linphonecore.c:2931
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3077
+#: ../coreapi/linphonecore.c:3081
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3236
+#: ../coreapi/linphonecore.c:3240
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3237
+#: ../coreapi/linphonecore.c:3241
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3355
+#: ../coreapi/linphonecore.c:3359
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3703
+#: ../coreapi/linphonecore.c:3707
 msgid "Connected."
 msgstr "Connessione"
 
-#: ../coreapi/linphonecore.c:3728
+#: ../coreapi/linphonecore.c:3732
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3918
+#: ../coreapi/linphonecore.c:3922
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3922
+#: ../coreapi/linphonecore.c:3926
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1775,9 +1767,8 @@ msgid "Vacation"
 msgstr ""
 
 #: ../coreapi/friend.c:68
-#, fuzzy
 msgid "Unknown status"
-msgstr "Bug-sconosciuto"
+msgstr ""
 
 #: ../coreapi/proxy.c:319
 msgid ""
@@ -1921,50 +1912,33 @@ msgid_plural "You have missed %i calls."
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "label"
-#~ msgstr "etichetta"
+#: ../coreapi/call_log.c:209
+msgid "aborted"
+msgstr ""
 
-#~ msgid "D"
-#~ msgstr "D"
+#: ../coreapi/call_log.c:212
+msgid "completed"
+msgstr ""
 
-#~ msgid "#"
-#~ msgstr "#"
+#: ../coreapi/call_log.c:215
+msgid "missed"
+msgstr ""
 
-#~ msgid "0"
-#~ msgstr "0"
+#: ../coreapi/call_log.c:220
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
 
-#~ msgid "*"
-#~ msgstr "*"
+#: ../coreapi/call_log.c:221
+msgid "Outgoing call"
+msgstr ""
 
-#~ msgid "9"
-#~ msgstr "9"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "7"
-#~ msgstr "7"
-
-#~ msgid "B"
-#~ msgstr "B"
-
-#~ msgid "6"
-#~ msgstr "6"
-
-#~ msgid "5"
-#~ msgstr "5"
-
-#~ msgid "4"
-#~ msgstr "4"
-
-#~ msgid "A"
-#~ msgstr "A"
-
-#~ msgid "3"
-#~ msgstr "3"
-
-#~ msgid "2"
-#~ msgstr "2"
-
-#~ msgid "1"
-#~ msgstr "1"
+#: ../gtk/videowindow.c:66
+#, c-format
+msgid "Cannot play %s."
+msgstr ""
