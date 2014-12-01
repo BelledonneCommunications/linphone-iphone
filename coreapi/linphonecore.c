@@ -6048,6 +6048,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
 	config->proxies=ms_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
+	
+	config->deleted_proxies=ms_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 

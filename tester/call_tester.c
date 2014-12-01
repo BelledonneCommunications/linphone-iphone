@@ -206,9 +206,6 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,caller_params));
 	}
 
-
-	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
-
 	did_received_call = wait_for(callee_mgr->lc
 				,caller_mgr->lc
 				,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived
@@ -641,7 +638,7 @@ static void simple_call_compatibility_mode(void) {
 
 	CU_ASSERT_TRUE (wait_for(lc_marie,lc_marie,&stat_marie->number_of_LinphoneRegistrationOk,1));
 
-	linphone_core_invite(lc_marie,"pauline");
+	linphone_core_invite_address(lc_marie,pauline->identity);
 
 	CU_ASSERT_TRUE (wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
 	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
@@ -674,7 +671,7 @@ static void cancelled_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
@@ -730,7 +727,7 @@ static void call_failed_because_of_codecs(void) {
 
 		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
 		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-		out_call = linphone_core_invite(pauline->lc,"marie");
+		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 		linphone_call_ref(out_call);
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
@@ -801,7 +798,7 @@ static void cancelled_ringing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 
@@ -823,7 +820,7 @@ static void early_declined_call(void) {
 	LinphoneCall* out_call;
 
 	linphone_core_set_max_calls(marie->lc,0);
-	out_call = linphone_core_invite(pauline->lc,"marie");
+	out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_call_ref(out_call);
 
 	/*wait until flexisip transfers the busy...*/
@@ -943,7 +940,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 				linphone_core_iterate(callee->lc);
 			}
 			ms_usleep(20000);
-		}while(!liblinphone_tester_clock_elapsed(&ts,5000));
+		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
 	}
 
 	 /*make sure encryption mode are preserved*/
@@ -980,7 +977,6 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 	CU_ASSERT_TRUE(call(pauline,marie));
 
 	if (callee_with_ice && caller_with_ice) {
-		check_ice(pauline,marie,LinphoneIceStateHostConnection);
 		/*wait for the ICE reINVITE to complete*/
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
@@ -1631,7 +1627,7 @@ static void video_call_with_ice_no_matching_audio_codecs(void) {
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 	linphone_core_set_stun_server(pauline->lc, "stun.linphone.org");
 
-	out_call = linphone_core_invite(marie->lc, "pauline");
+	out_call = linphone_core_invite_address(marie->lc, pauline->identity);
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingInit, 1));
 
@@ -2822,7 +2818,7 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 
 static void call_rejected_because_wrong_credentials_with_params(const char* user_agent,bool_t enable_auth_req_cb) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneAuthInfo* good_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
+	LinphoneAuthInfo* good_auth_info=linphone_auth_info_clone(linphone_core_find_auth_info(marie->lc,NULL,linphone_address_get_username(marie->identity),NULL));
 	LinphoneAuthInfo* wrong_auth_info=linphone_auth_info_clone(good_auth_info);
 	bool_t result=FALSE;
 	linphone_auth_info_set_passwd(wrong_auth_info,"passecretdutout");
@@ -2855,7 +2851,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 	/*to make sure unregister will work*/
 	linphone_core_clear_all_auth_info(marie->lc);
 	linphone_core_add_auth_info(marie->lc,good_auth_info);
-
+	linphone_auth_info_destroy(good_auth_info);
 	linphone_core_manager_destroy(marie);
 }
 

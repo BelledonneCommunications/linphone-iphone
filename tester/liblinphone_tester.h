@@ -278,6 +278,9 @@ void liblinphone_tester_chat_message_msg_state_changed(LinphoneChatMessage *msg,
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee);
 void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
+void linphone_core_manager_check_accounts(LinphoneCoreManager *m);
+void account_manager_destroy(void);
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 #ifdef ANDROID
 void cunit_android_trace_handler(int level, const char *fmt, va_list args) ;
 #endif

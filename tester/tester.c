@@ -25,8 +25,6 @@
 #include "CUnit/CUCurses.h"
 #endif
 
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
-
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
 
@@ -108,7 +106,7 @@ void reset_counters( stats* counters) {
 	memset(counters,0,sizeof(stats));
 }
 
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
 	LinphoneCore* lc;
 	LpConfig* config = NULL;
 	char *filepath         = NULL;
@@ -252,6 +250,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
 	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_path, mgr);
+	linphone_core_manager_check_accounts(mgr);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
@@ -545,6 +544,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	}
 
 	CU_cleanup_registry();
+	account_manager_destroy();
 	return ret;
 }
 

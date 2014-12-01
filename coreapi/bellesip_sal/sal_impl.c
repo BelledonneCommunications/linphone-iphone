@@ -1077,6 +1077,10 @@ unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
 	return belle_sip_random_bytes(ret,size);
 }
 
+char *sal_get_random_token(int size){
+	return belle_sip_random_token(ms_malloc(size),size);
+}
+
 unsigned int sal_get_random(void){
 	unsigned int ret=0;
 	belle_sip_random_bytes((unsigned char*)&ret,4);

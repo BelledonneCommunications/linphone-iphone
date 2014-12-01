@@ -103,6 +103,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
 	}
 
+	belle_sip_uri_set_user_password(contact_uri,NULL);
 	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
 	if (op->privacy!=SalPrivacyNone){
 		belle_sip_uri_set_user(contact_uri,NULL);

@@ -641,6 +641,24 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
+const char *linphone_ice_state_to_string(LinphoneIceState state){
+	switch(state){
+		case LinphoneIceStateFailed:
+			return "IceStateFailed";
+		case LinphoneIceStateHostConnection:
+			return "IceStateHostConnection";
+		case LinphoneIceStateInProgress:
+			return "IceStateInProgress";
+		case LinphoneIceStateNotActivated:
+			return "IceStateNotActivated";
+		case LinphoneIceStateReflexiveConnection:
+			return "IceStateReflexiveConnection";
+		case LinphoneIceStateRelayConnection:
+			return "IceStateRelayConnection";
+	}
+	return "invalid";
+}
+
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 {
 	IceCheckList *audio_check_list;
@@ -699,6 +717,8 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}
+	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call, 
+		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
