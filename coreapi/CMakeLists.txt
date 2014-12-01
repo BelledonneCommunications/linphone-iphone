@@ -110,10 +110,6 @@ add_definitions(
 	-DLIBLINPHONE_EXPORTS
 )
 
-if(ENABLE_VIDEO)
-	add_definitions(-DVIDEO_ENABLED)
-endif()
-
 set(LIBS
 	${LIBGCC}
 	${LIBMINGWEX}

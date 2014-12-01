@@ -153,6 +153,11 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/config.h PROPERTIES GENE
 add_definitions(-DHAVE_CONFIG_H)
 
 
+if(ENABLE_VIDEO)
+	add_definitions(-DVIDEO_ENABLED)
+endif()
+
+
 add_subdirectory(coreapi)
 add_subdirectory(share)
 if(ENABLE_GTK_UI)
