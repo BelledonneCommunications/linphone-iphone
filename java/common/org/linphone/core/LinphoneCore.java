@@ -1786,11 +1786,17 @@ public interface LinphoneCore {
 	 * Create a media player
 	 * @return An object that implement LinphonePlayer
 	 */
-	public LinphonePlayer createPlayer(AndroidVideoWindowImpl window);
+	public LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window);
 	
 	/**
-	 * Destroy a player
-	 * @param player Player to destroy
+	 * Adds a new listener to be called by the core
+	 * @param listener to add
 	 */
-	public void destroyPlayer(LinphonePlayer player);
+	public void addListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Removes a listener previously added with addListener
+	 * @param listener to remove
+	 */
+	public void removeListener(LinphoneCoreListener listener);
 }

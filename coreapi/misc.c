@@ -86,6 +86,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt,
 	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
 		_linphone_core_codec_config_write(lc);
+		linphone_core_update_allocated_audio_bandwidth(lc);
 		return 0;
 	}
 	ms_error("Enabling codec not in audio or video list of PayloadType !");
@@ -113,12 +114,14 @@ void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadTyp
 		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
 			pt->normal_bitrate=bitrate*1000;
 			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
+			linphone_core_update_allocated_audio_bandwidth(lc);
 		}else{
 			ms_error("Cannot set an explicit bitrate for codec %s/%i, because it is not VBR.",pt->mime_type,pt->clock_rate);
 			return;
 		}
+	} else {
+		ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
 	}
-	ms_error("linphone_core_set_payload_type_bitrate() payload type not in audio or video list !");
 }
 
 
@@ -188,7 +191,6 @@ int linphone_core_get_payload_type_bitrate(LinphoneCore *lc, const LinphonePaylo
 		return get_audio_payload_bandwidth(lc,pt,maxbw);
 	}else if (pt->type==PAYLOAD_VIDEO){
 		int video_bw;
-		linphone_core_update_allocated_audio_bandwidth(lc);
 		if (maxbw<=0) {
 			video_bw=1500; /*default bitrate for video stream when no bandwidth limit is set, around 1.5 Mbit/s*/
 		}else{
@@ -250,7 +252,19 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt){
-	return linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
+	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
+	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
+		&& lc->sound_conf.capt_sndcard 
+		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
+		&& linphone_core_echo_cancellation_enabled(lc)
+		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
+		&& strcasecmp(pt->mime_type,"opus")!=0
+		&& ms_filter_lookup_by_name("MSWebRTCAEC")!=NULL){
+		ms_warning("Payload type %s/%i cannot be used because software echo cancellation is required but is unable to operate at this rate.",
+			   pt->mime_type,pt->clock_rate);
+		ret=FALSE;
+	}
+	return ret;
 }
 
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
@@ -627,6 +641,24 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
+const char *linphone_ice_state_to_string(LinphoneIceState state){
+	switch(state){
+		case LinphoneIceStateFailed:
+			return "IceStateFailed";
+		case LinphoneIceStateHostConnection:
+			return "IceStateHostConnection";
+		case LinphoneIceStateInProgress:
+			return "IceStateInProgress";
+		case LinphoneIceStateNotActivated:
+			return "IceStateNotActivated";
+		case LinphoneIceStateReflexiveConnection:
+			return "IceStateReflexiveConnection";
+		case LinphoneIceStateRelayConnection:
+			return "IceStateRelayConnection";
+	}
+	return "invalid";
+}
+
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 {
 	IceCheckList *audio_check_list;
@@ -673,7 +705,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 			} else {
 				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 			}
-		}
+		}else call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateNotActivated;
 	} else if (session_state == IS_Running) {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 		if (call->params->has_video && (video_check_list != NULL)) {
@@ -685,9 +717,11 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}
+	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call, 
+		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
-void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
 {
 	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
@@ -808,7 +842,7 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 		call->videostream->ms.ice_check_list=NULL;
 }
 
-void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	bool_t ice_restarted = FALSE;
 
@@ -966,6 +1000,8 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			else if (strcasecmp(name,"DTMF")==0) ret|=AUDIO_STREAM_FEATURE_DTMF;
 			else if (strcasecmp(name,"DTMF_ECHO")==0) ret|=AUDIO_STREAM_FEATURE_DTMF_ECHO;
 			else if (strcasecmp(name,"MIXED_RECORDING")==0) ret|=AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+			else if (strcasecmp(name,"LOCAL_PLAYING")==0) ret|=AUDIO_STREAM_FEATURE_LOCAL_PLAYING;
+			else if (strcasecmp(name,"REMOTE_PLAYING")==0) ret|=AUDIO_STREAM_FEATURE_REMOTE_PLAYING;
 			else if (strcasecmp(name,"ALL")==0) ret|=AUDIO_STREAM_FEATURE_ALL;
 			else if (strcasecmp(name,"NONE")==0) ret=0;
 			else ms_error("Unsupported audio feature %s requested in config file.",name);

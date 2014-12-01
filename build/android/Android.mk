@@ -26,50 +26,51 @@ include $(CLEAR_VARS)
 LOCAL_CPP_EXTENSION := .cc
 
 LOCAL_SRC_FILES := \
-	linphonecore.c \
-	misc.c  \
-	enum.c \
-	presence.c \
-	proxy.c \
-	friend.c \
-	authentication.c \
-	lpconfig.c \
-	chat.c \
-	sipsetup.c \
-	siplogin.c \
 	address.c \
-	linphonecore_jni.cc \
+	authentication.c \
 	bellesip_sal/sal_address_impl.c \
 	bellesip_sal/sal_impl.c \
 	bellesip_sal/sal_op_call.c \
 	bellesip_sal/sal_op_call_transfer.c \
+	bellesip_sal/sal_op_events.c \
 	bellesip_sal/sal_op_impl.c \
+	bellesip_sal/sal_op_info.c \
 	bellesip_sal/sal_op_message.c \
 	bellesip_sal/sal_op_presence.c \
-	bellesip_sal/sal_op_registration.c \
 	bellesip_sal/sal_op_publish.c \
-	bellesip_sal/sal_op_info.c \
-	bellesip_sal/sal_op_events.c \
+	bellesip_sal/sal_op_registration.c \
 	bellesip_sal/sal_sdp.c \
-	sal.c \
-	offeranswer.c \
 	callbacks.c \
-	linphonecall.c \
-	conference.c \
-	ec-calibrator.c \
-	linphone_tunnel_config.c \
-	message_storage.c \
-	info.c \
-	event.c \
-	xml.c \
-	xml2lpc.c \
-	lpc2xml.c \
-	remote_provisioning.c \
-	quality_reporting.c \
 	call_log.c \
 	call_params.c \
+	chat.c \
+	conference.c \
+	content.c \
+	ec-calibrator.c \
+	enum.c \
+	event.c \
+	friend.c \
+	info.c \
+	linphonecall.c \
+	linphonecore.c \
+	linphonecore_jni.cc \
+	linphone_tunnel_config.c \
+	localplayer.c \
+	lpc2xml.c \
+	lpconfig.c \
+	message_storage.c \
+	misc.c  \
+	offeranswer.c \
 	player.c \
-	fileplayer.c
+	presence.c \
+	proxy.c \
+	quality_reporting.c \
+	remote_provisioning.c \
+	sal.c \
+	siplogin.c \
+	sipsetup.c \
+	xml2lpc.c \
+	xml.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
@@ -256,15 +257,16 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 ifeq ($(_BUILD_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
-	libavcodec-linphone \
-	libswscale-linphone \
-	libavutil-linphone
+	libffmpeg-linphone
 endif
 
 LOCAL_MODULE := liblinphone
 LOCAL_MODULE_FILENAME := liblinphone-$(TARGET_ARCH_ABI)
 
 include $(BUILD_SHARED_LIBRARY)
+
+LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
+LOCAL_CFLAGS += -Wdeclaration-after-statement
 
 $(call import-module,android/cpufeatures)
 

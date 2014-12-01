@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 #include "offeranswer.h"
 
-static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
+static int extract_sdp(SalOp* op,belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
 
 /*used for calls terminated before creation of a dialog*/
 static void call_set_released(SalOp* op){
@@ -41,7 +41,12 @@ static void sdp_process(SalOp *h){
 	ms_message("Doing SDP offer/answer process of type %s",h->sdp_offering ? "outgoing" : "incoming");
 	if (h->result){
 		sal_media_description_unref(h->result);
+		h->result = NULL;
 	}
+
+	/* if SDP was invalid */
+	if (h->base.remote_media == NULL) return;
+
 	h->result=sal_media_description_new();
 	if (h->sdp_offering){
 		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
@@ -75,22 +80,33 @@ static void sdp_process(SalOp *h){
 static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
-	belle_sip_error_code error = BELLE_SIP_OK;
+	belle_sip_error_code error = BELLE_SIP_BUFFER_OVERFLOW;
 	size_t length = 0;
-	char buff[2048];
 
 	if (session_desc) {
+		size_t bufLen = 2048;
+		size_t hardlimit = 16*1024; /* 16k SDP limit seems reasonable */
+		char* buff = belle_sip_malloc(bufLen);
 		content_type = belle_sip_header_content_type_create("application","sdp");
-		error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,sizeof(buff),&length);
-		if (error != BELLE_SIP_OK) {
-			ms_error("Buffer too small or sdp too big");
+
+		/* try to marshal the description. This could go higher than 2k so we iterate */
+		while( error != BELLE_SIP_OK && bufLen <= hardlimit && buff != NULL){
+ 			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
+			if( error != BELLE_SIP_OK ){
+				bufLen *= 2;
+				buff = belle_sip_realloc(buff,bufLen);
+			}
+		}
+		/* give up if hard limit reached */
+		if (error != BELLE_SIP_OK || buff == NULL) {
+			ms_error("Buffer too small (%d) or not enough memory, giving up SDP", (int)bufLen);
 			return -1;
 		}
 
-		content_length= belle_sip_header_content_length_create(length);
+		content_length = belle_sip_header_content_length_create(length);
 		belle_sip_message_add_header(msg,BELLE_SIP_HEADER(content_type));
 		belle_sip_message_add_header(msg,BELLE_SIP_HEADER(content_length));
-		belle_sip_message_set_body(msg,buff,length);
+		belle_sip_message_assign_body(msg,buff,length);
 		return 0;
 	} else {
 		return -1;
@@ -151,13 +167,14 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 		sal_media_description_unref(op->base.remote_media);
 		op->base.remote_media=NULL;
 	}
-	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
+	if (extract_sdp(op,BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
 		if (sdp){
 			op->base.remote_media=sal_media_description_new();
 			sdp_to_media_description(sdp,op->base.remote_media);
-			if (op->base.local_media) sdp_process(op);
 		}/*if no sdp in response, what can we do ?*/
 	}
+	/* process sdp in any case to reset result media description*/
+	if (op->base.local_media) sdp_process(op);
 }
 
 static void cancelling_invite(SalOp* op ){
@@ -319,7 +336,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
 	bool_t release_call=FALSE;
-	
+
 	if (client_transaction) {
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(client_transaction));
@@ -367,8 +384,16 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
  * If body was present is not a SDP or parsing of SDP failed, -1 is returned and SalReason is set appropriately.
  *
 **/
-static int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
+static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
 	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
+
+	if (op&&op->sdp_removal){
+		ms_error("Removed willingly SDP because sal_call_enable_sdp_removal was set to TRUE.");
+		*session_desc=NULL;
+		*error=SalReasonNotAcceptable;
+		return -1;
+	}
+
 	if (content_type){
 		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
 			&& strcmp("sdp",belle_sip_header_content_type_get_subtype(content_type))==0) {
@@ -398,7 +423,7 @@ static int process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 	belle_sdp_session_description_t* sdp;
 	int err=0;
 	SalReason reason;
-	if (extract_sdp(BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
+	if (extract_sdp(op,BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
 		if (sdp){
 			op->sdp_offering=FALSE;
 			op->base.remote_media=sal_media_description_new();
@@ -473,15 +498,15 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				ms_warning("replace header already set");
 			}
 
-			process_sdp_for_invite(op,req);
-
-			if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
-				if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
-					op->auto_answer_asked=TRUE;
-					ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+			if (process_sdp_for_invite(op,req) == 0) {
+				if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
+					if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
+						op->auto_answer_asked=TRUE;
+						ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+					}
 				}
+				op->base.root->callbacks.call_received(op);
 			}
-			op->base.root->callbacks.call_received(op);
 			break;
 		} /* else same behavior as for EARLY state*/
 	}
@@ -521,7 +546,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		if (strcmp("ACK",method)==0) {
 			if (op->sdp_offering){
 				SalReason reason;
-				if (extract_sdp(BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
+				if (extract_sdp(op,BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
 					if (sdp){
 						if (op->base.remote_media)
 							sal_media_description_unref(op->base.remote_media);

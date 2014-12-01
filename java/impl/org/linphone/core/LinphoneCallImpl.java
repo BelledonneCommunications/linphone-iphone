@@ -245,4 +245,10 @@ class LinphoneCallImpl implements LinphoneCall {
 	public Object getUserData() {
 		return userData;
 	}
+	
+	private native long getPlayer(long callPtr);
+	@Override
+	public LinphonePlayer getPlayer() {
+		return new LinphonePlayerImpl(getPlayer(nativePtr));
+	}
 }

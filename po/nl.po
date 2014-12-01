@@ -1,28 +1,27 @@
-# translation of nl.po to Nederlands
-# Dutch translation of linphone.
-# Copyright (C) 2005 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the linphone package.
-# Taco Witte <tcwitte@cs.uu.nl>, 2005.
-# Hendrik-Jan Heins <hjh@passys.nl>, 2005.
-# Hendrik-Jan Heins <hjh@passys.nl>, 2007.
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: nl\n"
+"Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-15 09:24+0200\n"
-"PO-Revision-Date: 2007-09-05 10:40+0200\n"
-"Last-Translator: Hendrik-Jan Heins <hjheins@gmail.com>\n"
-"Language-Team: Nederlands <vertaling@nl.linux.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2014-12-01 14:27+0100\n"
+"PO-Revision-Date: 2014-12-01 13:28+0000\n"
+"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/projects/p/linphone-gtk/"
+"language/nl/)\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
-#, fuzzy, c-format
+#, c-format
 msgid "Call %s"
-msgstr "Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
 #, c-format
@@ -30,28 +29,25 @@ msgid "Send text to %s"
 msgstr ""
 
 #: ../gtk/calllogs.c:232
-#, fuzzy, c-format
+#, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/calllogs.c:314
 msgid "n/a"
 msgstr ""
 
 #: ../gtk/calllogs.c:317
-#, fuzzy
 msgid "Aborted"
-msgstr "afgebroken"
+msgstr ""
 
 #: ../gtk/calllogs.c:320
-#, fuzzy
 msgid "Missed"
-msgstr "gemist"
+msgstr ""
 
 #: ../gtk/calllogs.c:323
-#, fuzzy
 msgid "Declined"
-msgstr "lijn"
+msgstr ""
 
 #: ../gtk/calllogs.c:329
 #, c-format
@@ -67,11 +63,6 @@ msgid_plural "%i seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../gtk/calllogs.c:335 ../gtk/calllogs.c:341
-#, c-format
-msgid "<big><b>%s</b></big>\t%s"
-msgstr ""
-
 #: ../gtk/calllogs.c:337
 #, c-format
 msgid ""
@@ -79,11 +70,9 @@ msgid ""
 "%s\t%s\t"
 msgstr ""
 
-#: ../gtk/calllogs.c:343
+#: ../gtk/calllogs.c:341
 #, c-format
-msgid ""
-"<small><i>%s</i></small>\t\n"
-"%s"
+msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
@@ -99,7 +88,7 @@ msgstr ""
 msgid "Couldn't find pixmap file: %s"
 msgstr "Kon pixmap bestand %s niet vinden"
 
-#: ../gtk/chat.c:364 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr ""
 
@@ -134,20 +123,14 @@ msgid ""
 msgstr ""
 
 #: ../gtk/main.c:156
-#, fuzzy
 msgid "Configuration file"
-msgstr "Informatie"
+msgstr ""
 
 #: ../gtk/main.c:163
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:590
-#, fuzzy, c-format
-msgid "Call with %s"
-msgstr "Chat met %s"
-
-#: ../gtk/main.c:1183
+#: ../gtk/main.c:1085
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -156,82 +139,78 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk/main.c:1260
+#: ../gtk/main.c:1162
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1376
-#, fuzzy
+#: ../gtk/main.c:1283
 msgid "Call error"
-msgstr "Linphone - Oproepgeschiedenis"
+msgstr ""
 
-#: ../gtk/main.c:1379 ../coreapi/linphonecore.c:3240
+#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3751
 msgid "Call ended"
 msgstr "Oproep beeindigd"
 
-#: ../gtk/main.c:1382
+#: ../gtk/main.c:1289 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Inkomende oproep"
 
-#: ../gtk/main.c:1384 ../gtk/incall_view.c:522 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1291 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr ""
 
-#: ../gtk/main.c:1386 ../gtk/main.ui.h:6
-#, fuzzy
+#: ../gtk/main.c:1293 ../gtk/main.ui.h:6
 msgid "Decline"
-msgstr "lijn"
+msgstr ""
 
-#: ../gtk/main.c:1392
-#, fuzzy
+#: ../gtk/main.c:1299
 msgid "Call paused"
-msgstr "afgebroken"
+msgstr ""
 
-#: ../gtk/main.c:1392
-#, fuzzy, c-format
+#: ../gtk/main.c:1299
+#, c-format
 msgid "<b>by %s</b>"
-msgstr "Contactlijst"
+msgstr ""
 
-#: ../gtk/main.c:1459
+#: ../gtk/main.c:1366
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1621
+#: ../gtk/main.c:1528
 msgid "Website link"
 msgstr ""
 
-#: ../gtk/main.c:1670
+#: ../gtk/main.c:1577
 msgid "Linphone - a video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1762
+#: ../gtk/main.c:1669
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk/main.c:2099 ../coreapi/callbacks.c:949
+#: ../gtk/main.c:2006 ../coreapi/callbacks.c:983
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:2109
+#: ../gtk/main.c:2016
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2250
+#: ../gtk/main.c:2157
 msgid "A free SIP video-phone"
 msgstr "Een Vrije SIP video-telefoon"
 
 #: ../gtk/friendlist.c:505
-#, fuzzy
 msgid "Add to addressbook"
-msgstr "Adresboek"
+msgstr ""
 
 #: ../gtk/friendlist.c:691
 msgid "Presence status"
@@ -242,14 +221,12 @@ msgid "Name"
 msgstr "Naam"
 
 #: ../gtk/friendlist.c:721
-#, fuzzy
 msgid "Call"
-msgstr "Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/friendlist.c:726
-#, fuzzy
 msgid "Chat"
-msgstr "Chat box"
+msgstr ""
 
 #: ../gtk/friendlist.c:756
 #, c-format
@@ -257,9 +234,9 @@ msgid "Search in %s directory"
 msgstr ""
 
 #: ../gtk/friendlist.c:976
-#, fuzzy, c-format
+#, c-format
 msgid "Edit contact '%s'"
-msgstr "Bewerk contactgegevens"
+msgstr ""
 
 #: ../gtk/friendlist.c:977
 #, c-format
@@ -285,9 +262,8 @@ msgid "Status"
 msgstr "Status"
 
 #: ../gtk/propertybox.c:570
-#, fuzzy
 msgid "IP Bitrate (kbit/s)"
-msgstr "Minimale bitrate (kbit/s)"
+msgstr ""
 
 #: ../gtk/propertybox.c:577
 msgid "Parameters"
@@ -305,92 +281,92 @@ msgstr "Uit"
 msgid "Account"
 msgstr "Account"
 
-#: ../gtk/propertybox.c:1063
+#: ../gtk/propertybox.c:1072
 msgid "English"
 msgstr ""
 
-#: ../gtk/propertybox.c:1064
+#: ../gtk/propertybox.c:1073
 msgid "French"
 msgstr ""
 
-#: ../gtk/propertybox.c:1065
+#: ../gtk/propertybox.c:1074
 msgid "Swedish"
 msgstr ""
 
-#: ../gtk/propertybox.c:1066
+#: ../gtk/propertybox.c:1075
 msgid "Italian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1067
+#: ../gtk/propertybox.c:1076
 msgid "Spanish"
 msgstr ""
 
-#: ../gtk/propertybox.c:1068
+#: ../gtk/propertybox.c:1077
 msgid "Brazilian Portugese"
 msgstr ""
 
-#: ../gtk/propertybox.c:1069
+#: ../gtk/propertybox.c:1078
 msgid "Polish"
 msgstr ""
 
-#: ../gtk/propertybox.c:1070
+#: ../gtk/propertybox.c:1079
 msgid "German"
 msgstr ""
 
-#: ../gtk/propertybox.c:1071
+#: ../gtk/propertybox.c:1080
 msgid "Russian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1072
+#: ../gtk/propertybox.c:1081
 msgid "Japanese"
 msgstr ""
 
-#: ../gtk/propertybox.c:1073
+#: ../gtk/propertybox.c:1082
 msgid "Dutch"
 msgstr ""
 
-#: ../gtk/propertybox.c:1074
+#: ../gtk/propertybox.c:1083
 msgid "Hungarian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1075
+#: ../gtk/propertybox.c:1084
 msgid "Czech"
 msgstr ""
 
-#: ../gtk/propertybox.c:1076
+#: ../gtk/propertybox.c:1085
 msgid "Chinese"
 msgstr ""
 
-#: ../gtk/propertybox.c:1077
+#: ../gtk/propertybox.c:1086
 msgid "Traditional Chinese"
 msgstr ""
 
-#: ../gtk/propertybox.c:1078
+#: ../gtk/propertybox.c:1087
 msgid "Norwegian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1079
+#: ../gtk/propertybox.c:1088
 msgid "Hebrew"
 msgstr ""
 
-#: ../gtk/propertybox.c:1080
+#: ../gtk/propertybox.c:1089
 msgid "Serbian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1147
+#: ../gtk/propertybox.c:1156
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
 
-#: ../gtk/propertybox.c:1225
+#: ../gtk/propertybox.c:1234
 msgid "None"
 msgstr "Geen"
 
-#: ../gtk/propertybox.c:1229
+#: ../gtk/propertybox.c:1238
 msgid "SRTP"
 msgstr ""
 
-#: ../gtk/propertybox.c:1235
+#: ../gtk/propertybox.c:1244
 msgid "ZRTP"
 msgstr ""
 
@@ -414,14 +390,12 @@ msgid "Error communicating with server."
 msgstr ""
 
 #: ../gtk/buddylookup.c:164
-#, fuzzy
 msgid "Connecting..."
-msgstr "Verbinden"
+msgstr ""
 
 #: ../gtk/buddylookup.c:168
-#, fuzzy
 msgid "Connected"
-msgstr "Verbonden."
+msgstr ""
 
 #: ../gtk/buddylookup.c:172
 msgid "Receiving data..."
@@ -436,7 +410,7 @@ msgstr[1] ""
 
 #: ../gtk/setupwizard.c:34
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
 
@@ -461,28 +435,24 @@ msgid "Enter your linphone.org username"
 msgstr ""
 
 #: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:4
-#, fuzzy
 msgid "Username:"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:104 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-#, fuzzy
 msgid "Password:"
-msgstr "wachtwoord:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:124
 msgid "Enter your account informations"
 msgstr ""
 
 #: ../gtk/setupwizard.c:140
-#, fuzzy
 msgid "Username*"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:141
-#, fuzzy
 msgid "Password*"
-msgstr "wachtwoord:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:144
 msgid "Domain*"
@@ -497,14 +467,12 @@ msgid "(*) Required fields"
 msgstr ""
 
 #: ../gtk/setupwizard.c:318
-#, fuzzy
 msgid "Username: (*)"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:320
-#, fuzzy
 msgid "Password: (*)"
-msgstr "wachtwoord:"
+msgstr ""
 
 #: ../gtk/setupwizard.c:322
 msgid "Email: (*)"
@@ -535,46 +503,46 @@ msgid ""
 "Then come back here and press Next button."
 msgstr ""
 
-#: ../gtk/setupwizard.c:600
+#: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:618
+#: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:623
+#: ../gtk/setupwizard.c:625
 msgid "Account setup assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:638
+#: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:647
+#: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
 msgstr ""
 
-#: ../gtk/setupwizard.c:652
+#: ../gtk/setupwizard.c:654
 msgid "Error"
 msgstr ""
 
-#: ../gtk/setupwizard.c:656 ../gtk/audio_assistant.c:527
+#: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:527
 msgid "Terminating"
 msgstr ""
 
 #: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
-#, fuzzy, c-format
+#, c-format
 msgid "Call #%i"
-msgstr "Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/incall_view.c:155
 #, c-format
@@ -590,9 +558,8 @@ msgid "ICE not activated"
 msgstr ""
 
 #: ../gtk/incall_view.c:223
-#, fuzzy
 msgid "ICE failed"
-msgstr "Oproep geannuleerd."
+msgstr ""
 
 #: ../gtk/incall_view.c:225
 msgid "ICE in progress"
@@ -603,9 +570,8 @@ msgid "Going through one or more NATs"
 msgstr ""
 
 #: ../gtk/incall_view.c:229
-#, fuzzy
 msgid "Direct"
-msgstr "Doorgeschakeld naar %s..."
+msgstr ""
 
 #: ../gtk/incall_view.c:231
 msgid "Through a relay server"
@@ -616,23 +582,20 @@ msgid "uPnP not activated"
 msgstr ""
 
 #: ../gtk/incall_view.c:241
-#, fuzzy
 msgid "uPnP in progress"
-msgstr "STUN adres wordt opgezocht..."
+msgstr ""
 
 #: ../gtk/incall_view.c:243
-#, fuzzy
 msgid "uPnp not available"
-msgstr "Geen informatie beschikbaar"
+msgstr ""
 
 #: ../gtk/incall_view.c:245
 msgid "uPnP is running"
 msgstr ""
 
 #: ../gtk/incall_view.c:247
-#, fuzzy
 msgid "uPnP failed"
-msgstr "Oproep geannuleerd."
+msgstr ""
 
 #: ../gtk/incall_view.c:257 ../gtk/incall_view.c:258
 msgid "Direct or through server"
@@ -655,118 +618,107 @@ msgstr ""
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:232
 msgid "Hang up"
 msgstr ""
 
-#: ../gtk/incall_view.c:501
-#, fuzzy
+#: ../gtk/incall_view.c:511
 msgid "<b>Calling...</b>"
-msgstr "Contactlijst"
+msgstr ""
 
-#: ../gtk/incall_view.c:504 ../gtk/incall_view.c:707
+#: ../gtk/incall_view.c:514 ../gtk/incall_view.c:727
 msgid "00::00::00"
 msgstr ""
 
-#: ../gtk/incall_view.c:515
-#, fuzzy
+#: ../gtk/incall_view.c:525
 msgid "<b>Incoming call</b>"
-msgstr "Inkomende oproep"
+msgstr ""
 
-#: ../gtk/incall_view.c:552
+#: ../gtk/incall_view.c:562
 msgid "good"
 msgstr ""
 
-#: ../gtk/incall_view.c:554
+#: ../gtk/incall_view.c:564
 msgid "average"
 msgstr ""
 
-#: ../gtk/incall_view.c:556
+#: ../gtk/incall_view.c:566
 msgid "poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:558
+#: ../gtk/incall_view.c:568
 msgid "very poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:560
+#: ../gtk/incall_view.c:570
 msgid "too bad"
 msgstr ""
 
-#: ../gtk/incall_view.c:561 ../gtk/incall_view.c:577
+#: ../gtk/incall_view.c:571 ../gtk/incall_view.c:587
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:669
+#: ../gtk/incall_view.c:679
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:675
+#: ../gtk/incall_view.c:685
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:681
+#: ../gtk/incall_view.c:691
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:681 ../gtk/main.ui.h:4
+#: ../gtk/incall_view.c:691 ../gtk/main.ui.h:4
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:702
+#: ../gtk/incall_view.c:722
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:702
-#, fuzzy
+#: ../gtk/incall_view.c:722
 msgid "<b>In call</b>"
-msgstr "Contactlijst"
-
-#: ../gtk/incall_view.c:738
-#, fuzzy
-msgid "<b>Paused call</b>"
-msgstr "Contactlijst"
-
-#: ../gtk/incall_view.c:751
-#, c-format
-msgid "%02i::%02i::%02i"
 msgstr ""
 
-#: ../gtk/incall_view.c:772
-#, fuzzy
-msgid "<b>Call ended.</b>"
-msgstr "Oproep beeindigd"
+#: ../gtk/incall_view.c:758
+msgid "<b>Paused call</b>"
+msgstr ""
 
-#: ../gtk/incall_view.c:803
+#: ../gtk/incall_view.c:794
+msgid "<b>Call ended.</b>"
+msgstr ""
+
+#: ../gtk/incall_view.c:825
 msgid "Transfer in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:806
+#: ../gtk/incall_view.c:828
 msgid "Transfer done."
 msgstr ""
 
-#: ../gtk/incall_view.c:809
-#, fuzzy
+#: ../gtk/incall_view.c:831
 msgid "Transfer failed."
-msgstr "Oproep geannuleerd."
+msgstr ""
 
-#: ../gtk/incall_view.c:853
+#: ../gtk/incall_view.c:875
 msgid "Resume"
 msgstr ""
 
-#: ../gtk/incall_view.c:860 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:882 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr ""
 
-#: ../gtk/incall_view.c:926
+#: ../gtk/incall_view.c:948
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
 
-#: ../gtk/incall_view.c:926
+#: ../gtk/incall_view.c:948
 msgid "(Paused)"
 msgstr ""
 
@@ -776,9 +728,9 @@ msgid "Please enter login information for %s"
 msgstr ""
 
 #: ../gtk/config-fetching.c:57
-#, fuzzy, c-format
+#, c-format
 msgid "fetching from %s"
-msgstr "Inkomende oproep"
+msgstr ""
 
 #: ../gtk/config-fetching.c:73
 #, c-format
@@ -803,28 +755,25 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:328
-#, fuzzy
 msgid "Capture device"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:329
-#, fuzzy
 msgid "Recorded volume"
-msgstr "Bron voor opname:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:333
 msgid "No voice"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:369
-#, fuzzy
 msgid "Playback device"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:370
 msgid "Play three beeps"
@@ -863,14 +812,12 @@ msgid "Record and Play"
 msgstr ""
 
 #: ../gtk/main.ui.h:1
-#, fuzzy
 msgid "<b>Callee name</b>"
-msgstr "Oproep beeindigd"
+msgstr ""
 
 #: ../gtk/main.ui.h:2
-#, fuzzy
 msgid "Send"
-msgstr "Geluid"
+msgstr ""
 
 #: ../gtk/main.ui.h:3
 msgid "End conference"
@@ -893,14 +840,12 @@ msgid "Transfer"
 msgstr ""
 
 #: ../gtk/main.ui.h:14
-#, fuzzy
 msgid "In call"
-msgstr "Inkomende oproep"
+msgstr ""
 
 #: ../gtk/main.ui.h:15
-#, fuzzy
 msgid "Duration"
-msgstr "Informatie"
+msgstr ""
 
 #: ../gtk/main.ui.h:16
 msgid "Call quality rating"
@@ -911,9 +856,8 @@ msgid "All users"
 msgstr ""
 
 #: ../gtk/main.ui.h:18
-#, fuzzy
 msgid "Online users"
-msgstr "Aanwezig"
+msgstr ""
 
 #: ../gtk/main.ui.h:19
 msgid "ADSL"
@@ -924,32 +868,28 @@ msgid "Fiber Channel"
 msgstr ""
 
 #: ../gtk/main.ui.h:21
-#, fuzzy
 msgid "Default"
-msgstr "SIP-identiteit:"
+msgstr ""
 
 #: ../gtk/main.ui.h:22
 msgid "_Options"
 msgstr ""
 
 #: ../gtk/main.ui.h:23
-#, fuzzy
 msgid "Set configuration URI"
-msgstr "Proxy/registratieserver registratieveld"
+msgstr ""
 
 #: ../gtk/main.ui.h:24
 msgid "Always start video"
 msgstr ""
 
 #: ../gtk/main.ui.h:25
-#, fuzzy
 msgid "Enable self-view"
-msgstr "Video aan"
+msgstr ""
 
 #: ../gtk/main.ui.h:26
-#, fuzzy
 msgid "_Help"
-msgstr "Help"
+msgstr ""
 
 #: ../gtk/main.ui.h:27
 msgid "Show debug window"
@@ -968,87 +908,75 @@ msgid "Account assistant"
 msgstr ""
 
 #: ../gtk/main.ui.h:32
-#, fuzzy
 msgid "SIP address or phone number:"
-msgstr "Geef het SIP adres of telefoonnummer in"
+msgstr ""
 
 #: ../gtk/main.ui.h:33
 msgid "Initiate a new call"
 msgstr ""
 
 #: ../gtk/main.ui.h:34
-#, fuzzy
 msgid "Contacts"
-msgstr "Verbinden"
+msgstr ""
 
 #: ../gtk/main.ui.h:35
 msgid "Search"
 msgstr ""
 
 #: ../gtk/main.ui.h:36
-#, fuzzy
 msgid "<b>Add contacts from directory</b>"
-msgstr "Contact informatie"
+msgstr ""
 
 #: ../gtk/main.ui.h:37
-#, fuzzy
 msgid "Add contact"
-msgstr "Bewerk contactgegevens"
+msgstr ""
 
 #: ../gtk/main.ui.h:38
-#, fuzzy
 msgid "Recent calls"
-msgstr "Inkomende oproep"
+msgstr ""
 
 #: ../gtk/main.ui.h:39
-#, fuzzy
 msgid "My current identity:"
-msgstr "SIP-identiteit:"
+msgstr ""
 
 #: ../gtk/main.ui.h:40 ../gtk/tunnel_config.ui.h:7
-#, fuzzy
 msgid "Username"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:8
-#, fuzzy
 msgid "Password"
-msgstr "wachtwoord:"
+msgstr ""
 
 #: ../gtk/main.ui.h:42
 msgid "Internet connection:"
 msgstr ""
 
 #: ../gtk/main.ui.h:43
-#, fuzzy
 msgid "Automatically log me in"
-msgstr "Automatisch een geldige hostnaam raden"
+msgstr ""
 
 #: ../gtk/main.ui.h:44 ../gtk/password.ui.h:3
 msgid "UserID"
 msgstr ""
 
 #: ../gtk/main.ui.h:45
-#, fuzzy
 msgid "Login information"
-msgstr "Contact informatie"
+msgstr ""
 
 #: ../gtk/main.ui.h:46
-#, fuzzy
-msgid "<b>Welcome !</b>"
-msgstr "Contactlijst"
+msgid "<b>Welcome!</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:47
 msgid "Delete"
 msgstr ""
 
 #: ../gtk/about.ui.h:1
-#, fuzzy
-msgid "About linphone"
-msgstr "linphone"
+msgid "About Linphone"
+msgstr ""
 
 #: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications,2010\n"
+msgid "(C) Belledonne Communications, 2010\n"
 msgstr ""
 
 #: ../gtk/about.ui.h:4
@@ -1072,9 +1000,8 @@ msgid ""
 msgstr ""
 
 #: ../gtk/contact.ui.h:2
-#, fuzzy
 msgid "SIP Address"
-msgstr "Adres"
+msgstr ""
 
 #: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
@@ -1085,9 +1012,8 @@ msgid "Allow this contact to see my presence status"
 msgstr ""
 
 #: ../gtk/contact.ui.h:5
-#, fuzzy
 msgid "<b>Contact information</b>"
-msgstr "Contact informatie"
+msgstr ""
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
@@ -1098,36 +1024,32 @@ msgid "Scroll to end"
 msgstr ""
 
 #: ../gtk/password.ui.h:1
-#, fuzzy
 msgid "Linphone - Authentication required"
-msgstr "Authorisatie gevraagd"
+msgstr ""
 
 #: ../gtk/password.ui.h:2
 msgid "Please enter the domain password"
 msgstr ""
 
 #: ../gtk/call_logs.ui.h:1
-#, fuzzy
 msgid "Call history"
-msgstr "Linphone - Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Clear all"
 msgstr ""
 
 #: ../gtk/call_logs.ui.h:3
-#, fuzzy
 msgid "Call back"
-msgstr "Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Linphone - Configure a SIP account"
 msgstr ""
 
 #: ../gtk/sip_account.ui.h:2
-#, fuzzy
 msgid "Your SIP identity:"
-msgstr "SIP-identiteit:"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<username>@<domain>"
@@ -1138,23 +1060,20 @@ msgid "sip:"
 msgstr "sip:"
 
 #: ../gtk/sip_account.ui.h:5
-#, fuzzy
 msgid "SIP Proxy address:"
-msgstr "SIP-proxy:"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Looks like sip:<proxy hostname>"
 msgstr ""
 
 #: ../gtk/sip_account.ui.h:7
-#, fuzzy
 msgid "Registration duration (sec):"
-msgstr "Registratieperiode:"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:8
-#, fuzzy
 msgid "Contact params (optional):"
-msgstr "Route (optioneel):"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:9
 msgid "AVPF regular RTCP interval (sec):"
@@ -1165,23 +1084,20 @@ msgid "Route (optional):"
 msgstr "Route (optioneel):"
 
 #: ../gtk/sip_account.ui.h:11
-#, fuzzy
 msgid "Transport"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:12
 msgid "Register"
 msgstr ""
 
 #: ../gtk/sip_account.ui.h:13
-#, fuzzy
 msgid "Publish presence information"
-msgstr "Toon informatie over aanwezigheid:"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:14
-#, fuzzy
 msgid "Enable AVPF"
-msgstr "Aan"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
@@ -1216,16 +1132,14 @@ msgid "CIF"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:8
-#, fuzzy
 msgid "Audio codecs"
-msgstr "Video codecs"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:9
-#, fuzzy
 msgid "Video codecs"
-msgstr "Video codecs"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:10 ../gtk/keypad.ui.h:5
+#: ../gtk/parameters.ui.h:10
 msgid "C"
 msgstr ""
 
@@ -1258,9 +1172,8 @@ msgid "Use IPv6 instead of IPv4"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:18
-#, fuzzy
 msgid "<b>Transport</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:19
 msgid "Media encryption type"
@@ -1291,14 +1204,12 @@ msgid "DSCP fields"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:26
-#, fuzzy
 msgid "SIP/TCP port"
-msgstr "SIP-poort"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:27
-#, fuzzy
 msgid "SIP/UDP port"
-msgstr "SIP-poort"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:28
 msgid "<b>Network protocol and ports</b>"
@@ -1325,76 +1236,64 @@ msgid "Behind NAT / Firewall (use uPnP)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:34
-#, fuzzy
 msgid "Public IP address:"
-msgstr "SIP-adres:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:35
-#, fuzzy
 msgid "Stun server:"
-msgstr "Geluidsapparaat"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:36
-#, fuzzy
 msgid "<b>NAT and Firewall</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:37
-#, fuzzy
 msgid "Network settings"
-msgstr "Netwerk"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:38
-#, fuzzy
 msgid "Ring sound:"
-msgstr "Belgeluid:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:39
 msgid "ALSA special device (optional):"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:40
-#, fuzzy
 msgid "Capture device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:41
-#, fuzzy
 msgid "Ring device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:42
-#, fuzzy
 msgid "Playback device:"
-msgstr "Geluidsapparaat gebruiken:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:43
 msgid "Enable echo cancellation"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:44
-#, fuzzy
 msgid "<b>Audio</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:45
-#, fuzzy
 msgid "Video input device:"
-msgstr "Geluidsapparaat"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:46
 msgid "Prefered video resolution:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:47
-#, fuzzy
 msgid "Video output method:"
-msgstr "Geluidsapparaat"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:48
-#, fuzzy
 msgid "<b>Video</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:49
 msgid "Multimedia settings"
@@ -1409,28 +1308,24 @@ msgid "Your display name (eg: John Doe):"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:52
-#, fuzzy
 msgid "Your username:"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:53
-#, fuzzy
 msgid "Your resulting SIP address:"
-msgstr "Uw SIP-adres:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:54
-#, fuzzy
 msgid "<b>Default identity</b>"
-msgstr "SIP-identiteit:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:55
 msgid "Wizard"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:56
-#, fuzzy
 msgid "Add"
-msgstr "Adres"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:57
 msgid "Edit"
@@ -1441,18 +1336,16 @@ msgid "Remove"
 msgstr "Verwijderen"
 
 #: ../gtk/parameters.ui.h:59
-#, fuzzy
 msgid "<b>Proxy accounts</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:60
 msgid "Erase all passwords"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:61
-#, fuzzy
 msgid "<b>Privacy</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:62
 msgid "Manage SIP Accounts"
@@ -1467,23 +1360,20 @@ msgid "Disable"
 msgstr "Uit"
 
 #: ../gtk/parameters.ui.h:65
-#, fuzzy
 msgid "<b>Codecs</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:66
 msgid "0 stands for \"unlimited\""
 msgstr ""
 
 #: ../gtk/parameters.ui.h:67
-#, fuzzy
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Upload bandbreedte (kbit/sec):"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:68
-#, fuzzy
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Download bandbreedte (kbit/sec):"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:69
 msgid "Enable adaptive rate control"
@@ -1500,84 +1390,68 @@ msgid "<b>Bandwidth control</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:72
-#, fuzzy
 msgid "Codecs"
-msgstr "Codecs"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:73
-#, fuzzy
 msgid "<b>Language</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:74
 msgid "Show advanced settings"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:75
-#, fuzzy
 msgid "<b>Level</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:76
-#, fuzzy
 msgid "User interface"
-msgstr "gebruikersnaam:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:77 ../gtk/ldap.ui.h:2
-#, fuzzy
 msgid "Server address:"
-msgstr "Serveradres"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:78 ../gtk/ldap.ui.h:3
-#, fuzzy
 msgid "Authentication method:"
-msgstr "Authorisatie gegevens"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:80
-msgid "label"
+msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:81
-#, fuzzy
-msgid "<b>LDAP Account setup</b>"
-msgstr "Contactlijst"
-
-#: ../gtk/parameters.ui.h:82
 msgid "LDAP"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:83
-#, fuzzy
+#: ../gtk/parameters.ui.h:82
 msgid "Done"
-msgstr "Weg"
+msgstr ""
 
 #: ../gtk/buddylookup.ui.h:1
-#, fuzzy
 msgid "Search contacts in directory"
-msgstr "Contact informatie"
+msgstr ""
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
 msgstr ""
 
 #: ../gtk/buddylookup.ui.h:3
-#, fuzzy
 msgid "<b>Search somebody</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/waiting.ui.h:1
-#, fuzzy
 msgid "Linphone"
-msgstr "linphone"
+msgstr ""
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
 msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:1
-#, fuzzy
 msgid "DSCP settings"
-msgstr "Netwerk"
+msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
@@ -1596,19 +1470,16 @@ msgid "<b>Set DSCP values (in hexadecimal)</b>"
 msgstr ""
 
 #: ../gtk/call_statistics.ui.h:1
-#, fuzzy
 msgid "Call statistics"
-msgstr "Oproepgeschiedenis"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:2
-#, fuzzy
 msgid "Audio codec"
-msgstr "Video codecs"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:3
-#, fuzzy
 msgid "Video codec"
-msgstr "Video codecs"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
@@ -1627,9 +1498,8 @@ msgid "Video Media connectivity"
 msgstr ""
 
 #: ../gtk/call_statistics.ui.h:8
-#, fuzzy
 msgid "Round trip time"
-msgstr "Geluidseigenschappen"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:9
 msgid "Video resolution received"
@@ -1644,9 +1514,8 @@ msgid "RTP profile"
 msgstr ""
 
 #: ../gtk/call_statistics.ui.h:12
-#, fuzzy
 msgid "<b>Call statistics and information</b>"
-msgstr "Contact informatie"
+msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:1
 msgid "Configure VoIP tunnel"
@@ -1668,84 +1537,21 @@ msgstr ""
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr ""
 
-#: ../gtk/keypad.ui.h:1
-msgid "D"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:2
-msgid "#"
-msgstr "#"
-
-#: ../gtk/keypad.ui.h:3
-msgid "0"
-msgstr "0"
-
-#: ../gtk/keypad.ui.h:4
-msgid "*"
-msgstr "*"
-
-#: ../gtk/keypad.ui.h:6
-msgid "9"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:7
-msgid "8"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:8
-msgid "7"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:9
-msgid "B"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:10
-msgid "6"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:11
-msgid "5"
-msgstr "5"
-
-#: ../gtk/keypad.ui.h:12
-msgid "4"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:13
-msgid "A"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:14
-msgid "3"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:15
-msgid "2"
-msgstr ""
-
-#: ../gtk/keypad.ui.h:16
-msgid "1"
-msgstr "1"
-
 #: ../gtk/ldap.ui.h:1
-#, fuzzy
 msgid "LDAP Settings"
-msgstr "Netwerk"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:7
-#, fuzzy
 msgid "Not yet available"
-msgstr "Geen informatie beschikbaar"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:8
-#, fuzzy
 msgid "<b>Connection</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:9
 msgid "Bind DN"
@@ -1756,14 +1562,12 @@ msgid "Authname"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:11
-#, fuzzy
 msgid "Realm"
-msgstr "gebied:"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:12
-#, fuzzy
 msgid "<b>SASL</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:13
 msgid "Base object:"
@@ -1779,18 +1583,16 @@ msgid "Name Attribute:"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:17
-#, fuzzy
 msgid "SIP address attribute:"
-msgstr "Adres"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:18
 msgid "Attributes to query:"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:19
-#, fuzzy
 msgid "<b>Search</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:20
 msgid "Timeout for search:"
@@ -1805,9 +1607,8 @@ msgid "Follow Aliases"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:23
-#, fuzzy
 msgid "<b>Miscellaneous</b>"
-msgstr "Contactlijst"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:24
 msgid "ANONYMOUS"
@@ -1838,91 +1639,76 @@ msgid ""
 "the new configuration. "
 msgstr ""
 
-#: ../gtk/config-uri.ui.h:4
-msgid "https://"
-msgstr ""
-
 #: ../gtk/provisioning-fetch.ui.h:1
-#, fuzzy
 msgid "Configuring..."
-msgstr "Verbinden"
+msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:2
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1034
+#: ../coreapi/linphonecore.c:1510
 msgid "Ready"
 msgstr "Gereed."
 
-#: ../coreapi/linphonecore.c:1967
-#, fuzzy
+#: ../coreapi/linphonecore.c:2473
 msgid "Configuring"
-msgstr "Informatie"
+msgstr ""
 
-#: ../coreapi/linphonecore.c:2133
+#: ../coreapi/linphonecore.c:2638
 msgid "Looking for telephone number destination..."
 msgstr "Zoekt de lokatie van het telefoonnummer..."
 
-#: ../coreapi/linphonecore.c:2136
+#: ../coreapi/linphonecore.c:2640
 msgid "Could not resolve this number."
 msgstr "Kon dit nummer niet vinden."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2418
+#: ../coreapi/linphonecore.c:2926
 msgid "Contacting"
 msgstr "Verbinden"
 
-#: ../coreapi/linphonecore.c:2425
-#, fuzzy
+#: ../coreapi/linphonecore.c:2931
 msgid "Could not call"
-msgstr "Kon niet oproepen"
+msgstr ""
 
-#: ../coreapi/linphonecore.c:2576
+#: ../coreapi/linphonecore.c:3081
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2745
-#, fuzzy
+#: ../coreapi/linphonecore.c:3240
 msgid "is contacting you"
-msgstr "belt u."
+msgstr ""
 
-#: ../coreapi/linphonecore.c:2746
+#: ../coreapi/linphonecore.c:3241
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2746
-msgid "."
-msgstr ""
-
-#: ../coreapi/linphonecore.c:2865
+#: ../coreapi/linphonecore.c:3359
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3194
+#: ../coreapi/linphonecore.c:3707
 msgid "Connected."
 msgstr "Verbonden."
 
-#: ../coreapi/linphonecore.c:3220
-#, fuzzy
+#: ../coreapi/linphonecore.c:3732
 msgid "Call aborted"
-msgstr "afgebroken"
+msgstr ""
 
-#: ../coreapi/linphonecore.c:3412
-#, fuzzy
+#: ../coreapi/linphonecore.c:3922
 msgid "Could not pause the call"
-msgstr "Kon niet oproepen"
+msgstr ""
 
-#: ../coreapi/linphonecore.c:3417
-#, fuzzy
+#: ../coreapi/linphonecore.c:3926
 msgid "Pausing the current call..."
-msgstr "Kon niet oproepen"
+msgstr ""
 
-#: ../coreapi/misc.c:425
+#: ../coreapi/misc.c:438
 msgid "Stun lookup in progress..."
 msgstr "STUN adres wordt opgezocht..."
 
-#: ../coreapi/misc.c:607
+#: ../coreapi/misc.c:619
 msgid "ICE local candidates gathering in progress..."
 msgstr ""
 
@@ -1935,789 +1721,214 @@ msgid "Busy"
 msgstr "Bezet"
 
 #: ../coreapi/friend.c:39
-#, fuzzy
 msgid "Be right back"
-msgstr "Kom zo terug"
+msgstr ""
 
 #: ../coreapi/friend.c:42
 msgid "Away"
 msgstr "Afwezig"
 
 #: ../coreapi/friend.c:45
-#, fuzzy
 msgid "On the phone"
-msgstr "Aan de telefoon"
+msgstr ""
 
 #: ../coreapi/friend.c:48
-#, fuzzy
 msgid "Out to lunch"
-msgstr "Aan het lunchen"
+msgstr ""
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
 msgstr "Niet storen"
 
 #: ../coreapi/friend.c:54
-#, fuzzy
 msgid "Moved"
-msgstr "Codecs"
+msgstr ""
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
 msgstr ""
 
 #: ../coreapi/friend.c:60
-#, fuzzy
 msgid "Offline"
-msgstr "Aanwezig"
+msgstr ""
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
 msgstr ""
 
 #: ../coreapi/friend.c:66
-#, fuzzy
 msgid "Vacation"
-msgstr "Informatie"
-
-#: ../coreapi/friend.c:68
-msgid "Unknown-bug"
 msgstr ""
 
-#: ../coreapi/proxy.c:314
+#: ../coreapi/friend.c:68
+msgid "Unknown status"
+msgstr ""
+
+#: ../coreapi/proxy.c:319
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
 
-#: ../coreapi/proxy.c:320
+#: ../coreapi/proxy.c:325
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 
-#: ../coreapi/proxy.c:1369
-#, fuzzy, c-format
+#: ../coreapi/proxy.c:1377
+#, c-format
 msgid "Could not login as %s"
-msgstr "Kon pixmap bestand %s niet vinden"
+msgstr ""
 
-#: ../coreapi/callbacks.c:355
-#, fuzzy
+#: ../coreapi/callbacks.c:383
 msgid "Remote ringing."
-msgstr "Externe diensten"
+msgstr ""
 
-#: ../coreapi/callbacks.c:373
-#, fuzzy
+#: ../coreapi/callbacks.c:404
 msgid "Remote ringing..."
-msgstr "Externe diensten"
+msgstr ""
 
-#: ../coreapi/callbacks.c:384
+#: ../coreapi/callbacks.c:414
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/callbacks.c:435
-#, fuzzy, c-format
+#: ../coreapi/callbacks.c:475
+#, c-format
 msgid "Call with %s is paused."
-msgstr "Chat met %s"
+msgstr ""
 
-#: ../coreapi/callbacks.c:448
+#: ../coreapi/callbacks.c:488
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:459
-#, fuzzy
+#: ../coreapi/callbacks.c:498
 msgid "Call resumed."
-msgstr "Oproep beeindigd"
+msgstr ""
 
-#: ../coreapi/callbacks.c:464
-#, fuzzy, c-format
+#: ../coreapi/callbacks.c:502
+#, c-format
 msgid "Call answered by %s."
 msgstr ""
-"Oproepen of\n"
-"beantwoorden"
 
-#: ../coreapi/callbacks.c:483
+#: ../coreapi/callbacks.c:525
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:512
+#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:826
+msgid "Incompatible media parameters."
+msgstr ""
+
+#: ../coreapi/callbacks.c:560
 msgid "We have been resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:521
+#. we are being paused
+#: ../coreapi/callbacks.c:568
 msgid "We are paused by other party."
 msgstr ""
 
-#: ../coreapi/callbacks.c:556
+#. reINVITE and in-dialogs UPDATE go here
+#: ../coreapi/callbacks.c:602
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:658
+#: ../coreapi/callbacks.c:705
 msgid "Call terminated."
 msgstr "Oproep beeindigd."
 
-#: ../coreapi/callbacks.c:687
+#: ../coreapi/callbacks.c:733
 msgid "User is busy."
 msgstr "Gebruiker is bezet."
 
-#: ../coreapi/callbacks.c:688
+#: ../coreapi/callbacks.c:734
 msgid "User is temporarily unavailable."
 msgstr "Gebruiker is tijdelijk niet beschikbaar."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:690
+#: ../coreapi/callbacks.c:736
 msgid "User does not want to be disturbed."
 msgstr "De gebruiker wenst niet gestoord te worden."
 
-#: ../coreapi/callbacks.c:691
+#: ../coreapi/callbacks.c:737
 msgid "Call declined."
 msgstr "Oproep geweigerd."
 
-#: ../coreapi/callbacks.c:706
+#: ../coreapi/callbacks.c:752
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:737
-#, fuzzy
+#: ../coreapi/callbacks.c:780
 msgid "Redirected"
-msgstr "Doorgeschakeld naar %s..."
-
-#: ../coreapi/callbacks.c:787
-msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:798
-#, fuzzy
+#: ../coreapi/callbacks.c:835
 msgid "Call failed."
-msgstr "Oproep geannuleerd."
+msgstr ""
 
-#: ../coreapi/callbacks.c:878
+#: ../coreapi/callbacks.c:913
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registratie op %s gelukt."
 
-#: ../coreapi/callbacks.c:879
-#, fuzzy, c-format
+#: ../coreapi/callbacks.c:914
+#, c-format
 msgid "Unregistration on %s done."
-msgstr "Registratie op %s gelukt."
+msgstr ""
 
-#: ../coreapi/callbacks.c:897
+#: ../coreapi/callbacks.c:932
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/callbacks.c:900
-#, fuzzy, c-format
+#: ../coreapi/callbacks.c:935
+#, c-format
 msgid "Registration on %s failed: %s"
-msgstr "Registratie op %s mislukt (time-out)."
+msgstr ""
 
-#: ../coreapi/callbacks.c:907
+#: ../coreapi/callbacks.c:942
 msgid "Service unavailable, retrying"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:177
-#, fuzzy, c-format
+#: ../coreapi/linphonecall.c:174
+#, c-format
 msgid "Authentication token is %s"
-msgstr "Authorisatie gegevens"
+msgstr ""
 
-#: ../coreapi/linphonecall.c:2932
-#, fuzzy, c-format
+#: ../coreapi/linphonecall.c:3020
+#, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "U heeft %i oproep(en) gemist."
-msgstr[1] "U heeft %i oproep(en) gemist."
-
-#~ msgid "aborted"
-#~ msgstr "afgebroken"
-
-#~ msgid "completed"
-#~ msgstr "voltooid"
-
-#~ msgid "missed"
-#~ msgstr "gemist"
-
-#~ msgid ""
-#~ "%s at %s\n"
-#~ "From: %s\n"
-#~ "To: %s\n"
-#~ "Status: %s\n"
-#~ "Duration: %i mn %i sec\n"
-#~ msgstr ""
-#~ "%s op %s\n"
-#~ "Van: %s\n"
-#~ "Aan: %s\n"
-#~ "Status: %s\n"
-#~ "Tijdsduur: %i mins %i secs\n"
-
-#~ msgid "Outgoing call"
-#~ msgstr "Uitgaande oproep"
-
-#~ msgid ""
-#~ "Could not parse given sip address. A sip url usually looks like sip:"
-#~ "user@domain"
-#~ msgstr ""
-#~ "Slecht geformuleerd SIP-adres. Een SIP-adres ziet er uit als sip:"
-#~ "gebruikersnaam@domeinnaam"
-
-#~ msgid ""
-#~ "Your computer appears to be using ALSA sound drivers.\n"
-#~ "This is the best choice. However the pcm oss emulation module\n"
-#~ "is missing and linphone needs it. Please execute\n"
-#~ "'modprobe snd-pcm-oss' as root to load it."
-#~ msgstr ""
-#~ "Uw computer maakt schijnbaar gebruik van ALSA geluidsdrivers.\n"
-#~ "Dit is de beste keuze. Maar de pcm oss emulatie module mist\n"
-#~ "en linphone heeft deze nodig. Geeft u alstublieft het commando\n"
-#~ "'modprobe snd-pcm-oss' als root om de module te laden."
-
-#~ msgid ""
-#~ "Your computer appears to be using ALSA sound drivers.\n"
-#~ "This is the best choice. However the mixer oss emulation module\n"
-#~ "is missing and linphone needs it. Please execute\n"
-#~ " 'modprobe snd-mixer-oss' as root to load it."
-#~ msgstr ""
-#~ "Uw computer maakt schijnbaar gebruik van ALSA geluidsdrivers.\n"
-#~ "Dit is de beste keuze. Maar de mixer oss emulatie module mist\n"
-#~ "en linphone heeft deze nodig. Geeft u alstublieft het commando\n"
-#~ "'modprobe snd-mixer-oss' als root om de module te laden."
-
-#~ msgid "Chat with %s"
-#~ msgstr "Chat met %s"
-
-#, fuzzy
-#~ msgid "Choosing a username"
-#~ msgstr "gebruikersnaam:"
-
-#, fuzzy
-#~ msgid "Enable video"
-#~ msgstr "Aan"
-
-#, fuzzy
-#~ msgid "Unmute"
-#~ msgstr "Ongelimiteerd"
-
-#, fuzzy
-#~ msgid "<b>Contact list</b>"
-#~ msgstr "Contactlijst"
-
-#, fuzzy
-#~ msgid "Audio & video"
-#~ msgstr "Audio codecs"
-
-#, fuzzy
-#~ msgid "Audio only"
-#~ msgstr "Audio codecs"
-
-#, fuzzy
-#~ msgid "Duration:"
-#~ msgstr "Informatie"
-
-#, fuzzy
-#~ msgid "_Call history"
-#~ msgstr "Linphone - Oproepgeschiedenis"
-
-#, fuzzy
-#~ msgid "_Linphone"
-#~ msgstr "linphone"
-
-#, fuzzy
-#~ msgid "gtk-cancel"
-#~ msgstr "Verbonden."
-
-#, fuzzy
-#~ msgid "gtk-ok"
-#~ msgstr "Verwijderen"
-
-#, fuzzy
-#~ msgid "gtk-close"
-#~ msgstr "Verbonden."
-
-#~ msgid ""
-#~ "Your machine appears to be connected to an IPv6 network. By default "
-#~ "linphone always uses IPv4. Please update your configuration if you want "
-#~ "to use IPv6"
-#~ msgstr ""
-#~ "Uw machine lijkt verbonden te zijn met een IPv6 netwerk. Standaard "
-#~ "gebruikt linphone altijd IPv4. Wijzig uw configuratie wanneer u IPv6 wilt "
-#~ "gebruiken."
-
-#, fuzzy
-#~ msgid "_Modes"
-#~ msgstr "Codecs"
-
-#~ msgid "Accept"
-#~ msgstr "Accepteren"
-
-#, fuzzy
-#~ msgid "Incoming call from"
-#~ msgstr "Inkomende oproep"
-
-#, fuzzy
-#~ msgid "Linphone - Incoming call"
-#~ msgstr "Inkomende oproep"
-
-#, fuzzy
-#~ msgid ""
-#~ "Audio codecs\n"
-#~ "Video codecs"
-#~ msgstr "Audio en video codecs"
-
-#~ msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-#~ msgstr ""
-#~ "Helaas, meerdere gelijktijdige gesprekken wordt nog niet ondersteund!"
-
-#~ msgid "Could not reach destination."
-#~ msgstr "Kon bestemming niet bereiken."
-
-#~ msgid "Request Cancelled."
-#~ msgstr "Verzoek geannuleerd."
-
-#~ msgid "Bad request"
-#~ msgstr "Slecht geformuleerd verzoek"
-
-#~ msgid "User cannot be found at given address."
-#~ msgstr "Gebruiker kan niet worden gevonden bij opgegeven adres."
-
-#~ msgid "Remote user cannot support any of proposed codecs."
-#~ msgstr "De externe gebruiker ondersteunt geen van de voorgestelde codecs."
-
-#~ msgid "Timeout."
-#~ msgstr "Time-out."
-
-#~ msgid "Remote host was found but refused connection."
-#~ msgstr "Externe machine is gevonden, maar verbinding is geweigerd."
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you\n"
-#~ "to contact him using the following alternate resource:"
-#~ msgstr ""
-#~ "De gebruiker is op dit moment niet bereikbaar, maar hij nodigt u uit om\n"
-#~ "op de volgende, alternatieve, manier contact met hem op te nemen:"
-
-#~ msgid "No nat/firewall address supplied !"
-#~ msgstr "Geen NAT/firewall adres opgegeven"
-
-#~ msgid "Invalid nat address '%s' : %s"
-#~ msgstr "Ongeldig NAT adres '%s' : %s"
-
-#~ msgid "Gone"
-#~ msgstr "Weg"
-
-#~ msgid "Waiting for Approval"
-#~ msgstr "Wachten op accoord"
-
-#~ msgid "Be Right Back"
-#~ msgstr "Kom zo terug"
-
-#~ msgid "On The Phone"
-#~ msgstr "Aan de telefoon"
-
-#~ msgid "Out To Lunch"
-#~ msgstr "Aan het lunchen"
-
-#~ msgid "Closed"
-#~ msgstr "Gesloten"
-
-#, fuzzy
-#~ msgid "_View"
-#~ msgstr "Video"
-
-#, fuzzy
-#~ msgid "_Properties"
-#~ msgstr "RTP-eigenschappen"
-
-#, fuzzy
-#~ msgid "Show logs"
-#~ msgstr "Oproepen weergeven"
-
-#, fuzzy
-#~ msgid "_About"
-#~ msgstr "Account"
-
-#, fuzzy
-#~ msgid "Proxy in use"
-#~ msgstr "Te gebruiken proxy:"
-
-#~ msgid "Sound"
-#~ msgstr "Geluid"
-
-#, fuzzy
-#~ msgid "Proxy accounts"
-#~ msgstr "Te gebruiken proxy:"
-
-#~ msgid "Go"
-#~ msgstr "Ga"
-
-#~ msgid "Exit"
-#~ msgstr "Einde"
-
-#~ msgid "Shows the address book"
-#~ msgstr "Het adresboek weergeven"
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid ""
-#~ "Hangup\n"
-#~ "or refuse"
-#~ msgstr ""
-#~ "Ophangen\n"
-#~ "of weigeren"
-
-#~ msgid "Or chat !"
-#~ msgstr "Of chat!"
-
-#~ msgid "Show more..."
-#~ msgstr "Meer weergeven..."
-
-#~ msgid "Playback level:"
-#~ msgstr "Geluidssterkte afspelen:"
-
-#~ msgid "Recording level:"
-#~ msgstr "Geluidssterkte opname:"
-
-#, fuzzy
-#~ msgid "Ring level:"
-#~ msgstr "Geluidssterkte opname:"
-
-#~ msgid "Controls"
-#~ msgstr "Functies"
-
-#~ msgid "Reachable"
-#~ msgstr "Bereikbaar"
-
-#~ msgid "Busy, I'll be back in "
-#~ msgstr "Bezig; ik ben terug over "
-
-#~ msgid "The other party will be informed that you'll be back in X minutes"
-#~ msgstr ""
-#~ "De andere partij zal worden geïnformeerd dat u over X minuten terug bent"
-
-#~ msgid "mn"
-#~ msgstr "min"
-
-#~ msgid "Moved temporarily"
-#~ msgstr "Tijdelijk verplaatst"
-
-#~ msgid "Alternative service"
-#~ msgstr "Alternatieve dienst"
-
-#~ msgid "URL:"
-#~ msgstr "URL:"
-
-#~ msgid "Presence"
-#~ msgstr "Aanwezigheid"
-
-#~ msgid "Press digits to send DTMFs."
-#~ msgstr "Druk op de cijfers om DTMF's te sturen"
-
-#~ msgid ""
-#~ "  3\n"
-#~ "def"
-#~ msgstr ""
-#~ "  3\n"
-#~ "def"
-
-#~ msgid ""
-#~ "  2\n"
-#~ "abc"
-#~ msgstr ""
-#~ "  2\n"
-#~ "abc"
-
-#~ msgid ""
-#~ "  4\n"
-#~ "ghi"
-#~ msgstr ""
-#~ "  4\n"
-#~ "ghi"
-
-#~ msgid ""
-#~ " 5\n"
-#~ "jkl"
-#~ msgstr ""
-#~ " 5\n"
-#~ "jkl"
-
-#~ msgid ""
-#~ "  6\n"
-#~ "mno"
-#~ msgstr ""
-#~ "  6\n"
-#~ "mno"
-
-#~ msgid ""
-#~ "   7\n"
-#~ "pqrs"
-#~ msgstr ""
-#~ "   7\n"
-#~ "pqrs"
-
-#~ msgid ""
-#~ "  8\n"
-#~ "tuv"
-#~ msgstr ""
-#~ "  8\n"
-#~ "tuv"
-
-#~ msgid ""
-#~ "   9\n"
-#~ "wxyz"
-#~ msgstr ""
-#~ "   9\n"
-#~ "wxyz"
-
-#~ msgid "DTMF"
-#~ msgstr "DTMF"
-
-#~ msgid "My online friends"
-#~ msgstr "Mijn online vrienden"
-
-#~ msgid ""
-#~ "C: 2001\n"
-#~ "Made in Old Europe"
-#~ msgstr ""
-#~ "C: 2001\n"
-#~ "Gemaakt in antiek Europa"
-
-#~ msgid ""
-#~ "Linphone is a web-phone.\n"
-#~ "It is compatible with SIP and RTP protocols."
-#~ msgstr ""
-#~ "Linphone is een webtelefoon.\n"
-#~ "Het werkt met de SIP- en RTP-protocollen."
-
-#~ msgid "http://www.linphone.org"
-#~ msgstr "http://www.linphone.org"
-
-#~ msgid "Use IPv6 network (if available)"
-#~ msgstr "Gebruik IPv6 netwerk (wanneer het beschikbaar is)"
-
-#~ msgid ""
-#~ "Toggle this if you are on an ipv6 network and you wish linphone to use it."
-#~ msgstr ""
-#~ "Wijzig dit wanneer u op een IPv6 netwerk zit en linphone daarop wilt "
-#~ "gebruiken."
-
-#~ msgid "Global"
-#~ msgstr "Globaal"
-
-#~ msgid ""
-#~ "These options is only for users in a private network, behind a gateway. "
-#~ "If you are not in this situation, then leave this empty."
-#~ msgstr ""
-#~ "Deze optie is alleen voor gebruikers in een lokaal netwerk, achter een "
-#~ "gateway: Wanneer u niet in deze situatie zit, laat dit dan leeg."
-
-#~ msgid "No firewall"
-#~ msgstr "Geen firewall"
-
-#~ msgid "Use this STUN server to guess firewall address :"
-#~ msgstr "Gebruik deze STUN server om het firewall adres te achterhalen"
-
-#~ msgid "Specify firewall address manually:"
-#~ msgstr "Geef het firewall adres handmatig op"
-
-#~ msgid "NAT traversal options (experimental)"
-#~ msgstr "NAT-doorstuur opties (experimenteel)"
-
-#~ msgid "Number of buffered miliseconds (jitter compensation):"
-#~ msgstr "Aantal gebufferde miliseconden (jitter compensatie):"
-
-#~ msgid "RTP port used for audio:"
-#~ msgstr "RTP-poort voor geluid:"
-
-#~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
-#~ msgstr ""
-#~ "Gebruik SIP INFO bericht in plaats van RTP rfc2833 voor DTMF berichten"
-
-#~ msgid "RTP-RFC2833 is the recommended way."
-#~ msgstr "RTP-RFC2833 is de aanbevolen manier."
-
-#~ msgid "Other"
-#~ msgstr "Overige"
-
-#~ msgid "micro"
-#~ msgstr "microfoon"
-
-#~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
-#~ msgstr ""
-#~ "Activeer de echo-onderdrukking (onderdrukt de echo die de andere partij "
-#~ "hoort)"
-
-#~ msgid "Choose file"
-#~ msgstr "Kies bestand"
-
-#~ msgid "Listen"
-#~ msgstr "Luisteren"
-
-#~ msgid "Run sip user agent on port:"
-#~ msgstr "Start SIP gebruikerssysteem op poort:"
-
-#~ msgid "It is strongly recommended to use port 5060."
-#~ msgstr "Het wordt sterk aangeraden om poort 5060 te gebruiken."
-
-#~ msgid "@"
-#~ msgstr "@"
-
-#~ msgid "Identity"
-#~ msgstr "Identiteit"
-
-#~ msgid "Add proxy/registrar"
-#~ msgstr "Voeg proxy/registratieserver toe"
-
-#~ msgid "Clear all stored authentication information (username,password...)"
-#~ msgstr ""
-#~ "Schoon alle opgeslagen authorisatie gegevens op (gebruikersnaam, "
-#~ "wachtwoord...)"
-
-#~ msgid "List of audio codecs, in order of preference:"
-#~ msgstr "Lijst met audio codecs, in volgorde van voorkeur:"
-
-#~ msgid ""
-#~ "Note: Codecs in red are not usable regarding to your connection type to "
-#~ "the internet."
-#~ msgstr ""
-#~ "Opmerking: Met rood weergegeven codecs zijn niet bruikbaar vanwege het "
-#~ "soort internetverbinding dat u heeft"
-
-#~ msgid "Codec information"
-#~ msgstr "Codec informatie"
-
-#~ msgid "Address Book"
-#~ msgstr "Adresboek"
-
-#~ msgid "Select"
-#~ msgstr "Kiezen"
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you to contact him "
-#~ "using the following alternate ressource:"
-#~ msgstr ""
-#~ "De gebruiker is op dit moment niet bereikbaar, maar hij nodigt u uit op "
-#~ "de volgende, alternatieve, manier contact met hem op te nemen:"
-
-#~ msgid "None."
-#~ msgstr "Geen."
-
-#~ msgid "Send registration:"
-#~ msgstr "Verstruur registratie:"
-
-#~ msgid "Name:"
-#~ msgstr "Naam:"
-
-#~ msgid "Subscribe policy:"
-#~ msgstr "Aanmeldbeleid:"
-
-#~ msgid "Send subscription (see person's online status)"
-#~ msgstr "Verstruur aanmelding (bekijk de online status van een persoon)"
-
-#~ msgid "New incoming subscription"
-#~ msgstr "Nieuwe inkomende aanmelding"
-
-#~ msgid "You have received a new subscription..."
-#~ msgstr "U heeft een nieuwe aanmelding ontvangen..."
-
-#~ msgid "Refuse"
-#~ msgstr "Weigeren"
-
-#~ msgid "Authentication required for realm"
-#~ msgstr "Authorisatie benodigd voor gebied"
-
-#~ msgid "userid:"
-#~ msgstr "gebruikersID:"
-
-#~ msgid "Text:"
-#~ msgstr "Tekst:"
-
-#~ msgid "The caller asks for resource reservation. Do you agree ?"
-#~ msgstr "De beller vraagt om reservering van bronnen. Gaat u accoord?"
-
-#~ msgid ""
-#~ "The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
-#~ "continue anyway ?"
-#~ msgstr ""
-#~ "De beller gebruikt geen bron reservatie. \t\t\t\t\tWilt u toch doorgaan?"
-
-#~ msgid "linphone - receiving call from %s"
-#~ msgstr "Linphone - binnenkomend gesprek van %s"
-
-#~ msgid ""
-#~ "You have received a subscription from %s.This means that this person "
-#~ "wishes to be notified of your presence information (online, busy, "
-#~ "away...).\n"
-#~ "Do you agree ?"
-#~ msgstr ""
-#~ "U heeft een aanmelding ontvangen van %s. Dit betekent dat deze persoon "
-#~ "een melding wil ontvangen wat betreft uw status (online, bezig, weg...).\n"
-#~ "Gaat u accoord?"
-
-#~ msgid "Authentication required for realm %s"
-#~ msgstr "Authorisatie benodigd voor gebied %s"
-
-#~ msgid "Wait"
-#~ msgstr "Wachten"
-
-#~ msgid "Deny"
-#~ msgstr "Weigeren"
-
-#~ msgid "Bad sip address: a sip address looks like sip:user@domain"
-#~ msgstr ""
-#~ "Slecht geformuleerd SIP-adres. Een SIP-adres ziet er uit als sip:"
-#~ "gebruikersnaam@domeinnaam"
-
-#~ msgid "Stun lookup done..."
-#~ msgstr "STUN adres gevonden..."
-
-#~ msgid "User manual"
-#~ msgstr "Handleiding"
-
-#~ msgid "Ring sound selection"
-#~ msgstr "Belgeluid keuze"
-
-#~ msgid "Communication ended."
-#~ msgstr "Communicatie beëindigd."
-
-#~ msgid "Firewall 's external ip address (in dot notations):"
-#~ msgstr "Extern IP adres van de firewall (in  x.x.x.x notatie):"
-
-#~ msgid "Index"
-#~ msgstr "Index"
-
-#~ msgid "28k modem"
-#~ msgstr "28k modem"
-
-#~ msgid "56k modem"
-#~ msgstr "56k modem"
-
-#~ msgid "64k modem (numeris)"
-#~ msgstr "64k modem (ISDN)"
-
-#~ msgid "ADSL or Cable modem"
-#~ msgstr "ADSL- of kabelmodem"
-
-#~ msgid "Ethernet or equivalent"
-#~ msgstr "Ethernet of vergelijkbaar"
-
-#~ msgid "Connection type:"
-#~ msgstr "Soort verbinding:"
-
-#~ msgid ""
-#~ "Linphone could not open audio device %s. Check if your sound card is "
-#~ "fully configured and working."
-#~ msgstr ""
-#~ "Linphone kon het geluidsapparaat %s niet openen. Controleer of uw "
-#~ "geluidskaart goed is ingesteld en werkt."
-
-#~ msgid "Type here the sip address of the person you want to call."
-#~ msgstr "Geef hier het SIP-adres op van de persoon die u wilt bellen."
-
-#~ msgid ""
-#~ "Release or\n"
-#~ "Refuse"
-#~ msgstr ""
-#~ "Ophangen\n"
-#~ "of weigeren"
-
-#~ msgid "%s. Retry after %i minute(s)."
-#~ msgstr "%s. Opnieuw proberen na %i minu(u)t(en)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../coreapi/call_log.c:209
+msgid "aborted"
+msgstr ""
+
+#: ../coreapi/call_log.c:212
+msgid "completed"
+msgstr ""
+
+#: ../coreapi/call_log.c:215
+msgid "missed"
+msgstr ""
+
+#: ../coreapi/call_log.c:220
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+
+#: ../coreapi/call_log.c:221
+msgid "Outgoing call"
+msgstr ""
+
+#: ../gtk/videowindow.c:66
+#, c-format
+msgid "Cannot play %s."
+msgstr ""

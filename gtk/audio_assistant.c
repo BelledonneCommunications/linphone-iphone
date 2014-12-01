@@ -315,7 +315,7 @@ static void open_mixer(){
 
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
-	GtkWidget *label=gtk_label_new(_("Welcome !\nThis assistant will help you to configure audio settings for Linphone"));
+	GtkWidget *label=gtk_label_new(_("Welcome!\nThis assistant will help you to configure audio settings for Linphone"));
 	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);
 	gtk_widget_show_all(vbox);
 	return vbox;

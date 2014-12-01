@@ -31,6 +31,7 @@ set(SOURCE_FILES
 	authentication.c
 	bellesip_sal/sal_address_impl.c
 	bellesip_sal/sal_impl.c
+	bellesip_sal/sal_impl.h
 	bellesip_sal/sal_op_call.c
 	bellesip_sal/sal_op_call_transfer.c
 	bellesip_sal/sal_op_events.c
@@ -46,41 +47,45 @@ set(SOURCE_FILES
 	call_params.c
 	chat.c
 	conference.c
+	contactprovider.c
+	content.c
+	dict.c
 	ec-calibrator.c
 	enum.c
+	enum.h
 	event.c
+	event.h
 	friend.c
 	info.c
+	ldap/ldapprovider.c
 	linphonecall.c
 	linphonecore.c
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
 	linphone_tunnel_config.c
+	linphone_tunnel.h
+	localplayer.c
 	lpconfig.c
+	lpconfig.h
 	lsd.c
 	message_storage.c
 	misc.c
 	offeranswer.c
+	offeranswer.h
 	player.c
 	presence.c
+	private.h
 	proxy.c
 	quality_reporting.c
 	remote_provisioning.c
 	sal.c
 	siplogin.c
 	sipsetup.c
-	xml.c
-	xml2lpc.c
-	bellesip_sal/sal_impl.h
-	enum.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphone_tunnel.h
-	lpconfig.h
-	offeranswer.h
-	private.h
 	sipsetup.h
+	xml2lpc.c
 	xml2lpc.h
+	xml.c
 )
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
@@ -101,14 +106,9 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
 	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
 
 add_definitions(
-	-DIN_LINPHONE
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
 )
-
-if(ENABLE_VIDEO)
-	add_definitions(-DVIDEO_ENABLED)
-endif()
 
 set(LIBS
 	${LIBGCC}
@@ -152,6 +152,7 @@ install(TARGETS linphone
 set(HEADER_FILES
 	call_log.h
 	call_params.h
+	content.h
 	event.h
 	linphonecore.h
 	linphonecore_utils.h

@@ -48,14 +48,14 @@ static void stop(int signum){
 /**
  * function invoked to report file transfer progress.
  * */
-static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress) {
+static void file_transfer_progress_indication(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
 	const LinphoneAddress* from_address = linphone_chat_message_get_from(message);
 	const LinphoneAddress* to_address = linphone_chat_message_get_to(message);
 	char *address = linphone_chat_message_is_outgoing(message)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
-	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)progress
+	printf(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", (int)((offset *100)/total)
 																	,(linphone_chat_message_is_outgoing(message)?"sent":"received")
-																	, content->type
-																	, content->subtype
+																	, linphone_content_get_type(content)
+																	, linphone_content_get_subtype(content)
 																	,(linphone_chat_message_is_outgoing(message)?"to":"from")
 																	, address);
 	free(address);
@@ -63,7 +63,7 @@ static void file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMess
 /**
  * function invoked when a file transfer is received.
  **/
-static void file_transfer_received(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
+static void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
 	FILE* file=NULL;
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
@@ -92,7 +92,7 @@ char big_file [128000];
 /*
  * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
  * */
-static void file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
+static void file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
 	int offset=-1;
 
 	if (!linphone_chat_message_get_user_data(message)) {
@@ -131,9 +131,9 @@ static void linphone_file_transfer_state_changed(LinphoneChatMessage* msg,Linpho
  */
 static void message_received(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	const LinphoneContent *file_transfer_info = linphone_chat_message_get_file_transfer_information(msg);
-	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", file_transfer_info->name, (long int)file_transfer_info->size);
+	printf ("Do you really want to download %s (size %ld)?[Y/n]\nOk, let's go\n", linphone_content_get_name(file_transfer_info), (long int)linphone_content_get_size(file_transfer_info));
 
-	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed);
+	linphone_chat_message_start_file_download(msg, linphone_file_transfer_state_changed, NULL);
 
 }
 
@@ -145,8 +145,9 @@ int main(int argc, char *argv[]){
 	int i;
 	const char* big_file_content="big file";
 	LinphoneChatRoom* chat_room;
-	LinphoneContent content;
+	LinphoneContent* content;
 	LinphoneChatMessage* chat_message;
+	LinphoneChatMessageCbs *cbs;
 
 	/*seting dummy file content to something*/
 	for (i=0;i<sizeof(big_file);i+=strlen(big_file_content))
@@ -160,15 +161,6 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/*
-	 Fill the LinphoneCoreVTable with application callbacks.
-	 All are optional. Here we only use the file_transfer_received callback
-	 in order to get notifications about incoming file receive, file_transfer_send to feed file to be transfered
-	 and file_transfer_progress_indication to print progress.
-	 */
-	vtable.file_transfer_recv=file_transfer_received;
-	vtable.file_transfer_send=file_transfer_send;
-	vtable.file_transfer_progress_indication=file_transfer_progress_indication;
 	vtable.message_received=message_received;
 
 
@@ -189,20 +181,30 @@ int main(int argc, char *argv[]){
 	/*Next step is to create a chat room*/
 	chat_room = linphone_core_create_chat_room(lc,dest_friend);
 
-	memset(&content,0,sizeof(content));
-	content.type="text";
-	content.subtype="plain";
-	content.size=sizeof(big_file); /*total size to be transfered*/
-	content.name = "bigfile.txt";
+	content = linphone_core_create_content(lc);
+	linphone_content_set_type(content,"text");
+	linphone_content_set_subtype(content,"plain");
+	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
+	linphone_content_set_name(content,"bigfile.txt");
 
 	/*now create a chat message with custom content*/
-	chat_message = linphone_chat_room_create_file_transfer_message(chat_room,&content);
+	chat_message = linphone_chat_room_create_file_transfer_message(chat_room,content);
 	if (chat_message == NULL) {
 		printf("returned message is null\n");
 	}
 
+	/**
+	 * Fill the application callbacks. The file_transfer_received callback is used in order to get notifications
+	 * about incoming file reception, file_transfer_send to feed file to be transfered and
+	 * file_transfer_progress_indication to print progress.
+	 */
+	cbs = linphone_chat_message_get_callbacks(chat_message);
+	linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+
 	/*initiating file transfer*/
-	linphone_chat_room_send_message2(chat_room, chat_message, linphone_file_transfer_state_changed, NULL);
+	linphone_chat_room_send_chat_message(chat_room, chat_message);
 
 	/* main loop for receiving incoming messages and doing background linphone core work: */
 	while(running){
@@ -212,6 +214,7 @@ int main(int argc, char *argv[]){
 
 
 	printf("Shutting down...\n");
+	linphone_content_unref(content);
 	linphone_chat_room_destroy(chat_room);
 	linphone_core_destroy(lc);
 	printf("Exited\n");

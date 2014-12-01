@@ -14,9 +14,9 @@ public interface LinphonePlayer {
 	 *
 	 */
 	public enum State {
-		closed, /**< No file is open */
-		paused, /**< A file is open and playback is not running */
-		playing; /**< A file is open and playback is running */
+		closed, /*< No file is open */
+		paused, /*< A file is open and playback is not running */
+		playing; /*< A file is open and playback is running */
 		
 		public static State fromValue(int value) {
 			if(value == 0) {

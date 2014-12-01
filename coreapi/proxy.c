@@ -881,8 +881,11 @@ static bool_t is_a_phone_number(const char *username){
 		    *p==')' ||
 			*p=='(' ||
 			*p=='/' ||
-			*p=='+') continue;
-		else return FALSE;
+			*p=='+' ||
+			(unsigned char)*p== 0xca // non-breakable space (iOS uses it to format contacts phone number)
+			)
+			continue;
+		return FALSE;
 	}
 	return TRUE;
 }
@@ -921,7 +924,7 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 	if (is_a_phone_number(username)){
 		char *flatten;
 		flatten=flatten_number(username);
-		ms_message("Flattened number is '%s'",flatten);
+		ms_debug("Flattened number is '%s'",flatten);
 
 		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
 			/*no prefix configured, nothing else to do*/
@@ -931,10 +934,10 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 		}else{
 			dial_plan_t dialplan;
 			lookup_dial_plan(proxy->dial_prefix,&dialplan);
-			ms_message("Using dialplan '%s'",dialplan.country);
+			ms_debug("Using dialplan '%s'",dialplan.country);
 			if (flatten[0]=='+' || strstr(flatten,dialplan.icp)==flatten){
 				/* the number has international prefix or +, so nothing to do*/
-				ms_message("Prefix already present.");
+				ms_debug("Prefix already present.");
 				/*eventually replace the plus*/
 				replace_plus(flatten,result,result_len,proxy->dial_escape_plus ? dialplan.icp : NULL);
 				ms_free(flatten);

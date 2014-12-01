@@ -17,7 +17,6 @@
 */
 
 #include <stdio.h>
-#include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -26,7 +25,7 @@
 #define __strstr(x, y) ((x==NULL)?NULL:strstr(x,y))
 
 void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
-	char * body = (char *)content->data;
+	char * body = (char *)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 	MediaStream * ms;
@@ -92,7 +91,7 @@ char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics,
 }
 
 void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
-	char * body = (char*)content->data;
+	char * body = (char*)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 	on_report_send_mandatory(call,stream_type,content);
@@ -100,7 +99,7 @@ void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, int stream_type
 	CU_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics,body) < remote_metrics_start);
 }
 void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
-	char * body = (char*)content->data;
+	char * body = (char*)linphone_content_get_buffer(content);
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 
 	on_report_send_mandatory(call,stream_type,content);
@@ -215,7 +214,7 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 }
 
 void on_report_send_remove_fields(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
-	char *body = (char*)content->data;
+	char *body = (char*)linphone_content_get_buffer(content);
 	/*corrupt start of the report*/
 	strncpy(body, "corrupted report is corrupted", strlen("corrupted report is corrupted"));
 }
@@ -275,14 +274,14 @@ static void quality_reporting_interval_report() {
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL))  {
 		linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
-		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 3);
+		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 10);
 
 		CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
 		CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
 
 		// PUBLISH submission to the collector should be ok
-		CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,25000));
-		CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,25000));
+		CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,3,60000));
+		CU_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,3,60000));
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

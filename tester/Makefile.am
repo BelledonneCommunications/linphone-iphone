@@ -22,8 +22,11 @@ liblinphonetester_la_SOURCES = tester.c \
 				stun_tester.c \
 				remote_provisioning_tester.c \
 				quality_reporting_tester.c \
+				log_collection_tester.c \
 				transport_tester.c \
-				player_tester.c
+				player_tester.c \
+				dtmf_tester.c \
+				accountmanager.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
@@ -42,7 +45,7 @@ endif
 
 
 test: liblinphone_tester
-	./liblinphone_tester  --config $(abs_srcdir)
+	./liblinphone_tester  --config $(abs_srcdir) $(TEST_OPTIONS)
 
 else !BUILD_CUNIT_TESTS
 

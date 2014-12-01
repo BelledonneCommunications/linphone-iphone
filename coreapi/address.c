@@ -201,6 +201,37 @@ int linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
 }
 
+/**
+ * Set the password encoded in the address.
+ * It is used for basic authentication (not recommended).
+ * @param addr the LinphoneAddress
+ * @param passwd the password to set.
+**/
+void linphone_address_set_password(LinphoneAddress *addr, const char *passwd){
+	sal_address_set_password(addr,passwd);
+}
+
+/**
+ * Get the password encoded in the address.
+ * It is used for basic authentication (not recommended).
+ * @param addr the address
+ * @return the password, if any, NULL otherwise.
+**/
+const char *linphone_address_get_password(const LinphoneAddress *addr){
+	return sal_address_get_password(addr);
+}
+
+/**
+ * Set a header into the address.
+ * Headers appear in the URI with '?', such as <sip:test@linphone.org?SomeHeader=SomeValue>.
+ * @param addr the address
+ * @param header_name the header name
+ * @param header_value the header value
+**/
+void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value){
+	sal_address_set_header(addr,header_name,header_value);
+}
+
 LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
 	return linphone_address_new(address);
 }

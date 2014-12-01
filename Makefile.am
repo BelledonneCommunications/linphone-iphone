@@ -50,7 +50,7 @@ PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 EXTRA_DIST =		BUGS  \
 			README.arm \
 			README.mingw \
-			README.macos \
+			README.macos.md \
 			autogen.sh \
 			linphone.spec \
 			linphone.spec.in \
@@ -171,7 +171,7 @@ filelist: zip
 setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
-	$(ISCC) $(ISS_SCRIPT) 
+	$(ISCC) $(ISS_SCRIPT)
 	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-$(VERSION)-setup.exe
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)

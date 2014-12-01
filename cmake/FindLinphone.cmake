@@ -1,5 +1,5 @@
 ############################################################################
-# FindLinphone.txt
+# FindLinphone.cmake
 # Copyright (C) 2014  Belledonne Communications, Grenoble France
 #
 ############################################################################
@@ -33,7 +33,7 @@ find_package(MS2 REQUIRED)
 find_package(XML2 REQUIRED)
 find_package(BelleSIP REQUIRED)
 
-set(_LINPHONEROOT_PATHS
+set(_LINPHONE_ROOT_PATHS
 	${WITH_LINPHONE}
 	${CMAKE_INSTALL_PREFIX}
 )

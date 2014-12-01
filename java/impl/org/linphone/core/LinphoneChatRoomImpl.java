@@ -177,11 +177,4 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 	
-	private native void cancelFileTransfer(long ptr, long messagePtr);
-	@Override
-	public void cancelFileTransfer(LinphoneChatMessage message) {
-		synchronized(getCore()) {
-			cancelFileTransfer(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
-		}
-	}
 }

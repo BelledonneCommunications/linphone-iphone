@@ -335,11 +335,26 @@ static void parseEnum(Project *proj, XmlNode node){
 	klass->setHelp(node.getChild("detaileddescription").getChild("para").getText());
 	list<XmlNode> enumValues=node.getChildren("enumvalue");
 	list<XmlNode>::iterator it;
+	int value = 0;
 	for (it=enumValues.begin();it!=enumValues.end();++it){
-		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText());
+		string initializer = (*it).getChild("initializer").getText();
+		if ((initializer.length() > 1) && (initializer.at(0) == '=')) {
+			std::stringstream ss;
+			if ((initializer.length() > 2) && (initializer.at(1) == '0')) {
+				if ((initializer.length() > 3) && (initializer.at(2) == 'x')) {
+					ss << std::hex << initializer.substr(3);
+				} else {
+					ss << std::oct << initializer.substr(2);
+				}
+			} else {
+				ss << std::dec << initializer.substr(1);
+			}
+			ss >> value;
+		}
+		ConstField *cf=new ConstField(Type::getType("int"),(*it).getChild("name").getText(),value);
 		cf->setHelp((*it).getChild("detaileddescription").getChild("para").getText());
 		klass->addConstField(cf);
-		
+		value++;
 	}
 	
 }

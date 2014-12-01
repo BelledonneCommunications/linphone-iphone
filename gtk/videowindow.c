@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-#ifdef __linux
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #elif defined(WIN32)
 #include <gdk/gdkwin32.h>
@@ -74,7 +74,7 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 }
 
 static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint x, gint y, guint time, gpointer user_data){
-#if GTK_CHECK_VERSION(2,20,0)
+#if GTK_CHECK_VERSION(2,21,0)
 	GList *l=gdk_drag_context_list_targets(drag_context);
 	GList *elem;
 	
@@ -95,7 +95,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 }
 
 unsigned long get_native_handle(GdkWindow *gdkw){
-#ifdef __linux
+#ifdef GDK_WINDOWING_X11
 	return (unsigned long)GDK_WINDOW_XID(gdkw);
 #elif defined(WIN32)
 	return (unsigned long)GDK_WINDOW_HWND(gdkw);

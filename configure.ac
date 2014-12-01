@@ -330,7 +330,6 @@ if test "$gtk_ui" = "true" ; then
 				AC_DEFINE([HAVE_NOTIFY1],[1],[NOTIFY1 support])
 		esac
 	else
-		NotifyNotification *n;
 		echo "Libnotify support is disabled."
 	fi
 fi

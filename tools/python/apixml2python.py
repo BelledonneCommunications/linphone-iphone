@@ -23,7 +23,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.realpath(__file__))
-from apixml2python.linphone import LinphoneModule
+from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenProperty
 
 
 blacklisted_classes = [
@@ -58,7 +58,9 @@ blacklisted_functions = [
 	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
 	'linphone_core_set_log_collection_path',	# need to handle class properties
+	'linphone_core_set_log_collection_prefix',	# need to handle class properties
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
@@ -82,11 +84,12 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
-	'linphone_chat_room_send_message2',
-	'linphone_core_get_sound_devices',
-	'linphone_core_get_video_devices',
-	'linphone_core_new',
-	'linphone_core_new_with_config'
+	HandWrittenInstanceMethod('ChatRoom', 'send_message2', 'linphone_chat_room_send_message2'),
+	HandWrittenProperty('Content', 'buffer', 'linphone_content_get_buffer', 'linphone_content_set_buffer'),
+	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None),
+	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None),
+	HandWrittenClassMethod('Core', 'new', 'linphone_core_new'),
+	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config')
 ]
 
 def generate(apixmlfile, outputfile):

@@ -20,7 +20,20 @@
 #
 ############################################################################
 
-install(FILES oldphone.wav toy-mono.wav
-		COMPONENT COMP_liblinphone
-        DESTINATION share/sounds/linphone/rings
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+set(RING_FILES
+	bigben.wav
+	oldphone-mono-30s.caf
+	oldphone-mono.wav
+	oldphone.wav
+	orig.wav
+	rock.wav
+	sweet.wav
+	synth.wav
+	tapping.wav
+	toy-mono.wav
+)
+
+install(FILES ${RING_FILES}
+	DESTINATION ${PACKAGE_RING_DIR}
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)

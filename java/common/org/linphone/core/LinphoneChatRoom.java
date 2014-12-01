@@ -144,9 +144,4 @@ public interface LinphoneChatRoom {
 	 */
 	LinphoneChatMessage createFileTransferMessage(LinphoneContent content);
 	
-	/**
-	 * Cancel an ongoing file transfer attached to this message (upload or download)
-	 * @param message
-	 */
-	void cancelFileTransfer(LinphoneChatMessage message);
 }

@@ -17,15 +17,13 @@
  */
 
 #include <stdio.h>
-#include "CUnit/Basic.h"
+#include "CUnit/TestRun.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
-
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
@@ -40,6 +38,7 @@ const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
+int liblinphone_tester_use_log_file=0;
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
@@ -107,38 +106,61 @@ void reset_counters( stats* counters) {
 	memset(counters,0,sizeof(stats));
 }
 
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data) {
 	LinphoneCore* lc;
-	char filepath[256]={0};
-	char ringpath[256]={0};
-	char ringbackpath[256]={0};
-	char rootcapath[256]={0};
-	char dnsuserhostspath[256]={0};
-	char nowebcampath[256]={0};
+	LpConfig* config = NULL;
+	char *filepath         = NULL;
+	char *ringpath         = NULL;
+	char *ringbackpath     = NULL;
+	char *rootcapath       = NULL;
+	char *dnsuserhostspath = NULL;
+	char *nowebcampath     = NULL;
 
 	if (path==NULL) path=".";
 
 	if (file){
-		sprintf(filepath, "%s/%s", path, file);
+		filepath = ms_strdup_printf("%s/%s", path, file);
 		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
+		config = lp_config_new_with_factory(NULL,filepath);
 	}
 
-	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL, user_data);
+
+	// setup dynamic-path assets
+	ringpath         = ms_strdup_printf("%s/sounds/oldphone.wav",path);
+	ringbackpath     = ms_strdup_printf("%s/sounds/ringback.wav", path);
+	nowebcampath     = ms_strdup_printf("%s/images/nowebcamCIF.jpg", path);
+	rootcapath       = ms_strdup_printf("%s/certificates/cn/cafile.pem", path);
+	dnsuserhostspath = ms_strdup_printf( "%s/%s", path, userhostsfile);
+
+
+	if( config != NULL ) {
+		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
+		lp_config_set_string(config, "sound", "local_ring" , ringpath);
+		lp_config_set_string(config, "sip",   "root_ca"    , rootcapath);
+		lc = linphone_core_new_with_config(v_table, config, user_data);
+	} else {
+		lc = linphone_core_new(v_table,NULL,(filepath!=NULL&&filepath[0]!='\0') ? filepath : NULL, user_data);
+
+		linphone_core_set_ring(lc, ringpath);
+		linphone_core_set_ringback(lc, ringbackpath);
+		linphone_core_set_root_ca(lc,rootcapath);
+	}
 
 	sal_enable_test_features(lc->sal,TRUE);
-	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cafile.pem", path);
-	linphone_core_set_root_ca(lc,rootcapath);
-
-	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
-
-	snprintf(ringpath,sizeof(ringpath), "%s/sounds/oldphone.wav",path);
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/ringback.wav", path);
-	linphone_core_set_ring(lc, ringpath);
-	linphone_core_set_ringback(lc, ringbackpath);
-
-	snprintf(nowebcampath, sizeof(nowebcampath), "%s/images/nowebcamCIF.jpg", path);
 	linphone_core_set_static_picture(lc,nowebcampath);
+
+
+	ms_free(ringpath);
+	ms_free(ringbackpath);
+	ms_free(nowebcampath);
+	ms_free(rootcapath);
+	ms_free(dnsuserhostspath);
+
+	if( filepath ) ms_free(filepath);
+
+	if( config ) lp_config_unref(config);
+
 	return lc;
 }
 
@@ -211,9 +233,6 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
-	mgr->v_table.file_transfer_recv=file_transfer_received;
-	mgr->v_table.file_transfer_send=file_transfer_send;
-	mgr->v_table.file_transfer_progress_indication=file_transfer_progress_indication;
 	mgr->v_table.is_composing_received=is_composing_received;
 	mgr->v_table.new_subscription_requested=new_subscription_requested;
 	mgr->v_table.notify_presence_received=notify_presence_received;
@@ -225,10 +244,13 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.configuring_status=linphone_configuration_status;
 	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
 	mgr->v_table.network_reachable=network_reachable;
+	mgr->v_table.dtmf_received=dtmf_received;
+	mgr->v_table.call_stats_updated=call_stats_updated;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
 	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_path, mgr);
+	linphone_core_manager_check_accounts(mgr);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
@@ -387,8 +409,10 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&flexisip_test_suite);
 	add_test_suite(&remote_provisioning_test_suite);
 	add_test_suite(&quality_reporting_test_suite);
+	add_test_suite(&log_collection_test_suite);
 	add_test_suite(&transport_test_suite);
 	add_test_suite(&player_test_suite);
+	add_test_suite(&dtmf_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {
@@ -397,6 +421,56 @@ void liblinphone_tester_uninit(void) {
 		test_suite = NULL;
 		nb_test_suites = 0;
 	}
+}
+
+/*derivated from cunit*/
+static void test_complete_message_handler(const CU_pTest pTest,
+                                                const CU_pSuite pSuite,
+                                                const CU_pFailureRecord pFailureList) {
+    int i;
+    CU_pFailureRecord pFailure = pFailureList;
+	if (pFailure) {
+		if (liblinphone_tester_use_log_file) ms_warning("Suite [%s], Test [%s] had failures:", pSuite->pName, pTest->pName);
+		liblinphone_tester_fprintf(stdout,"\nSuite [%s], Test [%s] had failures:", pSuite->pName, pTest->pName);
+	} else {
+		if (liblinphone_tester_use_log_file) ms_warning(" passed");
+		liblinphone_tester_fprintf(stdout," passed");
+	}
+      for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
+    	  if (liblinphone_tester_use_log_file) ms_warning("\n    %d. %s:%u  - %s", i,
+            (NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+            pFailure->uiLineNumber,
+            (NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+    	  liblinphone_tester_fprintf(stdout,"\n    %d. %s:%u  - %s", i,
+            (NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+            pFailure->uiLineNumber,
+            (NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+      }
+ }
+
+
+static void test_all_tests_complete_message_handler(const CU_pFailureRecord pFailure) {
+  if (liblinphone_tester_use_log_file) ms_warning("\n\n %s",CU_get_run_results_string());
+  liblinphone_tester_fprintf(stdout,"\n\n %s",CU_get_run_results_string());
+}
+
+static void test_suite_init_failure_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite initialization failed for [%s].", pSuite->pName);
+    liblinphone_tester_fprintf(stdout,"Suite initialization failed for [%s].", pSuite->pName);
+}
+
+static void test_suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite cleanup failed for '%s'.", pSuite->pName);
+	liblinphone_tester_fprintf(stdout,"Suite cleanup failed for [%s].", pSuite->pName);
+}
+
+static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s] Test [%s]", pSuite->pName,pTest->pName);
+	liblinphone_tester_fprintf(stdout,"\nSuite [%s] Test [%s]\n", pSuite->pName,pTest->pName);
+}
+static void test_suite_start_message_handler(const CU_pSuite pSuite) {
+	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s]", pSuite->pName);
+	liblinphone_tester_fprintf(stdout,"\nSuite [%s]", pSuite->pName);
 }
 
 int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) {
@@ -410,6 +484,14 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		run_test_suite(test_suite[i]);
 	}
 
+	CU_set_test_start_handler(test_start_message_handler);
+	CU_set_test_complete_handler(test_complete_message_handler);
+	CU_set_all_test_complete_handler(test_all_tests_complete_message_handler);
+	CU_set_suite_init_failure_handler(test_suite_init_failure_message_handler);
+	CU_set_suite_cleanup_failure_handler(test_suite_cleanup_failure_message_handler);
+	CU_set_suite_start_handler(test_suite_start_message_handler);
+
+
 #if !HAVE_CU_GET_SUITE
 	if( suite_name ){
 		ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
@@ -417,7 +499,6 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 #else
 	if (suite_name){
 		CU_pSuite suite;
-		CU_basic_set_mode(CU_BRM_VERBOSE);
 		suite=CU_get_suite(suite_name);
 		if (!suite) {
 			ms_error("Could not find suite '%s'. Available suites are:", suite_name);
@@ -431,11 +512,11 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 				liblinphone_tester_list_suite_tests(suite->pName);
 				return -2;
 			} else {
-				CU_ErrorCode err= CU_basic_run_test(suite, test);
+				CU_ErrorCode err= CU_run_test(suite, test);
 				if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
 			}
 		} else {
-			CU_basic_run_suite(suite);
+			CU_run_suite(suite);
 		}
 	}
 	else
@@ -450,8 +531,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 #endif
 		{
 			/* Run all tests using the CUnit Basic interface */
-			CU_basic_set_mode(CU_BRM_VERBOSE);
-			CU_basic_run_tests();
+			CU_run_all_tests();
 		}
 	}
 
@@ -460,18 +540,21 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
-		printf("\n");
+		liblinphone_tester_fprintf(stdout,"\n");
 	}
 
 	CU_cleanup_registry();
+	account_manager_destroy();
 	return ret;
 }
+
 int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
 	int result;
 	va_list args;
 	va_start(args, format);
 #ifndef ANDROID
 	result = vfprintf(stream,format,args);
+	fflush(stream);
 #else
 	/*used by liblinphone tester to retrieve suite list*/
 	result = 0;
@@ -480,3 +563,22 @@ int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
 	va_end(args);
 	return result;
 }
+
+int liblinphone_tester_ipv6_available(void){
+	struct addrinfo *ai=belle_sip_ip_address_to_addrinfo(AF_INET6,"2a01:e00::2",53);
+	if (ai){
+		struct sockaddr_storage ss;
+		struct addrinfo src;
+		socklen_t slen=sizeof(ss);
+		char localip[128];
+		int port=0;
+		belle_sip_get_src_addr_for(ai->ai_addr,ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
+		src.ai_addr=(struct sockaddr*) &ss;
+		src.ai_addrlen=slen;
+		belle_sip_addrinfo_to_ip(&src,localip, sizeof(localip),&port);
+		freeaddrinfo(ai);
+		return strcmp(localip,"::1")!=0;
+	}
+	return FALSE;
+}
+

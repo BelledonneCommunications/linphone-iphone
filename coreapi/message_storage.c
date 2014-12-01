@@ -21,10 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 #ifdef MSG_STORAGE_ENABLED
+#ifndef PRIu64
+#define PRIu64 "I64u"
+#endif
 
 #include "sqlite3.h"
 
-static inline LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
+static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
 	MSList* transients = cr->transient_messages;
 	LinphoneChatMessage* chat;
 	while( transients ){
@@ -51,18 +54,15 @@ static int callback_content(void *data, int argc, char **argv, char **colName) {
 	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
 
 	if (message->file_transfer_information) {
-		linphone_content_uninit(message->file_transfer_information);
-		ms_free(message->file_transfer_information);
+		linphone_content_unref(message->file_transfer_information);
 		message->file_transfer_information = NULL;
 	}
-	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
-
-	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
-	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
-	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
-	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
-	message->file_transfer_information->size = (size_t) atoi(argv[5]);
+	message->file_transfer_information = linphone_content_new();
+	if (argv[1]) linphone_content_set_type(message->file_transfer_information, argv[1]);
+	if (argv[2]) linphone_content_set_subtype(message->file_transfer_information, argv[2]);
+	if (argv[3]) linphone_content_set_name(message->file_transfer_information, argv[3]);
+	if (argv[4]) linphone_content_set_encoding(message->file_transfer_information, argv[4]);
+	linphone_content_set_size(message->file_transfer_information, (size_t)atoi(argv[5]));
 
 	return 0;
 }
@@ -196,13 +196,13 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 	if (lc->db) {
 		LinphoneContent *content = msg->file_transfer_information;
 		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
-						content->type,
-						content->subtype,
-						content->name,
-						content->encoding,
-						content->size,
+						linphone_content_get_type(content),
+						linphone_content_get_subtype(content),
+						linphone_content_get_name(content),
+						linphone_content_get_encoding(content),
+						linphone_content_get_size(content),
 						NULL
- 					);
+					);
 		linphone_sql_request(lc->db, buf);
 		sqlite3_free(buf);
 		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
@@ -225,7 +225,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 
 		peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
-		buf=sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%i,%Q,%i);",
+		buf = sqlite3_mprintf("INSERT INTO history VALUES(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q,%lld,%Q,%i);",
 						local_contact,
 						peer,
 						msg->dir,
@@ -234,10 +234,10 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						msg->is_read,
 						msg->state,
 						msg->external_body_url,
-						msg->time,
+						(int64_t)msg->time,
 						msg->appdata,
 						content_id
- 					);
+					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -250,17 +250,10 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
-		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i) AND utc = %i;",
-								  msg->state,msg->storage_id,msg->time);
+		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i);",
+								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
-	}
-
-	if( msg->state == LinphoneChatMessageStateDelivered
-			|| msg->state == LinphoneChatMessageStateNotDelivered ){
-		// message is not transient anymore, we can remove it from our transient list:
-		msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
-		linphone_chat_message_unref(msg);
 	}
 }
 
@@ -361,7 +354,7 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	MSList *ret;
-	char *buf;
+	char *buf,*buf2;
 	char *peer;
 	uint64_t begin,end;
 	int buf_max_size = 512;
@@ -375,17 +368,24 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 	buf=ms_malloc(buf_max_size);
 	buf=sqlite3_snprintf(buf_max_size-1,buf,"SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC",peer);
 
+
 	if (startm<0) startm=0;
 
-	if (endm>0&&endm>=startm){
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT %i ",buf,endm+1-startm);
+	if ((endm>0&&endm>=startm) || (startm == 0 && endm == 0) ){
+		buf2=ms_strdup_printf("%s LIMIT %i ",buf,endm+1-startm);
+		ms_free(buf);
+		buf = buf2;
 	}else if(startm>0){
-		ms_message("%s(): end is lower than start (%d < %d). No end assumed.",__FUNCTION__,endm,startm);
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s LIMIT -1",buf);
+		ms_message("%s(): end is lower than start (%d < %d). Assuming no end limit.",__FUNCTION__,endm,startm);
+		buf2=ms_strdup_printf("%s LIMIT -1",buf);
+		ms_free(buf);
+		buf = buf2;
 	}
 
 	if (startm>0){
-		buf=sqlite3_snprintf(buf_max_size-1,buf,"%s OFFSET %i ",buf,startm);
+		buf2=ms_strdup_printf("%s OFFSET %i ",buf,startm);
+		ms_free(buf);
+		buf = buf2;
 	}
 
 	begin=ortp_get_cur_time_ms();
@@ -400,7 +400,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 }
 
 MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
-	return linphone_chat_room_get_history_range(cr, 0, nb_message);
+	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
 
@@ -459,7 +459,7 @@ static int migrate_messages_timestamp(void* data,int argc, char** argv, char** c
 	time_t new_time = parse_time_from_db(argv[1]);
 	if( new_time ){
 		/* replace 'time' by -1 and set 'utc' to the timestamp */
-		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%i,time='-1' WHERE id=%i;", new_time, atoi(argv[0]));
+		char *buf =	sqlite3_mprintf("UPDATE history SET utc=%lld,time='-1' WHERE id=%i;", (int64_t)new_time, atoi(argv[0]));
 		if( buf) {
 			linphone_sql_request((sqlite3*)data, buf);
 			sqlite3_free(buf);
@@ -486,7 +486,7 @@ static void linphone_migrate_timestamps(sqlite3* db){
 		uint64_t end;
 		linphone_sql_request(db, "COMMIT");
 		end=ortp_get_cur_time_ms();
-		ms_message("Migrated message timestamps to UTC in %i ms",(int)(end-begin));
+		ms_message("Migrated message timestamps to UTC in %lu ms",(unsigned long)(end-begin));
 	}
 }
 

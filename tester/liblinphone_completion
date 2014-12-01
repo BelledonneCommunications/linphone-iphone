@@ -1,0 +1,113 @@
+# Copyright (C) 2012  Belledonne Comunications, Grenoble, France
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+# Created by Gautier Pelloux-Prayer on 2014/10/24.
+# This script adds auto-completion for liblinphone_tester binary for Bash and
+# zsh. To use it, just type: `source liblinphone_completion`, then use
+# `./liblinphone_tester [tab] to get auto-completions. To use it permanently,
+# source this file in your .rc file
+
+_liblinphone_complete() {
+	local completions command_requiring_argument prev_arg latest_arg available_tasks has_not_set_suite suite_name
+
+	if [ -n "$BASH_VERSION" ]; then
+		set -- "${COMP_WORDS[@]}" #convert them to arguments (eg $1,$#,$@,etc.)
+	elif [ -n "$ZSH_VERSION" ]; then
+		local args
+		read -cA args #read list of arguments user entered
+		set -- "${args[@]}" #convert them to arguments (eg $1,$#,$@,etc.)
+	fi
+	#skip program name
+	program=$1
+	shift
+
+	# if user required help, do not complete anything
+	if ! grep -q -- "--help" <<< "$@"; then
+		# retrieve the last argument
+		latest_arg=""
+		prev_arg=""
+		latest_is_empty=0
+		for arg in "$@"; do
+			if [ ! -z "$arg" ]; then
+				prev_arg="$latest_arg"
+				latest_arg="$arg"
+			else
+				latest_is_empty=1
+			fi
+		done
+
+		# get the tasks available, from --help
+		available_tasks="$($program 2>&1 --help | sed -nE "s/.*--([^ ]*).*/--\\1/p")"
+
+		# these commands expect an argument
+		command_requiring_argument="$($program 2>&1 --help | sed -nE "s/.*--(.*) <.*/--\\1/p")"
+
+		# remove all already provided tasks (it's useless to provide them twice)
+		if [[ ! -z "$@" ]]; then
+			current_tasks=$(echo $@ | grep -Eo -- "--([^ ])*" | tr '\n' '|' | sed 's/|/$|/g')--$
+			if [ ! -z "$current_tasks" ]; then
+				available_tasks=$(echo "$available_tasks" | grep -vE -- "(${current_tasks})")
+			fi
+		fi
+		# remove --test option if --suite is not provided yet!
+		has_not_set_suite=$(grep -q -- "--suite" <<< "$@"; echo $?)
+		if [ $has_not_set_suite = 1 ]; then
+			available_tasks=$(echo "$available_tasks" | grep -v -- --test)
+		fi
+
+		# if latest arg does not start with '--', it is a custom value
+		if [ $latest_is_empty = 0 ] && ! grep -q -- '^--' <<< "$latest_arg"; then
+			# echo "yes!$prev_arg $has_not_set_suite"
+			if [ "$prev_arg" = "--test" ] && [ $has_not_set_suite = 0 ]; then
+				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) (--.*)$/\1/p' |sed "s@\\\\@@g")
+				completions="$($program --list-tests $suite_name)"
+			elif [ "$prev_arg" = "--suite" ] || [ "$prev_arg" = "--list-tests" ]; then
+				completions="$($program --list-suites)"
+			fi
+		elif [ "$latest_arg" = "--test" ]; then
+			if [ $has_not_set_suite = 0 ]; then
+				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) (--.*)$/\1/p' |sed "s@\\\\@@g")
+				completions="$($program --list-tests $suite_name)"
+			fi
+		elif [ "$latest_arg" = "--suite" ] || [ "$latest_arg" = "--list-tests" ]; then
+			completions="$($program --list-suites)"
+		# we are waiting for a custom value, so do not hint anything
+		elif [[ ! -z "$latest_arg" ]] && grep -q -- "^$latest_arg$" <<< "$command_requiring_argument"; then
+			completions=""
+		else
+			completions="$available_tasks"
+		fi
+	fi
+
+	if [ ! -z "$completions"  ]; then
+		if [ -n "$BASH_VERSION" ]; then
+			IFS=$'\n'  #if that even necessary?
+			COMPREPLY=($(compgen -W "${completions}" -- ${COMP_WORDS[COMP_CWORD]}))
+		elif [ -n "$ZSH_VERSION" ]; then
+			reply=( "${(ps:\n:)completions}" )
+		fi
+	fi
+}
+
+for tester in liblinphone_tester mediastreamer2_tester belle_sip_tester; do
+	if [ -n "$BASH_VERSION" ]; then
+		complete -F _liblinphone_complete $tester
+	elif [ -n "$ZSH_VERSION" ]; then
+		compctl -K _liblinphone_complete $tester
+	else
+		echo "Your shell might be not supported! Only bash and zsh tested."
+	fi
+done

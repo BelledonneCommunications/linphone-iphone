@@ -61,4 +61,10 @@ public class LinphonePlayerImpl implements LinphonePlayer {
 	public synchronized void close() {
 		close(nativePtr);
 	}
+	
+	private native void destroy(long nativePtr);
+	@Override
+	protected void finalize() {
+		destroy(nativePtr);
+	}
 }

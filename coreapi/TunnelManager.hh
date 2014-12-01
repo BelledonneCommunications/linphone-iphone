@@ -142,7 +142,15 @@ namespace belledonnecomm {
 		 */
 		bool isConnected() const;
 
+		bool isActivated() const;
 	private:
+		enum State {
+			disabled,
+			connecting,
+			ready,
+			autodetecting
+		};
+
 		enum EventType{
 			UdpMirrorClientEvent,
 			TunnelEvent,
@@ -168,9 +176,9 @@ namespace belledonnecomm {
 	private:
 		void onIterate();
 		void doRegistration();
+		void doUnregistration();
 		void startClient();
-		void stopClient();
-		void autoDetect();
+		bool startAutoDetection();
 		void processTunnelEvent(const Event &ev);
 		void processUdpMirrorEvent(const Event &ev);
 		void postEvent(const Event &ev);
@@ -178,9 +186,7 @@ namespace belledonnecomm {
 	private:
 		LinphoneCore* mCore;
 		LinphoneTunnelMode mMode;
-		bool mAutoDetecting;
-		bool mConnecting;
-		bool mScheduledRegistration;
+		State mState;
 		bool mTunnelizeSipPackets;
 		TunnelClient* mTunnelClient;
 		std::string mHttpUserName;
@@ -194,10 +200,6 @@ namespace belledonnecomm {
 		LinphoneRtpTransportFactories mTransportFactories;
 		Mutex mMutex;
 		std::queue<Event> mEvq;
-#ifndef USE_BELLESIP
-		TunnelSocket *mSipSocket;
-		eXosip_transport_hooks_t mExosipTransport;
-#endif
 	};
 
 /**

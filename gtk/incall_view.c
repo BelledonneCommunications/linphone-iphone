@@ -426,7 +426,9 @@ void linphone_gtk_update_video_button(LinphoneCall *call){
 	GtkWidget *conf_frame;
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	gboolean has_video=linphone_call_params_video_enabled(params);
+	gboolean button_sensitive=FALSE;
 	if (call_view==NULL) return;
+
 	button=linphone_gtk_get_widget(call_view,"video_button");
 
 	gtk_button_set_image(GTK_BUTTON(button),
@@ -436,12 +438,20 @@ void linphone_gtk_update_video_button(LinphoneCall *call){
 		gtk_widget_set_sensitive(button,FALSE);
 		return;
 	}
+	switch(linphone_call_get_state(call)){
+		case LinphoneCallStreamsRunning:
+			button_sensitive=!linphone_call_media_in_progress(call);
+		break;
+		default:
+			button_sensitive=FALSE;
+		break;
+	}
+	gtk_widget_set_sensitive(button,button_sensitive);
 	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button),"signal_connected"))==0){
 		g_signal_connect(G_OBJECT(button),"clicked",(GCallback)video_button_clicked,call);
 		g_object_set_data(G_OBJECT(button),"signal_connected",GINT_TO_POINTER(1));
 	}
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"conf_frame");
-	gtk_widget_set_sensitive(button,linphone_call_get_state(call)==LinphoneCallStreamsRunning);
 	if(conf_frame!=NULL){
 		gtk_widget_set_sensitive(button,FALSE);
 	}
@@ -705,7 +715,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
 	linphone_gtk_in_call_show_video(call);
-	
+
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
@@ -758,7 +768,7 @@ void linphone_gtk_in_call_view_update_duration(LinphoneCall *call){
 	int seconds=duration%60;
 	int minutes=(duration/60)%60;
 	int hours=duration/3600;
-	snprintf(tmp,sizeof(tmp)-1,_("%02i::%02i::%02i"),hours,minutes,seconds);
+	snprintf(tmp,sizeof(tmp)-1,"%02i::%02i::%02i",hours,minutes,seconds);
 	gtk_label_set_text(GTK_LABEL(duration_label),tmp);
 }
 

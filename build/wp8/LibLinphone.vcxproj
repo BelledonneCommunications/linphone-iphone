@@ -53,8 +53,8 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR=".";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;$(ProjectDir)..\..\..\sqlite\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR=".";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -68,13 +68,16 @@
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
     </Link>
-    <CustomBuildStep>
-      <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
-    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>version.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Batch script to get the git version</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;MSG_STORAGE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -82,7 +85,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;MSG_STORAGE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -112,6 +115,7 @@
     <ClCompile Include="..\..\coreapi\callbacks.c" />
     <ClCompile Include="..\..\coreapi\chat.c" />
     <ClCompile Include="..\..\coreapi\conference.c" />
+    <ClCompile Include="..\..\coreapi\content.c" />
     <ClCompile Include="..\..\coreapi\ec-calibrator.c" />
     <ClCompile Include="..\..\coreapi\enum.c" />
     <ClCompile Include="..\..\coreapi\event.c" />
@@ -121,6 +125,7 @@
     <ClCompile Include="..\..\coreapi\linphonecore.c" />
     <ClCompile Include="..\..\coreapi\linphone_tunnel.cc" />
     <ClCompile Include="..\..\coreapi\linphone_tunnel_config.c" />
+    <ClCompile Include="..\..\coreapi\localplayer.c" />
     <ClCompile Include="..\..\coreapi\lpconfig.c" />
     <ClCompile Include="..\..\coreapi\lsd.c" />
     <ClCompile Include="..\..\coreapi\message_storage.c" />
@@ -140,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\coreapi\bellesip_sal\sal_impl.h" />
+    <ClInclude Include="..\..\coreapi\content.h" />
     <ClInclude Include="..\..\coreapi\enum.h" />
     <ClInclude Include="..\..\coreapi\event.h" />
     <ClInclude Include="..\..\coreapi\linphonecore.h" />
@@ -151,6 +157,8 @@
     <ClInclude Include="..\..\coreapi\private.h" />
     <ClInclude Include="..\..\coreapi\sipsetup.h" />
     <ClInclude Include="..\..\coreapi\xml2lpc.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="liblinphone_gitversion.h" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Windows">
@@ -188,6 +196,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\mswp8vid\mswp8vid\mswp8vid.vcxproj">
       <Project>{0565952a-ea62-46a2-8261-f5b4b490da42}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sqlite\sqlite.vcxproj">
+      <Project>{a45d63b9-60de-476c-8836-f8eedbe139d0}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\tunnel\build\wp8\tunnel\tunnel.vcxproj">
       <Project>{59500dd1-b192-4ddf-a402-8a8e3739e032}</Project>

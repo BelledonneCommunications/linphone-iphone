@@ -52,7 +52,7 @@ void CplusplusGenerator::generate(Project *proj){
 
 void CplusplusGenerator::writeEnumMember(ConstField *cf, bool isLast){
 	writeTabs(1);
-	mOutfile<<cf->getName();
+	mOutfile<<cf->getName()<<"="<<cf->getValue();
 	if (!isLast) mOutfile<<",";
 	if (!cf->getHelp().empty()) mOutfile<<"\t/**< "<<cf->getHelp()<<" */";
 	mOutfile<<endl;
@@ -222,7 +222,6 @@ void JavascriptGenerator::writeEnum(Class *klass){
 	list<ConstField*> members=klass->getConstFields();
 	list<ConstField*>::iterator it;
 	string enum_name=getEnumName(klass);
-	int value=0;
 	
 	filename<<to_lower(mCurProj->getName())<<"/"<<to_lower(enum_name)<<".js";
 	mOutfile.open(filename.str().c_str());
@@ -243,7 +242,7 @@ void JavascriptGenerator::writeEnum(Class *klass){
 	string prefix=ConstField::getCommonPrefix(members);
 	size_t prefix_size=prefix.size();
 	
-	for(it=members.begin();it!=members.end();value++){
+	for(it=members.begin();it!=members.end();){
 		ConstField *cf=(*it);
 		if (!cf->getHelp().empty()){
 			writeTabs(1);
@@ -254,7 +253,7 @@ void JavascriptGenerator::writeEnum(Class *klass){
 			mOutfile<<"*/"<<endl;
 		}
 		writeTabs(1);
-		mOutfile<<cf->getName().substr(prefix_size,string::npos)<<" : "<<value;
+		mOutfile<<cf->getName().substr(prefix_size,string::npos)<<" : "<<cf->getValue();
 		if (++it!=members.end()) mOutfile<<",";
 		mOutfile<<endl;
 	}

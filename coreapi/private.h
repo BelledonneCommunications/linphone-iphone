@@ -102,7 +102,7 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
-	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/ 
+	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
 };
@@ -125,12 +125,13 @@ struct _LinphoneCallLog{
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
 	char start_date[128]; /**<Human readable string containing the start date*/
-	int duration; /**<Duration of the call in seconds*/
+	int duration; /**<Duration of the call starting in connected state in seconds*/
 	char *refkey;
 	rtp_stats_t local_stats;
 	rtp_stats_t remote_stats;
 	float quality;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	time_t connected_date_time; /**Connecting date of the call in seconds as expressed in a time_t */
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
 	bool_t video_enabled;
@@ -145,6 +146,17 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
+struct _LinphoneChatMessageCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneChatMessageMsgStateChangedCb msg_state_changed;
+	LinphoneChatMessageFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneChatMessageFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneChatMessageFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneChatMessageCbs);
+
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
 	LinphoneChatMessageOutgoing
@@ -153,6 +165,7 @@ typedef enum _LinphoneChatMessageDir{
 struct _LinphoneChatMessage {
 	belle_sip_object_t base;
 	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
 	LinphoneChatMessageStateChangedCb cb;
@@ -171,6 +184,7 @@ struct _LinphoneChatMessage {
 	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
 	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
 	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
+	char *file_transfer_filepath;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -186,8 +200,7 @@ typedef struct _PortConfig{
 	int rtcp_port;
 }PortConfig;
 
-struct _LinphoneCall
-{
+struct _LinphoneCall{
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneCore *core;
@@ -203,7 +216,6 @@ struct _LinphoneCall
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
-	time_t media_start_time; /*time at which it was accepted, media streams established*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
@@ -237,6 +249,9 @@ struct _LinphoneCall
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	int localdesc_changed;/*not a boolean, contains a mask representing changes*/
 	LinphonePlayer *player;
+
+	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
+	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
@@ -373,8 +388,9 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
-void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
-void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
+void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
@@ -409,8 +425,7 @@ void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
-void linphone_call_set_state_base(LinphoneCall *call, LinphoneCallState cstate, const char *message,bool_t silently);
-
+int _linphone_core_apply_transports(LinphoneCore *lc);
 const char * linphone_core_get_identity(LinphoneCore *lc);
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
@@ -438,6 +453,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
+void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg );
 /**/
 
 struct _LinphoneProxyConfig
@@ -463,17 +479,17 @@ struct _LinphoneProxyConfig
 	LinphoneRegistrationState state;
 	SalOp *publish_op;
 	LinphoneAVPFMode avpf_mode;
-	
+
 	bool_t commit;
 	bool_t reg_sendregister;
 	bool_t publish;
 	bool_t dial_escape_plus;
-	
+
 	bool_t send_publish;
 	bool_t quality_reporting_enabled;
 	uint8_t avpf_rr_interval;
 	uint8_t quality_reporting_interval;
-	
+
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
@@ -768,6 +784,7 @@ struct _LinphoneCore
 	LinphoneReason chat_deny_code;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
+	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
 };
 
 
@@ -884,10 +901,9 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
-void linphone_content_uninit(LinphoneContent * obj);
-void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref);
-LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
+LinphoneContent * linphone_content_new(void);
+LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
@@ -899,8 +915,20 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
+LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+struct _LinphoneContent {
+	belle_sip_object_t base;
+	void *user_data;
+	struct _LinphoneContentPrivate lcp;
+	bool_t owned_fields;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneContent);
+
+
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *
@@ -923,10 +951,13 @@ struct _LinphonePlayer{
 	int (*get_duration)(struct _LinphonePlayer *player);
 	int (*get_position)(struct _LinphonePlayer *player);
 	void (*close)(struct _LinphonePlayer* player);
+	void (*destroy)(struct _LinphonePlayer *player);
 	LinphonePlayerEofCallback cb;
 	void *user_data;
 	void *impl;
 };
+
+void _linphone_player_destroy(LinphonePlayer *player);
 
 
 /*****************************************************************************
@@ -979,7 +1010,9 @@ BELLE_SIP_TYPE_ID(LinphoneCall),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
+BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
+BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig)
@@ -1004,7 +1037,7 @@ void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRo
 void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
 void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
-void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t progress);
+void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /*
@@ -1022,7 +1055,7 @@ void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, 
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
-void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t progress);
+void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);

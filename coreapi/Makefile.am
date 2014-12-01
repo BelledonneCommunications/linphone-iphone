@@ -24,45 +24,61 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h call_log.h call_params.h
+linphone_include_HEADERS=\
+	call_log.h \
+	call_params.h \
+	content.h \
+	event.h \
+	linphonecore.h \
+	linphonecore_utils.h \
+	linphonefriend.h \
+	linphonepresence.h \
+	linphone_tunnel.h \
+	lpc2xml.h \
+	lpconfig.h \
+	sipsetup.h \
+	xml2lpc.h
 
 lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
-	linphonecore.c linphonecore.h private.h\
-	offeranswer.c offeranswer.h\
-	sal.c \
-	callbacks.c \
-	misc.c  \
 	address.c \
-	enum.c enum.h \
-	presence.c \
-	proxy.c \
-	friend.c \
 	authentication.c \
-	lpconfig.c lpconfig.h \
-	chat.c \
-	linphonecall.c \
-	sipsetup.c sipsetup.h \
-	siplogin.c \
-	lsd.c linphonecore_utils.h \
-	ec-calibrator.c \
-	conference.c \
-	message_storage.c \
-	info.c \
-	event.c event.h \
-	contactprovider.c contactprovider.h contact_providers_priv.h \
-	ldap/ldapprovider.c ldap/ldapprovider.h \
-	dict.c \
-	xml.c \
-	xml2lpc.c \
-	lpc2xml.c \
-	remote_provisioning.c \
-	quality_reporting.c quality_reporting.h\
+	callbacks.c \
 	call_log.c \
 	call_params.c \
+	chat.c \
+	conference.c \
+	contactprovider.c contactprovider.h contact_providers_priv.h \
+	content.c \
+	dict.c \
+	ec-calibrator.c \
+	enum.c enum.h \
+	event.c event.h \
+	friend.c \
+	info.c \
+	ldap/ldapprovider.c ldap/ldapprovider.h \
+	linphonecall.c \
+	linphonecore.c linphonecore.h \
+	linphonecore_utils.h \
+	localplayer.c \
+	lpc2xml.c \
+	lpconfig.c lpconfig.h \
+	lsd.c \
+	message_storage.c \
+	misc.c  \
+	offeranswer.c offeranswer.h\
 	player.c \
-	fileplayer.c \
+	presence.c \
+	private.h \
+	proxy.c \
+	quality_reporting.c quality_reporting.h\
+	remote_provisioning.c \
+	sal.c \
+	siplogin.c \
+	sipsetup.c sipsetup.h \
+	xml2lpc.c \
+	xml.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
