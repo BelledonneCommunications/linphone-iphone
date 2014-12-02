@@ -95,6 +95,7 @@ if(ENABLE_NOTIFY)
 		set(ENABLE_NOTIFY OFF CACHE BOOL "Enable libnotify support." FORCE)
 	endif()
 endif()
+find_package(Gettext)
 
 
 include_directories(
@@ -114,7 +115,7 @@ if(MSVC)
 	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
 endif()
 
-add_definitions(-DIN_LINPHONE)
+add_definitions("-DIN_LINPHONE")
 
 
 if(MSVC)
@@ -163,6 +164,7 @@ add_subdirectory(share)
 if(ENABLE_GTK_UI)
 	add_subdirectory(gtk)
 	add_subdirectory(pixmaps)
+	add_subdirectory(po)
 endif()
 if(ENABLE_TOOLS)
 	add_subdirectory(tools)

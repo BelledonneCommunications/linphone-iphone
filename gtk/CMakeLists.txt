@@ -65,6 +65,10 @@ set(SOURCE_FILES
 	videowindow.c
 )
 
+if(GETTEXT_FOUND)
+	add_definitions("-DENABLE_NLS")
+endif()
+
 add_executable(linphone-gtk ${SOURCE_FILES})
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS})
