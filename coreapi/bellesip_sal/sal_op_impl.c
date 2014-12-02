@@ -313,7 +313,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			}
 		}else{
 #ifdef TUNNEL_ENABLED
-			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(udplp,belle_sip_tunnel_listening_point_t)){
+			if (udplp && BELLE_SIP_OBJECT_IS_INSTANCE_OF(udplp,belle_sip_tunnel_listening_point_t)){
 				/* our tunnel mode only supports UDP. Force transport to be set to UDP */
 				belle_sip_uri_set_transport_param(next_hop_uri,"udp");
 			}
