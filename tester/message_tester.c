@@ -358,6 +358,7 @@ static void text_message_with_ack(void) {
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 		CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 	}

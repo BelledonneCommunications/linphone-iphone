@@ -103,6 +103,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 
 void reset_counters( stats* counters) {
+	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
 	memset(counters,0,sizeof(stats));
 }
 
