@@ -1032,7 +1032,21 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addListener(JNIEnv* env,
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* env, jobject thiz, jlong lc, jobject jlistener) {
-	//TODO
+	MSList* iterator;
+	LinphoneCore *core = (LinphoneCore*)lc;
+	jobject listener = env->NewGlobalRef(jlistener);
+	for (iterator = core->vtables; iterator != NULL; iterator = iterator->next) {
+		LinphoneCoreVTable *vTable = (LinphoneCoreVTable*)(iterator->data);
+		if (vTable) {
+			LinphoneCoreData *data = (LinphoneCoreData*) linphone_core_v_table_get_user_data(vTable);
+			if (data && env->IsSameObject(data->listener, listener)) {
+				linphone_core_remove_listener(core, vTable);
+				linphone_core_v_table_destroy(vTable);
+				break;
+			}
+		}
+	}
+	env->DeleteGlobalRef(listener);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_migrateToMultiTransport(JNIEnv*  env
