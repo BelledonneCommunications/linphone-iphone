@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-01 14:27+0100\n"
+"POT-Creation-Date: 2014-12-03 13:39+0100\n"
 "PO-Revision-Date: 2014-12-01 13:28+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/linphone-gtk/"
@@ -209,7 +209,7 @@ msgstr "Linphone - ein Internet-Video-Telefon"
 msgid "%s (Default)"
 msgstr "%s (Vorgabe)"
 
-#: ../gtk/main.c:2006 ../coreapi/callbacks.c:983
+#: ../gtk/main.c:2006 ../coreapi/callbacks.c:986
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Vermittlung nach %s"
@@ -789,6 +789,19 @@ msgstr "gut"
 msgid "Too loud"
 msgstr "zu laut"
 
+#: ../gtk/audio_assistant.c:183
+#, fuzzy
+msgid "Did you hear three beeps ?"
+msgstr "spiele drei Pieptöne ab"
+
+#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+msgid "Sound preferences not found "
+msgstr ""
+
+#: ../gtk/audio_assistant.c:306
+msgid "Cannot launch system sound control "
+msgstr ""
+
 #: ../gtk/audio_assistant.c:318
 msgid ""
 "Welcome!\n"
@@ -810,6 +823,10 @@ msgstr "aufgenommene Lautstärke"
 msgid "No voice"
 msgstr "Keine Stimme"
 
+#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+msgid "System sound preferences"
+msgstr ""
+
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
 msgstr "Wiedergabegerät"
@@ -825,6 +842,14 @@ msgstr "Drücken Sie den Aufnahmeknopf und sagen Sie etwas"
 #: ../gtk/audio_assistant.c:404
 msgid "Listen to your record voice"
 msgstr "Hören Sie das Aufgenommene"
+
+#: ../gtk/audio_assistant.c:405
+msgid "Record"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:406
+msgid "Play"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
@@ -1884,7 +1909,7 @@ msgstr "Anruf wird von %s entgegengenommen."
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Inkompatibel, prüfe Codecs oder Sicherheitseinstellungen..."
 
-#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:826
+#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:829
 msgid "Incompatible media parameters."
 msgstr "Inkompatible Medienparameter."
 
@@ -1927,34 +1952,34 @@ msgstr "Anruf abgewiesen"
 msgid "Request timeout."
 msgstr "Zeitüberschreitung bei der Anfrage"
 
-#: ../coreapi/callbacks.c:780
+#: ../coreapi/callbacks.c:783
 msgid "Redirected"
 msgstr "Umgeleitet"
 
-#: ../coreapi/callbacks.c:835
+#: ../coreapi/callbacks.c:838
 msgid "Call failed."
 msgstr "Anruf fehlgeschlagen."
 
-#: ../coreapi/callbacks.c:913
+#: ../coreapi/callbacks.c:916
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrierung auf %s erfolgreich."
 
-#: ../coreapi/callbacks.c:914
+#: ../coreapi/callbacks.c:917
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Abmeldung von %s ist erfolgt."
 
-#: ../coreapi/callbacks.c:932
+#: ../coreapi/callbacks.c:935
 msgid "no response timeout"
 msgstr "Zeitüberschreitung bei der Antwort"
 
-#: ../coreapi/callbacks.c:935
+#: ../coreapi/callbacks.c:938
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrierung auf %s fehlgeschlagen: %s"
 
-#: ../coreapi/callbacks.c:942
+#: ../coreapi/callbacks.c:945
 msgid "Service unavailable, retrying"
 msgstr "Service nicht verfügbar, versuche erneut"
 
@@ -1980,6 +2005,10 @@ msgstr ""
 
 #: ../coreapi/call_log.c:215
 msgid "missed"
+msgstr ""
+
+#: ../coreapi/call_log.c:218
+msgid "unknown"
 msgstr ""
 
 #: ../coreapi/call_log.c:220

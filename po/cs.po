@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-01 14:27+0100\n"
+"POT-Creation-Date: 2014-12-03 13:39+0100\n"
 "PO-Revision-Date: 2014-12-01 13:28+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/linphone-gtk/"
@@ -205,7 +205,7 @@ msgstr "Lipnhone – internetový videofon"
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:2006 ../coreapi/callbacks.c:983
+#: ../gtk/main.c:2006 ../coreapi/callbacks.c:986
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
@@ -780,6 +780,18 @@ msgstr ""
 msgid "Too loud"
 msgstr ""
 
+#: ../gtk/audio_assistant.c:183
+msgid "Did you hear three beeps ?"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+msgid "Sound preferences not found "
+msgstr ""
+
+#: ../gtk/audio_assistant.c:306
+msgid "Cannot launch system sound control "
+msgstr ""
+
 #: ../gtk/audio_assistant.c:318
 msgid ""
 "Welcome!\n"
@@ -798,6 +810,10 @@ msgstr ""
 msgid "No voice"
 msgstr ""
 
+#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+msgid "System sound preferences"
+msgstr ""
+
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
 msgstr ""
@@ -812,6 +828,14 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:404
 msgid "Listen to your record voice"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:405
+msgid "Record"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:406
+msgid "Play"
 msgstr ""
 
 #: ../gtk/audio_assistant.c:433
@@ -1849,7 +1873,7 @@ msgstr "Hovor přijat kým: %s."
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Není slučitelné. Zkontrolujte nastavení kodeků a zabezpečení…"
 
-#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:826
+#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:829
 msgid "Incompatible media parameters."
 msgstr "Neslučitelné parametry médií."
 
@@ -1892,34 +1916,34 @@ msgstr "Volání odmítnuto."
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:780
+#: ../coreapi/callbacks.c:783
 msgid "Redirected"
 msgstr "Přesměrováno"
 
-#: ../coreapi/callbacks.c:835
+#: ../coreapi/callbacks.c:838
 msgid "Call failed."
 msgstr "Volání se nezdařilo."
 
-#: ../coreapi/callbacks.c:913
+#: ../coreapi/callbacks.c:916
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: ../coreapi/callbacks.c:914
+#: ../coreapi/callbacks.c:917
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Odregistrování z %s hotovo."
 
-#: ../coreapi/callbacks.c:932
+#: ../coreapi/callbacks.c:935
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/callbacks.c:935
+#: ../coreapi/callbacks.c:938
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/callbacks.c:942
+#: ../coreapi/callbacks.c:945
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1946,6 +1970,10 @@ msgstr ""
 
 #: ../coreapi/call_log.c:215
 msgid "missed"
+msgstr ""
+
+#: ../coreapi/call_log.c:218
+msgid "unknown"
 msgstr ""
 
 #: ../coreapi/call_log.c:220

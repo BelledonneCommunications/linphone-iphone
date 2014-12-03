@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-01 14:27+0100\n"
-"PO-Revision-Date: 2014-12-01 13:28+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"PO-Revision-Date: 2014-12-01 17:44+0000\n"
+"Last-Translator: محيي الدين <tx99h4@hotmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/linphone-gtk/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -768,7 +768,7 @@ msgstr "صاخب"
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr "مرحبا !\nسيمكنك هذا المرشد من تهيئة إعدادات الصوت للِنْفُونْ"
+msgstr "مرحبا !\nسيمكنك هذا المرشد من تهيئة إعدادات الصوت من أجل لِنْفُونْ"
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -1916,15 +1916,15 @@ msgstr[5] "فاتتك %i مكالمة."
 
 #: ../coreapi/call_log.c:209
 msgid "aborted"
-msgstr ""
+msgstr "أُجهِضت"
 
 #: ../coreapi/call_log.c:212
 msgid "completed"
-msgstr ""
+msgstr "اكتملت"
 
 #: ../coreapi/call_log.c:215
 msgid "missed"
-msgstr ""
+msgstr "فاتت"
 
 #: ../coreapi/call_log.c:220
 #, c-format
@@ -1934,13 +1934,13 @@ msgid ""
 "To: %s\n"
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
-msgstr ""
+msgstr "%s في %s\nمن : %s\nإلى : %s\nالحالة : %s\nالمدة : %i دقيقة %i ثانية\n"
 
 #: ../coreapi/call_log.c:221
 msgid "Outgoing call"
-msgstr ""
+msgstr "المكالمة الصادرة"
 
 #: ../gtk/videowindow.c:66
 #, c-format
 msgid "Cannot play %s."
-msgstr ""
+msgstr "لم يتمكن من تشغيل %s"
