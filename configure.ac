@@ -129,7 +129,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW he sr"
+ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
