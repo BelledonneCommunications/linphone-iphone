@@ -1820,6 +1820,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 
 	/*use playfile for callee to avoid locking on capture card*/
 	linphone_core_use_files (laure->lc,TRUE);
+	linphone_core_use_files (marie->lc,TRUE);
 	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
 	linphone_core_set_play_file(laure->lc,hellopath);
 	if (enable_caller_privacy)
@@ -1844,7 +1845,8 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 		LinphoneCall *call=(LinphoneCall *)iterator->data;
 		if (call != pauline_called_by_marie) {
 			/*fine, this is the call waiting*/
-			linphone_core_accept_call(pauline->lc,pauline_called_by_laure=call);
+			pauline_called_by_laure=call;
+			linphone_core_accept_call(pauline->lc,pauline_called_by_laure);
 		}
 	}
 

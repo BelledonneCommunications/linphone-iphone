@@ -772,8 +772,11 @@ static void call_failure(SalOp *op){
 					char* url = linphone_address_as_string(redirection_to);
 					ms_warning("Redirecting call [%p] to %s",call, url);
 					ms_free(url);
-					linphone_call_create_op(call);
-					linphone_core_start_invite(lc, call, redirection_to);
+					if( call->log->to != NULL ) {
+						linphone_address_unref(call->log->to);
+					}
+					call->log->to = linphone_address_ref(redirection_to);
+					linphone_core_restart_invite(lc, call);
 					return;
 				}
 			}
