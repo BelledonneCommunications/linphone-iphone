@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-03 13:39+0100\n"
-"PO-Revision-Date: 2014-12-01 13:41+0000\n"
+"PO-Revision-Date: 2014-12-04 09:51+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/fr/)\n"
@@ -788,17 +788,16 @@ msgid "Too loud"
 msgstr "Trop bruyant"
 
 #: ../gtk/audio_assistant.c:183
-#, fuzzy
 msgid "Did you hear three beeps ?"
-msgstr "Joue trois bips"
+msgstr "Avez-vous entendu trois bips ?"
 
 #: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
 msgid "Sound preferences not found "
-msgstr ""
+msgstr "Préférences son non trouvé"
 
 #: ../gtk/audio_assistant.c:306
 msgid "Cannot launch system sound control "
-msgstr ""
+msgstr "Impossible de démarrer le contrôleur système du son"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
@@ -823,7 +822,7 @@ msgstr "Silencieux"
 
 #: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
 msgid "System sound preferences"
-msgstr ""
+msgstr "Préférences son système"
 
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
@@ -843,11 +842,11 @@ msgstr "Ecoutez votre voix enregistrée"
 
 #: ../gtk/audio_assistant.c:405
 msgid "Record"
-msgstr ""
+msgstr "Enregistrer"
 
 #: ../gtk/audio_assistant.c:406
 msgid "Play"
-msgstr ""
+msgstr "Jouer"
 
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
@@ -2007,7 +2006,7 @@ msgstr "manqué"
 
 #: ../coreapi/call_log.c:218
 msgid "unknown"
-msgstr ""
+msgstr "inconnu"
 
 #: ../coreapi/call_log.c:220
 #, c-format

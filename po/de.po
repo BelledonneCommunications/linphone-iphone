@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-03 13:39+0100\n"
-"PO-Revision-Date: 2014-12-01 13:28+0000\n"
+"PO-Revision-Date: 2014-12-04 09:51+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/de/)\n"
@@ -790,9 +790,8 @@ msgid "Too loud"
 msgstr "zu laut"
 
 #: ../gtk/audio_assistant.c:183
-#, fuzzy
 msgid "Did you hear three beeps ?"
-msgstr "spiele drei Pieptöne ab"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
 msgid "Sound preferences not found "

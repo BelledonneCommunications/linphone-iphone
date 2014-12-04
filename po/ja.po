@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-03 13:39+0100\n"
-"PO-Revision-Date: 2014-12-01 16:32+0000\n"
+"PO-Revision-Date: 2014-12-04 09:51+0000\n"
 "Last-Translator: Alexander\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ja/)\n"
@@ -645,7 +645,7 @@ msgstr "<b>着信</b>"
 
 #: ../gtk/incall_view.c:562
 msgid "good"
-msgstr ""
+msgstr "良い"
 
 #: ../gtk/incall_view.c:564
 msgid "average"
@@ -653,7 +653,7 @@ msgstr "アベレージ"
 
 #: ../gtk/incall_view.c:566
 msgid "poor"
-msgstr ""
+msgstr "悪い"
 
 #: ../gtk/incall_view.c:568
 msgid "very poor"
@@ -674,19 +674,19 @@ msgstr "SRTPのセキュリティ"
 #: ../gtk/incall_view.c:685
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr ""
+msgstr "ZRTP によるセキュリティ - [auth token: %s]"
 
 #: ../gtk/incall_view.c:691
 msgid "Set unverified"
-msgstr ""
+msgstr "セット未検証"
 
 #: ../gtk/incall_view.c:691 ../gtk/main.ui.h:4
 msgid "Set verified"
-msgstr ""
+msgstr "セット検証済"
 
 #: ../gtk/incall_view.c:722
 msgid "In conference"
-msgstr ""
+msgstr "会議で"
 
 #: ../gtk/incall_view.c:722
 msgid "<b>In call</b>"
@@ -702,7 +702,7 @@ msgstr ""
 
 #: ../gtk/incall_view.c:825
 msgid "Transfer in progress"
-msgstr ""
+msgstr "進行中の転送"
 
 #: ../gtk/incall_view.c:828
 msgid "Transfer done."
@@ -748,31 +748,31 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:98
 msgid "No voice detected"
-msgstr ""
+msgstr "音声が検出できません"
 
 #: ../gtk/audio_assistant.c:99
 msgid "Too low"
-msgstr ""
+msgstr "小さい"
 
 #: ../gtk/audio_assistant.c:100
 msgid "Good"
-msgstr ""
+msgstr "丁度よい"
 
 #: ../gtk/audio_assistant.c:101
 msgid "Too loud"
-msgstr ""
+msgstr "大きい"
 
 #: ../gtk/audio_assistant.c:183
 msgid "Did you hear three beeps ?"
-msgstr ""
+msgstr "3回のビープ音が聞こえましたか？"
 
 #: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
 msgid "Sound preferences not found "
-msgstr ""
+msgstr "音声の設定が見つかりません"
 
 #: ../gtk/audio_assistant.c:306
 msgid "Cannot launch system sound control "
-msgstr ""
+msgstr "音声制御システムを起動できません"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""

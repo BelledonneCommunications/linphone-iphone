@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-03 13:39+0100\n"
-"PO-Revision-Date: 2014-12-02 10:05+0000\n"
+"PO-Revision-Date: 2014-12-04 09:51+0000\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/sr/)\n"
@@ -787,17 +787,16 @@ msgid "Too loud"
 msgstr "Сувише гласан"
 
 #: ../gtk/audio_assistant.c:183
-#, fuzzy
 msgid "Did you hear three beeps ?"
-msgstr "Пусти три писка"
+msgstr "Да ли сте чули три писка ?"
 
 #: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
 msgid "Sound preferences not found "
-msgstr ""
+msgstr "Нисам пронашао поставке звука "
 
 #: ../gtk/audio_assistant.c:306
 msgid "Cannot launch system sound control "
-msgstr ""
+msgstr "Не могу да покренем управљање звуком система "
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
@@ -821,7 +820,7 @@ msgstr "Нема гласа"
 
 #: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
 msgid "System sound preferences"
-msgstr ""
+msgstr "Поставке звука система"
 
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
@@ -841,11 +840,11 @@ msgstr "Слушајте ваш снимљени глас"
 
 #: ../gtk/audio_assistant.c:405
 msgid "Record"
-msgstr ""
+msgstr "Сними"
 
 #: ../gtk/audio_assistant.c:406
 msgid "Play"
-msgstr ""
+msgstr "Пусти"
 
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
@@ -2003,7 +2002,7 @@ msgstr "пропуштен"
 
 #: ../coreapi/call_log.c:218
 msgid "unknown"
-msgstr ""
+msgstr "непознато"
 
 #: ../coreapi/call_log.c:220
 #, c-format
