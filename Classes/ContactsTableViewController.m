@@ -173,8 +173,12 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 					if ([ContactSelection getNameOrEmailFilter] == nil ||
 						(ms_strcmpfuz([[[ContactSelection getNameOrEmailFilter] lowercaseString] UTF8String], [[name lowercaseString] UTF8String]) == 0)) {
 
+						//Get first char. However translate them to ASCII first, because foreign languages (spanish) use tildes for instance
+						NSString *firstCharUTF8 = [[name substringToIndex:1] uppercaseString];
+						NSData *data = [firstCharUTF8 dataUsingEncoding:NSASCIIStringEncoding
+													 allowLossyConversion:YES];
+						NSString *firstChar = [[[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] autorelease];
 						// Put in correct subDic
-						NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 						if([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {
 							firstChar = @"#";
 						}
