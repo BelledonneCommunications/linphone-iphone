@@ -205,7 +205,8 @@ MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
 MACAPPDMG=$(PACKAGE)-$(VERSION).dmg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
-
+#a path prefix where additional libs can be cherry-picked by the bundler.
+LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=/usr/local
 
 bundle:
 	rm -rf $(INSTALLDIR)
@@ -215,6 +216,7 @@ bundle:
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
+	LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=$(LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
