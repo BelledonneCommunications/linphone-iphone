@@ -559,8 +559,8 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
 #ifdef HAVE_ZLIB
-		core->log_collection_upload_information->type = "application";
-		core->log_collection_upload_information->subtype = "gzip";
+		linphone_content_set_type(core->log_collection_upload_information, "application");
+		linphone_content_set_subtype(core->log_collection_upload_information, "gzip");
 #else
 		linphone_content_set_type(core->log_collection_upload_information, "text");
 		linphone_content_set_subtype(core->log_collection_upload_information,"plain");
