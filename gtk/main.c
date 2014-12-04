@@ -2101,6 +2101,7 @@ int main(int argc, char *argv[]){
 	LpConfig *factory;
 	const char *db_file;
 	GError *error=NULL;
+	const char *tmp;
 
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
@@ -2110,6 +2111,8 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 
 	config_file=linphone_gtk_get_config_file(NULL);
+	
+	workingdir= (tmp=g_getenv("LINPHONE_WORKDIR")) ? g_strdup(tmp) : NULL;
 
 #ifdef WIN32
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
