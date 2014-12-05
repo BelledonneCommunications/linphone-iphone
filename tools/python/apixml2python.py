@@ -42,10 +42,7 @@ blacklisted_functions = [
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
-	'linphone_chat_message_get_file_transfer_information',	# missing LinphoneContent
-	'linphone_chat_message_start_file_download',	# to be handwritten because of callback
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
-	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
 	'linphone_core_add_listener',
 	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_log_collection',	# need to handle class properties
@@ -55,7 +52,6 @@ blacklisted_functions = [
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
@@ -66,12 +62,6 @@ blacklisted_functions = [
 	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_set_sip_transports',	# missing LCSipTransports
-	'linphone_core_subscribe',	# missing LinphoneContent
-	'linphone_event_notify',	# missing LinphoneContent
-	'linphone_event_send_publish',	# missing LinphoneContent
-	'linphone_event_send_subscribe',	# missing LinphoneContent
-	'linphone_event_update_publish',	# missing LinphoneContent
-	'linphone_event_update_subscribe',	# missing LinphoneContent
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
