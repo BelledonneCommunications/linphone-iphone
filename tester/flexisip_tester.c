@@ -573,6 +573,7 @@ static void early_media_call_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,3000));
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
 	
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie1_call=linphone_core_get_current_call(marie1->lc);
@@ -580,9 +581,12 @@ static void early_media_call_forking(void) {
 	
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,3000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70
+					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<90);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70
+					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<90);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70
+					&& linphone_call_get_audio_stats(marie2_call)->download_bandwidth<90);
 	
 	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
@@ -593,8 +597,10 @@ static void early_media_call_forking(void) {
 	
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,1000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71
+					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<91 );
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71
+					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<91 );
 	
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
