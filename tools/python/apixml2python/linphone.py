@@ -235,7 +235,12 @@ class MethodDefinition:
 			self.return_type = self.xml_method_return.get('type')
 			self.return_complete_type = self.xml_method_return.get('completetype')
 			self.return_contained_type = self.xml_method_return.get('containedtype')
-		if self.return_complete_type != 'void':
+		if is_callback(self.return_complete_type):
+			body += "\tPyObject * pyresult;\n"
+			body += "\tPyObject * pyret;\n"
+			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
+			self.build_value_format = argument_type.fmt_str
+		elif self.return_complete_type != 'void':
 			body += "\t" + self.return_complete_type + " cresult;\n"
 			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
 			self.build_value_format = argument_type.fmt_str
@@ -343,14 +348,17 @@ class MethodDefinition:
 				arg_names.append(arg_name + "_native_obj")
 			else:
 				arg_names.append(arg_name)
-		if self.return_complete_type != 'void':
-			c_function_call_code += "cresult = "
-		c_function_call_code += self.method_node.get('name') + "("
-		if self.self_arg is not None:
-			c_function_call_code += "native_ptr"
-			if len(arg_names) > 0:
-				c_function_call_code += ', '
-		c_function_call_code += ', '.join(arg_names) + ");"
+		if is_callback(self.return_complete_type):
+			c_function_call_code = "pyresult = ((pylinphone_{class_name}Object *)self)->{callback_name};".format(class_name=self.class_['class_name'], callback_name=compute_event_name(self.return_complete_type, self.class_['class_name']))
+		else:
+			if self.return_complete_type != 'void':
+				c_function_call_code += "cresult = "
+			c_function_call_code += self.method_node.get('name') + "("
+			if self.self_arg is not None:
+				c_function_call_code += "native_ptr"
+				if len(arg_names) > 0:
+					c_function_call_code += ', '
+			c_function_call_code += ', '.join(arg_names) + ");"
 		from_native_pointer_code = ''
 		convert_from_code = ''
 		build_value_code = ''
@@ -676,7 +684,8 @@ class SetterMethodDefinition(MethodDefinition):
 		if is_callback(self.first_argument_type.complete_type):
 			callback_setting_code = \
 """Py_XDECREF(((pylinphone_{class_name}Object *)self)->{callback_name});
-	((pylinphone_{class_name}Object *)self)->{callback_name} = Py_INCREF(value);
+	Py_INCREF(value);
+	((pylinphone_{class_name}Object *)self)->{callback_name} = value;
 """.format(class_name=self.class_['class_name'], callback_name=compute_event_name(self.first_arg_complete_type, self.class_['class_name']))
 		if (self.first_argument_type.convert_func is None) or \
 			(self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_func is not None):
