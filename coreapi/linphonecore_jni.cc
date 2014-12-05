@@ -3074,6 +3074,19 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDeviceRotation(JNIEnv
 	linphone_core_set_device_rotation((LinphoneCore*)lc,rotation);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRemoteRingbackTone(JNIEnv *env, jobject thiz, jlong lc, jstring jtone){
+	const char* tone = NULL;
+	if (jtone) tone=env->GetStringUTFChars(jtone, NULL);
+	linphone_core_set_remote_ringback_tone((LinphoneCore*)lc,tone);
+	if (tone) env->ReleaseStringUTFChars(jtone,tone);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getRemoteRingbackTone(JNIEnv *env, jobject thiz, jlong lc){
+	const char *ret= linphone_core_get_remote_ringback_tone((LinphoneCore*)lc);
+	if (ret==NULL) return NULL;
+	jstring jvalue =env->NewStringUTF(ret);
+	return jvalue;
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFirewallPolicy(JNIEnv *env, jobject thiz, jlong lc, jint enum_value){
 	linphone_core_set_firewall_policy((LinphoneCore*)lc,(LinphoneFirewallPolicy)enum_value);

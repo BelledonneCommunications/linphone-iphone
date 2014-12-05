@@ -1799,4 +1799,17 @@ public interface LinphoneCore {
 	 * @param listener to remove
 	 */
 	public void removeListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Specifies a ring back tone to be played to far end during incoming calls, when early media is requested.
+	 * @param file
+	 */
+	public void setRemoteRingbackTone(String file);
+
+	/**
+	 * Return the ringback tone file used when doing early media. It may be null.
+	 * @return the ringback tone file path.
+	 */
+	String getRemoteRingbackTone();
+	
 }
