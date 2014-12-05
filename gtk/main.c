@@ -77,6 +77,7 @@ void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
 void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data);
 static void linphone_gtk_init_ui(void);
+static void linphone_gtk_quit(void);
 
 #ifndef HAVE_GTK_OSX
 static gint main_window_x=0;
@@ -90,6 +91,7 @@ static int start_option = START_LINPHONE;
 static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
 static gboolean run_audio_assistant=FALSE;
+static gboolean selftest=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
@@ -161,6 +163,13 @@ static GOptionEntry linphone_options[]={
 		.arg = G_OPTION_ARG_NONE,
 		.arg_data = (gpointer) &run_audio_assistant,
 		.description = N_("Run the audio assistant")
+	},
+	{
+		.long_name = "selftest",
+		.short_name = '\0',
+		.arg = G_OPTION_ARG_NONE,
+		.arg_data = (gpointer) &selftest,
+		.description = N_("Run self test and exit 0 if succeed")
 	},
 	{0}
 };
@@ -1319,6 +1328,9 @@ static void linphone_gtk_global_state_changed(LinphoneCore *lc, LinphoneGlobalSt
 		break;
 		case LinphoneGlobalOn:
 			linphone_gtk_init_ui();
+			if (selftest) {
+				gtk_timeout_add(300,(GtkFunction)gtk_main_quit,NULL);
+			}
 		break;
 		default:
 		break;
