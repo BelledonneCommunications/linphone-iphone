@@ -97,9 +97,15 @@ MSList * PyList_AsMSListOf{{c_contained_type}}(PyObject *pyl) {
 
 {{/mslist_types}}
 
-{{#events}}
+{{#core_events}}
 {{{event_callback_definition}}}
-{{/events}}
+{{/core_events}}
+
+{{#classes}}
+{{#class_events}}
+{{{event_callback_definition}}}
+{{/class_events}}
+{{/classes}}
 
 {{#classes}}
 

@@ -95,7 +95,7 @@ void linphone_chat_message_cbs_set_user_data(LinphoneChatMessageCbs *cbs, void *
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current message state changed callback.
  */
-LinphoneChatMessageMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
 	return cbs->msg_state_changed;
 }
 
@@ -104,7 +104,7 @@ LinphoneChatMessageMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_cha
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The message state changed callback to be used.
  */
-void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageMsgStateChangedCb cb) {
+void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb) {
 	cbs->msg_state_changed = cb;
 }
 
@@ -113,7 +113,7 @@ void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer receive callback.
  */
-LinphoneChatMessageFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_recv;
 }
 
@@ -122,7 +122,7 @@ LinphoneChatMessageFileTransferRecvCb linphone_chat_message_cbs_get_file_transfe
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer receive callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferRecvCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb) {
 	cbs->file_transfer_recv = cb;
 }
 
@@ -131,7 +131,7 @@ void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cb
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer send callback.
  */
-LinphoneChatMessageFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_send;
 }
 
@@ -140,7 +140,7 @@ LinphoneChatMessageFileTransferSendCb linphone_chat_message_cbs_get_file_transfe
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer send callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferSendCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb) {
 	cbs->file_transfer_send = cb;
 }
 
@@ -149,7 +149,7 @@ void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cb
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer progress indication callback.
  */
-LinphoneChatMessageFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_progress_indication;
 }
 
@@ -158,7 +158,7 @@ LinphoneChatMessageFileTransferProgressIndicationCb linphone_chat_message_cbs_ge
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer progress indication callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferProgressIndicationCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
 	cbs->file_transfer_progress_indication = cb;
 }
 

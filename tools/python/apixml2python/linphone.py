@@ -25,9 +25,12 @@ def strip_leading_linphone(s):
 	else:
 		return s
 
-def compute_event_name(s):
+def is_callback(s):
+	return s.startswith('Linphone') and s.endswith('Cb')
+
+def compute_event_name(s, className):
 	s = strip_leading_linphone(s)
-	s = s[4:-2] # Remove leading 'Core' and tailing 'Cb'
+	s = s[len(className):-2] # Remove leading class name and tailing 'Cb'
 	event_name = ''
 	first = True
 	for l in s:
@@ -198,6 +201,10 @@ class ArgumentType:
 				self.convert_func = 'PyInt_AsLong'
 				self.fmt_str = 'i'
 				self.cfmt_str = '%d'
+			elif is_callback(self.complete_type):
+				self.type_str = 'callable'
+				self.check_func = 'PyCallable_Check'
+				self.cnativefmt_str = None
 			elif '*' in splitted_type:
 				self.type_str = 'linphone.' + strip_leading_linphone(self.basic_type)
 				self.use_native_pointer = True
@@ -245,7 +252,9 @@ class MethodDefinition:
 			arg_contained_type = xml_method_arg.get('containedtype')
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			self.parse_tuple_format += argument_type.fmt_str
-			if argument_type.fmt_str == 'O' and argument_type.use_native_pointer:
+			if is_callback(arg_complete_type):
+				body += "\tPyObject * {arg_name};\n".format(arg_name=arg_name)
+			elif argument_type.fmt_str == 'O' and argument_type.use_native_pointer:
 				body += "\tPyObject * " + arg_name + ";\n"
 				body += "\t" + arg_complete_type + " " + arg_name + "_native_ptr = NULL;\n"
 			elif argument_type.fmt_str == 'O' and argument_type.convert_func is not None:
@@ -308,7 +317,7 @@ class MethodDefinition:
 			argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self.linphone_module)
 			fmt += argument_type.cfmt_str
 			args.append(arg_name)
-			if argument_type.fmt_str == 'O':
+			if argument_type.fmt_str == 'O' and argument_type.cnativefmt_str is not None:
 				fmt += ' [' + argument_type.cnativefmt_str + ']'
 				if argument_type.use_native_pointer:
 					args.append(arg_name + '_native_ptr')
@@ -663,6 +672,12 @@ class SetterMethodDefinition(MethodDefinition):
 	}}
 """.format(checknotnone=checknotnone, checkfunc=self.first_argument_type.check_func, attribute_name=self.attribute_name, type_str=self.first_argument_type.type_str)
 		attribute_conversion_code = ''
+		callback_setting_code = ''
+		if is_callback(self.first_argument_type.complete_type):
+			callback_setting_code = \
+"""Py_XDECREF(((pylinphone_{class_name}Object *)self)->{callback_name});
+	((pylinphone_{class_name}Object *)self)->{callback_name} = Py_INCREF(value);
+""".format(class_name=self.class_['class_name'], callback_name=compute_event_name(self.first_arg_complete_type, self.class_['class_name']))
 		if (self.first_argument_type.convert_func is None) or \
 			(self.first_argument_type.fmt_str == 'O' and self.first_argument_type.convert_func is not None):
 			attribute_conversion_code += "{arg_name} = value;\n".format(arg_name="_" + self.first_arg_name)
@@ -693,14 +708,21 @@ class SetterMethodDefinition(MethodDefinition):
 	}}
 	{attribute_type_check_code}
 	{attribute_conversion_code}
+	{callback_setting_code}
 	{attribute_native_ptr_check_code}
 """.format(attribute_name=self.attribute_name,
 		native_ptr_check_code=self.format_class_native_pointer_check(True),
 		attribute_type_check_code=attribute_type_check_code,
 		attribute_conversion_code=attribute_conversion_code,
+		callback_setting_code=callback_setting_code,
 		attribute_native_ptr_check_code=attribute_native_ptr_check_code)
 
 	def format_c_function_call(self):
+		if is_callback(self.first_argument_type.complete_type):
+			return \
+"""	{method_name}(native_ptr, pylinphone_{class_name}_callback_{callback_name});
+	pylinphone_dispatch_messages();
+""".format(method_name=self.method_node.get('name'), class_name=self.class_['class_name'], callback_name=compute_event_name(self.first_argument_type.complete_type, self.class_['class_name']))
 		suffix = ''
 		if self.first_argument_type.fmt_str == 'O' and self.first_argument_type.use_native_pointer:
 			suffix = '_native_ptr'
@@ -735,11 +757,19 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		MethodDefinition.__init__(self, linphone_module, class_, method_node)
 
 	def format_local_variables_definition(self):
+		class_name = self.class_['event_class']
+		nocallbacks_class_name = class_name
+		if class_name.endswith('Cbs'):
+			nocallbacks_class_name = class_name[:-3]
 		common = \
-"""	pylinphone_CoreObject *pylc = (pylinphone_CoreObject *)linphone_core_get_user_data(lc);
+"""	pylinphone_{class_name}Object *pyself = (pylinphone_{class_name}Object *){function_prefix}get_user_data(self);
 	PyObject *func;
 	PyObject *args;
-	PyGILState_STATE pygil_state;"""
+	PyGILState_STATE pygil_state;""".format(class_name=nocallbacks_class_name, function_prefix=self.find_class_definition(nocallbacks_class_name)['class_c_function_prefix'])
+		if class_name.endswith('Cbs'):
+			common += """
+	pylinphone_{class_name}Object *pycbs = (pylinphone_{class_name}Object *){cbs_function_prefix}get_user_data({function_prefix}get_callbacks(self));
+""".format(class_name=class_name, cbs_function_prefix=self.find_class_definition(class_name)['class_c_function_prefix'], function_prefix=self.find_class_definition(nocallbacks_class_name)['class_c_function_prefix'])
 		specific = ''
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
@@ -752,15 +782,22 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "{common}\n{specific}".format(common=common, specific=specific)
 
 	def format_arguments_parsing(self):
-		return \
-"""	if (Py_REFCNT(pylc) <= 0) return;
-	func = PyDict_GetItemString(pylc->vtable_dict, "{name}");
+		if self.class_['event_class'] == 'Core':
+			return \
+"""	if (Py_REFCNT(pyself) <= 0) return;
+	func = PyDict_GetItemString(pyself->vtable_dict, "{name}");
 	pygil_state = PyGILState_Ensure();
 """.format(name=self.class_['event_name'])
+		else:
+			return \
+"""	if (Py_REFCNT(pyself) <= 0) return;
+	func = pycbs->{event_name};
+	pygil_state = PyGILState_Ensure();
+""".format(event_name=self.class_['event_name'])
 
 	def format_enter_trace(self):
 		fmt = '%p'
-		args = ['lc']
+		args = ['self']
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -779,7 +816,7 @@ class EventCallbackMethodDefinition(MethodDefinition):
 	def format_c_function_call(self):
 		create_python_objects_code = ''
 		fmt = 'O'
-		args = ['pylc']
+		args = ['pyself']
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
@@ -817,17 +854,21 @@ class EventCallbackMethodDefinition(MethodDefinition):
 
 	def format(self):
 		body = MethodDefinition.format(self)
-		arguments = ['LinphoneCore * lc']
+		class_name = self.class_['event_class']
+		nocallbacks_class_name = class_name
+		if class_name.endswith('Cbs'):
+			nocallbacks_class_name = class_name[:-3]
+		arguments = ['Linphone' + nocallbacks_class_name + ' * self']
 		for xml_method_arg in self.xml_method_args:
 			arg_name = xml_method_arg.get('name')
 			arg_type = xml_method_arg.get('type')
 			arg_complete_type = xml_method_arg.get('completetype')
 			arguments.append(arg_complete_type + ' ' + arg_name)
 		definition = \
-"""static void pylinphone_Core_callback_{event_name}({arguments}) {{
+"""static void pylinphone_{class_name}_callback_{event_name}({arguments}) {{
 {body}
 }}
-""".format(event_name=self.class_['event_name'], arguments=', '.join(arguments), body=body)
+""".format(class_name=class_name, event_name=self.class_['event_name'], arguments=', '.join(arguments), body=body)
 		return definition
 
 
@@ -863,7 +904,7 @@ class LinphoneModule(object):
 			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
-		self.events = []
+		self.core_events = []
 		self.classes = []
 		xml_classes = tree.findall("./classes/class")
 		for xml_class in xml_classes:
@@ -886,35 +927,39 @@ class LinphoneModule(object):
 			c['class_hand_written_properties'] = []
 			c['class_object_members'] = []
 			c['class_object_members_code'] = ''
+			c['class_events'] = []
 			if c['class_name'] == 'Core':
 				c['class_object_members'].append("vtable_dict")
 				c['class_object_members_code'] = "\tPyObject *vtable_dict;"
-				xml_events = xml_class.findall("./events/event")
-				for xml_event in xml_events:
-					if xml_event.get('deprecated') == 'true':
+			xml_events = xml_class.findall("./events/event")
+			for xml_event in xml_events:
+				if xml_event.get('deprecated') == 'true':
+					continue
+				if xml_event.get('name') in blacklisted_events:
 						continue
-					if xml_event.get('name') in blacklisted_events:
-						  continue
-					ev = {}
-					ev['event_xml_node'] = xml_event
-					ev['event_cname'] = xml_event.get('name')
-					ev['event_name'] = compute_event_name(ev['event_cname'])
-					ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
-					self.events.append(ev)
+				ev = {}
+				ev['event_class'] = c['class_name']
+				ev['event_xml_node'] = xml_event
+				ev['event_cname'] = xml_event.get('name')
+				ev['event_name'] = compute_event_name(ev['event_cname'], c['class_name'])
+				ev['event_doc'] = self.__format_doc(xml_event.find('briefdescription'), xml_event.find('detaileddescription'))
+				if c['class_name'] == 'Core':
+					self.core_events.append(ev)
+				else:
+					c['class_events'].append(ev)
+					c['class_object_members'].append(ev['event_name'])
+					c['class_object_members_code'] += "\tPyObject *" + ev['event_name'] + ";\n"
 			for hand_written_code in hand_written_codes:
 				if hand_written_code._class == c['class_name']:
 					if isinstance(hand_written_code, HandWrittenClassMethod):
-						print "HandWrittenClassMethod"
 						m = {}
 						m['method_name'] = hand_written_code.name
 						c['class_type_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenInstanceMethod):
-						print "HandWrittenInstanceMethod"
 						m = {}
 						m['method_name'] = hand_written_code.name
 						c['class_instance_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenProperty):
-						print "HandWrittenProperty"
 						p = {}
 						p['property_name'] = hand_written_code.name
 						if hand_written_code.getter_cfunction is None:
@@ -992,9 +1037,12 @@ class LinphoneModule(object):
 				c['class_properties'].append(p)
 			self.classes.append(c)
 		# Format events definitions
-		for ev in self.events:
+		for ev in self.core_events:
 			ev['event_callback_definition'] = EventCallbackMethodDefinition(self, ev, ev['event_xml_node']).format()
 			ev['event_vtable_reference'] = "_vtable.{name} = pylinphone_Core_callback_{name};".format(name=ev['event_name'])
+		for c in self.classes:
+			for ev in c['class_events']:
+				ev['event_callback_definition'] = EventCallbackMethodDefinition(self, ev, ev['event_xml_node']).format()
 		# Format methods' bodies
 		for c in self.classes:
 			xml_new_method = c['class_xml_node'].find("./classmethods/classmethod[@name='" + c['class_c_function_prefix'] + "new']")
