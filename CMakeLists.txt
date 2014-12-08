@@ -184,7 +184,9 @@ if(ENABLE_UNIT_TESTS)
 endif()
 
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLinphone.cmake
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLinphone.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake
 	DESTINATION share/cmake/Modules
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
