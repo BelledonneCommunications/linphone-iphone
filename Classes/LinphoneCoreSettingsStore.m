@@ -413,7 +413,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 
 		lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
-		if( pushnotification ) [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
+		[[LinphoneManager instance] configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, true);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);

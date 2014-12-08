@@ -418,10 +418,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)setDefaultSettings:(LinphoneProxyConfig*)proxyCfg {
     LinphoneManager* lm = [LinphoneManager instance];
 
-    BOOL pushnotification = [lm lpConfigBoolForKey:@"pushnotification_preference"];
-    if(pushnotification) {
-        [lm addPushTokenToProxyConfig:proxyCfg];
-    }
+	[lm configurePushTokenForProxyConfig:proxyCfg];
+
 }
 
 - (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {

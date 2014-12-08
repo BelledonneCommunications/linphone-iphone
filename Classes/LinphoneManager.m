@@ -1946,14 +1946,14 @@ static void audioRouteChangeListenerCallback (
     }
     LinphoneProxyConfig *cfg=nil;
     linphone_core_get_default_proxy(theLinphoneCore, &cfg);
-    if (cfg) {
+    if (cfg ) {
         linphone_proxy_config_edit(cfg);
-        [self addPushTokenToProxyConfig: cfg];
+        [self configurePushTokenForProxyConfig: cfg];
         linphone_proxy_config_done(cfg);
     }
 }
 
-- (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
+- (void)configurePushTokenForProxyConfig:(LinphoneProxyConfig*)proxyCfg{
 	NSData *tokenData =  pushNotificationToken;
 	if(tokenData != nil && [self lpConfigBoolForKey:@"pushnotification_preference"]) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
@@ -1972,8 +1972,13 @@ static void audioRouteChangeListenerCallback (
 
         linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
         linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
-    }
+	} else {
+		// no push token:
+		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, NULL);
+		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
+	}
 }
+
 
 
 #pragma mark - Misc Functions
