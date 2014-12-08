@@ -2501,7 +2501,6 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransferState(
  */
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransfererCall(JNIEnv *env, jobject jCall, jlong callptr){
 	LinphoneCall *call=(LinphoneCall*)callptr;
-	LinphoneCore *lc=linphone_call_get_core(call);
 	LinphoneCall *ret=linphone_call_get_transferer_call(call);
 	return getCall(env,ret);
 }
@@ -2513,7 +2512,6 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransfererC
  */
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransferTargetCall(JNIEnv *env, jobject jCall, jlong callptr){
 	LinphoneCall *call=(LinphoneCall*)callptr;
-	LinphoneCore *lc=linphone_call_get_core(call);
 	LinphoneCall *ret=linphone_call_get_transfer_target_call(call);
 	return getCall(env,ret);
 }
@@ -2990,7 +2988,6 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage=(jobject)linphone_chat_message_get_user_data(msg);
-	LinphoneCore *lc = linphone_chat_room_get_lc(linphone_chat_message_get_chat_room(msg));
 	
 	jclass chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
