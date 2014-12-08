@@ -596,7 +596,7 @@ static void early_media_call_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
 	
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,1000);
+	wait_for_list(lcs,&dummy,1,3000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71
 					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<91 );
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71
