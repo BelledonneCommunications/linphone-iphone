@@ -1,54 +1,4 @@
 #include "private.h"
-#include "liblinphone_tester.h"
-
-static PyObject * pylinphone_testing_module_method_check_accounts(PyObject *self, PyObject *args) {
-	PyObject *_core;
-	PyObject *_identity;
-	PyObject * pyresult;
-	PyObject * pyret;
-	LinphoneCore *_core_native_ptr;
-	LinphoneAddress *_identity_native_ptr;
-
-	if (!PyArg_ParseTuple(args, "OO", &_core, &_identity)) {
-		return NULL;
-	}
-	if ((_core != Py_None) && !PyObject_IsInstance(_core, (PyObject *)&pylinphone_CoreType)) {
-		PyErr_SetString(PyExc_TypeError, "The '_core' argument must be a linphone.Core instance.");
-		return NULL;
-	}
-	if ((_core != Py_None) && !PyObject_IsInstance(_identity, (PyObject *)&pylinphone_AddressType)) {
-		PyErr_SetString(PyExc_TypeError, "The '_identity' argument must be a linphone.Address instance.");
-		return NULL;
-	}
-
-	if ((_core != NULL) && (_core != Py_None)) {
-		if ((_core_native_ptr = pylinphone_Core_get_native_ptr(_core)) == NULL) {
-			return NULL;
-		}
-	}
-	if ((_identity != NULL) && (_identity != Py_None)) {
-		if ((_identity_native_ptr = pylinphone_Address_get_native_ptr(_core)) == NULL) {
-			return NULL;
-		}
-	}
-
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, _core, _core_native_ptr, _identity, _identity_native_ptr);
-	_identity_native_ptr = account_manager_check_accounts(_core_native_ptr, _identity_native_ptr);
-	pylinphone_dispatch_messages();
-	pyresult = pylinphone_Address_from_native_ptr(&pylinphone_AddressType, _identity_native_ptr);
-	pyret = Py_BuildValue("O", pyresult);
-
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
-	return pyret;
-}
-
-static PyObject * pylinphone_testing_module_method_clean_accounts(PyObject *self, PyObject *args) {
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s()", __FUNCTION__);
-	account_manager_destroy();
-	pylinphone_dispatch_messages();
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
-	Py_RETURN_NONE;
-}
 
 static PyObject * pylinphone_testing_module_method_set_dns_user_hosts_file(PyObject *self, PyObject *args) {
 	PyObject *_core;
@@ -78,8 +28,6 @@ static PyObject * pylinphone_testing_module_method_set_dns_user_hosts_file(PyObj
 }
 
 static PyMethodDef pylinphone_TestingModuleMethods[] = {
-	{ "check_accounts", pylinphone_testing_module_method_check_accounts, METH_VARARGS, "Checks that testing SIP accounts are created or creates them." },
-	{ "clean_accounts", pylinphone_testing_module_method_clean_accounts, METH_VARARGS, "Cleans the testing SIP accounts." },
 	{ "set_dns_user_hosts_file", pylinphone_testing_module_method_set_dns_user_hosts_file, METH_VARARGS, "Allows to set a user specified hosts file." },
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }

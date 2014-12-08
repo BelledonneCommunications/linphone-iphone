@@ -13,10 +13,6 @@ class TestMessage:
         base, ext = os.path.splitext(os.path.basename(__file__))
         cls.logger = Logger(base + '.log')
 
-    @classmethod
-    def teardown_class(cls):
-        linphone.testing.clean_accounts()
-
     def wait_for_server_to_purge_messages(self, manager1, manager2):
         # Wait a little bit just to have time to purge message stored in the server
         CoreManager.wait_for_until(manager1, manager2, lambda manager1, manager2: False, 100)

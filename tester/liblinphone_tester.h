@@ -279,7 +279,6 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
 void linphone_core_manager_check_accounts(LinphoneCoreManager *m);
-LinphoneAddress * account_manager_check_accounts(LinphoneCore *lc, LinphoneAddress *identity);
 void account_manager_destroy(void);
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 #ifdef ANDROID

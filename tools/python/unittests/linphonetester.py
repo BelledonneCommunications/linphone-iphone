@@ -493,7 +493,6 @@ class CoreManager:
             assert_equals(os.path.isfile(filepath), True)
         lc = linphone.Core.new(vtable, None, filepath)
         linphone.testing.set_dns_user_hosts_file(lc, os.path.join(resources_path, 'tester_hosts'))
-        self.identity = linphone.testing.check_accounts(lc, self.identity)
         lc.root_ca = os.path.join(resources_path, 'certificates', 'cn', 'cafile.pem')
         lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
         lc.ringback = os.path.join(resources_path, 'sounds', 'ringback.wav')

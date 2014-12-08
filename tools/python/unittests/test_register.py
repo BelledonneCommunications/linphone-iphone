@@ -81,10 +81,6 @@ class TestRegister:
         base, ext = os.path.splitext(os.path.basename(__file__))
         cls.logger = Logger(base + '.log')
 
-    @classmethod
-    def teardown_class(cls):
-        linphone.testing.clean_accounts()
-
     def test_simple_register(self):
         cm = RegisterCoreManager(logger=TestRegister.logger)
         cm.register_with_refresh(False, None, None)

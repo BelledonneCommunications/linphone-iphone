@@ -12,10 +12,6 @@ class TestCall:
         base, ext = os.path.splitext(os.path.basename(__file__))
         cls.logger = Logger(base + '.log')
 
-    @classmethod
-    def teardown_class(cls):
-        linphone.testing.clean_accounts()
-
     def test_early_declined_call(self):
         marie = CoreManager('marie_rc', logger=TestCall.logger)
         pauline = CoreManager('pauline_rc', logger=TestCall.logger)

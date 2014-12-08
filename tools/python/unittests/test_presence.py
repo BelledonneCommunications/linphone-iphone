@@ -21,10 +21,6 @@ class TestPresence:
         base, ext = os.path.splitext(os.path.basename(__file__))
         cls.logger = Logger(base + '.log')
 
-    @classmethod
-    def teardown_class(cls):
-        linphone.testing.clean_accounts()
-
     def subscribe_to_callee_presence(self, caller_mgr, callee_mgr):
         initial_caller_stats = deepcopy(caller_mgr.stats)
         initial_callee_stats = deepcopy(callee_mgr.stats)
