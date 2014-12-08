@@ -201,16 +201,22 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	return account->modified_identity;
 }
 
-void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
+LinphoneAddress * account_manager_check_accounts(LinphoneCore *lc, LinphoneAddress *identity){
 	const MSList *it;
 	AccountManager *am=account_manager_get();
 
-	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
+	for(it=linphone_core_get_proxy_config_list(lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
 		LinphoneAddress *modified_identity=account_manager_check_account(am,cfg);
-		if (m->identity){
-			linphone_address_unref(m->identity);
+		if (identity){
+			linphone_address_unref(identity);
 		}
-		m->identity=linphone_address_ref(modified_identity);
+		identity=linphone_address_ref(modified_identity);
 	}
+
+	return identity;
+}
+
+void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
+	m->identity=account_manager_check_accounts(m->lc,m->identity);
 }
