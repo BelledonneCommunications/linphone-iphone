@@ -1431,8 +1431,23 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
+
+/**
+ * Mark all messages of the conversation as read
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
+ */
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
+/**
+ * Delete a message from the chat room history.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
+ * @param[in] msg The #LinphoneChatMessage object to remove. 
+ */
+
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+/**
+ * Delete all messages from the history
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
+ */
 LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
 /**
  * Gets the number of messages in a chat room.
@@ -1463,6 +1478,11 @@ LINPHONE_PUBLIC void linphone_chat_room_compose(LinphoneChatRoom *cr);
  */
 LINPHONE_PUBLIC bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr);
 
+/**
+ * Gets the number of unread messages in the chatroom.
+ * @param[in] cr The "LinphoneChatRoom object corresponding to the conversation.
+ * @return the number of unread messages.
+ */
 LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
