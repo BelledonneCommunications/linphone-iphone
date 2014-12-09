@@ -293,6 +293,7 @@ PyMODINIT_FUNC initlinphone(void) {
 
 	/* Hand-written classes. */
 	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return;
+	if (PyType_Ready(&pylinphone_SipTransportsType) < 0) return;
 
 	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
 	if (m == NULL) return;

@@ -132,7 +132,7 @@ class AccountManager:
         vtable['registration_state_changed'] = AccountManager.account_created_on_server_cb
         vtable['auth_info_requested'] = AccountManager.account_created_auth_requested_cb
         lc = CoreManager.configure_lc_from(vtable, tester_resources_path, None, account)
-        lc.sip_transports = linphone.SipTransports.new(-1, -1, -1, -1)
+        lc.sip_transports = linphone.SipTransports(-1, -1, -1, -1)
         cfg = lc.create_proxy_config()
         tmp_identity.password = account.password
         tmp_identity.set_header("X-Create-Account", "yes")
