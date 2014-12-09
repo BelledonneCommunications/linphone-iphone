@@ -118,10 +118,15 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	LinphoneAddress *server_addr;
+	LCSipTransports tr;
 	
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
 	lc=configure_lc_from(&vtable,liblinphone_tester_file_prefix,NULL,account);
+	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
+	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
+	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
+	linphone_core_set_sip_transports(lc,&tr);
 	
 	cfg=linphone_core_create_proxy_config(lc);
 	linphone_address_set_password(tmp_identity,account->password);
@@ -145,7 +150,6 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	if (wait_for_until(lc,NULL,&account->auth_requested,1,10000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
-	linphone_proxy_config_stop_refreshing(cfg); /*so that op is destroyed; we need to remove the X-create-account*/
 	linphone_proxy_config_edit(cfg);
 	tmp=linphone_address_as_string(account->modified_identity);
 	linphone_proxy_config_set_identity(cfg,tmp); /*remove the X-Create-Account header*/

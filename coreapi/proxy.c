@@ -41,33 +41,34 @@ static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* obj) 
 		obj->saved_proxy = NULL;
 }
 
-bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b) {
+LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b) {
 	if (a == NULL && b == NULL)
-		return TRUE;
+		return LinphoneProxyConfigAddressEqual;
 	else if (!a || !b)
-		return FALSE;
+		return LinphoneProxyConfigAddressDifferent;
 
+	if (linphone_address_equal(a,b))
+		return LinphoneProxyConfigAddressEqual;
 	if (linphone_address_weak_equal(a,b)) {
 		/*also check both transport and uri */
-		return linphone_address_is_secure(a) == linphone_address_is_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b);
-	} else
-		return FALSE; /*either username, domain or port ar not equals*/
-
+		if (linphone_address_is_secure(a) == linphone_address_is_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b))
+			return LinphoneProxyConfigAddressWeakEqual;
+		else
+			return LinphoneProxyConfigAddressDifferent;
+	}
+	return LinphoneProxyConfigAddressDifferent; /*either username, domain or port ar not equals*/
 }
 
-bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
+LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
 	LinphoneAddress *current_identity=obj->reg_identity?linphone_address_new(obj->reg_identity):NULL;
 	LinphoneAddress *current_proxy=obj->reg_proxy?linphone_address_new(obj->reg_proxy):NULL;
-	bool_t result=FALSE;
+	LinphoneProxyConfigAddressComparisonResult result=LinphoneProxyConfigAddressDifferent;
 
-	if (!linphone_proxy_config_address_equal(obj->saved_identity,current_identity)){
-		result=TRUE;
-		goto end;
-	}
-	if (!linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy)){
-		result=TRUE;
-		goto end;
-	}
+	result = linphone_proxy_config_address_equal(obj->saved_identity,current_identity);
+	if (result == LinphoneProxyConfigAddressDifferent) goto end;
+
+	result = linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy);
+	if (result == LinphoneProxyConfigAddressDifferent) goto end;
 
 	end:
 	if (current_identity) linphone_address_destroy(current_identity);
@@ -976,14 +977,19 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 **/
 int linphone_proxy_config_done(LinphoneProxyConfig *obj)
 {
+	LinphoneProxyConfigAddressComparisonResult res;
+
 	if (!linphone_proxy_config_check(obj->lc,obj))
 		return -1;
 
 	/*check if server address as changed*/
-	if (linphone_proxy_config_is_server_config_changed(obj)) {
+	res = linphone_proxy_config_is_server_config_changed(obj);
+	if (res != LinphoneProxyConfigAddressEqual) {
 		/* server config has changed, need to unregister from previous first*/
 		if (obj->op) {
-			_linphone_proxy_config_unregister(obj);
+			if (res == LinphoneProxyConfigAddressDifferent) {
+				_linphone_proxy_config_unregister(obj);
+			}
 			sal_op_set_user_pointer(obj->op,NULL); /*we don't want to receive status for this un register*/
 			sal_op_unref(obj->op); /*but we keep refresher to handle authentication if needed*/
 			obj->op=NULL;

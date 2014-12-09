@@ -400,6 +400,7 @@ LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,Linphon
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
 LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
+LINPHONE_PUBLIC bool_t linphone_address_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
 LINPHONE_PUBLIC void linphone_address_set_password(LinphoneAddress *addr, const char *passwd);
 LINPHONE_PUBLIC const char *linphone_address_get_password(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value);
