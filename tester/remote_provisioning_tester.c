@@ -104,7 +104,10 @@ static void remote_provisioning_default_values(void) {
 static void remote_provisioning_file(void) {
 	LinphoneCoreManager* marie;
 	const LpConfig* conf;
-#if ANDROID
+#if TARGET_OS_IPHONE
+	ms_message("Skipping remote provisioning from file on iOS");
+	return;
+#elif defined(ANDROID)
 	marie = linphone_core_manager_new2("marie_remote_localfile_android_rc", FALSE);
 #else
 	marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
