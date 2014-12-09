@@ -285,6 +285,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyObject *menum;
 
 	PyDateTime_IMPORT;
+	PyEval_InitThreads();
 	pylinphone_init_logging();
 
 {{#classes}}

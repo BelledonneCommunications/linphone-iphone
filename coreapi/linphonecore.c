@@ -1523,6 +1523,24 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	linphone_core_start(lc);
 }
 
+static int linphone_core_serialization_ref = 0;
+
+static void linphone_core_activate_log_serialization_if_needed(void) {
+	if (liblinphone_serialize_logs == TRUE) {
+		linphone_core_serialization_ref++;
+		if (linphone_core_serialization_ref == 1)
+			ortp_set_log_thread_id(ortp_thread_self());
+	}
+}
+
+static void linphone_core_deactivate_log_serialization_if_needed(void) {
+	if (liblinphone_serialize_logs == TRUE) {
+		--linphone_core_serialization_ref;
+		if (linphone_core_serialization_ref == 0)
+			ortp_set_log_thread_id(0);
+	}
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	const char *remote_provisioning_uri = NULL;
@@ -1539,9 +1557,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
-	if (liblinphone_serialize_logs == TRUE) {
-		ortp_set_log_thread_id(ortp_thread_self());
-	}
+	linphone_core_activate_log_serialization_if_needed();
 	lc->dyn_pt=96;
 	lc->default_profile=rtp_profile_new("default profile");
 	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
@@ -6279,9 +6295,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
-	if (liblinphone_serialize_logs == TRUE) {
-		ortp_set_log_thread_id(0);
-	}
+	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_core_v_table_destroy);
 }
 
