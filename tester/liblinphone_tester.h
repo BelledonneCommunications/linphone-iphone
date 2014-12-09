@@ -79,6 +79,24 @@ extern void liblinphone_tester_set_fileprefix(const char* file_prefix);
 extern void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix);
 extern int liblinphone_tester_ipv6_available(void);
 
+/**
+ * @brief Tells the tester whether or not to clean the accounts it has created between runs.
+ * @details Setting this to 1 will not clear the list of created accounts between successive
+ * calls to liblinphone_run_tests(). Some testing APIs call this function for *each* test, 
+ * in which case we should keep the accounts that were created for further testing.
+ * 
+ * You are supposed to manually call liblinphone_tester_clear_account when all the tests are 
+ * finished.
+ * 
+ * @param keep 1 to keep the accounts in-between runs, 0 to clear them after each run.
+ */
+extern void liblinphone_tester_keep_accounts( int keep );
+
+/**
+ * @brief Clears the created accounts during the testing session.
+ */
+extern void liblinphone_tester_clear_accounts(void);
+
 #ifdef __cplusplus
 };
 #endif

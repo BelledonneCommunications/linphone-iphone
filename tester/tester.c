@@ -39,6 +39,7 @@ const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 int liblinphone_tester_use_log_file=0;
+static int liblinphone_tester_keep_accounts_flag = 0;
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
@@ -545,7 +546,10 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	}
 
 	CU_cleanup_registry();
-	account_manager_destroy();
+
+	if( liblinphone_tester_keep_accounts_flag == 0){
+		liblinphone_tester_clear_accounts();
+	}
 	return ret;
 }
 
@@ -582,4 +586,13 @@ int liblinphone_tester_ipv6_available(void){
 	}
 	return FALSE;
 }
+
+void liblinphone_tester_keep_accounts( int keep ){
+	liblinphone_tester_keep_accounts_flag = keep;
+}
+
+void liblinphone_tester_clear_accounts(void){
+	account_manager_destroy();
+}
+
 
