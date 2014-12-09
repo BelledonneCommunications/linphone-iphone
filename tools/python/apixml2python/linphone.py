@@ -194,6 +194,14 @@ class ArgumentType:
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
 			self.cast_convert_func_result = False
+		elif self.basic_type == 'LCSipTransports':
+			self.type_str = 'linphone.SipTransports'
+			self.check_func = 'PyLinphoneSipTransports_Check'
+			self.convert_func = 'PyLinphoneSipTransports_AsLCSipTransports'
+			self.convert_from_func = 'PyLinphoneSipTransports_FromLCSipTransports'
+			self.fmt_str = 'O'
+			self.cfmt_str = '%p'
+			self.cast_convert_func_result = False
 		else:
 			if strip_leading_linphone(self.basic_type) in self.linphone_module.enum_names:
 				self.type_str = 'int'

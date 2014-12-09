@@ -326,6 +326,8 @@ PyMODINIT_FUNC initlinphone(void) {
 	/* Hand-written classes. */
 	Py_INCREF(&pylinphone_VideoSizeType);
 	PyModule_AddObject(m, "VideoSize", (PyObject *)&pylinphone_VideoSizeType);
+	Py_INCREF(&pylinphone_SipTransportsType);
+	PyModule_AddObject(m, "SipTransports", (PyObject *)&pylinphone_SipTransportsType);
 
 	pylinphone_init_testing_module(m);
 }
