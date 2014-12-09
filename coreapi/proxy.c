@@ -62,13 +62,20 @@ LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(c
 LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj) {
 	LinphoneAddress *current_identity=obj->reg_identity?linphone_address_new(obj->reg_identity):NULL;
 	LinphoneAddress *current_proxy=obj->reg_proxy?linphone_address_new(obj->reg_proxy):NULL;
-	LinphoneProxyConfigAddressComparisonResult result=LinphoneProxyConfigAddressDifferent;
+	LinphoneProxyConfigAddressComparisonResult result_identity;
+	LinphoneProxyConfigAddressComparisonResult result;
 
 	result = linphone_proxy_config_address_equal(obj->saved_identity,current_identity);
 	if (result == LinphoneProxyConfigAddressDifferent) goto end;
+	result_identity = result;
 
 	result = linphone_proxy_config_address_equal(obj->saved_proxy,current_proxy);
 	if (result == LinphoneProxyConfigAddressDifferent) goto end;
+	/** If the proxies are equal use the result of the difference between the identities,
+	  * otherwise the result is weak-equal and so weak-equal must be returned even if the
+	  * identities were equal.
+	  */
+	if (result == LinphoneProxyConfigAddressEqual) result = result_identity;
 
 	end:
 	if (current_identity) linphone_address_destroy(current_identity);
