@@ -92,9 +92,9 @@ class AccountManager:
 
     @classmethod
     def account_created_on_server_cb(cls, lc, cfg, state, message):
-        if state == linphone.RegistrationOk:
+        if state == linphone.RegistrationState.RegistrationOk:
             lc.user_data.created = True
-        elif state == linphone.RegistrationCleared:
+        elif state == linphone.RegistrationState.RegistrationCleared:
             lc.user_data.done = True
 
     @classmethod
@@ -106,10 +106,10 @@ class AccountManager:
         lc = cfg.core
         identity = cfg.identity
         id_addr = linphone.Address.new(identity)
-        account = get_account(id_addr)
+        account = self._get_account(id_addr)
         if account is None:
             if logger is not None:
-                logger.info("No account for {identity} exists, going to create one.".format(identity=identity))
+                logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=identity))
             account = Account(id_addr, self.unique_id)
             self.accounts.append(account)
             create_account = True
@@ -120,12 +120,19 @@ class AccountManager:
         lc.add_auth_info(ai)
         return account.modified_identity
 
+    def _get_account(self, id_addr):
+        for account in self.accounts:
+            if account.identity.weak_equal(id_addr):
+                return account
+        return None
+
     def _create_account_on_server(self, account, refcfg, logger=None):
         vtable = {}
         tmp_identity = account.modified_identity.clone()
         vtable['registration_state_changed'] = AccountManager.account_created_on_server_cb
         vtable['auth_info_requested'] = AccountManager.account_created_auth_requested_cb
         lc = CoreManager.configure_lc_from(vtable, tester_resources_path, None, account)
+        lc.sip_transports = linphone.SipTransports.new(-1, -1, -1, -1)
         cfg = lc.create_proxy_config()
         tmp_identity.password = account.password
         tmp_identity.set_header("X-Create-Account", "yes")
@@ -140,7 +147,6 @@ class AccountManager:
             if logger is not None:
                 logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
             sys.exit(-1)
-        cfg.stop_refreshing()
         cfg.edit()
         cfg.identity = account.modified_identity.as_string()
         cfg.done()
@@ -272,7 +278,7 @@ class CoreManagerStats:
 class CoreManager:
 
     @classmethod
-    def configure_lc_from(vtable, resources_path, rc_path, user_data=None):
+    def configure_lc_from(cls, vtable, resources_path, rc_path, user_data=None):
         filepath = None
         if rc_path is not None:
             filepath = os.path.join(resources_path, rc_path)
