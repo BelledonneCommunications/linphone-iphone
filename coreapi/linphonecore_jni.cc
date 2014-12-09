@@ -172,7 +172,7 @@ jobject getProxy(JNIEnv *env, LinphoneProxyConfig *proxy, jobject core){
 	if (proxy!=NULL){
 		jclass proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		jmethodID proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V");
-		
+
 		void *up=linphone_proxy_config_get_user_data(proxy);
 
 		if (up==NULL){
@@ -199,7 +199,7 @@ jobject getCall(JNIEnv *env, LinphoneCall *call){
 	if (call!=NULL){
 		jclass callClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallImpl"));
 		jmethodID callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
-		
+
 		void *up=linphone_call_get_user_pointer(call);
 
 		if (up==NULL){
@@ -221,7 +221,7 @@ jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
 	if (msg != NULL){
 		jclass chatMessageClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessageImpl"));
 		jmethodID chatMessageCtrId = env->GetMethodID(chatMessageClass,"<init>", "(J)V");
-		
+
 		void *up = linphone_chat_message_get_user_data(msg);
 
 		if (up == NULL) {
@@ -242,11 +242,11 @@ jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
 	if (jev==NULL){
 		jclass linphoneEventClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneEventImpl"));
 		jmethodID linphoneEventCtrId = env->GetMethodID(linphoneEventClass,"<init>", "(J)V");
-		
+
 		jev=env->NewObject(linphoneEventClass,linphoneEventCtrId,(jlong)linphone_event_ref(lev));
 		jev=env->NewGlobalRef(jev);
 		linphone_event_set_user_data(lev,jev);
-		
+
 		env->DeleteGlobalRef(linphoneEventClass);
 	}
 	return jev;
@@ -257,9 +257,9 @@ public:
 	LinphoneCoreData(JNIEnv *env, jobject lc, LinphoneCoreVTable *vTable, jobject alistener) {
 		core = env->NewGlobalRef(lc);
 		listener = env->NewGlobalRef(alistener);
-		
+
 		memset(vTable, 0, sizeof(LinphoneCoreVTable));
-		
+
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass(alistener));
 
 		/*displayStatus(LinphoneCore lc,String message);*/
@@ -277,7 +277,7 @@ public:
 		if (globalStateId) {
 			vTable->global_state_changed = globalStateChange;
 		}
-		
+
 		/*registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState cstate, String smessage);*/
 		registrationStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RegistrationState"));
 		registrationStateFromIntId = env->GetStaticMethodID(registrationStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RegistrationState;");
@@ -286,7 +286,7 @@ public:
 		if (registrationStateId) {
 			vTable->registration_state_changed = registrationStateChange;
 		}
-		
+
 		/*callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);*/
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
@@ -295,7 +295,7 @@ public:
 		if (callStateId) {
 			vTable->call_state_changed = callStateChange;
 		}
-	
+
 		transferStateId = env->GetMethodID(listenerClass,"transferState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;)V");
 		env->ExceptionClear();
 		if (transferStateId) {
@@ -348,25 +348,25 @@ public:
 		if (textReceivedId) {
 			vTable->text_received = text_received;
 		}
-	
+
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 		env->ExceptionClear();
 		if (messageReceivedId) {
 			vTable->message_received = message_received;
 		}
-	
+
 		isComposingReceivedId = env->GetMethodID(listenerClass,"isComposingReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;)V");
 		env->ExceptionClear();
 		if (isComposingReceivedId) {
 			vTable->is_composing_received = is_composing_received;
 		}
-	
+
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
 		env->ExceptionClear();
 		if (dtmfReceivedId) {
 			vTable->dtmf_received = dtmf_received;
 		}
-	
+
 		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneInfoMessage;)V");
 		env->ExceptionClear();
 		if (infoReceivedId) {
@@ -380,7 +380,7 @@ public:
 		if (subscriptionStateId) {
 			vTable->subscription_state_changed = subscriptionStateChanged;
 		}
-	
+
 		publishStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/PublishState"));
 		publishStateFromIntId = env->GetStaticMethodID(publishStateClass,"fromInt","(I)Lorg/linphone/core/PublishState;");
 		publishStateId = env->GetMethodID(listenerClass,"publishStateChanged", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Lorg/linphone/core/PublishState;)V");
@@ -388,7 +388,7 @@ public:
 		if (publishStateId) {
 			vTable->publish_state_changed = publishStateChanged;
 		}
-	
+
 		notifyRecvId = env->GetMethodID(listenerClass,"notifyReceived", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Ljava/lang/String;Lorg/linphone/core/LinphoneContent;)V");
 		env->ExceptionClear();
 		if (notifyRecvId) {
@@ -408,7 +408,7 @@ public:
 		if (fileTransferProgressIndicationId) {
 			vTable->file_transfer_progress_indication = fileTransferProgressIndication;
 		}
-	
+
 		fileTransferSendId = env->GetMethodID(listenerClass, "fileTransferSend", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/nio/ByteBuffer;I)I");
 		env->ExceptionClear();
 		if (fileTransferSendId) {
@@ -423,7 +423,7 @@ public:
 
 		chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 		chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
-	
+
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V");
 
@@ -567,7 +567,7 @@ public:
 	jmethodID fileTransferRecvId;
 
 	LinphoneCoreVTable vTable;
-	
+
 	static void displayStatusCb(LinphoneCore *lc, const char *message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
@@ -979,7 +979,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 
 	const char* userConfig = juserConfig?env->GetStringUTFChars(juserConfig, NULL):NULL;
 	const char* factoryConfig = jfactoryConfig?env->GetStringUTFChars(jfactoryConfig, NULL):NULL;
-	
+
 	LinphoneCoreVTable *vTable = linphone_core_v_table_new();
 	LinphoneCoreData* ldata = new LinphoneCoreData(env, thiz, vTable, jlistener);
 	linphone_core_v_table_set_user_data(vTable, ldata);
@@ -1116,7 +1116,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultProxyConfig(	J
 		,jlong pc) {
 	linphone_core_set_default_proxy((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
-	
+
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
@@ -2245,6 +2245,12 @@ extern "C" jint Java_org_linphone_core_LinphoneAddressImpl_getTransport(JNIEnv* 
 	LinphoneTransportType transporttype = linphone_address_get_transport((LinphoneAddress*)ptr);
 	return (jint)transporttype;
 }
+extern "C" jint Java_org_linphone_core_LinphoneAddressImpl_getPort(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	int port = linphone_address_get_port((LinphoneAddress*)ptr);
+	return (jint)port;
+}
 extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toString(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -2290,6 +2296,12 @@ extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setTransport(JNIEnv* 
 																		,jlong address
 																		,jint jtransport) {
 	linphone_address_set_transport((LinphoneAddress*)address, (LinphoneTransportType) jtransport);
+}
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setPort(JNIEnv*  env
+									,jobject  thiz
+									,jlong address
+									,jint jport) {
+	linphone_address_set_port((LinphoneAddress*)address, (LinphoneTransportType) jport);
 }
 
 //CallLog
@@ -2988,7 +3000,7 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage=(jobject)linphone_chat_message_get_user_data(msg);
-	
+
 	jclass chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
 	env->CallVoidMethod(

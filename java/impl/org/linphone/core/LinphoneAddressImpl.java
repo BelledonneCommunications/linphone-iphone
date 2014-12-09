@@ -35,11 +35,13 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native String getUserName(long ptr);
 	private native String getDomain(long ptr);
 	private native int getTransport(long ptr);
+    private native int getPort(long ptr);
 	private native String toUri(long ptr);
 	private native void setDisplayName(long ptr,String name);
 	private native void setDomain(long ptr,String domain);
 	private native void setUserName(long ptr,String username);
 	private native void setTransport(long ptr, int transport);
+    private native void setPort(long ptr, int port);
 	private native String toString(long ptr);
 	
 	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
@@ -89,40 +91,33 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	public TransportType getTransport() {
 		return TransportType.fromInt(getTransport(nativePtr));
 	}
-	
-	public String toString() {
+    public int getPort() { return getPort(nativePtr); }
+
+    public String toString() {
 		return toString(nativePtr);
 	}
 	public String toUri() {
 		return toUri(nativePtr);	
 	}
+
+    public String asString() {
+        return toString();
+    }
+    public String asStringUriOnly() {
+        return toUri(nativePtr);
+    }
+
+    public void clean() {
+        throw new RuntimeException("Not implemented");
+    }
+
 	public void setDisplayName(String name) {
 		setDisplayName(nativePtr,name);
-	}
-	public String asString() {
-		return toString();
-	}
-	public String asStringUriOnly() {
-		return toUri(nativePtr);
-	}
-	public void clean() {
-		throw new RuntimeException("Not implemented");
-	}
-	public String getPort() {
-		return String.valueOf(getPortInt());
-	}
-	public int getPortInt() {
-		return getPortInt();
 	}
 	public void setDomain(String domain) {
 		setDomain(nativePtr, domain);
 	}
-	public void setPort(String port) {
-		throw new RuntimeException("Not implemented");
-	}
-	public void setPortInt(int port) {
-		throw new RuntimeException("Not implemented");
-	}
+	public void setPort(int port) { setPort(nativePtr, port); }
 	public void setUserName(String username) {
 		setUserName(nativePtr,username);
 	}
