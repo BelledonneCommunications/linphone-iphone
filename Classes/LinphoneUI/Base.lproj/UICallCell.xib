@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallCell">
@@ -55,11 +55,6 @@
                             <rect key="frame" x="0.0" y="63" width="320" height="237"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar_shadow.png" id="30" userLabel="avatarShadowImage">
-                                    <rect key="frame" x="0.0" y="-20" width="320" height="262"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </imageView>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar_unknown.png" id="29" userLabel="avatarImage">
                                     <rect key="frame" x="80" y="0.0" width="160" height="170"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -70,7 +65,6 @@
                                     </accessibility>
                                 </imageView>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                         </view>
                         <view contentMode="scaleToFill" id="76" userLabel="audioStatsView">
                             <rect key="frame" x="0.0" y="63" width="331" height="237"/>
@@ -447,7 +441,6 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar_shadow.png" width="640" height="523"/>
         <image name="avatar_unknown.png" width="320" height="339"/>
         <image name="call_state_delete_default.png" width="43" height="43"/>
         <image name="call_state_delete_over.png" width="43" height="43"/>
