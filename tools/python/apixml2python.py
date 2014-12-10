@@ -38,6 +38,9 @@ blacklisted_events = [
 	'LinphoneCoreFileTransferSendCb'	# missing LinphoneContent
 ]
 blacklisted_functions = [
+	'linphone_buffer_new_from_data',
+	'linphone_buffer_get_content',
+	'linphone_buffer_set_content',
 	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask

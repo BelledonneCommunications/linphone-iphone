@@ -42,6 +42,7 @@ set(SOURCE_FILES
 	bellesip_sal/sal_op_publish.c
 	bellesip_sal/sal_op_registration.c
 	bellesip_sal/sal_sdp.c
+	buffer.c
 	callbacks.c
 	call_log.c
 	call_params.c
@@ -153,6 +154,7 @@ install(TARGETS linphone
 
 
 set(HEADER_FILES
+	buffer.h
 	call_log.h
 	call_params.h
 	content.h

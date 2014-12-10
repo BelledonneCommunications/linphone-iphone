@@ -3,10 +3,16 @@ from copy import deepcopy
 import linphone
 from linphonetester import *
 import os
+import os.path
 import time
 
 
 class TestMessage:
+
+    @classmethod
+    def teardown_class(cls):
+        if os.path.exists('receive_file.dump'):
+            os.remove('receive_file.dump')
 
     @classmethod
     def msg_state_changed(cls, msg, state):
@@ -24,18 +30,23 @@ class TestMessage:
             linphonetester_logger.error("[TESTER] Unexpected state [{state}] for message [{msg}]".format(msg=msg, state=linphone.ChatMessageState.string(state)))
 
     @classmethod
-    def file_transfer_received(cls, msg, content, buf, size):
-        print buf, size
+    def file_transfer_send(cls, msg, content, offset, size):
+        if offset >= len(msg.user_data):
+            return linphone.Buffer.new() # end of file
+        return linphone.Buffer.new_from_string(msg.user_data[offset:offset+size])
+
+    @classmethod
+    def file_transfer_recv(cls, msg, content, buf):
         stats = msg.chat_room.core.user_data.stats
         if msg.user_data is None:
             msg.user_data = open('receive_file.dump', 'wb')
-            msg.user_data.write(buf)
+            msg.user_data.write(buf.string_content)
         else:
-            if size == 0: # Transfer complete
+            if buf.size == 0: # Transfer complete
                 stats.number_of_LinphoneMessageExtBodyReceived += 1
                 msg.user_data.close()
             else: # Store content
-                msg.user_data.write(buf)
+                msg.user_data.write(buf.string_content)
 
     def wait_for_server_to_purge_messages(self, manager1, manager2):
         # Wait a little bit just to have time to purge message stored in the server
@@ -87,14 +98,16 @@ class TestMessage:
         content.size = len(big_file) # total size to be transfered
         content.name = 'bigfile.txt'
         message = chat_room.create_file_transfer_message(content)
+        message.user_data = big_file # Store the file in the user data of the chat message
         self.wait_for_server_to_purge_messages(marie, pauline)
         message.callbacks.msg_state_changed = TestMessage.msg_state_changed
+        message.callbacks.file_transfer_send = TestMessage.file_transfer_send
         chat_room.send_chat_message(message)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceivedWithFile == 1), True)
         if marie.stats.last_received_chat_message is not None:
             cbs = marie.stats.last_received_chat_message.callbacks
             cbs.msg_state_changed = TestMessage.msg_state_changed
-            cbs.file_transfer_recv = TestMessage.file_transfer_received
+            cbs.file_transfer_recv = TestMessage.file_transfer_recv
             marie.stats.last_received_chat_message.download_file()
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageExtBodyReceived == 1), True)
         assert_equals(pauline.stats.number_of_LinphoneMessageInProgress, 1)

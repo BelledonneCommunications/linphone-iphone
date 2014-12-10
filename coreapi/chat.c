@@ -246,7 +246,13 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
 		/* get data from call back */
 		if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
-			linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, buf, size);
+			LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
+			if (lb == NULL) *size = 0;
+			else {
+				*size = linphone_buffer_get_size(lb);
+				memcpy(buffer, linphone_buffer_get_content(lb), *size);
+				linphone_buffer_unref(lb);
+			}
 		} else {
 			/* Legacy */
 			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
@@ -1205,7 +1211,9 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		return;
 	}
 	if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
-		linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
+		LinphoneBuffer *lb = linphone_buffer_new_from_data(buffer, size);
+		linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+		linphone_buffer_unref(lb);
 	} else {
 		/* Legacy: call back given by application level */
 		linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
@@ -1279,7 +1287,9 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			LinphoneCore *lc = chatMsg->chat_room->lc;
 			/* file downloaded succesfully, call again the callback with size at zero */
 			if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
-				linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, NULL, 0);
+				LinphoneBuffer *lb = linphone_buffer_new();
+				linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+				linphone_buffer_unref(lb);
 			} else {
 				linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
 			}
