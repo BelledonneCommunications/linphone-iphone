@@ -257,8 +257,8 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
-void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
-void file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
+void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);
+LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t size);
 void file_transfer_progress_indication(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);

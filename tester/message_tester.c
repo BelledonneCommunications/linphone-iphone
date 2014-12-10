@@ -62,7 +62,7 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 /**
  * function invoked when a file transfer is received.
  * */
-void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
+void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer){
 	FILE* file=NULL;
 	char receive_file[256];
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(message);
@@ -76,12 +76,12 @@ void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent*
 		/*next chunk*/
 		file = (FILE*)linphone_chat_message_get_user_data(message);
 
-		if (size==0) { /* tranfer complete */
+		if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
 			stats* counters = get_stats(lc);
 			counters->number_of_LinphoneMessageExtBodyReceived++;
 			fclose(file);
 		} else { /* store content on a file*/
-			if (fwrite(buff,size,1,file)==-1){
+			if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
 				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 			}
 		}
@@ -93,26 +93,10 @@ static char big_file [128000]; /* a buffer to simulate a big file for the file t
 /*
  * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
  * */
-void file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
-	int offset=-1;
-
-	if (!linphone_chat_message_get_user_data(message)) {
-		/*first chunk*/
-		offset=0;
-	} else {
-		/*subsequent chunk*/
-		offset = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
-	}
-	*size = MIN(*size,sizeof(big_file)-offset); /*updating content->size with minimun between remaining data and requested size*/
-
-	if (*size==0) {
-		/*end of file*/
-		return;
-	}
-	memcpy(buff,big_file+offset,*size);
-
-	/*store offset for next chunk*/
-	linphone_chat_message_set_user_data(message,(void*)(offset+*size));
+LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t size){
+	size_t size_to_send = MIN(size, sizeof(big_file) - offset);
+	if (size == 0) return linphone_buffer_new(); /*end of file*/
+	return linphone_buffer_new_from_data((uint8_t *)big_file + offset, size_to_send);
 }
 
 /**
@@ -443,6 +427,7 @@ static void file_transfer_message(void) {
 		reset_counters(&pauline->stat);
 	}
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 	linphone_chat_room_send_chat_message(chat_room,message);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 	if (marie->stat.last_received_chat_message ) {
@@ -505,6 +490,7 @@ static void small_file_transfer_message(void) {
 	}
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 	linphone_chat_room_send_chat_message(chat_room,message);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 	if (marie->stat.last_received_chat_message ) {
@@ -566,6 +552,7 @@ static void file_transfer_message_io_error_upload(void) {
 	}
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_room_send_chat_message(chat_room,message);
 
@@ -696,6 +683,7 @@ static void file_transfer_message_upload_cancelled(void) {
 	}
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_room_send_chat_message(chat_room,message);
 
