@@ -6,8 +6,8 @@ root_directory=$(cd "$(dirname $0)" && pwd)/../
 # notifications, the ID is not matching the English translation... so we must keep
 # the translations!
 localizable_en=$root_directory/Resources/en.lproj/Localizable.strings
-IC_MSG_EN=$(grep IC_MSG $localizable_en | sed -nE 's/"IC_MSG" = "(.*)";/\1/p')
-IM_MSG_EN=$(grep IM_MSG $localizable_en | sed -nE 's/"IM_MSG" = "(.*)";/\1/p')
+IC_MSG_EN=$(sed -nE 's/"IC_MSG" = "(.*)";/\1/p' $localizable_en)
+IM_MSG_EN=$(sed -nE 's/"IM_MSG" = "(.*)";/\1/p' $localizable_en)
 rm -f $localizable_en
 find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)
 iconv -f utf-16 -t utf-8 $localizable_en > $localizable_en.tmp
