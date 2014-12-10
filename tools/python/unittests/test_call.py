@@ -7,14 +7,9 @@ import time
 
 class TestCall:
 
-    @classmethod
-    def setup_class(cls):
-        base, ext = os.path.splitext(os.path.basename(__file__))
-        cls.logger = Logger(base + '.log')
-
     def test_early_declined_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         marie.lc.max_calls = 0
         out_call = pauline.lc.invite_address(marie.identity)
 
@@ -31,8 +26,8 @@ class TestCall:
         pauline.stop()
 
     def test_declined_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         out_call = pauline.lc.invite_address(marie.identity)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneCallIncomingReceived == 1), True)
         in_call = marie.lc.current_call
@@ -49,8 +44,8 @@ class TestCall:
         pauline.stop()
 
     def test_cancelled_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         out_call = pauline.lc.invite_address(marie.identity)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallOutgoingInit == 1), True)
         pauline.lc.terminate_call(out_call)
@@ -62,8 +57,8 @@ class TestCall:
         pauline.stop()
 
     def test_early_cancelled_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('empty_rc', check_for_proxies=False, logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('empty_rc', check_for_proxies=False)
         out_call = pauline.lc.invite_address(marie.identity)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallOutgoingInit == 1), True)
         pauline.lc.terminate_call(out_call)
@@ -81,8 +76,8 @@ class TestCall:
         pauline.stop()
 
     def test_cancelled_ringing_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         out_call = pauline.lc.invite_address(marie.identity)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneCallIncomingReceived == 1), True)
         pauline.lc.terminate_call(out_call)
@@ -93,8 +88,8 @@ class TestCall:
         pauline.stop()
 
     def test_call_failed_because_of_codecs(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         marie.disable_all_audio_codecs_except_one('pcmu')
         pauline.disable_all_audio_codecs_except_one('pcma')
         out_call = pauline.lc.invite_address(marie.identity)
@@ -109,8 +104,8 @@ class TestCall:
         pauline.stop()
 
     def test_simple_call(self):
-        marie = CoreManager('marie_rc', logger=TestCall.logger)
-        pauline = CoreManager('pauline_rc', logger=TestCall.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         assert_equals(CoreManager.call(pauline, marie), True)
         #liblinphone_tester_check_rtcp(marie,pauline);
         CoreManager.end_call(marie, pauline)

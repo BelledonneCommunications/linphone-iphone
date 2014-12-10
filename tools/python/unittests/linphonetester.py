@@ -19,6 +19,21 @@ else:
     tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
 
 
+def linphonetester_log_handler(level, msg):
+    method = getattr(logging.getLogger("linphonetester"), level)
+    if not msg.strip().startswith('[PYLINPHONE]'):
+        msg = '[CORE] ' + msg
+    method(msg)
+
+linphonetester_logger = logging.getLogger("linphonetester")
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', '%H:%M:%S')
+handler.setFormatter(formatter)
+linphonetester_logger.addHandler(handler)
+linphone.set_log_handler(linphonetester_log_handler)
+
+
 def create_address(domain):
     addr = linphone.Address.new(None)
     assert addr != None
@@ -32,24 +47,6 @@ def create_address(domain):
     addr.display_name = "Mr Tester"
     assert_equals(addr.display_name, "Mr Tester")
     return addr
-
-
-class Logger(logging.Logger):
-
-    def __init__(self, filename):
-        logging.Logger.__init__(self, filename)
-        handler = logging.FileHandler(filename)
-        handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', '%H:%M:%S')
-        handler.setFormatter(formatter)
-        self.addHandler(handler)
-        linphone.set_log_handler(self.log_handler)
-
-    def log_handler(self, level, msg):
-        method = getattr(self, level)
-        if not msg.strip().startswith('[PYLINPHONE]'):
-            msg = '[CORE] ' + msg
-        method(msg)
 
 
 class Account:
@@ -101,21 +98,20 @@ class AccountManager:
     def account_created_auth_requested_cb(cls, lc, realm, username, domain):
         lc.user_data.auth_requested = True
 
-    def check_account(self, cfg, logger=None):
+    def check_account(self, cfg):
         create_account = False
         lc = cfg.core
         identity = cfg.identity
         id_addr = linphone.Address.new(identity)
         account = self._get_account(id_addr)
         if account is None:
-            if logger is not None:
-                logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=identity))
+            linphonetester_logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=identity))
             account = Account(id_addr, self.unique_id)
             self.accounts.append(account)
             create_account = True
         cfg.identity = account.modified_identity.as_string()
         if create_account:
-            self._create_account_on_server(account, cfg, logger)
+            self._create_account_on_server(account, cfg)
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         return account.modified_identity
@@ -126,7 +122,7 @@ class AccountManager:
                 return account
         return None
 
-    def _create_account_on_server(self, account, refcfg, logger=None):
+    def _create_account_on_server(self, account, refcfg):
         vtable = {}
         tmp_identity = account.modified_identity.clone()
         vtable['registration_state_changed'] = AccountManager.account_created_on_server_cb
@@ -144,8 +140,7 @@ class AccountManager:
         cfg.expires = 3600
         lc.add_proxy_config(cfg)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.auth_requested == True, 10000) != True:
-            if logger is not None:
-                logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
+            linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
             sys.exit(-1)
         cfg.edit()
         cfg.identity = account.modified_identity.as_string()
@@ -153,13 +148,11 @@ class AccountManager:
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.created == True, 3000) != True:
-            if logger is not None:
-                logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity))
+            linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity))
             sys.exit(-1)
         lc.remove_proxy_config(cfg)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.done == True, 3000) != True:
-            if logger is not None:
-                logger.critical("[TESTER] Account creation could not clean the registration context.")
+            linphonetester_logger.critical("[TESTER] Account creation could not clean the registration context.")
             sys.exit(-1)
 
 
@@ -392,9 +385,8 @@ class CoreManager:
     @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
         manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
-                state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
+        linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
+            state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
         if state == linphone.RegistrationState.RegistrationNone:
             manager.stats.number_of_LinphoneRegistrationNone += 1
         elif state == linphone.RegistrationState.RegistrationProgress:
@@ -411,9 +403,8 @@ class CoreManager:
     @classmethod
     def auth_info_requested(cls, lc, realm, username, domain):
         manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
-                username=username, realm=realm))
+        linphonetester_logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
+            username=username, realm=realm))
         manager.stats.number_of_auth_info_requested +=1
 
     @classmethod
@@ -424,9 +415,8 @@ class CoreManager:
         direction = "Outgoing"
         if call.call_log.dir == linphone.CallDir.CallIncoming:
             direction = "Incoming"
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] {direction} call from [{from_address}] to [{to_address}], new state is [{state}]".format(
-                direction=direction, from_address=from_address, to_address=to_address, state=linphone.CallState.string(state)))
+        linphonetester_logger.info("[TESTER] {direction} call from [{from_address}] to [{to_address}], new state is [{state}]".format(
+            direction=direction, from_address=from_address, to_address=to_address, state=linphone.CallState.string(state)))
         if state == linphone.CallState.CallIncomingReceived:
             manager.stats.number_of_LinphoneCallIncomingReceived += 1
         elif state == linphone.CallState.CallOutgoingInit:
@@ -472,9 +462,8 @@ class CoreManager:
         from_str = message.from_address.as_string()
         text_str = message.text
         external_body_url = message.external_body_url
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
-                from_str=from_str, text_str=text_str, external_body_url=external_body_url))
+        linphonetester_logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
+            from_str=from_str, text_str=text_str, external_body_url=external_body_url))
         manager.stats.number_of_LinphoneMessageReceived += 1
 
         if message.external_body_url is not None:
@@ -483,18 +472,16 @@ class CoreManager:
     @classmethod
     def new_subscription_requested(cls, lc, lf, url):
         manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
-                from_str=lf.address.as_string(), url=url))
+        linphonetester_logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
+            from_str=lf.address.as_string(), url=url))
         manager.stats.number_of_NewSubscriptionRequest += 1
         lc.add_friend(lf) # Accept subscription
 
     @classmethod
     def notify_presence_received(cls, lc, lf):
         manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New notify request: from [{from_str}]".format(
-                from_str=lf.address.as_string()))
+        linphonetester_logger.info("[TESTER] New notify request: from [{from_str}]".format(
+            from_str=lf.address.as_string()))
         manager.stats.number_of_NotifyReceived += 1
         manager.stats.last_received_presence = lf.presence_model
         acttype = manager.stats.last_received_presence.activity.type
@@ -557,8 +544,7 @@ class CoreManager:
         elif acttype == linphone.PresenceActivityType.PresenceActivityWorship:
             manager.stats.number_of_LinphonePresenceActivityWorship += 1
 
-    def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}, logger=None):
-        self.logger = logger
+    def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
         if not vtable.has_key('registration_state_changed'):
             vtable['registration_state_changed'] = CoreManager.registration_state_changed
         if not vtable.has_key('auth_info_requested'):
@@ -631,4 +617,4 @@ class CoreManager:
     def check_accounts(self):
         pcl = self.lc.proxy_config_list
         for cfg in pcl:
-            self.identity = account_manager.check_account(cfg, self.logger)
+            self.identity = account_manager.check_account(cfg)

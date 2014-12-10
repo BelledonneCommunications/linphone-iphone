@@ -8,11 +8,6 @@ import time
 
 class TestMessage:
 
-    @classmethod
-    def setup_class(cls):
-        base, ext = os.path.splitext(os.path.basename(__file__))
-        cls.logger = Logger(base + '.log')
-
     def wait_for_server_to_purge_messages(self, manager1, manager2):
         # Wait a little bit just to have time to purge message stored in the server
         CoreManager.wait_for_until(manager1, manager2, lambda manager1, manager2: False, 100)
@@ -20,8 +15,8 @@ class TestMessage:
         manager2.stats.reset()
 
     def test_text_message(self):
-        marie = CoreManager('marie_rc', logger=TestMessage.logger)
-        pauline = CoreManager('pauline_rc', logger=TestMessage.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         chat_room = pauline.lc.get_chat_room(marie.identity)
         self.wait_for_server_to_purge_messages(marie, pauline)
         msg = chat_room.create_message("Bla bla bla bla")
@@ -32,8 +27,8 @@ class TestMessage:
         pauline.stop()
 
     def test_text_message_within_dialog(self):
-        marie = CoreManager('marie_rc', logger=TestMessage.logger)
-        pauline = CoreManager('pauline_rc', logger=TestMessage.logger)
+        marie = CoreManager('marie_rc')
+        pauline = CoreManager('pauline_rc')
         pauline.lc.config.set_int('sip', 'chat_use_call_dialogs', 1)
         chat_room = pauline.lc.get_chat_room(marie.identity)
         self.wait_for_server_to_purge_messages(marie, pauline)
