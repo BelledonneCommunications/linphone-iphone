@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallBar">
@@ -14,6 +14,7 @@
                 <outlet property="fourButton" destination="22" id="68"/>
                 <outlet property="hangupButton" destination="11" id="69"/>
                 <outlet property="landscapeView" destination="2" id="70"/>
+                <outlet property="leftPadding" destination="Htc-7i-IYY" id="zVJ-JC-Di6"/>
                 <outlet property="microButton" destination="16" id="71"/>
                 <outlet property="nineButton" destination="27" id="72"/>
                 <outlet property="oneButton" destination="19" id="73"/>
@@ -24,6 +25,7 @@
                 <outlet property="padView" destination="5" id="78"/>
                 <outlet property="pauseButton" destination="13" id="79"/>
                 <outlet property="portraitView" destination="3" id="80"/>
+                <outlet property="rightPadding" destination="aXO-Ng-LZe" id="f1h-to-gx6"/>
                 <outlet property="sevenButton" destination="25" id="81"/>
                 <outlet property="sharpButton" destination="30" id="82"/>
                 <outlet property="sixButton" destination="24" id="83"/>
@@ -347,6 +349,12 @@
                             <state key="selected" image="dialer_alt_back_default_landscape.png"/>
                             <state key="highlighted" image="dialer_alt_over_landscape.png"/>
                         </button>
+                        <imageView hidden="YES" userInteractionEnabled="NO" tag="61" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="xvD-yI-e1g" userLabel="leftPadding">
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <imageView hidden="YES" userInteractionEnabled="NO" tag="62" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="8M5-a6-pwT" userLabel="rightPadding">
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
@@ -693,6 +701,12 @@
                                 <action selector="onPadClick:" destination="-1" eventType="touchUpInside" id="92"/>
                             </connections>
                         </button>
+                        <imageView userInteractionEnabled="NO" tag="61" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Htc-7i-IYY" userLabel="leftPadding">
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" tag="62" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aXO-Ng-LZe" userLabel="rightPadding">
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>

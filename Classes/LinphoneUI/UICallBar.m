@@ -573,9 +573,12 @@
     [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;    
-        [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
-    } else if (view.tag ==self.leftPadding.tag || view.tag == self.rightPadding.tag){
-        [attributes setObject:[(UIImageView*)view image] forKey:@"image"];
+		[LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
+	} else if (view.tag ==self.leftPadding.tag || view.tag == self.rightPadding.tag){
+		UIImage* image = [(UIImageView*)view image];
+		if( image ){
+			[attributes setObject:image forKey:@"image"];
+		}
     }
     [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
 
@@ -589,6 +592,7 @@
         UIButton *button = (UIButton *)view;
         [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
     } else if (view.tag ==self.leftPadding.tag || view.tag == self.rightPadding.tag){
+
         [(UIImageView*)view setImage:[attributes objectForKey:@"image"]];
     }
     view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
