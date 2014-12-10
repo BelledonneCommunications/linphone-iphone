@@ -1,28 +1,20 @@
-# LINPHONE ON IPHONE
+# Linphone on iPhone
 
-## BUILD PREQUISITES
+## Build prerequisite
 
-Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
+Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts. Before building Linphone on iPhone, please read and execute [liblinphone README](submodule/linphone/README.macos.md).
 
-You must first install both Xcode with iPhone OS SDK and [HomeBrew](brew.sh) or [MacPorts](www.macports.org) for these scripts to work.
+You will NOT be able to build the SDK if you did not read liblinphone README first!
 
-### Install dependencies
+### Additional dependencies
 
 * Using HomeBrew:
 
-```sh
-brew install automake intltool libtool pkg-config coreutils yasm nasm wget imagemagick
-# then you have to install antlr3 from a tap.
-wget https://gist.githubusercontent.com/Gui13/f5cf103f50d34c28c7be/raw/f50242f5e0c3a6d25ed7fca1462bce3a7b738971/antlr3.rb
-mv antlr3.rb /usr/local/Library/Formula/
-brew install antlr3
-```
+        brew install imagemagick
 
 * Using MacPorts:
 
-```sh
-sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm nasm grep doxygen ImageMagick optipng antlr3
-```
+        sudo port install ImageMagick optipng
 
 ### System linking
 
