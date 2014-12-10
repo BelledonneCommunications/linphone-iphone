@@ -61,8 +61,9 @@ void LSLog(NSString* fmt, ...){
 
     liblinphone_tester_set_fileprefix(bundle);
     liblinphone_tester_set_writable_dir_prefix(documents);
+	liblinphone_tester_keep_accounts(TRUE);
 
-    int count = liblinphone_tester_nb_test_suites();
+	int count = liblinphone_tester_nb_test_suites();
 
     for (int i=0; i<count; i++) {
         const char* suite = liblinphone_tester_test_suite_name(i);
@@ -74,16 +75,16 @@ void LSLog(NSString* fmt, ...){
 			NSString* sTest  = [NSString stringWithUTF8String:test];
 
 			if( [[LinphoneTester_Tests skippedSuites] containsObject:sSuite] ) continue;
-            // prepend test_ so that it gets found by introspection
+            // prepend "test_" so that it gets found by introspection
             NSString* safesTest    = [self safeifyTestString:sTest];
             NSString* safesSuite   = [self safeifyTestString:sSuite];
             NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
+
 			[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName block:^(LinphoneTester_Tests* myself) {
 				[myself testForSuite:sSuite andTest:sTest];
 			}];
 		}
     }
-
 }
 
 - (void)setUp
@@ -100,6 +101,10 @@ void LSLog(NSString* fmt, ...){
 {
 	LSLog(@"Launching test %@ from suite %@", test, suite);
 	XCTAssertFalse(liblinphone_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
+}
+
+- (void)dealloc {
+	liblinphone_tester_clear_accounts();
 }
 
 @end
