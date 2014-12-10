@@ -303,9 +303,9 @@ static void call_received(SalOp *h){
 		linphone_address_destroy(to_addr);
 		return;
 	}
-	
+
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
-	
+
 	linphone_call_make_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
@@ -772,8 +772,11 @@ static void call_failure(SalOp *op){
 					char* url = linphone_address_as_string(redirection_to);
 					ms_warning("Redirecting call [%p] to %s",call, url);
 					ms_free(url);
-					linphone_call_create_op(call);
-					linphone_core_start_invite(lc, call, redirection_to);
+					if( call->log->to != NULL ) {
+						linphone_address_unref(call->log->to);
+					}
+					call->log->to = linphone_address_ref(redirection_to);
+					linphone_core_restart_invite(lc, call);
 					return;
 				}
 			}
@@ -1170,14 +1173,18 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	}
 
 	chat_msg->state=chatStatusSal2Linphone(status);
-	linphone_chat_message_store_state(chat_msg);
-	if (chat_msg && chat_msg->cb) {
+	linphone_chat_message_update_state(chat_msg);
+
+	if (chat_msg && (chat_msg->cb || (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)))) {
 		ms_message("Notifying text delivery with status %i",chat_msg->state);
-		chat_msg->cb(chat_msg
-			,chat_msg->state
-			,chat_msg->cb_ud);
+		if (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)) {
+			linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)(chat_msg, chat_msg->state);
+		} else {
+			/* Legacy */
+			chat_msg->cb(chat_msg,chat_msg->state,chat_msg->cb_ud);
+		}
 	}
-	if (status != SalTextDeliveryInProgress) { /*don't release op if progress*/
+	if (status != SalTextDeliveryInProgress) { /*only release op if not in progress*/
 		linphone_chat_message_destroy(chat_msg);
 	}
 }

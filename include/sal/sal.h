@@ -110,6 +110,9 @@ void sal_address_set_transport_name(SalAddress* addr,const char* transport);
 void sal_address_set_params(SalAddress *addr, const char *params);
 void sal_address_set_uri_params(SalAddress *addr, const char *params);
 bool_t sal_address_is_ipv6(SalAddress *addr);
+void sal_address_set_password(SalAddress *addr, const char *passwd);
+const char *sal_address_get_password(const SalAddress *addr);
+void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value);
 
 Sal * sal_init();
 void sal_uninit(Sal* sal);
@@ -782,6 +785,7 @@ LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
 unsigned int sal_get_random(void);
+char *sal_get_random_token(int size);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
 belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
 void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer);

@@ -5,11 +5,6 @@ import os
 
 class TestSetup:
 
-    @classmethod
-    def setup_class(cls):
-        base, ext = os.path.splitext(os.path.basename(__file__))
-        cls.logger = Logger(base + '.log')
-
     def test_address(self):
         create_address(None)
 

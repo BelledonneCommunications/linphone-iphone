@@ -913,13 +913,13 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 	GtkWidget *w=linphone_gtk_create_window("sip_account");
 	const char *tmp;
 	gboolean is_new=FALSE;
-	
+
 	if (!cfg) {
 		cfg=linphone_core_create_proxy_config(linphone_gtk_get_core());
 		is_new=TRUE;
 		g_object_set_data(G_OBJECT(w),"is_new",GINT_TO_POINTER(TRUE));
 	}
-	
+
 	if (!is_new){
 		linphone_proxy_config_edit(cfg);
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"identity")),
@@ -930,7 +930,7 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 		tmp=linphone_proxy_config_get_contact_parameters(cfg);
 		if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"params")),tmp);
 	}
-	
+
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod")),
 		linphone_proxy_config_get_expires(cfg));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register")),

@@ -560,8 +560,8 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
 		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
 #ifdef HAVE_ZLIB
-		core->log_collection_upload_information->type = "application";
-		core->log_collection_upload_information->subtype = "gzip";
+		linphone_content_set_type(core->log_collection_upload_information, "application");
+		linphone_content_set_subtype(core->log_collection_upload_information, "gzip");
 #else
 		linphone_content_set_type(core->log_collection_upload_information, "text");
 		linphone_content_set_subtype(core->log_collection_upload_information,"plain");
@@ -1508,7 +1508,6 @@ static void linphone_core_start(LinphoneCore * lc) {
 	misc_config_read(lc);
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
-	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) {
 		linphone_tunnel_configure(lc->tunnel);
 	}
@@ -1530,13 +1529,31 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	linphone_core_start(lc);
 }
 
+static int linphone_core_serialization_ref = 0;
+
+static void linphone_core_activate_log_serialization_if_needed(void) {
+	if (liblinphone_serialize_logs == TRUE) {
+		linphone_core_serialization_ref++;
+		if (linphone_core_serialization_ref == 1)
+			ortp_set_log_thread_id(ortp_thread_self());
+	}
+}
+
+static void linphone_core_deactivate_log_serialization_if_needed(void) {
+	if (liblinphone_serialize_logs == TRUE) {
+		--linphone_core_serialization_ref;
+		if (linphone_core_serialization_ref == 0)
+			ortp_set_log_thread_id(0);
+	}
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	const char *remote_provisioning_uri = NULL;
 	const char *aac_fmtp162248, *aac_fmtp3244;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
-	memset (lc, 0, sizeof (LinphoneCore));
+
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
@@ -1546,9 +1563,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
-	if (liblinphone_serialize_logs == TRUE) {
-		ortp_set_log_thread_id(ortp_thread_self());
-	}
+	linphone_core_activate_log_serialization_if_needed();
 	lc->dyn_pt=96;
 	lc->default_profile=rtp_profile_new("default profile");
 	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
@@ -1636,6 +1651,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 
+#ifdef TUNNEL_ENABLED
+	lc->tunnel=linphone_core_tunnel_new(lc);
+#endif
+
 	lc->network_last_check = 0;
 	lc->network_last_status = FALSE;
 
@@ -1682,7 +1701,7 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 
 LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata)
 {
-	LinphoneCore *core = ms_new(LinphoneCore, 1);
+	LinphoneCore *core = ms_new0(LinphoneCore, 1);
 	linphone_core_init(core, vtable, config, userdata);
 	return core;
 }
@@ -2804,6 +2823,10 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	LinphoneProxyConfig *found_noreg_cfg=NULL;
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
 
+	if (linphone_address_get_domain(uri) == NULL) {
+		ms_message("cannot seach for proxy for uri [%p] if no domain set. returning default",uri);
+		return default_cfg;
+	}
 	/*return default proxy if it is matching the destination uri*/
 	if (default_cfg){
 		const char *domain=linphone_proxy_config_get_domain(default_cfg);
@@ -3237,7 +3260,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	tmp=linphone_address_as_string(from_parsed);
 	linphone_address_destroy(from_parsed);
 	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
-		(sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
+		(sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):".");
 	linphone_core_notify_show_interface(lc);
 	linphone_core_notify_display_status(lc,barmesg);
 
@@ -4943,11 +4966,11 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
 
-ORTP_INLINE LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
 }
 
-ORTP_INLINE LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
+LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
 	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
 }
 
@@ -6047,6 +6070,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
 	config->proxies=ms_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
+	
+	config->deleted_proxies=ms_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 
@@ -6279,9 +6304,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
-	if (liblinphone_serialize_logs == TRUE) {
-		ortp_set_log_thread_id(0);
-	}
+	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_core_v_table_destroy);
 }
 
@@ -6405,6 +6428,28 @@ static void notify_soundcard_usage(LinphoneCore *lc, bool_t used){
 	}
 }
 
+void linphone_core_soundcard_hint_check( LinphoneCore* lc){
+	MSList* the_calls = lc->calls;
+	LinphoneCall* call = NULL;
+	bool_t remaining_paused = FALSE;
+
+	/* check if the remaining calls are paused */
+	while( the_calls ){
+		call = the_calls->data;
+		if( call->state == LinphoneCallPausing || call->state == LinphoneCallPaused ){
+			remaining_paused = TRUE;
+			break;
+		}
+		the_calls = the_calls->next;
+	}
+
+	/* if no more calls or all calls are paused, we can free the soundcard */
+	if ( (lc->calls==NULL || remaining_paused) && !lc->use_files){
+		ms_message("Notifying soundcard that we don't need it anymore for calls.");
+		notify_soundcard_usage(lc,FALSE);
+	}
+}
+
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call)
 {
 	if (linphone_core_can_we_add_call(lc)){
@@ -6431,7 +6476,9 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	lc->calls = the_calls;
-	if (lc->calls==NULL) notify_soundcard_usage(lc,FALSE);
+
+	linphone_core_soundcard_hint_check(lc);
+
 	return 0;
 }
 
@@ -6646,7 +6693,7 @@ typedef struct Hook{
 }Hook;
 
 static Hook *hook_new(LinphoneCoreIterateHook hook, void *hook_data){
-	Hook *h=ms_new(Hook,1);
+	Hook *h=ms_new0(Hook,1);
 	h->fun=hook;
 	h->data=hook_data;
 	return h;
@@ -7054,16 +7101,34 @@ LinphoneCoreVTable *linphone_core_v_table_new() {
 	return ms_new0(LinphoneCoreVTable,1);
 }
 
+void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) {
+	if (table->user_data) {
+		ms_free(table->user_data);
+	}
+	table->user_data = data;
+}
+
+void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
+	return table->user_data;
+}
+
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
+	if (table->user_data) {
+		ms_free(table->user_data);
+	}
 	ms_free(table);
 }
+
+LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
+	return lc->current_vtable;
+}
+ 
 #define NOTIFY_IF_EXIST(function_name) \
 	MSList* iterator; \
 	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\
 	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next) \
-			if (((LinphoneCoreVTable*)(iterator->data))->function_name)\
+			if ((lc->current_vtable=((LinphoneCoreVTable*)(iterator->data)))->function_name)\
 				((LinphoneCoreVTable*)(iterator->data))->function_name
-
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
 	NOTIFY_IF_EXIST(global_state_changed)(lc,gstate,message);
 }

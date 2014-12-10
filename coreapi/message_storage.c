@@ -202,7 +202,7 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 						linphone_content_get_encoding(content),
 						linphone_content_get_size(content),
 						NULL
- 					);
+					);
 		linphone_sql_request(lc->db, buf);
 		sqlite3_free(buf);
 		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
@@ -237,7 +237,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						(int64_t)msg->time,
 						msg->appdata,
 						content_id
- 					);
+					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -254,13 +254,6 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
-	}
-
-	if( msg->state == LinphoneChatMessageStateDelivered
-			|| msg->state == LinphoneChatMessageStateNotDelivered ){
-		// message is not transient anymore, we can remove it from our transient list:
-		msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
-		linphone_chat_message_unref(msg);
 	}
 }
 
@@ -378,7 +371,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 
 	if (startm<0) startm=0;
 
-	if (endm>0&&endm>=startm){
+	if ((endm>0&&endm>=startm) || (startm == 0 && endm == 0) ){
 		buf2=ms_strdup_printf("%s LIMIT %i ",buf,endm+1-startm);
 		ms_free(buf);
 		buf = buf2;

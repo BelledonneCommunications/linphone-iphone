@@ -781,7 +781,7 @@ static void tls_alt_name_register(){
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationFailed,0);
-	linphone_core_destroy(mgr->lc);
+	linphone_core_manager_destroy(mgr);
 }
 
 static void tls_wildcard_register(){

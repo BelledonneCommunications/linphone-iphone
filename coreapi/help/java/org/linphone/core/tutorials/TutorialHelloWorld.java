@@ -22,23 +22,23 @@ import java.nio.ByteBuffer;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
+import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneCoreListener.LinphoneListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCore.GlobalState;
-import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
@@ -52,7 +52,7 @@ import org.linphone.core.SubscriptionState;
  * @author Guillaume Beraudo
  *
  */
-public class TutorialHelloWorld implements LinphoneCoreListener {
+public class TutorialHelloWorld implements LinphoneListener {
 	private boolean running;
 	private TutorialNotifier TutorialNotifier;
 

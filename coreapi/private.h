@@ -146,6 +146,17 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
+struct _LinphoneChatMessageCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneChatMessageCbsMsgStateChangedCb msg_state_changed;
+	LinphoneChatMessageCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneChatMessageCbs);
+
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
 	LinphoneChatMessageOutgoing
@@ -154,6 +165,7 @@ typedef enum _LinphoneChatMessageDir{
 struct _LinphoneChatMessage {
 	belle_sip_object_t base;
 	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
 	LinphoneChatMessageStateChangedCb cb;
@@ -363,6 +375,8 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presence, const char *contact, char **content);
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
+void linphone_core_soundcard_hint_check(LinphoneCore* lc);
+
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
@@ -434,14 +448,21 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
-LINPHONE_PUBLIC bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+typedef enum _LinphoneProxyConfigAddressComparisonResult{
+	LinphoneProxyConfigAddressDifferent,
+	LinphoneProxyConfigAddressEqual,
+	LinphoneProxyConfigAddressWeakEqual
+} LinphoneProxyConfigAddressComparisonResult;
+
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
+void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg );
 /**/
 
 struct _LinphoneProxyConfig
@@ -773,6 +794,7 @@ struct _LinphoneCore
 	LinphoneReason chat_deny_code;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
+	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
 };
 
 
@@ -911,6 +933,7 @@ struct _LinphoneContent {
 	belle_sip_object_t base;
 	void *user_data;
 	struct _LinphoneContentPrivate lcp;
+	bool_t owned_fields;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneContent);
@@ -997,6 +1020,7 @@ BELLE_SIP_TYPE_ID(LinphoneCall),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
+BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),

@@ -23,7 +23,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.realpath(__file__))
-from apixml2python.linphone import LinphoneModule
+from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenProperty
 
 
 blacklisted_classes = [
@@ -42,20 +42,14 @@ blacklisted_functions = [
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
-	'linphone_chat_message_get_file_transfer_information',	# missing LinphoneContent
-	'linphone_chat_message_start_file_download',	# to be handwritten because of callback
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
-	'linphone_chat_room_create_file_transfer_message',	# missing LinphoneContent
 	'linphone_core_add_listener',
 	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_log_collection',	# need to handle class properties
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_get_sip_transports',	# missing LCSipTransports
-	'linphone_core_get_sip_transports_used',	# missing LCSipTransports
 	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
-	'linphone_core_publish',	# missing LinphoneContent
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
 	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
@@ -65,13 +59,6 @@ blacklisted_functions = [
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_core_set_sip_transports',	# missing LCSipTransports
-	'linphone_core_subscribe',	# missing LinphoneContent
-	'linphone_event_notify',	# missing LinphoneContent
-	'linphone_event_send_publish',	# missing LinphoneContent
-	'linphone_event_send_subscribe',	# missing LinphoneContent
-	'linphone_event_update_publish',	# missing LinphoneContent
-	'linphone_event_update_subscribe',	# missing LinphoneContent
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
@@ -84,11 +71,12 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
-	'linphone_chat_room_send_message2',
-	'linphone_core_get_sound_devices',
-	'linphone_core_get_video_devices',
-	'linphone_core_new',
-	'linphone_core_new_with_config'
+	HandWrittenInstanceMethod('ChatRoom', 'send_message2', 'linphone_chat_room_send_message2'),
+	HandWrittenProperty('Content', 'buffer', 'linphone_content_get_buffer', 'linphone_content_set_buffer'),
+	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None),
+	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None),
+	HandWrittenClassMethod('Core', 'new', 'linphone_core_new'),
+	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config')
 ]
 
 def generate(apixmlfile, outputfile):

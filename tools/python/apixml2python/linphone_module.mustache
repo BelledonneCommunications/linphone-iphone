@@ -97,9 +97,15 @@ MSList * PyList_AsMSListOf{{c_contained_type}}(PyObject *pyl) {
 
 {{/mslist_types}}
 
-{{#events}}
+{{#core_events}}
 {{{event_callback_definition}}}
-{{/events}}
+{{/core_events}}
+
+{{#classes}}
+{{#class_events}}
+{{{event_callback_definition}}}
+{{/class_events}}
+{{/classes}}
 
 {{#classes}}
 
@@ -279,6 +285,7 @@ PyMODINIT_FUNC initlinphone(void) {
 	PyObject *menum;
 
 	PyDateTime_IMPORT;
+	PyEval_InitThreads();
 	pylinphone_init_logging();
 
 {{#classes}}
@@ -287,6 +294,7 @@ PyMODINIT_FUNC initlinphone(void) {
 
 	/* Hand-written classes. */
 	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return;
+	if (PyType_Ready(&pylinphone_SipTransportsType) < 0) return;
 
 	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
 	if (m == NULL) return;
@@ -320,6 +328,8 @@ PyMODINIT_FUNC initlinphone(void) {
 	/* Hand-written classes. */
 	Py_INCREF(&pylinphone_VideoSizeType);
 	PyModule_AddObject(m, "VideoSize", (PyObject *)&pylinphone_VideoSizeType);
+	Py_INCREF(&pylinphone_SipTransportsType);
+	PyModule_AddObject(m, "SipTransports", (PyObject *)&pylinphone_SipTransportsType);
 
 	pylinphone_init_testing_module(m);
 }

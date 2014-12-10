@@ -180,7 +180,7 @@ static void calibration_finished(LinphoneCore *lc, LinphoneEcCalibratorStatus st
 			GTK_DIALOG_DESTROY_WITH_PARENT,
 			GTK_MESSAGE_QUESTION,
 			GTK_BUTTONS_YES_NO,
-			"%s","Did you hear three beeps ?");
+			"%s",_("Did you hear three beeps ?"));
 
 	g_signal_connect(G_OBJECT (dialog), "response",
 			G_CALLBACK (dialog_click),speaker_page);
@@ -289,12 +289,12 @@ static void open_mixer(){
 
 #ifdef WIN32
 	if(!g_spawn_command_line_async("control mmsys.cpl",&error)){
-		display_popup(GTK_MESSAGE_WARNING,"Sound preferences not found ");
+		display_popup(GTK_MESSAGE_WARNING,_("Sound preferences not found "));
 		g_error_free(error);
 	}
 #elif __APPLE__
 	if(!g_spawn_command_line_async("open /System/Library/PreferencePanes/Sound.prefPane",&error)){
-		display_popup(GTK_MESSAGE_WARNING,"Sound preferences not found ");
+		display_popup(GTK_MESSAGE_WARNING,_("Sound preferences not found "));
 		g_error_free(error);
 	}
 #else
@@ -303,7 +303,7 @@ static void open_mixer(){
 			if(!g_spawn_command_line_async("kmix",&error)){
 				if(!g_spawn_command_line_async("mate-volume-control",&error)){
 					if(!g_spawn_command_line_async("xterm alsamixer",&error)){
-						display_popup(GTK_MESSAGE_WARNING,"Cannot launch system sound control ");
+						display_popup(GTK_MESSAGE_WARNING,_("Cannot launch system sound control "));
 						g_error_free(error);
 					}
 				}
@@ -315,7 +315,7 @@ static void open_mixer(){
 
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
-	GtkWidget *label=gtk_label_new(_("Welcome !\nThis assistant will help you to configure audio settings for Linphone"));
+	GtkWidget *label=gtk_label_new(_("Welcome!\nThis assistant will help you to configure audio settings for Linphone"));
 	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);
 	gtk_widget_show_all(vbox);
 	return vbox;
@@ -331,7 +331,7 @@ static GtkWidget *create_mic_page(){
 	GtkWidget *capture_device=gtk_combo_box_new();
 	GtkWidget *box = gtk_vbox_new(FALSE,0);
 	GtkWidget *label_audiolevel=gtk_label_new(_("No voice"));
-	GtkWidget *mixer_button=gtk_button_new_with_label("System sound preferences");
+	GtkWidget *mixer_button=gtk_button_new_with_label(_("System sound preferences"));
 	GtkWidget *image;
 
 	image=gtk_image_new_from_stock(GTK_STOCK_PREFERENCES,GTK_ICON_SIZE_MENU);
@@ -370,7 +370,7 @@ static GtkWidget *create_speaker_page(){
 	GtkWidget *labelSpeakerLevel=gtk_label_new(_("Play three beeps"));
 	GtkWidget *spk_button=gtk_button_new_from_stock(GTK_STOCK_MEDIA_PLAY);
 	GtkWidget *playback_device=gtk_combo_box_new();
-	GtkWidget *mixer_button=gtk_button_new_with_label("System sound preferences");
+	GtkWidget *mixer_button=gtk_button_new_with_label(_("System sound preferences"));
 	GtkWidget *image;
 	const char **sound_devices;
 
@@ -402,8 +402,8 @@ static GtkWidget *create_play_record_page(){
 	GtkWidget *vbox=gtk_table_new(2,2,FALSE);
 	GtkWidget *labelRecord=gtk_label_new(_("Press the record button and say some words"));
 	GtkWidget *labelPlay=gtk_label_new(_("Listen to your record voice"));
-	GtkWidget *rec_button=gtk_toggle_button_new_with_label("Record");
-	GtkWidget *play_button=gtk_toggle_button_new_with_label("Play");
+	GtkWidget *rec_button=gtk_toggle_button_new_with_label(_("Record"));
+	GtkWidget *play_button=gtk_toggle_button_new_with_label(_("Play"));
 	GtkWidget *image;
 
 	image=gtk_image_new_from_stock(GTK_STOCK_MEDIA_RECORD,GTK_ICON_SIZE_MENU);

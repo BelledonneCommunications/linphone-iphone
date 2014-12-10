@@ -215,7 +215,7 @@ char * linphone_call_log_to_str(LinphoneCallLog *cl){
 			status=_("missed");
 			break;
 		default:
-			status="unknown";
+			status=_("unknown");
 	}
 	tmp=ortp_strdup_printf(_("%s at %s\nFrom: %s\nTo: %s\nStatus: %s\nDuration: %i mn %i sec\n"),
 			(cl->dir==LinphoneCallIncoming) ? _("Incoming call") : _("Outgoing call"),

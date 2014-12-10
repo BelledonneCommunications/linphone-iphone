@@ -79,15 +79,10 @@ public interface LinphoneAddress {
 	 */
 	public String getDomain();
 	/**
-	 * Port as String
-	 * @return null if not set
+	 * Port
+	 * @return 0 if not set
 	 */
-	public String getPort();
-	/**
-	 * Port as integer value. 
-	 * @return negative value if not set if not set
-	 */
-	public int getPortInt();
+	public int getPort();
 	/**
 	 * set display name 
 	 * @param name
@@ -104,15 +99,11 @@ public interface LinphoneAddress {
 	 */
 	public void setDomain(String domain);
 	/**
-	 * set port as String 
-	 * @param port, null if not set
+	 * set port
+	 * @param port, 0 if not set
 	 */
-	public void setPort(String port);
-	/**
-	 * set port as int 
-	 * @param port, negative value if not set
-	 */
-	public void setPortInt(int port);
+	public void setPort(int port);
+
 	/**
 	 * Removes address's tags and uri headers so that it is displayable to the user.
 	**/

@@ -1787,4 +1787,29 @@ public interface LinphoneCore {
 	 * @return An object that implement LinphonePlayer
 	 */
 	public LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window);
+	
+	/**
+	 * Adds a new listener to be called by the core
+	 * @param listener to add
+	 */
+	public void addListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Removes a listener previously added with addListener
+	 * @param listener to remove
+	 */
+	public void removeListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Specifies a ring back tone to be played to far end during incoming calls, when early media is requested.
+	 * @param file
+	 */
+	public void setRemoteRingbackTone(String file);
+
+	/**
+	 * Return the ringback tone file used when doing early media. It may be null.
+	 * @return the ringback tone file path.
+	 */
+	String getRemoteRingbackTone();
+	
 }

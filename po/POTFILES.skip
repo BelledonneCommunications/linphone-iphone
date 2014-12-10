@@ -48,3 +48,6 @@ mediastreamer2/src/videofilters/winvideo2.c
 mediastreamer2/src/videofilters/x11video.c
 mediastreamer2/src/voip/ice.c
 build/vsx/LibLinphoneTester-wp8/LibLinphoneTester-wp8/Resources/AppResources.Designer.cs
+build/wp8/LibLinphoneTester-wp8/Resources/AppResources.Designer.cs
+mediastreamer2/build/wp8/mediastreamer2-tester-wp8/Resources/AppResources.Designer.cs
+share/linphone.desktop.in

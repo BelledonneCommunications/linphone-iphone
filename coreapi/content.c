@@ -23,27 +23,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 static void linphone_content_destroy(LinphoneContent *content) {
-	if (content->lcp.type) belle_sip_free(content->lcp.type);
-	if (content->lcp.subtype) belle_sip_free(content->lcp.subtype);
-	if (content->lcp.data) belle_sip_free(content->lcp.data);
-	if (content->lcp.encoding) belle_sip_free(content->lcp.encoding);
-	if (content->lcp.name) belle_sip_free(content->lcp.name);
+	if (content->owned_fields == TRUE) {
+		if (content->lcp.type) belle_sip_free(content->lcp.type);
+		if (content->lcp.subtype) belle_sip_free(content->lcp.subtype);
+		if (content->lcp.data) belle_sip_free(content->lcp.data);
+		if (content->lcp.encoding) belle_sip_free(content->lcp.encoding);
+		if (content->lcp.name) belle_sip_free(content->lcp.name);
+	}
 }
 
 static void linphone_content_clone(LinphoneContent *obj, const LinphoneContent *ref) {
-	void *data;
 	linphone_content_set_type(obj, linphone_content_get_type(ref));
 	linphone_content_set_subtype(obj, linphone_content_get_subtype(ref));
 	linphone_content_set_encoding(obj, linphone_content_get_encoding(ref));
 	linphone_content_set_name(obj, linphone_content_get_name(ref));
-	linphone_content_set_size(obj, linphone_content_get_size(ref));
-	data = linphone_content_get_data(ref);
-	if (data != NULL) {
-		size_t size = linphone_content_get_size(ref);
-		void *objdata = belle_sip_malloc(size + 1);
-		memcpy(objdata, data, size);
-		((char *)objdata)[size] = '\0';
-		linphone_content_set_data(obj, objdata);
+	if (linphone_content_get_buffer(ref) != NULL) {
+		linphone_content_set_buffer(obj, linphone_content_get_buffer(ref), linphone_content_get_size(ref));
+	} else {
+		linphone_content_set_size(obj, linphone_content_get_size(ref));
 	}
 }
 
@@ -107,12 +104,24 @@ void linphone_content_set_subtype(LinphoneContent *content, const char *subtype)
 	}
 }
 
-void * linphone_content_get_data(const LinphoneContent *content) {
+void * linphone_content_get_buffer(const LinphoneContent *content) {
 	return content->lcp.data;
 }
 
-void linphone_content_set_data(LinphoneContent *content, void *data) {
-	content->lcp.data = data;
+void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, size_t size) {
+	content->lcp.size = size;
+	content->lcp.data = belle_sip_malloc(size + 1);
+	memcpy(content->lcp.data, buffer, size);
+	((char *)content->lcp.data)[size] = '\0';
+}
+
+char * linphone_content_get_string_buffer(const LinphoneContent *content) {
+	return (char *)content->lcp.data;
+}
+
+void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer) {
+	content->lcp.size = strlen(buffer);
+	content->lcp.data = belle_sip_strdup(buffer);
 }
 
 size_t linphone_content_get_size(const LinphoneContent *content) {
@@ -156,6 +165,7 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
 LinphoneContent * linphone_content_new(void) {
 	LinphoneContent *content = belle_sip_object_new(LinphoneContent);
 	belle_sip_object_ref(content);
+	content->owned_fields = TRUE;
 	return content;
 }
 
@@ -165,16 +175,15 @@ LinphoneContent * linphone_content_copy(const LinphoneContent *ref) {
 
 LinphoneContent * linphone_content_from_sal_body(const SalBody *ref) {
 	if (ref && ref->type) {
-		void *objdata;
 		LinphoneContent *content = linphone_content_new();
 		linphone_content_set_type(content, ref->type);
 		linphone_content_set_subtype(content, ref->subtype);
 		linphone_content_set_encoding(content, ref->encoding);
-		linphone_content_set_size(content, ref->size);
-		objdata = belle_sip_malloc(ref->size + 1);
-		memcpy(objdata, ref->data, ref->size);
-		((char *)objdata)[ref->size] = '\0';
-		linphone_content_set_data(content, objdata);
+		if (ref->data != NULL) {
+			linphone_content_set_buffer(content, ref->data, ref->size);
+		} else {
+			linphone_content_set_size(content, ref->size);
+		}
 		return content;
 	}
 	return NULL;
@@ -184,7 +193,7 @@ SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content) {
 	if (content && linphone_content_get_type(content)) {
 		body->type = linphone_content_get_type(content);
 		body->subtype = linphone_content_get_subtype(content);
-		body->data = linphone_content_get_data(content);
+		body->data = linphone_content_get_buffer(content);
 		body->size = linphone_content_get_size(content);
 		body->encoding = linphone_content_get_encoding(content);
 		return body;
@@ -197,6 +206,7 @@ SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content) {
 LinphoneContent * linphone_content_private_to_linphone_content(const LinphoneContentPrivate *lcp) {
 	LinphoneContent *content = belle_sip_object_new(LinphoneContent);
 	memcpy(&content->lcp, lcp, sizeof(LinphoneContentPrivate));
+	content->owned_fields = FALSE;
 	return content;
 }
 

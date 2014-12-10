@@ -170,13 +170,17 @@ void linphone_proxy_config_address_equal_test() {
 	LinphoneAddress *c = linphone_address_new("sip:toto@titi;transport=tcp");
 	LinphoneAddress *d = linphone_address_new("sip:toto@titu");
 	LinphoneAddress *e = linphone_address_new("sip:toto@titi;transport=udp");
+	LinphoneAddress *f = linphone_address_new("sip:toto@titi?X-Create-Account=yes");
 
-	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,NULL));
-	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,b));
-	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,c));
-	CU_ASSERT_FALSE(linphone_proxy_config_address_equal(a,d));
-	CU_ASSERT_TRUE(linphone_proxy_config_address_equal(a,e));
-	CU_ASSERT_TRUE(linphone_proxy_config_address_equal(NULL,NULL));
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,NULL), LinphoneProxyConfigAddressDifferent);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,b), LinphoneProxyConfigAddressDifferent);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,c), LinphoneProxyConfigAddressDifferent);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,d), LinphoneProxyConfigAddressDifferent);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,e), LinphoneProxyConfigAddressWeakEqual);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(NULL,NULL), LinphoneProxyConfigAddressEqual);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,f), LinphoneProxyConfigAddressWeakEqual);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(c,f), LinphoneProxyConfigAddressDifferent);
+	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(e,f), LinphoneProxyConfigAddressWeakEqual);
 
 	linphone_address_destroy(a);
 	linphone_address_destroy(b);
@@ -192,36 +196,36 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_set_identity(proxy_config,"sip:toto@titi");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_identity(proxy_config,"sips:toto@titi");
-	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:toto.com");
-	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org:4444");
-	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;transport=tcp");
-	CU_ASSERT_TRUE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;param=blue");
-	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressWeakEqual);
 
 
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_contact_parameters(proxy_config,"blabla=blue");
-	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual);
 
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_register(proxy_config,TRUE);
-	CU_ASSERT_FALSE(linphone_proxy_config_is_server_config_changed(proxy_config));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual);
 
 	linphone_proxy_config_destroy(proxy_config);
 }

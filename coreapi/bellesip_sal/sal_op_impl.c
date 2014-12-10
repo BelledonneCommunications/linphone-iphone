@@ -103,6 +103,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
 	}
 
+	belle_sip_uri_set_user_password(contact_uri,NULL);
 	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
 	if (op->privacy!=SalPrivacyNone){
 		belle_sip_uri_set_user(contact_uri,NULL);
@@ -312,7 +313,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			}
 		}else{
 #ifdef TUNNEL_ENABLED
-			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(udplp,belle_sip_tunnel_listening_point_t)){
+			if (udplp && BELLE_SIP_OBJECT_IS_INSTANCE_OF(udplp,belle_sip_tunnel_listening_point_t)){
 				/* our tunnel mode only supports UDP. Force transport to be set to UDP */
 				belle_sip_uri_set_transport_param(next_hop_uri,"udp");
 			}

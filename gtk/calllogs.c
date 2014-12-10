@@ -332,7 +332,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			ngettext("%i second", "%i seconds", duration%60),
 			duration%60);
 		if (status==NULL) {
-				headtxt=g_markup_printf_escaped(_("<big><b>%s</b></big>\t%s"),display,start_date ? start_date : "");
+				headtxt=g_markup_printf_escaped("<big><b>%s</b></big>\t%s",display,start_date ? start_date : "");
 				logtxt=g_markup_printf_escaped(
 				_("<small><i>%s</i>\t"
 				  "<i>Quality: %s</i></small>\n%s\t%s\t"),
@@ -340,8 +340,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		} else {
 			headtxt=g_markup_printf_escaped(_("<big><b>%s</b></big>\t%s"),display,start_date ? start_date : "");
 			logtxt=g_markup_printf_escaped(
-			_("<small><i>%s</i></small>\t"
-				"\n%s"),addr, status);
+			"<small><i>%s</i></small>\t"
+				"\n%s",addr, status);
 		}
 		g_free(minutes);
 		g_free(seconds);

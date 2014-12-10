@@ -388,7 +388,7 @@ bool TunnelManager::startAutoDetection() {
 bool TunnelManager::isActivated() const{
 	switch(getMode()){
 		case LinphoneTunnelModeAuto:
-			return !mState==disabled;
+			return !(mState==disabled);
 		case LinphoneTunnelModeDisable:
 			return false;
 		case LinphoneTunnelModeEnable:

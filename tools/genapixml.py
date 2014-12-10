@@ -198,15 +198,15 @@ class CClass(CObject):
 
 	def __addClassMethod(self, f):
 		name = f.name[len(self.cFunctionPrefix):]
-		if string.find(name, 'get_') == 0 and len(f.arguments) == 0:
+		if name.startswith('get_') and len(f.arguments) == 0:
 			self.__addPropertyGetter(name[4:], f)
-		elif string.find(name, 'is_') == 0 and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
+		elif name.startswith('is_') and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
 			self.__addPropertyGetter(name[3:], f)
-		elif string.rfind(name, '_enabled') == (len(name) - 8) and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
+		elif name.endswith('_enabled') and len(f.arguments) == 0 and f.returnArgument.ctype == 'bool_t':
 			self.__addPropertyGetter(name, f)
-		elif string.find(name, 'set_') == 0 and len(f.arguments) == 1:
+		elif name.startswith('set_') and len(f.arguments) == 1:
 			self.__addPropertySetter(name[4:], f)
-		elif string.find(name, 'enable_') == 0 and len(f.arguments) == 1 and f.arguments[0].ctype == 'bool_t':
+		elif name.startswith('enable_') and len(f.arguments) == 1 and f.arguments[0].ctype == 'bool_t':
 			self.__addPropertySetter(name[7:] + '_enabled', f)
 		else:
 			if not f.name in self.classMethods:
@@ -214,15 +214,15 @@ class CClass(CObject):
 
 	def __addInstanceMethod(self, f):
 		name = f.name[len(self.cFunctionPrefix):]
-		if string.find(name, 'get_') == 0 and len(f.arguments) == 1:
+		if name.startswith('get_') and len(f.arguments) == 1:
 			self.__addPropertyGetter(name[4:], f)
-		elif string.find(name, 'is_') == 0 and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
+		elif name.startswith('is_') and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
 			self.__addPropertyGetter(name[3:], f)
-		elif string.rfind(name, '_enabled') == (len(name) - 8) and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
+		elif name.endswith('_enabled') and len(f.arguments) == 1 and f.returnArgument.ctype == 'bool_t':
 			self.__addPropertyGetter(name, f)
-		elif string.find(name, 'set_') == 0 and len(f.arguments) == 2:
+		elif name.startswith('set_') and len(f.arguments) == 2:
 			self.__addPropertySetter(name[4:], f)
-		elif string.find(name, 'enable_') == 0 and len(f.arguments) == 2 and f.arguments[1].ctype == 'bool_t':
+		elif name.startswith('enable_') and len(f.arguments) == 2 and f.arguments[1].ctype == 'bool_t':
 			self.__addPropertySetter(name[7:] + '_enabled', f)
 		else:
 			if not f.name in self.instanceMethods:
@@ -314,12 +314,12 @@ class Project:
 
 	def __discoverClasses(self):
 		for td in self.__typedefs:
-			if string.find(td.definition, 'enum ') == 0:
+			if td.definition.startswith('enum '):
 				for e in self.enums:
 					if (e.associatedTypedef is None) and td.definition[5:] == e.name:
 						e.associatedTypedef = td
 						break
-			elif string.find(td.definition, 'struct ') == 0:
+			elif td.definition.startswith('struct '):
 				structFound = False
 				for st in self.__structs:
 					if (st.associatedTypedef is None) and td.definition[7:] == st.name:
@@ -333,7 +333,7 @@ class Project:
 					st.associatedTypedef = td
 					self.add(st)
 		for td in self.__typedefs:
-			if string.find(td.definition, 'struct ') == 0:
+			if td.definition.startswith('struct '):
 				for st in self.__structs:
 					if st.associatedTypedef == td:
 						self.add(CClass(st))
@@ -346,9 +346,18 @@ class Project:
 		# Sort classes by length of name (longest first), so that methods are put in the right class
 		self.classes.sort(key = lambda c: len(c.name), reverse = True)
 		for e in self.__events:
+			eventAdded = False
 			for c in self.classes:
-				if string.find(e.name, c.name) == 0:
+				if c.name.endswith('Cbs') and e.name.startswith(c.name):
 					c.addEvent(e)
+					eventAdded = True
+					break
+			if not eventAdded:
+				for c in self.classes:
+					if e.name.startswith(c.name):
+						c.addEvent(e)
+						eventAdded = True
+						break
 		for f in self.__functions:
 			for c in self.classes:
 				if c.cFunctionPrefix == f.name[0 : len(c.cFunctionPrefix)]:
@@ -417,9 +426,9 @@ class Project:
 	def __parseCTypedefMemberdef(self, node):
 		name = node.find('./name').text
 		definition = node.find('./definition').text
-		if string.find(definition, 'typedef ') == 0:
+		if definition.startswith('typedef '):
 			definition = definition[8 :]
-		if string.rfind(name, 'Cb') == len(name) - 2:
+		if name.endswith('Cb'):
 			pos = string.find(definition, "(*")
 			if pos == -1:
 				return None
