@@ -1060,6 +1060,42 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
 	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
 }
 
+/**
+ * Parse a directory to get a certificate with the given subject common name
+ *
+ */
+void sal_certificates_chain_parse_directory(unsigned char **certificate_pem, unsigned char **key_pem, unsigned char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint) {
+	belle_sip_certificates_chain_t *certificate = NULL;
+	belle_sip_signing_key_t *key = NULL;
+	*certificate_pem = NULL;
+	*key_pem = NULL;
+	if (belle_sip_get_certificate_and_pkey_in_dir(path, subject, &certificate, &key, (belle_sip_certificate_raw_format_t)format) == 0) {
+		*certificate_pem = belle_sip_get_certificates_pem(certificate);
+		*key_pem = belle_sip_get_key_pem(key);
+		ms_message("Retrieve certificate with CN=%s successful\n", subject);
+	} else {
+		if (generate_certificate == TRUE) {
+			if ( belle_sip_generate_self_signed_certificate(path, subject, &certificate, &key) == 0) {
+				*certificate_pem = belle_sip_get_certificates_pem(certificate);
+				*key_pem = belle_sip_get_key_pem(key);
+				ms_message("Generate self-signed certificate with CN=%s successful\n", subject);
+			}
+		}
+	}
+	/* generate the fingerprint as described in RFC4572 if needed */
+	if ((generate_dtls_fingerprint == TRUE) && (fingerprint != NULL)) {
+		*fingerprint = belle_sip_generate_certificate_fingerprint(certificate);
+	}
+
+	/* free key and certificate */
+	if ( certificate != NULL ) {
+		belle_sip_object_unref(certificate);
+	}
+	if ( key != NULL ) {
+		belle_sip_object_unref(key);
+	}
+}
+
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
 	return belle_sip_random_bytes(ret,size);
 }

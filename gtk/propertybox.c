@@ -1199,11 +1199,13 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 		if (strcasecmp(selected,"SRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionSRTP);
 			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,TRUE);
+		}else if (strcasecmp(selected,"DTLS")==0){
+			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionDTLS);
+			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
 		}else if (strcasecmp(selected,"ZRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
 			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
-		}
-		else {
+		} else {
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
 			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
 		}
@@ -1219,7 +1221,7 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *combo=linphone_gtk_get_widget(pb,"media_encryption_combo");
 	bool_t no_enc=TRUE;
-	int srtp_id=-1,zrtp_id=-1;
+	int srtp_id=-1,zrtp_id=-1,dtls_id=-1;
 	GtkTreeModel *model;
 	GtkListStore *store;
 	GtkTreeIter iter;
@@ -1239,12 +1241,26 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		srtp_id=1;
 		no_enc=FALSE;
 	}
+	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionDTLS)){
+		gtk_list_store_append(store,&iter);
+		gtk_list_store_set(store,&iter,0,_("DTLS"),-1);
+		if (srtp_id!=-1) dtls_id=2;
+		else dtls_id=1;
+		no_enc=FALSE;
+	}
 	if (linphone_core_media_encryption_supported(lc,LinphoneMediaEncryptionZRTP)){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,_("ZRTP"),-1);
 		no_enc=FALSE;
-		if (srtp_id!=-1) zrtp_id=2;
-		else zrtp_id=1;
+		if (srtp_id!=-1) {
+			if (dtls_id!=-1)
+				zrtp_id=3;
+			else zrtp_id=2;
+		} else {
+			if (dtls_id!=-1)
+				zrtp_id=2;
+			else zrtp_id=1;
+		}
 	}
 	if (no_enc){
 		/*hide this setting*/
@@ -1261,6 +1277,12 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 			case LinphoneMediaEncryptionSRTP:
 				if (srtp_id!=-1) {
 					gtk_combo_box_set_active(GTK_COMBO_BOX(combo),srtp_id);
+					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,TRUE);
+				}
+			break;
+			case LinphoneMediaEncryptionDTLS:
+				if (dtls_id!=-1) {
+					gtk_combo_box_set_active(GTK_COMBO_BOX(combo),dtls_id);
 					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,TRUE);
 				}
 			break;

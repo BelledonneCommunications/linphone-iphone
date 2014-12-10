@@ -158,8 +158,12 @@ static void propagate_encryption_changed(LinphoneCall *call){
 		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 		linphone_core_notify_call_encryption_changed(call->core, call, FALSE, call->auth_token);
 	} else {
-		ms_message("All streams are encrypted");
-		call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
+		if (call->auth_token) {/* ZRTP only is using auth_token */
+			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+		} else { /* otherwise it must be DTLS as SDES doesn't go through this function */
+			call->current_params->media_encryption=LinphoneMediaEncryptionDTLS;
+		}
 		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
 	}
 }
@@ -171,8 +175,10 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 	call = (LinphoneCall *)data;
 
 	if (encrypted) {
-		snprintf(status,sizeof(status)-1,_("Authentication token is %s"),call->auth_token);
-		linphone_core_notify_display_status(call->core, status);
+		if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) { /* if encryption is DTLS, no status to be displayed */
+			snprintf(status,sizeof(status)-1,_("Authentication token is %s"),call->auth_token);
+			linphone_core_notify_display_status(call->core, status);
+		}
 	}
 
 	propagate_encryption_changed(call);
@@ -472,6 +478,14 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	}
 
 	setup_encryption_keys(call,md);
+	/* if media encryption is set to DTLS check presence of fingerprint in the call which shall have been set at stream init but it may have failed when retrieving certificate resulting in no fingerprint present and then DTLS not usable */
+	if ((call->params->media_encryption==LinphoneMediaEncryptionDTLS) && (call->dtls_certificate_fingerprint!= NULL)) {
+		memcpy(md->dtls_fingerprint, call->dtls_certificate_fingerprint, strlen((const char *)(call->dtls_certificate_fingerprint))); /* get the self fingerprint from call(it's computed at stream init) */
+		md->dtls_role = SalDtlsRoleUnset; /* if we are offering, SDP will have actpass setup attribute when role is unset, if we are responding the result mediadescription will be set to SalDtlsRoleIsClient */
+	} else {
+		md->dtls_fingerprint[0] = '\0';
+		md->dtls_role = SalDtlsRoleInvalid;
+	}
 	setup_rtcp_fb(call, md);
 	setup_rtcp_xr(call, md);
 
@@ -572,6 +586,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->camera_enabled=TRUE;
 	call->current_params = linphone_call_params_new();
 	call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+	call->dtls_certificate_fingerprint = NULL;
 
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,0,min_port,max_port);
@@ -735,7 +750,7 @@ static void linphone_call_incoming_select_ip_version(LinphoneCall *call){
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md) {
 	call->params->has_video &= linphone_core_media_description_contains_video_stream(md);
 
-	/* Handle AVPF and SRTP. */
+	/* Handle AVPF, SRTP and DTLS. */
 	call->params->avpf_enabled = sal_media_description_has_avpf(md);
 	if (call->params->avpf_enabled == TRUE) {
 		if (call->dest_proxy != NULL) {
@@ -743,6 +758,9 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 		} else {
 			call->params->avpf_rr_interval = linphone_core_get_avpf_rr_interval(call->core)*1000;
 		}
+	}
+	if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {
+		call->params->media_encryption = LinphoneMediaEncryptionDTLS;
 	}
 	if ((sal_media_description_has_srtp(md) == TRUE) && (media_stream_srtp_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionSRTP;
@@ -917,8 +935,19 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 void linphone_call_fix_call_parameters(LinphoneCall *call){
 	call->params->has_video=call->current_params->has_video;
 
-	if (call->params->media_encryption != LinphoneMediaEncryptionZRTP) /*in case of ZRTP call parameter are handle after zrtp negociation*/
-		call->params->media_encryption=call->current_params->media_encryption;
+	switch(call->params->media_encryption) {
+		case LinphoneMediaEncryptionZRTP:
+		case LinphoneMediaEncryptionDTLS:
+		case LinphoneMediaEncryptionNone:
+			/* do nothing */
+			break;
+		case LinphoneMediaEncryptionSRTP:
+			call->params->media_encryption=call->current_params->media_encryption;
+			break;
+		default:
+			ms_fatal("Unknown media encryption type on call [%p]", call);
+			break;
+	}
 }
 
 const char *linphone_call_state_to_string(LinphoneCallState cs){
@@ -1066,6 +1095,10 @@ static void linphone_call_destroy(LinphoneCall *obj){
 		ms_free(obj->auth_token);
 		obj->auth_token=NULL;
 	}
+	if (obj->dtls_certificate_fingerprint) {
+		ms_free(obj->dtls_certificate_fingerprint);
+		obj->dtls_certificate_fingerprint=NULL;
+	}
 	if (obj->dtmfs_timer) {
 		linphone_call_cancel_dtmfs(obj);
 	}
@@ -1118,11 +1151,16 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 #endif
 
 	if (linphone_call_all_streams_encrypted(call)) {
-		 if (linphone_call_get_authentication_token(call)) {
-			 call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
-		 } else {
-			 call->current_params->media_encryption=LinphoneMediaEncryptionSRTP;
-		 }
+		if (linphone_call_get_authentication_token(call)) {
+			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+		} else {
+			/* TODO : check this or presence of dtls_fingerprint in the call? */
+			if (call->params->media_encryption == LinphoneMediaEncryptionDTLS) {
+				call->current_params->media_encryption=LinphoneMediaEncryptionDTLS;
+			} else {
+				call->current_params->media_encryption=LinphoneMediaEncryptionSRTP;
+			}
+		}
 	} else {
 		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 	}
@@ -1553,6 +1591,34 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if (call->sessions[0].rtp_session==NULL){
 		call->audiostream=audiostream=audio_stream_new(call->media_ports[0].rtp_port,call->media_ports[0].rtcp_port,call->af==AF_INET6);
 		rtp_session_set_symmetric_rtp(audiostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
+		if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+			MSDtlsSrtpParams params;
+			unsigned char *certificate, *key;
+			memset(&params,0,sizeof(MSDtlsSrtpParams));
+			/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or defautl  celui par default linphone-dtls-default-identity */
+			/* This will parse the directory to find a matching fingerprint or generate it if not found */
+			/* returned string must be freed */
+			sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
+
+			if (key!= NULL && certificate!=NULL) {
+				params.pem_certificate = (char *)certificate;
+				params.pem_pkey = (char *)key;
+				params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
+				audio_stream_enable_dtls(call->audiostream,&params);
+				ms_free(certificate);
+				ms_free(key);
+			} else {
+				ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
+				/* TODO : check if encryption forced, if yes, stop call */
+			}
+		#if TODO_DTLS_VIDEO_ENCRYPTION //VIDEO_ENABLED
+			if (media_stream_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+				/*audio stream is already encrypted and video stream is active*/
+				memset(&params,0,sizeof(MSDtlsSrtpParams));
+				video_stream_enable_dtls(call->videostream,call->audiostream,&params);
+			}
+		#endif
+		}
 	}else{
 		call->audiostream=audio_stream_new_with_sessions(&call->sessions[0]);
 	}
@@ -2241,9 +2307,32 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 		}
 #endif
-	}else{
+	} else if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+		/* DTLS engine was already initialised during stream init. Before starting it we must be sure that the role(client or server) is set.
+		 * Role may have already been set to server if we initiate the call and already received a packet from peer, in that case do nothing */
+		SalDtlsRole salRole = call->resultdesc->streams[0].dtls_role; /* TODO: is streams[0] necessary the audiostream in the media description ? */
+		if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
+			salRole = call->resultdesc->dtls_role;
+		}
+
+		if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
+			/* give the peer certificate fingerprint to dtls context */
+			SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+			ms_dtls_srtp_set_peer_fingerprint(call->audiostream->ms.sessions.dtls_context, remote_desc->streams[0].dtls_fingerprint);
+		} else {
+			ms_warning("unable to start DTLS engine, Dtls role in resulting media description is invalid\n");
+		}
+		if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
+			ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
+			ms_dtls_srtp_start(call->audiostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
+		} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
+			ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
+			/* no need to start engine, we are waiting for DTLS Client Hello */
+		}
+
+	} else {
 		call->current_params->media_encryption=linphone_call_all_streams_encrypted(call) ?
-			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
+		LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
 
 	if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed)) {
@@ -2968,7 +3057,12 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
 			if (ms->type==AudioStreamType)
 				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
-		} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
+		} else if (evt == ORTP_EVENT_DTLS_ENCRYPTION_CHANGED) {
+			if (ms->type==AudioStreamType)
+				linphone_call_audiostream_encryption_changed(call, evd->info.dtls_stream_encrypted);
+			else if (ms->type==VideoStreamType)
+				propagate_encryption_changed(call);
+		}else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
 			handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){

@@ -680,6 +680,12 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 			gtk_widget_hide(status_icon);
 			gtk_widget_hide(verify_button);
 		break;
+		case LinphoneMediaEncryptionDTLS:
+			gtk_widget_show_all(encryption_box);
+			gtk_label_set_markup(GTK_LABEL(label),_("Secured by DTLS"));
+			gtk_widget_hide(status_icon);
+			gtk_widget_hide(verify_button);
+		break;
 		case LinphoneMediaEncryptionZRTP:
 		{
 			gchar *text=g_strdup_printf(_("Secured by ZRTP - [auth token: %s]"),linphone_call_get_authentication_token(call));

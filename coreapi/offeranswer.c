@@ -315,6 +315,21 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		result->rtcp_xr.enabled = FALSE;
 	}
 
+	// Handle dtls session attribute: if both local and remote have a dtls fingerprint and a dtls setup, get the remote fingerprint into the result
+	if ((local_offer->dtls_role!=SalDtlsRoleInvalid) && (remote_answer->dtls_role!=SalDtlsRoleInvalid)
+			&&(strlen(local_offer->dtls_fingerprint)>0) && (strlen(remote_answer->dtls_fingerprint)>0)) {
+		strcpy(result->dtls_fingerprint, remote_answer->dtls_fingerprint);
+		if (remote_answer->dtls_role==SalDtlsRoleIsClient) {
+			result->dtls_role = SalDtlsRoleIsServer;
+		} else {
+			result->dtls_role = SalDtlsRoleIsClient;
+		}
+	} else {
+		result->dtls_fingerprint[0] = '\0';
+		result->dtls_role = SalDtlsRoleInvalid;
+	}
+
+
 	return 0;
 }
 
@@ -334,7 +349,9 @@ static bool_t local_stream_not_already_used(const SalMediaDescription *result, c
 static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
 	if (local == remote) return TRUE;
 	if ((remote == SalProtoRtpAvp) && ((local == SalProtoRtpSavp) || (local == SalProtoRtpSavpf))) return TRUE;
+	if ((remote == SalProtoRtpAvp) && ((local == SalProtoUdpTlsRtpSavp) || (local == SalProtoUdpTlsRtpSavpf))) return TRUE;
 	if ((remote == SalProtoRtpAvpf) && (local == SalProtoRtpSavpf)) return TRUE;
+	if ((remote == SalProtoRtpAvpf) && (local == SalProtoUdpTlsRtpSavpf)) return TRUE;
 	return FALSE;
 }
 
@@ -367,6 +384,23 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+
+			// Handle dtls stream attribute: if both local and remote have a dtls fingerprint and a dtls setup, add the local fingerprint to the answer
+			// Note: local description usually stores dtls config at session level which means it apply to all streams, check this too
+			if (((ls->dtls_role!=SalDtlsRoleInvalid) || (local_capabilities->dtls_role!=SalDtlsRoleInvalid)) && (rs->dtls_role!=SalDtlsRoleInvalid)
+					&& ((strlen(ls->dtls_fingerprint)>0) || (strlen(local_capabilities->dtls_fingerprint)>0)) && (strlen(rs->dtls_fingerprint)>0)) {
+				if (strlen(ls->dtls_fingerprint)>0) { /* get the fingerprint in stream description */
+					strcpy(result->streams[i].dtls_fingerprint, ls->dtls_fingerprint);
+				} else { /* get the fingerprint in session description */
+					strcpy(result->streams[i].dtls_fingerprint, local_capabilities->dtls_fingerprint);
+				}
+				if (rs->dtls_role==SalDtlsRoleUnset) {
+					result->streams[i].dtls_role = SalDtlsRoleIsClient;
+				}
+			} else {
+				result->streams[i].dtls_fingerprint[0] = '\0';
+				result->streams[i].dtls_role = SalDtlsRoleInvalid;
+			}
 
 			// Handle media RTCP XR attribute
 			memset(&result->streams[i].rtcp_xr, 0, sizeof(result->streams[i].rtcp_xr));
@@ -407,6 +441,18 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	result->ice_completed = local_capabilities->ice_completed;
 
 	strcpy(result->name,local_capabilities->name);
+
+	// Handle dtls session attribute: if both local and remote have a dtls fingerprint and a dtls setup, add the local fingerprint to the answer
+	if ((local_capabilities->dtls_role!=SalDtlsRoleInvalid) && (remote_offer->dtls_role!=SalDtlsRoleInvalid)
+			&&(strlen(local_capabilities->dtls_fingerprint)>0) && (strlen(remote_offer->dtls_fingerprint)>0)) {
+		strcpy(result->dtls_fingerprint, local_capabilities->dtls_fingerprint);
+		if (remote_offer->dtls_role==SalDtlsRoleUnset) {
+			result->dtls_role = SalDtlsRoleIsClient;
+		}
+	} else {
+		result->dtls_fingerprint[0] = '\0';
+		result->dtls_role = SalDtlsRoleInvalid;
+	}
 
 	// Handle session RTCP XR attribute
 	memset(&result->rtcp_xr, 0, sizeof(result->rtcp_xr));

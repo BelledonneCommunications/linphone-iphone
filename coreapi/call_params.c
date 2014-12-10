@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
 	if ((params->media_encryption == LinphoneMediaEncryptionSRTP) && params->avpf_enabled) return SalProtoRtpSavpf;
 	if (params->media_encryption == LinphoneMediaEncryptionSRTP) return SalProtoRtpSavp;
+	if ((params->media_encryption == LinphoneMediaEncryptionDTLS) && params->avpf_enabled) return SalProtoUdpTlsRtpSavpf;
+	if (params->media_encryption == LinphoneMediaEncryptionDTLS) return SalProtoUdpTlsRtpSavp;
 	if (params->avpf_enabled) return SalProtoRtpAvpf;
 	return SalProtoRtpAvp;
 }
