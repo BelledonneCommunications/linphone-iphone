@@ -267,6 +267,8 @@ class CoreManagerStats:
         self.number_of_LinphoneCallEncryptedOn = 0
         self.number_of_LinphoneCallEncryptedOff = 0
 
+        self.last_received_chat_message = None
+
 
 class CoreManager:
 
@@ -465,8 +467,10 @@ class CoreManager:
         linphonetester_logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
             from_str=from_str, text_str=text_str, external_body_url=external_body_url))
         manager.stats.number_of_LinphoneMessageReceived += 1
-
-        if message.external_body_url is not None:
+        manager.stats.last_received_chat_message = message
+        if message.file_transfer_information is not None:
+            manager.stats.number_of_LinphoneMessageReceivedWithFile += 1
+        elif message.external_body_url is not None:
             manager.stats.number_of_LinphoneMessageExtBodyReceived += 1
 
     @classmethod
@@ -553,12 +557,6 @@ class CoreManager:
             vtable['call_state_changed'] = CoreManager.call_state_changed
         if not vtable.has_key('message_received'):
             vtable['message_received'] = CoreManager.message_received
-        #if not vtable.has_key('file_transfer_recv'):
-            #vtable['file_transfer_recv'] = CoreManager.file_transfer_recv
-        #if not vtable.has_key('file_transfer_send'):
-            #vtable['file_transfer_send'] = CoreManager.file_transfer_send
-        #if not vtable.has_key('file_transfer_progress_indication'):
-            #vtable['file_transfer_progress_indication'] = CoreManager.file_transfer_progress_indication
         #if not vtable.has_key('is_composing_received'):
             #vtable['is_composing_received'] = CoreManager.is_composing_received
         if not vtable.has_key('new_subscription_requested'):
