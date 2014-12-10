@@ -263,8 +263,6 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	manager_count++;
 
 #if TARGET_OS_IPHONE
-	linphone_core_set_playback_device( mgr->lc, "AU: Audio Unit Tester");
-	linphone_core_set_capture_device( mgr->lc, "AU: Audio Unit Tester");
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
 	linphone_core_set_ringback(mgr->lc, NULL);
 	if( manager_count >= 2){
