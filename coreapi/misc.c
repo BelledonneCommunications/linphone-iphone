@@ -845,8 +845,25 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	bool_t ice_restarted = FALSE;
-
-	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
+	bool_t ice_params_found=FALSE;
+	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0'))  {
+		ice_params_found=TRUE;
+	} else {
+		int i;
+		for (i = 0; i < md->nb_streams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl) {
+				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+					ice_params_found=TRUE;
+				} else {
+					ice_params_found=FALSE;
+					break;
+				}
+			}
+		}
+	}
+	if (ice_params_found) {
 		int i, j;
 
 		/* Check for ICE restart and set remote credentials. */
@@ -878,11 +895,14 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
-					if (ice_restarted == FALSE) {
+					if (ice_restarted == FALSE
+							&& ice_check_list_remote_ufrag(cl)
+							&& ice_check_list_remote_pwd(cl)) {
+							/* restart onlu if remote ufrag/paswd was already set*/
 						ice_session_restart(call->ice_session);
 						ice_restarted = TRUE;
 					}
-					ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
 					break;
 				}
 			}
