@@ -6415,8 +6415,29 @@ bool_t linphone_core_can_we_add_call(LinphoneCore *lc)
 static void notify_soundcard_usage(LinphoneCore *lc, bool_t used){
 	MSSndCard *card=lc->sound_conf.capt_sndcard;
 	if (card && ms_snd_card_get_capabilities(card) & MS_SND_CARD_CAP_IS_SLOW){
-		ms_message("Notifying soundcard that we don't need it anymore for calls.");
 		ms_snd_card_set_usage_hint(card,used);
+	}
+}
+
+void linphone_core_soundcard_hint_check( LinphoneCore* lc){
+	MSList* the_calls = lc->calls;
+	LinphoneCall* call = NULL;
+	bool_t remaining_paused = FALSE;
+
+	/* check if the remaining calls are paused */
+	while( the_calls ){
+		call = the_calls->data;
+		if( call->state == LinphoneCallPausing || call->state == LinphoneCallPaused ){
+			remaining_paused = TRUE;
+			break;
+		}
+		the_calls = the_calls->next;
+	}
+
+	/* if no more calls or all calls are paused, we can free the soundcard */
+	if ( (lc->calls==NULL || remaining_paused) && !lc->use_files){
+		ms_message("Notifying soundcard that we don't need it anymore for calls.");
+		notify_soundcard_usage(lc,FALSE);
 	}
 }
 
@@ -6446,7 +6467,9 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	lc->calls = the_calls;
-	if (lc->calls==NULL) notify_soundcard_usage(lc,FALSE);
+
+	linphone_core_soundcard_hint_check(lc);
+
 	return 0;
 }
 

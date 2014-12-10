@@ -1018,6 +1018,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		if (cstate==LinphoneCallReleased){
 			linphone_call_set_released(call);
 		}
+		linphone_core_soundcard_hint_check(lc);
 	}
 }
 
