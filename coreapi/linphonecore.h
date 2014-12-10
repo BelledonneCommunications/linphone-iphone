@@ -3211,6 +3211,7 @@ LINPHONE_PUBLIC void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id,
  * Globaly set an http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml. This value can also be set for a dedicated account using #linphone_proxy_config_set_file_transfer_server
  * @param[in] core #LinphoneCore to be modified
  * @param[in] server_url URL of the file server like https://file.linphone.org/upload.php
+ * @ingroup misc
  * */
 LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, const char * server_url);
 
@@ -3218,6 +3219,7 @@ LINPHONE_PUBLIC void linphone_core_set_file_transfer_server(LinphoneCore *core, 
  * Get the globaly set http file transfer server to be used for content type application/vnd.gsma.rcs-ft-http+xml.
  * @param[in] core #LinphoneCore from which to get the server_url
  * @return URL of the file server like https://file.linphone.org/upload.php
+ * @ingroup misc
  * */
 LINPHONE_PUBLIC const char * linphone_core_get_file_transfer_server(LinphoneCore *core);
 
