@@ -763,17 +763,24 @@ public:
 			ms_error("cannot attach VM");
 			return;
 		}
-		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
-		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
-		env->CallVoidMethod(lcData->listener
-							,lcData->ecCalibrationStatusId
-							,lcData->core
-							,env->CallStaticObjectMethod(lcData->ecCalibratorStatusClass,lcData->ecCalibratorStatusFromIntId,(jint)status)
-							,delay_ms
-							,data ? data : NULL);
-		if (data != NULL &&status !=LinphoneEcCalibratorInProgress ) {
-			//final state, releasing global ref
-			env->DeleteGlobalRef((jobject)data);
+		
+		LinphoneCoreVTable *table = (LinphoneCoreVTable*) data;
+		if (table) {
+			LinphoneCoreData* lcData = (LinphoneCoreData*) linphone_core_v_table_get_user_data(table);
+			if (lcData->ecCalibrationStatusId) {
+				jobject ecData = env->NewGlobalRef((jobject) data);
+				jobject state = env->CallStaticObjectMethod(lcData->ecCalibratorStatusClass, lcData->ecCalibratorStatusFromIntId, (jint)status);
+				env->CallVoidMethod(lcData->listener
+								,lcData->ecCalibrationStatusId
+								,lcData->core
+								,state
+								,delay_ms
+								,ecData);
+				env->DeleteGlobalRef(ecData);
+			}
+			if (status != LinphoneEcCalibratorInProgress) {
+				linphone_core_v_table_destroy(table);
+			}
 		}
 
 	}
@@ -1727,11 +1734,11 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 																				,jobject  thiz
 																				,jlong lc
 																				,jobject data) {
-	return (jint)linphone_core_start_echo_calibration((LinphoneCore*)lc
-													, LinphoneCoreData::ecCalibrationStatus
-													, NULL
-													, NULL
-													, data?env->NewGlobalRef(data):NULL);
+	LinphoneCoreVTable *vTable = linphone_core_v_table_new();
+	LinphoneCoreData* ldata = new LinphoneCoreData(env, thiz, vTable, data);
+	linphone_core_v_table_set_user_data(vTable, ldata);
+	
+	return (jint)linphone_core_start_echo_calibration((LinphoneCore*)lc, ldata->ecCalibrationStatus, NULL, NULL, vTable);
 
 }
 

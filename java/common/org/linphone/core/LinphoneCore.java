@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCoreListener.LinphoneEchoCalibrationListener;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
@@ -1057,10 +1058,10 @@ public interface LinphoneCore {
 	/**
 	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
 	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
-	 * @param User object
+	 * @param listener the LinphoneEchoCalibrationListener to call when the calibration is done
 	 * @throws LinphoneCoreException if operation is still in progress;
 	**/
-	void startEchoCalibration(Object data) throws LinphoneCoreException;
+	void startEchoCalibration(LinphoneEchoCalibrationListener listener) throws LinphoneCoreException;
 
 	/**
 	 * Returns true if echo calibration is recommended.

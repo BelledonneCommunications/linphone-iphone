@@ -76,15 +76,6 @@ public interface LinphoneCoreListener {
 		void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf);
 		
 		/**
-		 * Invoked when echo cancalation calibration is completed
-		 * @param lc LinphoneCore
-		 * @param status 
-		 * @param delay_ms echo delay
-		 * @param data
-		 */
-		void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
-		
-		/**
 		 *  Report Notified message received for this identity.
 		 *  @param lc LinphoneCore
 		 *  @param call LinphoneCall in case the notify is part of a dialog, may be null
@@ -242,6 +233,17 @@ public interface LinphoneCoreListener {
 		 * @param room LinphoneChatRoom involved in the conversation.
 		 */
 		void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr);
+	}
+	
+	public interface LinphoneEchoCalibrationListener extends LinphoneCoreListener {
+		/**
+		 * Invoked when echo cancalation calibration is completed
+		 * @param lc LinphoneCore
+		 * @param status 
+		 * @param delay_ms echo delay
+		 * @param data
+		 */
+		void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
 	}
 }
 
