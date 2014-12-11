@@ -259,66 +259,6 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 }
 
 
-static void pylinphone_ChatRoom_callback_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
-	PyGILState_STATE pygil_state;
-	PyObject *pycm = NULL;
-	PyObject *_dict = (PyObject *)ud;
-	PyObject *_cb = PyDict_GetItemString(_dict, "callback");
-	PyObject *_ud = PyDict_GetItemString(_dict, "user_data");
-
-	pygil_state = PyGILState_Ensure();
-	pycm = pylinphone_ChatMessage_from_native_ptr(&pylinphone_ChatMessageType, msg);
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, %p [%p], %d, %p)", __FUNCTION__, pycm, msg, state, ud);
-	if ((_cb != NULL) && PyCallable_Check(_cb)) {
-		PyObject *args = Py_BuildValue("OiO", pycm, state, _ud);
-		if (PyEval_CallObject(_cb, args) == NULL) {
-			PyErr_Print();
-		}
-		Py_DECREF(args);
-	}
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
-	PyGILState_Release(pygil_state);
-}
-
-static PyObject * pylinphone_ChatRoom_instance_method_send_message2(PyObject *self, PyObject *args) {
-	PyObject *_chat_message;
-	PyObject *_dict;
-	PyObject *_cb;
-	PyObject *_ud;
-	LinphoneChatMessage * _chat_message_native_ptr;
-	LinphoneChatRoom *native_ptr = pylinphone_ChatRoom_get_native_ptr(self);
-
-	if (native_ptr == NULL) {
-		PyErr_SetString(PyExc_TypeError, "Invalid linphone.ChatRoom instance");
-		return NULL;
-	}
-	if (!PyArg_ParseTuple(args, "OOO", &_chat_message, &_cb, &_ud)) {
-		return NULL;
-	}
-	if (!PyObject_IsInstance(_chat_message, (PyObject *)&pylinphone_ChatMessageType)) {
-		PyErr_SetString(PyExc_TypeError, "The msg argument must be a linphone.ChatMessage");
-		return NULL;
-	}
-	if ((_cb != Py_None) && !PyCallable_Check(_cb)) {
-		PyErr_SetString(PyExc_TypeError, "The status_cb argument must be a callable");
-		return NULL;
-	}
-	if ((_chat_message_native_ptr = pylinphone_ChatMessage_get_native_ptr(_chat_message)) == NULL) {
-		return NULL;
-	}
-	_dict = PyDict_New();
-	PyDict_SetItemString(_dict, "callback", _cb);
-	PyDict_SetItemString(_dict, "user_data", _ud);
-
-	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p], %p, %p)", __FUNCTION__, self, native_ptr, _chat_message, _chat_message_native_ptr, _cb, _ud);
-	linphone_chat_room_send_message2(native_ptr, _chat_message_native_ptr, pylinphone_ChatRoom_callback_chat_message_state_changed, _dict);
-	pylinphone_dispatch_messages();
-
-	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
-	Py_RETURN_NONE;
-}
-
-
 
 static void pylinphone_VideoSize_dealloc(PyObject *self) {
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, self);
@@ -645,6 +585,91 @@ static PyMethodDef pylinphone_PayloadTypeType_ModuleMethods[] = {
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
+
+
+static PyObject * pylinphone_Buffer_class_method_new_from_data(PyObject *cls, PyObject *args) {
+	LinphoneBuffer * cresult;
+	pylinphone_BufferObject *self;
+	PyObject * pyret;
+	PyObject * _byte_array;
+
+	if (!PyArg_ParseTuple(args, "O", &_byte_array)) {
+		return NULL;
+	}
+	if (!PyByteArray_Check(_byte_array)) {
+		PyErr_SetString(PyExc_TypeError, "The argument must be a ByteArray");
+		return NULL;
+	}
+
+	self = (pylinphone_BufferObject *)PyObject_CallObject((PyObject *) &pylinphone_BufferType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, _byte_array);
+	cresult = linphone_buffer_new_from_data((uint8_t *)PyByteArray_AsString(_byte_array), PyByteArray_Size(_byte_array));
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static PyObject * pylinphone_Buffer_get_content(PyObject *self, void *closure) {
+	const uint8_t * ccontent;
+	size_t csize;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const char *pyret_fmt;
+	const LinphoneBuffer *native_ptr;
+	native_ptr = pylinphone_Buffer_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Buffer instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	ccontent = linphone_buffer_get_content(native_ptr);
+	csize = linphone_buffer_get_size(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyresult = PyByteArray_FromStringAndSize((const char *)ccontent, csize);
+	pyret = Py_BuildValue("O", pyresult);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Buffer_set_content(PyObject *self, PyObject *value, void *closure) {
+	LinphoneBuffer *native_ptr;
+	uint8_t * _content;
+	size_t _size;
+	LinphonePresenceModel * _presence_native_ptr = NULL;
+	native_ptr = pylinphone_Buffer_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Buffer instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'content' attribute.");
+		return -1;
+	}
+	if ((value != Py_None) && !PyByteArray_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'content' attribute value must be a ByteArray instance.");
+		return -1;
+	}
+
+	_content = (uint8_t *)PyByteArray_AsString(value);
+	_size = PyByteArray_Size(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, self, native_ptr, value, _content);
+	linphone_buffer_set_content(native_ptr, _content, _size);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
 
 
 static PyObject * pylinphone_Content_get_buffer(PyObject *self, void *closure) {

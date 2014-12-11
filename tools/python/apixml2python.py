@@ -38,9 +38,6 @@ blacklisted_events = [
 	'LinphoneCoreFileTransferSendCb'	# missing LinphoneContent
 ]
 blacklisted_functions = [
-	'linphone_buffer_new_from_data',
-	'linphone_buffer_get_content',
-	'linphone_buffer_set_content',
 	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
 	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
@@ -74,7 +71,8 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
-	HandWrittenInstanceMethod('ChatRoom', 'send_message2', 'linphone_chat_room_send_message2'),
+	HandWrittenClassMethod('Buffer', 'new_from_data', 'linphone_buffer_new_from_data'),
+	HandWrittenProperty('Buffer', 'content', 'linphone_buffer_get_content', 'linphone_buffer_set_content'),
 	HandWrittenProperty('Content', 'buffer', 'linphone_content_get_buffer', 'linphone_content_set_buffer'),
 	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None),
 	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None),
