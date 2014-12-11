@@ -69,19 +69,18 @@ static void file_transfer_received(LinphoneChatMessage *message, const LinphoneC
 		/*first chunk, creating file*/
 		file = fopen("receive_file.dump","wb");
 		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
-	} else {
-		/*next chunk*/
-		file = (FILE*)linphone_chat_message_get_user_data(message);
-		if (linphone_buffer_is_empty(buffer)) {
-			printf("File transfert completed\n");
-			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-			linphone_chat_message_destroy(message);
-			fclose(file);
-			running=FALSE;
-		} else { /* store content on a file*/
-			if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
-				ms_warning("file_transfer_received() write failed: %s",strerror(errno));
-			}
+	}
+
+	file = (FILE*)linphone_chat_message_get_user_data(message);
+	if (linphone_buffer_is_empty(buffer)) {
+		printf("File transfert completed\n");
+		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+		linphone_chat_message_destroy(message);
+		fclose(file);
+		running=FALSE;
+	} else { /* store content on a file*/
+		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
+			ms_warning("file_transfer_received() write failed: %s",strerror(errno));
 		}
 	}
 }

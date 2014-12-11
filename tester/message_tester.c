@@ -72,18 +72,17 @@ void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent*
 		/*first chunk, creating file*/
 		file = fopen(receive_file,"wb");
 		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
-	} else {
-		/*next chunk*/
-		file = (FILE*)linphone_chat_message_get_user_data(message);
+	}
 
-		if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
-			stats* counters = get_stats(lc);
-			counters->number_of_LinphoneMessageExtBodyReceived++;
-			fclose(file);
-		} else { /* store content on a file*/
-			if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
-				ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
-			}
+	file = (FILE*)linphone_chat_message_get_user_data(message);
+
+	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
+		stats* counters = get_stats(lc);
+		counters->number_of_LinphoneMessageExtBodyReceived++;
+		fclose(file);
+	} else { /* store content on a file*/
+		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
+			ms_error("file_transfer_received(): write() failed: %s",strerror(errno));
 		}
 	}
 }
