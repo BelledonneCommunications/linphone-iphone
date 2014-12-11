@@ -78,8 +78,9 @@ const uint8_t * linphone_buffer_get_content(const LinphoneBuffer *buffer) {
 void linphone_buffer_set_content(LinphoneBuffer *buffer, const uint8_t *content, size_t size) {
 	buffer->size = size;
 	if (buffer->content) belle_sip_free(buffer->content);
-	buffer->content = belle_sip_malloc(size);
+	buffer->content = belle_sip_malloc(size + 1);
 	memcpy(buffer->content, content, size);
+    ((char *)buffer->content)[size] = '\0';
 }
 
 const char * linphone_buffer_get_string_content(const LinphoneBuffer *buffer) {
