@@ -804,18 +804,23 @@ class EventCallbackMethodDefinition(MethodDefinition):
 		return "{returnvars}\n{common}\n{specific}".format(returnvars=returnvars, common=common, specific=specific)
 
 	def format_arguments_parsing(self):
+		return_str = ''
+		if self.return_complete_type != 'void':
+			argument_type = ArgumentType(self.return_type, self.return_complete_type, self.return_contained_type, self.linphone_module)
+			if argument_type.fmt_str == 'O':
+				return_str = 'NULL'
 		if self.class_['event_class'] == 'Core':
 			return \
-"""	if (Py_REFCNT(pyself) <= 0) return;
+"""	if (Py_REFCNT(pyself) <= 0) return {return_str};
 	func = PyDict_GetItemString(pyself->vtable_dict, "{name}");
 	pygil_state = PyGILState_Ensure();
-""".format(name=self.class_['event_name'])
+""".format(name=self.class_['event_name'], return_str=return_str)
 		else:
 			return \
-"""	if (Py_REFCNT(pyself) <= 0) return;
+"""	if (Py_REFCNT(pyself) <= 0) return {return_str};
 	func = pycbs->{event_name};
 	pygil_state = PyGILState_Ensure();
-""".format(event_name=self.class_['event_name'])
+""".format(event_name=self.class_['event_name'], return_str=return_str)
 
 	def format_enter_trace(self):
 		fmt = '%p'
