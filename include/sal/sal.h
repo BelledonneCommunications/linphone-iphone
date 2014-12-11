@@ -164,7 +164,7 @@ typedef struct SalIceCandidate {
 	int rport;
 } SalIceCandidate;
 
-#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 20
 
 typedef struct SalIceRemoteCandidate {
 	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];

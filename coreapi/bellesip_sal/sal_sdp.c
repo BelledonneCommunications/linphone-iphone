@@ -487,7 +487,9 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 		att_name = belle_sdp_attribute_get_name(attribute);
 		value = belle_sdp_attribute_get_value(attribute);
 
-		if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
+		if (	(nb_ice_candidates < sizeof (stream->ice_candidates)/sizeof(SalIceCandidate))
+				&& (keywordcmp("candidate", att_name) == 0)
+				&& (value != NULL)) {
 			SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
 			char proto[4];
 			int nb = sscanf(value, "%s %u %3s %u %s %d typ %s raddr %s rport %d",
