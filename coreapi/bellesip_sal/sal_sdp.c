@@ -489,10 +489,11 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 
 		if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
 			SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
-			int nb = sscanf(value, "%s %u UDP %u %s %d typ %s raddr %s rport %d",
-				candidate->foundation, &candidate->componentID, &candidate->priority, candidate->addr, &candidate->port,
+			char proto[4];
+			int nb = sscanf(value, "%s %u %3s %u %s %d typ %s raddr %s rport %d",
+				candidate->foundation, &candidate->componentID, proto, &candidate->priority, candidate->addr, &candidate->port,
 				candidate->type, candidate->raddr, &candidate->rport);
-			if ((nb == 6) || (nb == 8)) nb_ice_candidates++;
+			if (strcasecmp("udp",proto)==0 && ((nb == 7) || (nb == 9))) nb_ice_candidates++;
 			else memset(candidate, 0, sizeof(*candidate));
 		} else if ((keywordcmp("remote-candidates", att_name) == 0) && (value != NULL)) {
 			SalIceRemoteCandidate candidate;
