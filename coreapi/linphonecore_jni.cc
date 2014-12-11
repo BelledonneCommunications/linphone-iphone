@@ -768,15 +768,13 @@ public:
 		if (table) {
 			LinphoneCoreData* lcData = (LinphoneCoreData*) linphone_core_v_table_get_user_data(table);
 			if (lcData->ecCalibrationStatusId) {
-				jobject ecData = env->NewGlobalRef((jobject) data);
 				jobject state = env->CallStaticObjectMethod(lcData->ecCalibratorStatusClass, lcData->ecCalibratorStatusFromIntId, (jint)status);
 				env->CallVoidMethod(lcData->listener
 								,lcData->ecCalibrationStatusId
 								,lcData->core
 								,state
 								,delay_ms
-								,ecData);
-				env->DeleteGlobalRef(ecData);
+								,NULL);
 			}
 			if (status != LinphoneEcCalibratorInProgress) {
 				linphone_core_v_table_destroy(table);
