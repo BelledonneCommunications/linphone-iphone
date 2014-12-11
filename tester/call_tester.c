@@ -326,12 +326,32 @@ static void simple_call(void) {
 	LinphoneCoreManager* pauline;
 	const LinphoneAddress *from;
 	LinphoneCall *pauline_call;
+	LinphoneProxyConfig* marie_cfg;
+	const char* marie_id = NULL;
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
+	
+	/* with the account manager, we might lose the identity */
+	marie_cfg = linphone_core_get_default_proxy_config(marie->lc);
+	marie_id = linphone_proxy_config_get_identity(marie_cfg);
+	{
+		LinphoneAddress* marie_addr = linphone_address_new(marie_id);
+		char* marie_tmp_id = NULL;
+		linphone_address_set_display_name(marie_addr, "Super Marie");
+		marie_tmp_id = linphone_address_as_string(marie_addr);
+
+		linphone_proxy_config_edit(marie_cfg);
+		linphone_proxy_config_set_identity(marie_cfg,marie_tmp_id);
+		linphone_proxy_config_done(marie_cfg);
+
+		ms_free(marie_tmp_id);
+		linphone_address_unref(marie_addr);
+	}
+
 	CU_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	CU_ASSERT_PTR_NOT_NULL(pauline_call);
@@ -2925,7 +2945,7 @@ static void multiple_early_media(void) {
 	marie2_call=linphone_core_get_current_call(marie2->lc);
 
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,6000);
+	wait_for_list(lcs,&dummy,1,3000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
