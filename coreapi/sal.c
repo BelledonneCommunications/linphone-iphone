@@ -120,7 +120,9 @@ SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMedia
 }
 
 SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type) {
-	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
+	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoUdpTlsRtpSavpf, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoUdpTlsRtpSavp, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavp, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvpf, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvp, type);
