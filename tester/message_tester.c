@@ -105,7 +105,9 @@ LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message, const Linphone
 	fseek(file_to_send, offset, SEEK_SET);
 	size_to_send = MIN(size, file_size - offset);
 	buf = ms_malloc(size_to_send);
-	fread(buf, size_to_send, 1, file_to_send);
+	if (fread(buf, size_to_send, 1, file_to_send)!=size_to_send){
+		ms_error("fread error");
+	}
 	lb = linphone_buffer_new_from_data(buf, size_to_send);
 	ms_free(buf);
 	return lb;
@@ -425,8 +427,12 @@ static bool_t compare_files(const char *path1, const char *path2) {
 	}
 	buf1 = ms_malloc(size1);
 	buf2 = ms_malloc(size2);
-	fread(buf1, size1, 1, f1);
-	fread(buf2, size2, 1, f2);
+	if (fread(buf1, size1, 1, f1)!=size1){
+		ms_error("fread() error");
+	}
+	if (fread(buf2, size2, 1, f2)!=size2){
+		ms_error("fread() error");
+	}
 	fclose(f1);
 	fclose(f2);
 	res = (memcmp(buf1, buf2, size1) == 0) ? TRUE : FALSE;
