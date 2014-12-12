@@ -2906,6 +2906,31 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_play_named_tone(lc,LinphoneToneCallLost);
 }
 
+static void change_ice_media_destinations(LinphoneCall *call) {
+    const char *rtp_addr;
+    const char *rtcp_addr;
+    int rtp_port;
+    int rtcp_port;
+    bool_t result;
+
+    if (call->audiostream && ice_session_check_list(call->ice_session, 0)) {
+        result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, 0), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+        if (result == TRUE) {
+            ms_message("Change audio stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+            rtp_session_set_remote_addr_full(call->audiostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+        }
+    }
+#ifdef VIDEO_ENABLED
+    if (call->videostream && ice_session_check_list(call->ice_session, 1)) {
+        result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, 1), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+        if (result == TRUE) {
+            ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+            rtp_session_set_remote_addr_full(call->videostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+        }
+    }
+#endif
+}
+
 static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
@@ -2923,6 +2948,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				if (ice_session_role(call->ice_session) == IR_Controlling) {
 					linphone_core_update_call(call->core, call, params);
 				}
+				change_ice_media_destinations(call);
 				break;
 			case IS_Failed:
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
