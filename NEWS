@@ -1,3 +1,14 @@
+linphone-3.8.0 -- Date to be defined
+	Application level improvements:
+	* The video window has now controls in order to switch fullscreen mode and terminate call.
+	* The out of call video preview feature (to test camera) is moved into the settings and is no longer linked to the in-call video preview feature.
+	* Lots of updated translations.
+
+	Liblinphone level improvements:
+	* Support for RTP/AVPF (RFCxxxx) for video streams, allowing fast transmission error recovery with VP8 codec only.
+	* API enhancements, most objects can be ref-counted.
+	* Call video recording feature, in mkv format (H264 streams only for the moment)
+
 linphone-3.7.0 -- February 20th, 2014
 	Application level improvements:
 	* It is now possible to configure multiple proxy accounts with different transports (UDP, TCP, TLS)

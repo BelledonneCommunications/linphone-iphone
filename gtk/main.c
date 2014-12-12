@@ -827,9 +827,6 @@ bool_t linphone_gtk_video_enabled(void){
 
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
-	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
-	    	VIDEOSELFVIEW_DEFAULT));
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -1023,13 +1020,6 @@ void _linphone_gtk_enable_video(gboolean val){
 	linphone_core_enable_video_capture(linphone_gtk_get_core(), TRUE);
 	linphone_core_enable_video_display(linphone_gtk_get_core(), TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
-
-	if (val){
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
-	}else{
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
-	}
 }
 
 void linphone_gtk_enable_video(GtkWidget *w){
@@ -1041,7 +1031,6 @@ void linphone_gtk_enable_video(GtkWidget *w){
 void linphone_gtk_enable_self_view(GtkWidget *w){
 	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,val);
 	linphone_core_enable_self_view(lc,val);
 	linphone_gtk_set_ui_config_int("videoselfview",val);
 }
@@ -1838,10 +1827,11 @@ void linphone_gtk_manage_login(void){
 gboolean linphone_gtk_close(GtkWidget *mw){
 	/*shutdown calls if any*/
 	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *camera_preview=linphone_gtk_get_camera_preview_window();
 	if (linphone_core_in_call(lc)){
 		linphone_core_terminate_all_calls(lc);
 	}
-	linphone_core_enable_video_preview(lc,FALSE);
+	if (camera_preview) gtk_widget_destroy(camera_preview);
 #ifdef __APPLE__ /*until with have a better option*/
 	gtk_window_iconify(GTK_WINDOW(mw));
 #else
@@ -1852,13 +1842,6 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 
 #ifdef HAVE_GTK_OSX
 static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
-	bool_t video_enabled=linphone_gtk_video_enabled();
-	if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
-	}else{
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && video_enabled);
-	}
 	return FALSE;
 }
 #endif
@@ -1969,6 +1952,7 @@ static void linphone_gtk_init_main_window(){
 	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
 	linphone_gtk_check_menu_items();
+	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 }
 
 void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){

@@ -94,7 +94,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 	return TRUE;
 }
 
-unsigned long get_native_handle(GdkWindow *gdkw){
+static unsigned long get_native_handle(GdkWindow *gdkw){
 #ifdef GDK_WINDOWING_X11
 	return (unsigned long)GDK_WINDOW_XID(gdkw);
 #elif defined(WIN32)
@@ -106,6 +106,15 @@ unsigned long get_native_handle(GdkWindow *gdkw){
 	return 0;
 }
 
+static void _resize_video_window(GtkWidget *video_window, MSVideoSize vsize){
+	MSVideoSize cur;
+	gtk_window_get_size(GTK_WINDOW(video_window),&cur.width,&cur.height);
+	if (vsize.width*vsize.height > cur.width*cur.height || 
+		ms_video_size_get_orientation(vsize)!=ms_video_size_get_orientation(cur) ){
+		gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
+	}
+}
+
 static gint resize_video_window(LinphoneCall *call){
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	if (params){
@@ -114,13 +123,7 @@ static gint resize_video_window(LinphoneCall *call){
 			GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 			GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 			if (video_window){
-				MSVideoSize cur;
-				gtk_window_get_size(GTK_WINDOW(video_window),&cur.width,&cur.height);
-				if (vsize.width*vsize.height > cur.width*cur.height || 
-					ms_video_size_get_orientation(vsize)!=ms_video_size_get_orientation(cur) ){
-					g_message("Resized to %ix%i",vsize.width,vsize.height);
-					gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
-				}
+				_resize_video_window(video_window,vsize);
 			}
 		}
 	}
@@ -308,3 +311,55 @@ void linphone_gtk_in_call_show_video(LinphoneCall *call){
 		}
 	}
 }
+
+static void on_video_preview_destroyed(GtkWidget *video_preview, GtkWidget *mw){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	guint timeout_id=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(video_preview),"timeout-id"));
+	g_object_set_data(G_OBJECT(mw),"video_preview",NULL);
+	linphone_core_enable_video_preview(lc,FALSE);
+	linphone_core_set_native_preview_window_id(lc,-1);
+	g_source_remove(timeout_id);
+}
+
+GtkWidget *linphone_gtk_get_camera_preview_window(void){
+	return (GtkWidget *)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"video_preview");
+}
+
+static gboolean check_preview_size(GtkWidget *video_preview){
+	MSVideoSize vsize=linphone_core_get_current_preview_video_size(linphone_gtk_get_core());
+	if (vsize.width && vsize.height){
+		MSVideoSize cur;
+		gtk_window_get_size(GTK_WINDOW(video_preview),&cur.width,&cur.height);
+		if (cur.width!=vsize.width || cur.height!=vsize.height){
+			gtk_window_resize(GTK_WINDOW(video_preview),vsize.width,vsize.height);
+		}
+	}
+	return TRUE;
+}
+
+void linphone_gtk_show_camera_preview_clicked(GtkButton *button){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *video_preview=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"video_preview");
+	
+	if (!video_preview){
+		gchar *title;
+		LinphoneCore *lc=linphone_gtk_get_core();
+		GdkColor color;
+		guint tid;
+		
+		video_preview=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		title=g_strdup_printf("%s - Video preview",linphone_gtk_get_ui_config("title","Linphone"));
+		gtk_window_set_title(GTK_WINDOW(video_preview),title);
+		gdk_color_parse("black",&color);
+		gtk_widget_modify_bg(video_preview,GTK_STATE_NORMAL,&color);
+		g_free(title);
+		g_object_set_data(G_OBJECT(mw),"video_preview",video_preview);
+		g_signal_connect(video_preview,"destroy",(GCallback)on_video_preview_destroyed,mw);
+		gtk_widget_show(video_preview);
+		linphone_core_set_native_preview_window_id(lc,get_native_handle(gtk_widget_get_window(video_preview)));
+		linphone_core_enable_video_preview(lc,TRUE);
+		tid=g_timeout_add(100,(GSourceFunc)check_preview_size,video_preview);
+		g_object_set_data(G_OBJECT(video_preview),"timeout-id",GINT_TO_POINTER(tid));
+	}
+}
+

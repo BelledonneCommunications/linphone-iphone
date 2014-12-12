@@ -5641,6 +5641,22 @@ MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
 }
 
 /**
+ * Returns the effective video size for the captured video as provided by the camera.
+ * When preview is disabled or not yet started, this function returns a zeroed video size.
+ * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
+ * @param lc the core
+ * @return a MSVideoSize
+**/
+MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
+	MSVideoSize ret={0};
+	if (lc->previewstream){
+		ret=video_preview_get_current_size(lc->previewstream);
+	}
+	return ret;
+}
+
+/**
  * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
  *
  * @ingroup media_parameters
