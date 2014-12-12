@@ -3938,10 +3938,10 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		linphone_core_notify_display_warning(lc,_("Could not pause the call"));
 	}
 	lc->current_call=NULL;
-	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	linphone_core_notify_display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
+	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	call->paused_by_app=FALSE;
 	return 0;
 }
@@ -6483,8 +6483,6 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	lc->calls = the_calls;
-
-	linphone_core_soundcard_hint_check(lc);
 
 	return 0;
 }
