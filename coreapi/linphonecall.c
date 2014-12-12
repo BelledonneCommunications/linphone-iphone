@@ -1621,6 +1621,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 void linphone_call_init_video_stream(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
+	RtpTransport *meta_rtp=NULL;
+	RtpTransport *meta_rtcp=NULL;
 
 	if (call->videostream == NULL){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
@@ -1644,11 +1646,11 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		if (display_filter != NULL)
 			video_stream_set_display_filter_name(call->videostream,display_filter);
 		video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
-		if (lc->rtptf){
+		rtp_session_get_transports(call->videostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
+		if (lc->rtptf && (meta_rtp==NULL && meta_rtcp==NULL)){
 			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[1].rtp_port);
 			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->media_ports[1].rtcp_port);
-			RtpTransport *meta_rtp;
-			RtpTransport *meta_rtcp;
+			
 			meta_rtp_transport_new(&meta_rtp,TRUE,vrtp, 0);
 			meta_rtp_transport_new(&meta_rtcp,FALSE,vrtcp, 0);
 			rtp_session_set_transports(call->videostream->ms.sessions.rtp_session,meta_rtp,meta_rtcp);
