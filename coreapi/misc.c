@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif /*_WIN32_WCE*/
 
 #undef snprintf
-#include <ortp/stun.h>
+#include <mediastreamer2/stun.h>
 
 #ifdef HAVE_GETIFADDRS
 #include <net/if.h>
