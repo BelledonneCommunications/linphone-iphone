@@ -21,7 +21,7 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#include "ortp/stun.h"
+#include "mediastreamer2/stun.h"
 #include "ortp/port.h"
 
 
