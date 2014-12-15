@@ -247,6 +247,9 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
 			result->rtp_port = 0;
 	}
+	result->rtp_ssrc=local_offer->rtp_ssrc;
+	strncpy(result->rtcp_cname,local_offer->rtcp_cname,sizeof(result->rtcp_cname));
+
 }
 
 
@@ -281,6 +284,9 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
 	strcpy(result->name,local_cap->name);
+	result->rtp_ssrc=local_cap->rtp_ssrc;
+	strncpy(result->rtcp_cname,local_cap->rtcp_cname,sizeof(result->rtcp_cname));
+
 }
 
 /**

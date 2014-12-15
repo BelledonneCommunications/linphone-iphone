@@ -202,6 +202,8 @@ typedef struct SalStreamDescription{
 	char proto_other[32];
 	char rtp_addr[64];
 	char rtcp_addr[64];
+	unsigned int rtp_ssrc;
+	char rtcp_cname[255];
 	int rtp_port;
 	int rtcp_port;
 	MSList *payloads; //<list of PayloadType

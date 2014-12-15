@@ -236,6 +236,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 
 	/* insert DTLS session attribute if needed */
 	if ((stream->proto == SalProtoUdpTlsRtpSavpf) || (stream->proto == SalProtoUdpTlsRtpSavp)) {
+		char* ssrc_attribute = ms_strdup_printf("%u cname:%s",htonl(stream->rtp_ssrc),stream->rtcp_cname);
 		if ((stream->dtls_role != SalDtlsRoleInvalid) && (strlen(stream->dtls_fingerprint)>0)) {
 			switch(stream->dtls_role) {
 				case SalDtlsRoleIsClient:
@@ -251,6 +252,10 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			}
 			belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("fingerprint",stream->dtls_fingerprint));
 		}
+
+		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute));
+		ms_free(ssrc_attribute);
+
 	}
 
 	switch ( stream->dir ) {
@@ -321,6 +326,13 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			belle_sip_object_unref((belle_sip_object_t*)media_attribute);
 		}
 	}
+	/*
+	 * rfc5576
+	 * 4.1.  The "ssrc" Media Attribute
+	 * <ssrc-id> is the synchronization source (SSRC) ID of the
+	 * source being described, interpreted as a 32-bit unsigned integer in
+	 * network byte order and represented in decimal.*/
+
 
 	belle_sdp_session_description_add_media_description(session_desc, media_desc);
 }
