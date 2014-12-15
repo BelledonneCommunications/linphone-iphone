@@ -282,7 +282,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	if (proxy_count){
 #define REGISTER_TIMEOUT 20 /* seconds */
 		int success = wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,
-									proxy_count,(REGISTER_TIMEOUT * 1000 * proxy_count);
+									proxy_count,(REGISTER_TIMEOUT * 1000 * proxy_count));
 		if( !success ){
 			ms_error("Did not register after %d seconds for %d proxies", REGISTER_TIMEOUT, proxy_count);
 		}
