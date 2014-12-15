@@ -1255,9 +1255,13 @@ class LinphoneModule(object):
 			doc = doc.replace(cfunction, method)
 		return doc
 
+	def __replace_doc_keywords(self, doc):
+		return doc.replace('NULL', 'None')
+
 	def __format_doc(self, brief_description, detailed_description):
 		doc = self.__format_doc_content(brief_description, detailed_description)
 		doc = self.__replace_doc_cfunction_by_method(doc)
+		doc = self.__replace_doc_keywords(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1291,6 +1295,7 @@ class LinphoneModule(object):
 				doc += '\n:returns: ' + return_doc
 				doc += '\n:rtype: ' + return_argument_type.type_str
 		doc = self.__replace_doc_cfunction_by_method(doc)
+		doc = self.__replace_doc_keywords(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1303,6 +1308,7 @@ class LinphoneModule(object):
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + argument_type.type_str + '] ' + doc
 		doc = self.__replace_doc_cfunction_by_method(doc)
+		doc = self.__replace_doc_keywords(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1315,5 +1321,6 @@ class LinphoneModule(object):
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + return_argument_type.type_str + '] ' + doc
 		doc = self.__replace_doc_cfunction_by_method(doc)
+		doc = self.__replace_doc_keywords(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
