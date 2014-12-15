@@ -119,7 +119,9 @@ static NSString* const kAllTestsName = @"Run All tests";
     if(image){
         image = [[NSBundle mainBundle] pathForResource:image ofType:@"png"];
         cell.imageView.image = [UIImage imageWithContentsOfFile:image];
-    }
+	} else {
+		[cell.imageView setImage:nil];
+	}
     return cell;
 }
 
