@@ -188,7 +188,6 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
 	bool_t result=FALSE;
-	char hellopath[256];
 	LinphoneCallParams *caller_params = caller_test_params->base;
 	LinphoneCallParams *callee_params = callee_test_params->base;
 	bool_t did_received_call;
@@ -196,10 +195,6 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	sal_default_enable_sdp_removal(caller_mgr->lc->sal, caller_test_params->sdp_removal);
 	sal_default_enable_sdp_removal(callee_mgr->lc->sal, callee_test_params->sdp_removal);
 
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (callee_mgr->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(callee_mgr->lc,hellopath);
 	if (!caller_params){
 		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
 	}else{
@@ -388,14 +383,8 @@ static void direct_call_over_ipv6(){
 	if (liblinphone_tester_ipv6_available()){
 		LCSipTransports pauline_transports;
 		LinphoneAddress* pauline_dest = linphone_address_new("sip:[::1];transport=tcp");
-		char hellopath[256];
 		marie = linphone_core_manager_new( "marie_rc");
 		pauline = linphone_core_manager_new( "pauline_tcp_rc");
-
-		/*use playfile for callee to avoid locking on capture card*/
-		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-		linphone_core_set_play_file(pauline->lc,hellopath);
-		linphone_core_use_files (pauline->lc,TRUE);
 
 		linphone_core_enable_ipv6(marie->lc,TRUE);
 		linphone_core_enable_ipv6(pauline->lc,TRUE);
@@ -468,7 +457,6 @@ static void multiple_answers_call() {
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
 	   Both linphones answer at the same time, and only one should get the
 	   call running, the other should be terminated */
-	char ringbackpath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
 	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
 	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
@@ -479,11 +467,6 @@ static void multiple_answers_call() {
 	lcs = ms_list_append(lcs,marie1->lc);
 	lcs = ms_list_append(lcs,marie2->lc);
 
-	linphone_core_use_files(pauline->lc, TRUE);
-	linphone_core_use_files(marie1->lc, TRUE);
-	linphone_core_use_files(marie2->lc, TRUE);
-
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
 
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
 
@@ -519,7 +502,6 @@ static void multiple_answers_call_with_media_relay() {
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
 	 *   Both linphones answer at the same time, and only one should get the
 	 *   call running, the other should be terminated */
-	char ringbackpath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc" );
 	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
 	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
@@ -530,15 +512,9 @@ static void multiple_answers_call_with_media_relay() {
 	lcs = ms_list_append(lcs,marie1->lc);
 	lcs = ms_list_append(lcs,marie2->lc);
 
-	linphone_core_use_files(pauline->lc, TRUE);
-	linphone_core_use_files(marie1->lc, TRUE);
-	linphone_core_use_files(marie2->lc, TRUE);
-
 	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie1->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie2->lc, "Natted Linphone", NULL);
-
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
 
 	CU_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
 
@@ -1839,7 +1815,6 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
-	char hellopath[256];
 	MSList *iterator;
 	MSList* lcs;
 	LinphoneCall* pauline_called_by_marie;
@@ -1857,12 +1832,6 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	CU_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 
-
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (laure->lc,TRUE);
-	linphone_core_use_files (marie->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(laure->lc,hellopath);
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
 
@@ -2295,7 +2264,6 @@ static void early_media_call(void) {
 }
 
 static void early_media_call_with_ringing(void){
-	char hellopath[256];
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
@@ -2310,11 +2278,6 @@ static void early_media_call_with_ringing(void){
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
-
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (pauline->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(pauline->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 	marie_call_log = linphone_call_get_call_log(marie_call);
@@ -2359,7 +2322,6 @@ static void early_media_call_with_ringing(void){
 }
 
 static void early_media_call_with_update_base(bool_t media_change){
-	char hellopath[256];
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
@@ -2375,11 +2337,6 @@ static void early_media_call_with_update_base(bool_t media_change){
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
-
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (pauline->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(pauline->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
@@ -2598,9 +2555,6 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	const MSList* calls;
 
-	linphone_core_use_files (pauline->lc,TRUE);
-	linphone_core_use_files (laure->lc,TRUE);
-
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 
@@ -2766,7 +2720,6 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 }
 
 static void call_redirect(void){
-	char hellopath[256];
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCoreManager* laure   = linphone_core_manager_new("laure_rc");
@@ -2780,13 +2733,6 @@ static void call_redirect(void){
 	/*
 		Marie calls Pauline, which will redirect the call to Laure via a 302
 	*/
-
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (pauline->lc,TRUE);
-	linphone_core_use_files (laure->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(pauline->lc,hellopath);
-	linphone_core_set_play_file(laure->lc,hellopath);
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
@@ -2912,9 +2858,9 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb()
 #ifdef VIDEO_ENABLED
 /*this is call forking with early media managed at client side (not by flexisip server)*/
 static void multiple_early_media(void) {
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	MSList *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneVideoPolicy pol;
@@ -2923,9 +2869,6 @@ static void multiple_early_media(void) {
 	LinphoneCall *pauline_call;
 	LinphoneInfoMessage *info;
 	int dummy=0;
-	char ringbackpath[256];
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
 
@@ -2933,18 +2876,11 @@ static void multiple_early_media(void) {
 
 	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
-	/*use playfile for marie1 to avoid locking on capture card*/
-	linphone_core_use_files(marie1->lc,TRUE);
-	linphone_core_set_play_file(marie1->lc,ringbackpath);
 
 	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
-	/*use playfile for marie2 to avoid locking on capture card*/
-	linphone_core_use_files(marie2->lc,TRUE);
-	linphone_core_set_play_file(marie2->lc,ringbackpath);
-
 
 	lcs=ms_list_append(lcs,marie1->lc);
 	lcs=ms_list_append(lcs,marie2->lc);

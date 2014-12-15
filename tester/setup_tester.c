@@ -137,6 +137,8 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	conf = lp_config_new_with_factory(NULL, rc_path);
 
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+
+	// non_zero_len=test -> should return test
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */

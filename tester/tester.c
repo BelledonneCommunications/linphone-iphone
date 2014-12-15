@@ -269,11 +269,15 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 #if TARGET_OS_IPHONE
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
 	linphone_core_set_ringback(mgr->lc, NULL);
+#endif
+
 	if( manager_count >= 2){
+		char hellopath[512];
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
 		linphone_core_use_files(mgr->lc, TRUE);
+		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+		linphone_core_set_play_file(mgr->lc,hellopath);
 	}
-#endif
 
 	if (proxy_count)
 		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,5000*proxy_count);
