@@ -87,12 +87,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 			LinphoneAddress* address = linphone_address_new([(NSString*)CFDictionaryGetValue(lDict,kABPersonInstantMessageUsernameKey) UTF8String]);
 
 			if (address) {
-				NSString* domain = [NSString stringWithCString:linphone_address_get_domain(address)
-													  encoding:[NSString defaultCStringEncoding]];
+				const char* dom =linphone_address_get_domain(address);
+				if( dom != NULL ){
+					NSString* domain = [NSString stringWithCString:dom
+														  encoding:[NSString defaultCStringEncoding]];
 
-				if (([filter compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-					|| ([filter compare:domain options:NSCaseInsensitiveSearch] == NSOrderedSame)) {
-					match = true;
+					if (([filter compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+						|| ([filter compare:domain options:NSCaseInsensitiveSearch] == NSOrderedSame)) {
+						match = true;
+					}
 				}
 				linphone_address_destroy(address);
 			}
