@@ -253,7 +253,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("fingerprint",stream->dtls_fingerprint));
 		}
 
-		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute));
+		/*belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute));*/
 		ms_free(ssrc_attribute);
 
 	}

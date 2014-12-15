@@ -854,6 +854,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	 else
 		 call->me=linphone_call_log_get_from_address(call->log);
 
+	linphone_address_ref(call->me);
 
 	/*reserve the sockets immediately*/
 	linphone_call_init_media_streams(call);
@@ -1140,7 +1141,7 @@ static void linphone_call_destroy(LinphoneCall *obj){
 		obj->remote_params=NULL;
 	}
 	if (obj->me) {
-		linphone_address_destroy(obj->me);
+		linphone_address_unref(obj->me);
 		obj->me = NULL;
 	}
 
