@@ -951,6 +951,7 @@ class LinphoneModule(object):
 		self.mslist_types = Set([])
 		self.enums = []
 		self.enum_names = []
+		self.cfunction2methodmap = {}
 		hand_written_functions = []
 		for hand_written_code in hand_written_codes:
 			hand_written_functions += hand_written_code.func_list
@@ -1074,6 +1075,7 @@ class LinphoneModule(object):
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
 				if method_name not in hand_written_functions:
 					m['method_xml_node'] = xml_type_method
+					self.cfunction2methodmap[method_name] = ':py:meth:`linphone.' + c['class_name'] + '.' + m['method_name'] + '`'
 					c['class_type_methods'].append(m)
 			c['class_instance_methods'] = []
 			xml_instance_methods = xml_class.findall("./instancemethods/instancemethod")
@@ -1089,6 +1091,7 @@ class LinphoneModule(object):
 				m['method_name'] = method_name.replace(c['class_c_function_prefix'], '')
 				if method_name not in hand_written_functions:
 					m['method_xml_node'] = xml_instance_method
+					self.cfunction2methodmap[method_name] = ':py:meth:`linphone.' + c['class_name'] + '.' + m['method_name'] + '`'
 					c['class_instance_methods'].append(m)
 			c['class_properties'] = []
 			xml_properties = xml_class.findall("./properties/property")
@@ -1115,6 +1118,7 @@ class LinphoneModule(object):
 					p['getter_reference'] = "(getter)pylinphone_" + c['class_name'] + "_" + p['getter_name']
 					p['getter_definition_begin'] = "static PyObject * pylinphone_" + c['class_name'] + "_" + p['getter_name'] + "(PyObject *self, void *closure) {"
 					p['getter_definition_end'] = "}"
+					self.cfunction2methodmap[xml_property_getter.get('name')] = ':py:attr:`linphone.' + c['class_name'] + '.' + property_name + '`'
 				else:
 					p['getter_reference'] = "NULL"
 				if xml_property_setter is not None:
@@ -1124,6 +1128,7 @@ class LinphoneModule(object):
 					p['setter_reference'] = "(setter)pylinphone_" + c['class_name'] + "_" + p['setter_name']
 					p['setter_definition_begin'] = "static int pylinphone_" + c['class_name'] + "_" + p['setter_name'] + "(PyObject *self, PyObject *value, void *closure) {"
 					p['setter_definition_end'] = "}"
+					self.cfunction2methodmap[xml_property_setter.get('name')] = ':py:attr:`linphone.' + c['class_name'] + '.' + property_name + '`'
 				else:
 					p['setter_reference'] = "NULL"
 				c['class_properties'].append(p)
@@ -1243,8 +1248,16 @@ class LinphoneModule(object):
 	def __replace_doc_special_chars(self, doc):
 		return doc.replace('"', '').encode('string-escape')
 
+	def __replace_doc_cfunction_by_method(self, doc):
+		for cfunction, method in self.cfunction2methodmap.iteritems():
+			doc = doc.replace(cfunction + '()', method)
+		for cfunction, method in self.cfunction2methodmap.iteritems():
+			doc = doc.replace(cfunction, method)
+		return doc
+
 	def __format_doc(self, brief_description, detailed_description):
 		doc = self.__format_doc_content(brief_description, detailed_description)
+		doc = self.__replace_doc_cfunction_by_method(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1277,6 +1290,7 @@ class LinphoneModule(object):
 				return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
 				doc += '\n:returns: ' + return_doc
 				doc += '\n:rtype: ' + return_argument_type.type_str
+		doc = self.__replace_doc_cfunction_by_method(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1288,6 +1302,7 @@ class LinphoneModule(object):
 		argument_type = ArgumentType(arg_type, arg_complete_type, arg_contained_type, self)
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + argument_type.type_str + '] ' + doc
+		doc = self.__replace_doc_cfunction_by_method(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc
 
@@ -1299,5 +1314,6 @@ class LinphoneModule(object):
 		return_argument_type = ArgumentType(return_type, return_complete_type, return_contained_type, self)
 		doc = self.__format_doc_content(xml_node.find('briefdescription'), xml_node.find('detaileddescription'))
 		doc = '[' + return_argument_type.type_str + '] ' + doc
+		doc = self.__replace_doc_cfunction_by_method(doc)
 		doc = self.__replace_doc_special_chars(doc)
 		return doc

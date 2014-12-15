@@ -313,7 +313,7 @@ PyMODINIT_FUNC initlinphone(void) {
 {{/enum_deprecated_values}}
 {{/enums}}
 
-	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of linphone.PayloadType.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
+	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
 	if (menum == NULL) return;
 	Py_INCREF(menum);
 	if (PyModule_AddObject(m, "PayloadTypeType", menum) < 0) return;
