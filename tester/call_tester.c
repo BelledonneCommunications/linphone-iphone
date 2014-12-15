@@ -2269,8 +2269,8 @@ static void early_media_call_with_ringing(void){
 	MSList* lcs = NULL;
 	LinphoneCall* marie_call;
 	LinphoneCallLog *marie_call_log;
-	time_t connected_time=0;
-	time_t ended_time=0;
+	uint64_t connected_time=0;
+	uint64_t ended_time=0;
 	int dummy=0;
 
 	lcs = ms_list_append(lcs,marie->lc);
@@ -2299,7 +2299,7 @@ static void early_media_call_with_ringing(void){
 		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
-		connected_time=time(NULL);
+		connected_time=ms_get_cur_time_ms();
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
 		CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
@@ -2312,8 +2312,8 @@ static void early_media_call_with_ringing(void){
 
 		CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
-		ended_time=time(NULL);
-		CU_ASSERT_TRUE (labs (linphone_call_log_get_duration(marie_call_log) - (ended_time - connected_time)) <1 );
+		ended_time=ms_get_cur_time_ms();
+		CU_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (ended_time - connected_time)) <=1000 );
 		ms_list_free(lcs);
 	}
 
