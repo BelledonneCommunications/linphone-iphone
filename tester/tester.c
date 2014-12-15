@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "CUnit/TestRun.h"
+#include "CUnit/Automated.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -41,6 +42,9 @@ const char* test_route="sip2.linphone.org";
 int liblinphone_tester_use_log_file=0;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int manager_count = 0;
+
+static const char* liblinphone_tester_xml_file = NULL;
+static int      liblinphone_tester_xml_enabled = FALSE;
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
@@ -500,49 +504,57 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	CU_set_suite_start_handler(test_suite_start_message_handler);
 
 
+	if( liblinphone_tester_xml_file != NULL ){
+		CU_set_output_filename(liblinphone_tester_xml_file);
+	}
+	if( liblinphone_tester_xml_enabled != 0 ){
+		CU_automated_run_tests();
+	} else {
+
 #if !HAVE_CU_GET_SUITE
-	if( suite_name ){
-		ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
-	}
-#else
-	if (suite_name){
-		CU_pSuite suite;
-		suite=CU_get_suite(suite_name);
-		if (!suite) {
-			ms_error("Could not find suite '%s'. Available suites are:", suite_name);
-			liblinphone_tester_list_suites();
-			return -1;
-		} else if (test_name) {
-			CU_pTest test=CU_get_test_by_name(test_name, suite);
-			if (!test) {
-				ms_error("Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
-				// do not use suite_name here, since this method is case sentisitive
-				liblinphone_tester_list_suite_tests(suite->pName);
-				return -2;
-			} else {
-				CU_ErrorCode err= CU_run_test(suite, test);
-				if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
-			}
-		} else {
-			CU_run_suite(suite);
+		if( suite_name ){
+			ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
 		}
-	}
-	else
-#endif
-	{
-#if HAVE_CU_CURSES
-		if (curses) {
-			/* Run tests using the CUnit curses interface */
-			CU_curses_run_tests();
+#else
+		if (suite_name){
+			CU_pSuite suite;
+			suite=CU_get_suite(suite_name);
+			if (!suite) {
+				ms_error("Could not find suite '%s'. Available suites are:", suite_name);
+				liblinphone_tester_list_suites();
+				return -1;
+			} else if (test_name) {
+				CU_pTest test=CU_get_test_by_name(test_name, suite);
+				if (!test) {
+					ms_error("Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
+					// do not use suite_name here, since this method is case sentisitive
+					liblinphone_tester_list_suite_tests(suite->pName);
+					return -2;
+				} else {
+					CU_ErrorCode err= CU_run_test(suite, test);
+					if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
+				}
+			} else {
+				CU_run_suite(suite);
+			}
 		}
 		else
 #endif
 		{
-			/* Run all tests using the CUnit Basic interface */
-			CU_run_all_tests();
+#if HAVE_CU_CURSES
+			if (curses) {
+				/* Run tests using the CUnit curses interface */
+				CU_curses_run_tests();
+			}
+			else
+#endif
+			{
+				/* Run all tests using the CUnit Basic interface */
+				CU_run_all_tests();
+			}
 		}
-	}
 
+	}
 	ret=CU_get_number_of_tests_failed()!=0;
 
 	/* Redisplay list of failed tests on end */
@@ -600,5 +612,19 @@ void liblinphone_tester_keep_accounts( int keep ){
 void liblinphone_tester_clear_accounts(void){
 	account_manager_destroy();
 }
+
+void liblinphone_tester_enable_xml( bool_t enable ){
+	liblinphone_tester_xml_enabled = enable;
+}
+
+void liblinphone_tester_set_xml_output(const char *xml_path ) {
+	liblinphone_tester_xml_file = xml_path;
+}
+
+const char* liblinphone_tester_get_xml_output( void ) {
+	return liblinphone_tester_xml_file;
+}
+
+
 
 

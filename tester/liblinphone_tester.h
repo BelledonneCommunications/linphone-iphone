@@ -79,6 +79,11 @@ extern void liblinphone_tester_set_fileprefix(const char* file_prefix);
 extern void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix);
 extern int liblinphone_tester_ipv6_available(void);
 
+
+extern        void liblinphone_tester_enable_xml( bool_t enable );
+extern        void liblinphone_tester_set_xml_output(const char *xml_path );
+extern const char* liblinphone_tester_get_xml_output(void);
+
 /**
  * @brief Tells the tester whether or not to clean the accounts it has created between runs.
  * @details Setting this to 1 will not clear the list of created accounts between successive
