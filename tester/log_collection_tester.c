@@ -100,8 +100,14 @@ LinphoneCoreManager* setup(bool_t enable_logs)  {
 	return marie;
 }
 
-time_t check_file(char * filepath)  {
-	time_t time_curr = -1;
+time_t check_file(LinphoneCoreManager* mgr)  {
+
+	uint64_t last_log = ms_get_cur_time_ms();
+	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
+	time_t  time_curr = -1;
+
+	CU_ASSERT_PTR_NOT_NULL(filepath);	
+
 	if (filepath != NULL) {
 		int line_count = 0;
 		FILE *file = fopen(filepath, "r");
@@ -134,6 +140,8 @@ time_t check_file(char * filepath)  {
 		fclose(file);
 		ms_free(filepath);
 	}
+
+	CU_ASSERT_TRUE( labs(time_curr*1000 - last_log) <= 1000 );
 	// return latest time in file
 	return time_curr;
 }
@@ -159,19 +167,14 @@ static void collect_files_disabled()  {
 
 static void collect_files_filled() {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(check_file(filepath), ms_time(0));
+	check_file(marie);
 	linphone_core_manager_destroy(marie);
 }
 
 static void collect_files_small_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath;
 	linphone_core_set_log_collection_max_file_size(5000);
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(check_file(filepath), ms_time(0));
+	check_file(marie);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -180,17 +183,13 @@ static void collect_files_changing_size()  {
 	char * filepath;
 	int waiting = 100;
 
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(check_file(filepath), ms_time(0));
+	check_file(marie);
 
 	linphone_core_set_log_collection_max_file_size(5000);
 	// Generate some logs
 	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
 
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(check_file(filepath), ms_time(0));
+	check_file(marie);
 
 	linphone_core_manager_destroy(marie);
 }
