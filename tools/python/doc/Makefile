@@ -48,8 +48,12 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	rm -f source/enums.rst
 
-html:
+source/enums.rst:
+	python generate_enums.py -o source/enums.rst
+
+html: source/enums.rst
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

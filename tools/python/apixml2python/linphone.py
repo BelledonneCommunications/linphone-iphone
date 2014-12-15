@@ -15,6 +15,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
+import re
 from sets import Set
 import sys
 
@@ -24,6 +25,18 @@ def strip_leading_linphone(s):
 		return s[8:]
 	else:
 		return s
+
+def remove_useless_enum_prefix(senum, svalue):
+	lenum = re.findall('[A-Z][^A-Z]*', senum)
+	lvalue = re.findall('[A-Z][^A-Z]*', svalue)
+	if len(lenum) == 0 or len(lvalue) == 0:
+		return svalue
+	if lenum[0] == lvalue[0]:
+		i = 0
+		while i < len(lenum) and lenum[i] == lvalue[i]:
+			i += 1
+		return ''.join(lvalue[i:])
+	return svalue
 
 def is_callback(s):
 	return s.startswith('Linphone') and s.endswith('Cb')
@@ -42,27 +55,28 @@ def compute_event_name(s, className):
 
 
 class HandWrittenCode:
-	def __init__(self, _class, name, func_list):
+	def __init__(self, _class, name, func_list, doc = ''):
 		self._class = _class
 		self.name = name
 		self.func_list = func_list
+		self.doc = doc
 
 class HandWrittenInstanceMethod(HandWrittenCode):
-	def __init__(self, _class, name, cfunction):
-		HandWrittenCode.__init__(self, _class, name, [cfunction])
+	def __init__(self, _class, name, cfunction, doc = ''):
+		HandWrittenCode.__init__(self, _class, name, [cfunction], doc)
 
 class HandWrittenClassMethod(HandWrittenCode):
-	def __init__(self, _class, name, cfunction):
-		HandWrittenCode.__init__(self, _class, name, [cfunction])
+	def __init__(self, _class, name, cfunction, doc = ''):
+		HandWrittenCode.__init__(self, _class, name, [cfunction], doc)
 
 class HandWrittenProperty(HandWrittenCode):
-	def __init__(self, _class, name, getter_cfunction = None, setter_cfunction = None):
+	def __init__(self, _class, name, getter_cfunction = None, setter_cfunction = None, doc = ''):
 		func_list = []
 		if getter_cfunction is not None:
 			func_list.append(getter_cfunction)
 		if setter_cfunction is not None:
 			func_list.append(setter_cfunction)
-		HandWrittenCode.__init__(self, _class, name, func_list)
+		HandWrittenCode.__init__(self, _class, name, func_list, doc)
 		self.getter_cfunction = getter_cfunction
 		self.setter_cfunction = setter_cfunction
 
@@ -947,18 +961,35 @@ class LinphoneModule(object):
 			e = {}
 			e['enum_name'] = strip_leading_linphone(xml_enum.get('name'))
 			e['enum_doc'] = self.__format_doc_content(xml_enum.find('briefdescription'), xml_enum.find('detaileddescription'))
-			e['enum_doc'] += "\n\nValues:\n"
+			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
+			e['enum_doc'] += """
+
+.. csv-table::
+   :delim: |
+   :widths: 30, 70
+   :header: Value,Description
+
+"""
 			e['enum_values'] = []
+			e['enum_deprecated_values'] = []
 			xml_enum_values = xml_enum.findall("./values/value")
 			for xml_enum_value in xml_enum_values:
 				if xml_enum_value.get('deprecated') == 'true':
 					continue
 				v = {}
 				v['enum_value_cname'] = xml_enum_value.get('name')
-				v['enum_value_name'] = strip_leading_linphone(v['enum_value_cname'])
+				valname = strip_leading_linphone(v['enum_value_cname'])
+				v['enum_value_name'] = remove_useless_enum_prefix(e['enum_name'], valname)
 				v['enum_value_doc'] = self.__format_doc(xml_enum_value.find('briefdescription'), xml_enum_value.find('detaileddescription'))
-				e['enum_doc'] += '\t' + v['enum_value_name'] + ': ' + v['enum_value_doc'] + '\n'
+				e['enum_doc'] += '   ' + v['enum_value_name'] + '|' + v['enum_value_doc'] + '\n'
 				e['enum_values'].append(v)
+				if v['enum_value_name'] != valname:
+					# TODO: To remove. Add deprecated value name.
+					v = {}
+					v['enum_value_cname'] = xml_enum_value.get('name')
+					v['enum_value_name'] = strip_leading_linphone(v['enum_value_cname'])
+					v['enum_value_doc'] = self.__format_doc(xml_enum_value.find('briefdescription'), xml_enum_value.find('detaileddescription'))
+					e['enum_deprecated_values'].append(v)
 			e['enum_doc'] = self.__replace_doc_special_chars(e['enum_doc'])
 			self.enums.append(e)
 			self.enum_names.append(e['enum_name'])
@@ -1012,10 +1043,12 @@ class LinphoneModule(object):
 					if isinstance(hand_written_code, HandWrittenClassMethod):
 						m = {}
 						m['method_name'] = hand_written_code.name
+						m['method_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
 						c['class_type_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenInstanceMethod):
 						m = {}
 						m['method_name'] = hand_written_code.name
+						m['method_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
 						c['class_instance_hand_written_methods'].append(m)
 					elif isinstance(hand_written_code, HandWrittenProperty):
 						p = {}
@@ -1028,6 +1061,7 @@ class LinphoneModule(object):
 							p['setter_reference'] = 'NULL'
 						else:
 							p['setter_reference'] = '(setter)pylinphone_' + c['class_name'] + '_set_' + p['property_name']
+						p['property_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
 						c['class_hand_written_properties'].append(p)
 			xml_type_methods = xml_class.findall("./classmethods/classmethod")
 			for xml_type_method in xml_type_methods:
