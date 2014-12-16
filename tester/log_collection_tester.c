@@ -180,7 +180,6 @@ static void collect_files_small_size()  {
 
 static void collect_files_changing_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath;
 	int waiting = 100;
 
 	check_file(marie);
