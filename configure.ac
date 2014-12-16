@@ -158,13 +158,16 @@ dnl AC_CHECK_LIB(intl,libintl_gettext)
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
 AC_ARG_ENABLE(x11,
-	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=no)])],
+	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=yes for MacOSX, no otherwise)])],
 	[case "${enableval}" in
 		yes)	enable_x11=true ;;
 		no)	enable_x11=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
 	esac],
-	[enable_x11=true]
+	[case "$target_os" in
+		*darwin*) enable_x11=false ;; #disable x11 on MacOS by default
+		*) enable_x11=true ;;
+	esac]
 )
 
 dnl conditional build of LDAP support
