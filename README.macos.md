@@ -3,8 +3,10 @@
 ## Build prerequisite
 
 * Xcode (download from apple or using appstore application)
-* Java SE
-* [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
+* [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or openJDK
+ This is required to generate a C sourcefile from SIP grammar using [antlr3](http://www.antlr3.org/) generator.
+ * [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
+ * [XQuartz](https://xquartz.macosforge.org) for GTK version.
 
 ### Dependencies
 
@@ -41,20 +43,18 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 
 ##### Linphone library (liblinphone)
 
-        brew install automake intltool libtool pkg-config coreutils \
-        yasm nasm wget imagemagick speex ffmpeg
-
-        #then you have to install some dependencies from a tap.
         brew tap Gui13/linphone
-        brew install antlr3.2 libantlr3.4c mattintosh4/gtk-mac-integration/gtk-mac-integration
+        brew install intltool libtool wget pkg-config automake libantlr3.4c \
+                antlr3.2 gettext speex ffmpeg readline
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        brew link --force gettext
 
 ##### Linphone UI (GTK version)
 
-        brew install gettext pygtk gtk+
-        brew link gettext --force
+        brew install gtk+ --without-x11
+        brew install gettext gtk-mac-integration
         #readline is required from linphonec.c otherwise compilation will fail
         brew link readline --force
-
 
 ### Building Linphone
 
@@ -122,7 +122,7 @@ The libvpx build isn't able to produce dual architecture files. To workaround th
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, :
 
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
+        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
 * Install on the system
 
