@@ -26,23 +26,21 @@ You will NOT be able to build the SDK if you did not read liblinphone README fir
 
 * Modify your `PATH` so that the tools are taken in place of the versions brought by Apple in `/usr/bin`. Otherwise the build will fail with obscure errors:
 
- `export PATH=$LOCAL_BIN_DIR:$PATH`
+        export PATH=$LOCAL_BIN_DIR:$PATH
 
 * Install [gas-preprosessor.pl](http://github.com/yuvi/gas-preprocessor/) (version above July 2013) into your `LOCAL_BIN_DIR` directory
 
- ```sh
- wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
- chmod +x gas-preprocessor.pl
- sudo mv gas-preprocessor.pl $LOCAL_BIN_DIR
- ```
+        wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
+        chmod +x gas-preprocessor.pl
+        sudo mv gas-preprocessor.pl $LOCAL_BIN_DIR
 
 * Link `libtoolize` to `glibtoolize`
 
- `sudo ln -s $LOCAL_BIN_DIR/glibtoolize $LOCAL_BIN_DIR/libtoolize`
+        sudo ln -s $LOCAL_BIN_DIR/glibtoolize $LOCAL_BIN_DIR/libtoolize
 
 * Link host's `strings` to simulator SDK
 
- `sudo ln -s /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings`
+        sudo ln -s /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
 
 
 ## BUILDING THE SDK
@@ -54,28 +52,28 @@ You will NOT be able to build the SDK if you did not read liblinphone README fir
 
  To generate the liblinphone multi arch sdk in GPL mode, do:
 
- `cd submodules/build && make all`
+        cd submodules/build && make all
 
  ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastreamer2, oRTP, belle-sip.
  If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastreamer2, oRTP, belle-sip.
 
  To generate the liblinphone multi arch sdk in non GPL mode, do:
 
- `cd submodules/build && make all enable_gpl_third_parties=no`
+        cd submodules/build && make all enable_gpl_third_parties=no
 
 * For Xcode prior to 4.5, use:
 
- `make -f Makefile.xcode4.4`
+        make -f Makefile.xcode4.4
 
 * ZRTP support
 
  You can disable ZRTP support with:
 
- `make all enable_zrtp=no`
+        make all enable_zrtp=no
 
 * In case you upgrade your IOS SDK, you may force rebuilding everything, by doing
 
- `make veryclean && make all`
+        make veryclean && make all
 
 **The resulting sdk is in `liblinphone-sdk/` root directory.**
 
@@ -98,7 +96,7 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
 Sometime it can be useful to step into liblinphone SDK functions. To allow Xcode to enable breakpoint within liblinphone, SDK must be built with debug symbols.
 To add debug symbol to liblinphone SDK, add make option `enable_debug=yes`:
 
-`make all enable_gpl_third_parties=no enable_debug=yes`
+        make all enable_gpl_third_parties=no enable_debug=yes
 
 ## DEBUGING MEDIASTREAMER2
 
