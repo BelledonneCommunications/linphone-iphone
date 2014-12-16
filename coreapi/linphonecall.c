@@ -603,6 +603,11 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->current_params = linphone_call_params_new();
 	call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 	call->dtls_certificate_fingerprint = NULL;
+	if (call->dir == LinphoneCallIncoming)
+		call->me=to;
+	 else
+		call->me=from;
+	linphone_address_ref(call->me);
 
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,0,min_port,max_port);
@@ -847,14 +852,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			ms_warning("ICE not supported for incoming INVITE without SDP.");
 		}
 	}
-
-
-	if (linphone_call_log_get_dir(call->log) == LinphoneCallIncoming)
-		call->me=linphone_call_log_get_to_address(call->log);
-	 else
-		 call->me=linphone_call_log_get_from_address(call->log);
-
-	linphone_address_ref(call->me);
 
 	/*reserve the sockets immediately*/
 	linphone_call_init_media_streams(call);
