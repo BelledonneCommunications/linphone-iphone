@@ -784,8 +784,6 @@ AC_ARG_ENABLE(msg-storage,
 	[enable_msg_storage=auto]
 )
 
-AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
-
 if test x$enable_msg_storage != xfalse; then
 	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
 	if test "$found_sqlite" = "no"; then
@@ -794,6 +792,7 @@ if test x$enable_msg_storage != xfalse; then
 	fi
 	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		enable_msg_storage=true
 	else
 		if test x$enable_msg_storage = xtrue; then
 			AC_MSG_ERROR([sqlite3, required for message storage, not found])
@@ -805,7 +804,7 @@ if test x$enable_msg_storage != xfalse; then
 	AC_SUBST(SQLITE3_LIBS)
 fi
 
-
+AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
 
