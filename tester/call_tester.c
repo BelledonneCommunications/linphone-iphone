@@ -2052,7 +2052,9 @@ static void call_with_file_player(void) {
 		CU_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
 		CU_ASSERT_TRUE(linphone_player_start(player)==0);
 	}
-	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
+
+	/* This assert should be modified to be at least as long as the hello8000.wav file */
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,30000));
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(marie->lc);
