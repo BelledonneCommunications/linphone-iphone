@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mssndcard.h"
 
 static const char EC_STATE_STORE[] = ".linphone.ecstate";
-static const size_t EC_STATE_MAX_LEN = 1048576; // 1Mo
+#define EC_STATE_MAX_LEN 1048576 // 1Mo
 
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
 
