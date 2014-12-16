@@ -89,9 +89,9 @@ class AccountManager:
 
     @classmethod
     def account_created_on_server_cb(cls, lc, cfg, state, message):
-        if state == linphone.RegistrationState.RegistrationOk:
+        if state == linphone.RegistrationState.Ok:
             lc.user_data.created = True
-        elif state == linphone.RegistrationState.RegistrationCleared:
+        elif state == linphone.RegistrationState.Cleared:
             lc.user_data.done = True
 
     @classmethod
@@ -134,7 +134,7 @@ class AccountManager:
         tmp_identity.set_header("X-Create-Account", "yes")
         cfg.identity = tmp_identity.as_string()
         server_addr = linphone.Address.new(refcfg.server_addr)
-        server_addr.transport = linphone.TransportType.TransportTcp;
+        server_addr.transport = linphone.TransportType.Tcp;
         server_addr.port = 0
         cfg.server_addr = server_addr.as_string()
         cfg.expires = 3600
@@ -365,12 +365,12 @@ class CoreManager:
             lambda callee_manager, caller_manager: (callee_manager.stats.number_of_LinphoneCallStreamsRunning == initial_callee_stats.number_of_LinphoneCallStreamsRunning + 1) and \
                 (caller_manager.stats.number_of_LinphoneCallStreamsRunning == initial_caller_stats.number_of_LinphoneCallStreamsRunning + 1))
 
-        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone:
+        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.None:
             # Wait for encryption to be on, in case of zrtp, it can take a few seconds
-            if caller_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+            if caller_manager.lc.media_encryption == linphone.MediaEncryption.ZRTP:
                 CoreManager.wait_for(callee_manager, caller_manager,
                     lambda callee_manager, caller_manager: caller_manager.stats.number_of_LinphoneCallEncryptedOn == initial_caller_stats.number_of_LinphoneCallEncryptedOn + 1)
-            if callee_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+            if callee_manager.lc.media_encryption == linphone.MediaEncryption.ZRTP:
                 CoreManager.wait_for(callee_manager, caller_manager,
                     lambda callee_manager, caller_manager: callee_manager.stats.number_of_LinphoneCallEncryptedOn == initial_callee_stats.number_of_LinphoneCallEncryptedOn + 1)
             assert_equals(callee_manager.lc.current_call.current_params.media_encryption, caller_manager.lc.media_encryption)
@@ -389,15 +389,15 @@ class CoreManager:
         manager = lc.user_data
         linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
             state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
-        if state == linphone.RegistrationState.RegistrationNone:
+        if state == linphone.RegistrationState.None:
             manager.stats.number_of_LinphoneRegistrationNone += 1
-        elif state == linphone.RegistrationState.RegistrationProgress:
+        elif state == linphone.RegistrationState.Progress:
             manager.stats.number_of_LinphoneRegistrationProgress += 1
-        elif state == linphone.RegistrationState.RegistrationOk:
+        elif state == linphone.RegistrationState.Ok:
             manager.stats.number_of_LinphoneRegistrationOk += 1
-        elif state == linphone.RegistrationState.RegistrationCleared:
+        elif state == linphone.RegistrationState.Cleared:
             manager.stats.number_of_LinphoneRegistrationCleared += 1
-        elif state == linphone.RegistrationState.RegistrationFailed:
+        elif state == linphone.RegistrationState.Failed:
             manager.stats.number_of_LinphoneRegistrationFailed += 1
         else:
             raise Exception("Unexpected registration state")
@@ -415,45 +415,45 @@ class CoreManager:
         to_address = call.call_log.to_address.as_string()
         from_address = call.call_log.from_address.as_string()
         direction = "Outgoing"
-        if call.call_log.dir == linphone.CallDir.CallIncoming:
+        if call.call_log.dir == linphone.CallDir.Incoming:
             direction = "Incoming"
         linphonetester_logger.info("[TESTER] {direction} call from [{from_address}] to [{to_address}], new state is [{state}]".format(
             direction=direction, from_address=from_address, to_address=to_address, state=linphone.CallState.string(state)))
-        if state == linphone.CallState.CallIncomingReceived:
+        if state == linphone.CallState.IncomingReceived:
             manager.stats.number_of_LinphoneCallIncomingReceived += 1
-        elif state == linphone.CallState.CallOutgoingInit:
+        elif state == linphone.CallState.OutgoingInit:
             manager.stats.number_of_LinphoneCallOutgoingInit += 1
-        elif state == linphone.CallState.CallOutgoingProgress:
+        elif state == linphone.CallState.OutgoingProgress:
             manager.stats.number_of_LinphoneCallOutgoingProgress += 1
-        elif state == linphone.CallState.CallOutgoingRinging:
+        elif state == linphone.CallState.OutgoingRinging:
             manager.stats.number_of_LinphoneCallOutgoingRinging += 1
-        elif state == linphone.CallState.CallOutgoingEarlyMedia:
+        elif state == linphone.CallState.OutgoingEarlyMedia:
             manager.stats.number_of_LinphoneCallOutgoingEarlyMedia += 1
-        elif state == linphone.CallState.CallConnected:
+        elif state == linphone.CallState.Connected:
             manager.stats.number_of_LinphoneCallConnected += 1
-        elif state == linphone.CallState.CallStreamsRunning:
+        elif state == linphone.CallState.StreamsRunning:
             manager.stats.number_of_LinphoneCallStreamsRunning += 1
-        elif state == linphone.CallState.CallPausing:
+        elif state == linphone.CallState.Pausing:
             manager.stats.number_of_LinphoneCallPausing += 1
-        elif state == linphone.CallState.CallPaused:
+        elif state == linphone.CallState.Paused:
             manager.stats.number_of_LinphoneCallPaused += 1
-        elif state == linphone.CallState.CallResuming:
+        elif state == linphone.CallState.Resuming:
             manager.stats.number_of_LinphoneCallResuming += 1
-        elif state == linphone.CallState.CallRefered:
+        elif state == linphone.CallState.Refered:
             manager.stats.number_of_LinphoneCallRefered += 1
-        elif state == linphone.CallState.CallError:
+        elif state == linphone.CallState.Error:
             manager.stats.number_of_LinphoneCallError += 1
-        elif state == linphone.CallState.CallEnd:
+        elif state == linphone.CallState.End:
             manager.stats.number_of_LinphoneCallEnd += 1
-        elif state == linphone.CallState.CallPausedByRemote:
+        elif state == linphone.CallState.PausedByRemote:
             manager.stats.number_of_LinphoneCallPausedByRemote += 1
-        elif state == linphone.CallState.CallUpdatedByRemote:
+        elif state == linphone.CallState.UpdatedByRemote:
             manager.stats.number_of_LinphoneCallUpdatedByRemote += 1
-        elif state == linphone.CallState.CallIncomingEarlyMedia:
+        elif state == linphone.CallState.IncomingEarlyMedia:
             manager.stats.number_of_LinphoneCallIncomingEarlyMedia += 1
-        elif state == linphone.CallState.CallUpdating:
+        elif state == linphone.CallState.Updating:
             manager.stats.number_of_LinphoneCallUpdating += 1
-        elif state == linphone.CallState.CallReleased:
+        elif state == linphone.CallState.Released:
             manager.stats.number_of_LinphoneCallReleased += 1
         else:
             raise Exception("Unexpected call state")
@@ -489,63 +489,63 @@ class CoreManager:
         manager.stats.number_of_NotifyReceived += 1
         manager.stats.last_received_presence = lf.presence_model
         acttype = manager.stats.last_received_presence.activity.type
-        if acttype == linphone.PresenceActivityType.PresenceActivityOffline:
+        if acttype == linphone.PresenceActivityType.Offline:
             manager.stats.number_of_LinphonePresenceActivityOffline += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOnline:
+        elif acttype == linphone.PresenceActivityType.Online:
             manager.stats.number_of_LinphonePresenceActivityOnline += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityAppointment:
+        elif acttype == linphone.PresenceActivityType.Appointment:
             manager.stats.number_of_LinphonePresenceActivityAppointment += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityAway:
+        elif acttype == linphone.PresenceActivityType.Away:
             manager.stats.number_of_LinphonePresenceActivityAway += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityBreakfast:
+        elif acttype == linphone.PresenceActivityType.Breakfast:
             manager.stats.number_of_LinphonePresenceActivityBreakfast += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityBusy:
+        elif acttype == linphone.PresenceActivityType.Busy:
             manager.stats.number_of_LinphonePresenceActivityBusy += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityDinner:
+        elif acttype == linphone.PresenceActivityType.Dinner:
             manager.stats.number_of_LinphonePresenceActivityDinner += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityHoliday:
+        elif acttype == linphone.PresenceActivityType.Holiday:
             manager.stats.number_of_LinphonePresenceActivityHoliday += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityInTransit:
+        elif acttype == linphone.PresenceActivityType.InTransit:
             manager.stats.number_of_LinphonePresenceActivityInTransit += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityLookingForWork:
+        elif acttype == linphone.PresenceActivityType.LookingForWork:
             manager.stats.number_of_LinphonePresenceActivityLookingForWork += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityLunch:
+        elif acttype == linphone.PresenceActivityType.Lunch:
             manager.stats.number_of_LinphonePresenceActivityLunch += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityMeal:
+        elif acttype == linphone.PresenceActivityType.Meal:
             manager.stats.number_of_LinphonePresenceActivityMeal += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityMeeting:
+        elif acttype == linphone.PresenceActivityType.Meeting:
             manager.stats.number_of_LinphonePresenceActivityMeeting += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOnThePhone:
+        elif acttype == linphone.PresenceActivityType.OnThePhone:
             manager.stats.number_of_LinphonePresenceActivityOnThePhone += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOther:
+        elif acttype == linphone.PresenceActivityType.Other:
             manager.stats.number_of_LinphonePresenceActivityOther += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPerformance:
+        elif acttype == linphone.PresenceActivityType.Performance:
             manager.stats.number_of_LinphonePresenceActivityPerformance += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPermanentAbsence:
+        elif acttype == linphone.PresenceActivityType.PermanentAbsence:
             manager.stats.number_of_LinphonePresenceActivityPermanentAbsence += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPlaying:
+        elif acttype == linphone.PresenceActivityType.Playing:
             manager.stats.number_of_LinphonePresenceActivityPlaying += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPresentation:
+        elif acttype == linphone.PresenceActivityType.Presentation:
             manager.stats.number_of_LinphonePresenceActivityPresentation += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityShopping:
+        elif acttype == linphone.PresenceActivityType.Shopping:
             manager.stats.number_of_LinphonePresenceActivityShopping += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySleeping:
+        elif acttype == linphone.PresenceActivityType.Sleeping:
             manager.stats.number_of_LinphonePresenceActivitySleeping += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySpectator:
+        elif acttype == linphone.PresenceActivityType.Spectator:
             manager.stats.number_of_LinphonePresenceActivitySpectator += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySteering:
+        elif acttype == linphone.PresenceActivityType.Steering:
             manager.stats.number_of_LinphonePresenceActivitySteering += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityTravel:
+        elif acttype == linphone.PresenceActivityType.Travel:
             manager.stats.number_of_LinphonePresenceActivityTravel += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityTV:
+        elif acttype == linphone.PresenceActivityType.TV:
             manager.stats.number_of_LinphonePresenceActivityTV += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityUnknown:
+        elif acttype == linphone.PresenceActivityType.Unknown:
             manager.stats.number_of_LinphonePresenceActivityUnknown += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityVacation:
+        elif acttype == linphone.PresenceActivityType.Vacation:
             manager.stats.number_of_LinphonePresenceActivityVacation += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityWorking:
+        elif acttype == linphone.PresenceActivityType.Working:
             manager.stats.number_of_LinphonePresenceActivityWorking += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityWorship:
+        elif acttype == linphone.PresenceActivityType.Worship:
             manager.stats.number_of_LinphonePresenceActivityWorship += 1
 
     def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):

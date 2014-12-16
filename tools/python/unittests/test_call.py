@@ -17,11 +17,11 @@ class TestCall:
         assert_equals(CoreManager.wait_for_until(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallError == 1, 33000), True)
         assert_equals(pauline.stats.number_of_LinphoneCallError, 1)
         #FIXME http://git.linphone.org/mantis/view.php?id=757
-        #assert_equals(out_call.reason, linphone.Reason.ReasonBusy)
+        #assert_equals(out_call.reason, linphone.Reason.Busy)
         if len(pauline.lc.call_logs) > 0:
             out_call_log = pauline.lc.call_logs[0]
             assert out_call_log is not None
-            assert_equals(out_call_log.status, linphone.CallStatus.CallAborted)
+            assert_equals(out_call_log.status, linphone.CallStatus.Aborted)
         marie.stop()
         pauline.stop()
 
@@ -38,8 +38,8 @@ class TestCall:
             assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallReleased == 1), True)
             assert_equals(marie.stats.number_of_LinphoneCallEnd, 1)
             assert_equals(pauline.stats.number_of_LinphoneCallEnd, 1)
-            assert_equals(in_call.reason, linphone.Reason.ReasonDeclined)
-            assert_equals(out_call.reason, linphone.Reason.ReasonDeclined)
+            assert_equals(in_call.reason, linphone.Reason.Declined)
+            assert_equals(out_call.reason, linphone.Reason.Declined)
         marie.stop()
         pauline.stop()
 
@@ -97,7 +97,7 @@ class TestCall:
 
         # flexisip will retain the 488 until the "urgent reply" timeout arrives.
         assert_equals(CoreManager.wait_for_until(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallError == 1, 7000), True)
-        assert_equals(out_call.reason, linphone.Reason.ReasonNotAcceptable)
+        assert_equals(out_call.reason, linphone.Reason.NotAcceptable)
         assert_equals(marie.stats.number_of_LinphoneCallIncomingReceived, 0)
         assert_equals(marie.stats.number_of_LinphoneCallReleased, 0)
         marie.stop()

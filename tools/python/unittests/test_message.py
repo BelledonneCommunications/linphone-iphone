@@ -14,13 +14,13 @@ class TestMessage:
     def msg_state_changed(cls, msg, state):
         stats = msg.chat_room.core.user_data.stats
         linphonetester_logger.info("[TESTER] Message [{text}] [{state}]".format(text=msg.text, state=linphone.ChatMessageState.string(state)))
-        if state == linphone.ChatMessageState.ChatMessageStateDelivered:
+        if state == linphone.ChatMessageState.Delivered:
             stats.number_of_LinphoneMessageDelivered += 1
-        elif state == linphone.ChatMessageState.ChatMessageStateNotDelivered:
+        elif state == linphone.ChatMessageState.NotDelivered:
             stats.number_of_LinphoneMessageNotDelivered += 1
-        elif state == linphone.ChatMessageState.ChatMessageStateInProgress:
+        elif state == linphone.ChatMessageState.InProgress:
             stats.number_of_LinphoneMessageInProgress += 1
-        elif state == linphone.ChatMessageState.ChatMessageStateFileTransferError:
+        elif state == linphone.ChatMessageState.FileTransferError:
             stats.number_of_LinphoneMessageNotDelivered += 1
         else:
             linphonetester_logger.error("[TESTER] Unexpected state [{state}] for message [{msg}]".format(msg=msg, state=linphone.ChatMessageState.string(state)))
@@ -95,7 +95,7 @@ class TestMessage:
         chat_room = pauline.lc.get_chat_room(marie.identity)
         self.wait_for_server_to_purge_messages(marie, pauline)
         msg = chat_room.create_message("Bla bla bla bla")
-        chat_room.send_message2(msg, None, None)
+        chat_room.send_chat_message(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         assert marie.lc.get_chat_room(pauline.identity) is not None
         marie.stop()
@@ -109,7 +109,7 @@ class TestMessage:
         self.wait_for_server_to_purge_messages(marie, pauline)
         assert_equals(CoreManager.call(marie, pauline), True)
         msg = chat_room.create_message("Bla bla bla bla")
-        chat_room.send_message2(msg, None, None)
+        chat_room.send_chat_message(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         assert marie.lc.get_chat_room(pauline.identity) is not None
         marie.stop()

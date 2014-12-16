@@ -18,7 +18,7 @@ class RegisterCoreManager(CoreManager):
             vtable['auth_info_requested'] = RegisterCoreManager.auth_info_requested
         CoreManager.__init__(self, vtable=vtable)
 
-    def register_with_refresh(self, refresh, domain, route, late_auth_info = False, expected_final_state = linphone.RegistrationState.RegistrationOk):
+    def register_with_refresh(self, refresh, domain, route, late_auth_info = False, expected_final_state = linphone.RegistrationState.Ok):
         assert self.lc is not None
         self.stats.reset()
         proxy_cfg = self.lc.create_proxy_config()
@@ -42,25 +42,25 @@ class RegisterCoreManager(CoreManager):
         if refresh:
             expected_count += 1
         max_retry = 110
-        if expected_final_state == linphone.RegistrationState.RegistrationProgress:
+        if expected_final_state == linphone.RegistrationState.Progress:
             max_retry += 200
         while self.stats.number_of_LinphoneRegistrationOk < expected_count and retry < max_retry:
             retry += 1
             self.lc.iterate()
-            if self.stats.number_of_auth_info_requested > 0 and proxy_cfg.state == linphone.RegistrationState.RegistrationFailed and late_auth_info:
+            if self.stats.number_of_auth_info_requested > 0 and proxy_cfg.state == linphone.RegistrationState.Failed and late_auth_info:
                 if len(self.lc.auth_info_list) == 0:
-                    assert_equals(proxy_cfg.error, linphone.Reason.ReasonUnauthorized)
+                    assert_equals(proxy_cfg.error, linphone.Reason.Unauthorized)
                     info = linphone.AuthInfo.new(test_username, None, test_password, None, None, None) # Create authentication structure from identity
                     self.lc.add_auth_info(info)
-            if proxy_cfg.error == linphone.Reason.ReasonForbidden or \
-                (self.stats.number_of_auth_info_requested > 2 and proxy_cfg.error == linphone.Reason.ReasonUnauthorized):
+            if proxy_cfg.error == linphone.Reason.Forbidden or \
+                (self.stats.number_of_auth_info_requested > 2 and proxy_cfg.error == linphone.Reason.Unauthorized):
                 break
             time.sleep(0.1)
 
         assert_equals(proxy_cfg.state, expected_final_state)
         assert_equals(self.stats.number_of_LinphoneRegistrationNone, 0)
         assert self.stats.number_of_LinphoneRegistrationProgress >= 1
-        if expected_final_state == linphone.RegistrationState.RegistrationOk:
+        if expected_final_state == linphone.RegistrationState.Ok:
             assert_equals(self.stats.number_of_LinphoneRegistrationOk, expected_count)
             expected_failed = 0
             if late_auth_info:
