@@ -172,7 +172,7 @@ class ArgumentType:
 """if (PyInt_Check({arg_name})) {result_name}{result_suffix} = {cast}(size_t)PyInt_AsSsize_t({arg_name});
 	else if (PyLong_Check({arg_name})) {result_name}{result_suffix} = {cast}(size_t)PyLong_AsSsize_t({arg_name});
 """
-			self.fmt_str = 'L'
+			self.fmt_str = 'n'
 			self.cfmt_str = '%lu'
 		elif self.basic_type == 'float':
 			self.type_str = 'float'
