@@ -329,7 +329,7 @@ static void simple_call(void) {
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
-	
+
 	/* with the account manager, we might lose the identity */
 	marie_cfg = linphone_core_get_default_proxy_config(marie->lc);
 	marie_id = linphone_proxy_config_get_identity(marie_cfg);
@@ -896,7 +896,7 @@ static void call_with_no_sdp_ack_without_sdp(void){
 	LinphoneCall *call;
 
 	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
-	
+
 	linphone_core_invite_address(marie->lc,pauline->identity);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallIncomingReceived,1));
 	call=linphone_core_get_current_call(pauline->lc);
@@ -2315,7 +2315,7 @@ static void early_media_call_with_ringing(void){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 		ended_time=ms_get_cur_time_ms();
-		CU_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (ended_time - connected_time)) <=1000 );
+		CU_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time)) <=1000 );
 		ms_list_free(lcs);
 	}
 
