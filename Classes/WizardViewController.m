@@ -110,6 +110,7 @@ typedef enum _ViewElement {
     [provisionedUsername release];
     [provisionedPassword release];
     [provisionedDomain release];
+    [_transportChooser release];
     [super dealloc];
 }
 
@@ -422,9 +423,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 }
 
-- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {
+- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
     LinphoneCore* lc = [LinphoneManager getLc];
 	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config(lc);
+	NSString* server_address = domain;
 
     char normalizedUserName[256];
     linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
@@ -436,8 +438,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_address_set_username(linphoneAddress, normalizedUserName);
 
     if( domain && [domain length] != 0) {
+		if( transport != nil ){
+			server_address = [NSString stringWithFormat:@"%@;transport=%@", server_address, [transport lowercaseString]];
+		}
         // when the domain is specified (for external login), take it as the server address
-        linphone_proxy_config_set_server_addr(proxyCfg, [domain UTF8String]);
+        linphone_proxy_config_set_server_addr(proxyCfg, [server_address UTF8String]);
         linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
     }
 
@@ -695,10 +700,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
-    NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
-    NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
-    NSString *domain = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
-    
+    NSString *username  = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+    NSString *password  = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+    NSString *domain    = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
+    NSString *transport = [self.transportChooser titleForSegmentAtIndex:self.transportChooser.selectedSegmentIndex];
+
     
     NSMutableString *errors = [NSMutableString string];
     if ([username length] == 0) {
@@ -720,7 +726,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView release];
     } else {
         [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password domain:domain];
+        [self addProxyConfig:username password:password domain:domain withTransport:transport];
     }
 }
 
@@ -745,7 +751,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else {
         [self.waitView setHidden:false];
         // domain and server will be configured from the default proxy values
-        [self addProxyConfig:username password:password domain:nil];
+        [self addProxyConfig:username password:password domain:nil withTransport:nil];
     }
 }
 
@@ -995,7 +1001,7 @@ static UICompositeViewDescription *compositeDescription = nil;
              if([response object] == [NSNumber numberWithInt:1]) {
                  NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                  NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
-                [self addProxyConfig:username password:password domain:nil];
+                [self addProxyConfig:username password:password domain:nil withTransport:nil];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
                                                                      message:NSLocalizedString(@"Your account is not validate yet.", nil)
