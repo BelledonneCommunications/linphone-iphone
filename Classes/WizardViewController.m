@@ -1067,9 +1067,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - UIGestureRecognizerDelegate Functions
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    if ([touch.view isKindOfClass:[UIButton class]]) { //Avoid tap gesture on Button
+    if ([touch.view isKindOfClass:[UIButton class]]) {
+		/* we resign any keyboard that's displayed when a button is touched */
         if([LinphoneUtils findAndResignFirstResponder:currentView]) {
-            [(UIButton*)touch.view sendActionsForControlEvents:UIControlEventTouchUpInside];
             return NO;
         }
     }
