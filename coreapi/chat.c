@@ -584,8 +584,13 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		belle_http_request_listener_t *l;
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
+		const char *transfer_server = linphone_core_get_file_transfer_server(cr->lc);
 
-		uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(cr->lc));
+		if (transfer_server == NULL) {
+			ms_warning("Cannot send file transfer message: no file transfer server configured.");
+			return;
+		}
+		uri=belle_generic_uri_parse(transfer_server);
 
 		req=belle_http_request_create("POST",
 				uri,
