@@ -283,8 +283,6 @@ struct codec_name_pref_table codec_pref_table[]={
 		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
 		configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]] , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
-		[self migrateFromUserPrefs];
-
 		//set default values for first boot
 		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
 #ifdef DEBUG
@@ -293,6 +291,8 @@ struct codec_name_pref_table codec_pref_table[]={
 			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
 #endif
 		}
+
+		[self migrateFromUserPrefs];
 	}
 	return self;
 }
@@ -1431,7 +1431,7 @@ static BOOL libStarted = FALSE;
 #endif
 
     /*to make sure we don't loose debug trace*/
-    if ([self  lpConfigBoolForKey:@"debugenable_preference"]) {
+    if ([self lpConfigBoolForKey:@"debugenable_preference"]) {
         linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 		/*must be done before creating linphone core to get its traces too*/
