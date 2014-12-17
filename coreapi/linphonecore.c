@@ -5650,9 +5650,13 @@ MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
 **/
 MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
 	MSVideoSize ret={0};
+#ifndef VIDEO_ENABLED
+	ms_error("linphone_core_get_current_preview_video_size() fail. Support for video is disabled");
+#else
 	if (lc->previewstream){
 		ret=video_preview_get_current_size(lc->previewstream);
 	}
+#endif
 	return ret;
 }
 
