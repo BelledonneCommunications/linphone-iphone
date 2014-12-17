@@ -280,14 +280,6 @@
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
-		<dict>
-			<key>Key</key>
-			<string>send_logs_button</string>
-			<key>Title</key>
-			<string>Send debug logs</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

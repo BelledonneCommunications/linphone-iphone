@@ -21,6 +21,14 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>send_logs_button</string>
+			<key>Title</key>
+			<string>Send Logs</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string></string>
 			<key>Type</key>

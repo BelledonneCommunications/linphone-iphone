@@ -495,72 +495,48 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Event Functions
 
 - (void)appSettingChanged:(NSNotification*) notif {
-    if([@"enable_video_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"enable_video_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(!enable) {
-            [hiddenKeys addObject:@"video_menu"];
-        } else {
-            [hiddenKeys removeObject:@"video_menu"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(enable) {
-            [hiddenKeys addObject:@"port_preference"];
-        } else {
-            [hiddenKeys removeObject:@"port_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"backgroundmode_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"backgroundmode_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(!enable) {
-            [hiddenKeys addObject:@"start_at_boot_preference"];
-        } else {
-            [hiddenKeys removeObject:@"start_at_boot_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"stun_preference" compare: notif.object] == NSOrderedSame) {
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
-        if (stun_server && ([stun_server length] > 0)) {
-            [hiddenKeys removeObject:@"ice_preference"];
-        } else {
-            [hiddenKeys addObject:@"ice_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"debugenable_preference" compare: notif.object] == NSOrderedSame) {
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        BOOL debugEnable = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
-        if (debugEnable) {
-            [hiddenKeys removeObject:@"console_button"];
-        } else {
-            [hiddenKeys addObject:@"console_button"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
-        BOOL advanced = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+	NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+	NSMutableArray* keys = [NSMutableArray array];
+	BOOL removeFromHiddenKeys = TRUE;
 
-        if( advanced ){
-            [hiddenKeys removeObject:@"userid_preference"];
-            [hiddenKeys removeObject:@"proxy_preference"];
-            [hiddenKeys removeObject:@"outbound_proxy_preference"];
-            [hiddenKeys removeObject:@"avpf_preference"];
-        } else {
-            [hiddenKeys addObject:@"userid_preference"];
-            [hiddenKeys addObject:@"proxy_preference"];
-            [hiddenKeys addObject:@"outbound_proxy_preference"];
-            [hiddenKeys addObject:@"avpf_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-  }
+	if([@"enable_video_preference" compare: notif.object] == NSOrderedSame) {
+        removeFromHiddenKeys = [[notif.userInfo objectForKey:@"enable_video_preference"] boolValue];
+		[keys addObject:@"video_menu"];
+	} else if ([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = ! [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
+		[keys addObject:@"port_preference"];
+	} else if ([@"backgroundmode_preference" compare: notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"backgroundmode_preference"] boolValue];
+		[keys addObject:@"start_at_boot_preference"];
+	} else if ([@"stun_preference" compare: notif.object] == NSOrderedSame) {
+		NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
+		removeFromHiddenKeys = (stun_server && ([stun_server length] > 0));
+		[keys addObject:@"ice_preference"];
+	} else if ([@"debugenable_preference" compare: notif.object] == NSOrderedSame) {
+		BOOL debugEnabled = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
+		removeFromHiddenKeys = debugEnabled;
+        [keys addObject:@"send_logs_button"];
+		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
+    } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
+
+		[keys addObject:@"userid_preference"];
+		[keys addObject:@"proxy_preference"];
+		[keys addObject:@"outbound_proxy_preference"];
+		[keys addObject:@"avpf_preference"];
+	}
+
+	for(NSString* key in keys){
+		if( removeFromHiddenKeys ) [hiddenKeys removeObject:key];
+		else                       [hiddenKeys addObject:key];
+	}
+
+	[settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 + (IASKSpecifier*)disableCodecSpecifier:(IASKSpecifier *)specifier {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
@@ -637,7 +613,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
 
-	if (! [[LinphoneManager instance] lpConfigBoolForKey:@"enable_log_collect"]) {
+	if (! [[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
 		[hiddenKeys addObject:@"send_logs_button"];
 	}
     

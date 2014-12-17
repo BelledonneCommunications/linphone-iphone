@@ -152,6 +152,7 @@ typedef struct _LinphoneManagerSounds {
 - (bool)allowSpeaker;
 
 - (void)configureVbrCodecs;
+- (void)setLogsEnabled:(BOOL)enabled;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;

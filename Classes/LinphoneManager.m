@@ -1434,11 +1434,11 @@ static BOOL libStarted = FALSE;
     if ([self  lpConfigBoolForKey:@"debugenable_preference"]) {
         linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+		/*must be done before creating linphone core to get its traces too*/
     }
-
-	/*must be done before creating linphone core to get its traces too*/
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"enable_log_collect"]);
+	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"debugenable_preference"]);
+
 
 	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
 										 ,configDb
@@ -2060,6 +2060,17 @@ static void audioRouteChangeListenerCallback (
 
         codec = codec->next;
     }
+}
+
+-(void)setLogsEnabled:(BOOL)enabled {
+	if (enabled) {
+		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+		linphone_core_enable_log_collection(enabled);
+	} else {
+		linphone_core_enable_log_collection(enabled);
+		linphone_core_disable_logs();
+	}
 }
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg {

@@ -689,13 +689,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
-	if (debugmode) {
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	} else {
-		linphone_core_disable_logs();
-	}
-
+	[[LinphoneManager instance] setLogsEnabled:debugmode];
+	
 	BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
 
