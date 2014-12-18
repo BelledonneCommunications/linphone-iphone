@@ -102,7 +102,7 @@ LinphoneCoreManager* setup(bool_t enable_logs)  {
 
 time_t check_file(LinphoneCoreManager* mgr)  {
 
-	uint64_t last_log = ms_time(NULL);
+	time_t last_log = ms_time(NULL);
 	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
 	time_t  time_curr = -1;
 	uint32_t timediff = 0;
@@ -142,7 +142,7 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		ms_free(filepath);
 	}
 
-	timediff = labs(time_curr - last_log);
+	timediff = labs((long int)time_curr - (long int)last_log);
 
 	CU_ASSERT_TRUE( timediff <= 1 );
 	if( !(timediff <= 1) ){
