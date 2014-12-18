@@ -7074,7 +7074,7 @@ int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt) {
 	return pt->normal_bitrate;
 }
 
-char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
+const char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
 	return pt->mime_type;
 }
 

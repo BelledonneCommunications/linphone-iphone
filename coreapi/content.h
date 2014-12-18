@@ -165,7 +165,7 @@ LINPHONE_PUBLIC void linphone_content_set_buffer(LinphoneContent *content, const
  * @param[in] content LinphoneContent object
  * @return The string content data buffer.
  */
-LINPHONE_PUBLIC char * linphone_content_get_string_buffer(const LinphoneContent *content);
+LINPHONE_PUBLIC const char * linphone_content_get_string_buffer(const LinphoneContent *content);
 
 /**
  * Set the string content data buffer.

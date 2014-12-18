@@ -257,7 +257,7 @@ LINPHONE_PUBLIC int linphone_payload_type_get_normal_bitrate(const LinphonePaylo
  * @param[in] pt LinphonePayloadType object
  * @return The mime type.
  */
-LINPHONE_PUBLIC char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt);
+LINPHONE_PUBLIC const char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt);
 
 /**
  * Get the number of channels.
