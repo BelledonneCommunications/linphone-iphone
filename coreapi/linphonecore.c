@@ -7087,9 +7087,6 @@ LinphoneCoreVTable *linphone_core_v_table_new() {
 }
 
 void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) {
-	if (table->user_data) {
-		ms_free(table->user_data);
-	}
 	table->user_data = data;
 }
 
@@ -7098,9 +7095,6 @@ void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
 }
 
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
-	if (table->user_data) {
-		ms_free(table->user_data);
-	}
 	ms_free(table);
 }
 
