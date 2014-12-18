@@ -382,6 +382,7 @@ class MethodDefinition:
 		from_native_pointer_code = ''
 		convert_from_code = ''
 		build_value_code = ''
+		cfree_code = ''
 		result_variable = ''
 		if self.return_complete_type != 'void':
 			if self.build_value_format == 'O':
@@ -400,16 +401,20 @@ class MethodDefinition:
 				result_variable = 'cresult'
 		if result_variable != '':
 			build_value_code = "pyret = Py_BuildValue(\"{fmt}\", {result_variable});".format(fmt=self.build_value_format, result_variable=result_variable)
+		if self.return_complete_type == 'char *':
+			cfree_code = 'ms_free(cresult);';
 		body = \
 """	{c_function_call_code}
 	pylinphone_dispatch_messages();
 	{from_native_pointer_code}
 	{convert_from_code}
 	{build_value_code}
+	{cfree_code}
 """.format(c_function_call_code=c_function_call_code,
 		from_native_pointer_code=from_native_pointer_code,
 		convert_from_code=convert_from_code,
-		build_value_code=build_value_code)
+		build_value_code=build_value_code,
+		cfree_code=cfree_code)
 		return body
 
 	def format_return_trace(self):
