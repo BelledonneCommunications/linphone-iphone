@@ -1584,15 +1584,16 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	audio_stream_enable_gain_control(audiostream,TRUE);
 	if (linphone_core_echo_cancellation_enabled(lc)){
 		int len,delay,framesize;
-		char statestr[EC_STATE_MAX_LEN];
 		len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
 		delay=lp_config_get_int(lc->config,"sound","ec_delay",0);
 		framesize=lp_config_get_int(lc->config,"sound","ec_framesize",0);
 		audio_stream_set_echo_canceller_params(audiostream,len,delay,framesize);
 		if (audiostream->ec) {
+			char *statestr=ms_malloc0(EC_STATE_MAX_LEN);
 			if (lp_config_read_relative_file(lc->config, EC_STATE_STORE, statestr, EC_STATE_MAX_LEN) == 0) {
 				ms_filter_call_method(audiostream->ec, MS_ECHO_CANCELLER_SET_STATE_STRING, statestr);
 			}
+			ms_free(statestr);
 		}
 	}
 	audio_stream_enable_automatic_gain_control(audiostream,linphone_core_agc_enabled(lc));

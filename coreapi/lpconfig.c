@@ -739,7 +739,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 	FILE *file = fopen(filepath, "r");
 	if(file != NULL) {
-		if(fgets(data, max_length, file) == NULL) {
+		if(fread(data, 1, max_length, file)<=0) {
 			ms_error("%s could not be loaded. %s", filepath, strerror(errno));
 			goto err;
 		}
