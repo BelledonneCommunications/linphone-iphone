@@ -2888,11 +2888,13 @@ extern "C" jbyteArray Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNI
 																		,jobject  thiz
 																		,jlong ptr) {
 	const char *message = linphone_chat_message_get_text((LinphoneChatMessage*)ptr);
-	size_t length = strlen(message);
-	jbyteArray array = env->NewByteArray(length);
-	env->SetByteArrayRegion(array, 0, length, (const jbyte*)message);
-
-	return array;
+	if (message){
+		size_t length = strlen(message);
+		jbyteArray array = env->NewByteArray(length);
+		env->SetByteArrayRegion(array, 0, length, (const jbyte*)message);
+		return array;
+	}
+	return NULL;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getReason(JNIEnv*  env
