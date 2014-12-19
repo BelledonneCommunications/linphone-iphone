@@ -1280,10 +1280,12 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 				(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
 			);
 		} else {
-			belle_sip_message_set_body_handler(
-				(belle_sip_message_t *)event->response,
-				(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message)
-			);
+			belle_sip_body_handler_t *bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message);
+			if (belle_sip_body_handler_get_size(bh) == 0) {
+				/* If the size of the body has not been initialized from the file stat, use the one from the file_transfer_information. */
+				belle_sip_body_handler_set_size(bh, body_size);
+			}
+			belle_sip_message_set_body_handler((belle_sip_message_t *)event->response, bh);
 		}
 	}
 }
