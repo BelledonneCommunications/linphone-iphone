@@ -45,14 +45,15 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 
         brew tap Gui13/linphone
         brew install intltool libtool wget pkg-config automake libantlr3.4c \
-                antlr3.2 gettext speex ffmpeg readline
+                antlr3.2 gettext speex ffmpeg readline libvpx opus
         ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
         brew link --force gettext
 
 ##### Linphone UI (GTK version)
 
+	brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gettext gtk-mac-integration
+        brew install gettext gtk-mac-integration libsoup
         #readline is required from linphonec.c otherwise compilation will fail
         brew link readline --force
 
