@@ -2125,7 +2125,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 /**
  * Returns the UDP port used by SIP.
  *
- * Deprecated: use linphone_core_get_sip_transports() instead.
+ * @deprecated use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc){
@@ -2293,7 +2293,7 @@ void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr
 /**
  * Sets the UDP port to be used by SIP.
  *
- * Deprecated: use linphone_core_set_sip_transports() instead.
+ * @deprecated use linphone_core_set_sip_transports() instead.
  * @ingroup network_parameters
 **/
 void linphone_core_set_sip_port(LinphoneCore *lc,int port)
