@@ -250,11 +250,6 @@
 }
 
 
-- (void)prepareForReuse {
-    
-}
-
-
 #pragma mark - Properties Functions
 
 - (void)setData:(UICallCellData *)adata {
@@ -427,9 +422,12 @@
     
     if(!data->minimize) {
         CGRect frame = [self frame];
-        frame.size.height = [otherView frame].size.height;
+        frame.size.height = [UICallCell getMaximizedHeight];
         [self setFrame:frame];
+		frame = otherView.frame;
+		frame.size.height = [UICallCell getMaximizedHeight];
         [otherView setHidden:false];
+		otherView.frame = frame;
     } else {
         CGRect frame = [self frame];
         frame.size.height = [headerView frame].size.height;
@@ -528,7 +526,7 @@
     if(parentTable != nil) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
-            [parentTable reloadRowsAtIndexPaths:[[[NSArray alloc] initWithObjects:index, nil] autorelease] withRowAnimation:false];
+            [parentTable reloadRowsAtIndexPaths:@[index] withRowAnimation:false];
         }
     }
 }

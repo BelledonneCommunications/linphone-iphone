@@ -49,7 +49,7 @@
             <subviews>
                 <view contentMode="scaleToFill" id="77" userLabel="otherView">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="300"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <view contentMode="scaleToFill" id="31" userLabel="avatarView">
                             <rect key="frame" x="0.0" y="63" width="320" height="237"/>
