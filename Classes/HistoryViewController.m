@@ -78,11 +78,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:animated];
-    }
-    
+
     if([tableController isEditing]) {
         [tableController setEditing:FALSE animated:FALSE];
     }
@@ -100,23 +96,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidAppear:animated];
 
 	editButton.hidden = ([[tableView dataSource] tableView:tableView numberOfRowsInSection:0] == 0);
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:animated];
-    }
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:animated];
-    }
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:animated];
-    }
 }
 
 - (void)viewDidLoad {

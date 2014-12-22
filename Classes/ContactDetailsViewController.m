@@ -238,13 +238,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:animated];
-    }
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
@@ -253,25 +246,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     } else {
         [editButton setHidden:TRUE];
     }
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:animated];
     }   
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:animated];
-    }   
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:animated];
-    }  
-}
-
 
 #pragma mark - UICompositeViewDelegate Functions
 

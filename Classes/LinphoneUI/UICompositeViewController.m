@@ -352,25 +352,13 @@
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillAppear:NO];
-        }
         [view addSubview: controller.view];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidAppear:NO];
-        }
     }
 }
 
 + (void)removeSubView:(UIViewController*)controller {
     if(controller != nil) {
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillDisappear:NO];
-        }
         [controller.view removeFromSuperview];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidDisappear:NO];
-        }
     }
 }
 

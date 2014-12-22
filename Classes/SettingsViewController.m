@@ -351,9 +351,7 @@
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [UINavigationControllerEx removeBackground:viewController.view];
     UIViewController *oldTopViewController = self.topViewController;
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [oldTopViewController viewWillDisappear:animated];
-    }
+
     [viewController viewWillAppear:animated]; // Force view
     UILabel *labelTitleView = [[UILabel alloc] init];
     labelTitleView.backgroundColor = [UIColor clearColor];
@@ -367,28 +365,6 @@
     viewController.navigationItem.titleView = labelTitleView;
     [labelTitleView release];
     [super pushViewController:viewController animated:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [self.topViewController viewDidAppear:animated];
-        [oldTopViewController viewDidDisappear:animated];
-    }
-}
-
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [self.topViewController viewWillDisappear:animated];
-        UIViewController *nextView = nil;
-        NSInteger count = [self.viewControllers count];
-        if(count > 1) {
-            nextView = [self.viewControllers objectAtIndex:count - 2];
-        }
-        [nextView viewWillAppear:animated];
-    }
-    UIViewController * ret = [super popViewControllerAnimated:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [ret viewDidDisappear:animated];
-        [self.topViewController viewDidAppear:animated];
-    }
-    return ret;
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers {

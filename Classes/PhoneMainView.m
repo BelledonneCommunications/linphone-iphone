@@ -96,7 +96,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 
                         }
                         completion:^(BOOL finished) {
-                        }];
+						}];
     }
     return currentViewController;
 }
@@ -167,9 +167,6 @@ static RootViewManager* rootViewManagerInstance = nil;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewWillAppear:animated];
-    }
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
@@ -198,10 +195,6 @@ static RootViewManager* rootViewManagerInstance = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewWillDisappear:animated];
-    }
-    
     // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:kLinphoneCallUpdate
@@ -222,22 +215,8 @@ static RootViewManager* rootViewManagerInstance = nil;
     
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewDidAppear:animated];
-    }   
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewDidDisappear:animated];
-    }  
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
+-(void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
 }
 
 - (void)setVolumeHidden:(BOOL)hidden {

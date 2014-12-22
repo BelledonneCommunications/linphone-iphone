@@ -125,18 +125,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (UIScrollView *)defaultScrollView:(UIWebView *)webView {
-    UIScrollView *scrollView = nil;
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
         return webView.scrollView;
-    }  else {
-        for (UIView *subview in [webView subviews]) {
-            if ([subview isKindOfClass:[UIScrollView class]]) {
-                scrollView = (UIScrollView *)subview;
-            }
-        }
-    }
-    return scrollView;
 }
 
 
