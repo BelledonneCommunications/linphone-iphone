@@ -32,7 +32,7 @@
 #endif
 
 static void srtp_call(void);
-static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
+
 static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 static char *create_filepath(const char *dir, const char *filename, const char *ext);
 
@@ -1978,14 +1978,14 @@ static void simple_conference_with_ice(void) {
 }
 
 static void srtp_call() {
-	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyNoFirewall);
+	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 
 static void zrtp_call() {
-	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall);
+	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 static void zrtp_video_call() {
-	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyNoFirewall);
+	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 
 static void call_with_declined_srtp(void) {
@@ -2132,12 +2132,30 @@ end:
 }
 
 
-static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy) {
+void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	if (enable_relay) {
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 		linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	}
+	if (enable_tunnel) {
+		int i;
+		LinphoneTunnelConfig * tunnel_config = linphone_tunnel_config_new();
+		linphone_tunnel_config_set_host(tunnel_config,"tunnel.linphone.org");
+		linphone_tunnel_config_set_port(tunnel_config,443);
+		linphone_tunnel_add_server(linphone_core_get_tunnel(marie->lc),tunnel_config);
+		linphone_tunnel_enable_sip(linphone_core_get_tunnel(marie->lc),FALSE);
+		linphone_tunnel_set_mode(linphone_core_get_tunnel(marie->lc),LinphoneTunnelModeEnable);
+		for (i=0;i<10;i++) {
+			if (linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc))) {
+				break;
+			}
+			linphone_core_iterate(marie->lc);
+			ms_usleep(200000);
+		}
+		CU_ASSERT_TRUE(linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc)));
+
 	}
 	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
 		linphone_core_set_media_encryption(marie->lc,mode);
@@ -2172,7 +2190,7 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 		}
 
 		if (policy == LinphonePolicyUseIce)
-			CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+			CU_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
 #ifdef VIDEO_ENABLED
 		if (enable_video) {
 			int i=0;
@@ -2185,7 +2203,7 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 
 				add_video(pauline,marie);
 				if (policy == LinphonePolicyUseIce)
-					CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+					CU_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
 
 				liblinphone_tester_check_rtcp(marie,pauline);
 				/*wait for ice to found the direct path*/
@@ -2208,25 +2226,24 @@ static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t e
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-
 #ifdef VIDEO_ENABLED
 static void srtp_video_ice_call(void) {
-	call_base(LinphoneMediaEncryptionSRTP,TRUE,FALSE,LinphonePolicyUseIce);
+	call_base(LinphoneMediaEncryptionSRTP,TRUE,FALSE,LinphonePolicyUseIce,FALSE);
 }
 static void zrtp_video_ice_call(void) {
-	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce);
+	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce,FALSE);
 }
 #endif
 
 static void srtp_ice_call(void) {
-	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyUseIce);
+	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyUseIce,FALSE);
 }
 
 static void zrtp_ice_call(void) {
-	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce);
+	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce,FALSE);
 }
 static void zrtp_ice_call_with_relay(void) {
-	call_base(LinphoneMediaEncryptionZRTP,FALSE,TRUE,LinphonePolicyUseIce);
+	call_base(LinphoneMediaEncryptionZRTP,FALSE,TRUE,LinphonePolicyUseIce,FALSE);
 }
 
 static void early_media_call(void) {

@@ -298,20 +298,6 @@ void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
-/**
- * @brief Equivalent to _linphone_core_get_firewall_policy_with_lie(lc, TRUE)
- * @param lc LinphoneCore instance
- * @return Fairewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc);
-/**
- * @brief Get the firwall policy which has been set.
- * @param lc Instance of LinphoneCore
- * @param lie If true, the configured firewall policy will be returned only if no tunnel are enabled.
- * Otherwise, NoFirewallPolicy value will be returned.
- * @return The firewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie);
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenceModel *presence);
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);

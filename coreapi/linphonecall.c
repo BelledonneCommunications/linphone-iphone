@@ -698,7 +698,7 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 		}
 		if (res != NULL) freeaddrinfo(res);
 	}
-	if (_linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
+	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
 		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
 		strncpy(call->localip,ip,LINPHONE_IPADDR_SIZE);
 		return;
@@ -735,11 +735,11 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_init_common(call,from,to);
 	call->params = linphone_call_params_copy(params);
 
-	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
 		ice_session_set_role(call->ice_session, IR_Controlling);
 	}
-	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 #ifdef BUILD_UPNP
@@ -841,7 +841,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// In this case WE chose the media parameters according to policy.
 		linphone_call_set_compatible_incoming_call_parameters(call, md);
 	}
-	fpol=_linphone_core_get_firewall_policy(call->core);
+	fpol=linphone_core_get_firewall_policy(call->core);
 	/*create the ice session now if ICE is required*/
 	if (fpol==LinphonePolicyUseIce){
 		if (md){
@@ -1557,7 +1557,7 @@ static void port_config_set_random_choosed(LinphoneCall *call, int stream_index,
 
 static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream_index, bool_t create_checklist){
 	MediaStream *ms=stream_index == 0 ? (MediaStream*)call->audiostream : (MediaStream*)call->videostream;
-	if ((_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
+	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		IceCheckList *cl;
 		rtp_session_set_pktinfo(ms->sessions.rtp_session, TRUE);
 		rtp_session_set_symmetric_rtp(ms->sessions.rtp_session, FALSE);
@@ -1578,7 +1578,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	SalMediaDescription *remote = NULL;
 	bool_t has_video=FALSE;
 
-	if ((_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
+	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		if (incoming_offer){
 			remote=sal_call_get_remote_media_description(call->op);
 			has_video=call->params->has_video && linphone_core_media_description_contains_video_stream(remote);
@@ -1699,13 +1699,16 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	audio_stream_set_features(audiostream,linphone_core_get_audio_features(lc));
 
 	if (lc->rtptf){
-		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->media_ports[0].rtp_port);
-		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->media_ports[0].rtcp_port);
 		RtpTransport *meta_rtp;
 		RtpTransport *meta_rtcp;
-		meta_rtp_transport_new(&meta_rtp,TRUE,artp, 0);
-		meta_rtp_transport_new(&meta_rtcp,FALSE,artcp, 0);
-		rtp_session_set_transports(audiostream->ms.sessions.rtp_session,meta_rtp,meta_rtcp);
+
+		rtp_session_get_transports(audiostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
+		if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+			meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->media_ports[0].rtp_port));
+		}
+		if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
+			meta_rtp_transport_set_endpoint(meta_rtcp,lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->media_ports[0].rtcp_port));
+		}
 	}
 
 	call->audiostream_app_evq = ortp_ev_queue_new();
@@ -1748,13 +1751,16 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			video_stream_set_display_filter_name(call->videostream,display_filter);
 		video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
 		if (lc->rtptf){
-			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[1].rtp_port);
-			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->media_ports[1].rtcp_port);
 			RtpTransport *meta_rtp;
 			RtpTransport *meta_rtcp;
-			meta_rtp_transport_new(&meta_rtp,TRUE,vrtp, 0);
-			meta_rtp_transport_new(&meta_rtcp,FALSE,vrtcp, 0);
-			rtp_session_set_transports(call->videostream->ms.sessions.rtp_session,meta_rtp,meta_rtcp);
+
+			rtp_session_get_transports(call->videostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
+			if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+				meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[1].rtp_port));
+			}
+			if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
+				meta_rtp_transport_set_endpoint(meta_rtcp,lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->media_ports[1].rtcp_port));
+			}
 		}
 		call->videostream_app_evq = ortp_ev_queue_new();
 		rtp_session_register_event_queue(call->videostream->ms.sessions.rtp_session,call->videostream_app_evq);
@@ -3262,7 +3268,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 	const char *localip=call->localip;
 
 	/* first use user's supplied ip address if asked*/
-	if (_linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
+	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		linphone_address_set_domain(ctt,linphone_core_get_nat_address_resolved(lc));
 		ret=ctt;

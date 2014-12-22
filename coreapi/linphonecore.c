@@ -3137,12 +3137,12 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);
 
-	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
 		if (linphone_call_prepare_ice(call,FALSE)==1)
 			defer=TRUE;
 	}
-	else if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
@@ -4965,23 +4965,8 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	if (linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
-
-LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie){
+LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
 	const char *policy;
-	if(lie) {
-		LinphoneTunnel *tunnel = linphone_core_get_tunnel(lc);
-		if(tunnel != NULL && linphone_tunnel_get_mode(tunnel)) {
-			return LinphonePolicyNoFirewall;
-		}
-	}
 	policy = lp_config_get_string(lc->config, "net", "firewall_policy", NULL);
 	if ((policy == NULL) || (strcmp(policy, "0") == 0))
 		return LinphonePolicyNoFirewall;
