@@ -150,8 +150,8 @@
 			//resize cell to match .nib size. It is needed when resized the cell to
 			//correctly adapt its height too
 			UIView *sub = ((UIView*)[arrayOfViews objectAtIndex:0]);
-			[self.contentView setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
-            [self.contentView addSubview:sub];
+			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+            [self addSubview:sub];
         }
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
