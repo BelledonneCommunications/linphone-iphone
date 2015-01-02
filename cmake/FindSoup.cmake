@@ -1,5 +1,5 @@
 ############################################################################
-# FindNotify.cmake
+# FindSoup.cmake
 # Copyright (C) 2014  Belledonne Communications, Grenoble France
 #
 ############################################################################
@@ -20,37 +20,44 @@
 #
 ############################################################################
 #
-# - Find the notify include file and library
+# - Find the soup include file and library
 #
-#  NOTIFY_FOUND - system has libnotify
-#  NOTIFY_INCLUDE_DIRS - the libnotify include directory
-#  NOTIFY_LIBRARIES - The libraries needed to use libnotify
+#  SOUP_FOUND - system has libsoup
+#  SOUP_INCLUDE_DIRS - the libsoup include directory
+#  SOUP_LIBRARIES - The libraries needed to use libsoup
 
-set(_NOTIFY_ROOT_PATHS
-	${WITH_NOTIFY}
+find_package(GTK2 2.18 REQUIRED gtk)
+
+set(_SOUP_ROOT_PATHS
+	${WITH_SOUP}
 	${CMAKE_INSTALL_PREFIX}
 )
 
-find_path(NOTIFY_INCLUDE_DIRS
-	NAMES libnotify/notify.h
-	HINTS _NOTIFY_ROOT_PATHS
-	PATH_SUFFIXES include
+find_path(SOUP_INCLUDE_DIRS
+	NAMES libsoup/soup.h
+	HINTS _SOUP_ROOT_PATHS
+	PATH_SUFFIXES include/libsoup-2.4
 )
 
-if(NOTIFY_INCLUDE_DIRS)
-	set(HAVE_LIBNOTIFY_NOTIFY_H 1)
+if(SOUP_INCLUDE_DIRS)
+	set(HAVE_LIBSOUP_SOUP_H 1)
+	list(APPEND SOUP_INCLUDE_DIRS ${GTK2_INCLUDE_DIRS})
 endif()
 
-find_library(NOTIFY_LIBRARIES
-	NAMES notify
-	HINTS ${_NOTIFY_ROOT_PATHS}
+find_library(SOUP_LIBRARIES
+	NAMES soup-2.4
+	HINTS ${_SOUP_ROOT_PATHS}
 	PATH_SUFFIXES bin lib
 )
 
+if(SOUP_LIBRARIES)
+	list(APPEND SOUP_LIBRARIES ${GTK2_LIBRARIES})
+endif()
+
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Notify
+find_package_handle_standard_args(Soup
 	DEFAULT_MSG
-	NOTIFY_INCLUDE_DIRS NOTIFY_LIBRARIES HAVE_LIBNOTIFY_NOTIFY_H
+	SOUP_INCLUDE_DIRS SOUP_LIBRARIES HAVE_LIBSOUP_SOUP_H
 )
 
-mark_as_advanced(NOTIFY_INCLUDE_DIRS NOTIFY_LIBRARIES HAVE_LIBNOTIFY_NOTIFY_H)
+mark_as_advanced(SOUP_INCLUDE_DIRS SOUP_LIBRARIES HAVE_LIBSOUP_SOUP_H)
