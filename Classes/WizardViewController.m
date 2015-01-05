@@ -26,6 +26,8 @@
 #import <XMLRPCResponse.h>
 #import <XMLRPCRequest.h>
 
+#import "DTAlertView.h"
+
 typedef enum _ViewElement {
     ViewElement_Username            = 100,
     ViewElement_Password            = 101,
@@ -699,60 +701,58 @@ static UICompositeViewDescription *compositeDescription = nil;
     [remoteInput release];
 }
 
+- (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+	NSMutableString *errors = [NSMutableString string];
+	if ([username length] == 0) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+	}
+
+	if (domain != nil && [domain length] == 0) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a domain.\n", nil)]];
+	}
+
+	if([errors length]) {
+		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+															message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:nil,nil];
+		[errorView show];
+		[errorView release];
+	} else {
+		[self.waitView setHidden:false];
+		if ([LinphoneManager instance].connectivity == none) {
+			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"No connectivity", nil) message:NSLocalizedString(@"You can either skip verification or connect to the Internet first.", nil)];
+			[alert addCancelButtonWithTitle:NSLocalizedString(@"Stay here", nil) block:^{
+				[waitView setHidden:true];
+			}];
+			[alert addButtonWithTitle:NSLocalizedString(@"Continue", nil) block:^{
+				[waitView setHidden:true];
+				[self addProxyConfig:username password:password domain:domain withTransport:transport];
+				[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
+			}];
+			[alert show];
+		} else {
+			[self addProxyConfig:username password:password domain:domain withTransport:transport];
+		}
+	}
+}
+
 - (IBAction)onSignInExternalClick:(id)sender {
     NSString *username  = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password  = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *domain    = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
     NSString *transport = [self.transportChooser titleForSegmentAtIndex:self.transportChooser.selectedSegmentIndex];
 
-    
-    NSMutableString *errors = [NSMutableString string];
-    if ([username length] == 0) {
-        
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
-    }
-    
-    if ([domain length] == 0) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a domain.\n", nil)]];
-    }
-    
-    if([errors length]) {
-        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
-                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-                                                  otherButtonTitles:nil,nil];
-        [errorView show];
-        [errorView release];
-    } else {
-        [self.waitView setHidden:false];
-        [self addProxyConfig:username password:password domain:domain withTransport:transport];
-    }
+	[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
 }
 
 - (IBAction)onSignInClick:(id)sender {
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
-    
-    NSMutableString *errors = [NSMutableString string];
-    if ([username length] == 0) {
-        
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
-    }
-    
-    if([errors length]) {
-        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
-                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-                                                           delegate:nil
-                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-                                                  otherButtonTitles:nil,nil];
-        [errorView show];
-        [errorView release];
-    } else {
-        [self.waitView setHidden:false];
-        // domain and server will be configured from the default proxy values
-        [self addProxyConfig:username password:password domain:nil withTransport:nil];
-    }
+
+	// domain and server will be configured from the default proxy values
+    [self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
 }
 
 - (IBAction)onRegisterClick:(id)sender {
