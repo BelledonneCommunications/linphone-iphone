@@ -123,6 +123,7 @@
 		639CEB031A1DF4EB004DE38F /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeViewController.xib */; };
 		639CEB061A1DF4F1004DE38F /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB081A1DF4F1004DE38F /* UIChatRoomCell.xib */; };
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
+		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -985,6 +986,8 @@
 		639CEB0A1A1DF4FA004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCell.xib; sourceTree = "<group>"; };
 		639CEB0C1A1DF528004DE38F /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		639CEB0D1A1DF52C004DE38F /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UICallCell.strings; sourceTree = "<group>"; };
+		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
+		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63EF7FDC1A24B5810017A416 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutViewController.strings; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
@@ -2278,6 +2281,8 @@
 			isa = PBXGroup;
 			children = (
 				D37EE160160377D7003608A6 /* DTActionSheet.h */,
+				63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */,
+				63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */,
 				D37EE161160377D7003608A6 /* DTActionSheet.m */,
 				F0642EF719DAF32E009DB336 /* DTWeakSupport.h */,
 			);
@@ -3810,6 +3815,7 @@
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
+				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
