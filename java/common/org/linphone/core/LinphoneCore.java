@@ -1847,11 +1847,7 @@ public interface LinphoneCore {
 	public void setRemoteRingbackTone(String file);
 
 	/**
-	 * Return the ringback tone file used when doing early media. It may be
-
-	jclass logCollectionUploadStateClass;
-	jmethodID logCollectionUploadStateId;
-	jmethodID logCollectionUploadStateFromIntId; null.
+	 * Return the ringback tone file used when doing early media. It may be null.
 	 * @return the ringback tone file path.
 	 */
 	String getRemoteRingbackTone();

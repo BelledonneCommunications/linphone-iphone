@@ -423,7 +423,7 @@ public:
 		
 		logCollectionUploadStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$LogCollectionUploadState"));
 		logCollectionUploadStateFromIntId = env->GetStaticMethodID(logCollectionUploadStateClass, "fromInt", "(I)Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;");
-		logCollectionUploadProgressId = env->GetMethodID(listenerClass, "uploadProgressIndication", "(Lorg/linphone/core/LinphoneCore;I;I)V");
+		logCollectionUploadProgressId = env->GetMethodID(listenerClass, "uploadProgressIndication", "(Lorg/linphone/core/LinphoneCore;II)V");
 		env->ExceptionClear();
 		if (logCollectionUploadProgressId) {
 			vTable->log_collection_upload_progress_indication = logCollectionUploadProgressIndication;
