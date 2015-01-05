@@ -20,7 +20,6 @@ package org.linphone.core;
 
 import java.nio.ByteBuffer;
 
-import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 
 /**
  * 
@@ -31,7 +30,7 @@ public interface LinphoneCoreListener {
 	public interface LinphoneListener extends LinphoneCoreListener, 
 			LinphoneRemoteProvisioningListener, LinphoneMessageListener, LinphoneCallStateListener, 
 			LinphoneCallEncryptionStateListener, LinphoneNotifyListener, LinphoneComposingListener,
-			LinphoneGlobalStateListener, LinphoneRegistrationStateListener {
+			LinphoneGlobalStateListener, LinphoneRegistrationStateListener, LinphoneLogCollectionUploadListener {
 		/**< Ask the application some authentication information 
 		 * @return */
 		void authInfoRequested(LinphoneCore lc, String realm, String username, String Domain); 
@@ -185,7 +184,7 @@ public interface LinphoneCoreListener {
 		 * @param state the RemoteProvisioningState
 		 * @param message the error message if state == Failed
 		 */
-		void configuringStatus(LinphoneCore lc, RemoteProvisioningState state, String message);
+		void configuringStatus(LinphoneCore lc, LinphoneCore.RemoteProvisioningState state, String message);
 	}
 	
 	public interface LinphoneMessageListener extends LinphoneCoreListener {
@@ -243,7 +242,22 @@ public interface LinphoneCoreListener {
 		 * @param delay_ms echo delay
 		 * @param data
 		 */
-		void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
+		void ecCalibrationStatus(LinphoneCore lc, LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
+	}
+	
+	public interface LinphoneLogCollectionUploadListener extends LinphoneCoreListener {
+		/**
+		 * Callback prototype for reporting log collection upload progress indication.
+		 */
+		void uploadProgressIndication(LinphoneCore lc, int offset, int total);
+		
+		/**
+		 * Callback prototype for reporting log collection upload state change.
+		 * @param lc LinphoneCore object
+		 * @param state The state of the log collection upload
+		 * @param info Additional information: error message in case of error state, URL of uploaded file in case of success.
+		 */
+		void uploadStateChanged(LinphoneCore lc, LinphoneCore.LogCollectionUploadState state, String info);
 	}
 }
 

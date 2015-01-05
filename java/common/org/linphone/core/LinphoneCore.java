@@ -430,6 +430,45 @@ public interface LinphoneCore {
 			return mStringValue;
 		}
 	}
+	/**
+	 * linphone log collection upload states
+	 */
+	static public class LogCollectionUploadState {
+
+		static private Vector<LogCollectionUploadState> values = new Vector<LogCollectionUploadState>();
+		/**
+		 * Delivery in progress
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateInProgress = new LogCollectionUploadState(0,"LinphoneCoreLogCollectionUploadStateInProgress");
+		/**
+		 * Log collection upload successfully delivered and acknowledged by remote end point
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateDelivered = new LogCollectionUploadState(1,"LinphoneCoreLogCollectionUploadStateDelivered");
+		/**
+		 * Log collection upload was not delivered
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateNotDelivered = new LogCollectionUploadState(2,"LinphoneCoreLogCollectionUploadStateNotDelivered");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private LogCollectionUploadState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static LogCollectionUploadState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				LogCollectionUploadState state = (LogCollectionUploadState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
 
 	/**
 	 * Set the context of creation of the LinphoneCore.
@@ -1808,9 +1847,17 @@ public interface LinphoneCore {
 	public void setRemoteRingbackTone(String file);
 
 	/**
-	 * Return the ringback tone file used when doing early media. It may be null.
+	 * Return the ringback tone file used when doing early media. It may be
+
+	jclass logCollectionUploadStateClass;
+	jmethodID logCollectionUploadStateId;
+	jmethodID logCollectionUploadStateFromIntId; null.
 	 * @return the ringback tone file path.
 	 */
 	String getRemoteRingbackTone();
 	
+	/**
+	 * Upload the log collection to the configured server url.
+	 */
+	public void uploadLogCollection();
 }

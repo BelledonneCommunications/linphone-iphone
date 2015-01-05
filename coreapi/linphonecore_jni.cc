@@ -420,6 +420,19 @@ public:
 		if (fileTransferRecvId) {
 			vTable->file_transfer_recv = fileTransferRecv;
 		}
+		
+		logCollectionUploadStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$LogCollectionUploadState"));
+		logCollectionUploadStateFromIntId = env->GetStaticMethodID(logCollectionUploadStateClass, "fromInt", "(I)Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;");
+		logCollectionUploadProgressId = env->GetMethodID(listenerClass, "uploadProgressIndication", "(Lorg/linphone/core/LinphoneCore;I;I)V");
+		env->ExceptionClear();
+		if (logCollectionUploadProgressId) {
+			vTable->log_collection_upload_progress_indication = logCollectionUploadProgressIndication;
+		}
+		logCollectionUploadStateId = env->GetMethodID(listenerClass, "uploadStateChanged", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;Ljava/lang/String;)V");
+		env->ExceptionClear();
+		if (logCollectionUploadStateId) {
+			vTable->log_collection_upload_state_changed = logCollectionUploadStateChange;
+		}
 
 		chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 		chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
@@ -479,6 +492,7 @@ public:
 		env->DeleteGlobalRef(linphoneEventClass);
 		env->DeleteGlobalRef(subscriptionStateClass);
 		env->DeleteGlobalRef(subscriptionDirClass);
+		env->DeleteGlobalRef(logCollectionUploadStateClass);
 	}
 	jobject core;
 	jobject listener;
@@ -565,6 +579,11 @@ public:
 	jmethodID fileTransferProgressIndicationId;
 	jmethodID fileTransferSendId;
 	jmethodID fileTransferRecvId;
+
+	jclass logCollectionUploadStateClass;
+	jmethodID logCollectionUploadStateId;
+	jmethodID logCollectionUploadStateFromIntId;
+	jmethodID logCollectionUploadProgressId;
 
 	LinphoneCoreVTable vTable;
 
@@ -1001,6 +1020,40 @@ public:
 				jbytes,
 				size);
 	}
+	static void logCollectionUploadProgressIndication(LinphoneCore *lc, size_t offset, size_t total) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		env->CallVoidMethod(lcData->listener
+							,lcData->logCollectionUploadProgressId
+							,lcData->core
+							,(jlong)offset
+							,(jlong)total);
+	}
+	static void logCollectionUploadStateChange(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		jstring msg = info ? env->NewStringUTF(info) : NULL;
+		env->CallVoidMethod(lcData->listener
+							,lcData->logCollectionUploadStateId
+							,lcData->core
+							,env->CallStaticObjectMethod(lcData->logCollectionUploadStateClass,lcData->logCollectionUploadStateFromIntId,(jint)state),
+							msg);
+		if (msg) {
+			env->DeleteLocalRef(msg);
+		}
+	}
 };
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*  env
@@ -1080,6 +1133,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* e
 		}
 	}
 	env->DeleteGlobalRef(listener);
+}
+
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_uploadLogCollection(JNIEnv* env, jobject thiz, jlong lc) {
+	LinphoneCore *core = (LinphoneCore*)lc;
+	linphone_core_upload_log_collection(core);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableLogCollection(JNIEnv* env, jclass cls, jboolean enable) {
+	linphone_core_enable_log_collection(enable ? LinphoneLogCollectionEnabledWithoutPreviousLogHandler : LinphoneLogCollectionDisabled);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setLogCollectionPath(JNIEnv* env, jclass cls, jstring jpath) {
+	const char* path = env->GetStringUTFChars(jpath, NULL);
+	linphone_core_set_log_collection_path(path);
+	env->ReleaseStringUTFChars(jpath, path);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_migrateToMultiTransport(JNIEnv*  env

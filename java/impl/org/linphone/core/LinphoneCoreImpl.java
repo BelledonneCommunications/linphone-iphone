@@ -32,8 +32,7 @@ import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import android.content.Context;
 import android.media.AudioManager;
 
-
-class LinphoneCoreImpl implements LinphoneCore {
+public class LinphoneCoreImpl implements LinphoneCore {
 
 	private final  LinphoneCoreListener mListener; //to make sure to keep a reference on this object
 	protected long nativePtr = 0;
@@ -1314,4 +1313,21 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public String getRemoteRingbackTone() {
 		return getRemoteRingbackTone(nativePtr);
 	}
+	
+	private native void uploadLogCollection(long nativePtr);
+	@Override
+	public void uploadLogCollection() {
+		uploadLogCollection(nativePtr);
+	}
+	
+	/**
+	 * Enable the linphone core log collection to upload logs on a server.
+	 */
+	public native static void enableLogCollection(boolean enable);
+
+	/**
+	 * Set the path where the log files will be written for log collection.
+	 * @param path The path where the log files will be written.
+	 */
+	public native static void setLogCollectionPath(String path);
 }
