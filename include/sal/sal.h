@@ -540,7 +540,7 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
  * @param[in]	generate_certificate		if true, if matching certificate and key can't be found, generate it and store it into the given dir, filename will be subject.pem
  * @param[in]	generate_dtls_fingerprint	if true and we have a certificate, generate the dtls fingerprint as described in rfc4572
  */
-void sal_certificates_chain_parse_directory(unsigned char **certificate_pem, unsigned char **key_pem, unsigned char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint); 
+void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint); 
 
 void sal_certificates_chain_delete(SalCertificatesChain *chain);
 void sal_signing_key_delete(SalSigningKey *key);

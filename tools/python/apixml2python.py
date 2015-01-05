@@ -23,7 +23,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.realpath(__file__))
-from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenProperty
+from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenDeallocMethod, HandWrittenProperty
 
 
 blacklisted_classes = [
@@ -71,12 +71,16 @@ blacklisted_functions = [
 	'lp_config_section_to_dict'	# missing LinphoneDictionary
 ]
 hand_written_functions = [
-	HandWrittenInstanceMethod('ChatRoom', 'send_message2', 'linphone_chat_room_send_message2'),
-	HandWrittenProperty('Content', 'buffer', 'linphone_content_get_buffer', 'linphone_content_set_buffer'),
-	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None),
-	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None),
-	HandWrittenClassMethod('Core', 'new', 'linphone_core_new'),
-	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config')
+	HandWrittenClassMethod('Buffer', 'new_from_data', 'linphone_buffer_new_from_data', "Create a new LinphoneBuffer object from existing data.\n\n:param data: The initial data to store in the LinphoneBuffer.\n:type data: ByteArray\n:returns: A new LinphoneBuffer object.\n:rtype: linphone.Buffer"),
+	HandWrittenProperty('Buffer', 'content', 'linphone_buffer_get_content', 'linphone_buffer_set_content', "[ByteArray] Set the content of the data buffer."),
+	HandWrittenProperty('Content', 'buffer', 'linphone_content_get_buffer', 'linphone_content_set_buffer', "[ByteArray] Set the content data buffer."),
+	HandWrittenProperty('Core', 'sip_transports', 'linphone_core_get_sip_transports', 'linphone_core_set_sip_transports', "[:py:class:`linphone.SipTransports`] Sets the ports to be used for each transport. A zero value port for a given transport means the transport is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be chosen randomly by the system."),
+	HandWrittenProperty('Core', 'sip_transports_used', 'linphone_core_get_sip_transports_used', None, "[:py:class:`linphone.SipTransports`] Retrieves the real port number assigned for each sip transport (udp, tcp, tls). A zero value means that the transport is not activated. If LC_SIP_TRANSPORT_RANDOM was passed to :py:attr:`linphone.Core.sip_transports`, the random port choosed by the system is returned."),
+	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None, "[list of string] Get the available sound devices."),
+	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None, "[list of string] Get the available video capture devices."),
+	HandWrittenClassMethod('Core', 'new', 'linphone_core_new', "Instantiate a LinphoneCore object.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param configPath: A path to a config file. If it does not exists it will be created. The config file is used to store all settings, call logs, friends, proxies... so that all these settings become persistent over the life of the LinphoneCore object. It is allowed to set to None. In that case LinphoneCore will not store any settings.\n:type configPath: string\n:param factoryConfigPath: A path to a read-only config file that can be used to store hard-coded preference such as proxy settings or internal preferences. The settings in this factory file always override the one in the normal config file. It is OPTIONAL, use None if unneeded.\n:type factoryConfigPath: string\n:rtype: linphone.Core"),
+	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config', "Instantiate a LinphoneCore object from a LpConfig.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param config: A LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:rtype: linphone.Core"),
+	HandWrittenDeallocMethod('Core', 'linphone_core_destroy')
 ]
 
 def generate(apixmlfile, outputfile):

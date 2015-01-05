@@ -115,7 +115,7 @@ void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, s
 	((char *)content->lcp.data)[size] = '\0';
 }
 
-char * linphone_content_get_string_buffer(const LinphoneContent *content) {
+const char * linphone_content_get_string_buffer(const LinphoneContent *content) {
 	return (char *)content->lcp.data;
 }
 

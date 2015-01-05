@@ -734,25 +734,26 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	}
 }
 
-char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename) {
+int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
 	char *dir = _lp_config_dirname(lpconfig->filename);
 	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-	char *result = NULL;
-	if(ortp_file_exist(filepath) == 0) {
-		FILE *file = fopen(filepath, "r");
-		if(file != NULL) {
-			result = ms_new0(char, MAX_LEN);
-			if(fgets(result, MAX_LEN, file) == NULL) {
-				ms_error("%s could not be loaded", filepath);
-			}
-			fclose(file);
-		} else {
-			ms_error("Could not open %s for read", filepath);
+	FILE *file = fopen(filepath, "r");
+	if(file != NULL) {
+		if(fread(data, 1, max_length, file)<=0) {
+			ms_error("%s could not be loaded. %s", filepath, strerror(errno));
+			goto err;
 		}
+		fclose(file);
 	} else {
-		ms_message("%s does not exist", filepath);
+		ms_error("Could not open %s for read. %s", filepath, strerror(errno));
+		goto err;
 	}
 	ms_free(dir);
 	ms_free(filepath);
-	return result;
+	return 0;
+	
+err:
+	ms_free(dir);
+	ms_free(filepath);
+	return -1;
 }

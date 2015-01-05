@@ -125,9 +125,7 @@ static int pylinphone_{{class_name}}_init(PyObject *self, PyObject *args, PyObje
 {{{init_body}}}
 }
 
-static void pylinphone_{{class_name}}_dealloc(PyObject *self) {
-{{{dealloc_body}}}
-}
+{{{dealloc_definition}}}
 
 {{#class_type_methods}}
 
@@ -148,14 +146,14 @@ static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyOb
 static PyMethodDef pylinphone_{{class_name}}_methods[] = {
 	/* Class methods */
 {{#class_type_hand_written_methods}}
-	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "" },
+	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "{{{method_doc}}}" },
 {{/class_type_hand_written_methods}}
 {{#class_type_methods}}
 	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "{{{method_doc}}}" },
 {{/class_type_methods}}
 	/* Instance methods */
 {{#class_instance_hand_written_methods}}
-	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "" },
+	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "{{{method_doc}}}" },
 {{/class_instance_hand_written_methods}}
 {{#class_instance_methods}}
 	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "{{{method_doc}}}" },
@@ -183,7 +181,7 @@ static PyMemberDef pylinphone_{{class_name}}_members[] = {
 
 static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
 {{#class_hand_written_properties}}
-	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "" },
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
 {{/class_hand_written_properties}}
 {{#class_properties}}
 	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
@@ -308,12 +306,21 @@ PyMODINIT_FUNC initlinphone(void) {
 {{#enum_values}}
 	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
 {{/enum_values}}
+{{#enum_deprecated_values}}
+	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
+{{/enum_deprecated_values}}
 {{/enums}}
 
-	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of linphone.PayloadType.");
+	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
 	if (menum == NULL) return;
 	Py_INCREF(menum);
 	if (PyModule_AddObject(m, "PayloadTypeType", menum) < 0) return;
+	if (PyModule_AddIntConstant(menum, "AudioContinuous", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
+	if (PyModule_AddIntConstant(menum, "AudioPacketized", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Video", PAYLOAD_VIDEO) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Text", PAYLOAD_TEXT) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Other", PAYLOAD_OTHER) < 0) return;
+	// TODO: To remove. Deprecated enum values.
 	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
 	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
 	if (PyModule_AddIntConstant(menum, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return;

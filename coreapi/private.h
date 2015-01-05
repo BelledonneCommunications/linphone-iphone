@@ -254,7 +254,7 @@ struct _LinphoneCall{
 	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
-	unsigned char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
+	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -925,6 +925,14 @@ struct _LinphoneContent {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneContent);
 
+struct _LinphoneBuffer {
+	belle_sip_object_t base;
+	void *user_data;
+	uint8_t *content;	/**< A pointer to the buffer content */
+	size_t size;	/**< The size of the buffer content */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
 
 /*****************************************************************************
@@ -1001,6 +1009,7 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
   */
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),

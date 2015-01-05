@@ -158,13 +158,16 @@ dnl AC_CHECK_LIB(intl,libintl_gettext)
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
 AC_ARG_ENABLE(x11,
-	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=no)])],
+	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=yes for MacOSX, no otherwise)])],
 	[case "${enableval}" in
 		yes)	enable_x11=true ;;
 		no)	enable_x11=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
 	esac],
-	[enable_x11=true]
+	[case "$target_os" in
+		*darwin*) enable_x11=false ;; #disable x11 on MacOS by default
+		*) enable_x11=true ;;
+	esac]
 )
 
 dnl conditional build of LDAP support
@@ -792,8 +795,6 @@ AC_ARG_ENABLE(msg-storage,
 	[enable_msg_storage=auto]
 )
 
-AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
-
 if test x$enable_msg_storage != xfalse; then
 	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
 	if test "$found_sqlite" = "no"; then
@@ -802,6 +803,7 @@ if test x$enable_msg_storage != xfalse; then
 	fi
 	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		enable_msg_storage=true
 	else
 		if test x$enable_msg_storage = xtrue; then
 			AC_MSG_ERROR([sqlite3, required for message storage, not found])
@@ -813,7 +815,7 @@ if test x$enable_msg_storage != xfalse; then
 	AC_SUBST(SQLITE3_LIBS)
 fi
 
-
+AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
 

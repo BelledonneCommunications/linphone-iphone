@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "CUnit/TestRun.h"
+#include "CUnit/Automated.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -41,6 +42,9 @@ const char* test_route="sip2.linphone.org";
 int liblinphone_tester_use_log_file=0;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int manager_count = 0;
+
+static const char* liblinphone_tester_xml_file = NULL;
+static int      liblinphone_tester_xml_enabled = FALSE;
 
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
@@ -263,18 +267,26 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	manager_count++;
 
 #if TARGET_OS_IPHONE
-	linphone_core_set_playback_device( mgr->lc, "AU: Audio Unit Tester");
-	linphone_core_set_capture_device( mgr->lc, "AU: Audio Unit Tester");
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
 	linphone_core_set_ringback(mgr->lc, NULL);
-	if( manager_count >= 2){
-		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
-		linphone_core_use_files(mgr->lc, TRUE);
-	}
 #endif
 
-	if (proxy_count)
-		wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,proxy_count,5000*proxy_count);
+	if( manager_count >= 2){
+		char hellopath[512];
+		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
+		linphone_core_use_files(mgr->lc, TRUE);
+		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+		linphone_core_set_play_file(mgr->lc,hellopath);
+	}
+
+	if (proxy_count){
+#define REGISTER_TIMEOUT 20 /* seconds */
+		int success = wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,
+									proxy_count,(REGISTER_TIMEOUT * 1000 * proxy_count));
+		if( !success ){
+			ms_error("Did not register after %d seconds for %d proxies", REGISTER_TIMEOUT, proxy_count);
+		}
+	}
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
 	enable_codec(mgr->lc,"PCMU",8000);
 
@@ -502,49 +514,57 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	CU_set_suite_start_handler(test_suite_start_message_handler);
 
 
+	if( liblinphone_tester_xml_file != NULL ){
+		CU_set_output_filename(liblinphone_tester_xml_file);
+	}
+	if( liblinphone_tester_xml_enabled != 0 ){
+		CU_automated_run_tests();
+	} else {
+
 #if !HAVE_CU_GET_SUITE
-	if( suite_name ){
-		ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
-	}
-#else
-	if (suite_name){
-		CU_pSuite suite;
-		suite=CU_get_suite(suite_name);
-		if (!suite) {
-			ms_error("Could not find suite '%s'. Available suites are:", suite_name);
-			liblinphone_tester_list_suites();
-			return -1;
-		} else if (test_name) {
-			CU_pTest test=CU_get_test_by_name(test_name, suite);
-			if (!test) {
-				ms_error("Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
-				// do not use suite_name here, since this method is case sentisitive
-				liblinphone_tester_list_suite_tests(suite->pName);
-				return -2;
-			} else {
-				CU_ErrorCode err= CU_run_test(suite, test);
-				if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
-			}
-		} else {
-			CU_run_suite(suite);
+		if( suite_name ){
+			ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
 		}
-	}
-	else
-#endif
-	{
-#if HAVE_CU_CURSES
-		if (curses) {
-			/* Run tests using the CUnit curses interface */
-			CU_curses_run_tests();
+#else
+		if (suite_name){
+			CU_pSuite suite;
+			suite=CU_get_suite(suite_name);
+			if (!suite) {
+				ms_error("Could not find suite '%s'. Available suites are:", suite_name);
+				liblinphone_tester_list_suites();
+				return -1;
+			} else if (test_name) {
+				CU_pTest test=CU_get_test_by_name(test_name, suite);
+				if (!test) {
+					ms_error("Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
+					// do not use suite_name here, since this method is case sentisitive
+					liblinphone_tester_list_suite_tests(suite->pName);
+					return -2;
+				} else {
+					CU_ErrorCode err= CU_run_test(suite, test);
+					if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
+				}
+			} else {
+				CU_run_suite(suite);
+			}
 		}
 		else
 #endif
 		{
-			/* Run all tests using the CUnit Basic interface */
-			CU_run_all_tests();
+#if HAVE_CU_CURSES
+			if (curses) {
+				/* Run tests using the CUnit curses interface */
+				CU_curses_run_tests();
+			}
+			else
+#endif
+			{
+				/* Run all tests using the CUnit Basic interface */
+				CU_run_all_tests();
+			}
 		}
-	}
 
+	}
 	ret=CU_get_number_of_tests_failed()!=0;
 
 	/* Redisplay list of failed tests on end */
@@ -602,5 +622,19 @@ void liblinphone_tester_keep_accounts( int keep ){
 void liblinphone_tester_clear_accounts(void){
 	account_manager_destroy();
 }
+
+void liblinphone_tester_enable_xml( bool_t enable ){
+	liblinphone_tester_xml_enabled = enable;
+}
+
+void liblinphone_tester_set_xml_output(const char *xml_path ) {
+	liblinphone_tester_xml_file = xml_path;
+}
+
+const char* liblinphone_tester_get_xml_output( void ) {
+	return liblinphone_tester_xml_file;
+}
+
+
 
 

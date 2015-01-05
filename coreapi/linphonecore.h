@@ -257,7 +257,7 @@ LINPHONE_PUBLIC int linphone_payload_type_get_normal_bitrate(const LinphonePaylo
  * @param[in] pt LinphonePayloadType object
  * @return The mime type.
  */
-LINPHONE_PUBLIC char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt);
+LINPHONE_PUBLIC const char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt);
 
 /**
  * Get the number of channels.
@@ -367,12 +367,14 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 
 
 #ifdef IN_LINPHONE
+#include "buffer.h"
 #include "call_log.h"
 #include "call_params.h"
 #include "content.h"
 #include "event.h"
 #include "linphonefriend.h"
 #else
+#include "linphone/buffer.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
 #include "linphone/content.h"
@@ -1351,30 +1353,24 @@ typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg
 
 /**
  * File transfer receive callback prototype. This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
- *
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent incoming content information
- * @param buff pointer to the received data
- * @param size number of bytes to be read from buff. 0 means end of file.
- *
+ * @param buffer #LinphoneBuffer holding the received data. Empty buffer means end of file.
  */
-typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size);
+typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);
 
 /**
- * File transfer send callback prototype. This function is called by the core upon an outgoing File transfer is started. This function is called until size is set to 0.
- * <br> a #LinphoneContent with a size equal zero
- *
+ * File transfer send callback prototype. This function is called by the core when an outgoing file transfer is started. This function is called until size is set to 0.
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent outgoing content
- * @param buff pointer to the buffer where data chunk shall be written by the app
- * @param size as input value, it represents the number of bytes expected by the framework. As output value, it means the number of bytes wrote by the application in the buffer. 0 means end of file.
- *
+ * @param offset the offset in the file from where to get the data to be sent
+ * @param size the number of bytes expected by the framework
+ * @return A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
  */
-typedef void (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size);
+typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size);
 
 /**
  * File transfer progress indication callback prototype.
- *
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent incoming content information
  * @param offset The number of bytes sent/received since the beginning of the transfer.
@@ -2816,6 +2812,7 @@ LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MS
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+LINPHONE_PUBLIC MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
 
 /**

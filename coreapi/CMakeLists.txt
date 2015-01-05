@@ -42,6 +42,7 @@ set(SOURCE_FILES
 	bellesip_sal/sal_op_publish.c
 	bellesip_sal/sal_op_registration.c
 	bellesip_sal/sal_sdp.c
+	buffer.c
 	callbacks.c
 	call_log.c
 	call_params.c
@@ -96,6 +97,9 @@ if(ENABLE_TUNNEL)
 else()
 	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
 endif()
+if(ENABLE_ASSISTANT)
+	list(APPEND SOURCE_FILES sipwizard.c)
+endif()
 
 set(GENERATED_SOURCE_FILES
 	${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
@@ -122,6 +126,9 @@ if(SQLITE3_FOUND)
 endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
+endif()
+if(ENABLE_ASSISTANT)
+	list(APPEND LIBS ${SOUP_LIBRARIES})
 endif()
 if(WIN32)
 	list(APPEND LIBS shlwapi)
@@ -153,6 +160,7 @@ install(TARGETS linphone
 
 
 set(HEADER_FILES
+	buffer.h
 	call_log.h
 	call_params.h
 	content.h

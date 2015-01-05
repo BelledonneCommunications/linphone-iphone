@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCoreListener.LinphoneEchoCalibrationListener;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
@@ -424,6 +425,45 @@ public interface LinphoneCore {
 				if (mstate.mValue == value) return mstate;
 			}
 			throw new RuntimeException("UpnpState not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * linphone log collection upload states
+	 */
+	static public class LogCollectionUploadState {
+
+		static private Vector<LogCollectionUploadState> values = new Vector<LogCollectionUploadState>();
+		/**
+		 * Delivery in progress
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateInProgress = new LogCollectionUploadState(0,"LinphoneCoreLogCollectionUploadStateInProgress");
+		/**
+		 * Log collection upload successfully delivered and acknowledged by remote end point
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateDelivered = new LogCollectionUploadState(1,"LinphoneCoreLogCollectionUploadStateDelivered");
+		/**
+		 * Log collection upload was not delivered
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateNotDelivered = new LogCollectionUploadState(2,"LinphoneCoreLogCollectionUploadStateNotDelivered");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private LogCollectionUploadState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static LogCollectionUploadState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				LogCollectionUploadState state = (LogCollectionUploadState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
 		}
 		public String toString() {
 			return mStringValue;
@@ -1057,10 +1097,10 @@ public interface LinphoneCore {
 	/**
 	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
 	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
-	 * @param User object
+	 * @param listener the LinphoneEchoCalibrationListener to call when the calibration is done
 	 * @throws LinphoneCoreException if operation is still in progress;
 	**/
-	void startEchoCalibration(Object data) throws LinphoneCoreException;
+	void startEchoCalibration(LinphoneEchoCalibrationListener listener) throws LinphoneCoreException;
 
 	/**
 	 * Returns true if echo calibration is recommended.
@@ -1812,4 +1852,8 @@ public interface LinphoneCore {
 	 */
 	String getRemoteRingbackTone();
 	
+	/**
+	 * Upload the log collection to the configured server url.
+	 */
+	public void uploadLogCollection();
 }

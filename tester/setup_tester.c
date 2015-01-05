@@ -132,9 +132,13 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", liblinphone_tester_file_prefix, zero_rc_file);
 	LpConfig* conf;
 
-	conf = lp_config_new(rc_path);
+	/* not using lp_config_new() because it expects a readable file, and iOS (for instance)
+	   stores the app bundle in read-only */
+	conf = lp_config_new_with_factory(NULL, rc_path);
 
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+
+	// non_zero_len=test -> should return test
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */

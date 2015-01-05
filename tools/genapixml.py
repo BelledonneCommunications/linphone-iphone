@@ -433,9 +433,16 @@ class Project:
 			if pos == -1:
 				return None
 			returntype = definition[0:pos].strip()
-			if returntype != "void":
-				return None
 			returnarg = CArgument(returntype, enums = self.enums, structs = self.__structs)
+			returndesc = node.find("./detaileddescription/para/simplesect[@kind='return']")
+			if returndesc is not None:
+				if returnarg.ctype == 'MSList':
+					n = returndesc.find('.//mslist')
+					if n is not None:
+						returnarg.containedType = n.text
+				returnarg.description = self.__cleanDescription(returndesc)
+			elif returnarg.completeType != 'void':
+				missingDocWarning += "\tReturn value is not documented\n"
 			definition = definition[pos + 2 :]
 			pos = string.find(definition, "(")
 			definition = definition[pos + 1 : -1]

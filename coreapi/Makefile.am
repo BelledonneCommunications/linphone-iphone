@@ -25,6 +25,7 @@ CLEANFILES=$(GITVERSION_FILE)
 linphone_includedir=$(includedir)/linphone
 
 linphone_include_HEADERS=\
+	buffer.h \
 	call_log.h \
 	call_params.h \
 	content.h \
@@ -44,6 +45,7 @@ lib_LTLIBRARIES=liblinphone.la
 liblinphone_la_SOURCES=\
 	address.c \
 	authentication.c \
+	buffer.c \
 	callbacks.c \
 	call_log.c \
 	call_params.c \

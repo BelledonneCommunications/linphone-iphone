@@ -2131,7 +2131,7 @@ void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 /**
  * Returns the UDP port used by SIP.
  *
- * Deprecated: use linphone_core_get_sip_transports() instead.
+ * @deprecated use linphone_core_get_sip_transports() instead.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_port(LinphoneCore *lc){
@@ -2299,7 +2299,7 @@ void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr
 /**
  * Sets the UDP port to be used by SIP.
  *
- * Deprecated: use linphone_core_set_sip_transports() instead.
+ * @deprecated use linphone_core_set_sip_transports() instead.
  * @ingroup network_parameters
 **/
 void linphone_core_set_sip_port(LinphoneCore *lc,int port)
@@ -3944,10 +3944,10 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		linphone_core_notify_display_warning(lc,_("Could not pause the call"));
 	}
 	lc->current_call=NULL;
-	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	linphone_core_notify_display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
+	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	call->paused_by_app=FALSE;
 	return 0;
 }
@@ -5632,6 +5632,26 @@ MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
 }
 
 /**
+ * Returns the effective video size for the captured video as provided by the camera.
+ * When preview is disabled or not yet started, this function returns a zeroed video size.
+ * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
+ * @param lc the core
+ * @return a MSVideoSize
+**/
+MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
+	MSVideoSize ret={0};
+#ifndef VIDEO_ENABLED
+	ms_error("linphone_core_get_current_preview_video_size() fail. Support for video is disabled");
+#else
+	if (lc->previewstream){
+		ret=video_preview_get_current_size(lc->previewstream);
+	}
+#endif
+	return ret;
+}
+
+/**
  * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
  *
  * @ingroup media_parameters
@@ -6416,20 +6436,20 @@ static void notify_soundcard_usage(LinphoneCore *lc, bool_t used){
 void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	MSList* the_calls = lc->calls;
 	LinphoneCall* call = NULL;
-	bool_t remaining_paused = FALSE;
+	bool_t dont_need_sound = TRUE;
 
 	/* check if the remaining calls are paused */
 	while( the_calls ){
 		call = the_calls->data;
-		if( call->state == LinphoneCallPausing || call->state == LinphoneCallPaused ){
-			remaining_paused = TRUE;
+		if( call->state != LinphoneCallPausing && call->state != LinphoneCallPaused ){
+			dont_need_sound = FALSE;
 			break;
 		}
 		the_calls = the_calls->next;
 	}
 
 	/* if no more calls or all calls are paused, we can free the soundcard */
-	if ( (lc->calls==NULL || remaining_paused) && !lc->use_files){
+	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files){
 		ms_message("Notifying soundcard that we don't need it anymore for calls.");
 		notify_soundcard_usage(lc,FALSE);
 	}
@@ -6461,8 +6481,6 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	lc->calls = the_calls;
-
-	linphone_core_soundcard_hint_check(lc);
 
 	return 0;
 }
@@ -6814,7 +6832,7 @@ const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
 bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc){
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
-			return media_stream_srtp_supported();
+			return ms_srtp_supported();
 		case LinphoneMediaEncryptionDTLS:
 			return ms_dtls_available();
 		case LinphoneMediaEncryptionZRTP:
@@ -6829,7 +6847,7 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 	const char *type="none";
 	int ret=0;
 	if (menc == LinphoneMediaEncryptionSRTP){
-		if (!media_stream_srtp_supported()){
+		if (!ms_srtp_supported()){
 			ms_warning("SRTP not supported by library.");
 			type="none";
 			ret=-1;
@@ -7074,7 +7092,7 @@ int linphone_payload_type_get_normal_bitrate(const LinphonePayloadType *pt) {
 	return pt->normal_bitrate;
 }
 
-char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
+const char * linphone_payload_type_get_mime_type(const LinphonePayloadType *pt) {
 	return pt->mime_type;
 }
 
@@ -7087,9 +7105,6 @@ LinphoneCoreVTable *linphone_core_v_table_new() {
 }
 
 void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) {
-	if (table->user_data) {
-		ms_free(table->user_data);
-	}
 	table->user_data = data;
 }
 
@@ -7098,9 +7113,6 @@ void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
 }
 
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
-	if (table->user_data) {
-		ms_free(table->user_data);
-	}
 	ms_free(table);
 }
 
