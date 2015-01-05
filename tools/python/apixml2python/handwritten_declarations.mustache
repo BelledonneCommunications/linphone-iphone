@@ -1,5 +1,6 @@
 static PyObject * pylinphone_Core_get_sip_transports(PyObject *self, void *closure);
 static int pylinphone_Core_set_sip_transports(PyObject *self, PyObject *value, void *closure);
+static void pylinphone_Core_dealloc(PyObject *self);
 static PyObject * pylinphone_Core_get_sip_transports_used(PyObject *self, void *closure);
 static PyObject * pylinphone_Core_get_sound_devices(PyObject *self, void *closure);
 static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure);

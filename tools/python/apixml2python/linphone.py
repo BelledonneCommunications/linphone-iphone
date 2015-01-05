@@ -69,6 +69,10 @@ class HandWrittenClassMethod(HandWrittenCode):
 	def __init__(self, _class, name, cfunction, doc = ''):
 		HandWrittenCode.__init__(self, _class, name, [cfunction], doc)
 
+class HandWrittenDeallocMethod(HandWrittenCode):
+	def __init__(self, _class, cfunction):
+		HandWrittenCode.__init__(self, _class, 'dealloc', [cfunction], '')
+
 class HandWrittenProperty(HandWrittenCode):
 	def __init__(self, _class, name, getter_cfunction = None, setter_cfunction = None, doc = ''):
 		func_list = []
@@ -698,6 +702,12 @@ class DeallocMethodDefinition(MethodDefinition):
 	def format_return_result(self):
 		return ''
 
+	def format(self):
+		return \
+"""static void pylinphone_{class_name}_dealloc(PyObject *self) {{
+{method_body}
+}}""".format(class_name=self.class_['class_name'], method_body=MethodDefinition.format(self))
+
 class GetterMethodDefinition(MethodDefinition):
 	def __init__(self, linphone_module, class_, method_node = None):
 		MethodDefinition.__init__(self, linphone_module, class_, method_node)
@@ -1069,6 +1079,8 @@ class LinphoneModule(object):
 						m['method_name'] = hand_written_code.name
 						m['method_doc'] = self.__replace_doc_special_chars(hand_written_code.doc)
 						c['class_instance_hand_written_methods'].append(m)
+					elif isinstance(hand_written_code, HandWrittenDeallocMethod):
+						c['class_has_hand_written_dealloc'] = True
 					elif isinstance(hand_written_code, HandWrittenProperty):
 						p = {}
 						p['property_name'] = hand_written_code.name
@@ -1199,18 +1211,19 @@ class LinphoneModule(object):
 			except Exception, e:
 				e.args += (c['class_name'], p['property_name'])
 				raise
-			try:
-				if c['class_refcountable']:
-					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
-					c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
-				elif c['class_destroyable']:
-					xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
-					c['dealloc_body'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
-				else:
-					c['dealloc_body'] = DeallocMethodDefinition(self, c).format()
-			except Exception, e:
-				e.args += (c['class_name'], 'dealloc_body')
-				raise
+			if not 'class_has_hand_written_dealloc' in c:
+				try:
+					if c['class_refcountable']:
+						xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "unref']")
+						c['dealloc_definition'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
+					elif c['class_destroyable']:
+						xml_instance_method = c['class_xml_node'].find("./instancemethods/instancemethod[@name='" + c['class_c_function_prefix'] + "destroy']")
+						c['dealloc_definition'] = DeallocMethodDefinition(self, c, xml_instance_method).format()
+					else:
+						c['dealloc_definition'] = DeallocMethodDefinition(self, c).format()
+				except Exception, e:
+					e.args += (c['class_name'], 'dealloc_body')
+					raise
 		# Convert mslist_types to a list of dictionaries for the template
 		d = []
 		for mslist_type in self.mslist_types:

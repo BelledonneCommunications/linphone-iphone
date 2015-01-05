@@ -23,7 +23,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.realpath(__file__))
-from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenProperty
+from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandWrittenInstanceMethod, HandWrittenDeallocMethod, HandWrittenProperty
 
 
 blacklisted_classes = [
@@ -79,7 +79,8 @@ hand_written_functions = [
 	HandWrittenProperty('Core', 'sound_devices', 'linphone_core_get_sound_devices', None, "[list of string] Get the available sound devices."),
 	HandWrittenProperty('Core', 'video_devices', 'linphone_core_get_video_devices', None, "[list of string] Get the available video capture devices."),
 	HandWrittenClassMethod('Core', 'new', 'linphone_core_new', "Instantiate a LinphoneCore object.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param configPath: A path to a config file. If it does not exists it will be created. The config file is used to store all settings, call logs, friends, proxies... so that all these settings become persistent over the life of the LinphoneCore object. It is allowed to set to None. In that case LinphoneCore will not store any settings.\n:type configPath: string\n:param factoryConfigPath: A path to a read-only config file that can be used to store hard-coded preference such as proxy settings or internal preferences. The settings in this factory file always override the one in the normal config file. It is OPTIONAL, use None if unneeded.\n:type factoryConfigPath: string\n:rtype: linphone.Core"),
-	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config', "Instantiate a LinphoneCore object from a LpConfig.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param config: A LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:rtype: linphone.Core")
+	HandWrittenClassMethod('Core', 'new_with_config', 'linphone_core_new_with_config', "Instantiate a LinphoneCore object from a LpConfig.\n\n:param vtable: The callbacks.\n:type vtable: dictionary\n:param config: A LpConfig object holding the configuration of the LinphoneCore to be instantiated.\n:rtype: linphone.Core"),
+	HandWrittenDeallocMethod('Core', 'linphone_core_destroy')
 ]
 
 def generate(apixmlfile, outputfile):

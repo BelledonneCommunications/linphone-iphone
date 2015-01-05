@@ -336,6 +336,24 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 	return pyret;
 }
 
+static void pylinphone_Core_dealloc(PyObject *self) {
+	LinphoneCore * native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (Py_REFCNT(self) < 0) return;
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	
+	if (native_ptr != NULL) {
+		linphone_core_destroy(native_ptr);
+		ms_exit();	// De-initialize mediastreamer
+	}
+
+	pylinphone_dispatch_messages();
+	Py_XDECREF(((pylinphone_CoreObject *)self)->user_data);
+	Py_XDECREF(((pylinphone_CoreObject *)self)->vtable_dict);
+
+	self->ob_type->tp_free(self);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+}
+
 
 
 static void pylinphone_VideoSize_dealloc(PyObject *self) {
