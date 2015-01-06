@@ -62,7 +62,7 @@ case $target in
 	*mingw*)
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
-		LIBS="$LIBS -lws2_32"
+		LIBS="$LIBS -L/lib -lws2_32"
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
