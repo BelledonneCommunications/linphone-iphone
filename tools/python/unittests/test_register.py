@@ -8,7 +8,7 @@ class RegisterCoreManager(CoreManager):
 
     @classmethod
     def auth_info_requested(cls, lc, realm, username, domain):
-        CoreManager.auth_info_requested(cls, lc, realm, username, domain)
+        CoreManager.auth_info_requested(lc, realm, username, domain)
         info = linphone.AuthInfo.new(test_username, None, test_password, None, realm, domain) # Create authentication structure from identity
         lc.add_auth_info(info) # Add authentication info to LinphoneCore
 
@@ -145,3 +145,47 @@ class TestRegister:
         pc.server_addr = "sip:{domain}:{port};transport=tls".format(domain=addr.domain, port=port)
         pc.done()
         assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 5000), True)
+
+    def test_simple_authenticated_register(self):
+        cm = RegisterCoreManager()
+        info = linphone.AuthInfo.new(test_username, None, test_password, None, auth_domain, None) # Create authentication structure from identity
+        cm.lc.add_auth_info(info)
+        cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route))
+        assert_equals(cm.stats.number_of_auth_info_requested, 0)
+
+    def test_digest_auth_without_initial_credentials(self):
+        cm = RegisterCoreManager(with_auth=True)
+        cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route))
+        assert_equals(cm.stats.number_of_auth_info_requested, 1)
+
+    def test_authenticated_register_with_late_credentials(self):
+        cm = RegisterCoreManager()
+        cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route), True, linphone.SipTransports(5070, 5070, 5071, 0))
+        assert_equals(cm.stats.number_of_auth_info_requested, 1)
+
+    def test_simple_register_with_refresh(self):
+        cm = RegisterCoreManager()
+        cm.register_with_refresh(True, None, None)
+        assert_equals(cm.stats.number_of_auth_info_requested, 0)
+
+    def test_simple_auth_register_with_refresh(self):
+        cm = RegisterCoreManager(with_auth=True)
+        cm.register_with_refresh(True, auth_domain, "sip:{route}".format(route=test_route))
+        assert_equals(cm.stats.number_of_auth_info_requested, 1)
+
+    def test_multiple_accounts(self):
+        cm = CoreManager('multi_account_rc', False)
+        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == len(cm.lc.proxy_config_list)), True)
+
+    def test_transport_change(self):
+        cm = CoreManager('multi_account_rc', False)
+        number_of_udp_proxies = reduce(lambda x, y: x + int(y.transport == "udp"), cm.lc.proxy_config_list, 0)
+        total_number_of_proxies = len(cm.lc.proxy_config_list)
+        # Keep only UDP
+        tr = cm.lc.sip_transports
+        tr.tcp_port = 0
+        tr.tls_port = 0
+        tr.dtls_port = 0
+        cm.lc.sip_transports = tr
+        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == number_of_udp_proxies), True)
+        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == (total_number_of_proxies - number_of_udp_proxies)), True)
