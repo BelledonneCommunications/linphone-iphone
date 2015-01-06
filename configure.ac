@@ -271,6 +271,32 @@ if test "$build_upnp" != "false" ; then
 	AC_DEFINE(BUILD_UPNP, 1, [Define if upnp enabled])
 fi
 
+dnl check zlib
+PKG_CHECK_MODULES(ZLIB, [zlib], [found_zlib=yes], [found_zlib=no])
+if test "x$found_zlib" = "xno" ; then
+	AC_CHECK_LIB(z, inflate,
+		[AC_CHECK_HEADER([zlib.h],
+		[AC_COMPILE_IFELSE(
+			[AC_LANG_PROGRAM([[
+			 #include <zlib.h>
+			 #if !defined(ZLIB_VERNUM) || (ZLIB_VERNUM < 0x1230)
+			 // compile error
+			 #endif
+		]],[])],
+		[found_zlib=yes])])])
+	if test "x$found_zlib" = "xno" ; then
+		AC_MSG_NOTICE([zlib library and headers not found])
+	else
+		AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
+		ZLIBS_LIBS='-z'
+		AC_SUBST(ZLIB_LIBS)
+	fi
+else
+	AC_MSG_NOTICE([ZLIB found])
+	AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
+fi
+
+
 dnl check libxml2
 PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[libxml2_found=yes],foo=bar)
 if test "$libxml2_found" != "yes" ; then
@@ -959,6 +985,7 @@ printf "* %-30s %s\n" "zRTP encryption"		$zrtp
 printf "* %-30s %s\n" "DTLS encryption"		$dtls
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
+printf "* %-30s %s\n" "ZLIB support" 		$found_zlib
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"
