@@ -26,6 +26,7 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 #include "mediastreamer2/dsptools.h"
+#include "belle-sip/sipstack.h"
 
 #ifdef WIN32
 #define unlink _unlink
@@ -375,6 +376,49 @@ static void simple_call(void) {
 		belle_sip_object_dump_active_objects();
 	}
 }
+
+static void call_with_timeouted_bye(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	belle_sip_timer_config_t timer_config;
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+
+	sal_set_send_error(pauline->lc->sal,1500); /*to trash the message without generating error*/
+	timer_config.T1=50; /*to have timer F = 3s*/
+	timer_config.T2=4000;
+	timer_config.T3=0;
+	timer_config.T4=5000;
+
+	belle_sip_stack_set_timer_config(sal_get_belle_sip_stack(pauline->lc->sal),&timer_config);
+	linphone_core_terminate_all_calls(pauline->lc);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1,timer_config.T1*84));
+
+	sal_set_send_error(pauline->lc->sal,0);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1,5000));
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1,5000));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
 
 static void direct_call_over_ipv6(){
 	LinphoneCoreManager* marie;
@@ -3483,6 +3527,7 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
+	{ "Call with timeouted bye", call_with_timeouted_bye },
 	{ "Direct call over IPv6", direct_call_over_ipv6},
 	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
 	{ "Audio call recording", audio_call_recording_test },
