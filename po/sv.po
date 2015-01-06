@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-03 13:39+0100\n"
-"PO-Revision-Date: 2014-12-04 09:51+0000\n"
+"POT-Creation-Date: 2015-01-06 12:28+0100\n"
+"PO-Revision-Date: 2015-01-06 11:29+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/sv/)\n"
@@ -92,31 +92,31 @@ msgstr "Kunde inte hitta pixmap filen: %s"
 msgid "Invalid sip contact !"
 msgstr "ogiltig SIP kontakt!"
 
-#: ../gtk/main.c:107
+#: ../gtk/main.c:109
 msgid "log to stdout some debug information while running."
 msgstr "skriv loggning information under körning"
 
-#: ../gtk/main.c:114
+#: ../gtk/main.c:116
 msgid "path to a file to write logs into."
 msgstr ""
 
-#: ../gtk/main.c:121
+#: ../gtk/main.c:123
 msgid "Start linphone with video disabled."
 msgstr ""
 
-#: ../gtk/main.c:128
+#: ../gtk/main.c:130
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Starta ikonifierat, visa inte huvudfönstret"
 
-#: ../gtk/main.c:135
+#: ../gtk/main.c:137
 msgid "address to call right now"
 msgstr "Samtalsmottagare"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid "if set automatically answer incoming calls"
 msgstr "Om på, besvara automatisk alla inkommande samtal"
 
-#: ../gtk/main.c:149
+#: ../gtk/main.c:151
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -124,15 +124,19 @@ msgstr ""
 "Välj en arbetskatalog som ska vara basen för installationen, såsom C:"
 "\\Program\\Linphone"
 
-#: ../gtk/main.c:156
+#: ../gtk/main.c:158
 msgid "Configuration file"
 msgstr ""
 
-#: ../gtk/main.c:163
+#: ../gtk/main.c:165
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:1085
+#: ../gtk/main.c:172
+msgid "Run self test and exit 0 if succeed"
+msgstr ""
+
+#: ../gtk/main.c:1083
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -145,72 +149,72 @@ msgstr ""
 "henne till din kontaktlista?\n"
 "Om du svarar nej, personen kommer att vara bannlyst."
 
-#: ../gtk/main.c:1162
+#: ../gtk/main.c:1160
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1283
+#: ../gtk/main.c:1281
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3751
+#: ../gtk/main.c:1284 ../coreapi/linphonecore.c:3767
 msgid "Call ended"
 msgstr "Samtalet slut"
 
-#: ../gtk/main.c:1289 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1287 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
-#: ../gtk/main.c:1291 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1289 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr ""
 
-#: ../gtk/main.c:1293 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1291 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Avböj"
 
-#: ../gtk/main.c:1299
+#: ../gtk/main.c:1297
 msgid "Call paused"
 msgstr ""
 
-#: ../gtk/main.c:1299
+#: ../gtk/main.c:1297
 #, c-format
 msgid "<b>by %s</b>"
 msgstr ""
 
-#: ../gtk/main.c:1366
+#: ../gtk/main.c:1367
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1528
+#: ../gtk/main.c:1529
 msgid "Website link"
 msgstr "Webbsajt"
 
-#: ../gtk/main.c:1577
+#: ../gtk/main.c:1578
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk/main.c:1669
+#: ../gtk/main.c:1670
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Default)"
 
-#: ../gtk/main.c:2006 ../coreapi/callbacks.c:986
+#: ../gtk/main.c:2002 ../coreapi/callbacks.c:986
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:2016
+#: ../gtk/main.c:2012
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2157
+#: ../gtk/main.c:2156
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
@@ -279,7 +283,7 @@ msgstr "Parametrar"
 msgid "Enabled"
 msgstr "På"
 
-#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763
+#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:20
 msgid "Disabled"
 msgstr "Av"
 
@@ -442,7 +446,7 @@ msgstr ""
 msgid "Enter your linphone.org username"
 msgstr ""
 
-#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:82 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "Användarnamn:"
 
@@ -626,7 +630,7 @@ msgstr ""
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:232
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:235
 msgid "Hang up"
 msgstr ""
 
@@ -1208,257 +1212,265 @@ msgid "<b>Transport</b>"
 msgstr "<b>Transport</b>"
 
 #: ../gtk/parameters.ui.h:19
-msgid "Media encryption type"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:20
-msgid "Video RTP/UDP:"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:21
-msgid "Audio RTP/UDP:"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:22
-msgid "Fixed"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:23
-msgid "Media encryption is mandatory"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:24
-msgid "Tunnel"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:25
-msgid "DSCP fields"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:26
-msgid "SIP/TCP port"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:27
 msgid "SIP/UDP port"
 msgstr ""
 
+#: ../gtk/parameters.ui.h:21
+msgid "Random"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "SIP/TCP port"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:23
+msgid "Audio RTP/UDP:"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:24
+msgid "Fixed"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:25
+msgid "Video RTP/UDP:"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:26
+msgid "Media encryption type"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:27
+msgid "Media encryption is mandatory"
+msgstr ""
+
 #: ../gtk/parameters.ui.h:28
-msgid "<b>Network protocol and ports</b>"
+msgid "Tunnel"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:29
-msgid "Direct connection to the Internet"
-msgstr "Direkt förbindelse till Internet"
+msgid "DSCP fields"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:30
-msgid "Behind NAT / Firewall (specify gateway IP )"
+msgid "<b>Network protocol and ports</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:31
-msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+msgid "Direct connection to the Internet"
+msgstr "Direkt förbindelse till Internet"
 
 #: ../gtk/parameters.ui.h:32
-msgid "Behind NAT / Firewall (use ICE)"
+msgid "Behind NAT / Firewall (specify gateway IP )"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:33
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Behind NAT / Firewall (use ICE)"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:35
 msgid "Behind NAT / Firewall (use uPnP)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:34
+#: ../gtk/parameters.ui.h:36
 msgid "Public IP address:"
 msgstr "Publik IP adress:"
 
-#: ../gtk/parameters.ui.h:35
+#: ../gtk/parameters.ui.h:37
 msgid "Stun server:"
 msgstr "STUN server:"
 
-#: ../gtk/parameters.ui.h:36
+#: ../gtk/parameters.ui.h:38
 msgid "<b>NAT and Firewall</b>"
 msgstr "<b>NAT och Brandvägg</b>"
 
-#: ../gtk/parameters.ui.h:37
+#: ../gtk/parameters.ui.h:39
 msgid "Network settings"
 msgstr "Nätverksinställningar"
 
-#: ../gtk/parameters.ui.h:38
+#: ../gtk/parameters.ui.h:40
 msgid "Ring sound:"
 msgstr "Ring signal:"
 
-#: ../gtk/parameters.ui.h:39
+#: ../gtk/parameters.ui.h:41
 msgid "ALSA special device (optional):"
 msgstr "ALSA speciell enhet (tillval):"
 
-#: ../gtk/parameters.ui.h:40
+#: ../gtk/parameters.ui.h:42
 msgid "Capture device:"
 msgstr "Mikrofon enhet:"
 
-#: ../gtk/parameters.ui.h:41
+#: ../gtk/parameters.ui.h:43
 msgid "Ring device:"
 msgstr "Ringning enhet:"
 
-#: ../gtk/parameters.ui.h:42
+#: ../gtk/parameters.ui.h:44
 msgid "Playback device:"
 msgstr "Uppspelningsenhet:"
 
-#: ../gtk/parameters.ui.h:43
+#: ../gtk/parameters.ui.h:45
 msgid "Enable echo cancellation"
 msgstr "Tillåta ekokancellering"
 
-#: ../gtk/parameters.ui.h:44
+#: ../gtk/parameters.ui.h:46
 msgid "<b>Audio</b>"
 msgstr "<b>Audio</b>"
 
-#: ../gtk/parameters.ui.h:45
+#: ../gtk/parameters.ui.h:47
 msgid "Video input device:"
 msgstr "Video ingångsenhet:"
 
-#: ../gtk/parameters.ui.h:46
+#: ../gtk/parameters.ui.h:48
 msgid "Prefered video resolution:"
 msgstr "Video upplösning:"
 
-#: ../gtk/parameters.ui.h:47
+#: ../gtk/parameters.ui.h:49
 msgid "Video output method:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:48
+#: ../gtk/parameters.ui.h:50
+msgid "Show camera preview"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
 msgstr "<b>Video</b>"
 
-#: ../gtk/parameters.ui.h:49
+#: ../gtk/parameters.ui.h:52
 msgid "Multimedia settings"
 msgstr "Multimedia inställningar"
 
-#: ../gtk/parameters.ui.h:50
+#: ../gtk/parameters.ui.h:53
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 "Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
 
-#: ../gtk/parameters.ui.h:51
+#: ../gtk/parameters.ui.h:54
 msgid "Your display name (eg: John Doe):"
 msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
 
-#: ../gtk/parameters.ui.h:52
+#: ../gtk/parameters.ui.h:55
 msgid "Your username:"
 msgstr "Ditt användarnamn:"
 
-#: ../gtk/parameters.ui.h:53
+#: ../gtk/parameters.ui.h:56
 msgid "Your resulting SIP address:"
 msgstr "Din SIP adress:"
 
-#: ../gtk/parameters.ui.h:54
+#: ../gtk/parameters.ui.h:57
 msgid "<b>Default identity</b>"
 msgstr "<b>Default identitet</b>"
 
-#: ../gtk/parameters.ui.h:55
+#: ../gtk/parameters.ui.h:58
 msgid "Wizard"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:56
+#: ../gtk/parameters.ui.h:59
 msgid "Add"
 msgstr "Lägg till"
 
-#: ../gtk/parameters.ui.h:57
+#: ../gtk/parameters.ui.h:60
 msgid "Edit"
 msgstr "Editera"
 
-#: ../gtk/parameters.ui.h:58
+#: ../gtk/parameters.ui.h:61
 msgid "Remove"
 msgstr "Ta bort"
 
-#: ../gtk/parameters.ui.h:59
+#: ../gtk/parameters.ui.h:62
 msgid "<b>Proxy accounts</b>"
 msgstr "<b>Proxy konton</b>"
 
-#: ../gtk/parameters.ui.h:60
+#: ../gtk/parameters.ui.h:63
 msgid "Erase all passwords"
 msgstr "Glöm alla lösenord"
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:64
 msgid "<b>Privacy</b>"
 msgstr "<b>Integritet</b>"
 
-#: ../gtk/parameters.ui.h:62
+#: ../gtk/parameters.ui.h:65
 msgid "Manage SIP Accounts"
 msgstr "Hantera SIP konton"
 
-#: ../gtk/parameters.ui.h:63 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "Möjliggör"
 
-#: ../gtk/parameters.ui.h:64 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:67 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "Inaktivera"
 
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:68
 msgid "<b>Codecs</b>"
 msgstr "<b>Codecs</b>"
 
-#: ../gtk/parameters.ui.h:66
+#: ../gtk/parameters.ui.h:69
 msgid "0 stands for \"unlimited\""
 msgstr "0 står för \"utan begränsning\""
 
-#: ../gtk/parameters.ui.h:67
+#: ../gtk/parameters.ui.h:70
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "Max upstream bandbreddshastighet i kbit/sek:"
 
-#: ../gtk/parameters.ui.h:68
+#: ../gtk/parameters.ui.h:71
 msgid "Download speed limit in Kbit/sec:"
 msgstr "Max downstream bandbreddshastighet i kbit/sek:"
 
-#: ../gtk/parameters.ui.h:69
+#: ../gtk/parameters.ui.h:72
 msgid "Enable adaptive rate control"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:70
+#: ../gtk/parameters.ui.h:73
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:71
+#: ../gtk/parameters.ui.h:74
 msgid "<b>Bandwidth control</b>"
 msgstr "<b>Bandbreddskontroll</b>"
 
-#: ../gtk/parameters.ui.h:72
+#: ../gtk/parameters.ui.h:75
 msgid "Codecs"
 msgstr "Codecs"
 
-#: ../gtk/parameters.ui.h:73
+#: ../gtk/parameters.ui.h:76
 msgid "<b>Language</b>"
 msgstr "<b>Språk</b>"
 
-#: ../gtk/parameters.ui.h:74
+#: ../gtk/parameters.ui.h:77
 msgid "Show advanced settings"
 msgstr "Visa avancerade inställningar"
 
-#: ../gtk/parameters.ui.h:75
+#: ../gtk/parameters.ui.h:78
 msgid "<b>Level</b>"
 msgstr "<b>Nivå</b>"
 
-#: ../gtk/parameters.ui.h:76
+#: ../gtk/parameters.ui.h:79
 msgid "User interface"
 msgstr "Användarinterface"
 
-#: ../gtk/parameters.ui.h:77 ../gtk/ldap.ui.h:2
+#: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:2
 msgid "Server address:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:78 ../gtk/ldap.ui.h:3
+#: ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:80
+#: ../gtk/parameters.ui.h:83
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:81
+#: ../gtk/parameters.ui.h:84
 msgid "LDAP"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:85
 msgid "Done"
 msgstr "Klar"
 
@@ -1684,56 +1696,56 @@ msgstr ""
 msgid "Ready"
 msgstr "Redo"
 
-#: ../coreapi/linphonecore.c:2473
+#: ../coreapi/linphonecore.c:2489
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2638
+#: ../coreapi/linphonecore.c:2654
 msgid "Looking for telephone number destination..."
 msgstr "Leta efter telefonnummer för destinationen..."
 
-#: ../coreapi/linphonecore.c:2640
+#: ../coreapi/linphonecore.c:2656
 msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2926
+#: ../coreapi/linphonecore.c:2942
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: ../coreapi/linphonecore.c:2931
+#: ../coreapi/linphonecore.c:2947
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3081
+#: ../coreapi/linphonecore.c:3097
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3240
+#: ../coreapi/linphonecore.c:3256
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3241
+#: ../coreapi/linphonecore.c:3257
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3359
+#: ../coreapi/linphonecore.c:3375
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3707
+#: ../coreapi/linphonecore.c:3723
 msgid "Connected."
 msgstr "Kopplad"
 
-#: ../coreapi/linphonecore.c:3732
+#: ../coreapi/linphonecore.c:3748
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3922
+#: ../coreapi/linphonecore.c:3938
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3926
+#: ../coreapi/linphonecore.c:3941
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1797,7 +1809,7 @@ msgstr ""
 msgid "Unknown status"
 msgstr ""
 
-#: ../coreapi/proxy.c:319
+#: ../coreapi/proxy.c:327
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
@@ -1805,7 +1817,7 @@ msgstr ""
 "SIP proxy adressen som du matade in är inte rätt, adressen måste starta med "
 "\"sip:\", följd av ett hostnamn"
 
-#: ../coreapi/proxy.c:325
+#: ../coreapi/proxy.c:333
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1813,7 +1825,7 @@ msgstr ""
 "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
 "namn@domän, såsom sip:peter@exempel.se"
 
-#: ../coreapi/proxy.c:1377
+#: ../coreapi/proxy.c:1390
 #, c-format
 msgid "Could not login as %s"
 msgstr "Kunde inte logga in som %s"
@@ -1927,12 +1939,12 @@ msgstr "Registrering hos %s mislyckades: %s"
 msgid "Service unavailable, retrying"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:174
+#: ../coreapi/linphonecall.c:175
 #, c-format
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3020
+#: ../coreapi/linphonecall.c:3041
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

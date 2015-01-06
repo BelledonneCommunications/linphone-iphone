@@ -1383,26 +1383,76 @@ static gboolean apply_transports(PortConfigCtx *ctx){
 	return FALSE;
 }
 
-static void transport_changed(GtkWidget *parameters){
+static PortConfigCtx* get_port_config() {
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	PortConfigCtx *cfg=(PortConfigCtx*)g_object_get_data(G_OBJECT(mw),"port_config");
 	if (cfg==NULL){
 		cfg=g_new0(PortConfigCtx,1);
 		g_object_set_data_full(G_OBJECT(mw),"port_config",cfg,(GDestroyNotify)port_config_free);
 	}
-	if (cfg->timeout_id!=0)
+	if (cfg->timeout_id!=0) {
 		g_source_remove(cfg->timeout_id);
-	cfg->tp.udp_port=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(linphone_gtk_get_widget(parameters,"sip_udp_port")));
-	cfg->tp.tcp_port=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(linphone_gtk_get_widget(parameters,"sip_tcp_port")));
+	}
 	cfg->timeout_id=g_timeout_add_seconds(2,(GSourceFunc)apply_transports,cfg);
+	return cfg;
+}
+
+static void transport_changed(GtkWidget *parameters){
+	PortConfigCtx *cfg = get_port_config();
+
+	GtkWidget *udp_random_port=linphone_gtk_get_widget(parameters,"random_udp_port");
+	GtkWidget *tcp_random_port=linphone_gtk_get_widget(parameters,"random_tcp_port");
+
+	GtkWidget *sip_udp_port=linphone_gtk_get_widget(parameters,"sip_udp_port");
+	GtkWidget *sip_tcp_port=linphone_gtk_get_widget(parameters,"sip_tcp_port");
+
+	gboolean udp_is_disabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(parameters,"disabled_udp_port")));
+	gboolean tcp_is_disabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(parameters,"disabled_tcp_port")));
+
+	gboolean udp_is_random=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(udp_random_port));
+	gboolean tcp_is_random=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tcp_random_port));
+
+	int udp_port = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sip_udp_port));
+	int tcp_port = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sip_tcp_port));
+
+
+	gtk_widget_set_sensitive(udp_random_port, !udp_is_disabled);
+	gtk_widget_set_sensitive(tcp_random_port, !tcp_is_disabled);
+	gtk_widget_set_sensitive(sip_udp_port, !udp_is_disabled && !udp_is_random);
+	gtk_widget_set_sensitive(sip_tcp_port, !tcp_is_disabled && !tcp_is_random);
+
+	cfg->tp.udp_port=udp_is_disabled?0:udp_is_random?-1:udp_port;
+	cfg->tp.tcp_port=tcp_is_disabled?0:tcp_is_random?-1:tcp_port;
+}
+
+void linphone_gtk_disabled_udp_port_toggle(GtkCheckButton *button){
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
+}
+
+void linphone_gtk_random_udp_port_toggle(GtkCheckButton *button){
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
 }
 
 void linphone_gtk_udp_port_value_changed(GtkSpinButton *button){
-	transport_changed(gtk_widget_get_toplevel((GtkWidget*)button));
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
+}
+
+void linphone_gtk_disabled_tcp_port_toggle(GtkCheckButton *button){
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
+}
+
+void linphone_gtk_random_tcp_port_toggle(GtkCheckButton *button){
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
 }
 
 void linphone_gtk_tcp_port_value_changed(GtkSpinButton *button){
-	transport_changed(gtk_widget_get_toplevel((GtkWidget*)button));
+	GtkWidget *parameters = gtk_widget_get_toplevel((GtkWidget*)button);
+	transport_changed(parameters);
 }
 
 void linphone_gtk_show_parameters(void){
@@ -1432,11 +1482,12 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_ipv6_enabled(lc));
 	linphone_core_get_sip_transports(lc,&tr);
 
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_udp_port")),
-				tr.udp_port);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_tcp_port")),
-				tr.tcp_port);
-
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"disabled_udp_port")), tr.udp_port==0);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"disabled_tcp_port")), tr.tcp_port==0);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"random_udp_port")), tr.udp_port==-1);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"random_tcp_port")), tr.tcp_port==-1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_udp_port")), tr.udp_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"sip_tcp_port")), tr.tcp_port);
 
 	linphone_core_get_audio_port_range(lc, &min_port, &max_port);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")), min_port);
