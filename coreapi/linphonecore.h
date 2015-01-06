@@ -1027,11 +1027,11 @@ LINPHONE_PUBLIC LinphoneReason linphone_proxy_config_get_error(const LinphonePro
 **/
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg);
 
-/*
- * return the transport from either : service route, route, or addr
- * @returns cfg object
- * @return transport as string (I.E udp, tcp, tls, dtls)*/
-
+/**
+ * Get the transport from either service route, route or addr.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @returns The transport as a string (I.E udp, tcp, tls, dtls)
+**/
 LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg);
 
 
