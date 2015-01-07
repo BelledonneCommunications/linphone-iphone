@@ -684,6 +684,7 @@
 		F01A77EB18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
+		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
 		F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F070E6331A2622EC00E17AFD /* dialer_padding_left.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E62D1A2622EC00E17AFD /* dialer_padding_left.png */; };
@@ -1608,6 +1609,7 @@
 		F03CA84118C72F1A0008889D /* UITextViewNoDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITextViewNoDefine.h; sourceTree = "<group>"; };
 		F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITextViewNoDefine.m; sourceTree = "<group>"; };
 		F04892FE180C3296002FED35 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ImageOptim.sh; sourceTree = "<group>"; };
+		F05BAA611A5D594E00411815 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		F0642EF719DAF32E009DB336 /* DTWeakSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWeakSupport.h; sourceTree = "<group>"; };
 		F066515317F9A02E0064280C /* UITransparentTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentTVCell.h; sourceTree = "<group>"; };
@@ -1797,6 +1799,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
 				22509042196BD902007863F6 /* libopenh264.a in Frameworks */,
 				15017E701773578400784ACB /* libxml2.a in Frameworks */,
@@ -2165,6 +2168,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F05BAA611A5D594E00411815 /* libz.dylib */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,

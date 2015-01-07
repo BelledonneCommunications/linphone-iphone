@@ -169,12 +169,10 @@ list-packages:
 build-submodules: $(addprefix build-,$(SUBMODULES_LIST))
 
 .NOTPARALLEL build-linphone: init build-submodules mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
-	cd $(LINPHONE_BUILD_DIR) \
-	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig \
-	CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	make newdate \
-	&& make \
-	&& make install
+	cd $(LINPHONE_BUILD_DIR) && \
+	export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig && \
+	export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) && \
+	make newdate && make all && make install
 	mkdir -p $(prefix)/share/linphone/tutorials && cp -f $(LINPHONE_SRC_DIR)/coreapi/help/*.c $(prefix)/share/linphone/tutorials/
 
 clean-linphone: $(addprefix clean-,$(SUBMODULES_LIST)) $(addprefix clean-,$(MEDIASTREAMER_PLUGINS))
