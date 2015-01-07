@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Linphone
-GenericName=web-phone
+GenericName=Web-phone
 Comment=Linphone is a web-phone
 Type=Application
 Exec=linphone
