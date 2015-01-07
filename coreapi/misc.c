@@ -177,7 +177,7 @@ static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
 static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, int maxbw){
 	if (linphone_core_payload_type_is_vbr(lc,pt)){
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
-			ms_message("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
+			ms_debug("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
 			return pt->normal_bitrate/1000;
 		}
 		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
