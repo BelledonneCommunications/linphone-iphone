@@ -879,7 +879,7 @@ static void lookup_dial_plan(const char *ccc, dial_plan_t *plan){
 	strcpy(plan->ccc,ccc);
 }
 
-static bool_t is_a_phone_number(const char *username){
+bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username){
 	const char *p;
 	for(p=username;*p!='\0';++p){
 		if (isdigit(*p) ||
@@ -928,7 +928,7 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 
 
 bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
-	if (is_a_phone_number(username)){
+	if (linphone_proxy_config_is_phone_number(proxy, username)){
 		char *flatten;
 		flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s'",flatten);

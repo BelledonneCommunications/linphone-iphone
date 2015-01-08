@@ -1040,6 +1040,15 @@ LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
+
+/**
+ * Detect if the given input is a phone number or not.
+ * @param proxy #LinphoneProxyConfig argument, unused yet but may contain useful data. Can be NULL.
+ * @param username string to parse.
+ * @return TRUE if input is a phone number, FALSE otherwise.
+**/
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username);
+
 /**
  * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
  * or +33888444222 depending on the #LinphoneProxyConfig argument. This function will always
