@@ -1634,6 +1634,7 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->callbacks=linphone_chat_message_cbs_new();
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message = NULL;
+	msg->is_read=TRUE;
 	msg->file_transfer_information = linphone_content_copy(initial_content);
 	msg->dir=LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
