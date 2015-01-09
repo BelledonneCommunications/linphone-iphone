@@ -1581,7 +1581,7 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
-	
+
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
@@ -1707,17 +1707,17 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCall *out_call;
 	LinphoneVideoPolicy vpol={0};
-	
+
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
-	
+
 	vpol.automatically_initiate=TRUE;
 	vpol.automatically_accept=TRUE;
 	linphone_core_set_video_policy(pauline->lc,&vpol);
 	linphone_core_set_video_policy(marie->lc,&vpol);
-	
+
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
 
@@ -1733,20 +1733,20 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1));
 	/*audio stream shall not have been requested to start*/
 	CU_ASSERT_PTR_NULL(linphone_core_get_current_call(pauline->lc)->audiostream->soundread);
-	
+
 	CU_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(out_call))==TRUE);
 	CU_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))==TRUE);
-	
+
 	linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
-	
+
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	
+
 	linphone_core_terminate_call(marie->lc, out_call);
-	
+
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	
+
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2223,12 +2223,17 @@ static void call_with_mkv_file_player(void) {
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+#ifdef ANDROID
+	/*inter-correlation process is too much CPU consuming ending in a 20 minutes test on Android...*/
+	remove(recordpath);
+#else
 	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
 	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
 	if(similar>threshold && similar<=1.0) {
 		remove(recordpath);
 	}
+#endif
 	ms_free(recordpath);
 
 end:
