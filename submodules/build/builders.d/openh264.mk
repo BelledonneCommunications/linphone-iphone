@@ -44,10 +44,12 @@ update-openh264: patch-openh264
 	&& cd $(BUILDER_BUILD_DIR)/$(openh264_dir)/ \
 	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(openh264_dir)/* .
 
-build-openh264: update-openh264
+make-target-%:
 	cd $(BUILDER_BUILD_DIR)/$(openh264_dir) \
-	&& make CC="xcrun clang" CXX="xcrun clang++" AR="xcrun ar" RANLIB="xcrun ranlib" libraries OS=ios ARCH=$(ARCH) PREFIX=$(prefix)\
-	&& make install OS=ios ARCH=$(ARCH) PREFIX=$(prefix)
+	&& echo ===== OpenH264: make $* ===== \
+	&& make CC="xcrun clang" CXX="xcrun clang++" AR="xcrun ar" LD="xcrun clang" RANLIB="xcrun ranlib" OS=ios ARCH=$(ARCH) PREFIX=$(prefix) $*
+
+build-openh264: update-openh264 make-target-libraries make-target-install
 
 clean-openh264:
 	cd $(BUILDER_BUILD_DIR)/$(openh264_dir) \
