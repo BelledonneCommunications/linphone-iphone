@@ -143,22 +143,19 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [[LinphoneManager instance].fastAddressBook reload];
 }
 
-- (void)newContact {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
-    contact = NULL;
-    [self resetData];
-    contact = ABPersonCreate();
-    [tableController setContact:contact];
-    [self enableEdit:FALSE];
-    [[tableController tableView] reloadData];
+- (void) selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
+	contact = NULL;
+	[self resetData];
+	contact = acontact;
+	[tableController setContact:contact];
+
+	if (reload) {
+		[self enableEdit:FALSE];
+		[[tableController tableView] reloadData];
+	}
 }
 
-- (void)newContact:(NSString*)address {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
-    contact = NULL;
-    [self resetData];
-    contact = ABPersonCreate();
-    [tableController setContact:contact];
+- (void) addCurrentContactContactField:(NSString*)address {
 
 	LinphoneAddress *linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
@@ -174,53 +171,31 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 	}
 	linphone_address_destroy(linphoneAddress);
 
-    [self enableEdit:FALSE];
-    [[tableController tableView] reloadData];
+	[self enableEdit:FALSE];
+	[[tableController tableView] reloadData];
+}
+
+- (void)newContact {
+	[self selectContact:ABPersonCreate() andReload:YES];
+}
+
+- (void)newContact:(NSString*)address {
+	[self selectContact:ABPersonCreate() andReload:NO];
+	[self addCurrentContactContactField:address];
 }
 
 - (void)editContact:(ABRecordRef)acontact {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
-    contact = NULL;
-    [self resetData];
-    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:contact];
-    [self enableEdit:FALSE];
-    [[tableController tableView] reloadData];
+	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:YES];
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
-    contact = NULL;
-    [self resetData];
-    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:contact];
-    if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
-        LinphoneAddress *linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-        NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
-        if ([username rangeOfString:@"@"].length > 0) {
-            [tableController addEmailField:username];
-        } else {
-            [tableController addSipField:address];
-        }
-        linphone_address_destroy(linphoneAddress);
-    } else {
-        [tableController addSipField:address];
-    }
-    [self enableEdit:FALSE];
-    [[tableController tableView] reloadData];
+	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:NO];
+	[self addCurrentContactContactField:address];
 }
-
-
-#pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Set contact %p", acontact];
-    contact = NULL;
-    [self resetData];
-    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:contact];
+	[self selectContact:ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact)) andReload:NO];
 }
-
 
 #pragma mark - ViewController Functions
 
