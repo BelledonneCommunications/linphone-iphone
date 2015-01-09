@@ -2511,7 +2511,7 @@ float linphone_call_get_record_volume(LinphoneCall *call){
  * 1-2 = very poor quality <br>
  * 0-1 = can't be worse, mostly unusable <br>
  *
- * @returns The function returns -1 if no quality measurement is available, for example if no
+ * @return The function returns -1 if no quality measurement is available, for example if no
  * active audio stream exist. Otherwise it returns the quality rating.
 **/
 float linphone_call_get_current_quality(LinphoneCall *call){

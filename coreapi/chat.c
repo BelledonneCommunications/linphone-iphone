@@ -484,7 +484,7 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
  * @param lc the linphone core
  * @param addr a linphone address.
- * @returns #LinphoneChatRoom where messaging can take place.
+ * @return #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
@@ -498,7 +498,7 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
  * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
  * @param lc The linphone core
  * @param to The destination address for messages.
- * @returns #LinphoneChatRoom where messaging can take place.
+ * @return #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);

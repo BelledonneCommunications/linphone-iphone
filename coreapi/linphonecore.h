@@ -729,7 +729,7 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  * The dtmf is automatically played to the user.
  * @param call The LinphoneCall object
  * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
- * @returns 0 if successful, -1 on error.
+ * @return 0 if successful, -1 on error.
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
 
@@ -740,7 +740,7 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
  * Sending is canceled if the call state changes to something not LinphoneCallStreamsRunning.
  * @param call The LinphoneCall object
  * @param dtmfs A dtmf sequence such as '123#123123'
- * @returns -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
+ * @return -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
 
@@ -1870,7 +1870,7 @@ LINPHONE_PUBLIC void linphone_core_v_table_set_user_data(LinphoneCoreVTable *tab
 /**
  * Gets a user data pointer in the vtable.
  * @param table the vtable
- * @returns the data attached to the vtable
+ * @return the data attached to the vtable
  */
 LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table);
 
@@ -1878,7 +1878,7 @@ LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *ta
  * Gets the current VTable.
  * This is meant only to be called from a callback to be able to get the user_data associated with the vtable that called the callback.
  * @param lc the linphonecore
- * @returns the vtable that called the last callback
+ * @return the vtable that called the last callback
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc);
 
