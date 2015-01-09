@@ -481,6 +481,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     [headerController setContact:contact];
 }
 
+- (void)addPhoneField:(NSString*)number {
+       int i = 0;
+       while(i < ContactSections_MAX && contactSections[i] != ContactSections_Number) ++i;
+       [self addEntry:[self tableView] section:i animated:FALSE value:number];
+}
+
 - (void)addSipField:(NSString*)address {
     int i = 0;
     while(i < ContactSections_MAX && contactSections[i] != ContactSections_Sip) ++i;

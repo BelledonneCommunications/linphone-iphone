@@ -350,7 +350,6 @@
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [UINavigationControllerEx removeBackground:viewController.view];
-    UIViewController *oldTopViewController = self.topViewController;
 
     [viewController viewWillAppear:animated]; // Force view
     UILabel *labelTitleView = [[UILabel alloc] init];
