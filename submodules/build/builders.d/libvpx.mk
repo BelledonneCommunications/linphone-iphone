@@ -1,10 +1,18 @@
+
+
+# /!\ Unset compiler env variable is set by user to avoid error in configure such as:
+# 1) Requested extra CFLAGS '-fno-strict-aliasing' not supported by compiler
+# OR
+# 2) Unable to invoke compiler
+unexport CC
+
 libvpx_dir?=externals/libvpx
 
 libvpx_configure_options=\
 	--enable-static   --disable-shared \
 	--disable-examples --disable-unit-tests \
 	--enable-realtime-only --enable-spatial-resampling \
-	--enable-vp8 --enable-multithread --disable-vp9 
+	--enable-vp8 --enable-multithread --disable-vp9
 
 
 ifeq ($(enable_debug),yes)
