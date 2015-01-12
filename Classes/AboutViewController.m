@@ -73,8 +73,11 @@
     
 	[linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 	
-    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-	 ,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
+    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@-b%@",
+										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]
+	 ];
 
     [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"%@ Core %s", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"], linphone_core_get_version()]];
     
