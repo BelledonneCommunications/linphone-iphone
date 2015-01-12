@@ -27,6 +27,10 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
+
 
 /*getline is not available on android...*/
 #ifdef ANDROID
@@ -100,22 +104,49 @@ LinphoneCoreManager* setup(bool_t enable_logs)  {
 	return marie;
 }
 
+#if HAVE_ZLIB
+/*returns uncompressed log file*/
+FILE* gzuncompress(const char* filepath) {
+		gzFile file = gzopen(filepath, "rb");
+		FILE *output = NULL;
+		char *newname = ms_strdup_printf("%s.txt", filepath);
+		char buffer[512];
+		output = fopen(newname, "w+");
+		while (gzread(file, buffer, 511) > 0) {
+			fprintf(output, buffer, strlen(buffer));
+		}
+
+		gzclose(file);
+		ms_free(newname);
+
+		fseek(output, 0, SEEK_SET);
+		return (FILE*)output;
+}
+#endif
+
 time_t check_file(LinphoneCoreManager* mgr)  {
 
 	time_t last_log = ms_time(NULL);
 	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
 	time_t  time_curr = -1;
 	uint32_t timediff = 0;
+	FILE *file = NULL;
 
-	CU_ASSERT_PTR_NOT_NULL(filepath);	
+	CU_ASSERT_PTR_NOT_NULL(filepath);
 
 	if (filepath != NULL) {
 		int line_count = 0;
-		FILE *file = fopen(filepath, "r");
 		char *line = NULL;
 		size_t line_size = 256;
 		struct tm tm_curr;
 		time_t time_prev = -1;
+
+#if HAVE_ZLIB
+		// 0) if zlib is enabled, we must decompress the file first
+		file = gzuncompress(filepath);
+#else
+		file = fopen(filepath, "r");
+#endif
 
 		// 1) expect to find folder name in filename path
 		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, liblinphone_tester_writable_dir_prefix));
@@ -124,7 +155,6 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		while (getline(&line, &line_size, file) != -1) {
 			// a) there should be at least 25 lines
 			++line_count;
-
 			// b) logs should be ordered by date (format: 2014-11-04 15:22:12:606)
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
