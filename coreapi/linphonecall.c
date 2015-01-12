@@ -1737,27 +1737,26 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 
 			if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
-			MSDtlsSrtpParams params;
-			char *certificate, *key;
-			memset(&params,0,sizeof(MSDtlsSrtpParams));
-			/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or default : linphone-dtls-default-identity */
-			/* This will parse the directory to find a matching fingerprint or generate it if not found */
-			/* returned string must be freed */
-			sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
+				MSDtlsSrtpParams params;
+				char *certificate, *key;
+				memset(&params,0,sizeof(MSDtlsSrtpParams));
+				/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or default : linphone-dtls-default-identity */
+				/* This will parse the directory to find a matching fingerprint or generate it if not found */
+				/* returned string must be freed */
+				sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
 
-			if (key!= NULL && certificate!=NULL) {
-				params.pem_certificate = (char *)certificate;
-				params.pem_pkey = (char *)key;
-				params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
-				video_stream_enable_dtls(call->videostream,&params);
-				ms_free(certificate);
-				ms_free(key);
-			} else {
-				ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
-				/* TODO : check if encryption forced, if yes, stop call */
+				if (key!= NULL && certificate!=NULL) {
+					params.pem_certificate = (char *)certificate;
+					params.pem_pkey = (char *)key;
+					params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
+					video_stream_enable_dtls(call->videostream,&params);
+					ms_free(certificate);
+					ms_free(key);
+				} else {
+					ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
+					/* TODO : check if encryption forced, if yes, stop call */
+				}
 			}
-		}
-
 		}else{
 			call->videostream=video_stream_new_with_sessions(&call->sessions[1]);
 		}
@@ -2166,8 +2165,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
 				if (crypto_idx >= 0) {
-					media_stream_set_srtp_recv_key_b64(&call->audiostream->ms,stream->crypto[0].algo,stream->crypto[0].master_key);
-					media_stream_set_srtp_send_key_b64(&call->audiostream->ms,stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+					media_stream_set_srtp_recv_key_b64(&(call->audiostream->ms.sessions),stream->crypto[0].algo,stream->crypto[0].master_key);
+					media_stream_set_srtp_send_key_b64(&(call->audiostream->ms.sessions),stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 				} else {
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
 				}
@@ -2285,8 +2284,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
 					if (crypto_idx >= 0) {
-						media_stream_set_srtp_recv_key_b64(&call->videostream->ms,vstream->crypto[0].algo,vstream->crypto[0].master_key);
-						media_stream_set_srtp_send_key_b64(&call->videostream->ms,vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+						media_stream_set_srtp_recv_key_b64(&(call->videostream->ms.sessions),vstream->crypto[0].algo,vstream->crypto[0].master_key);
+						media_stream_set_srtp_send_key_b64(&(call->videostream->ms.sessions),vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 					}
 				}
 				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
@@ -2444,9 +2443,9 @@ static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDes
 	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
 	if (crypto_idx >= 0) {
 		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
-			media_stream_set_srtp_send_key_b64(ms,new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+			media_stream_set_srtp_send_key_b64(&(ms->sessions),new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
-			media_stream_set_srtp_recv_key_b64(ms,new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
+			media_stream_set_srtp_recv_key_b64(&(ms->sessions),new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
 		}
 		return TRUE;
 	} else {
