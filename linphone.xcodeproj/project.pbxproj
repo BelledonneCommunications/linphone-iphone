@@ -3789,7 +3789,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "#increment build number each time we build\n\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"\n\n\n\n\n";
+			shellScript = "$SRCROOT/Tools/buildNumber.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
