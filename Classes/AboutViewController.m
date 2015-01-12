@@ -20,6 +20,7 @@
 #import "AboutViewController.h"
 #import "LinphoneManager.h"
 #include "linphone/lpconfig.h"
+#include "LinphoneIOSVersion.h"
 
 @implementation AboutViewController
 
@@ -73,10 +74,9 @@
     
 	[linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 	
-    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@-b%@",
+    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@",
 										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
-										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]
+										 [NSString stringWithUTF8String:LINPHONE_IOS_VERSION]]
 	 ];
 
     [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"%@ Core %s", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"], linphone_core_get_version()]];
