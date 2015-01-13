@@ -127,10 +127,11 @@ FILE* gzuncompress(const char* filepath) {
 		char buffer[512];
 		output = fopen(newname, "w+");
 		while (gzread(file, buffer, 511) > 0) {
-			fprintf(output, buffer, strlen(buffer));
+			fputs(buffer, output);
+			memset(buffer, 0, strlen(buffer));
 		}
 
-		gzclose(file);
+		CU_ASSERT_EQUAL(gzclose(file), Z_OK);
 		ms_free(newname);
 
 		fseek(output, 0, SEEK_SET);
