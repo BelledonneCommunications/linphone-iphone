@@ -88,10 +88,24 @@ size_t getline(char **lineptr, size_t *n, FILE *stream) {
 }
 #endif
 
+static LinphoneLogCollectionState old_collection_state;
+void collect_init()  {
+	old_collection_state = linphone_core_log_collection_enabled();
+	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
+}
+
+void collect_cleanup(LinphoneCoreManager *marie)  {
+	linphone_core_manager_destroy(marie);
+
+	linphone_core_enable_log_collection(old_collection_state);
+	linphone_core_reset_log_collection();
+}
+
 LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
 	int timeout = 300;
 
+	collect_init();
 	linphone_core_enable_log_collection(enable_logs);
 
 	marie = linphone_core_manager_new( "marie_rc");
@@ -170,48 +184,35 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		free(line);
 		fclose(file);
 		ms_free(filepath);
-	}
 
-	timediff = labs((long int)time_curr - (long int)last_log);
+		timediff = labs((long int)time_curr - (long int)last_log);
 
-	CU_ASSERT_TRUE( timediff <= 1 );
-	if( !(timediff <= 1) ){
-		ms_error("time_curr: %ld, last_log: %ld timediff: %d", time_curr, last_log, timediff );
+		CU_ASSERT_TRUE( timediff <= 1 );
+		if( !(timediff <= 1) ){
+			ms_error("time_curr: %ld, last_log: %ld timediff: %d", time_curr, last_log, timediff );
+		}
 	}
 	// return latest time in file
 	return time_curr;
 }
 
-static LinphoneLogCollectionState old_collection_state;
-static int collect_init()  {
-	old_collection_state = linphone_core_log_collection_enabled();
-	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
-	return 0;
-}
-
-static int collect_cleanup()  {
-	linphone_core_enable_log_collection(old_collection_state);
-	linphone_core_reset_log_collection();
-	return 0;
-}
-
 static void collect_files_disabled()  {
 	LinphoneCoreManager* marie = setup(FALSE);
 	CU_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_filled() {
 	LinphoneCoreManager* marie = setup(TRUE);
 	check_file(marie);
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_small_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
 	linphone_core_set_log_collection_max_file_size(5000);
 	check_file(marie);
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_changing_size()  {
@@ -226,7 +227,7 @@ static void collect_files_changing_size()  {
 
 	check_file(marie);
 
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 test_t log_collection_tests[] = {
@@ -238,8 +239,8 @@ test_t log_collection_tests[] = {
 
 test_suite_t log_collection_test_suite = {
 	"LogCollection",
-	collect_init,
-	collect_cleanup,
+	NULL,
+	NULL,
 	sizeof(log_collection_tests) / sizeof(log_collection_tests[0]),
 	log_collection_tests
 };
