@@ -62,7 +62,7 @@ case $target in
 	*mingw*)
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
-		LIBS="$LIBS -lws2_32"
+		LIBS="$LIBS -L/lib -lws2_32"
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
@@ -272,28 +272,39 @@ if test "$build_upnp" != "false" ; then
 fi
 
 dnl check zlib
-PKG_CHECK_MODULES(ZLIB, [zlib], [found_zlib=yes], [found_zlib=no])
-if test "x$found_zlib" = "xno" ; then
-	AC_CHECK_LIB(z, inflate,
-		[AC_CHECK_HEADER([zlib.h],
-		[AC_COMPILE_IFELSE(
-			[AC_LANG_PROGRAM([[
-			 #include <zlib.h>
-			 #if !defined(ZLIB_VERNUM) || (ZLIB_VERNUM < 0x1230)
-			 // compile error
-			 #endif
-		]],[])],
-		[found_zlib=yes])])])
+AC_ARG_ENABLE(zlib,
+	[AS_HELP_STRING([--disable-zlib], [Disable ZLib support])],
+	[case "${enableval}" in
+		yes)	build_zlib=true ;;
+		no)	build_zlib=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-zlib) ;;
+	esac],
+	[build_zlib=auto]
+)
+if test "$build_zlib" != "false" ; then
+	PKG_CHECK_MODULES(ZLIB, [zlib], [found_zlib=yes], [found_zlib=no])
 	if test "x$found_zlib" = "xno" ; then
-		AC_MSG_NOTICE([zlib library and headers not found])
+		AC_CHECK_LIB(z, inflate,
+			[AC_CHECK_HEADER([zlib.h],
+			[AC_COMPILE_IFELSE(
+				[AC_LANG_PROGRAM([[
+				 #include <zlib.h>
+				 #if !defined(ZLIB_VERNUM) || (ZLIB_VERNUM < 0x1230)
+				 // compile error
+				 #endif
+			]],[])],
+			[found_zlib=yes])])])
+		if test "x$found_zlib" = "xno" ; then
+			AC_MSG_NOTICE([zlib library and headers not found])
+		else
+			AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
+			ZLIBS_LIBS='-z'
+			AC_SUBST(ZLIB_LIBS)
+		fi
 	else
+		AC_MSG_NOTICE([ZLIB found])
 		AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
-		ZLIBS_LIBS='-z'
-		AC_SUBST(ZLIB_LIBS)
 	fi
-else
-	AC_MSG_NOTICE([ZLIB found])
-	AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
 fi
 
 

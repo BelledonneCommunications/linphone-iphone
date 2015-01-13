@@ -6003,7 +6003,7 @@ void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTran
  *
  * @note Remote RTP statistics is not implemented yet.
  *
- * @returns 0 or -1 if no call is running.
+ * @return 0 or -1 if no call is running.
 **/
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote){

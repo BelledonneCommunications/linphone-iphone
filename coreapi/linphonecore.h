@@ -730,7 +730,7 @@ LINPHONE_PUBLIC bool_t linphone_call_media_in_progress(LinphoneCall *call);
  * The dtmf is automatically played to the user.
  * @param call The LinphoneCall object
  * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
- * @returns 0 if successful, -1 on error.
+ * @return 0 if successful, -1 on error.
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
 
@@ -741,7 +741,7 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmf(LinphoneCall *lc,char dtmf);
  * Sending is canceled if the call state changes to something not LinphoneCallStreamsRunning.
  * @param call The LinphoneCall object
  * @param dtmfs A dtmf sequence such as '123#123123'
- * @returns -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
+ * @return -2 if there is already a DTMF sequence, -1 if call is not ready, 0 otherwise.
 **/
 LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
 
@@ -963,7 +963,7 @@ LINPHONE_PUBLIC int linphone_proxy_config_get_quality_reporting_interval(Linphon
 /**
  * Get the registration state of the given proxy config.
  * @param[in] obj #LinphoneProxyConfig object.
- * @returns The registration state of the proxy config.
+ * @return The registration state of the proxy config.
 **/
 LINPHONE_PUBLIC	LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *obj);
 
@@ -972,21 +972,21 @@ LINPHONE_PUBLIC	bool_t linphone_proxy_config_is_registered(const LinphoneProxyCo
 /**
  * Get the domain name of the given proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
- * @returns The domain name of the proxy config.
+ * @return The domain name of the proxy config.
 **/
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
 /**
  * Get the realm of the given proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
- * @returns The realm of the proxy config.
+ * @return The realm of the proxy config.
 **/
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_realm(const LinphoneProxyConfig *cfg);
 /**
  * Set the realm of the given proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param[in] realm New realm value.
- * @returns The realm of the proxy config.
+ * @return The realm of the proxy config.
 **/
 LINPHONE_PUBLIC	void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char * realm);
 
@@ -1007,7 +1007,7 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_contact_uri_parameters(con
 /**
  * Get the #LinphoneCore object to which is associated the #LinphoneProxyConfig.
  * @param[in] obj #LinphoneProxyConfig object.
- * @returns The #LinphoneCore object to which is associated the #LinphoneProxyConfig.
+ * @return The #LinphoneCore object to which is associated the #LinphoneProxyConfig.
 **/
 LINPHONE_PUBLIC LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
@@ -1017,22 +1017,22 @@ LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const Linphon
 /**
  * Get the reason why registration failed when the proxy config state is LinphoneRegistrationFailed.
  * @param[in] cfg #LinphoneProxyConfig object.
- * @returns The reason why registration failed for this proxy config.
+ * @return The reason why registration failed for this proxy config.
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 
 /**
  * Get detailed information why registration failed when the proxy config state is LinphoneRegistrationFailed.
  * @param[in] cfg #LinphoneProxyConfig object.
- * @returns The details why registration failed for this proxy config.
+ * @return The details why registration failed for this proxy config.
 **/
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg);
 
-/*
- * return the transport from either : service route, route, or addr
- * @returns cfg object
- * @return transport as string (I.E udp, tcp, tls, dtls)*/
-
+/**
+ * Get the transport from either service route, route or addr.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return The transport as a string (I.E udp, tcp, tls, dtls)
+**/
 LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg);
 
 
@@ -1041,10 +1041,27 @@ LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
 SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
+
 /**
- * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
+ * Detect if the given input is a phone number or not.
+ * @param proxy #LinphoneProxyConfig argument, unused yet but may contain useful data. Can be NULL.
+ * @param username string to parse.
+ * @return TRUE if input is a phone number, FALSE otherwise.
+**/
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username);
+
+/**
+ * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
+ * or +33888444222 depending on the #LinphoneProxyConfig argument. This function will always
+ * generate a normalized username; if input is not a phone number, output will be a copy of input.
+ * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol.
+ * @param username the string to parse
+ * @param result the newly normalized number
+ * @param result_len the size of the normalized number \a result
+ * @return TRUE if a phone number was recognized, FALSE otherwise.
  */
-LINPHONE_PUBLIC	int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username,
+																char *result, size_t result_len);
 
 /**
  * Set default privacy policy for all calls routed through this proxy.
@@ -1440,7 +1457,7 @@ LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
 /**
  * Delete a message from the chat room history.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
- * @param[in] msg The #LinphoneChatMessage object to remove. 
+ * @param[in] msg The #LinphoneChatMessage object to remove.
  */
 
 LINPHONE_PUBLIC void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
@@ -1840,7 +1857,7 @@ typedef struct _LinphoneCoreVTable{
 
 /**
  * Instantiate a vtable with all arguments set to NULL
- * @returns newly allocated vtable
+ * @return newly allocated vtable
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new();
 
@@ -1854,7 +1871,7 @@ LINPHONE_PUBLIC void linphone_core_v_table_set_user_data(LinphoneCoreVTable *tab
 /**
  * Gets a user data pointer in the vtable.
  * @param table the vtable
- * @returns the data attached to the vtable
+ * @return the data attached to the vtable
  */
 LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table);
 
@@ -1862,7 +1879,7 @@ LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *ta
  * Gets the current VTable.
  * This is meant only to be called from a callback to be able to get the user_data associated with the vtable that called the callback.
  * @param lc the linphonecore
- * @returns the vtable that called the last callback 
+ * @return the vtable that called the last callback
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc);
 
@@ -1914,7 +1931,7 @@ typedef enum _LinphoneLogCollectionState {
 /**
  * Tells whether the linphone core log collection is enabled.
  * @ingroup misc
- * @returns The state of the linphone core log collection.
+ * @return The state of the linphone core log collection.
  */
 LINPHONE_PUBLIC LinphoneLogCollectionState linphone_core_log_collection_enabled(void);
 
@@ -1928,7 +1945,7 @@ LINPHONE_PUBLIC void linphone_core_enable_log_collection(LinphoneLogCollectionSt
 /**
  * Get the path where the log files will be written for log collection.
  * @ingroup misc
- * @returns The path where the log files will be written.
+ * @return The path where the log files will be written.
  */
 LINPHONE_PUBLIC const char * linphone_core_get_log_collection_path(void);
 
@@ -1942,7 +1959,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_path(const char *path);
 /**
  * Get the prefix of the filenames that will be used for log collection.
  * @ingroup misc
- * @returns The prefix of the filenames used for log collection.
+ * @return The prefix of the filenames used for log collection.
  */
 LINPHONE_PUBLIC const char * linphone_core_get_log_collection_prefix(void);
 
@@ -1956,7 +1973,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_collection_prefix(const char *prefix)
 /**
  * Get the max file size in bytes of the files used for log collection.
  * @ingroup misc
- * @returns The max file size in bytes of the files used for log collection.
+ * @return The max file size in bytes of the files used for log collection.
  */
 LINPHONE_PUBLIC int linphone_core_get_log_collection_max_file_size(void);
 
@@ -2140,7 +2157,7 @@ LINPHONE_PUBLIC	int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall 
  * @param[in] lc #LinphoneCore object.
  * @param[in] call The #LinphoneCall to redirect.
  * @param[in] redirect_uri The URI to redirect the call to.
- * @returns 0 if successful, -1 on error.
+ * @return 0 if successful, -1 on error.
  * @ingroup call_control
  */
 LINPHONE_PUBLIC int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
@@ -2246,7 +2263,7 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enabl
 /**
  * Tells whether DNS SRV resolution is enabled.
  * @param[in] lc #LinphoneCore object.
- * @returns TRUE if DNS SRV resolution is enabled, FALSE if disabled.
+ * @return TRUE if DNS SRV resolution is enabled, FALSE if disabled.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
@@ -2264,7 +2281,7 @@ LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *cod
  * Tells whether the specified payload type is enabled.
  * @param[in] lc #LinphoneCore object.
  * @param[in] pt The #LinphonePayloadType we want to know is enabled or not.
- * @returns TRUE if the payload type is enabled, FALSE if disabled.
+ * @return TRUE if the payload type is enabled, FALSE if disabled.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt);
@@ -2273,7 +2290,7 @@ LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, cons
  * Tells whether the specified payload type represents a variable bitrate codec.
  * @param[in] lc #LinphoneCore object.
  * @param[in] pt The #LinphonePayloadType we want to know
- * @returns TRUE if the payload type represents a VBR codec, FALSE if disabled.
+ * @return TRUE if the payload type represents a VBR codec, FALSE if disabled.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayloadType *pt);
@@ -2398,7 +2415,7 @@ LINPHONE_PUBLIC void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *
 /**
  * Tells whether the audio adaptive jitter compensation is enabled.
  * @param[in] lc #LinphoneCore object
- * @returns TRUE if the audio adaptive jitter compensation is enabled, FALSE otherwise.
+ * @return TRUE if the audio adaptive jitter compensation is enabled, FALSE otherwise.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore *lc);
@@ -2418,7 +2435,7 @@ LINPHONE_PUBLIC void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *
 /**
  * Tells whether the video adaptive jitter compensation is enabled.
  * @param[in] lc #LinphoneCore object
- * @returns TRUE if the video adaptive jitter compensation is enabled, FALSE otherwise.
+ * @return TRUE if the video adaptive jitter compensation is enabled, FALSE otherwise.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore *lc);
@@ -2497,7 +2514,7 @@ LINPHONE_PUBLIC	void linphone_core_set_stun_server(LinphoneCore *lc, const char 
 /**
  * Get the STUN server address being used.
  * @param[in] lc #LinphoneCore object
- * @returns The STUN server address being used.
+ * @return The STUN server address being used.
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *lc);
@@ -2542,7 +2559,7 @@ LINPHONE_PUBLIC void linphone_core_set_nat_address(LinphoneCore *lc, const char 
 /**
  * Get the public IP address of NAT being used.
  * @param[in] lc #LinphoneCore object.
- * @returns The public IP address of NAT being used.
+ * @return The public IP address of NAT being used.
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC const char *linphone_core_get_nat_address(const LinphoneCore *lc);
@@ -2558,7 +2575,7 @@ LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, Linphon
 /**
  * Get the policy that is used to pass through firewalls.
  * @param[in] lc #LinphoneCore object.
- * @returns The #LinphoneFirewallPolicy that is being used.
+ * @return The #LinphoneFirewallPolicy that is being used.
  * @ingroup network_parameters
  */
 LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
@@ -2628,7 +2645,7 @@ LINPHONE_PUBLIC	void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t 
 /**
  * Tells whether echo limiter is enabled.
  * @param[in] lc #LinphoneCore object.
- * @returns TRUE if the echo limiter is enabled, FALSE otherwise.
+ * @return TRUE if the echo limiter is enabled, FALSE otherwise.
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC	bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
@@ -2658,7 +2675,7 @@ LINPHONE_PUBLIC void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable);
 /**
  * Tells whether the microphone is enabled.
  * @param[in] lc #LinphoneCore object
- * @returns TRUE if the microphone is enabled, FALSE if disabled.
+ * @return TRUE if the microphone is enabled, FALSE if disabled.
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_mic_enabled(LinphoneCore *lc);
@@ -2695,7 +2712,7 @@ LINPHONE_PUBLIC void linphone_core_clear_call_logs(LinphoneCore *lc);
  * Get the number of missed calls.
  * Once checked, this counter can be reset with linphone_core_reset_missed_calls_count().
  * @param[in] lc #LinphoneCore object.
- * @returns The number of missed calls.
+ * @return The number of missed calls.
 **/
 LINPHONE_PUBLIC int linphone_core_get_missed_calls_count(LinphoneCore *lc);
 
@@ -2786,7 +2803,7 @@ LINPHONE_PUBLIC void linphone_core_enable_video_source_reuse(LinphoneCore* lc, b
 /**
  * Tells whether video capture is enabled.
  * @param[in] lc #LinphoneCore object.
- * @returns TRUE if video capture is enabled, FALSE if disabled.
+ * @return TRUE if video capture is enabled, FALSE if disabled.
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_video_capture_enabled(LinphoneCore *lc);
@@ -2794,7 +2811,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_capture_enabled(LinphoneCore *lc);
 /**
  * Tells whether video display is enabled.
  * @param[in] lc #LinphoneCore object.
- * @returns TRUE if video display is enabled, FALSE if disabled.
+ * @return TRUE if video display is enabled, FALSE if disabled.
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
@@ -2818,7 +2835,7 @@ LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const Linphon
 /**
  * Get the name of the current preferred video size for sending.
  * @param[in] lc #LinphoneCore object.
- * @returns A string containing the name of the current preferred video size (to be freed with ms_free()).
+ * @return A string containing the name of the current preferred video size (to be freed with ms_free()).
  */
 LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
@@ -2858,7 +2875,7 @@ LINPHONE_PUBLIC int linphone_core_set_static_picture(LinphoneCore *lc, const cha
 /**
  * Get the path to the image file streamed when "Static picture" is set as the video device.
  * @param[in] lc #LinphoneCore object.
- * @returns The path to the image file streamed when "Static picture" is set as the video device.
+ * @return The path to the image file streamed when "Static picture" is set as the video device.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC const char *linphone_core_get_static_picture(LinphoneCore *lc);
@@ -3015,7 +3032,7 @@ LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const
 /**
  * Get the path to the file storing the zrtp secrets cache.
  * @param[in] lc #LinphoneCore object.
- * @returns The path to the file storing the zrtp secrets cache.
+ * @return The path to the file storing the zrtp secrets cache.
  * @ingroup initializing
  */
 LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
@@ -3080,7 +3097,7 @@ LINPHONE_PUBLIC	bool_t linphone_core_media_encryption_supported(const LinphoneCo
  * Choose the media encryption policy to be used for RTP packets.
  * @param[in] lc #LinphoneCore object.
  * @param[in] menc The media encryption policy to be used.
- * @returns 0 if successful, any other value otherwise.
+ * @return 0 if successful, any other value otherwise.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc);
@@ -3088,7 +3105,7 @@ LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, Linphon
 /**
  * Get the media encryption policy being used for RTP packets.
  * @param[in] lc #LinphoneCore object.
- * @returns The media encryption policy being used.
+ * @return The media encryption policy being used.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
@@ -3096,7 +3113,7 @@ LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_core_get_media_encryption(Linph
 /**
  * Get behaviour when encryption parameters negociation fails on outgoing call.
  * @param[in] lc #LinphoneCore object.
- * @returns TRUE means the call will fail; FALSE means an INVITE will be resent with encryption disabled.
+ * @return TRUE means the call will fail; FALSE means an INVITE will be resent with encryption disabled.
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);

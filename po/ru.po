@@ -4,7 +4,7 @@
 #
 # Translators:
 # AlexL <loginov.alex.valer@gmail.com>, 2014
-# AlexL <loginov.alex.valer@gmail.com>, 2014
+# AlexL <loginov.alex.valer@gmail.com>, 2014-2015
 # AlexL <loginov.alex.valer@gmail.com>, 2014
 # Maxim Prokopyev <jazzelastic@gmail.com>, 2010
 # Simon Morlat <linphone@free.fr>, 2001
@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 12:28+0100\n"
-"PO-Revision-Date: 2015-01-06 11:29+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-01-13 16:18+0100\n"
+"PO-Revision-Date: 2015-01-07 08:31+0000\n"
+"Last-Translator: AlexL <loginov.alex.valer@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ru/)\n"
 "Language: ru\n"
@@ -146,7 +146,7 @@ msgstr "Запустить помощника аудио"
 
 #: ../gtk/main.c:172
 msgid "Run self test and exit 0 if succeed"
-msgstr ""
+msgstr "Запустить самотест и выйти при успехе со статусом 0"
 
 #: ../gtk/main.c:1083
 #, c-format
@@ -1264,7 +1264,7 @@ msgstr "Порт SIP/UDP"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Random"
-msgstr ""
+msgstr "Случайно"
 
 #: ../gtk/parameters.ui.h:22
 msgid "SIP/TCP port"
@@ -1380,7 +1380,7 @@ msgstr "Метод вывода видео:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "Show camera preview"
-msgstr ""
+msgstr "Показать предпросмотр с камеры"
 
 #: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
@@ -1882,7 +1882,7 @@ msgstr ""
 "Должно выглядеть как sip:имя_пользователя@домен_прокси, как например, sip:"
 "alice@example.net"
 
-#: ../coreapi/proxy.c:1390
+#: ../coreapi/proxy.c:1391
 #, c-format
 msgid "Could not login as %s"
 msgstr "Невозможно зайти как: %s"

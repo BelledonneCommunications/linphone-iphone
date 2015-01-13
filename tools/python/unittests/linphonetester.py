@@ -9,6 +9,7 @@ import time
 
 
 test_domain = "sipopen.example.org"
+auth_domain = "sip.example.org"
 test_username = "liblinphone_tester"
 test_password = "secret"
 test_route = "sip2.linphone.org"
@@ -21,6 +22,7 @@ else:
 
 
 def linphonetester_log_handler(level, msg):
+    import logging
     method = getattr(logging.getLogger("linphonetester"), level)
     if not msg.strip().startswith('[PYLINPHONE]'):
         msg = '[CORE] ' + msg

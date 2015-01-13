@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 12:28+0100\n"
-"PO-Revision-Date: 2015-01-06 11:31+0000\n"
+"POT-Creation-Date: 2015-01-13 16:18+0100\n"
+"PO-Revision-Date: 2015-01-06 11:41+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/fr/)\n"
@@ -1878,7 +1878,7 @@ msgstr ""
 "Elle doit être de la forme sip:username@domain, comme par example sip:"
 "alice@example.net"
 
-#: ../coreapi/proxy.c:1390
+#: ../coreapi/proxy.c:1391
 #, c-format
 msgid "Could not login as %s"
 msgstr "Echec de la connexion en tant que %s"

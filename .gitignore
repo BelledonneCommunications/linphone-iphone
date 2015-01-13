@@ -81,3 +81,4 @@ tester/linphone_log.txt
 .tx/linphone-gtk.linphonedesktopin/
 po/linphone.pot
 .tx/linphone-gtk.audio-assistantdesktopin/
+tester/linphone_log.gz.txt

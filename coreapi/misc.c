@@ -177,7 +177,7 @@ static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
 static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, int maxbw){
 	if (linphone_core_payload_type_is_vbr(lc,pt)){
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
-			ms_message("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
+			ms_debug("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
 			return pt->normal_bitrate/1000;
 		}
 		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
@@ -1449,7 +1449,7 @@ static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTranspo
  * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
  * This function must be used just after creating the core, before any call to linphone_core_iterate()
  * @param lc the linphone core
- * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+ * @return 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
  * @ingroup initializing
 **/
 int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){

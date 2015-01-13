@@ -879,7 +879,7 @@ static void lookup_dial_plan(const char *ccc, dial_plan_t *plan){
 	strcpy(plan->ccc,ccc);
 }
 
-static bool_t is_a_phone_number(const char *username){
+bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username){
 	const char *p;
 	for(p=username;*p!='\0';++p){
 		if (isdigit(*p) ||
@@ -927,9 +927,8 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 }
 
 
-int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
-	int numlen;
-	if (is_a_phone_number(username)){
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
+	if (linphone_proxy_config_is_phone_number(proxy, username)){
 		char *flatten;
 		flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s'",flatten);
@@ -938,7 +937,6 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 			/*no prefix configured, nothing else to do*/
 			strncpy(result,flatten,result_len);
 			ms_free(flatten);
-			return 0;
 		}else{
 			dial_plan_t dialplan;
 			lookup_dial_plan(proxy->dial_prefix,&dialplan);
@@ -949,8 +947,8 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 				/*eventually replace the plus*/
 				replace_plus(flatten,result,result_len,proxy->dial_escape_plus ? dialplan.icp : NULL);
 				ms_free(flatten);
-				return 0;
 			}else{
+				int numlen;
 				int i=0;
 				int skip;
 				numlen=strlen(flatten);
@@ -975,8 +973,11 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 				ms_free(flatten);
 			}
 		}
-	}else strncpy(result,username,result_len);
-	return 0;
+		return TRUE;
+	} else {
+		strncpy(result,username,result_len);
+		return FALSE;
+	}
 }
 
 /**
