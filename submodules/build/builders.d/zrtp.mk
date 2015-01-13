@@ -22,6 +22,11 @@
 bzrtp_dir?=bzrtp
 enable_zrtp?=yes
 
+configure-options=
+ifeq ($(LINPHONE_CCACHE), ccache)
+	configure-options+= --disable-strict
+endif
+
 $(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure:
 	@echo -e "\033[01;32m Running autogen for bzrtp in $(BUILDER_SRC_DIR)/$(bzrtp_dir) \033[0m"
 	cd $(BUILDER_SRC_DIR)/$(bzrtp_dir) && ./autogen.sh
@@ -30,9 +35,10 @@ $(BUILDER_BUILD_DIR)/$(bzrtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(bzrtp_dir)/conf
 	@echo -e "\033[01;32m Running configure in $(BUILDER_BUILD_DIR)/$(bzrtp_dir) \033[0m"
 	mkdir -p $(BUILDER_BUILD_DIR)/$(bzrtp_dir)
 	cd $(BUILDER_BUILD_DIR)/$(bzrtp_dir)/ \
+		&& host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
 		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 		$(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-		--enable-static
+		--enable-static ${configure-options}
 
 ifeq ($(enable_zrtp),yes)
 

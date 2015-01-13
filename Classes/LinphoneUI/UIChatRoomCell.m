@@ -45,7 +45,7 @@
 
 static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
-static const CGFloat CELL_MAX_WIDTH = 320.0f;
+//static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
@@ -105,6 +105,18 @@ static UIFont *CELL_FONT = nil;
 	
 }
 
++ (NSString*)decodeTextMessage:(const char*)text {
+    NSString* decoded = [NSString stringWithUTF8String:text];
+    if( decoded == nil ){
+        // couldn't decode the string as UTF8, do a lossy conversion
+        decoded = [NSString stringWithCString:text encoding:NSASCIIStringEncoding];
+        if( decoded == nil ){
+            decoded = @"(invalid string)";
+        }
+    }
+    return decoded;
+}
+
 - (void)update {
     if(chat == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
@@ -132,8 +144,8 @@ static UIFont *CELL_FONT = nil;
         __block LinphoneChatMessage *achat = chat;
         [[LinphoneManager instance].photoLibrary assetForURL:imageUrl resultBlock:^(ALAsset *asset) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
-                UIImage* image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
                 if(achat == self->chat) { //Avoid glitch and scrolling
+					UIImage* image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [messageImageView setImage:image];
                         [messageImageView setFullImageUrl:asset];
@@ -151,15 +163,19 @@ static UIFont *CELL_FONT = nil;
     } else {
         // simple text message
         [messageText setHidden:FALSE];
-        if (text ){
+        if ( text ){
+            NSString* nstext = [UIChatRoomCell decodeTextMessage:text];
+
             /* We need to use an attributed string here so that data detector don't mess
              * with the text style. See http://stackoverflow.com/a/20669356 */
+
             NSAttributedString* attr_text = [[NSAttributedString alloc]
-                                             initWithString:[NSString stringWithUTF8String:text]
+                                             initWithString:nstext
                                              attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
                                                           NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
             messageText.attributedText = attr_text;
             [attr_text release];
+
         } else {
             messageText.text = @"";
         }
@@ -225,7 +241,7 @@ static UIFont *CELL_FONT = nil;
     CGSize messageSize;
     const char* url  = linphone_chat_message_get_external_body_url(chat);
     const char* text = linphone_chat_message_get_text(chat);
-    NSString* messageText = text ? [NSString stringWithUTF8String:text] : @"";
+    NSString* messageText = text ? [UIChatRoomCell decodeTextMessage:text] : @"";
     if(url == nil) {
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
@@ -284,12 +300,14 @@ static UIFont *CELL_FONT = nil;
         CGRect messageFrame = [bubbleView frame];
         messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
         if(!is_outgoing) { // Inverted
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_incoming"]];
+            UIImage* image = [UIImage imageNamed:@"chat_bubble_incoming"];
+            image = [image resizableImageWithCapInsets:UIEdgeInsetsMake(26, 32, 34, 56)];
+            [backgroundImage setImage:image];
             messageFrame.origin.y += 5;
         } else {
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_outgoing"]];
+            UIImage* image = [UIImage imageNamed:@"chat_bubble_outgoing"];
+            image = [image resizableImageWithCapInsets:UIEdgeInsetsMake(14, 15, 25, 40)];
+            [backgroundImage setImage:image];
             messageFrame.origin.y -= 5;
         }
         [bubbleView setFrame:messageFrame];

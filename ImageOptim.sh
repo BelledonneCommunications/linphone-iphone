@@ -10,9 +10,9 @@ if [ "$CONFIGURATION" == "Debug" ]; then
     exit 0
 fi
 
-CONVERT=/opt/local/bin/convert
+CONVERT=$(which convert)
 CONVERTFILTER="-sharpen 1x0.0 -filter Catrom"
-OPTIPNG=/opt/local/bin/optipng
+OPTIPNG=$(which optipng)
 CMDS="${CONVERT} ${OPTIPNG}"
 for i in $CMDS; do
     command -v $i > /dev/null && continue || { echo "$i command not found"; exit 1; }
@@ -72,7 +72,7 @@ for PNG in $PNGS; do
     fi
 
     echo "Optimizing ${BASENAME} and ${BASENAME}@2x ..."
-    $OPTIPNG -quiet $DIR/$RETINAFILE > /dev/null
+    $OPTIPNG $DIR/$RETINAFILE > /dev/null
     $OPTIPNG -quiet $DIR/$STANDARDFILE > /dev/null
 
 done

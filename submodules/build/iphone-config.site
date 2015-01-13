@@ -10,22 +10,17 @@ if test "${host_alias}" = "i386-apple-darwin" ; then
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=i386"
 	MCPU=""
 	CLANG_TARGET_SPECIFIER=mios-simulator-version-min
-elif test "${host_alias}" = "armv6-apple-darwin" ; then 
-	ARCH=armv6
-	PLATFORM=OS
-	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
-	MCPU="-mcpu=arm1176jzf-s"
 elif test "${host_alias}" = "armv7-apple-darwin" ; then 
 	ARCH=armv7
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 	MCPU="-mcpu=cortex-a8"
-elif test "${host_alias}" = "armv7s-apple-darwin" ; then 
-	ARCH=armv7s
+elif test "${host_alias}" = "aarch64-apple-darwin" ; then 
+	ARCH=arm64
 	PLATFORM=OS
-	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
+	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"
 else 
-	echo "bad host ${host_alias} must be either i386-apple-darwin or armv[6,7,7s]-apple-darwin"
+	echo "bad host ${host_alias} must be either i386-apple-darwin or arm[v7,64]-apple-darwin"
 	exit
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
@@ -51,9 +46,16 @@ COMMON_FLAGS="$COMMON_FLAGS -Dsha256=polarssl_sha256"
 # silence clang unused operators. This is temporary, we should find a way to compile 3rd party with correct flags :(
 COMMON_FLAGS="-Qunused-arguments -Wno-unknown-warning-option -Wno-unused-command-line-argument-hard-error-in-future $COMMON_FLAGS"
 
-CC="xcrun clang -std=c99 $COMMON_FLAGS"
-OBJC="xcrun clang -std=c99 $COMMON_FLAGS"
-CXX="xcrun clang++ $COMMON_FLAGS"
+# you can use ccache to speed up build, in which case just define LINPHONE_CCACHE to 'ccache'
+
+if test "$LINPHONE_CCACHE" = "ccache" ; then 
+	# ccache doesn't like some options
+	COMMON_FLAGS="$COMMON_FLAGS -Wno-variadic-macros -Wno-pointer-arith -Wno-return-type -Wno-tautological-compare -Wno-unused-function -Wno-error"
+fi
+
+CC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
+OBJC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
+CXX="xcrun $LINPHONE_CCACHE clang++ $COMMON_FLAGS"
 LD="xcrun ld -arch ${ARCH}"
 AR="xcrun ar"
 RANLIB="xcrun ranlib"

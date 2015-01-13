@@ -26,13 +26,11 @@
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
-    BOOL started;
-	int savedMaxCall;
+    BOOL startedInBackground;
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo;
 
-@property (assign) BOOL started;
 @property (nonatomic, retain) UIAlertView *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;

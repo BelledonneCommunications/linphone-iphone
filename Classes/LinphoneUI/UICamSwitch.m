@@ -66,10 +66,6 @@
 #pragma mark - 
 
 -(void) touchUp:(id) sender {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot tigger camswitch button: Linphone core not ready"];
-        return;
-    }
 	const char *currentCamId = (char*)linphone_core_get_video_device([LinphoneManager getLc]);
 	const char **cameras=linphone_core_get_video_devices([LinphoneManager getLc]);
 	const char *newCamId=NULL;

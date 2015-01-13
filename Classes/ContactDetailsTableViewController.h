@@ -38,6 +38,7 @@
 @property (nonatomic, retain) IBOutlet UIContactDetailsFooter *footerController;
 
 - (BOOL)isValid;
+- (void)addPhoneField:(NSString*)number;
 - (void)addSipField:(NSString*)address;
 - (void)addEmailField:(NSString*)address;
 

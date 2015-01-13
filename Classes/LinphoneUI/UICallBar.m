@@ -151,7 +151,16 @@
         [LinphoneUtils buttonFixStates:videoButton];
         [LinphoneUtils buttonFixStates:videoButtonLandscape];
     }
-    
+
+    {
+        UIImageView* leftPaddingLandscape = (UIImageView*)[landscapeView viewWithTag:self.leftPadding.tag];
+        leftPaddingLandscape.image =[UIImage imageNamed:@"incall_padding_left_landscape.png"];
+    }
+    {
+        UIImageView* rightPaddingLandscape = (UIImageView*)[landscapeView viewWithTag:self.rightPadding.tag];
+        rightPaddingLandscape.image = [UIImage imageNamed:@"incall_padding_right_landscape.png"];
+    }
+
     {
         UIButton *speakerButtonLandscape = (UIButton*) [landscapeView viewWithTag:[speakerButton tag]];
         // Set selected+disabled background: IB lack !
@@ -289,10 +298,6 @@
 #pragma mark - 
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {  
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call bar: Linphone core not ready"];
-        return;
-    }
     LinphoneCore* lc = [LinphoneManager getLc]; 
 
     [speakerButton update];
@@ -339,10 +344,10 @@
     }
     
     switch(state) {
-        LinphoneCallEnd:
-        LinphoneCallError:
-        LinphoneCallIncoming:
-        LinphoneCallOutgoing:
+        case LinphoneCallEnd:
+        case LinphoneCallError:
+        case LinphoneCallIncoming:
+        case LinphoneCallOutgoing:
             [self hidePad:TRUE];
             [self hideOptions:TRUE];
             [self hideRoutes:TRUE];
@@ -568,7 +573,12 @@
     [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;    
-        [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
+		[LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
+	} else if (view.tag ==self.leftPadding.tag || view.tag == self.rightPadding.tag){
+		UIImage* image = [(UIImageView*)view image];
+		if( image ){
+			[attributes setObject:image forKey:@"image"];
+		}
     }
     [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
 
@@ -581,6 +591,9 @@
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;
         [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
+    } else if (view.tag ==self.leftPadding.tag || view.tag == self.rightPadding.tag){
+
+        [(UIImageView*)view setImage:[attributes objectForKey:@"image"]];
     }
     view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
 }

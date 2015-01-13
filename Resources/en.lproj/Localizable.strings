@@ -8,7 +8,13 @@
 " (Missed)" = " (Missed)";
 
 /* No comment provided by engineer. */
+"%@ is composing..." = "%@ is composing...";
+
+/* No comment provided by engineer. */
 "%@\nReason was: %@" = "%1$@\nReason was: %2$@";
+
+/* %d */
+"%d unread messages" = "%d unread messages";
 
 /* No comment provided by engineer. */
 "'%@' not registered" = "'%@' not registered";
@@ -65,6 +71,9 @@
 "Cannot make call" = "Cannot make call";
 
 /* No comment provided by engineer. */
+"Cannot send email" = "Cannot send email";
+
+/* No comment provided by engineer. */
 "Cannot transfer file from remote contact" = "Cannot transfer file from remote contact";
 
 /* No comment provided by engineer. */
@@ -89,6 +98,9 @@
 "Communication issue (%@)" = "Communication issue (%@)";
 
 /* No comment provided by engineer. */
+"Company name" = "Company name";
+
+/* No comment provided by engineer. */
 "Confirm the following SAS with the peer:\n%s" = "Confirm the following SAS with the peer:\n%s";
 
 /* No comment provided by engineer. */
@@ -104,6 +116,9 @@
 "Direct connection" = "Direct connection";
 
 /* No comment provided by engineer. */
+"Disabled, build from sources to enable" = "Disabled, build from sources to enable";
+
+/* No comment provided by engineer. */
 "Dismiss" = "Dismiss";
 
 /* No comment provided by engineer. */
@@ -113,13 +128,43 @@
 "Either configure a SIP proxy server from settings prior to send a message or use a valid SIP address (I.E sip:john@example.net)" = "Either configure a SIP proxy server from settings prior to send a message or use a valid SIP address (I.E sip:john@example.net)";
 
 /* No comment provided by engineer. */
+"Email address" = "Email address";
+
+/* No comment provided by engineer. */
+"Email addresses" = "Email addresses";
+
+/* Enter an address */
+"Enter an address" = "Enter an address";
+
+/* No comment provided by engineer. */
+"Enter provisioning URL" = "Enter provisioning URL";
+
+/* No comment provided by engineer. */
 "Enter your password" = "Enter your password";
 
 /* No comment provided by engineer. */
 "Enter your username" = "Enter your username";
 
+/* No comment provided by engineer. */
+"Error" = "Error";
+
 /* ICE processing has failed */
 "Failed" = "Failed";
+
+/* No comment provided by engineer. */
+"Failed configuring from the specified URL." = "Failed configuring from the specified URL.";
+
+/* No comment provided by engineer. */
+"Failure" = "Failure";
+
+/* No comment provided by engineer. */
+"Fetch" = "Fetch";
+
+/* No comment provided by engineer. */
+"Fetching remote configuration" = "Fetching remote configuration";
+
+/* No comment provided by engineer. */
+"Fetching remote configuration..." = "Fetching remote configuration...";
 
 /* No comment provided by engineer. */
 "First name" = "First name";
@@ -134,6 +179,9 @@
 "IC_MSG" = "Incoming call from %@";
 
 /* No comment provided by engineer. */
+"Illegal character in username: %@" = "Illegal character in username: %@";
+
+/* No comment provided by engineer. */
 "IM_MSG" = "Incoming message from %@";
 
 /* ICE process is in progress */
@@ -143,13 +191,43 @@
 "Incoming call" = "Incoming call";
 
 /* No comment provided by engineer. */
+"Invalid address" = "Invalid address";
+
+/* No comment provided by engineer. */
+"Invalid proxy address" = "Invalid proxy address";
+
+/* No comment provided by engineer. */
+"Invalid route" = "Invalid route";
+
+/* No comment provided by engineer. */
 "Invalid SIP address" = "Invalid SIP address";
+
+/* No comment provided by engineer. */
+"Invalid username or domain" = "Invalid username or domain";
 
 /* No comment provided by engineer. */
 "Last name" = "Last name";
 
 /* No comment provided by engineer. */
+"Launch Wizard" = "Launch Wizard";
+
+/* No comment provided by engineer. */
+"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?" = "Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?";
+
+/* No comment provided by engineer. */
+"Linphone Logs" = "Linphone Logs";
+
+/* No comment provided by engineer. */
+"Linphone logs" = "Linphone logs";
+
+/* No comment provided by engineer. */
 "Low bandwidth" = "Low bandwidth";
+
+/* InAppSettingsKit */
+"Mail not configured" = "Mail not configured";
+
+/* No comment provided by engineer. */
+"Mark Read" = "Mark Read";
 
 /* No comment provided by engineer. */
 "Maximum" = "Maximum";
@@ -165,6 +243,9 @@
 
 /* No comment provided by engineer. */
 "Network Error" = "Network Error";
+
+/* No comment provided by engineer. */
+"No" = "No";
 
 /* No comment provided by engineer. */
 "No codec" = "No codec";
@@ -184,6 +265,9 @@
 /* No comment provided by engineer. */
 "Ok" = "Ok";
 
+/* InAppSettingsKit */
+"OK" = "OK";
+
 /* No comment provided by engineer. */
 "Outgoing call" = "Outgoing call";
 
@@ -197,9 +281,6 @@
 "Photo library" = "Photo library";
 
 /* No comment provided by engineer. */
-"Illegal character in username: %@" = "Illegal character in username: %@";
-
-/* No comment provided by engineer. */
 "Please enter a domain.\n" = "Please enter a domain.\n";
 
 /* No comment provided by engineer. */
@@ -210,6 +291,9 @@
 
 /* No comment provided by engineer. */
 "Please terminate GSM call" = "Please terminate GSM call";
+
+/* No comment provided by engineer. */
+"Provisioning Load error" = "Provisioning Load error";
 
 /* No comment provided by engineer. */
 "Registered" = "Registered";
@@ -227,19 +311,34 @@
 "Relay connection" = "Relay connection";
 
 /* No comment provided by engineer. */
+"Remote configuration" = "Remote configuration";
+
+/* No comment provided by engineer. */
+"Remote configuration successfully fetched and applied." = "Remote configuration successfully fetched and applied.";
+
+/* No comment provided by engineer. */
 "Remove" = "Remove";
 
 /* No comment provided by engineer. */
 "Remove trust in the peer?" = "Remove trust in the peer?";
 
 /* No comment provided by engineer. */
+"Reply" = "Reply";
+
+/* Resend */
+"Resend" = "Resend";
+
+/* No comment provided by engineer. */
 "Select picture source" = "Select picture source";
 
-/* */
+/* No comment provided by engineer. */
 "Settings" = "Settings";
 
 /* No comment provided by engineer. */
 "Show" = "Show";
+
+/* No comment provided by engineer. */
+"Simulator cannot send emails. To test this feature, please use a real device." = "Simulator cannot send emails. To test this feature, please use a real device.";
 
 /* No comment provided by engineer. */
 "SIP address" = "SIP address";
@@ -248,10 +347,13 @@
 "SIP addresses" = "SIP addresses";
 
 /* No comment provided by engineer. */
-"SIP server unreachable" = "SIP server unreachable";
+"Stop video" = "Stop video";
 
 /* No comment provided by engineer. */
-"Stop video" = "Stop video";
+"Success" = "Success";
+
+/* No comment provided by engineer. */
+"The address should only contain ASCII data" = "The address should only contain ASCII data";
 
 /* No comment provided by engineer. */
 "The email is invalid.\n" = "The email is invalid.\n";
@@ -268,6 +370,12 @@
 /* No comment provided by engineer. */
 "There is no network connection available, enable WIFI or WWAN prior to place a call" = "There is no network connection available, enable WIFI or WWAN prior to place a call";
 
+/* InAppSettingsKit */
+"This device is not configured for sending Email. Please configure the Mail settings in the Settings app." = "This device is not configured for sending Email. Please configure the Mail settings in the Settings app.";
+
+/* No comment provided by engineer. */
+"This operation will load a remote configuration. Continue ?" = "This operation will load a remote configuration. Continue ?";
+
 /* No comment provided by engineer. */
 "Transfer error" = "Transfer error";
 
@@ -275,13 +383,19 @@
 "Unknown" = "Unknown";
 
 /* No comment provided by engineer. */
-"Unknown error" = "Unknown error";
-
-/* No comment provided by engineer. */
 "Username already exists" = "Username already exists";
 
 /* No comment provided by engineer. */
 "Video cannot be activated because of low bandwidth condition, only audio is available" = "Video cannot be activated because of low bandwidth condition, only audio is available";
+
+/* No comment provided by engineer. */
+"Voice mail" = "Voice mail";
+
+/* No comment provided by engineer. */
+"Warning" = "Warning";
+
+/* No comment provided by engineer. */
+"Yes" = "Yes";
 
 /* No comment provided by engineer. */
 "You missed a call from %@" = "You missed a call from %@";
@@ -296,14 +410,8 @@
 "Your account is not validate yet." = "Your account is not validate yet.";
 
 /* No comment provided by engineer. */
+"Your device is not configured to send emails. Please configure mail application prior to send logs." = "Your device is not configured to send emails. Please configure mail application prior to send logs.";
+
+/* No comment provided by engineer. */
 "© 2010-2012 Belledonne Communications " = "© 2010-2012 Belledonne Communications ";
 
-/* Placeholder for the address in DialerView */
-"Enter an address" = "Phone number or Address";
-"%@ is composing..." = "%@ is composing...";
-"Resend" = "Resend";
-
-/* Alert view for Wizard in Settings */
-"Warning" = "Warning";
-"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?" = "Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?";
-"Launch Wizard" = "Launch Wizard";

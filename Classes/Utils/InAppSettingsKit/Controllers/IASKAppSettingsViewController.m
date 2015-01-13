@@ -27,9 +27,9 @@
 #import "IASKSpecifierValuesViewController.h"
 #import "IASKTextField.h"
 
-static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3;
-static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2;
-static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8;
+//static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3;
+//static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2;
+//static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8;
 
 static NSString *kIASKCredits = @"Powered by InAppSettingsKit"; // Leave this as-is!!!
 
@@ -579,7 +579,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 		} else {
 			textField.autocorrectionType = specifier.autoCorrectionType;
 		}
-		textField.textAlignment = specifier.textAlignment;
+		textField.textAlignment = (NSTextAlignment)specifier.textAlignment;
 		textField.adjustsFontSizeToFitWidth = specifier.adjustsFontSizeToFitWidth;
 	}
 	else if ([specifier.type isEqualToString:kIASKPSSliderSpecifier]) {
@@ -615,9 +615,9 @@ CGRect IASKCGRectSwap(CGRect rect);
 	cell.imageView.highlightedImage = specifier.highlightedCellImage;
     
 	if (![specifier.type isEqualToString:kIASKPSMultiValueSpecifier] && ![specifier.type isEqualToString:kIASKPSTitleValueSpecifier] && ![specifier.type isEqualToString:kIASKPSTextFieldSpecifier]) {
-		cell.textLabel.textAlignment = specifier.textAlignment;
+		cell.textLabel.textAlignment = (NSTextAlignment)specifier.textAlignment;
 	}
-	cell.detailTextLabel.textAlignment = specifier.textAlignment;
+	cell.detailTextLabel.textAlignment = (NSTextAlignment)specifier.textAlignment;
 	cell.textLabel.adjustsFontSizeToFitWidth = specifier.adjustsFontSizeToFitWidth;
 	cell.detailTextLabel.adjustsFontSizeToFitWidth = specifier.adjustsFontSizeToFitWidth;
     return cell;

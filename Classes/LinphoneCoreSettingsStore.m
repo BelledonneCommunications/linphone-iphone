@@ -293,6 +293,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[alertview release];
 }
 
++ (BOOL)hasSipPrefix:(NSString*)str {
+    return [str hasPrefix:@"sip:"] || [str hasPrefix:@"sips:"];
+}
+
 - (void)synchronizeAccount {
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LpConfig*   conf = linphone_core_get_config(lc);
@@ -352,9 +356,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if( isWifiOnly && [LinphoneManager instance].connectivity == wwan ) expire = 0;
 
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
-		} else {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
+			proxyAddress = domain;
+        }
+
+        if( ![LinphoneCoreSettingsStore hasSipPrefix:proxyAddress] ) {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress];
 		}
 
 		char* proxy = ms_strdup([proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -407,7 +413,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 
 		lp_config_set_int(conf, LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
-		if( pushnotification ) [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
+		[[LinphoneManager instance] configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, true);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
@@ -478,14 +484,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		bool range = [match rangeAtIndex:2].length > 0;
 		if(!range) {
 			NSRange rangeMinPort = [match rangeAtIndex:1];
-			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] intValue]];
 			*maxPort = *minPort;
 			return TRUE;
 		} else {
 			NSRange rangeMinPort = [match rangeAtIndex:1];
-			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+			*minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] intValue]];
 			NSRange rangeMaxPort = [match rangeAtIndex:4];
-			*maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] integerValue]];
+			*maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] intValue]];
 			if(*minPort > *maxPort) {
 				*minPort = *maxPort;
 			}
@@ -496,7 +502,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 }
 
 - (BOOL)synchronize {
-	if (![LinphoneManager isLcReady]) return YES;
 	LinphoneCore *lc=[LinphoneManager getLc];
 
 	BOOL account_changed;
@@ -684,13 +689,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
-	if (debugmode) {
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	} else {
-		linphone_core_disable_logs();
-	}
-
+	[[LinphoneManager instance] setLogsEnabled:debugmode];
+	
 	BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
 

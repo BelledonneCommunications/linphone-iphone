@@ -59,6 +59,7 @@
 @property (retain, nonatomic) IBOutlet UITextField *provisionedDomain;
 
 @property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
+@property (retain, nonatomic) IBOutlet UISegmentedControl *transportChooser;
 
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 

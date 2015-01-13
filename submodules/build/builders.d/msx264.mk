@@ -20,6 +20,12 @@
 #
 ############################################################################
 msx264_dir?=msx264
+
+configure-options=
+ifeq ($(LINPHONE_CCACHE), ccache)
+	configure-options+= --disable-strict
+endif
+
 $(BUILDER_SRC_DIR)/$(msx264_dir)/configure:
 	cd $(BUILDER_SRC_DIR)/$(msx264_dir) && ./autogen.sh
 
@@ -27,7 +33,7 @@ $(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msx264_dir)/co
 	mkdir -p $(BUILDER_BUILD_DIR)/$(msx264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(msx264_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(msx264_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
+	$(BUILDER_SRC_DIR)/$(msx264_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} ${configure-options}
 
 build-msx264: build-x264 $(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile
 	cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install

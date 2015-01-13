@@ -31,7 +31,7 @@
 
 NSTimer *callQualityTimer;
 NSTimer *callSecurityTimer;
-
+int messagesUnreadCount;
 
 #pragma mark - Lifecycle Functions
 
@@ -97,15 +97,22 @@ NSTimer *callSecurityTimer;
 						name:kLinphoneNotifyReceived
 						object:nil];
 
+	[[NSNotificationCenter defaultCenter]	addObserver:self
+											selector:@selector(callUpdate:)
+											name:kLinphoneCallUpdate
+											object:nil];
+
+
 	[callQualityImage setHidden: true];
 	[callSecurityImage setHidden: true];
-	self.voicemailCount.hidden = true;
 
-	// Update to default state
-	LinphoneProxyConfig* config = NULL;
-	if([LinphoneManager isLcReady])
-		linphone_core_get_default_proxy([LinphoneManager getLc], &config);
-	[self proxyConfigUpdate: config];
+    // Update to default state
+    LinphoneProxyConfig* config = NULL;
+    linphone_core_get_default_proxy([LinphoneManager getLc], &config);
+    messagesUnreadCount = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
+
+    [self proxyConfigUpdate: config];
+	[self updateVoicemail];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -122,6 +129,10 @@ NSTimer *callSecurityTimer;
 	[[NSNotificationCenter defaultCenter]	removeObserver:self
 						name:kLinphoneNotifyReceived
 						object:nil];
+	[[NSNotificationCenter defaultCenter]	removeObserver:self
+						name:kLinphoneCallUpdate
+						object:nil];
+
 	if(callQualityTimer != nil) {
 		[callQualityTimer invalidate];
 		callQualityTimer = nil;
@@ -142,37 +153,48 @@ NSTimer *callSecurityTimer;
 }
 
 - (void) globalStateUpdate:(NSNotification*) notif {
-	if ([LinphoneManager isLcReady]) [self registrationUpdate:notif];
+	[self registrationUpdate:notif];
 }
 
 - (void) notifyReceived:(NSNotification*) notif {
 	const LinphoneContent * content = [[notif.userInfo objectForKey: @"content"] pointerValue];
 
 	if ((content == NULL)
-		|| (strcmp("application", content->type) != 0)
-		|| (strcmp("simple-message-summary", content->subtype) != 0)
-		|| (content->data == NULL)) {
+		|| (strcmp("application", linphone_content_get_type(content)) != 0)
+		|| (strcmp("simple-message-summary", linphone_content_get_subtype(content)) != 0)
+		|| (linphone_content_get_buffer(content) == NULL)) {
 		return;
 	}
-
-	const char * body = (const char*) content->data;
-	if ((body = strstr(body, "voice-message: ")) == NULL) {
+    const char* body = linphone_content_get_buffer(content);
+    if ((body = strstr(body, "voice-message: ")) == NULL) {
 		[LinphoneLogger log:LinphoneLoggerWarning format:@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it."];
 		return;
 	}
 
-	int unreadCount = 0;
-	sscanf(body, "voice-message: %d", &unreadCount);
+	sscanf(body, "voice-message: %d", &messagesUnreadCount);
 
-	[LinphoneLogger log:LinphoneLoggerLog format:@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", unreadCount];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount];
 
-	if (unreadCount > 0) {
-		self.voicemailCount.hidden = FALSE;
-		self.voicemailCount.text = [NSString stringWithFormat:NSLocalizedString(@"%d unread messages", @"%d"), unreadCount];
+	// save in lpconfig for future
+	lp_config_set_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", messagesUnreadCount);
+
+	[self updateVoicemail];
+}
+
+- (void) updateVoicemail {
+	if (messagesUnreadCount > 0) {
+		self.voicemailCount.hidden = (linphone_core_get_calls([LinphoneManager getLc]) != NULL);
+		self.voicemailCount.text = [[NSString stringWithFormat:NSLocalizedString(@"%d unread messages", @"%d"), messagesUnreadCount] uppercaseString];
 	} else {
 		self.voicemailCount.hidden = TRUE;
 	}
 }
+
+- (void) callUpdate:(NSNotification*) notif {
+	//show voice mail only when there is no call
+	[self updateVoicemail];
+}
+
 
 #pragma mark -
 
@@ -187,7 +209,7 @@ NSTimer *callSecurityTimer;
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
-		if(![LinphoneManager isLcReady] || linphone_core_is_network_reachable([LinphoneManager getLc]))
+		if(linphone_core_is_network_reachable([LinphoneManager getLc]))
 			message = NSLocalizedString(@"No SIP account configured", nil);
 		else
 			message = NSLocalizedString(@"Network down", nil);
@@ -239,11 +261,8 @@ NSTimer *callSecurityTimer;
 	BOOL pending = false;
 	BOOL security = true;
 
-	if(![LinphoneManager isLcReady]) {
-		[callSecurityImage setHidden:true];
-		return;
-	}
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+
 	if(list == NULL) {
 		if(securitySheet) {
 			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
@@ -278,22 +297,20 @@ NSTimer *callSecurityTimer;
 
 - (void)callQualityUpdate {
 	UIImage *image = nil;
-	if([LinphoneManager isLcReady]) {
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-		if(call != NULL) {
-			//FIXME double check call state before computing, may cause core dump
-			float quality = linphone_call_get_average_quality(call);
-			if(quality < 1) {
-				image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
-			} else if (quality < 2) {
-				image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
-			} else if (quality < 3) {
-				image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
-			} else {
-				image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
-			}
-		}
-	}
+    LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+    if(call != NULL) {
+        //FIXME double check call state before computing, may cause core dump
+        float quality = linphone_call_get_average_quality(call);
+        if(quality < 1) {
+            image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
+        } else if (quality < 2) {
+            image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
+        } else if (quality < 3) {
+            image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
+        } else {
+            image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
+        }
+    }
 	if(image != nil) {
 		[callQualityImage setHidden:false];
 		[callQualityImage setImage:image];
@@ -306,7 +323,7 @@ NSTimer *callSecurityTimer;
 #pragma mark - Action Functions
 
 - (IBAction)doSecurityClick:(id)sender {
-	if([LinphoneManager isLcReady] && linphone_core_get_calls_nb([LinphoneManager getLc])) {
+	if(linphone_core_get_calls_nb([LinphoneManager getLc])) {
 		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 		if(call != NULL) {
 			LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));

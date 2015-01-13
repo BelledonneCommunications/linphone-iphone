@@ -1,10 +1,23 @@
+
+
+# /!\ Unset compiler env variable is set by user to avoid error in configure such as:
+# 1) Requested extra CFLAGS '-fno-strict-aliasing' not supported by compiler
+# OR
+# 2) Unable to invoke compiler
+unexport CC
+
 libvpx_dir?=externals/libvpx
 
 libvpx_configure_options=\
 	--enable-static   --disable-shared \
 	--disable-examples --disable-unit-tests \
 	--enable-realtime-only --enable-spatial-resampling \
-	--enable-vp8 --enable-multithread --disable-vp9 
+	--enable-vp8 --enable-multithread --disable-vp9
+
+
+ifeq ($(enable_debug),yes)
+	libvpx_configure_options += --enable-debug
+endif
 
 take_binary=
 
@@ -19,14 +32,21 @@ else ifneq (,$(findstring armv7s,$(host)))
 else ifneq (,$(findstring armv7,$(host)))
 	libvpx_configure_options+= --target=armv7-darwin-gcc
 	take_binary = armv7
+else ifneq (,$(findstring aarch64,$(host)))
+	libvpx_configure_options+= --target=arm64-darwin-gcc
+	take_binary = arm64
 else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
 	take_binary = i386
 endif
 
-all_p=armv6-darwin-gcc    #neon Cortex-A8
+ifeq ($(LINPHONE_CCACHE),ccache)
+	libvpx_configure_options+= --enable-ccache
+endif
+
+
+
 all_p+=armv7-darwin-gcc    #neon Cortex-A8
-all_p+=armv7s-darwin-gcc   #neon Cortex-A8
 
 ifeq ($(force_non_binary_libvpx),1)
 take_binary=

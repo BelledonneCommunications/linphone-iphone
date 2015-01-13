@@ -144,41 +144,39 @@ static UICompositeViewDescription *compositeDescription = nil;
     [callButton setEnabled:TRUE];
 
     // Update on show
-    if([LinphoneManager isLcReady]) {
-		LinphoneManager *mgr=[LinphoneManager instance];
-        LinphoneCore* lc = [LinphoneManager getLc];
-        LinphoneCall* call = linphone_core_get_current_call(lc);
-        LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
-        [self callUpdate:call state:state];
+    LinphoneManager *mgr=[LinphoneManager instance];
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* call = linphone_core_get_current_call(lc);
+    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+    [self callUpdate:call state:state];
 
-        if([LinphoneManager runningOnIpad]) {
-            if(linphone_core_video_enabled(lc) && [mgr lpConfigBoolForKey:@"preview_preference"]) {
-                linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
-                [backgroundView setHidden:FALSE];
-                [videoCameraSwitch setHidden:FALSE];
-            } else {
-                linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
-				linphone_core_enable_video_preview(lc, FALSE);
-                [backgroundView setHidden:TRUE];
-                [videoCameraSwitch setHidden:TRUE];
-            }
+    if([LinphoneManager runningOnIpad]) {
+        if(linphone_core_video_enabled(lc) && [mgr lpConfigBoolForKey:@"preview_preference"]) {
+            linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
+            [backgroundView setHidden:FALSE];
+            [videoCameraSwitch setHidden:FALSE];
+        } else {
+            linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+            linphone_core_enable_video_preview(lc, FALSE);
+            [backgroundView setHidden:TRUE];
+            [videoCameraSwitch setHidden:TRUE];
         }
+    }
 
-        [addressField setText:@""];
+    [addressField setText:@""];
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 // attributed string only available since iOS6
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-            // fix placeholder bar color in iOS7
-            UIColor *color = [UIColor grayColor];
-            NSAttributedString* placeHolderString = [[NSAttributedString alloc]
-                                                     initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
-                                                     attributes:@{NSForegroundColorAttributeName: color}];
-            addressField.attributedPlaceholder = placeHolderString;
-            [placeHolderString release];
-        }
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        // fix placeholder bar color in iOS7
+        UIColor *color = [UIColor grayColor];
+        NSAttributedString* placeHolderString = [[NSAttributedString alloc]
+                                                 initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
+                                                 attributes:@{NSForegroundColorAttributeName: color}];
+        addressField.attributedPlaceholder = placeHolderString;
+        [placeHolderString release];
+    }
 #endif
 
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -256,7 +254,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)coreUpdateEvent:(NSNotification*)notif {
-    if([LinphoneManager isLcReady] && [LinphoneManager runningOnIpad]) {
+    if([LinphoneManager runningOnIpad]) {
         LinphoneCore* lc = [LinphoneManager getLc];
         if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
             linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
@@ -273,26 +271,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore *lc = [LinphoneManager getLc];
-        if(linphone_core_get_calls_nb(lc) > 0) {
-            if(transferMode) {
-                [addCallButton setHidden:true];
-                [transferButton setHidden:false];
-            } else {
-                [addCallButton setHidden:false];
-                [transferButton setHidden:true];
-            }
-            [callButton setHidden:true];
-            [backButton setHidden:false];
-            [addContactButton setHidden:true];
-        } else {
+    LinphoneCore *lc = [LinphoneManager getLc];
+    if(linphone_core_get_calls_nb(lc) > 0) {
+        if(transferMode) {
             [addCallButton setHidden:true];
-            [callButton setHidden:false];
-            [backButton setHidden:true];
-            [addContactButton setHidden:false];
+            [transferButton setHidden:false];
+        } else {
+            [addCallButton setHidden:false];
             [transferButton setHidden:true];
         }
+        [callButton setHidden:true];
+        [backButton setHidden:false];
+        [addContactButton setHidden:true];
+    } else {
+        [addCallButton setHidden:true];
+        [callButton setHidden:false];
+        [backButton setHidden:true];
+        [addContactButton setHidden:false];
+        [transferButton setHidden:true];
     }
 }
 

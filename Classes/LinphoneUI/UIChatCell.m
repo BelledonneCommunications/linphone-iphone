@@ -71,6 +71,11 @@
 
 #pragma mark - 
 
+- (NSString *)accessibilityValue {
+    return [NSString stringWithFormat:@"%@ - %@ (%ld)", addressLabel.text, chatContentLabel.text, (long)[unreadMessageLabel.text integerValue]];
+}
+
+
 - (void)update {
 	NSString *displayName = nil;
     UIImage *image = nil;
@@ -97,15 +102,14 @@
         displayName = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
     }
     [addressLabel setText:displayName];
-    
+
     // Avatar
     if(image == nil) {
         image = [UIImage imageNamed:@"avatar_unknown_small.png"];
     }
     [avatarImage setImage:image];
 
-    MSList* last_message_list         = linphone_chat_room_get_history(chatRoom, 1);
-    LinphoneChatMessage* last_message = last_message_list? last_message_list->data : NULL;
+    LinphoneChatMessage* last_message = linphone_chat_room_get_user_data(chatRoom);
 
     if( last_message ){
 
@@ -135,7 +139,6 @@
         [unreadMessageView setHidden:TRUE];
     }
 
-    ms_list_free(last_message_list);
 }
 
 - (void)setEditing:(BOOL)editing {

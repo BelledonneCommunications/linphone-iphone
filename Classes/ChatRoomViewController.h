@@ -49,6 +49,7 @@
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *transferBackgroundImage;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
 @property (retain, nonatomic) IBOutlet UILabel *composeLabel;
 @property (retain, nonatomic) IBOutlet UIView *composeIndicatorView;
 

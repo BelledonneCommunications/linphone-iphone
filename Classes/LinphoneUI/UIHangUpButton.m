@@ -84,18 +84,14 @@
 #pragma mark - 
 
 - (void)update {
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore * lc = [LinphoneManager getLc];
-        if(linphone_core_get_calls_nb(lc) == 1 || // One call
-           linphone_core_get_current_call(lc) != NULL ||  // In call
-           linphone_core_is_in_conference(lc) || // In conference
-           (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
-           ) {
-            [self setEnabled:true];   
-            return;
-        }
-    }  else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update hangup button: Linphone core not ready"];
+    LinphoneCore * lc = [LinphoneManager getLc];
+    if(linphone_core_get_calls_nb(lc) == 1 || // One call
+       linphone_core_get_current_call(lc) != NULL ||  // In call
+       linphone_core_is_in_conference(lc) || // In conference
+       (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
+       ) {
+        [self setEnabled:true];
+        return;
     }
     [self setEnabled:false];
 }
@@ -104,23 +100,19 @@
 #pragma mark - Action Functions
 
 -(void) touchUp:(id) sender {
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore* lc = [LinphoneManager getLc];
-        LinphoneCall* currentcall = linphone_core_get_current_call(lc);
-        if (linphone_core_is_in_conference(lc) || // In conference
-            (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
-            ) {
-            linphone_core_terminate_conference(lc);
-        } else if(currentcall != NULL) { // In a call
-            linphone_core_terminate_call(lc, currentcall);
-        } else {
-            const MSList* calls = linphone_core_get_calls(lc);
-            if (ms_list_size(calls) == 1) { // Only one call
-                linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
-            }
-        }
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* currentcall = linphone_core_get_current_call(lc);
+    if (linphone_core_is_in_conference(lc) || // In conference
+        (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
+        ) {
+        linphone_core_terminate_conference(lc);
+    } else if(currentcall != NULL) { // In a call
+        linphone_core_terminate_call(lc, currentcall);
     } else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot trigger hangup button: Linphone core not ready"];
+        const MSList* calls = linphone_core_get_calls(lc);
+        if (ms_list_size(calls) == 1) { // Only one call
+            linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
+        }
     }
 }
 

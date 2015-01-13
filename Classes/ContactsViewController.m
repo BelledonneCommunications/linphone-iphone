@@ -151,6 +151,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	// cannot change search bar icon nor text font from the interface builder...
+	// [_searchBar setImage:[UIImage imageNamed:@"contact_search.png" ] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+	// UITextField *searchText = [_searchBar valueForKey:@"_searchField"];
+	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
+	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
+
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 	if( use_system && !self.sysViewController){// use system contacts
 		ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
@@ -305,6 +311,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+	[self searchBar:searchBar textDidChange:nil];
+	[searchBar resignFirstResponder];
+}
+
 #pragma mark - ABPeoplePickerDelegate
 
 -(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
@@ -337,9 +348,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return false;
 }
 
+#pragma mark - searchBar delegate
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+	// display searchtext in UPPERCASE
+	// searchBar.text = [searchText uppercaseString];
+	searchBar.showsCancelButton = (searchText.length > 0);
 	[ContactSelection setNameOrEmailFilter:searchText];
 	[tableController loadData];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:FALSE animated:TRUE];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:TRUE animated:TRUE];
+}
+
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
 }
 
 - (void)viewDidUnload {

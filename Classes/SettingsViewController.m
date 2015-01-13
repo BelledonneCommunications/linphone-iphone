@@ -350,10 +350,7 @@
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [UINavigationControllerEx removeBackground:viewController.view];
-    UIViewController *oldTopViewController = self.topViewController;
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [oldTopViewController viewWillDisappear:animated];
-    }
+
     [viewController viewWillAppear:animated]; // Force view
     UILabel *labelTitleView = [[UILabel alloc] init];
     labelTitleView.backgroundColor = [UIColor clearColor];
@@ -367,28 +364,6 @@
     viewController.navigationItem.titleView = labelTitleView;
     [labelTitleView release];
     [super pushViewController:viewController animated:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [self.topViewController viewDidAppear:animated];
-        [oldTopViewController viewDidDisappear:animated];
-    }
-}
-
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [self.topViewController viewWillDisappear:animated];
-        UIViewController *nextView = nil;
-        int count = [self.viewControllers count];
-        if(count > 1) {
-            nextView = [self.viewControllers objectAtIndex:count - 2];
-        }
-        [nextView viewWillAppear:animated];
-    }
-    UIViewController * ret = [super popViewControllerAnimated:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [ret viewDidDisappear:animated];
-        [self.topViewController viewDidAppear:animated];
-    }
-    return ret;
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers {
@@ -495,72 +470,49 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Event Functions
 
 - (void)appSettingChanged:(NSNotification*) notif {
-    if([@"enable_video_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"enable_video_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(!enable) {
-            [hiddenKeys addObject:@"video_menu"];
-        } else {
-            [hiddenKeys removeObject:@"video_menu"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(enable) {
-            [hiddenKeys addObject:@"port_preference"];
-        } else {
-            [hiddenKeys removeObject:@"port_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"backgroundmode_preference" compare: notif.object] == NSOrderedSame) {
-        BOOL enable = [[notif.userInfo objectForKey:@"backgroundmode_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        if(!enable) {
-            [hiddenKeys addObject:@"start_at_boot_preference"];
-        } else {
-            [hiddenKeys removeObject:@"start_at_boot_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"stun_preference" compare: notif.object] == NSOrderedSame) {
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
-        if (stun_server && ([stun_server length] > 0)) {
-            [hiddenKeys removeObject:@"ice_preference"];
-        } else {
-            [hiddenKeys addObject:@"ice_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if ([@"debugenable_preference" compare: notif.object] == NSOrderedSame) {
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
-        BOOL debugEnable = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
-        if (debugEnable) {
-            [hiddenKeys removeObject:@"console_button"];
-        } else {
-            [hiddenKeys addObject:@"console_button"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
-        BOOL advanced = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
-        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+	NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+	NSMutableArray* keys = [NSMutableArray array];
+	BOOL removeFromHiddenKeys = TRUE;
 
-        if( advanced ){
-            [hiddenKeys removeObject:@"userid_preference"];
-            [hiddenKeys removeObject:@"proxy_preference"];
-            [hiddenKeys removeObject:@"outbound_proxy_preference"];
-            [hiddenKeys removeObject:@"avpf_preference"];
-        } else {
-            [hiddenKeys addObject:@"userid_preference"];
-            [hiddenKeys addObject:@"proxy_preference"];
-            [hiddenKeys addObject:@"outbound_proxy_preference"];
-            [hiddenKeys addObject:@"avpf_preference"];
-        }
-        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-  }
+	if([@"enable_video_preference" compare: notif.object] == NSOrderedSame) {
+        removeFromHiddenKeys = [[notif.userInfo objectForKey:@"enable_video_preference"] boolValue];
+		[keys addObject:@"video_menu"];
+	} else if ([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = ! [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
+		[keys addObject:@"port_preference"];
+	} else if ([@"backgroundmode_preference" compare: notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"backgroundmode_preference"] boolValue];
+		[keys addObject:@"start_at_boot_preference"];
+	} else if ([@"stun_preference" compare: notif.object] == NSOrderedSame) {
+		NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
+		removeFromHiddenKeys = (stun_server && ([stun_server length] > 0));
+		[keys addObject:@"ice_preference"];
+	} else if ([@"debugenable_preference" compare: notif.object] == NSOrderedSame) {
+		BOOL debugEnabled = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
+		removeFromHiddenKeys = debugEnabled;
+        [keys addObject:@"send_logs_button"];
+		[keys addObject:@"reset_logs_button"];
+		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
+    } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
+
+		[keys addObject:@"userid_preference"];
+		[keys addObject:@"proxy_preference"];
+		[keys addObject:@"outbound_proxy_preference"];
+		[keys addObject:@"avpf_preference"];
+	}
+
+	for(NSString* key in keys){
+		if( removeFromHiddenKeys ) [hiddenKeys removeObject:key];
+		else                       [hiddenKeys addObject:key];
+	}
+
+	[settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 + (IASKSpecifier*)disableCodecSpecifier:(IASKSpecifier *)specifier {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
@@ -592,30 +544,29 @@ static UICompositeViewDescription *compositeDescription = nil;
         return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
     }
 #else
-    if([LinphoneManager isLcReady]) {
-        if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-            if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
-                NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-                [titles removeObject:@"ZRTP"];
-                [dict setObject:titles forKey:@"Titles"];
-                NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-                [values removeObject:@"ZRTP"];
-                [dict setObject:values forKey:@"Values"];
-            }
-            if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
-                NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-                [titles removeObject:@"SRTP"];
-                [dict setObject:titles forKey:@"Titles"];
-                NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-                [values removeObject:@"SRTP"];
-                [dict setObject:values forKey:@"Values"];
-            }
-            return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+    if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+        if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
+            NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+            [titles removeObject:@"ZRTP"];
+            [dict setObject:titles forKey:@"Titles"];
+            NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+            [values removeObject:@"ZRTP"];
+            [dict setObject:values forKey:@"Values"];
         }
+        if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
+            NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+            [titles removeObject:@"SRTP"];
+            [dict setObject:titles forKey:@"Titles"];
+            NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+            [values removeObject:@"SRTP"];
+            [dict setObject:values forKey:@"Values"];
+        }
+        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
     }
+
 #endif //HAVE_SSL
-    
+
 
     // Add "build from source" if MPEG4 or H264 disabled
     if ([[specifier key] isEqualToString:@"h264_preference"] && ![LinphoneManager isCodecSupported:"h264"]) {
@@ -629,9 +580,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (NSSet*)findHiddenKeys {
-    if(![LinphoneManager isLcReady]) {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't filter settings: Linphone core not ready"];
-    }
     LinphoneManager* lm = [LinphoneManager instance];
     NSMutableSet *hiddenKeys = [NSMutableSet set];
     
@@ -640,6 +588,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"clear_cache_button"];
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
+
+	if (! [[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
+		[hiddenKeys addObject:@"send_logs_button"];
+		[hiddenKeys addObject:@"reset_logs_button"];
+	}
     
     [hiddenKeys addObject:@"playback_gain_preference"];
     [hiddenKeys addObject:@"microphone_gain_preference"];
@@ -740,9 +693,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
     }
 #endif
-    if([key isEqual:@"console_button"]) {
-        [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
-    } else if([key isEqual:@"wizard_button"]) {
+    if([key isEqual:@"wizard_button"]) {
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning",nil)
                                                         message:NSLocalizedString(@"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?",nil)
                                                        delegate:self
@@ -752,7 +703,34 @@ static UICompositeViewDescription *compositeDescription = nil;
         [alert release];
     } else if([key isEqual:@"about_button"]) {
         [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
-    }
+	} else if ([key isEqualToString:@"reset_logs_button"]) {
+		linphone_core_reset_log_collection();
+	} else if ([key isEqual:@"send_logs_button"]) {
+		char * filepath = linphone_core_compress_log_collection([LinphoneManager getLc]);
+		if (filepath == NULL) {
+			[LinphoneLogger log:LinphoneLoggerError format:@"Cannot sent logs: file is NULL"];
+			return;
+		}
+
+		NSString *filename = [[NSString stringWithUTF8String:filepath] componentsSeparatedByString:@"/"].lastObject;
+		NSString *mimeType;
+		if ([filename hasSuffix:@".jpg"]) {
+			mimeType = @"image/jpeg";
+		} else if ([filename hasSuffix:@".png"]) {
+			mimeType = @"image/png";
+		} else if ([filename hasSuffix:@".pdf"]) {
+			mimeType = @"application/pdf";
+		} else if ([filename hasSuffix:@".txt"]) {
+			mimeType = @"text/plain";
+		} else if ([filename hasSuffix:@".gz"]) {
+			mimeType = @"application/gzip";
+		} else {
+			[LinphoneLogger log:LinphoneLoggerError format:@"Unknown extension type: %@, cancelling email", filename];
+			return;
+		}
+		[self emailAttachment:[NSData dataWithContentsOfFile:[NSString stringWithUTF8String:filepath]] mimeType:mimeType name:filename];
+		ms_free(filepath);
+	}
 }
 
 #pragma mark - UIAlertView delegate
@@ -766,5 +744,54 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+#pragma mark - Mail composer for send log
+- (void)emailAttachment: (NSData*)attachment mimeType:(NSString*)type name:(NSString*)attachmentName
+{
+	if (attachmentName == nil || type == nil || attachmentName == nil) {
+		[LinphoneLogger log:LinphoneLoggerError format:@"Trying to email attachment but mandatory field is missing"];
+		return;
+	}
+
+#if TARGET_IPHONE_SIMULATOR
+	UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
+													message:NSLocalizedString(@"Simulator cannot send emails. To test this feature, please use a real device.",nil)
+												   delegate:nil
+										  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+										  otherButtonTitles:nil];
+	[error show];
+	[error release];
+#else
+	if ([MFMailComposeViewController canSendMail] == YES) {
+		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+		picker.mailComposeDelegate = self;
+
+		[picker setSubject:NSLocalizedString(@"Linphone Logs",nil)];
+		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
+		[picker setMessageBody:NSLocalizedString(@"Linphone logs", nil) isHTML:NO];
+		[picker addAttachmentData:attachment mimeType:type fileName:attachmentName];
+
+		[self presentViewController:picker animated:true completion:nil];
+		[picker release];
+	} else {
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
+														message:NSLocalizedString(@"Your device is not configured to send emails. Please configure mail application prior to send logs.",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil];
+		[error show];
+		[error release];
+	}
+#endif
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+	if (error != nil) {
+		[LinphoneLogger log:LinphoneLoggerWarning format:@"Error while sending mail: %@", error];
+	} else {
+		[LinphoneLogger log:LinphoneLoggerLog format:@"Mail completed with status: %d", result];
+	}
+	[self dismissViewControllerAnimated:true completion:nil];
+}
 
 @end

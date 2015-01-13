@@ -22,6 +22,11 @@
 mssilk_dir?=mssilk
 enable_silk?=yes
 
+configure-options=
+ifeq ($(LINPHONE_CCACHE), ccache)
+	configure-options+= --disable-strict
+endif
+
 $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure:
 	echo -e "\033[01;32m Running autogen for mssilk in $(BUILDER_SRC_DIR)/$(mssilk_dir) \033[0m"
 	cd $(BUILDER_SRC_DIR)/$(mssilk_dir) && ./autogen.sh
@@ -32,7 +37,7 @@ $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mssilk_dir)/co
 	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir)/ \
 		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 		$(BUILDER_SRC_DIR)/$(mssilk_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-		--enable-static
+		--enable-static ${configure-options}
 
 ifeq ($(enable_silk),yes)
 

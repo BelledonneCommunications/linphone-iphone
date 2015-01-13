@@ -87,18 +87,22 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 			LinphoneAddress* address = linphone_address_new([(NSString*)CFDictionaryGetValue(lDict,kABPersonInstantMessageUsernameKey) UTF8String]);
 
 			if (address) {
-				NSString* domain = [NSString stringWithCString:linphone_address_get_domain(address)
-													  encoding:[NSString defaultCStringEncoding]];
+				const char* dom =linphone_address_get_domain(address);
+				if( dom != NULL ){
+					NSString* domain = [NSString stringWithCString:dom
+														  encoding:[NSString defaultCStringEncoding]];
 
-				if (([filter compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-					|| ([filter compare:domain options:NSCaseInsensitiveSearch] == NSOrderedSame)) {
-					match = true;
+					if (([filter compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+						|| ([filter compare:domain options:NSCaseInsensitiveSearch] == NSOrderedSame)) {
+						match = true;
+					}
 				}
 				linphone_address_destroy(address);
 			}
 		}
 		CFRelease(lDict);
 	}
+	CFRelease(personSipAddresses);
 	return match;
 }
 
@@ -119,7 +123,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 	}
 
 	// If the whole fuzzy was found, returns 0. Otherwise returns number of characters left.
-	return (within_sentence != NULL ? 0 : fuzzy_word + strlen(fuzzy_word) - c);
+	return (int)(within_sentence != NULL ? 0 : fuzzy_word + strlen(fuzzy_word) - c);
 }
 
 - (void)loadData {
@@ -172,8 +176,12 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 					if ([ContactSelection getNameOrEmailFilter] == nil ||
 						(ms_strcmpfuz([[[ContactSelection getNameOrEmailFilter] lowercaseString] UTF8String], [[name lowercaseString] UTF8String]) == 0)) {
 
+						//Get first char. However translate them to ASCII first, because foreign languages (spanish) use tildes for instance
+						NSString *firstCharUTF8 = [[name substringToIndex:1] uppercaseString];
+						NSData *data = [firstCharUTF8 dataUsingEncoding:NSASCIIStringEncoding
+													 allowLossyConversion:YES];
+						NSString *firstChar = [[[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] autorelease];
 						// Put in correct subDic
-						NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 						if([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {
 							firstChar = @"#";
 						}

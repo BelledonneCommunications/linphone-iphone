@@ -1,0 +1,195 @@
+[main]
+host = https://www.transifex.com
+lang_map = fr_CA:fr-rCA,pt_BR:pt-rBR,zh_CN:zh-rCN,zh_HK:zh-rHK,zh_TW:zh-rTW,da_DK:da-rDK,sv_SE:sv-rSE,kn_IN:kn-rIN,nl_NL:nl-rNL,en_NL:en-rNL
+minimum_perc = 1
+
+[linphone-ios.localizablestrings]
+file_filter = Resources/<lang>.lproj/Localizable.strings
+source_file = Resources/en.lproj/Localizable.strings
+source_lang = en
+
+[linphone-ios.aboutviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/AboutViewController.strings
+source_file = Classes/Base.lproj/AboutViewController.strings
+source_lang = en
+
+
+[linphone-ios.chatroomviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ChatRoomViewController.strings
+source_file = Classes/Base.lproj/ChatRoomViewController.strings
+source_lang = en
+
+
+[linphone-ios.chatviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ChatViewController.strings
+source_file = Classes/Base.lproj/ChatViewController.strings
+source_lang = en
+
+
+[linphone-ios.contactdetailslabelviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ContactDetailsLabelViewController.strings
+source_file = Classes/Base.lproj/ContactDetailsLabelViewController.strings
+source_lang = en
+
+
+[linphone-ios.contactdetailsviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ContactDetailsViewController.strings
+source_file = Classes/Base.lproj/ContactDetailsViewController.strings
+source_lang = en
+
+
+[linphone-ios.contactsviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ContactsViewController.strings
+source_file = Classes/Base.lproj/ContactsViewController.strings
+source_lang = en
+
+
+[linphone-ios.dialerviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/DialerViewController.strings
+source_file = Classes/Base.lproj/DialerViewController.strings
+source_lang = en
+
+
+[linphone-ios.dialerviewcontrolleripadstrings]
+file_filter = Classes/<lang>.lproj/DialerViewController~ipad.strings
+source_file = Classes/Base.lproj/DialerViewController~ipad.strings
+source_lang = en
+
+
+[linphone-ios.firstloginviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/FirstLoginViewController.strings
+source_file = Classes/Base.lproj/FirstLoginViewController.strings
+source_lang = en
+
+
+[linphone-ios.historydetailsviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/HistoryDetailsViewController.strings
+source_file = Classes/Base.lproj/HistoryDetailsViewController.strings
+source_lang = en
+
+
+[linphone-ios.historyviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/HistoryViewController.strings
+source_file = Classes/Base.lproj/HistoryViewController.strings
+source_lang = en
+
+
+[linphone-ios.imageviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/ImageViewController.strings
+source_file = Classes/Base.lproj/ImageViewController.strings
+source_lang = en
+
+
+[linphone-ios.incallviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/InCallViewController.strings
+source_file = Classes/Base.lproj/InCallViewController.strings
+source_lang = en
+
+
+[linphone-ios.incomingcallviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/IncomingCallViewController.strings
+source_file = Classes/Base.lproj/IncomingCallViewController.strings
+source_lang = en
+
+
+[linphone-ios.incomingcallviewcontrolleripadstrings]
+file_filter = Classes/<lang>.lproj/IncomingCallViewController~ipad.strings
+source_file = Classes/Base.lproj/IncomingCallViewController~ipad.strings
+source_lang = en
+
+
+[linphone-ios.wizardviewcontrollerstrings]
+file_filter = Classes/<lang>.lproj/WizardViewController.strings
+source_file = Classes/Base.lproj/WizardViewController.strings
+source_lang = en
+
+
+[linphone-ios.wizardviewcontrolleripadstrings]
+file_filter = Classes/<lang>.lproj/WizardViewController~ipad.strings
+source_file = Classes/Base.lproj/WizardViewController~ipad.strings
+source_lang = en
+
+
+[linphone-ios.wizardviewsstrings]
+file_filter = Classes/<lang>.lproj/WizardViews.strings
+source_file = Classes/Base.lproj/WizardViews.strings
+source_lang = en
+
+
+[linphone-ios.uicallbarstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallBar.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallBar.strings
+source_lang = en
+
+
+[linphone-ios.uicallbaripadstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallBar~ipad.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallBar~ipad.strings
+source_lang = en
+
+
+[linphone-ios.uicallcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallCell.strings
+source_lang = en
+
+
+[linphone-ios.uichatcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatCell.strings
+source_lang = en
+
+
+[linphone-ios.uichatroomcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatRoomCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatRoomCell.strings
+source_lang = en
+
+
+[linphone-ios.uiconferenceheaderstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIConferenceHeader.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIConferenceHeader.strings
+source_lang = en
+
+
+[linphone-ios.uicontactcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactCell.strings
+source_lang = en
+
+
+[linphone-ios.uicontactdetailsfooterstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactDetailsFooter.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactDetailsFooter.strings
+source_lang = en
+
+
+[linphone-ios.uicontactdetailsheaderstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactDetailsHeader.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactDetailsHeader.strings
+source_lang = en
+
+
+[linphone-ios.uihistorycellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIHistoryCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIHistoryCell.strings
+source_lang = en
+
+
+[linphone-ios.uimainbarstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIMainBar.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIMainBar.strings
+source_lang = en
+
+
+[linphone-ios.uimainbaripadstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIMainBar~ipad.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIMainBar~ipad.strings
+source_lang = en
+
+
+[linphone-ios.uistatebarstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIStateBar.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIStateBar.strings
+source_lang = en
+

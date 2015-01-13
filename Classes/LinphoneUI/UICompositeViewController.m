@@ -177,7 +177,7 @@
     oppositeFrame.size.width = frame.size.height;
 
     // if we start in portrait, the landscape view must get the opposite height and width
-    if( portrait || [[UIDevice currentDevice].systemName floatValue] < 8 ){
+    if( portrait || [[UIDevice currentDevice].systemVersion floatValue] < 8 ){
         Linphone_log(@"landscape get opposite: %@", NSStringFromCGSize(oppositeFrame.size));
         [landscapeView setFrame:oppositeFrame];
     } else {
@@ -271,12 +271,10 @@
 #pragma mark - Event Functions
 
 - (void)orientationDidChange:(NSNotification*)notif {
-    if([LinphoneManager isLcReady]) {
-        // Update rotation
-        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
-        if(currentOrientation != correctOrientation) {
-            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
-        }
+    // Update rotation
+    UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+    if(currentOrientation != correctOrientation) {
+        [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
     }
 }
 
@@ -354,25 +352,13 @@
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillAppear:NO];
-        }
         [view addSubview: controller.view];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidAppear:NO];
-        }
     }
 }
 
 + (void)removeSubView:(UIViewController*)controller {
     if(controller != nil) {
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillDisappear:NO];
-        }
         [controller.view removeFromSuperview];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidDisappear:NO];
-        }
     }
 }
 

@@ -98,15 +98,13 @@ struct NetworkReachabilityContext {
 @end
 
 typedef struct _LinphoneManagerSounds {
-    SystemSoundID call;
-    SystemSoundID message;
     SystemSoundID vibrate;
 } LinphoneManagerSounds;
 
 @interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
-
+	
 @private
 	NSTimer* mIterateTimer;
     NSMutableArray*  pendindCallIdFromRemoteNotif;
@@ -132,7 +130,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)getUserAgent;
 + (int)unreadMessageCount;
 
-
+- (void)playMessageSound;
 - (void)resetLinphoneCore;
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
@@ -140,12 +138,12 @@ typedef struct _LinphoneManagerSounds {
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
 - (void)enableAutoAnswerForCallId:(NSString*) callid;
-- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
+- (void)configurePushTokenForProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
 
-
++ (BOOL)langageDirectionIsRTL;
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
 
@@ -154,6 +152,7 @@ typedef struct _LinphoneManagerSounds {
 - (bool)allowSpeaker;
 
 - (void)configureVbrCodecs;
+- (void)setLogsEnabled:(BOOL)enabled;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
@@ -186,6 +185,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
+@property (retain, nonatomic) NSString* SSID;
 @property (readonly) sqlite3* database;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;

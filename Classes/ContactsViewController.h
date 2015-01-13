@@ -75,7 +75,7 @@ typedef enum _ContactSelectionMode {
 
 @end
 
-@interface ContactsViewController : UIViewController<UICompositeViewDelegate,ABPeoplePickerNavigationControllerDelegate> {
+@interface ContactsViewController : UIViewController<UICompositeViewDelegate,ABPeoplePickerNavigationControllerDelegate,UISearchBarDelegate> {
     BOOL use_systemView;
 }
 
@@ -94,5 +94,4 @@ typedef enum _ContactSelectionMode {
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onBackClick:(id)event;
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText;
 @end

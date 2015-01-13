@@ -18,9 +18,9 @@
  */          
 
 #import "AboutViewController.h"
-#include "ConsoleViewController.h"
 #import "LinphoneManager.h"
 #include "linphone/lpconfig.h"
+#include "LinphoneIOSVersion.h"
 
 @implementation AboutViewController
 
@@ -74,8 +74,10 @@
     
 	[linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 	
-    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-	 ,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
+    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@",
+										 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+										 [NSString stringWithUTF8String:LINPHONE_IOS_VERSION]]
+	 ];
 
     [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"%@ Core %s", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"], linphone_core_get_version()]];
     
@@ -126,18 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (UIScrollView *)defaultScrollView:(UIWebView *)webView {
-    UIScrollView *scrollView = nil;
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
         return webView.scrollView;
-    }  else {
-        for (UIView *subview in [webView subviews]) {
-            if ([subview isKindOfClass:[UIScrollView class]]) {
-                scrollView = (UIScrollView *)subview;
-            }
-        }
-    }
-    return scrollView;
 }
 
 

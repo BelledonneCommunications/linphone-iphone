@@ -46,22 +46,6 @@ void LSLog(NSString* fmt, ...){
 static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list args) {
     NSString* log = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:fmt] arguments:args];
     NSLog(@"%@",log);
-    
-//    [logsBuffer addObject:log];
-//    
-//    if (logsBuffer.count >= kLogsBufferCapacity ) {
-//        [lastLogs addObjectsFromArray:logsBuffer];
-//        
-//        if( lastLogs.count >= kLastLogsCapacity - kLogsBufferCapacity ){
-//            [lastLogs removeObjectsInRange:NSMakeRange(0, kLogsBufferCapacity)];
-//        }
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kLogsUpdateNotification
-//                                                            object:nil
-//                                                          userInfo:@{@"newlogs": [logsBuffer copy]}];
-//        [logsBuffer removeAllObjects];
-//    }
-
-
 }
 
 - (void)setupLogging {

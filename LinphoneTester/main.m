@@ -20,7 +20,7 @@ static NSString * const kKEY_ExceptionCallStack = @"UnhandledExceptionCallStack"
 static NSString * const kKEY_ExceptionScreenshot = @"UnhandledExceptionScreenshot";
 static NSString * const kKEY_ExceptionTimestamp = @"UnhandledExceptionTimestamp";
 
-__unused void unhandledExceptionHandler(NSException *exception) {
+static void unhandledExceptionHandler(NSException *exception) {
     NSMutableDictionary *crashReport = [NSMutableDictionary dictionary];
     crashReport[kKEY_ExceptionName] = exception.name;
     crashReport[kKEY_ExceptionReason] = exception.reason;

@@ -37,7 +37,7 @@
         self->call = acall;
         image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
         address = [@"Unknown" retain];
-        [self update];
+		[self update];
     }
     return self;
 }
@@ -147,7 +147,11 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[arrayOfViews objectAtIndex:0]];
+			//resize cell to match .nib size. It is needed when resized the cell to
+			//correctly adapt its height too
+			UIView *sub = ((UIView*)[arrayOfViews objectAtIndex:0]);
+			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+            [self addSubview:sub];
         }
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
@@ -176,7 +180,12 @@
         [UICallCell adaptSize:videoDownloadBandwidthHeaderLabel field:videoDownloadBandwidthLabel];
         [UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
         [UICallCell adaptSize:videoIceConnectivityHeaderLabel field:videoIceConnectivityLabel];
-        
+
+		if ([LinphoneManager runningOnIpad]) {
+			[LinphoneUtils adjustFontSize:self.audioStatsView mult:2.22];
+			[LinphoneUtils adjustFontSize:self.videoStatsView mult:2.22];
+		}
+		
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillEnterForeground:)
                                                      name:UIApplicationWillEnterForegroundNotification
@@ -241,11 +250,6 @@
 }
 
 
-- (void)prepareForReuse {
-    
-}
-
-
 #pragma mark - Properties Functions
 
 - (void)setData:(UICallCellData *)adata {
@@ -275,11 +279,11 @@
 #pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
-    return 300;
+	return [LinphoneManager runningOnIpad] ? 600 : 300;
 }
 
 + (int)getMinimizedHeight {
-   return 63;
+	return [LinphoneManager runningOnIpad] ? 126 : 63;
 }
 
 + (void)adaptSize:(UILabel*)label field:(UIView*)field {
@@ -418,9 +422,12 @@
     
     if(!data->minimize) {
         CGRect frame = [self frame];
-        frame.size.height = [otherView frame].size.height;
+        frame.size.height = [UICallCell getMaximizedHeight];
         [self setFrame:frame];
+		frame = otherView.frame;
+		frame.size.height = [UICallCell getMaximizedHeight];
         [otherView setHidden:false];
+		otherView.frame = frame;
     } else {
         CGRect frame = [self frame];
         frame.size.height = [headerView frame].size.height;
@@ -519,7 +526,7 @@
     if(parentTable != nil) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
-            [parentTable reloadRowsAtIndexPaths:[[[NSArray alloc] initWithObjects:index, nil] autorelease] withRowAnimation:false];
+            [parentTable reloadRowsAtIndexPaths:@[index] withRowAnimation:false];
         }
     }
 }

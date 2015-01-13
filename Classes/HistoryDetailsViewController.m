@@ -113,6 +113,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
     [HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
     [HistoryDetailsViewController adaptSize:plainAddressHeaderLabel field:plainAddressLabel];
+	[addContactButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     [callButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     [messageButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
 }
@@ -183,9 +184,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-    if(![LinphoneManager isLcReady]) {
-        return;
-    }
 
     // Look for the call log
     callLog = NULL;
@@ -385,18 +383,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     char* lAddress = linphone_address_as_string_uri_only(addr);
     if(lAddress == NULL)
         return;
-
-    NSString *displayName = nil;
-    if(contact != nil) {
-        displayName = [FastAddressBook getContactDisplayName:contact];
-    } else {
-        const char* lDisplayName = linphone_address_get_display_name(addr);
-        const char* lUserName = linphone_address_get_username(addr);
-        if (lDisplayName)
-            displayName = [NSString stringWithUTF8String:lDisplayName];
-        else if(lUserName)
-            displayName = [NSString stringWithUTF8String:lUserName];
-    }
 
     // Go to ChatRoom view
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];

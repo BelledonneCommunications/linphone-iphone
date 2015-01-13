@@ -25,7 +25,7 @@ enable_ffmpeg=no
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null)
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
@@ -87,38 +87,47 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
 armv7-%:
 	make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $*
 
-armv7s-%:
-	make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+arm64-%:
+	make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* V=1 VERBOSE=1
 
 simu-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $*
 
+arm64:
+	make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) V=1 VERBOSE=1
 
-build-% clean-% veryclean-%:
-	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $@
 
-# sends the target after 'broadcast_' to all sub-architectures (armv7, armv7s, simulator)
+# sends the target after 'broadcast_' to all sub-architectures (armv7, simu, arm64)
 broadcast_%:
 	@echo "Broadcasting target '$*' to all sub-architectures"
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk host=armv7s-apple-darwin $(LINPHONE_OPTIONS) $*
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* 
+
+build-% clean-% veryclean-%:
+	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@ 
 
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
 
+libs:
+	make -f builder-iphone-os.mk multi-arch
+
 download-sdk:
 	make -f builder-iphone-os.mk download-sdk
 
-build: broadcast_all sdk
+build: broadcast_all libs
 
 ipa: build broadcast_ipa
 
 clean: broadcast_clean
 
 veryclean: broadcast_veryclean
+
+list-packages:
+	@make -f builder-iphone-os.mk list-packages
 
 
 zipres:
@@ -127,26 +136,28 @@ zipres:
 
 help:
 	@echo "(please read the README file first)"
-	@echo "Available architectures: armv7, armv7s, simu"
+	@echo "Available architectures: armv7, simu"
 	@echo "Available targets:"
 	@echo ""
 	@echo "   * all       : builds all architectures and creates the liblinphone sdk"
 	@echo "   * ipa       : builds all, creates the SDK, then builds an IPA of the Linphone-iphone application"
 	@echo "   * clean     : clean all packages for all architectures"
 	@echo "   * veryclean : completely clean all packages for all architectures"
+	@echo "   * zipres    : creates a tar.gz file with all the resources (images)"
 	@echo ""
 	@echo "=== Advanced usage ==="
+	@echo ""
+	@echo "   *              list-packages : lists the packages that you can build"
 	@echo ""
 	@echo "   *            build-[package] : builds the package for all architectures"
 	@echo "   *            clean-[package] : clean the package for all architectures"
 	@echo "   *        veryclean-[package] : completely clean the package for all architectures"
 	@echo ""
 	@echo "   *      armv7-build-[package] : builds a package for the armv7 architecture"
-	@echo "   *     armv7s-build-[package] : builds a package for the armv7s architecture"
 	@echo "   *       simu-build-[package] : builds a package for the simulator architecture"
 	@echo ""
 	@echo "   *     [arch]-clean-[package] : clean the package for the selected architecture"
 	@echo "   * [arch]-veryclean-[package] : completely clean the package for the selected architecture"
 	@echo ""
-	@echo "   * sdk : re-add all generated libraries to the SDK. Use this only after a full build."
-
+	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
+	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"

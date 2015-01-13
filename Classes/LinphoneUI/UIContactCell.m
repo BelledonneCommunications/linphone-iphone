@@ -70,6 +70,10 @@
     [self setHighlighted:false animated:true];
 }
 
+- (NSString *)accessibilityValue {
+    return [NSString stringWithFormat:@"%@ %@", firstNameLabel.text, lastNameLabel.text];
+}
+
 - (void)update {
     if(contact == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update contact cell: null contact"];
@@ -83,13 +87,15 @@
     CFStringRef lOrganization = ABRecordCopyValue(contact, kABPersonOrganizationProperty);
     CFStringRef lLocalizedOrganization = (lOrganization != nil)?ABAddressBookCopyLocalizedLabel(lOrganization):nil;
 
-    if(lLocalizedFirstName != nil)
+    if(lLocalizedFirstName != nil){
         [firstNameLabel setText: (NSString *)lLocalizedFirstName];
+    }
     else
         [firstNameLabel setText: @""];
     
-    if(lLocalizedLastName != nil)
+    if(lLocalizedLastName != nil){
         [lastNameLabel setText: (NSString *)lLocalizedLastName];
+    }
     else
         [lastNameLabel setText: @""];
     

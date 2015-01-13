@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIMainBar">
@@ -21,19 +21,24 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view autoresizesSubviews="NO" contentMode="scaleToFill" id="3">
+        <view contentMode="scaleToFill" id="3">
             <rect key="frame" x="0.0" y="0.0" width="320" height="77"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view hidden="YES" autoresizesSubviews="NO" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="4" userLabel="mask">
-                    <rect key="frame" x="0.0" y="11" width="320" height="66"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <view hidden="YES" autoresizesSubviews="NO" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4" userLabel="mask">
+                    <rect key="frame" x="0.0" y="12" width="320" height="65"/>
                     <color key="backgroundColor" red="0.0" green="1" blue="0.090924573910000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="65" id="SfG-nT-bfE"/>
+                    </constraints>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="6" userLabel="history">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6" userLabel="history">
                     <rect key="frame" x="0.0" y="0.0" width="64" height="77"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="77" id="9fJ-Bx-Z87"/>
+                        <constraint firstAttribute="width" constant="64" id="dSE-Nc-AQX"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="History" backgroundImage="history_default.png">
@@ -50,31 +55,13 @@
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
                     </connections>
                 </button>
-                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="32" userLabel="historyNotificationView">
-                    <rect key="frame" x="38" y="1" width="21" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" id="33" userLabel="historyNotificationImage">
-                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="34" userLabel="historyNotificationLabel">
-                            <rect key="frame" x="2" y="2" width="17" height="17"/>
-                            <autoresizingMask key="autoresizingMask"/>
-                            <accessibility key="accessibilityConfiguration" label="Missed call(s)">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="8" userLabel="contacts">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="contacts">
                     <rect key="frame" x="64" y="0.0" width="64" height="77"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="64" id="7qG-OX-ocj"/>
+                        <constraint firstAttribute="height" constant="77" id="AaL-yt-Hnd"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="Contacts" backgroundImage="contacts_default.png">
@@ -91,10 +78,13 @@
                         <action selector="onContactsClick:" destination="-1" eventType="touchUpInside" id="23"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="settings">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9" userLabel="settings">
                     <rect key="frame" x="256" y="0.0" width="64" height="77"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Settings"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="64" id="50o-3P-EEl"/>
+                        <constraint firstAttribute="height" constant="77" id="cUb-Ax-J5i"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="Settings" backgroundImage="settings_default.png">
@@ -111,10 +101,13 @@
                         <action selector="onSettingsClick:" destination="-1" eventType="touchUpInside" id="25"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="7" userLabel="dialer">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7" userLabel="dialer">
                     <rect key="frame" x="128" y="0.0" width="64" height="77"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="64" id="Kyv-1i-fVw"/>
+                        <constraint firstAttribute="height" constant="77" id="hR6-kA-HxY"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                     <state key="normal" image="dialer_default.png">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -125,10 +118,13 @@
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="24"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5" userLabel="chat">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="chat">
                     <rect key="frame" x="192" y="0.0" width="64" height="77"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="64" id="eh4-r3-oxy"/>
+                        <constraint firstAttribute="height" constant="77" id="gId-1A-3gt"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="Chat" backgroundImage="chat_default.png">
@@ -145,29 +141,113 @@
                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="26"/>
                     </connections>
                 </button>
-                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="37" userLabel="chatNotificationView">
-                    <rect key="frame" x="197" y="1" width="21" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="37" userLabel="chatNotificationView">
+                    <rect key="frame" x="235" y="0.0" width="21" height="21"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" id="39" userLabel="chatNotificationImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" translatesAutoresizingMaskIntoConstraints="NO" id="39" userLabel="chatNotificationImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="38" userLabel="chatNotificationLabel">
-                            <rect key="frame" x="2" y="2" width="17" height="17"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="38" userLabel="chatNotificationLabel">
+                            <rect key="frame" x="3" y="2" width="16" height="17"/>
                             <accessibility key="accessibilityConfiguration" label="Missed message(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
                             </accessibility>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="17" id="0L7-q4-XAQ"/>
+                                <constraint firstAttribute="width" constant="16" id="jXP-Y5-d8a"/>
+                            </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="centerY" secondItem="38" secondAttribute="centerY" id="AqH-xS-ee0"/>
+                        <constraint firstAttribute="width" constant="21" id="CKe-U0-pTJ"/>
+                        <constraint firstAttribute="centerX" secondItem="39" secondAttribute="centerX" id="DJZ-vG-EZ9"/>
+                        <constraint firstAttribute="centerX" secondItem="38" secondAttribute="centerX" id="PyV-QG-q3f"/>
+                        <constraint firstItem="39" firstAttribute="height" secondItem="37" secondAttribute="height" id="Uzu-M2-lWM"/>
+                        <constraint firstAttribute="height" constant="21" id="bSp-VO-Ar7"/>
+                        <constraint firstAttribute="centerY" secondItem="39" secondAttribute="centerY" id="cYa-kU-nJs"/>
+                        <constraint firstItem="39" firstAttribute="width" secondItem="37" secondAttribute="width" id="yxe-m3-Pcu"/>
+                    </constraints>
                 </view>
+                <view autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="32" userLabel="historyNotificationView">
+                    <rect key="frame" x="43" y="0.0" width="21" height="21"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" translatesAutoresizingMaskIntoConstraints="NO" id="33" userLabel="historyNotificationImage">
+                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                        </imageView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="34" userLabel="historyNotificationLabel">
+                            <rect key="frame" x="3" y="2" width="16" height="17"/>
+                            <accessibility key="accessibilityConfiguration" label="Missed call(s)">
+                                <accessibilityTraits key="traits" none="YES"/>
+                            </accessibility>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="17" id="POi-z8-SlR"/>
+                                <constraint firstAttribute="width" constant="16" id="dgV-A5-wuu"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="4T8-IM-ass"/>
+                        <constraint firstAttribute="centerY" secondItem="33" secondAttribute="centerY" id="LTt-9K-g3a"/>
+                        <constraint firstAttribute="centerX" secondItem="34" secondAttribute="centerX" id="Lih-Vg-mnM"/>
+                        <constraint firstAttribute="centerX" secondItem="33" secondAttribute="centerX" id="Px6-nJ-aI7"/>
+                        <constraint firstAttribute="centerY" secondItem="34" secondAttribute="centerY" id="aCW-40-4oh"/>
+                        <constraint firstItem="33" firstAttribute="height" secondItem="32" secondAttribute="height" id="jJA-x1-0xU"/>
+                        <constraint firstItem="33" firstAttribute="width" secondItem="32" secondAttribute="width" id="shb-FE-cRF"/>
+                        <constraint firstAttribute="width" constant="21" id="tMw-Sg-MKB"/>
+                    </constraints>
+                </view>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_left.png" translatesAutoresizingMaskIntoConstraints="NO" id="f0B-Rk-Uez">
+                    <rect key="frame" x="-47" y="-8" width="47" height="85"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="85" id="Ce2-oh-cXP"/>
+                        <constraint firstAttribute="width" constant="47" id="hvC-cr-MbF"/>
+                    </constraints>
+                </imageView>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="dialer_padding_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="if3-GT-4eC">
+                    <rect key="frame" x="320" y="-8" width="47" height="85"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="47" id="Ez5-zh-daE"/>
+                        <constraint firstAttribute="height" constant="85" id="liI-Np-MjS"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" red="0.0" green="1" blue="0.19194547549999999" alpha="0.0" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="4" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="23R-LR-WSH"/>
+                <constraint firstAttribute="bottom" secondItem="f0B-Rk-Uez" secondAttribute="bottom" id="5jk-rI-3ek"/>
+                <constraint firstAttribute="bottom" secondItem="if3-GT-4eC" secondAttribute="bottom" id="BMD-5G-aiP"/>
+                <constraint firstItem="32" firstAttribute="trailing" secondItem="6" secondAttribute="trailing" id="KAR-Oc-g9D"/>
+                <constraint firstItem="if3-GT-4eC" firstAttribute="leading" secondItem="9" secondAttribute="trailing" id="Npd-ac-VuD"/>
+                <constraint firstItem="7" firstAttribute="leading" secondItem="8" secondAttribute="trailing" id="P0e-Vb-oo3"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" id="Q0Q-KR-hwu"/>
+                <constraint firstItem="5" firstAttribute="top" secondItem="37" secondAttribute="top" id="QTf-I4-aYm"/>
+                <constraint firstAttribute="bottom" secondItem="7" secondAttribute="bottom" id="RSs-eA-XI3"/>
+                <constraint firstItem="8" firstAttribute="leading" secondItem="6" secondAttribute="trailing" id="Tim-pC-QPd"/>
+                <constraint firstAttribute="bottom" secondItem="5" secondAttribute="bottom" id="UNn-fP-Bhi"/>
+                <constraint firstAttribute="bottom" secondItem="8" secondAttribute="bottom" id="ZXj-CV-9DA"/>
+                <constraint firstItem="6" firstAttribute="leading" secondItem="f0B-Rk-Uez" secondAttribute="trailing" id="buH-90-U2H"/>
+                <constraint firstAttribute="trailing" secondItem="4" secondAttribute="trailing" id="bz1-ui-hrk"/>
+                <constraint firstItem="6" firstAttribute="top" secondItem="32" secondAttribute="top" id="dEI-FQ-VES"/>
+                <constraint firstAttribute="centerX" secondItem="4" secondAttribute="centerX" id="jmU-VM-s9L"/>
+                <constraint firstItem="5" firstAttribute="trailing" secondItem="37" secondAttribute="trailing" id="kGi-dF-bTb"/>
+                <constraint firstItem="9" firstAttribute="leading" secondItem="5" secondAttribute="trailing" id="tw3-7Q-WKv"/>
+                <constraint firstAttribute="bottom" secondItem="6" secondAttribute="bottom" id="umW-rl-qXm"/>
+                <constraint firstAttribute="centerX" secondItem="7" secondAttribute="centerX" id="wni-ky-koR"/>
+                <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" id="znG-Zq-s5I"/>
+                <constraint firstAttribute="bottom" secondItem="4" secondAttribute="bottom" id="zvN-5z-2QF"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="988" y="613.5"/>
         </view>
     </objects>
     <resources>
@@ -179,6 +259,8 @@
         <image name="contacts_selected.png" width="128" height="154"/>
         <image name="dialer_default.png" width="128" height="154"/>
         <image name="dialer_over.png" width="128" height="154"/>
+        <image name="dialer_padding_left.png" width="94" height="170"/>
+        <image name="dialer_padding_right.png" width="94" height="170"/>
         <image name="dialer_selected.png" width="128" height="154"/>
         <image name="history_default.png" width="128" height="154"/>
         <image name="history_notification.png" width="43" height="43"/>
@@ -188,4 +270,9 @@
         <image name="settings_over.png" width="128" height="154"/>
         <image name="settings_selected.png" width="128" height="154"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

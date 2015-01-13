@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "LinphoneManager.h"
 #import "ChatRoomTableViewController.h"
@@ -34,7 +34,7 @@
 - (void)dealloc {
     [chatRoomDelegate release];
     [self clearMessageList];
-    
+
     [super dealloc];
 }
 
@@ -47,6 +47,7 @@
 //    chatRoom = NULL;
 }
 - (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 	[self reloadData];
 }
 
@@ -119,7 +120,7 @@
     if(messageList == nil || chatRoom == nil) {
         return;
     }
-    
+
     int index = -1;
     int count = ms_list_size(messageList);
     // Find first unread & set all entry read
@@ -135,11 +136,11 @@
     }
 
     linphone_chat_room_mark_as_read(chatRoom);
-    
+
     // Scroll to unread
     if(index >= 0) {
         [self.tableView.layer removeAllAnimations];
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] 
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
                               atScrollPosition:UITableViewScrollPositionTop
                                       animated:animated];
     }
@@ -169,7 +170,7 @@
         cell = [[[UIChatRoomCell alloc] initWithIdentifier:kCellId] autorelease];
     }
 
-    LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, [indexPath row]);
+    LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
     [cell setChatMessage:chat];
     [cell setChatRoomDelegate:chatRoomDelegate];
     return cell;
@@ -181,7 +182,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
-        LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, [indexPath row]);
+        LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
         if( chat ){
 
             linphone_chat_room_delete_message(chatRoom, chat);
@@ -203,7 +204,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LinphoneChatMessage* message = ms_list_nth_data(self->messageList, [indexPath row]);
+    LinphoneChatMessage* message = ms_list_nth_data(self->messageList, (int)[indexPath row]);
     return [UIChatRoomCell height:message width:[self.view frame].size.width];
 }
 

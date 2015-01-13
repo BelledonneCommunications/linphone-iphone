@@ -111,19 +111,17 @@
 
 - (void)loadData {
     [callLogs removeAllObjects];
-    if([LinphoneManager isLcReady]) {
-        const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-        while(logs != NULL) {
-            LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
-            if(missedFilter) {
-                if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
-                    [callLogs addObject:[NSValue valueWithPointer: log]];
-                }
-            } else {
+    const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+    while(logs != NULL) {
+        LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
+        if(missedFilter) {
+            if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
                 [callLogs addObject:[NSValue valueWithPointer: log]];
             }
-            logs = ms_list_next(logs);
+        } else {
+            [callLogs addObject:[NSValue valueWithPointer: log]];
         }
+        logs = ms_list_next(logs);
     }
     [[self tableView] reloadData];
 }

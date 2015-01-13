@@ -1,0 +1,30 @@
+
+/* Class = "IBUILabel"; text = "Title"; ObjectID = "2pz-XF-uhl"; */
+"2pz-XF-uhl.text" = "Title";
+
+/* Class = "IBUIViewController"; title = "Detail"; ObjectID = "Ah7-4n-0Wa"; */
+"Ah7-4n-0Wa.title" = "Detail";
+
+/* Class = "IBUILabel"; text = "Title"; ObjectID = "PRJ-ig-cCG"; */
+"PRJ-ig-cCG.text" = "Title";
+
+/* Class = "IBUIButton"; normalTitle = "Logs"; ObjectID = "V3v-ch-Eo9"; */
+"V3v-ch-Eo9.normalTitle" = "Logs";
+
+/* Class = "IBUIButton"; normalTitle = "Logs"; ObjectID = "W17-XV-pa2"; */
+"W17-XV-pa2.normalTitle" = "Logs";
+
+/* Class = "IBUINavigationItem"; title = "Tests"; ObjectID = "cra-N8-TIN"; */
+"cra-N8-TIN.title" = "Tests";
+
+/* Class = "IBUIButton"; normalTitle = "Clear"; ObjectID = "hhf-hV-LBt"; */
+"hhf-hV-LBt.normalTitle" = "Clear";
+
+/* Class = "IBUIViewController"; title = "Logs"; ObjectID = "iOM-9A-Idi"; */
+"iOM-9A-Idi.title" = "Logs";
+
+/* Class = "IBUITableViewController"; title = "Master"; ObjectID = "pGg-6v-bdr"; */
+"pGg-6v-bdr.title" = "Master";
+
+/* Class = "IBUINavigationItem"; title = "List of Categories"; ObjectID = "tQt-TN-PWz"; */
+"tQt-TN-PWz.title" = "List of Categories";

@@ -22,6 +22,11 @@
 msbcg729_dir?=bcg729
 enable_bcg729?=yes
 
+configure-options=
+ifeq ($(LINPHONE_CCACHE), ccache)
+	configure-options+= --disable-strict
+endif
+
 $(BUILDER_SRC_DIR)/$(msbcg729_dir)/configure:
 	@echo -e "\033[01;32m Running autogen for msbcg729 in $(BUILDER_SRC_DIR)/$(msbcg729_dir) \033[0m"
 	cd $(BUILDER_SRC_DIR)/$(msbcg729_dir) && ./autogen.sh
@@ -32,7 +37,7 @@ $(BUILDER_BUILD_DIR)/$(msbcg729_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msbcg729_dir
 	cd $(BUILDER_BUILD_DIR)/$(msbcg729_dir)/ \
 		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 		$(BUILDER_SRC_DIR)/$(msbcg729_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-		--enable-static
+		--enable-static ${configure-options}
 
 ifeq ($(enable_bcg729),yes)
 
