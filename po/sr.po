@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 12:28+0100\n"
-"PO-Revision-Date: 2015-01-06 11:29+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-01-13 16:18+0100\n"
+"PO-Revision-Date: 2015-01-07 17:21+0000\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/sr/)\n"
 "Language: sr\n"
@@ -140,7 +140,7 @@ msgstr "Покреће помоћника звука"
 
 #: ../gtk/main.c:172
 msgid "Run self test and exit 0 if succeed"
-msgstr ""
+msgstr "Покреће самоиспробавање и излази 0 ако је успешно"
 
 #: ../gtk/main.c:1083
 #, c-format
@@ -1258,7 +1258,7 @@ msgstr "СИП/УДП прикључник"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Random"
-msgstr ""
+msgstr "Насумично"
 
 #: ../gtk/parameters.ui.h:22
 msgid "SIP/TCP port"
@@ -1374,7 +1374,7 @@ msgstr "Начин излаза снимка:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "Show camera preview"
-msgstr ""
+msgstr "Прикажи претпреглед камерице"
 
 #: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
@@ -1873,7 +1873,7 @@ msgstr ""
 "Треба да изгледа као „sip:корисник@домен-посредника, као што је „sip:"
 "alice@example.net“"
 
-#: ../coreapi/proxy.c:1390
+#: ../coreapi/proxy.c:1391
 #, c-format
 msgid "Could not login as %s"
 msgstr "Не могу да се пријавим као %s"

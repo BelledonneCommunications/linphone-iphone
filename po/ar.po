@@ -4,14 +4,14 @@
 #
 # Translators:
 # محيي الدين <tx99h4@hotmail.com>, 2014
-# محيي الدين <tx99h4@hotmail.com>, 2014
+# محيي الدين <tx99h4@hotmail.com>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-06 12:28+0100\n"
-"PO-Revision-Date: 2015-01-06 11:29+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-01-13 16:18+0100\n"
+"PO-Revision-Date: 2015-01-06 14:11+0000\n"
+"Last-Translator: محيي الدين <tx99h4@hotmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ar/)\n"
 "Language: ar\n"
@@ -146,7 +146,7 @@ msgstr "ابدأ مرشد الصوت"
 
 #: ../gtk/main.c:172
 msgid "Run self test and exit 0 if succeed"
-msgstr ""
+msgstr "شغِّل الاختبار الذاتي ثم اخرِجْ 0 إذا نجح"
 
 #: ../gtk/main.c:1083
 #, c-format
@@ -1262,7 +1262,7 @@ msgstr "منفذ SIP/UDP"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Random"
-msgstr ""
+msgstr "عشوائي"
 
 #: ../gtk/parameters.ui.h:22
 msgid "SIP/TCP port"
@@ -1378,7 +1378,7 @@ msgstr "طريقة إخراج الفيديو :"
 
 #: ../gtk/parameters.ui.h:50
 msgid "Show camera preview"
-msgstr ""
+msgstr "اظهر معاينة الكاميرا"
 
 #: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
@@ -1874,7 +1874,7 @@ msgstr ""
 "هوية SIP التي أدخلت غير صحيحة.\n"
 "يجب أن تشبه هذا النمط sip:username@proxydomain، مثلا sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1390
+#: ../coreapi/proxy.c:1391
 #, c-format
 msgid "Could not login as %s"
 msgstr "تعذر الولوج بالهوية %s"
