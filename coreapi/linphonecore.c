@@ -1489,10 +1489,11 @@ static void misc_config_read(LinphoneCore *lc) {
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		sal_set_uuid(lc->sal, uuid);
 
-	/* DTLS: if media_encryption is DTLS, get or create the certificate directory */
-	if (linphone_core_get_media_encryption(lc) == LinphoneMediaEncryptionDTLS) {
-		/* TODO*/
-	}
+	/* DTLS: if media_encryption DTLS SRTP is available, get or create the certificate directory */
+	/*if (ms_dtls_srtp_available()){
+		*//*JOHAN: USELESS? REMOVE IT*/
+		//const char *user_certificate_config_path = lp_config_get_string(config,"misc","uuid",);
+//	}*/
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
@@ -6834,7 +6835,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 		case LinphoneMediaEncryptionSRTP:
 			return ms_srtp_supported();
 		case LinphoneMediaEncryptionDTLS:
-			return ms_dtls_available();
+			return ms_dtls_srtp_available();
 		case LinphoneMediaEncryptionZRTP:
 			return ms_zrtp_available();
 		case LinphoneMediaEncryptionNone:
@@ -6859,7 +6860,7 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 			ret=-1;
 		}else type="zrtp";
 	}else if (menc == LinphoneMediaEncryptionDTLS){
-		if (!ms_dtls_available()){
+		if (!ms_dtls_srtp_available()){
 			ms_warning("DTLS not supported by library.");
 			type="none";
 			ret=-1;
