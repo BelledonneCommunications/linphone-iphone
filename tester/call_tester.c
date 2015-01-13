@@ -106,6 +106,7 @@ void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool
 	else
 		counters->number_of_LinphoneCallEncryptedOff++;
 }
+
 void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(transfered)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(transfered)->from);
@@ -267,10 +268,10 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 
 	if (linphone_core_get_media_encryption(caller_mgr->lc) != LinphoneMediaEncryptionNone
 		&& linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
-		/*wait for encryption to be on, in case of zrtp, it can take a few seconds*/
-		if (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP)
+		/*wait for encryption to be on, in case of zrtp or dtls, it can take a few seconds*/
+		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP) || (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS))
 			wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_caller.number_of_LinphoneCallEncryptedOn+1);
-		if (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)
+		if ((linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) || (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionDTLS))
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 		{
 		const LinphoneCallParams* call_param = linphone_call_get_current_params(linphone_core_get_current_call(callee_mgr->lc));
@@ -2092,6 +2093,10 @@ static void zrtp_video_call() {
 	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 
+static void dtls_srtp_call() {
+	call_base(LinphoneMediaEncryptionDTLS,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
+}
+
 static void call_with_declined_srtp(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -2237,7 +2242,6 @@ end:
 
 }
 
-
 void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -2266,6 +2270,10 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
+		if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
+			marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", liblinphone_tester_file_prefix);
+			pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", liblinphone_tester_file_prefix);
+		}
 
 		linphone_core_set_firewall_policy(marie->lc,policy);
 		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
@@ -3567,6 +3575,7 @@ test_t call_tests[] = {
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
 	{ "SRTP call", srtp_call },
 	{ "ZRTP call",zrtp_call},
+	{ "DTLS SRTP call",dtls_srtp_call},
 	{ "ZRTP video call",zrtp_video_call},
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
 	{ "Call with file player", call_with_file_player},
