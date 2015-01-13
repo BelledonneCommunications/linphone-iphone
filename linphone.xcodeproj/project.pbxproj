@@ -46,7 +46,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
 		220FAD3210765B400068D98F /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
@@ -107,7 +106,6 @@
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */; };
 		57B0E360173C010400A476B8 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
 		57F005C415EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
 		57F005C815EE2D9200914747 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C615EE2D9200914747 /* linphonerc-factory */; };
@@ -141,10 +139,6 @@
 		D30562161671DC4900C97967 /* libXMLRPC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3554ED115CA79AA00478841 /* libXMLRPC.a */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */; };
-		D3103924162C3C5100C00C18 /* linphone_splashscreen-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */; };
-		D3103926162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103921162C3C5100C00C18 /* linphone_splashscreen-Landscape@2x.png */; };
-		D3103928162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103922162C3C5100C00C18 /* linphone_splashscreen-Portrait.png */; };
-		D310392A162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3103923162C3C5100C00C18 /* linphone_splashscreen-Portrait@2x.png */; };
 		D3119E7215B6A4710005D4A4 /* contacts_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3119E7015B6A4710005D4A4 /* contacts_back_default.png */; };
 		D3119E7415B6A4710005D4A4 /* contacts_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3119E7115B6A4710005D4A4 /* contacts_back_over.png */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsViewController.m */; };
@@ -234,8 +228,6 @@
 		D339890215C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D33988B315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png */; };
 		D339890615C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D339890415C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png */; };
 		D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */; };
-		D33CF34A15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */; };
-		D33CF34C15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */; };
 		D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F06164CF35100CFA363 /* callbar_left_padding.png */; };
 		D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F07164CF35100CFA363 /* callbar_right_padding.png */; };
 		D3432A62158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
@@ -260,8 +252,6 @@
 		D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21B15A43D3400149E54 /* setup_welcome_logo.png */; };
 		D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F515A47E9E007E7E81 /* button_background_default.png */; };
 		D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F615A47E9E007E7E81 /* button_background_over.png */; };
-		D354944C160B615A0027E44E /* linphone_splashscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944A160B615A0027E44E /* linphone_splashscreen.png */; };
-		D354944E160B615A0027E44E /* linphone_splashscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944B160B615A0027E44E /* linphone_splashscreen@2x.png */; };
 		D35497FE15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
 		D354980615875534000081D8 /* contacts_all_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D354980215875534000081D8 /* contacts_all_selected.png */; };
 		D354980815875534000081D8 /* contacts_all_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D354980315875534000081D8 /* contacts_all_default.png */; };
@@ -386,7 +376,6 @@
 		D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */; };
 		D38D14AF15A30B3D008497E8 /* cell_call_first_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */; };
 		D38D14B115A30B3D008497E8 /* cell_call_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */; };
-		D38F46F2160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D38F46F1160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png */; };
 		D3998D0416031937009DD22C /* background_alt.png in Resources */ = {isa = PBXBuildFile; fileRef = D3998D0316031937009DD22C /* background_alt.png */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A74E5915C68162001500B9 /* toolsbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74E5815C68162001500B9 /* toolsbar_background.png */; };
@@ -694,8 +683,6 @@
 		F070E6361A2622EC00E17AFD /* incall_padding_left.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6301A2622EC00E17AFD /* incall_padding_left.png */; };
 		F070E6371A2622EC00E17AFD /* incall_padding_right_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6311A2622EC00E17AFD /* incall_padding_right_landscape.png */; };
 		F070E6381A2622EC00E17AFD /* incall_padding_right.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6321A2622EC00E17AFD /* incall_padding_right.png */; };
-		F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
-		F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
 		F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
 		F08BDC3D1A35E60F006210C9 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		F08F118519C09C6B007D70C2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B3318C0CF7000C4D7FE /* XCTest.framework */; };
@@ -708,7 +695,7 @@
 		F08F119D19C0A65B007D70C2 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119C19C0A65B007D70C2 /* NSObject+DTRuntime.m */; };
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
-		F0A2759C18157A6000B6D61A /* linphone_icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7B17FC5160005A3330 /* linphone_icon_120.png */; };
+		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F0B89C2818DC973E0050B60E /* wizard_external_sip.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */; };
 		F0B89C2A18DC973E0050B60E /* wizard_linphone_create.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2518DC973E0050B60E /* wizard_linphone_create.rc */; };
@@ -724,7 +711,7 @@
 		F0BB8BEA1936208200974404 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BE81936208200974404 /* Main_iPad.storyboard */; };
 		F0BB8BED1936208200974404 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEC1936208200974404 /* MasterViewController.m */; };
 		F0BB8BF01936208200974404 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEF1936208200974404 /* DetailViewController.m */; };
-		F0BB8BF21936208200974404 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BF11936208200974404 /* Images.xcassets */; };
+		F0BB8BF21936208200974404 /* TesterImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BF11936208200974404 /* TesterImages.xcassets */; };
 		F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		F0BB8C121936240300974404 /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C111936240300974404 /* libcunit.a */; };
 		F0BB8C131936242400974404 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
@@ -882,7 +869,6 @@
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		22058C70116E305000B08DDD /* linphone_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_57.png; path = Resources/linphone_icon_57.png; sourceTree = "<group>"; };
 		220FAD2910765B400068D98F /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<group>"; };
 		220FAD2C10765B400068D98F /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
@@ -964,7 +950,6 @@
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_72.png; path = Resources/linphone_icon_72.png; sourceTree = "<group>"; };
 		57B0E35F173C010400A476B8 /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
 		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		57F005C615EE2D9200914747 /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
@@ -1011,10 +996,6 @@
 		D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsDelegate.h; sourceTree = "<group>"; };
 		D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_ok_disabled.png; path = Resources/contact_ok_disabled.png; sourceTree = "<group>"; };
 		D30BF33216A427BC00AF0026 /* libtunnel.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtunnel.a; path = "liblinphone-sdk/apple-darwin/lib/libtunnel.a"; sourceTree = "<group>"; };
-		D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen-Landscape.png"; path = "Resources/linphone_splashscreen-Landscape.png"; sourceTree = "<group>"; };
-		D3103921162C3C5100C00C18 /* linphone_splashscreen-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen-Landscape@2x.png"; path = "Resources/linphone_splashscreen-Landscape@2x.png"; sourceTree = "<group>"; };
-		D3103922162C3C5100C00C18 /* linphone_splashscreen-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen-Portrait.png"; path = "Resources/linphone_splashscreen-Portrait.png"; sourceTree = "<group>"; };
-		D3103923162C3C5100C00C18 /* linphone_splashscreen-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen-Portrait@2x.png"; path = "Resources/linphone_splashscreen-Portrait@2x.png"; sourceTree = "<group>"; };
 		D3119E7015B6A4710005D4A4 /* contacts_back_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_back_default.png; path = Resources/contacts_back_default.png; sourceTree = "<group>"; };
 		D3119E7115B6A4710005D4A4 /* contacts_back_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_back_over.png; path = Resources/contacts_back_over.png; sourceTree = "<group>"; };
 		D3128FDE15AABC7E00A2147A /* ContactDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsViewController.h; sourceTree = "<group>"; };
@@ -1117,8 +1098,6 @@
 		D33988B315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video_on_over_landscape~ipad.png"; path = "Resources/video_on_over_landscape~ipad.png"; sourceTree = "<group>"; };
 		D339890415C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer_alt_back_default_landscape~ipad.png"; path = "Resources/dialer_alt_back_default_landscape~ipad.png"; sourceTree = "<group>"; };
 		D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer_alt_back_over_landscape~ipad.png"; path = "Resources/dialer_alt_back_over_landscape~ipad.png"; sourceTree = "<group>"; };
-		D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_57@2x.png"; path = "Resources/linphone_icon_57@2x.png"; sourceTree = "<group>"; };
-		D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_72@2x.png"; path = "Resources/linphone_icon_72@2x.png"; sourceTree = "<group>"; };
 		D33E1F06164CF35100CFA363 /* callbar_left_padding.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callbar_left_padding.png; path = Resources/callbar_left_padding.png; sourceTree = "<group>"; };
 		D33E1F07164CF35100CFA363 /* callbar_right_padding.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callbar_right_padding.png; path = Resources/callbar_right_padding.png; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* led_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_connected.png; path = Resources/led_connected.png; sourceTree = "<group>"; };
@@ -1144,8 +1123,6 @@
 		D350F21B15A43D3400149E54 /* setup_welcome_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup_welcome_logo.png; path = Resources/setup_welcome_logo.png; sourceTree = "<group>"; };
 		D35406F515A47E9E007E7E81 /* button_background_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_background_default.png; path = Resources/button_background_default.png; sourceTree = "<group>"; };
 		D35406F615A47E9E007E7E81 /* button_background_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_background_over.png; path = Resources/button_background_over.png; sourceTree = "<group>"; };
-		D354944A160B615A0027E44E /* linphone_splashscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_splashscreen.png; path = Resources/linphone_splashscreen.png; sourceTree = "<group>"; };
-		D354944B160B615A0027E44E /* linphone_splashscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen@2x.png"; path = "Resources/linphone_splashscreen@2x.png"; sourceTree = "<group>"; };
 		D35497FB15875372000081D8 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		D35497FC15875372000081D8 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ContactsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D354980215875534000081D8 /* contacts_all_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_all_selected.png; path = Resources/contacts_all_selected.png; sourceTree = "<group>"; };
@@ -1286,7 +1263,6 @@
 		D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_outgoing.9.png; path = Resources/chat_bubble_outgoing.9.png; sourceTree = "<group>"; };
 		D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_first_highlight.png; path = Resources/cell_call_first_highlight.png; sourceTree = "<group>"; };
 		D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_highlight.png; path = Resources/cell_call_highlight.png; sourceTree = "<group>"; };
-		D38F46F1160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_splashscreen-568h@2x.png"; path = "Resources/linphone_splashscreen-568h@2x.png"; sourceTree = "<group>"; };
 		D3998D0316031937009DD22C /* background_alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background_alt.png; path = Resources/background_alt.png; sourceTree = "<group>"; };
 		D3A55FBA15877E5E003FD403 /* UIContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactCell.h; sourceTree = "<group>"; };
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
@@ -1621,9 +1597,6 @@
 		F070E6301A2622EC00E17AFD /* incall_padding_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = incall_padding_left.png; path = Resources/incall_padding_left.png; sourceTree = "<group>"; };
 		F070E6311A2622EC00E17AFD /* incall_padding_right_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = incall_padding_right_landscape.png; path = Resources/incall_padding_right_landscape.png; sourceTree = "<group>"; };
 		F070E6321A2622EC00E17AFD /* incall_padding_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = incall_padding_right.png; path = Resources/incall_padding_right.png; sourceTree = "<group>"; };
-		F0818E7B17FC5160005A3330 /* linphone_icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_120.png; path = Resources/linphone_icon_120.png; sourceTree = "<group>"; };
-		F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_76.png; path = Resources/linphone_icon_76.png; sourceTree = "<group>"; };
-		F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_152.png; path = Resources/linphone_icon_152.png; sourceTree = "<group>"; };
 		F088488C19FF8C41007FFCF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIContactCell.xib; sourceTree = "<group>"; };
 		F088488F19FF8C44007FFCF3 /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
 		F08F118419C09C6A007D70C2 /* LinphoneTester Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LinphoneTester Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1747,6 +1720,7 @@
 		F0AF07151A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F0AF07161A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F0AF07171A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F0B4FB5C1A65550B00637027 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Resources/Images.xcassets; sourceTree = "<group>"; };
 		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_external_sip.rc; path = Resources/wizard_external_sip.rc; sourceTree = "<group>"; };
 		F0B89C2518DC973E0050B60E /* wizard_linphone_create.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_linphone_create.rc; path = Resources/wizard_linphone_create.rc; sourceTree = "<group>"; };
@@ -1765,7 +1739,7 @@
 		F0BB8BEC1936208200974404 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
 		F0BB8BEE1936208200974404 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		F0BB8BEF1936208200974404 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		F0BB8BF11936208200974404 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F0BB8BF11936208200974404 /* TesterImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TesterImages.xcassets; sourceTree = "<group>"; };
 		F0BB8C0F193623F200974404 /* liblinphonetester.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphonetester.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphonetester.a"; sourceTree = "<group>"; };
 		F0BB8C111936240300974404 /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F0BB8C311936246600974404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -2144,6 +2118,7 @@
 			isa = PBXGroup;
 			children = (
 				D3C714B2159DB84400705B8E /* hold.wav */,
+				F0B4FB5C1A65550B00637027 /* Images.xcassets */,
 				F0B89C2318DC90850050B60E /* images */,
 				D37E3ECF1619DCC50087659A /* licenses.html */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
@@ -2445,286 +2420,11 @@
 		F0B89C2318DC90850050B60E /* images */ = {
 			isa = PBXGroup;
 			children = (
-				F0C1F9021A28781F009402C9 /* launchscreen */,
-				F84015BC1939FE37006ABAB5 /* test_failed.png */,
-				F84015BD1939FE37006ABAB5 /* test_inprogress.png */,
-				F84015BE1939FE37006ABAB5 /* test_passed.png */,
-				15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */,
-				1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */,
-				15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */,
-				1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */,
-				15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */,
-				1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */,
-				15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */,
-				1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */,
-				15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */,
-				1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */,
-				F070E62D1A2622EC00E17AFD /* dialer_padding_left.png */,
-				F070E62E1A2622EC00E17AFD /* dialer_padding_right.png */,
-				F070E62F1A2622EC00E17AFD /* incall_padding_left_landscape.png */,
-				F070E6301A2622EC00E17AFD /* incall_padding_left.png */,
-				F070E6311A2622EC00E17AFD /* incall_padding_right_landscape.png */,
-				F070E6321A2622EC00E17AFD /* incall_padding_right.png */,
-				15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */,
-				1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */,
-				15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */,
-				1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */,
-				15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */,
-				1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */,
-				15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */,
-				1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */,
-				15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */,
-				1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */,
-				15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */,
-				1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */,
-				15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */,
-				1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */,
-				15AF3C9416F37A5D00FC52EC /* routes_default.png */,
-				1599104F16F746B2007BF52B /* routes_default_landscape.png */,
-				15AF3C9516F37A5D00FC52EC /* routes_disabled.png */,
-				1599105016F746B2007BF52B /* routes_disabled_landscape.png */,
-				15AF3C9616F37A5D00FC52EC /* routes_over.png */,
-				1599105116F746B2007BF52B /* routes_over_landscape.png */,
-				15AF3C9716F37A5D00FC52EC /* routes_selected.png */,
-				1599105216F746B2007BF52B /* routes_selected_landscape.png */,
-				D3D6A3A5159B0EFE005F692C /* security_ko.png */,
-				D3D6A3A7159B0EFE005F692C /* security_ok.png */,
-				D3D6A3A6159B0EFE005F692C /* security_pending.png */,
-				D38327EF1580FE3A00FA0D23 /* settings_default.png */,
-				D3A74E9C15C69392001500B9 /* settings_default_landscape~ipad.png */,
-				D3A74E9D15C69392001500B9 /* settings_default~ipad.png */,
-				D38327FE158100E400FA0D23 /* settings_over.png */,
-				D3A74E9E15C69392001500B9 /* settings_over_landscape~ipad.png */,
-				D3A74E9F15C69392001500B9 /* settings_over~ipad.png */,
-				D38327F01580FE3A00FA0D23 /* settings_selected.png */,
-				D3A74EA015C69392001500B9 /* settings_selected_landscape~ipad.png */,
-				D3A74EA115C69392001500B9 /* settings_selected~ipad.png */,
-				D350F21315A43D3400149E54 /* setup_back_default.png */,
-				D3F5F984160B1A0800D3DA1A /* setup_back_default_landscape~ipad.png */,
-				D3F5F985160B1A0800D3DA1A /* setup_back_default~ipad.png */,
-				D3A8BB7815A6CC3200F96BE5 /* setup_back_disabled.png */,
-				D3F5F986160B1A0900D3DA1A /* setup_back_disabled_landscape~ipad.png */,
-				D3F5F8E51609A86700D3DA1A /* setup_back_disabled~ipad.png */,
-				D350F21415A43D3400149E54 /* setup_back_over.png */,
-				D3F5F8E61609A86700D3DA1A /* setup_back_over_landscape~ipad.png */,
-				D3F5F8E71609A86700D3DA1A /* setup_back_over~ipad.png */,
-				D350F21515A43D3400149E54 /* setup_cancel_default.png */,
-				D3F5F8E81609A86700D3DA1A /* setup_cancel_default_landscape~ipad.png */,
-				D3D5124C160B213900946DF8 /* setup_cancel_default~ipad.png */,
-				D3A8BB7915A6CC3200F96BE5 /* setup_cancel_disabled.png */,
-				D3F5F8EA1609A86700D3DA1A /* setup_cancel_disabled_landscape~ipad.png */,
-				D3F5F8EB1609A86700D3DA1A /* setup_cancel_disabled~ipad.png */,
-				D350F21615A43D3400149E54 /* setup_cancel_over.png */,
-				D3F5F8EC1609A86700D3DA1A /* setup_cancel_over_landscape~ipad.png */,
-				D3D5124D160B213900946DF8 /* setup_cancel_over~ipad.png */,
-				D350F21815A43D3400149E54 /* setup_start_default.png */,
-				D3F5F8EE1609A86700D3DA1A /* setup_start_default_landscape~ipad.png */,
-				D3F5F8EF1609A86700D3DA1A /* setup_start_default~ipad.png */,
-				D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */,
-				D3F5F8F01609A86700D3DA1A /* setup_start_disabled_landscape~ipad.png */,
-				D3F5F8F11609A86700D3DA1A /* setup_start_disabled~ipad.png */,
-				D350F21915A43D3400149E54 /* setup_start_over.png */,
-				D3F5F8F21609A86700D3DA1A /* setup_start_over_landscape~ipad.png */,
-				D3F5F8F31609A86700D3DA1A /* setup_start_over~ipad.png */,
-				D350F21B15A43D3400149E54 /* setup_welcome_logo.png */,
-				D3F5F8F41609A86700D3DA1A /* setup_welcome_logo~ipad.png */,
-				D3F83EFC158205A100336684 /* speaker_off_default.png */,
-				D3C31A2315BD8DED008ED271 /* speaker_off_default_landscape.png */,
-				D33988A615C6DD1600CAF1E4 /* speaker_off_default_landscape~ipad.png */,
-				D3A74EA215C69392001500B9 /* speaker_off_default~ipad.png */,
-				D365AA7915A2DE7500CAFE3F /* speaker_off_disabled.png */,
-				D3C31A2415BD8DED008ED271 /* speaker_off_disabled_landscape.png */,
-				D33988A715C6DD1600CAF1E4 /* speaker_off_disabled_landscape~ipad.png */,
-				D3A74EA315C69392001500B9 /* speaker_off_disabled~ipad.png */,
-				D3F83EFD158205A100336684 /* speaker_off_over.png */,
-				D3C31A2515BD8DED008ED271 /* speaker_off_over_landscape.png */,
-				D33988A815C6DD1600CAF1E4 /* speaker_off_over_landscape~ipad.png */,
-				D3A74EA415C69392001500B9 /* speaker_off_over~ipad.png */,
-				D3F83EFE158205A100336684 /* speaker_on_default.png */,
-				D3C31A2615BD8DED008ED271 /* speaker_on_default_landscape.png */,
-				D33988A915C6DD1600CAF1E4 /* speaker_on_default_landscape~ipad.png */,
-				D3A74EA515C69392001500B9 /* speaker_on_default~ipad.png */,
-				D365AA7A15A2DE7500CAFE3F /* speaker_on_disabled.png */,
-				D3C31A2715BD8DED008ED271 /* speaker_on_disabled_landscape.png */,
-				D33988AA15C6DD1600CAF1E4 /* speaker_on_disabled_landscape~ipad.png */,
-				D3A74EA615C69392001500B9 /* speaker_on_disabled~ipad.png */,
-				D3F83EFF158205A100336684 /* speaker_on_over.png */,
-				D3C31A2815BD8DED008ED271 /* speaker_on_over_landscape.png */,
-				D33988AB15C6DD1600CAF1E4 /* speaker_on_over_landscape~ipad.png */,
-				D3A74EA715C69392001500B9 /* speaker_on_over~ipad.png */,
-				D3ED3E511585FFFD006C0DE4 /* statebar_background.png */,
-				D3C31A2915BD8DED008ED271 /* statebar_background_landscape.png */,
-				D3A74EA815C69392001500B9 /* statebar_background_landscape~ipad.png */,
-				D3A74EA915C69392001500B9 /* statebar_background~ipad.png */,
-				D35E757515931E5D0066B1C1 /* switch_camera_default.png */,
-				D35E757615931E5D0066B1C1 /* switch_camera_over.png */,
-				D3A74E5815C68162001500B9 /* toolsbar_background.png */,
-				C9C8254115AE204D00D493FA /* transfer_call_default.png */,
-				D3A74EAA15C69392001500B9 /* transfer_call_default~ipad.png */,
-				C9C8254E15AE256100D493FA /* transfer_call_disabled.png */,
-				D3BDB9B815C6B5B1007BEAC1 /* transfer_call_disabled~ipad.png */,
-				C9C8254215AE204D00D493FA /* transfer_call_over.png */,
-				D3A74EAB15C69392001500B9 /* transfer_call_over~ipad.png */,
-				D3F83F00158205A100336684 /* video_off_default.png */,
-				D3C31A2C15BD8DED008ED271 /* video_off_default_landscape.png */,
-				D33988AE15C6DD1600CAF1E4 /* video_off_default_landscape~ipad.png */,
-				D3A74EAC15C69392001500B9 /* video_off_default~ipad.png */,
-				D37295DA158B3C9600D2C0C7 /* video_off_disabled.png */,
-				D3C31A2D15BD8DED008ED271 /* video_off_disabled_landscape.png */,
-				D33988AF15C6DD1600CAF1E4 /* video_off_disabled_landscape~ipad.png */,
-				D3A74EAD15C69392001500B9 /* video_off_disabled~ipad.png */,
-				D3F83F01158205A100336684 /* video_off_over.png */,
-				D3C31A2E15BD8DED008ED271 /* video_off_over_landscape.png */,
-				D33988B015C6DD1600CAF1E4 /* video_off_over_landscape~ipad.png */,
-				D3A74EAE15C69392001500B9 /* video_off_over~ipad.png */,
-				D3F83F02158205A100336684 /* video_on_default.png */,
-				D3C31A2F15BD8DED008ED271 /* video_on_default_landscape.png */,
-				D33988B115C6DD1600CAF1E4 /* video_on_default_landscape~ipad.png */,
-				D3A74EAF15C69392001500B9 /* video_on_default~ipad.png */,
-				D377BBF915A19DA6002B696B /* video_on_disabled.png */,
-				D3C31A3015BD8DED008ED271 /* video_on_disabled_landscape.png */,
-				D33988B215C6DD1600CAF1E4 /* video_on_disabled_landscape~ipad.png */,
-				D3A74EB015C69392001500B9 /* video_on_disabled~ipad.png */,
-				D3F83F03158205A100336684 /* video_on_over.png */,
-				D3C31A3115BD8DED008ED271 /* video_on_over_landscape.png */,
-				D33988B315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png */,
-				D3A74EB115C69392001500B9 /* video_on_over~ipad.png */,
-				D3F83F3C1582223B00336684 /* numpad_eight_default.png */,
-				D3F83F3D1582223B00336684 /* numpad_eight_over.png */,
-				D3F83F361582223B00336684 /* numpad_five_default.png */,
-				D3F83F371582223B00336684 /* numpad_five_over.png */,
-				D3F83F341582223B00336684 /* numpad_four_default.png */,
-				D3F83F351582223B00336684 /* numpad_four_over.png */,
-				D3F83F3E1582223B00336684 /* numpad_nine_default.png */,
-				D3F83F3F1582223B00336684 /* numpad_nine_over.png */,
-				D3F83F2E1582223B00336684 /* numpad_one_default.png */,
-				D3F83F2F1582223B00336684 /* numpad_one_over.png */,
-				D3F83F3A1582223B00336684 /* numpad_seven_default.png */,
-				D3F83F3B1582223B00336684 /* numpad_seven_over.png */,
-				D3F83F401582223B00336684 /* numpad_sharp_default.png */,
-				D3F83F411582223B00336684 /* numpad_sharp_over.png */,
-				D3F83F381582223B00336684 /* numpad_six_default.png */,
-				D3F83F391582223B00336684 /* numpad_six_over.png */,
-				D3F83F431582223B00336684 /* numpad_star_default.png */,
-				D3C2815115A2D64A0098AA42 /* numpad_star_over.png */,
-				D3F83F321582223B00336684 /* numpad_three_default.png */,
-				D3F83F331582223B00336684 /* numpad_three_over.png */,
-				D3F83F301582223B00336684 /* numpad_two_default.png */,
-				D3F83F311582223B00336684 /* numpad_two_over.png */,
-				D3F83F2C1582223B00336684 /* numpad_zero_default.png */,
-				D3F83F2D1582223B00336684 /* numpad_zero_over.png */,
-				D3196D3015A321E2007FEEBA /* options_add_default.png */,
-				D3C31A1515BD8DED008ED271 /* options_add_default_landscape.png */,
-				D339889815C6DD1600CAF1E4 /* options_add_default_landscape~ipad.png */,
-				D3A74E8E15C69392001500B9 /* options_add_default~ipad.png */,
-				C9C8253F15AE204D00D493FA /* options_add_disabled.png */,
-				D3C31A1615BD8DED008ED271 /* options_add_disabled_landscape.png */,
-				D339889915C6DD1600CAF1E4 /* options_add_disabled_landscape~ipad.png */,
-				D3A74E8F15C69392001500B9 /* options_add_disabled~ipad.png */,
-				D3196D3115A321E2007FEEBA /* options_add_over.png */,
-				D3C31A1715BD8DED008ED271 /* options_add_over_landscape.png */,
-				D339889A15C6DD1600CAF1E4 /* options_add_over_landscape~ipad.png */,
-				D3A74E9015C69392001500B9 /* options_add_over~ipad.png */,
-				D3D6A3A8159B0EFE005F692C /* options_default.png */,
-				D3C31A1815BD8DED008ED271 /* options_default_landscape.png */,
-				D339889B15C6DD1600CAF1E4 /* options_default_landscape~ipad.png */,
-				D3A74E9115C69392001500B9 /* options_default~ipad.png */,
-				D3D6A3A9159B0EFE005F692C /* options_disabled.png */,
-				D3C31A1915BD8DED008ED271 /* options_disabled_landscape.png */,
-				D339889C15C6DD1600CAF1E4 /* options_disabled_landscape~ipad.png */,
-				D3A74E9215C69392001500B9 /* options_disabled~ipad.png */,
-				D3D6A3AA159B0EFE005F692C /* options_over.png */,
-				D3C31A1A15BD8DED008ED271 /* options_over_landscape.png */,
-				D339889D15C6DD1600CAF1E4 /* options_over_landscape~ipad.png */,
-				D3A74E9315C69392001500B9 /* options_over~ipad.png */,
-				C9C8254B15AE207B00D493FA /* options_selected.png */,
-				D3C31A1B15BD8DED008ED271 /* options_selected_landscape.png */,
-				D339889E15C6DD1600CAF1E4 /* options_selected_landscape~ipad.png */,
-				D3A74E9415C69392001500B9 /* options_selected~ipad.png */,
-				D3196D3215A321E3007FEEBA /* options_transfer_default.png */,
-				D3C31A1C15BD8DED008ED271 /* options_transfer_default_landscape.png */,
-				D339889F15C6DD1600CAF1E4 /* options_transfer_default_landscape~ipad.png */,
-				D3A74E9515C69392001500B9 /* options_transfer_default~ipad.png */,
-				C9C8254015AE204D00D493FA /* options_transfer_disabled.png */,
-				D3C31A1D15BD8DED008ED271 /* options_transfer_disabled_landscape.png */,
-				D33988A015C6DD1600CAF1E4 /* options_transfer_disabled_landscape~ipad.png */,
-				D3A74E9615C69392001500B9 /* options_transfer_disabled~ipad.png */,
-				D3196D3315A321E3007FEEBA /* options_transfer_over.png */,
-				D3C31A1E15BD8DED008ED271 /* options_transfer_over_landscape.png */,
-				D33988A115C6DD1600CAF1E4 /* options_transfer_over_landscape~ipad.png */,
-				D3A74E9715C69392001500B9 /* options_transfer_over~ipad.png */,
-				D3F83EF8158205A100336684 /* pause_off_default.png */,
-				D3C31A1F15BD8DED008ED271 /* pause_off_default_landscape.png */,
-				D33988A215C6DD1600CAF1E4 /* pause_off_default_landscape~ipad.png */,
-				D3A74E9815C69392001500B9 /* pause_off_default~ipad.png */,
-				D3F83EF9158205A100336684 /* pause_off_over.png */,
-				D3C31A2015BD8DED008ED271 /* pause_off_over_landscape.png */,
-				D33988A315C6DD1600CAF1E4 /* pause_off_over_landscape~ipad.png */,
-				D3A74E9915C69392001500B9 /* pause_off_over~ipad.png */,
-				D36C43E7158F3F7E0048BA40 /* pause_on_default.png */,
-				D3C31A2115BD8DED008ED271 /* pause_on_default_landscape.png */,
-				D33988A415C6DD1600CAF1E4 /* pause_on_default_landscape~ipad.png */,
-				D3A74E9A15C69392001500B9 /* pause_on_default~ipad.png */,
-				D36C43E8158F3F7E0048BA40 /* pause_on_over.png */,
-				D3C31A2215BD8DED008ED271 /* pause_on_over_landscape.png */,
-				D33988A515C6DD1600CAF1E4 /* pause_on_over_landscape~ipad.png */,
-				D3A74E9B15C69392001500B9 /* pause_on_over~ipad.png */,
-				D3F5F8E41609A86700D3DA1A /* logo_linphone_trame_background.png */,
-				D3F83EF4158205A100336684 /* micro_off_default.png */,
-				D3C31A0F15BD8DED008ED271 /* micro_off_default_landscape.png */,
-				D339889215C6DD1600CAF1E4 /* micro_off_default_landscape~ipad.png */,
-				D3A74E8815C69392001500B9 /* micro_off_default~ipad.png */,
-				D35EA76115A2DF8D003E025D /* micro_off_disabled.png */,
-				D3C31A1015BD8DED008ED271 /* micro_off_disabled_landscape.png */,
-				D339889315C6DD1600CAF1E4 /* micro_off_disabled_landscape~ipad.png */,
-				D3A74E8915C69392001500B9 /* micro_off_disabled~ipad.png */,
-				D3F83EF5158205A100336684 /* micro_off_over.png */,
-				D3C31A1115BD8DED008ED271 /* micro_off_over_landscape.png */,
-				D339889415C6DD1600CAF1E4 /* micro_off_over_landscape~ipad.png */,
-				D3A74E8A15C69392001500B9 /* micro_off_over~ipad.png */,
-				D3F83EF6158205A100336684 /* micro_on_default.png */,
-				D3C31A1215BD8DED008ED271 /* micro_on_default_landscape.png */,
-				D339889515C6DD1600CAF1E4 /* micro_on_default_landscape~ipad.png */,
-				D3A74E8B15C69392001500B9 /* micro_on_default~ipad.png */,
-				D35EA76215A2DF8D003E025D /* micro_on_disabled.png */,
-				D3C31A1315BD8DED008ED271 /* micro_on_disabled_landscape.png */,
-				D339889615C6DD1600CAF1E4 /* micro_on_disabled_landscape~ipad.png */,
-				D3A74E8C15C69392001500B9 /* micro_on_disabled~ipad.png */,
-				D3F83EF7158205A100336684 /* micro_on_over.png */,
-				D3C31A1415BD8DED008ED271 /* micro_on_over_landscape.png */,
-				D339889715C6DD1600CAF1E4 /* micro_on_over_landscape~ipad.png */,
-				D3A74E8D15C69392001500B9 /* micro_on_over~ipad.png */,
-				D3EA5416159858A80037DC6B /* list_delete_default.png */,
-				D3EA5417159858A80037DC6B /* list_delete_over.png */,
-				D354981815876FE7000081D8 /* list_details_default.png */,
-				D354981915876FE7000081D8 /* list_details_over.png */,
-				225CB2F911ABB76400628906 /* linphone-banner.png */,
-				F0818E7B17FC5160005A3330 /* linphone_icon_120.png */,
-				F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */,
-				22058C70116E305000B08DDD /* linphone_icon_57.png */,
-				D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */,
-				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
-				D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */,
-				F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */,
-				D3012CC31610467D007CD926 /* linphone_logo.png */,
-				D38F46F1160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png */,
-				D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */,
-				D3103921162C3C5100C00C18 /* linphone_splashscreen-Landscape@2x.png */,
-				D3103922162C3C5100C00C18 /* linphone_splashscreen-Portrait.png */,
-				D3103923162C3C5100C00C18 /* linphone_splashscreen-Portrait@2x.png */,
-				D354944A160B615A0027E44E /* linphone_splashscreen.png */,
-				D354944B160B615A0027E44E /* linphone_splashscreen@2x.png */,
-				D3866C261608CA1600830F95 /* image_back_default.png */,
-				D3866C271608CA1600830F95 /* image_back_over.png */,
-				D3432A5C158A4446001C6B0B /* led_connected.png */,
-				D3432A70158A45AF001C6B0B /* led_disconnected.png */,
-				D3432A5D158A4446001C6B0B /* led_error.png */,
-				D3432A6F158A45AF001C6B0B /* led_inprogress.png */,
-				D3F83F741582253100336684 /* accept_default.png */,
 				D3D52A751614495300DEB00A /* accept_default_landscape~ipad.png */,
+				D3F83F741582253100336684 /* accept_default.png */,
 				D3D52A761614495300DEB00A /* accept_default~ipad.png */,
-				D3F83F751582253100336684 /* accept_over.png */,
 				D3D52A771614495300DEB00A /* accept_over_landscape~ipad.png */,
+				D3F83F751582253100336684 /* accept_over.png */,
 				D3D52A781614495300DEB00A /* accept_over~ipad.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
 				D3A74E5E15C69391001500B9 /* add_call_default~ipad.png */,
@@ -2738,19 +2438,19 @@
 				D3A74E6215C69392001500B9 /* add_contact_disabled~ipad.png */,
 				D3ED3E6915861A53006C0DE4 /* add_contact_over.png */,
 				D3A74E6315C69392001500B9 /* add_contact_over~ipad.png */,
-				D3F34F2F1599B008005BE94F /* avatar_shadow.png */,
 				D3D14E7B15A711700074A527 /* avatar_shadow_small.png */,
-				D31B4B261598A390002E6C72 /* avatar_unknown.png */,
+				D3F34F2F1599B008005BE94F /* avatar_shadow.png */,
 				D31B4B271598A390002E6C72 /* avatar_unknown_small.png */,
+				D31B4B261598A390002E6C72 /* avatar_unknown.png */,
 				D3211BBB159CBFD60098460B /* back_default.png */,
 				D3A74E6415C69392001500B9 /* back_default~ipad.png */,
 				D3211BBC159CBFD60098460B /* back_disabled.png */,
 				D3A74E6515C69392001500B9 /* back_disabled~ipad.png */,
 				D3211BBD159CBFD60098460B /* back_over.png */,
 				D3A74E6615C69392001500B9 /* back_over~ipad.png */,
-				D3ED3E401585FB4A006C0DE4 /* background.png */,
 				D3998D0316031937009DD22C /* background_alt.png */,
 				D3A74E6715C69392001500B9 /* background_top~ipad.png */,
+				D3ED3E401585FB4A006C0DE4 /* background.png */,
 				D3ED3E7615861B1B006C0DE4 /* backspace_default.png */,
 				D3A74E6815C69392001500B9 /* backspace_default~ipad.png */,
 				D35E758815932DE60066B1C1 /* backspace_disabled.png */,
@@ -2791,10 +2491,10 @@
 				D33E1F07164CF35100CFA363 /* callbar_right_padding.png */,
 				D3E84F1715B00F4100420DAC /* cancel_default.png */,
 				D3E84F1815B00F4100420DAC /* cancel_over.png */,
-				D36C43CC158F2F370048BA40 /* cell_call.png */,
-				D3211BB8159C8A820098460B /* cell_call_first.png */,
 				D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */,
+				D3211BB8159C8A820098460B /* cell_call_first.png */,
 				D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */,
+				D36C43CC158F2F370048BA40 /* cell_call.png */,
 				D36C43CD158F2F370048BA40 /* cell_conference.png */,
 				D3EA5401159852080037DC6B /* chat_add_default.png */,
 				D3EA5402159852080037DC6B /* chat_add_over.png */,
@@ -2806,8 +2506,8 @@
 				D3A8BB7615A6CC3200F96BE5 /* chat_bubble_outgoing.png */,
 				D3F5F8DA1609A86700D3DA1A /* chat_cancel_default.png */,
 				D3F5F8DB1609A86700D3DA1A /* chat_cancel_over.png */,
-				D38327F11580FE3A00FA0D23 /* chat_default.png */,
 				D3A74E6E15C69392001500B9 /* chat_default_landscape~ipad.png */,
+				D38327F11580FE3A00FA0D23 /* chat_default.png */,
 				D3A74E6F15C69392001500B9 /* chat_default~ipad.png */,
 				D3EA53FF159852080037DC6B /* chat_edit_default.png */,
 				D3EA5400159852080037DC6B /* chat_edit_over.png */,
@@ -2819,26 +2519,26 @@
 				2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */,
 				D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */,
 				D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */,
-				D38327FF158100E400FA0D23 /* chat_over.png */,
 				D3A74E7015C69392001500B9 /* chat_over_landscape~ipad.png */,
+				D38327FF158100E400FA0D23 /* chat_over.png */,
 				D3A74E7115C69392001500B9 /* chat_over~ipad.png */,
 				D3F5F8DC1609A86700D3DA1A /* chat_photo_default.png */,
 				D3F5F8DD1609A86700D3DA1A /* chat_photo_disabled.png */,
 				D3F5F8DE1609A86700D3DA1A /* chat_photo_over.png */,
 				D3F5F983160B1A0800D3DA1A /* chat_progressbar_background.png */,
-				D38327F21580FE3A00FA0D23 /* chat_selected.png */,
 				D3A74E7215C69392001500B9 /* chat_selected_landscape~ipad.png */,
+				D38327F21580FE3A00FA0D23 /* chat_selected.png */,
 				D3A74E7315C69392001500B9 /* chat_selected~ipad.png */,
 				D3B9A3DD15A58C440096EA4E /* chat_send_default.png */,
 				D32B6E2315A5B2020033019F /* chat_send_disabled.png */,
 				D3B9A3DE15A58C450096EA4E /* chat_send_over.png */,
-				D31AAF61159B5B6E002C6B02 /* conference_default.png */,
 				D3C31A0715BD8DED008ED271 /* conference_default_landscape.png */,
 				D339888C15C6DD1600CAF1E4 /* conference_default_landscape~ipad.png */,
+				D31AAF61159B5B6E002C6B02 /* conference_default.png */,
 				D3A74E7415C69392001500B9 /* conference_default~ipad.png */,
-				D31AAF62159B5B6E002C6B02 /* conference_over.png */,
 				D3C31A0815BD8DED008ED271 /* conference_over_landscape.png */,
 				D339888D15C6DD1600CAF1E4 /* conference_over_landscape~ipad.png */,
+				D31AAF62159B5B6E002C6B02 /* conference_over.png */,
 				D3A74E7515C69392001500B9 /* conference_over~ipad.png */,
 				D3128FE715AABE4E00A2147A /* contact_back_default.png */,
 				D3128FE815AABE4E00A2147A /* contact_back_over.png */,
@@ -2846,8 +2546,8 @@
 				D3E84F3715B011AF00420DAC /* contact_cancel_over.png */,
 				D3128FE915AABE4E00A2147A /* contact_edit_default.png */,
 				D3128FEA15AABE4E00A2147A /* contact_edit_over.png */,
-				D37C638D15AAD251009D0BAC /* contact_number.png */,
 				D37C638C15AAD251009D0BAC /* contact_number_over.png */,
+				D37C638D15AAD251009D0BAC /* contact_number.png */,
 				D3C6526915AC228A0092A874 /* contact_ok_default.png */,
 				D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */,
 				D3C6526A15AC228A0092A874 /* contact_ok_over.png */,
@@ -2857,69 +2557,71 @@
 				D354980215875534000081D8 /* contacts_all_selected.png */,
 				D3119E7015B6A4710005D4A4 /* contacts_back_default.png */,
 				D3119E7115B6A4710005D4A4 /* contacts_back_over.png */,
-				D38327EB1580FE3A00FA0D23 /* contacts_default.png */,
 				D3A74E7615C69392001500B9 /* contacts_default_landscape~ipad.png */,
+				D38327EB1580FE3A00FA0D23 /* contacts_default.png */,
 				D3A74E7715C69392001500B9 /* contacts_default~ipad.png */,
 				D354980515875534000081D8 /* contacts_linphone_default.png */,
 				D354980415875534000081D8 /* contacts_linphone_selected.png */,
-				D38327FC158100E400FA0D23 /* contacts_over.png */,
 				D3A74E7815C69392001500B9 /* contacts_over_landscape~ipad.png */,
+				D38327FC158100E400FA0D23 /* contacts_over.png */,
 				D3A74E7915C69392001500B9 /* contacts_over~ipad.png */,
-				D38327EC1580FE3A00FA0D23 /* contacts_selected.png */,
 				D3A74E7A15C69392001500B9 /* contacts_selected_landscape~ipad.png */,
+				D38327EC1580FE3A00FA0D23 /* contacts_selected.png */,
 				D3A74E7B15C69392001500B9 /* contacts_selected~ipad.png */,
-				D3F83F761582253100336684 /* decline_default.png */,
 				D3D52A791614495300DEB00A /* decline_default_landscape~ipad.png */,
+				D3F83F761582253100336684 /* decline_default.png */,
 				D3D52A7A1614495300DEB00A /* decline_default~ipad.png */,
-				D3F83F771582253100336684 /* decline_over.png */,
 				D3D52A7B1614495300DEB00A /* decline_over_landscape~ipad.png */,
+				D3F83F771582253100336684 /* decline_over.png */,
 				D3D52A7C1614495300DEB00A /* decline_over~ipad.png */,
-				D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */,
 				D3A74E7C15C69392001500B9 /* dialer_address_background_landscape~ipad.png */,
+				D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */,
 				D3A74E7D15C69392001500B9 /* dialer_address_background~ipad.png */,
-				D3E84F1B15B00F4100420DAC /* dialer_alt_back_default.png */,
 				D3C31A0915BD8DED008ED271 /* dialer_alt_back_default_landscape.png */,
 				D339890415C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png */,
+				D3E84F1B15B00F4100420DAC /* dialer_alt_back_default.png */,
 				D3ACB09915C6D59500E15894 /* dialer_alt_back_default~ipad.png */,
-				D3E84F1C15B00F4100420DAC /* dialer_alt_back_over.png */,
 				D3C31A0A15BD8DED008ED271 /* dialer_alt_back_over_landscape.png */,
 				D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */,
+				D3E84F1C15B00F4100420DAC /* dialer_alt_back_over.png */,
 				D3ACB09A15C6D59500E15894 /* dialer_alt_back_over~ipad.png */,
 				D3E84F1D15B00F4100420DAC /* dialer_alt_background.png */,
-				D36C43CF158F2F370048BA40 /* dialer_alt_default.png */,
 				D3C31A0B15BD8DED008ED271 /* dialer_alt_default_landscape.png */,
 				D339888E15C6DD1600CAF1E4 /* dialer_alt_default_landscape~ipad.png */,
+				D36C43CF158F2F370048BA40 /* dialer_alt_default.png */,
 				D3A74E7E15C69392001500B9 /* dialer_alt_default~ipad.png */,
-				D3328644160B5BC300E6435D /* dialer_alt_disabled.png */,
 				D3328642160B5BC300E6435D /* dialer_alt_disabled_landscape.png */,
 				D3328643160B5BC300E6435D /* dialer_alt_disabled_landscape~ipad.png */,
+				D3328644160B5BC300E6435D /* dialer_alt_disabled.png */,
 				D3328645160B5BC300E6435D /* dialer_alt_disabled~ipad.png */,
-				D36C43D0158F2F370048BA40 /* dialer_alt_over.png */,
 				D3C31A0C15BD8DED008ED271 /* dialer_alt_over_landscape.png */,
 				D339888F15C6DD1600CAF1E4 /* dialer_alt_over_landscape~ipad.png */,
+				D36C43D0158F2F370048BA40 /* dialer_alt_over.png */,
 				D3A74E7F15C69392001500B9 /* dialer_alt_over~ipad.png */,
 				D38327ED1580FE3A00FA0D23 /* dialer_default.png */,
 				D38327EE1580FE3A00FA0D23 /* dialer_over.png */,
+				F070E62D1A2622EC00E17AFD /* dialer_padding_left.png */,
+				F070E62E1A2622EC00E17AFD /* dialer_padding_right.png */,
 				D3C2814A15A2D38D0098AA42 /* dialer_selected.png */,
 				D35E9208160CAA1F0023116B /* field_background.9.png */,
 				D35E91E9160CA0BD0023116B /* field_background.9@2x.png */,
 				D350F21715A43D3400149E54 /* field_background.png */,
 				D3F5F8E01609A86700D3DA1A /* form_invalid.png */,
 				D3F5F8E11609A86700D3DA1A /* form_valid.png */,
-				D3F83EFA158205A100336684 /* hangup_default.png */,
 				D3C31A0D15BD8DED008ED271 /* hangup_default_landscape.png */,
 				D339889015C6DD1600CAF1E4 /* hangup_default_landscape~ipad.png */,
+				D3F83EFA158205A100336684 /* hangup_default.png */,
 				D3A74E8015C69392001500B9 /* hangup_default~ipad.png */,
-				D3F83EFB158205A100336684 /* hangup_over.png */,
 				D3C31A0E15BD8DED008ED271 /* hangup_over_landscape.png */,
 				D339889115C6DD1600CAF1E4 /* hangup_over_landscape~ipad.png */,
+				D3F83EFB158205A100336684 /* hangup_over.png */,
 				D3A74E8115C69392001500B9 /* hangup_over~ipad.png */,
 				D36C43CE158F2F370048BA40 /* header_conference.png */,
 				D3F26BFB15987083005F9CAB /* header_incoming.png */,
 				D3ED3E9315872EF1006C0DE4 /* history_all_default.png */,
 				D3ED3E9215872EF1006C0DE4 /* history_all_selected.png */,
-				D347347C1580E5F8003C7B8C /* history_default.png */,
 				D3A74E8215C69392001500B9 /* history_default_landscape~ipad.png */,
+				D347347C1580E5F8003C7B8C /* history_default.png */,
 				D3A74E8315C69392001500B9 /* history_default~ipad.png */,
 				D3F5F8E21609A86700D3DA1A /* history_delete_default.png */,
 				D3F5F8E31609A86700D3DA1A /* history_delete_over.png */,
@@ -2934,12 +2636,271 @@
 				D3F9A9DA15AEEB940045320F /* history_notification.png */,
 				D3F26BF515986DAD005F9CAB /* history_ok_default.png */,
 				D3F26BF615986DAD005F9CAB /* history_ok_over.png */,
-				D38327FD158100E400FA0D23 /* history_over.png */,
 				D3A74E8415C69392001500B9 /* history_over_landscape~ipad.png */,
+				D38327FD158100E400FA0D23 /* history_over.png */,
 				D3A74E8515C69392001500B9 /* history_over~ipad.png */,
-				D347347D1580E5F8003C7B8C /* history_selected.png */,
 				D3A74E8615C69392001500B9 /* history_selected_landscape~ipad.png */,
+				D347347D1580E5F8003C7B8C /* history_selected.png */,
 				D3A74E8715C69392001500B9 /* history_selected~ipad.png */,
+				D3866C261608CA1600830F95 /* image_back_default.png */,
+				D3866C271608CA1600830F95 /* image_back_over.png */,
+				F070E62F1A2622EC00E17AFD /* incall_padding_left_landscape.png */,
+				F070E6301A2622EC00E17AFD /* incall_padding_left.png */,
+				F070E6311A2622EC00E17AFD /* incall_padding_right_landscape.png */,
+				F070E6321A2622EC00E17AFD /* incall_padding_right.png */,
+				F0C1F9021A28781F009402C9 /* launchscreen */,
+				D3432A5C158A4446001C6B0B /* led_connected.png */,
+				D3432A70158A45AF001C6B0B /* led_disconnected.png */,
+				D3432A5D158A4446001C6B0B /* led_error.png */,
+				D3432A6F158A45AF001C6B0B /* led_inprogress.png */,
+				D3012CC31610467D007CD926 /* linphone_logo.png */,
+				225CB2F911ABB76400628906 /* linphone-banner.png */,
+				D3EA5416159858A80037DC6B /* list_delete_default.png */,
+				D3EA5417159858A80037DC6B /* list_delete_over.png */,
+				D354981815876FE7000081D8 /* list_details_default.png */,
+				D354981915876FE7000081D8 /* list_details_over.png */,
+				D3F5F8E41609A86700D3DA1A /* logo_linphone_trame_background.png */,
+				D3C31A0F15BD8DED008ED271 /* micro_off_default_landscape.png */,
+				D339889215C6DD1600CAF1E4 /* micro_off_default_landscape~ipad.png */,
+				D3F83EF4158205A100336684 /* micro_off_default.png */,
+				D3A74E8815C69392001500B9 /* micro_off_default~ipad.png */,
+				D3C31A1015BD8DED008ED271 /* micro_off_disabled_landscape.png */,
+				D339889315C6DD1600CAF1E4 /* micro_off_disabled_landscape~ipad.png */,
+				D35EA76115A2DF8D003E025D /* micro_off_disabled.png */,
+				D3A74E8915C69392001500B9 /* micro_off_disabled~ipad.png */,
+				D3C31A1115BD8DED008ED271 /* micro_off_over_landscape.png */,
+				D339889415C6DD1600CAF1E4 /* micro_off_over_landscape~ipad.png */,
+				D3F83EF5158205A100336684 /* micro_off_over.png */,
+				D3A74E8A15C69392001500B9 /* micro_off_over~ipad.png */,
+				D3C31A1215BD8DED008ED271 /* micro_on_default_landscape.png */,
+				D339889515C6DD1600CAF1E4 /* micro_on_default_landscape~ipad.png */,
+				D3F83EF6158205A100336684 /* micro_on_default.png */,
+				D3A74E8B15C69392001500B9 /* micro_on_default~ipad.png */,
+				D3C31A1315BD8DED008ED271 /* micro_on_disabled_landscape.png */,
+				D339889615C6DD1600CAF1E4 /* micro_on_disabled_landscape~ipad.png */,
+				D35EA76215A2DF8D003E025D /* micro_on_disabled.png */,
+				D3A74E8C15C69392001500B9 /* micro_on_disabled~ipad.png */,
+				D3C31A1415BD8DED008ED271 /* micro_on_over_landscape.png */,
+				D339889715C6DD1600CAF1E4 /* micro_on_over_landscape~ipad.png */,
+				D3F83EF7158205A100336684 /* micro_on_over.png */,
+				D3A74E8D15C69392001500B9 /* micro_on_over~ipad.png */,
+				D3F83F3C1582223B00336684 /* numpad_eight_default.png */,
+				D3F83F3D1582223B00336684 /* numpad_eight_over.png */,
+				D3F83F361582223B00336684 /* numpad_five_default.png */,
+				D3F83F371582223B00336684 /* numpad_five_over.png */,
+				D3F83F341582223B00336684 /* numpad_four_default.png */,
+				D3F83F351582223B00336684 /* numpad_four_over.png */,
+				D3F83F3E1582223B00336684 /* numpad_nine_default.png */,
+				D3F83F3F1582223B00336684 /* numpad_nine_over.png */,
+				D3F83F2E1582223B00336684 /* numpad_one_default.png */,
+				D3F83F2F1582223B00336684 /* numpad_one_over.png */,
+				D3F83F3A1582223B00336684 /* numpad_seven_default.png */,
+				D3F83F3B1582223B00336684 /* numpad_seven_over.png */,
+				D3F83F401582223B00336684 /* numpad_sharp_default.png */,
+				D3F83F411582223B00336684 /* numpad_sharp_over.png */,
+				D3F83F381582223B00336684 /* numpad_six_default.png */,
+				D3F83F391582223B00336684 /* numpad_six_over.png */,
+				D3F83F431582223B00336684 /* numpad_star_default.png */,
+				D3C2815115A2D64A0098AA42 /* numpad_star_over.png */,
+				D3F83F321582223B00336684 /* numpad_three_default.png */,
+				D3F83F331582223B00336684 /* numpad_three_over.png */,
+				D3F83F301582223B00336684 /* numpad_two_default.png */,
+				D3F83F311582223B00336684 /* numpad_two_over.png */,
+				D3F83F2C1582223B00336684 /* numpad_zero_default.png */,
+				D3F83F2D1582223B00336684 /* numpad_zero_over.png */,
+				D3C31A1515BD8DED008ED271 /* options_add_default_landscape.png */,
+				D339889815C6DD1600CAF1E4 /* options_add_default_landscape~ipad.png */,
+				D3196D3015A321E2007FEEBA /* options_add_default.png */,
+				D3A74E8E15C69392001500B9 /* options_add_default~ipad.png */,
+				D3C31A1615BD8DED008ED271 /* options_add_disabled_landscape.png */,
+				D339889915C6DD1600CAF1E4 /* options_add_disabled_landscape~ipad.png */,
+				C9C8253F15AE204D00D493FA /* options_add_disabled.png */,
+				D3A74E8F15C69392001500B9 /* options_add_disabled~ipad.png */,
+				D3C31A1715BD8DED008ED271 /* options_add_over_landscape.png */,
+				D339889A15C6DD1600CAF1E4 /* options_add_over_landscape~ipad.png */,
+				D3196D3115A321E2007FEEBA /* options_add_over.png */,
+				D3A74E9015C69392001500B9 /* options_add_over~ipad.png */,
+				D3C31A1815BD8DED008ED271 /* options_default_landscape.png */,
+				D339889B15C6DD1600CAF1E4 /* options_default_landscape~ipad.png */,
+				D3D6A3A8159B0EFE005F692C /* options_default.png */,
+				D3A74E9115C69392001500B9 /* options_default~ipad.png */,
+				D3C31A1915BD8DED008ED271 /* options_disabled_landscape.png */,
+				D339889C15C6DD1600CAF1E4 /* options_disabled_landscape~ipad.png */,
+				D3D6A3A9159B0EFE005F692C /* options_disabled.png */,
+				D3A74E9215C69392001500B9 /* options_disabled~ipad.png */,
+				D3C31A1A15BD8DED008ED271 /* options_over_landscape.png */,
+				D339889D15C6DD1600CAF1E4 /* options_over_landscape~ipad.png */,
+				D3D6A3AA159B0EFE005F692C /* options_over.png */,
+				D3A74E9315C69392001500B9 /* options_over~ipad.png */,
+				D3C31A1B15BD8DED008ED271 /* options_selected_landscape.png */,
+				D339889E15C6DD1600CAF1E4 /* options_selected_landscape~ipad.png */,
+				C9C8254B15AE207B00D493FA /* options_selected.png */,
+				D3A74E9415C69392001500B9 /* options_selected~ipad.png */,
+				D3C31A1C15BD8DED008ED271 /* options_transfer_default_landscape.png */,
+				D339889F15C6DD1600CAF1E4 /* options_transfer_default_landscape~ipad.png */,
+				D3196D3215A321E3007FEEBA /* options_transfer_default.png */,
+				D3A74E9515C69392001500B9 /* options_transfer_default~ipad.png */,
+				D3C31A1D15BD8DED008ED271 /* options_transfer_disabled_landscape.png */,
+				D33988A015C6DD1600CAF1E4 /* options_transfer_disabled_landscape~ipad.png */,
+				C9C8254015AE204D00D493FA /* options_transfer_disabled.png */,
+				D3A74E9615C69392001500B9 /* options_transfer_disabled~ipad.png */,
+				D3C31A1E15BD8DED008ED271 /* options_transfer_over_landscape.png */,
+				D33988A115C6DD1600CAF1E4 /* options_transfer_over_landscape~ipad.png */,
+				D3196D3315A321E3007FEEBA /* options_transfer_over.png */,
+				D3A74E9715C69392001500B9 /* options_transfer_over~ipad.png */,
+				D3C31A1F15BD8DED008ED271 /* pause_off_default_landscape.png */,
+				D33988A215C6DD1600CAF1E4 /* pause_off_default_landscape~ipad.png */,
+				D3F83EF8158205A100336684 /* pause_off_default.png */,
+				D3A74E9815C69392001500B9 /* pause_off_default~ipad.png */,
+				D3C31A2015BD8DED008ED271 /* pause_off_over_landscape.png */,
+				D33988A315C6DD1600CAF1E4 /* pause_off_over_landscape~ipad.png */,
+				D3F83EF9158205A100336684 /* pause_off_over.png */,
+				D3A74E9915C69392001500B9 /* pause_off_over~ipad.png */,
+				D3C31A2115BD8DED008ED271 /* pause_on_default_landscape.png */,
+				D33988A415C6DD1600CAF1E4 /* pause_on_default_landscape~ipad.png */,
+				D36C43E7158F3F7E0048BA40 /* pause_on_default.png */,
+				D3A74E9A15C69392001500B9 /* pause_on_default~ipad.png */,
+				D3C31A2215BD8DED008ED271 /* pause_on_over_landscape.png */,
+				D33988A515C6DD1600CAF1E4 /* pause_on_over_landscape~ipad.png */,
+				D36C43E8158F3F7E0048BA40 /* pause_on_over.png */,
+				D3A74E9B15C69392001500B9 /* pause_on_over~ipad.png */,
+				1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */,
+				15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */,
+				1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */,
+				15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */,
+				1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */,
+				15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */,
+				1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */,
+				15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */,
+				1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */,
+				15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */,
+				1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */,
+				15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */,
+				1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */,
+				15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */,
+				1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */,
+				15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */,
+				1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */,
+				15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */,
+				1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */,
+				15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */,
+				1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */,
+				15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */,
+				1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */,
+				15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */,
+				1599104F16F746B2007BF52B /* routes_default_landscape.png */,
+				15AF3C9416F37A5D00FC52EC /* routes_default.png */,
+				1599105016F746B2007BF52B /* routes_disabled_landscape.png */,
+				15AF3C9516F37A5D00FC52EC /* routes_disabled.png */,
+				1599105116F746B2007BF52B /* routes_over_landscape.png */,
+				15AF3C9616F37A5D00FC52EC /* routes_over.png */,
+				1599105216F746B2007BF52B /* routes_selected_landscape.png */,
+				15AF3C9716F37A5D00FC52EC /* routes_selected.png */,
+				D3D6A3A5159B0EFE005F692C /* security_ko.png */,
+				D3D6A3A7159B0EFE005F692C /* security_ok.png */,
+				D3D6A3A6159B0EFE005F692C /* security_pending.png */,
+				D3A74E9C15C69392001500B9 /* settings_default_landscape~ipad.png */,
+				D38327EF1580FE3A00FA0D23 /* settings_default.png */,
+				D3A74E9D15C69392001500B9 /* settings_default~ipad.png */,
+				D3A74E9E15C69392001500B9 /* settings_over_landscape~ipad.png */,
+				D38327FE158100E400FA0D23 /* settings_over.png */,
+				D3A74E9F15C69392001500B9 /* settings_over~ipad.png */,
+				D3A74EA015C69392001500B9 /* settings_selected_landscape~ipad.png */,
+				D38327F01580FE3A00FA0D23 /* settings_selected.png */,
+				D3A74EA115C69392001500B9 /* settings_selected~ipad.png */,
+				D3F5F984160B1A0800D3DA1A /* setup_back_default_landscape~ipad.png */,
+				D350F21315A43D3400149E54 /* setup_back_default.png */,
+				D3F5F985160B1A0800D3DA1A /* setup_back_default~ipad.png */,
+				D3F5F986160B1A0900D3DA1A /* setup_back_disabled_landscape~ipad.png */,
+				D3A8BB7815A6CC3200F96BE5 /* setup_back_disabled.png */,
+				D3F5F8E51609A86700D3DA1A /* setup_back_disabled~ipad.png */,
+				D3F5F8E61609A86700D3DA1A /* setup_back_over_landscape~ipad.png */,
+				D350F21415A43D3400149E54 /* setup_back_over.png */,
+				D3F5F8E71609A86700D3DA1A /* setup_back_over~ipad.png */,
+				D3F5F8E81609A86700D3DA1A /* setup_cancel_default_landscape~ipad.png */,
+				D350F21515A43D3400149E54 /* setup_cancel_default.png */,
+				D3D5124C160B213900946DF8 /* setup_cancel_default~ipad.png */,
+				D3F5F8EA1609A86700D3DA1A /* setup_cancel_disabled_landscape~ipad.png */,
+				D3A8BB7915A6CC3200F96BE5 /* setup_cancel_disabled.png */,
+				D3F5F8EB1609A86700D3DA1A /* setup_cancel_disabled~ipad.png */,
+				D3F5F8EC1609A86700D3DA1A /* setup_cancel_over_landscape~ipad.png */,
+				D350F21615A43D3400149E54 /* setup_cancel_over.png */,
+				D3D5124D160B213900946DF8 /* setup_cancel_over~ipad.png */,
+				D3F5F8EE1609A86700D3DA1A /* setup_start_default_landscape~ipad.png */,
+				D350F21815A43D3400149E54 /* setup_start_default.png */,
+				D3F5F8EF1609A86700D3DA1A /* setup_start_default~ipad.png */,
+				D3F5F8F01609A86700D3DA1A /* setup_start_disabled_landscape~ipad.png */,
+				D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */,
+				D3F5F8F11609A86700D3DA1A /* setup_start_disabled~ipad.png */,
+				D3F5F8F21609A86700D3DA1A /* setup_start_over_landscape~ipad.png */,
+				D350F21915A43D3400149E54 /* setup_start_over.png */,
+				D3F5F8F31609A86700D3DA1A /* setup_start_over~ipad.png */,
+				D350F21B15A43D3400149E54 /* setup_welcome_logo.png */,
+				D3F5F8F41609A86700D3DA1A /* setup_welcome_logo~ipad.png */,
+				D3C31A2315BD8DED008ED271 /* speaker_off_default_landscape.png */,
+				D33988A615C6DD1600CAF1E4 /* speaker_off_default_landscape~ipad.png */,
+				D3F83EFC158205A100336684 /* speaker_off_default.png */,
+				D3A74EA215C69392001500B9 /* speaker_off_default~ipad.png */,
+				D3C31A2415BD8DED008ED271 /* speaker_off_disabled_landscape.png */,
+				D33988A715C6DD1600CAF1E4 /* speaker_off_disabled_landscape~ipad.png */,
+				D365AA7915A2DE7500CAFE3F /* speaker_off_disabled.png */,
+				D3A74EA315C69392001500B9 /* speaker_off_disabled~ipad.png */,
+				D3C31A2515BD8DED008ED271 /* speaker_off_over_landscape.png */,
+				D33988A815C6DD1600CAF1E4 /* speaker_off_over_landscape~ipad.png */,
+				D3F83EFD158205A100336684 /* speaker_off_over.png */,
+				D3A74EA415C69392001500B9 /* speaker_off_over~ipad.png */,
+				D3C31A2615BD8DED008ED271 /* speaker_on_default_landscape.png */,
+				D33988A915C6DD1600CAF1E4 /* speaker_on_default_landscape~ipad.png */,
+				D3F83EFE158205A100336684 /* speaker_on_default.png */,
+				D3A74EA515C69392001500B9 /* speaker_on_default~ipad.png */,
+				D3C31A2715BD8DED008ED271 /* speaker_on_disabled_landscape.png */,
+				D33988AA15C6DD1600CAF1E4 /* speaker_on_disabled_landscape~ipad.png */,
+				D365AA7A15A2DE7500CAFE3F /* speaker_on_disabled.png */,
+				D3A74EA615C69392001500B9 /* speaker_on_disabled~ipad.png */,
+				D3C31A2815BD8DED008ED271 /* speaker_on_over_landscape.png */,
+				D33988AB15C6DD1600CAF1E4 /* speaker_on_over_landscape~ipad.png */,
+				D3F83EFF158205A100336684 /* speaker_on_over.png */,
+				D3A74EA715C69392001500B9 /* speaker_on_over~ipad.png */,
+				D3C31A2915BD8DED008ED271 /* statebar_background_landscape.png */,
+				D3A74EA815C69392001500B9 /* statebar_background_landscape~ipad.png */,
+				D3ED3E511585FFFD006C0DE4 /* statebar_background.png */,
+				D3A74EA915C69392001500B9 /* statebar_background~ipad.png */,
+				D35E757515931E5D0066B1C1 /* switch_camera_default.png */,
+				D35E757615931E5D0066B1C1 /* switch_camera_over.png */,
+				F84015BC1939FE37006ABAB5 /* test_failed.png */,
+				F84015BD1939FE37006ABAB5 /* test_inprogress.png */,
+				F84015BE1939FE37006ABAB5 /* test_passed.png */,
+				D3A74E5815C68162001500B9 /* toolsbar_background.png */,
+				C9C8254115AE204D00D493FA /* transfer_call_default.png */,
+				D3A74EAA15C69392001500B9 /* transfer_call_default~ipad.png */,
+				C9C8254E15AE256100D493FA /* transfer_call_disabled.png */,
+				D3BDB9B815C6B5B1007BEAC1 /* transfer_call_disabled~ipad.png */,
+				C9C8254215AE204D00D493FA /* transfer_call_over.png */,
+				D3A74EAB15C69392001500B9 /* transfer_call_over~ipad.png */,
+				D3C31A2C15BD8DED008ED271 /* video_off_default_landscape.png */,
+				D33988AE15C6DD1600CAF1E4 /* video_off_default_landscape~ipad.png */,
+				D3F83F00158205A100336684 /* video_off_default.png */,
+				D3A74EAC15C69392001500B9 /* video_off_default~ipad.png */,
+				D3C31A2D15BD8DED008ED271 /* video_off_disabled_landscape.png */,
+				D33988AF15C6DD1600CAF1E4 /* video_off_disabled_landscape~ipad.png */,
+				D37295DA158B3C9600D2C0C7 /* video_off_disabled.png */,
+				D3A74EAD15C69392001500B9 /* video_off_disabled~ipad.png */,
+				D3C31A2E15BD8DED008ED271 /* video_off_over_landscape.png */,
+				D33988B015C6DD1600CAF1E4 /* video_off_over_landscape~ipad.png */,
+				D3F83F01158205A100336684 /* video_off_over.png */,
+				D3A74EAE15C69392001500B9 /* video_off_over~ipad.png */,
+				D3C31A2F15BD8DED008ED271 /* video_on_default_landscape.png */,
+				D33988B115C6DD1600CAF1E4 /* video_on_default_landscape~ipad.png */,
+				D3F83F02158205A100336684 /* video_on_default.png */,
+				D3A74EAF15C69392001500B9 /* video_on_default~ipad.png */,
+				D3C31A3015BD8DED008ED271 /* video_on_disabled_landscape.png */,
+				D33988B215C6DD1600CAF1E4 /* video_on_disabled_landscape~ipad.png */,
+				D377BBF915A19DA6002B696B /* video_on_disabled.png */,
+				D3A74EB015C69392001500B9 /* video_on_disabled~ipad.png */,
+				D3C31A3115BD8DED008ED271 /* video_on_over_landscape.png */,
+				D33988B315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png */,
+				D3F83F03158205A100336684 /* video_on_over.png */,
+				D3A74EB115C69392001500B9 /* video_on_over~ipad.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -2951,7 +2912,7 @@
 				F0BB8BE31936208100974404 /* AppDelegate.m */,
 				F0BB8BEE1936208200974404 /* DetailViewController.h */,
 				F0BB8BEF1936208200974404 /* DetailViewController.m */,
-				F0BB8BF11936208200974404 /* Images.xcassets */,
+				F0BB8BF11936208200974404 /* TesterImages.xcassets */,
 				F0BB8BE81936208200974404 /* Main_iPad.storyboard */,
 				F0BB8BE51936208100974404 /* Main_iPhone.storyboard */,
 				F0BB8BEB1936208200974404 /* MasterViewController.h */,
@@ -3140,14 +3101,12 @@
 			files = (
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
 				2237D4091084D7A9001383EE /* ring.wav in Resources */,
-				22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */,
 				225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */,
 				636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */,
 				2242E313125235120061DDCE /* ring.caf in Resources */,
 				D38187C915FE346400C3EDCA /* FirstLoginViewController.xib in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
-				34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */,
 				D347347E1580E5F8003C7B8C /* history_default.png in Resources */,
 				D347347F1580E5F8003C7B8C /* history_selected.png in Resources */,
 				D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */,
@@ -3207,6 +3166,7 @@
 				D3F83F781582253100336684 /* accept_default.png in Resources */,
 				D3F83F7A1582253100336684 /* accept_over.png in Resources */,
 				D3F83F7C1582253100336684 /* decline_default.png in Resources */,
+				F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */,
 				D3F83F7E1582253100336684 /* decline_over.png in Resources */,
 				D3ED3E411585FB4A006C0DE4 /* background.png in Resources */,
 				D3ED3E451585FB8C006C0DE4 /* dialer_address_background.png in Resources */,
@@ -3313,7 +3273,6 @@
 				D377BBFA15A19DA6002B696B /* video_on_disabled.png in Resources */,
 				D37B96B715A1A6F20005CCD2 /* call_state_delete_default.png in Resources */,
 				D37B96B915A1A6F20005CCD2 /* call_state_delete_over.png in Resources */,
-				F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */,
 				D3C2814B15A2D38D0098AA42 /* dialer_selected.png in Resources */,
 				D3C2815215A2D64A0098AA42 /* numpad_star_over.png in Resources */,
 				D365AA7B15A2DE7500CAFE3F /* speaker_off_disabled.png in Resources */,
@@ -3458,7 +3417,6 @@
 				D3A74EDC15C69392001500B9 /* chat_selected~ipad.png in Resources */,
 				D3A74EDE15C69392001500B9 /* conference_default~ipad.png in Resources */,
 				D3A74EE015C69392001500B9 /* conference_over~ipad.png in Resources */,
-				F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */,
 				D3A74EE215C69392001500B9 /* contacts_default_landscape~ipad.png in Resources */,
 				D3A74EE415C69392001500B9 /* contacts_default~ipad.png in Resources */,
 				D3A74EE615C69392001500B9 /* contacts_over_landscape~ipad.png in Resources */,
@@ -3569,8 +3527,6 @@
 				D339890215C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890615C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
-				D33CF34A15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */,
-				D33CF34C15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */,
 				D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D3804E6015D92A57008072A5 /* msg.caf in Resources */,
 				D3804E6215D92A57008072A5 /* msg.wav in Resources */,
@@ -3627,10 +3583,7 @@
 				D3328648160B5BC300E6435D /* dialer_alt_disabled_landscape~ipad.png in Resources */,
 				D332864A160B5BC300E6435D /* dialer_alt_disabled.png in Resources */,
 				D332864C160B5BC300E6435D /* dialer_alt_disabled~ipad.png in Resources */,
-				D354944C160B615A0027E44E /* linphone_splashscreen.png in Resources */,
 				F070E6331A2622EC00E17AFD /* dialer_padding_left.png in Resources */,
-				D354944E160B615A0027E44E /* linphone_splashscreen@2x.png in Resources */,
-				D38F46F2160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png in Resources */,
 				F0C1F8EB1A277ADA009402C9 /* LaunchScreen.xib in Resources */,
 				D35E91EA160CA0BD0023116B /* field_background.9@2x.png in Resources */,
 				D35E91EE160CA0C70023116B /* button_background_default.9@2x.png in Resources */,
@@ -3651,11 +3604,6 @@
 				D3D52A891614495300DEB00A /* decline_over_landscape~ipad.png in Resources */,
 				D3D52A8B1614495300DEB00A /* decline_over~ipad.png in Resources */,
 				D37E3ED01619DCC50087659A /* licenses.html in Resources */,
-				D3103924162C3C5100C00C18 /* linphone_splashscreen-Landscape.png in Resources */,
-				D3103926162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */,
-				D3103928162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */,
-				D310392A162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
-				F0A2759C18157A6000B6D61A /* linphone_icon_120.png in Resources */,
 				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
 				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 				15AF3C5416F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */,
@@ -3723,7 +3671,7 @@
 				F0BB8C3E19362C2200974404 /* sounds in Resources */,
 				F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */,
 				F0022B091A370915009B51FD /* messages.db in Resources */,
-				F0BB8BF21936208200974404 /* Images.xcassets in Resources */,
+				F0BB8BF21936208200974404 /* TesterImages.xcassets in Resources */,
 				F0BB8BE71936208200974404 /* Main_iPhone.storyboard in Resources */,
 				F0BB8C47193630CA00974404 /* tester_hosts in Resources */,
 				F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */,
@@ -4338,6 +4286,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -4418,6 +4368,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -4497,6 +4449,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -4575,6 +4529,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
