@@ -245,10 +245,12 @@
         [confirmation release];
     } else {
         if([[url scheme] isEqualToString:@"sip"]) {
-            // Go to Dialer view
-            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and trailing "/"
+			NSString* sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+
+			DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
             if(controller != nil) {
-                [controller setAddress:[url absoluteString]];
+                [controller setAddress:sipUri];
             }
         }
     }
