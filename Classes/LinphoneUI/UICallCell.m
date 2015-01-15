@@ -4,16 +4,16 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -36,8 +36,8 @@
         self->view = UICallCellOtherView_Avatar;
         self->call = acall;
         image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
-        address = [@"Unknown" retain];
-		[self update];
+        address = [NSLocalizedString(@"Unknown",nil) retain];
+        [self update];
     }
     return self;
 }
@@ -48,7 +48,7 @@
         return;
     }
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-    
+
     if(addr != NULL) {
         BOOL useLinphoneAddress = true;
         // contact name
@@ -85,7 +85,7 @@
 - (void)dealloc {
     [address release];
     [image release];
-    
+
     [super dealloc];
 }
 
@@ -145,7 +145,7 @@
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UICallCell"
                                                               owner:self
                                                             options:nil];
-        
+
         if ([arrayOfViews count] >= 1) {
 			//resize cell to match .nib size. It is needed when resized the cell to
 			//correctly adapt its height too
@@ -154,28 +154,28 @@
             [self addSubview:sub];
         }
         // Set selected+over background: IB lack !
-        [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
+        [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"]
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        
+
         self->currentCall = FALSE;
-        
+
         self->detailsRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
         [detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
         [otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
-        
+
         self->detailsRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
         [detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
         [otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
-        
+
         [self->avatarView setHidden:TRUE];
         [self->audioStatsView setHidden:TRUE];
         [self->videoStatsView setHidden:TRUE];
-        
+
         [UICallCell adaptSize:audioCodecHeaderLabel field:audioCodecLabel];
         [UICallCell adaptSize:audioDownloadBandwidthHeaderLabel field:audioDownloadBandwidthLabel];
         [UICallCell adaptSize:audioUploadBandwidthHeaderLabel field:audioUploadBandwidthLabel];
         [UICallCell adaptSize:audioIceConnectivityHeaderLabel field:audioIceConnectivityLabel];
-        
+
         [UICallCell adaptSize:videoCodecHeaderLabel field:videoCodecLabel];
         [UICallCell adaptSize:videoDownloadBandwidthHeaderLabel field:videoDownloadBandwidthLabel];
         [UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
@@ -185,7 +185,7 @@
 			[LinphoneUtils adjustFontSize:self.audioStatsView mult:2.22];
 			[LinphoneUtils adjustFontSize:self.videoStatsView mult:2.22];
 		}
-		
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillEnterForeground:)
                                                      name:UIApplicationWillEnterForegroundNotification
@@ -198,23 +198,23 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillEnterForegroundNotification
                                                   object:nil];
-    
-    
+
+
     [headerBackgroundImage release];
     [headerBackgroundHighlightImage release];
-    
+
     [addressLabel release];
     [stateLabel release];
     [stateImage release];
     [avatarImage release];
     [pauseButton release];
     [removeButton release];
-    
+
     [headerView release];
     [avatarView release];
-    
+
     [audioStatsView release];
-    
+
     [audioCodecLabel release];
     [audioCodecHeaderLabel release];
     [audioUploadBandwidthLabel release];
@@ -223,9 +223,9 @@
     [audioDownloadBandwidthHeaderLabel release];
     [audioIceConnectivityLabel release];
     [audioIceConnectivityHeaderLabel release];
-    
+
     [videoStatsView release];
-    
+
     [videoCodecLabel release];
     [videoCodecHeaderLabel release];
     [videoUploadBandwidthLabel release];
@@ -234,11 +234,11 @@
     [videoDownloadBandwidthHeaderLabel release];
     [videoIceConnectivityLabel release];
     [videoIceConnectivityHeaderLabel release];
-    
+
     [otherView release];
-    
+
     [data release];
-    
+
     [detailsLeftSwipeGestureRecognizer release];
     [detailsRightSwipeGestureRecognizer release];
 
@@ -292,20 +292,20 @@
     //
     CGRect labelFrame = [label frame];
     CGRect fieldFrame = [field frame];
-    
+
     fieldFrame.origin.x -= labelFrame.size.width;
-    
+
     // Compute firstName size
     CGSize contraints;
     contraints.height = [label frame].size.height;
     contraints.width = ([field frame].size.width + [field frame].origin.x) - [label frame].origin.x;
     CGSize firstNameSize = [[label text] sizeWithFont:[label font] constrainedToSize: contraints];
     labelFrame.size.width = firstNameSize.width;
-    
+
     // Compute lastName size & position
     fieldFrame.origin.x += labelFrame.size.width;
     fieldFrame.size.width = (contraints.width + [label frame].origin.x) - fieldFrame.origin.x;
-    
+
     [label setFrame: labelFrame];
     [field setFrame: fieldFrame];
 }
@@ -372,7 +372,7 @@
     [target setAlpha:0.0f];
 }
 
-         
+
 #pragma mark -
 
 - (void)update {
@@ -381,12 +381,12 @@
         return;
     }
     LinphoneCall *call = data->call;
-    
+
     [pauseButton setType:UIPauseButtonType_Call call:call];
-    
+
     [addressLabel setText:data.address];
     [avatarImage setImage:data.image];
-    
+
     LinphoneCallState state = linphone_call_get_state(call);
     if(!conferenceCell) {
         if(state == LinphoneCallOutgoingRinging) {
@@ -416,10 +416,10 @@
         [removeButton setHidden:false];
         [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
     }
-    
+
     int duration = linphone_call_get_duration(call);
     [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), (duration%60), nil]];
-    
+
     if(!data->minimize) {
         CGRect frame = [self frame];
         frame.size.height = [UICallCell getMaximizedHeight];
@@ -434,9 +434,9 @@
         [self setFrame:frame];
         [otherView setHidden:true];
     }
-    
+
     [self updateStats];
-    
+
     [self updateDetailsView];
 }
 
@@ -446,7 +446,7 @@
         return;
     }
     LinphoneCall *call = data->call;
-    
+
     const LinphoneCallParams *params = linphone_call_get_current_params(call);
     {
         const PayloadType* payload = linphone_call_params_get_used_audio_codec(params);
@@ -466,7 +466,7 @@
             [audioIceConnectivityLabel setText:@""];
         }
     }
-    
+
     {
         const PayloadType* payload = linphone_call_params_get_used_video_codec(params);
         if(payload != NULL) {
@@ -474,7 +474,7 @@
         } else {
             [videoCodecLabel setText:NSLocalizedString(@"No codec", nil)];
         }
-        
+
         const LinphoneCallStats *stats = linphone_call_get_video_stats(call);
 
         MSVideoSize sentSize = linphone_call_params_get_sent_video_size(params);
@@ -520,7 +520,7 @@
 
 - (void)selfUpdate {
     UITableView *parentTable = (UITableView *)self.superview;
-    
+
     while( parentTable != nil && ![parentTable isKindOfClass:[UITableView class]] ) parentTable = (UITableView *)[parentTable superview];
 
     if(parentTable != nil) {

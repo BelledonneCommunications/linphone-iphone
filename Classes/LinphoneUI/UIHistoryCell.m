@@ -151,7 +151,7 @@
         }
     }
     if(address == nil) {
-        address = @"Unknown";
+        address = NSLocalizedString(@"Unknown", nil);
     }
 
     [addressLabel setText:address];

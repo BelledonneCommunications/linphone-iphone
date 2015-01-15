@@ -637,7 +637,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}
 	}
 	if(address == nil) {
-		address = @"Unknown";
+		address = NSLocalizedString(@"Unknown", nil);
 	}
 
 	if (state == LinphoneCallIncomingReceived) {
@@ -897,7 +897,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			}
 		}
 		if(address == nil) {
-			address = @"Unknown";
+			address = NSLocalizedString(@"Unknown", nil);
 		}
 
 		// Create a new notification
