@@ -2625,6 +2625,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 }
 
+static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress* addr ){
+	if( linphone_address_is_sip(addr) ) {
+		return addr;
+	} else {
+		linphone_address_destroy(addr);
+		return NULL;
+	}
+}
+
 /**
  * Interpret a call destination as supplied by the user, and returns a fully qualified
  * LinphoneAddress.
@@ -2661,7 +2670,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 		tmpurl=enumres->sip_address[0];
 		uri=linphone_address_new(tmpurl);
 		enum_lookup_res_free(enumres);
-		return uri;
+		return _linphone_core_destroy_addr_if_not_sip(uri);
 	}
 	/* check if we have a "sip:" or a "sips:" */
 	if ( (strstr(url,"sip:")==NULL) && (strstr(url,"sips:")==NULL) ){
@@ -2672,7 +2681,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 			uri=linphone_address_new(tmpurl);
 			ms_free(tmpurl);
 			if (uri){
-				return uri;
+				return _linphone_core_destroy_addr_if_not_sip(uri);
 			}
 		}
 
@@ -2688,12 +2697,12 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
 									sizeof(normalized_username));
 			linphone_address_set_username(uri,normalized_username);
-			return uri;
+			return _linphone_core_destroy_addr_if_not_sip(uri);
 		}else return NULL;
 	}
 	uri=linphone_address_new(url);
 	if (uri!=NULL){
-		return uri;
+		return _linphone_core_destroy_addr_if_not_sip(uri);
 	}
 
 	return NULL;

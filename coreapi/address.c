@@ -159,6 +159,13 @@ bool_t linphone_address_is_secure(const LinphoneAddress *uri){
 	return sal_address_is_secure(uri);
 }
 
+/**
+ * returns true if address is a routable sip address
+ */
+bool_t linphone_address_is_sip(const LinphoneAddress *uri){
+	return sal_address_is_sip(uri);
+}
+
 static bool_t strings_equals(const char *s1, const char *s2){
 	if (s1==NULL && s2==NULL) return TRUE;
 	if (s1!=NULL && s2!=NULL && strcmp(s1,s2)==0) return TRUE;

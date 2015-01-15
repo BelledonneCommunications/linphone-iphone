@@ -397,6 +397,7 @@ LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
 LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *uri);
+LINPHONE_PUBLIC bool_t linphone_address_is_sip(const LinphoneAddress *uri);
 LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
 LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
