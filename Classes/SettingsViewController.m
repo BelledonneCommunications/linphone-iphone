@@ -672,6 +672,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     return hiddenKeys;
 }
 
+- (void)goToWizard {
+	WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+	if(controller != nil) {
+		[controller reset];
+	}
+}
+
 #pragma mark - IASKSettingsDelegate Functions
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
@@ -694,6 +701,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 #endif
     if([key isEqual:@"wizard_button"]) {
+		LinphoneProxyConfig* proxy = NULL;
+		linphone_core_get_default_proxy([LinphoneManager getLc], &proxy);
+		if (proxy == NULL ) {
+			[self goToWizard];
+			return;
+		}
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning",nil)
                                                         message:NSLocalizedString(@"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?",nil)
                                                        delegate:self
@@ -736,12 +749,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - UIAlertView delegate
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if( buttonIndex != 1 ) return;
-
-    WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
-    if(controller != nil) {
-        [controller reset];
-    }
+    if( buttonIndex != 1 ) return; /* cancel */
+	else                   [self goToWizard];
 }
 
 #pragma mark - Mail composer for send log
