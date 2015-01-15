@@ -204,7 +204,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
-	[self setString: lp_config_get_string(conf, LINPHONERC_APPLICATION_KEY, "rotation_preference", "auto") forKey:@"rotation_preference"];
 	[self setBool: lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "edge_opt_preference", 0) forKey:@"edge_opt_preference"];
 	[self setBool: lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "debugenable_preference", 0) forKey:@"debugenable_preference"];
@@ -683,9 +682,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "edge_opt_preference", edgeOpt);
-
-	NSString *landscape = [self stringForKey:@"rotation_preference"];
-	lp_config_set_string(config, LINPHONERC_APPLICATION_KEY, "rotation_preference", [landscape UTF8String]);
 
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
