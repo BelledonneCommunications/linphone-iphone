@@ -306,8 +306,10 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expi
 	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(op->base.from_address),"tag");
 	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(op->base.to_address),"tag");
 	req=sal_op_build_request(op,"SUBSCRIBE");
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->event);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
+	if( req ){
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->event);
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
+	}
 
 	return sal_op_send_request(op,req);
 }

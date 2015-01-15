@@ -687,6 +687,11 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	ms_message("[%s] calling [%s] on op [%p]", from, to, op);
 	invite=sal_op_build_request(op,"INVITE");
 
+	if( invite == NULL ){
+		/* can happen if the op has an invalid address */
+		return -1;
+	}
+
 	sal_op_fill_invite(op,invite);
 
 	sal_op_call_fill_cbs(op);
