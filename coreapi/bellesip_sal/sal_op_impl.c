@@ -170,8 +170,8 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	}
 
 	if (strcmp("REGISTER",method)==0 || op->privacy==SalPrivacyNone) {
-		from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(to_address)
-												,belle_sip_random_token(token,sizeof(token)));
+		from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
+						,belle_sip_random_token(token,sizeof(token)));
 	} else {
 		from_header=belle_sip_header_from_create2("Anonymous <sip:anonymous@anonymous.invalid>",belle_sip_random_token(token,sizeof(token)));
 	}
