@@ -1863,8 +1863,6 @@ static void audioRouteChangeListenerCallback (
     BOOL addressIsASCII = [address canBeConvertedToEncoding:[NSString defaultCStringEncoding]];
 
 	if ([address length] == 0) return; //just return
-
-
     if( !addressIsASCII ){
         UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
                                                         message:NSLocalizedString(@"The address should only contain ASCII data",nil)
@@ -1874,9 +1872,11 @@ static void audioRouteChangeListenerCallback (
         [error show];
         [error release];
 
-    } else if ([address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"]) {
+    }
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url(theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
-		LinphoneAddress* linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	if (linphoneAddress) {
+
 		if(displayName!=nil) {
 			linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
@@ -1889,7 +1889,7 @@ static void audioRouteChangeListenerCallback (
 		}
 		linphone_address_destroy(linphoneAddress);
 
-	} else if (proxyCfg==nil){
+	} else {
 
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
 														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid SIP address (I.E sip:john@example.net)",nil)
@@ -1899,23 +1899,9 @@ static void audioRouteChangeListenerCallback (
 		[error show];
 		[error release];
 
-    } else {
-		char normalizedUserName[256];
-		LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));
-		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
-		linphone_address_set_username(linphoneAddress, normalizedUserName);
-		if(displayName!=nil) {
-			linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
-			linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		if(transfer) {
-			linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
-		} else {
-			call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
-		}
-		linphone_address_destroy(linphoneAddress);
-	}
+    }
+
+
 	if (call) {
 		// The LinphoneCallAppData object should be set on call creation with callback
 		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
