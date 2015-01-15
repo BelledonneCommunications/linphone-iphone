@@ -31,10 +31,19 @@
 
 - (void)setRoundRadius:(BOOL)radius {
     CALayer *imageLayer = self.layer;
+	CGRect frame = imageLayer.frame;
     CGFloat height =self.frame.size.height;
-    CGFloat witdh = self.frame.size.width;
-    CGFloat roundRadius = height > witdh ? witdh / 2 : height / 2;
+    CGFloat width = self.frame.size.width;
+    CGFloat roundRadius = height > width ? width / 2 : height / 2;
 
+	if (height > width) {
+		frame.origin.y = height / 2 - width / 2;
+		frame.size.height = width;
+	} else {
+		frame.origin.x = width / 2 - height / 2;
+		frame.size.width = height;
+	}
+	[imageLayer setFrame:frame];
     [imageLayer setCornerRadius:roundRadius];
     [imageLayer setBorderWidth:0];
     [imageLayer setMasksToBounds:YES];
