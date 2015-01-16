@@ -111,11 +111,11 @@
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
-                        <action selector="onConnectAccountClick:" destination="-1" eventType="touchUpInside" id="41"/>
+                        <action selector="onConnectLinphoneAccountClick:" destination="-1" eventType="touchUpInside" id="JTf-u3-Kbe"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="39" userLabel="externalAccountButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="33" y="269" width="255" height="50"/>
+                    <rect key="frame" x="33" y="387" width="255" height="72"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in SIP account">
                         <bool key="isElement" value="YES"/>
