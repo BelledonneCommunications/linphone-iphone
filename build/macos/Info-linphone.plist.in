@@ -26,6 +26,8 @@
     <string>Copyright 2011 Belledonne Communications</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.4</string>
+    <key>NSAppSleepDisabled</key>
+    <string>YES</string>
 </dict>
 </plist>
 
