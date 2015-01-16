@@ -123,7 +123,7 @@
     
     // Avatar image
     {
-        UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
+        UIImage *image = [FastAddressBook getContactImage:contact thumbnail:false];
         if(image == nil) {
             image = [UIImage imageNamed:@"avatar_unknown_small.png"];
         }
