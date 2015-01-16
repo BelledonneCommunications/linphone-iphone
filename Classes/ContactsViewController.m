@@ -148,6 +148,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 }
 
+- (void)relayoutTableView {
+	CGRect subViewFrame= self.view.frame;
+	// let the toolBar be visible
+	subViewFrame.origin.y += self.toolBar.frame.size.height;
+	subViewFrame.size.height -= self.toolBar.frame.size.height;
+	[UIView animateWithDuration:0.2 animations:^{
+		self.tableView.frame = subViewFrame;
+	}];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -166,19 +176,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self.view addSubview:picker.view];
 
 		self.sysViewController = picker;
+		self.searchBar.hidden = TRUE;
 
 	} else if( !use_system && !self.tableController ){
 
-		CGRect subViewFrame= self.view.frame;
-		// let the toolBar be visible
-		subViewFrame.origin.y += self.toolBar.frame.size.height;
-		subViewFrame.size.height -= self.toolBar.frame.size.height;
 
 		self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
 		self.tableView = [[[UITableView alloc] init] autorelease];
 
 		self.tableController.view = self.tableView;
-		self.tableView.frame = subViewFrame;
+
+		[self relayoutTableView];
 
 		self.tableView.dataSource = self.tableController;
 		self.tableView.delegate   = self.tableController;
@@ -315,6 +323,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self searchBar:searchBar textDidChange:nil];
 	[searchBar resignFirstResponder];
 }
+
+#pragma mark - Rotation handling
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	// the searchbar overlaps the subview in most rotation cases, we have to re-layout the view manually:
+	[self relayoutTableView];
+}
+
 
 #pragma mark - ABPeoplePickerDelegate
 
