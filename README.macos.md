@@ -148,7 +148,12 @@ If you don't need plugins, remove or comment out this line from the bundler file
         ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
         </binary>
 
-If using HomeBrew, this is not working yet. However you will at least need to install `glib-networking` and modify also:
+If using HomeBrew, this is not working yet. However you will at least need to:
+
+        brew install shared-mime-info glib-networking hicolor-icon-theme
+        update-mime-database /usr/local/share/mime
+
+ And modify also:
 
         <prefix name="default">/usr/local</prefix>
 
