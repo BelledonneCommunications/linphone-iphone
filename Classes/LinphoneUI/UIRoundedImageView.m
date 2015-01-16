@@ -31,14 +31,14 @@
 
 // warning: for non-squared image, this function will generate an ellipsoidal image, not a round image!
 - (void)setRoundRadius:(BOOL)radius {
-    CALayer *imageLayer = self.layer;
-    CGFloat height = frame.size.height;
-    CGFloat width = frame.size.width;
-    CGFloat roundRadius = height > width ? width / 2 : height / 2;
+	CALayer *imageLayer = self.layer;
+	CGFloat height = imageLayer.frame.size.height;
+	CGFloat width = imageLayer.frame.size.width;
+	CGFloat roundRadius = height > width ? width / 2 : height / 2;
 
-    [imageLayer setCornerRadius:roundRadius];
-    [imageLayer setBorderWidth:0];
-    [imageLayer setMasksToBounds:YES];
+	[imageLayer setCornerRadius:roundRadius];
+	[imageLayer setBorderWidth:0];
+	[imageLayer setMasksToBounds:YES];
 }
 
 
