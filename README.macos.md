@@ -53,7 +53,7 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 
 	brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gettext gtk-mac-integration libsoup
+        brew install gettext gtk-mac-integration libsoup hicolor-icon-theme
         #readline is required from linphonec.c otherwise compilation will fail
         brew link readline --force
 
@@ -147,6 +147,10 @@ If you don't need plugins, remove or comment out this line from the bundler file
         <binary>
         ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
         </binary>
+
+If using HomeBrew, this is not working yet. However you will at least need to install `glib-networking` and modify also:
+
+        <prefix name="default">/usr/local</prefix>
 
 Then run, inside Linphone source tree configure as told before but with `--enable-relativeprefix` appended.
 
