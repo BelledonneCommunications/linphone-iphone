@@ -697,6 +697,8 @@
 		F08F119D19C0A65B007D70C2 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119C19C0A65B007D70C2 /* NSObject+DTRuntime.m */; };
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
+		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
+		F0A1CE0C1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */; };
 		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F0B89C2818DC973E0050B60E /* wizard_external_sip.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */; };
@@ -1697,6 +1699,11 @@
 		F095485C1883F68800E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/WizardViewController~ipad.strings"; sourceTree = "<group>"; };
 		F095485D1883F6E700E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/WizardViews.strings; sourceTree = "<group>"; };
 		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/WizardViews.strings; sourceTree = "<group>"; };
+		F0A1CE061A6B056E001CA2BE /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
+		F0A1CE071A6B056E001CA2BE /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
+		F0A1CE091A6B05A4001CA2BE /* WizardTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WizardTester.h; sourceTree = "<group>"; };
+		F0A1CE0A1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KIFTestCase+LinphoneExtras.h"; sourceTree = "<group>"; };
+		F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KIFTestCase+LinphoneExtras.m"; sourceTree = "<group>"; };
 		F0AF06F01A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutViewController.strings; sourceTree = "<group>"; };
 		F0AF06F11A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatRoomViewController.strings; sourceTree = "<group>"; };
 		F0AF06F21A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatViewController.strings; sourceTree = "<group>"; };
@@ -3010,6 +3017,11 @@
 			children = (
 				F0F952021A6AEB1000254160 /* Supporting Files */,
 				F0F952111A6AECD300254160 /* WizardTester.m */,
+				F0A1CE091A6B05A4001CA2BE /* WizardTester.h */,
+				F0A1CE061A6B056E001CA2BE /* ChatTester.h */,
+				F0A1CE071A6B056E001CA2BE /* ChatTester.m */,
+				F0A1CE0A1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.h */,
+				F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */,
 			);
 			path = KifTests;
 			sourceTree = "<group>";
@@ -3981,6 +3993,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */,
+				F0A1CE0C1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m in Sources */,
 				F0F952121A6AECD300254160 /* WizardTester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
