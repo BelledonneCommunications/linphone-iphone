@@ -45,6 +45,7 @@
                                     <rect key="frame" x="-8" y="-11" width="310" height="126"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <accessibility key="accessibilityConfiguration" label="Chat Message"/>
                                     <color key="textColor" red="0.35686275360000003" green="0.3960784376" blue="0.43529412150000002" alpha="1" colorSpace="deviceRGB"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -79,6 +80,9 @@
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="chat_message_not_delivered.png" id="26" userLabel="status">
                             <rect key="frame" x="284" y="104" width="10" height="10"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Message status">
+                                <bool key="isElement" value="YES"/>
+                            </accessibility>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="18" userLabel="deleteButton">
                             <rect key="frame" x="250" y="0.0" width="44" height="44"/>
