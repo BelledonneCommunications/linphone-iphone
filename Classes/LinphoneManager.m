@@ -200,6 +200,12 @@ struct codec_name_pref_table codec_pref_table[]={
 #endif
 }
 
++ (BOOL)isRunningTests {
+    NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+    NSString *injectBundle = environment[@"XCInjectBundle"];
+    return [[injectBundle pathExtension] isEqualToString:@"xctest"];
+}
+
 + (BOOL)isNotIphone3G
 {
 	static BOOL done=FALSE;
@@ -278,6 +284,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		[self copyDefaultSettings];
 		pushCallIDs = [[NSMutableArray alloc] init ];
 		photoLibrary = [[ALAssetsLibrary alloc] init];
+        self->_isTesting = [LinphoneManager isRunningTests];
 
 		NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
 		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];

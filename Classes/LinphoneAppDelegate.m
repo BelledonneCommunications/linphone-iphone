@@ -172,24 +172,29 @@
 
     UIApplication* app= [UIApplication sharedApplication];
     UIApplicationState state = app.applicationState;
-    
-    if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
-        /* iOS8 notifications can be actioned! Awesome: */
-        UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
-       
-        NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
-        UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
-        [app registerUserNotificationSettings:userSettings];
-        [app registerForRemoteNotifications];
-    } else {
-        NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
-        [app registerForRemoteNotificationTypes:notifTypes];
-    }
 
 	LinphoneManager* instance = [LinphoneManager instance];
     BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
     BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-
+    
+    
+    if( !instance.isTesting ){
+        if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
+            /* iOS8 notifications can be actioned! Awesome: */
+            UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+            
+            NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
+            UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
+            [app registerUserNotificationSettings:userSettings];
+            [app registerForRemoteNotifications];
+        } else {
+            NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
+            [app registerForRemoteNotificationTypes:notifTypes];
+        }
+    } else {
+        NSLog(@"No remote push for testing");
+    }
+    
 
     if (state == UIApplicationStateBackground)
     {
