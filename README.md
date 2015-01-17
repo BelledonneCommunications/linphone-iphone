@@ -87,6 +87,25 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
  Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in Xcode project.
  Before embedding these 4 codecs in the final application, make sure to have the right to do so.
 
+## TESTING THE APPLICATION
+
+You need the cocoapods gem installed:
+
+        sudo gem install cocoapods
+        pod setup # the first time that cocoapods is installed, not needed if you have it already
+        pod init
+
+This will install the KIF framework, which is used for testing:
+
+        pod install
+
+After this, you should open the xcworkspace instead of the xcodeproj
+
+        open linphone.xcworkspace
+
+Now, simply press `Command + U` and the default simulator will launch and try to pass all the tests.
+
+
 ## LIMITATIONS, KNOWN BUGS
 
 * Video capture does not work in simulator (not implemented by simulator?).
