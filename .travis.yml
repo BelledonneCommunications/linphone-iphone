@@ -23,4 +23,4 @@ install:
 
 # Use Pods/Subliminal/.../subliminal-test if using Cocoapods
 script:
-    - xctool -scheme linphone -workspace linphone.xcworkspace -arch i386 -test-sdk $TEST_SDK -simulator $SIMULATOR clean test
+    - xctool -scheme linphone -workspace linphone.xcworkspace -arch i386 -sdk $TEST_SDK clean test
