@@ -31,6 +31,7 @@
     
     [tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
     
+    [tester tapViewWithAccessibilityLabel:@"Back"];    
 }
 
 @end
