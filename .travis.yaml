@@ -1,4 +1,6 @@
 language: objective-c
+xcode_project: linphone.xcworkspace
+xcode_scheme: linphone
 
 git:
   submodules: false
