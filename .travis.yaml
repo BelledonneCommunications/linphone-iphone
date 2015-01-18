@@ -1,0 +1,29 @@
+language: objective-c
+
+git:
+  submodules: false
+
+env:
+    global:
+        - VERSION="8.1"
+    matrix:
+        - TEST_SDK=iphonesimulator7.1 SIMULATOR=ipad
+        - TEST_SDK=iphonesimulator7.1 SIMULATOR=iphone
+        - TEST_SDK=iphonesimulator8.1 SIMULATOR=iphone
+        - TEST_SDK=iphonesimulator8.1 SIMULATOR=ipad
+
+install: 
+    - cd submodules/build 
+    - make download-sdk
+    - cd ../..
+    - pod install
+    - ls -la
+
+# Use Pods/Subliminal/.../subliminal-test if using Cocoapods
+script: >
+    xctool
+    -scheme linphone
+    -workspace linphone.xcworkspace
+    -arch i386 
+    -test-sdk $TEST_SDK -simulator $SIMULATOR
+    clean test
