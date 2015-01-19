@@ -10,9 +10,6 @@ env:
         - VERSION="8.1"
         - KIF_SCREENSHOTS="${TRAVIS_BUILD_DIR}/Screenshots"
 
-before_script:
-    - mkdir -p $KIF_SCREENSHOTS
-
 install: 
     - cd submodules/build 
     - make download-sdk
@@ -20,9 +17,11 @@ install:
     - pod install
     - ls -la
 
-# Use Pods/Subliminal/.../subliminal-test if using Cocoapods
 script:
+    - export KIF_SCREENSHOTS=$TRAVIS_BUILD_DIR/Screenshots
+    - mkdir -p "$KIF_SCREENSHOTS"
+    - echo $KIF_SCREENSHOTS
     - xcodebuild -scheme linphone -workspace linphone.xcworkspace -sdk iphonesimulator8.1 test
 
-after_script:
-    - ls -l $KIF_SCREENSHOTS
+after_failure:
+    - ls -la $KIF_SCREENSHOTS
