@@ -67,6 +67,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
+		compositeDescription.darkBackground = false;
     }
     return compositeDescription;
 }
@@ -93,7 +94,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [popoverController presentPopoverFromRect:CGRectZero inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
     }
     [[UIApplication sharedApplication] setStatusBarHidden:NO]; //Fix UIImagePickerController status bar hide
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque]; //Fix UIImagePickerController status bar style change
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault]; //Fix UIImagePickerController status bar style change
 }
 
 
