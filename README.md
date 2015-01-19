@@ -1,5 +1,7 @@
 # Linphone on iPhone
 
+[![Build Status](https://travis-ci.org/Gui13/linphone-iphone.svg?branch=kif)](https://travis-ci.org/Gui13/linphone-iphone)
+
 ## Build prerequisite
 
 Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts. Before building Linphone on iPhone, please read and execute [liblinphone README](submodule/linphone/README.macos.md).
