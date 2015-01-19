@@ -10,11 +10,11 @@ You will NOT be able to build the SDK if you did not read liblinphone README fir
 
 * Using HomeBrew:
 
-        brew install imagemagick
+        brew install imagemagick yasm nasm
 
 * Using MacPorts:
 
-        sudo port install ImageMagick optipng
+        sudo port install ImageMagick optipng yasm nasm
 
 ### System linking
 
