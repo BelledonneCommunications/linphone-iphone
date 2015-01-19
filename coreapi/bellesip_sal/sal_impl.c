@@ -1097,6 +1097,9 @@ void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_p
 	}
 	/* generate the fingerprint as described in RFC4572 if needed */
 	if ((generate_dtls_fingerprint == TRUE) && (fingerprint != NULL)) {
+		if (*fingerprint != NULL) {
+			ms_free(*fingerprint);
+		}
 		*fingerprint = belle_sip_certificates_chain_get_fingerprint(certificate);
 	}
 
