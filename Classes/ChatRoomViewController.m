@@ -292,7 +292,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     // Display name
     if(displayName == nil) {
-        displayName = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+		const char* username = linphone_address_get_username(linphoneAddress);
+		char* address = linphone_address_as_string(linphoneAddress);
+		displayName = [NSString stringWithUTF8String:username?:address];
+		ms_free(address);
     }
     [addressLabel setText:displayName];
 
