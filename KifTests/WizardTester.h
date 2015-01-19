@@ -6,8 +6,8 @@
 //
 //
 
-#import <KIF/Kif.h>
+#import "LinphoneTestCase.h"
 
-@interface WizardTester : KIFTestCase
+@interface WizardTester : LinphoneTestCase
 
 @end

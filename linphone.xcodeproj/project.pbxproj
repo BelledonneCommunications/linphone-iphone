@@ -781,6 +781,7 @@
 		F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BD1939FE37006ABAB5 /* test_inprogress.png */; };
 		F84015C11939FE37006ABAB5 /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BE1939FE37006ABAB5 /* test_passed.png */; };
 		F84015C7193B4E34006ABAB5 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F84015C6193B4E34006ABAB5 /* LogsViewController.m */; };
+		F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1792,6 +1793,8 @@
 		F84015BE1939FE37006ABAB5 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = Resources/test_passed.png; sourceTree = "<group>"; };
 		F84015C5193B4E34006ABAB5 /* LogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsViewController.h; sourceTree = "<group>"; };
 		F84015C6193B4E34006ABAB5 /* LogsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsViewController.m; sourceTree = "<group>"; };
+		F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
+		F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
 		F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.debug.xcconfig"; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3022,6 +3025,8 @@
 				F0A1CE071A6B056E001CA2BE /* ChatTester.m */,
 				F0A1CE0A1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.h */,
 				F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */,
+				F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */,
+				F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */,
 			);
 			path = KifTests;
 			sourceTree = "<group>";
@@ -3995,6 +4000,7 @@
 			files = (
 				F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */,
 				F0A1CE0C1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m in Sources */,
+				F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */,
 				F0F952121A6AECD300254160 /* WizardTester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

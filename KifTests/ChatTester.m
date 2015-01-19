@@ -13,6 +13,7 @@
 
 
 - (void)beforeAll {
+    [super beforeAll];
     [self switchToValidAccountIfNeeded];
     
     [tester tapViewWithAccessibilityLabel:@"Chat"];
