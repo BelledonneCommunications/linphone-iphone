@@ -298,7 +298,7 @@ if test "$build_zlib" != "false" ; then
 			AC_MSG_NOTICE([zlib library and headers not found])
 		else
 			AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
-			ZLIBS_LIBS='-z'
+			ZLIB_LIBS='-lz'
 			AC_SUBST(ZLIB_LIBS)
 		fi
 	else
