@@ -270,10 +270,11 @@ static RootViewManager* rootViewManagerInstance = nil;
 #pragma mark - Event Functions
 
 - (void)textReceived:(NSNotification*)notif { 
-    LinphoneAddress*from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
+    LinphoneAddress* from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
+    NSString*      callID = [notif.userInfo objectForKey:@"call-id"];
     if(from != nil) {
-        [self playMessageSound];
-    }
+		[self playMessageSoundForCallID:callID];
+	}
     [self updateApplicationBadgeNumber];
 }
 
@@ -653,22 +654,31 @@ static RootViewManager* rootViewManagerInstance = nil;
 
 #pragma mark - ActionSheet Functions
 
-- (void)playMessageSound {
+- (void)playMessageSoundForCallID:(NSString*)callID {
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
-            [[LinphoneManager instance] playMessageSound];
+		LinphoneManager* lm = [LinphoneManager instance];
+		// if the message was already received through a push notif, we don't need to ring
+        if( ![lm popPushCallID:callID] ) {
+            [lm playMessageSound];
         }
     }
 }
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
- 	LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-	NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
+    LinphoneCallLog* callLog = linphone_call_get_call_log(call);
+    NSString* callId         = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		if ([[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
-            [[LinphoneManager instance] acceptCall:call];
-		}else {
+        LinphoneManager* lm = [LinphoneManager instance];
+        BOOL callIDFromPush = [lm popPushCallID:callId];
+        BOOL autoAnswer     = [lm lpConfigBoolForKey:@"autoanswer_notif_preference"];
+
+		if (callIDFromPush && autoAnswer){
+			// accept call automatically
+			[lm acceptCall:call];
+
+		} else {
+
             IncomingCallViewController *controller = nil;
             if( ![currentView.name isEqualToString:[IncomingCallViewController compositeViewDescription].name]){
                 controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
@@ -676,11 +686,12 @@ static RootViewManager* rootViewManagerInstance = nil;
                 // controller is already presented, don't bother animating a transition
                 controller = DYNAMIC_CAST([self.mainViewController getCurrentViewController],IncomingCallViewController);
             }
-            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
+            AudioServicesPlaySystemSound(lm.sounds.vibrate);
 			if(controller != nil) {
 				[controller setCall:call];
 				[controller setDelegate:self];
 			}
+
 		}
 	}
 }

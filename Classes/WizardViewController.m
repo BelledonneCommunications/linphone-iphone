@@ -425,7 +425,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 }
 
-- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+- (BOOL)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
     LinphoneCore* lc = [LinphoneManager getLc];
 	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config(lc);
 	NSString* server_address = domain;
@@ -448,11 +448,29 @@ static UICompositeViewDescription *compositeDescription = nil;
         linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
     }
 
-    identity = linphone_address_as_string_uri_only(linphoneAddress);
+    char* extractedAddres = linphone_address_as_string_uri_only(linphoneAddress);
 
-    linphone_proxy_config_set_identity(proxyCfg, identity);
+	LinphoneAddress* parsedAddress = linphone_address_new(extractedAddres);
+	ms_free(extractedAddres);
 
+	if( parsedAddress == NULL || !linphone_address_is_sip(parsedAddress) ){
+		if( parsedAddress ) linphone_address_destroy(parsedAddress);
+		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+															message:NSLocalizedString(@"Please enter a valid username", nil)
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:nil,nil];
+		[errorView show];
+		[errorView release];
+		return FALSE;
+	}
 
+	char *c_parsedAddress = linphone_address_as_string_uri_only(parsedAddress);
+
+	linphone_proxy_config_set_identity(proxyCfg, c_parsedAddress);
+
+	linphone_address_destroy(parsedAddress);
+	ms_free(c_parsedAddress);
 
     LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String]
 													, NULL, [password UTF8String]
@@ -467,7 +485,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info(lc, info);
     linphone_core_add_proxy_config(lc, proxyCfg);
-	linphone_core_set_default_proxy(lc, proxyCfg);
+	linphone_core_set_default_proxy_config(lc, proxyCfg);
+	return TRUE;
 }
 
 - (void)addProvisionedProxy:(NSString*)username withPassword:(NSString*)password withDomain:(NSString*)domain {
@@ -508,6 +527,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString* scheme = [NSString stringWithUTF8String:linphone_address_get_scheme(linphoneAddress)];
     return [uri substringFromIndex:[scheme length] + 1];
 }
+
+#pragma mark - Linphone XMLRPC
 
 - (void)checkUserExist:(NSString*)username {
     [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC check_account %@", username];
@@ -551,6 +572,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [request release];
     [waitView setHidden:false];
 }
+
+#pragma mark -
 
 - (void)registrationUpdate:(LinphoneRegistrationState)state message:(NSString*)message{
     switch (state) {
@@ -668,7 +691,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self loadWizardConfig:@"wizard_linphone_create.rc"];
 }
 
-- (IBAction)onConnectAccountClick:(id)sender {
+- (IBAction)onConnectLinphoneAccountClick:(id)sender {
     nextView = connectAccountView;
     [self loadWizardConfig:@"wizard_linphone_existing.rc"];
 }
@@ -704,11 +727,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
 	}
 
 	if (domain != nil && [domain length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a domain.\n", nil)]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid domain.\n", nil)]];
 	}
 
 	if([errors length]) {
@@ -720,9 +743,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[errorView show];
 		[errorView release];
 	} else {
-		[self.waitView setHidden:false];
+		[waitView setHidden:false];
 		if ([LinphoneManager instance].connectivity == none) {
-			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"No connectivity", nil) message:NSLocalizedString(@"You can either skip verification or connect to the Internet first.", nil)];
+			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"No connectivity", nil)
+															message:NSLocalizedString(@"You can either skip verification or connect to the Internet first.", nil)];
 			[alert addCancelButtonWithTitle:NSLocalizedString(@"Stay here", nil) block:^{
 				[waitView setHidden:true];
 			}];
@@ -733,7 +757,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}];
 			[alert show];
 		} else {
-			[self addProxyConfig:username password:password domain:domain withTransport:transport];
+			BOOL success = [self addProxyConfig:username password:password domain:domain withTransport:transport];
+			if( !success ){
+				waitView.hidden = true;
+			}
 		}
 	}
 }
@@ -807,7 +834,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSMutableString *errors = [NSMutableString string];
     if ([username length] == 0) {
 
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
     }
 
     if([errors length]) {

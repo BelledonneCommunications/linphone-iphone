@@ -71,7 +71,7 @@
 - (IBAction)onCancelClick:(id)sender;
 
 - (IBAction)onCreateAccountClick:(id)sender;
-- (IBAction)onConnectAccountClick:(id)sender;
+- (IBAction)onConnectLinphoneAccountClick:(id)sender;
 - (IBAction)onExternalAccountClick:(id)sender;
 - (IBAction)onCheckValidationClick:(id)sender;
 - (IBAction)onRemoteProvisioningClick:(id)sender;

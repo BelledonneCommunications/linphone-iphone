@@ -276,7 +276,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		bluetoothEnabled = FALSE;
 		tunnelMode = FALSE;
 		[self copyDefaultSettings];
-		pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
+		pushCallIDs = [[NSMutableArray alloc] init ];
 		photoLibrary = [[ALAssetsLibrary alloc] init];
 
 		NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
@@ -311,7 +311,7 @@ struct codec_name_pref_table codec_pref_table[]={
 
 
 	[photoLibrary release];
-	[pendindCallIdFromRemoteNotif release];
+	[pushCallIDs release];
 	[super dealloc];
 }
 
@@ -637,7 +637,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}
 	}
 	if(address == nil) {
-		address = @"Unknown";
+		address = NSLocalizedString(@"Unknown", nil);
 	}
 
 	if (state == LinphoneCallIncomingReceived) {
@@ -663,7 +663,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			LinphoneCallLog* callLog=linphone_call_get_call_log(call);
 			NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
-			if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
+			if (![[LinphoneManager instance] popPushCallID:callId]){
 				// case where a remote notification is not already received
 				// Create a new local notification
 				data->notification = [[UILocalNotification alloc] init];
@@ -878,13 +878,15 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		silentPushCompletion(UIBackgroundFetchResultNewData);
 		silentPushCompletion = nil;
 	}
+    const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
+    char* c_address                      = linphone_address_as_string_uri_only(remoteAddress);
+    NSString* address                    = [NSString stringWithUTF8String:c_address];
+    const char* call_id                  = linphone_chat_message_get_custom_header(msg, "Call-ID");
+    NSString* callID                     = [NSString stringWithUTF8String:call_id];
+
+	ms_free(c_address);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-
-		const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
-		char* c_address = linphone_address_as_string_uri_only(remoteAddress);
-		NSString* address = [NSString stringWithUTF8String:c_address];
-		NSString* from_address = [address copy];
 
 		ABRecordRef contact = [fastAddressBook getContact:address];
 		if(contact) {
@@ -897,7 +899,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			}
 		}
 		if(address == nil) {
-			address = @"Unknown";
+			address = NSLocalizedString(@"Unknown", nil);
 		}
 
 		// Create a new notification
@@ -910,18 +912,18 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction    = NSLocalizedString(@"Show", nil);
 			notif.soundName      = @"msg.caf";
-			notif.userInfo       = @{@"from":from_address};
-
+			notif.userInfo       = @{@"from":address, @"call-id":callID};
 
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
-		[from_address release];
 	}
 
 	// Post event
 	NSDictionary* dict = @{@"room"        :[NSValue valueWithPointer:room],
-						   @"from_address":[NSValue valueWithPointer:linphone_chat_message_get_from(msg)],
-						   @"message"     :[NSValue valueWithPointer:msg]};
+						   @"from_address":[NSValue valueWithPointer:linphone_chat_message_get_from_address(msg)],
+						   @"message"     :[NSValue valueWithPointer:msg],
+						   @"call-id"     : callID};
+
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
 }
 
@@ -1532,23 +1534,23 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
     };
 }
 
-- (void)enableAutoAnswerForCallId:(NSString*) callid {
-    //first, make sure this callid is not already involved in a call
+- (void)addPushCallId:(NSString*) callid {
+   //first, make sure this callid is not already involved in a call
     MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
     if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handled",callid];
+        Linphone_warn(@"Call id [%@] already handled",callid);
         return;
     };
-    if ([pendindCallIdFromRemoteNotif count] > 10 /*max number of pending notif*/)
-        [pendindCallIdFromRemoteNotif removeObjectAtIndex:0];
+    if ([pushCallIDs count] > 10 /*max number of pending notif*/)
+        [pushCallIDs removeObjectAtIndex:0];
 
-    [pendindCallIdFromRemoteNotif addObject:callid];
+    [pushCallIDs addObject:callid];
 }
 
-- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId {
-	for (NSString* pendingNotif in pendindCallIdFromRemoteNotif) {
+- (BOOL)popPushCallID:(NSString*) callId {
+	for (NSString* pendingNotif in pushCallIDs) {
 		if ([pendingNotif  compare:callId] == NSOrderedSame) {
-			[pendindCallIdFromRemoteNotif removeObject:pendingNotif];
+			[pushCallIDs removeObject:pendingNotif];
 			return TRUE;
 		}
 	}
@@ -1863,8 +1865,6 @@ static void audioRouteChangeListenerCallback (
     BOOL addressIsASCII = [address canBeConvertedToEncoding:[NSString defaultCStringEncoding]];
 
 	if ([address length] == 0) return; //just return
-
-
     if( !addressIsASCII ){
         UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
                                                         message:NSLocalizedString(@"The address should only contain ASCII data",nil)
@@ -1874,9 +1874,11 @@ static void audioRouteChangeListenerCallback (
         [error show];
         [error release];
 
-    } else if ([address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"]) {
+    }
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url(theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
-		LinphoneAddress* linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	if (linphoneAddress) {
+
 		if(displayName!=nil) {
 			linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
@@ -1889,7 +1891,7 @@ static void audioRouteChangeListenerCallback (
 		}
 		linphone_address_destroy(linphoneAddress);
 
-	} else if (proxyCfg==nil){
+	} else {
 
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
 														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid SIP address (I.E sip:john@example.net)",nil)
@@ -1899,23 +1901,9 @@ static void audioRouteChangeListenerCallback (
 		[error show];
 		[error release];
 
-    } else {
-		char normalizedUserName[256];
-		LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));
-		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
-		linphone_address_set_username(linphoneAddress, normalizedUserName);
-		if(displayName!=nil) {
-			linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
-			linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		if(transfer) {
-			linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
-		} else {
-			call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
-		}
-		linphone_address_destroy(linphoneAddress);
-	}
+    }
+
+
 	if (call) {
 		// The LinphoneCallAppData object should be set on call creation with callback
 		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash

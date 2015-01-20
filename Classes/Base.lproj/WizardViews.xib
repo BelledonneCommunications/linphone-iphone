@@ -111,7 +111,7 @@
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
-                        <action selector="onConnectAccountClick:" destination="-1" eventType="touchUpInside" id="41"/>
+                        <action selector="onConnectLinphoneAccountClick:" destination="-1" eventType="touchUpInside" id="JTf-u3-Kbe"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="39" userLabel="externalAccountButton" customClass="UILinphoneButton">

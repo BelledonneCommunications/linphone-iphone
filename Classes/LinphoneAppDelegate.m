@@ -245,10 +245,12 @@
         [confirmation release];
     } else {
         if([[url scheme] isEqualToString:@"sip"]) {
-            // Go to Dialer view
-            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and trailing "/"
+			NSString* sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+
+			DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
             if(controller != nil) {
-                [controller setAddress:[url absoluteString]];
+                [controller setAddress:sipUri];
             }
         }
     }
@@ -265,11 +267,7 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
-	if ([LinphoneManager instance].pushNotificationToken==Nil){
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
-		return;
-	}
-	
+
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
 	
     if(aps != nil) {
@@ -284,18 +282,22 @@
 				[LinphoneManager instance].connectivity=none; /*force connectivity to be discovered again*/
                 [[LinphoneManager instance] refreshRegisters];
 				if(loc_key != nil) {
-					if([loc_key isEqualToString:@"IM_MSG"]) {
-						[[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
+
+					NSString* callId = [userInfo objectForKey:@"call-id"];
+					if( callId != nil ){
+						[[LinphoneManager instance] addPushCallId:callId];
+					} else {
+						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
+					}
+
+					if( [loc_key isEqualToString:@"IM_MSG"] ) {
+
 						[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
-					} else if([loc_key isEqualToString:@"IC_MSG"]) {
-						//it's a call
-						NSString *callid=[userInfo objectForKey:@"call-id"];
-						if (callid)
-							[[LinphoneManager instance] enableAutoAnswerForCallId:callid];
-						else
-							[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
+
+					} else if( [loc_key isEqualToString:@"IC_MSG"] ) {
 
 						[self fixRing];
+
 					}
 				}
 			}
@@ -365,11 +367,6 @@
 {
     Linphone_log(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
     LinphoneManager* lm = [LinphoneManager instance];
-	
-	if (lm.pushNotificationToken==Nil){
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Ignoring push notification we did not subscribed."];
-		return;
-	}
 
     // save the completion handler for later execution.
     // 2 outcomes:
