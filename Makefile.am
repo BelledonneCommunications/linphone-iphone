@@ -7,6 +7,8 @@ SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
 		coreapi console gtk share scripts tools tester include
 
 
+GITVERSION=`cd $(top_srcdir) && git describe --always || echo $(VERSION)`
+
 
 ACLOCAL_FLAGS=-I$(top_srcdir)/m4
 
@@ -20,11 +22,11 @@ OPTIONAL_SOUNDS=\
 
 INSTALLDIR=$(abs_top_builddir)/linphone-install
 INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(VERSION).zip
+ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-$(GITVERSION)-win32.zip
 ZIP_EXCLUDED=include lib \
 		$(OPTIONAL_SOUNDS)
 
-SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-win32-$(VERSION).zip
+SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-$(GITVERSION)-win32.zip
 SDK_EXCLUDED= \
 	bin/linphone.exe \
 	lib/*.la \
@@ -173,7 +175,7 @@ setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
 	$(ISCC) $(ISS_SCRIPT)
-	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-$(VERSION)-setup.exe
+	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-$(GITVERSION)-setup.exe
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
@@ -201,8 +203,8 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 ### MAC
 
 MACAPPNAME=Linphone.app
-MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
-MACAPPDMG=$(PACKAGE)-$(VERSION).dmg
+MACAPPZIP=$(PACKAGE)-$(GITVERSION).app.zip
+MACAPPDMG=$(PACKAGE)-$(GITVERSION).dmg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 #a path prefix where additional libs can be cherry-picked by the bundler.
