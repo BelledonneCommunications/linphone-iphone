@@ -196,7 +196,8 @@ typedef struct SalStreamDescription{
 	char rtcp_addr[64];
 	int rtp_port;
 	int rtcp_port;
-	MSList *payloads; //<list of PayloadType
+	MSList *payloads; /*<list of PayloadType */
+	MSList *already_assigned_payloads; /*<list of PayloadType offered in the past, used for correct allocation of payload type numbers*/
 	int bandwidth;
 	int ptime;
 	SalStreamDir dir;

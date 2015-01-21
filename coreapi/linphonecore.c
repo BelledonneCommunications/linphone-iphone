@@ -982,12 +982,13 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_set_avpf_mode(lc,lp_config_get_int(lc->config,"rtp","avpf",0));
 }
 
-static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
+static PayloadType * find_payload(const MSList *default_list, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
 	PayloadType *candidate=NULL;
-	int i;
 	PayloadType *it;
-	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
-		it=rtp_profile_get_payload(prof,i);
+	const MSList *elem;
+	
+	for(elem=default_list;elem!=NULL;elem=elem->next){
+		it=(PayloadType*)elem->data;
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
 			&& (clock_rate==it->clock_rate || clock_rate<=0)
 			&& (channels==it->channels || channels<=0) ){
@@ -1009,7 +1010,20 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 	return candidate;
 }
 
-static bool_t get_codec(LinphoneCore *lc, const char* type, int index, PayloadType **ret){
+static PayloadType* find_payload_type_from_list(const char* type, int rate, int channels, const MSList* from) {
+	const MSList *elem;
+	for(elem=from;elem!=NULL;elem=elem->next){
+		PayloadType *pt=(PayloadType*)elem->data;
+		if ((strcasecmp(type, payload_type_get_mime(pt)) == 0)
+			&& (rate == LINPHONE_FIND_PAYLOAD_IGNORE_RATE || rate==pt->clock_rate)
+			&& (channels == LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS || channels==pt->channels)) {
+			return pt;
+		}
+	}
+	return NULL;
+}
+
+static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
 	int rate,channels,enabled;
@@ -1017,7 +1031,7 @@ static bool_t get_codec(LinphoneCore *lc, const char* type, int index, PayloadTy
 	LpConfig *config=lc->config;
 
 	*ret=NULL;
-	snprintf(codeckey,50,"%s_%i",type,index);
+	snprintf(codeckey,50,"%s_codec_%i",type==SalAudio ? "audio" : "video", index);
 	mime=lp_config_get_string(config,codeckey,"mime",NULL);
 	if (mime==NULL || strlen(mime)==0 ) return FALSE;
 
@@ -1025,85 +1039,52 @@ static bool_t get_codec(LinphoneCore *lc, const char* type, int index, PayloadTy
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
 	channels=lp_config_get_int(config,codeckey,"channels",0);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	pt=find_payload(lc->default_profile,mime,rate,channels,fmtp);
-	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
-	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
-	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
-				mime,rate,fmtp ? fmtp : "");
+	if (!ms_filter_codec_supported(mime)){
+		ms_warning("Codec %s/%i read from conf is not supported by mediastreamer2, ignored.",mime,rate);
+		return TRUE;
+	}
+	pt=find_payload(type==SalAudio ? lc->default_audio_codecs : lc->default_video_codecs,mime,rate,channels,fmtp);
+	if (!pt){
+		MSList **default_list=(type==SalAudio) ? &lc->default_audio_codecs :  &lc->default_video_codecs;
+		ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
+		pt=payload_type_new();
+		pt->type=(type==SalAudio) ? PAYLOAD_AUDIO_PACKETIZED :  PAYLOAD_VIDEO;
+		pt->mime_type=ortp_strdup(mime);
+		pt->clock_rate=rate;
+		pt->channels=channels;
+		payload_type_set_recv_fmtp(pt,fmtp);
+		*default_list=ms_list_append(*default_list, pt);
+	}
+	if (enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	*ret=pt;
 	return TRUE;
 }
 
-#define RANK_END 10000
-
-typedef struct codec_desc{
-	const char *name;
-	int rate;
-}codec_desc_t;
-
-static codec_desc_t codec_pref_order[]={
-	{"opus", 48000},
-	{"SILK", 16000},
-	{"speex", 16000},
-	{"speex", 8000},
-	{"pcmu",8000},
-	{"pcma",8000},
-	{"VP8",90000},
-	{"H264",90000},
-	{"MP4V-ES",90000},
-	{NULL,0}
-};
-
-static int find_codec_rank(const char *mime, int clock_rate){
-	int i;
-
-#ifdef __arm__
-	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
-	if (strcasecmp(mime,"opus")==0){
-		if (ms_get_cpu_count()==1) return RANK_END;
-	}
-#endif
-	for(i=0;codec_pref_order[i].name!=NULL;++i){
-		if (strcasecmp(codec_pref_order[i].name,mime)==0 && clock_rate==codec_pref_order[i].rate)
-			return i;
-	}
-	return RANK_END;
-}
-
-static int codec_compare(const PayloadType *a, const PayloadType *b){
-	int ra,rb;
-	ra=find_codec_rank(a->mime_type,a->clock_rate);
-	rb=find_codec_rank(b->mime_type,b->clock_rate);
-	if (ra>rb) return 1;
-	if (ra<rb) return -1;
-	return 1;
-}
-
-static MSList *add_missing_codecs(LinphoneCore *lc, SalStreamType mtype, MSList *l){
-	int i;
-	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
-		PayloadType *pt=rtp_profile_get_payload(lc->default_profile,i);
-		if (pt){
-			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
-				pt=NULL;
-			else if (mtype==SalAudio && (pt->type!=PAYLOAD_AUDIO_PACKETIZED
-				&& pt->type!=PAYLOAD_AUDIO_CONTINUOUS)){
-				pt=NULL;
+/*this function merges the payload types from the codec default list with the list read from configuration file.
+ * If a new codec becomes supported in Liblinphone or if the list from configuration file is empty or incomplete, all the supported codecs are added
+ * automatically. This 'l' list is entirely destroyed and rewritten.*/
+static MSList *add_missing_codecs(const MSList *default_list, MSList *l){
+	const MSList *elem;
+	MSList *newlist;
+	
+	for(elem=default_list; elem!=NULL; elem=elem->next){
+		MSList *elem2=ms_list_find(l,elem->data);
+		if (!elem2){
+			PayloadType *pt=(PayloadType*)elem->data;
+			/*this codec from default list should be inserted in the list*/
+			if (!elem->prev){
+				l=ms_list_prepend(l,pt);
+			}else{
+				const MSList *after=ms_list_find(l,elem->prev->data);
+				l=ms_list_insert(l, after->next, pt);
 			}
-			if (pt && ms_filter_codec_supported(pt->mime_type)){
-				if (ms_list_find(l,pt)==NULL){
-					/*unranked codecs are disabled by default*/
-					if (find_codec_rank(pt->mime_type, pt->clock_rate)!=RANK_END){
-						payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
-					}
-					ms_message("Adding new codec %s/%i with fmtp %s",
-						pt->mime_type,pt->clock_rate,pt->recv_fmtp ? pt->recv_fmtp : "");
-					l=ms_list_insert_sorted(l,pt,(int (*)(const void *, const void *))codec_compare);
-				}
-			}
+			ms_message("Supported codec %s/%i fmtp=%s automatically added to codec list.", pt->mime_type,
+				   pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
 		}
 	}
-	return l;
+	newlist=ms_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
+	ms_list_free(l);
+	return newlist;
 }
 
 static MSList *codec_append_if_new(MSList *l, PayloadType *pt){
@@ -1123,23 +1104,23 @@ static void codecs_config_read(LinphoneCore *lc)
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
 	MSList *video_codecs=NULL;
-	for (i=0;get_codec(lc,"audio_codec",i,&pt);i++){
+	
+	lc->codecs_conf.dyn_pt=96;
+	lc->codecs_conf.telephone_event_pt=lp_config_get_int(lc->config,"misc","telephone_event_pt",101);
+	
+	for (i=0;get_codec(lc,SalAudio,i,&pt);i++){
 		if (pt){
-			if (!ms_filter_codec_supported(pt->mime_type)){
-				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else audio_codecs=codec_append_if_new(audio_codecs,pt);
+			audio_codecs=codec_append_if_new(audio_codecs, pt);
 		}
 	}
-	audio_codecs=add_missing_codecs(lc,SalAudio,audio_codecs);
+	audio_codecs=add_missing_codecs(lc->default_audio_codecs,audio_codecs);
 
-	for (i=0;get_codec(lc,"video_codec",i,&pt);i++){
+	for (i=0;get_codec(lc,SalVideo,i,&pt);i++){
 		if (pt){
-			if (!ms_filter_codec_supported(pt->mime_type)){
-				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
-			}else video_codecs=codec_append_if_new(video_codecs,(void *)pt);
+			video_codecs=codec_append_if_new(video_codecs, pt);
 		}
 	}
-	video_codecs=add_missing_codecs(lc,SalVideo,video_codecs);
+	video_codecs=add_missing_codecs(lc->default_video_codecs,video_codecs);
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
 	linphone_core_update_allocated_audio_bandwidth(lc);
@@ -1412,60 +1393,45 @@ const char * linphone_core_get_version(void){
 	return liblinphone_version;
 }
 
-static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *const_pt, int number, const char *recv_fmtp){
-	PayloadType *pt;
-
-	pt=payload_type_clone(const_pt);
-	if (number==-1){
-		/*look for a free number */
-		MSList *elem;
-		int i;
-		for(i=lc->dyn_pt;i<RTP_PROFILE_MAX_PAYLOADS;++i){
-			bool_t already_assigned=FALSE;
-			for(elem=lc->payload_types;elem!=NULL;elem=elem->next){
-				PayloadType *it=(PayloadType*)elem->data;
-				if (payload_type_get_number(it)==i){
-					already_assigned=TRUE;
-					break;
-				}
-			}
-			if (!already_assigned){
-				number=i;
-				lc->dyn_pt=i+1;
-				break;
-			}
-		}
-		if (number==-1){
-			ms_fatal("FIXME: too many codecs, no more free numbers.");
-		}
+static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadType *const_pt, const char *recv_fmtp, bool_t enabled){
+	MSList **codec_list=const_pt->type==PAYLOAD_VIDEO ? &lc->default_video_codecs : &lc->default_audio_codecs;
+	if (ms_filter_codec_supported(const_pt->mime_type)){
+		PayloadType *pt=payload_type_clone(const_pt);
+		int number=-1;
+		payload_type_set_enable(pt,enabled);
+		if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
+		/*Set a number to the payload type from the statically defined (RFC3551) profile, if not static, -1 is returned
+		 and the payload type number will be determined dynamically later, at call time.*/
+		payload_type_set_number(pt,
+			(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
+		); 
+		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate, 
+			   pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
+		*codec_list=ms_list_append(*codec_list,pt);
 	}
-	ms_message("assigning %s/%i payload type number %i",pt->mime_type,pt->clock_rate,number);
-	payload_type_set_number(pt,number);
-	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
-	rtp_profile_set_payload(lc->default_profile,number,pt);
-	lc->payload_types=ms_list_append(lc->payload_types,pt);
 }
 
-static void linphone_core_handle_static_payloads(LinphoneCore *lc){
+static void linphone_core_register_static_payloads(LinphoneCore *lc){
 	RtpProfile *prof=&av_profile;
 	int i;
 	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(prof,i);
 		if (pt){
-			// insert static payload only if no profile exists
-			if (rtp_profile_get_payload(lc->default_profile,i) == NULL){
-				linphone_core_assign_payload_type(lc,pt,i,NULL);
+#ifndef VIDEO_ENABLED
+			if (pt->type==PAYLOAD_VIDEO) continue;
+#endif
+			if (find_payload_type_from_list(
+				pt->mime_type, pt->clock_rate, pt->type!=PAYLOAD_VIDEO ? pt->channels : LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS,
+				pt->type==PAYLOAD_VIDEO ? lc->default_video_codecs : lc->default_audio_codecs)==NULL){
+				linphone_core_register_payload_type(lc,pt,NULL,FALSE);
 			}
 		}
 	}
 }
 
 static void linphone_core_free_payload_types(LinphoneCore *lc){
-	rtp_profile_clear_all(lc->default_profile);
-	rtp_profile_destroy(lc->default_profile);
-	ms_list_for_each(lc->payload_types,(void (*)(void*))payload_type_destroy);
-	ms_list_free(lc->payload_types);
-	lc->payload_types=NULL;
+	ms_list_free_with_data(lc->default_audio_codecs, (void (*)(void*))payload_type_destroy);
+	ms_list_free_with_data(lc->default_video_codecs, (void (*)(void*))payload_type_destroy);
 }
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message){
@@ -1541,10 +1507,73 @@ static void linphone_core_deactivate_log_serialization_if_needed(void) {
 	}
 }
 
-static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
-{
-	const char *remote_provisioning_uri = NULL;
+static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	const char *aac_fmtp162248, *aac_fmtp3244;
+	bool_t opus_enabled=TRUE;
+	/*default enabled audio codecs, in order of preference*/
+#ifdef __arm__
+	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
+	if (ms_get_cpu_count()==1) opus_enabled=FALSE;
+#endif
+	linphone_core_register_payload_type(lc,&payload_type_opus,"useinbandfec=1; stereo=0; sprop-stereo=0",opus_enabled);
+	linphone_core_register_payload_type(lc,&payload_type_silk_wb,NULL,TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_speex_wb,"vbr=on",TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
+	
+	/*other audio codecs, not enabled by default, in order of preference*/
+	linphone_core_register_payload_type(lc,&payload_type_gsm,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g722,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_ilbc,"mode=30",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_amr,"octet-align=1",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_amrwb,"octet-align=1",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g729,"annexb=no",FALSE);
+	/* For AAC, we use a config value to determine if we ought to support SBR. Since it is not offically supported
+	 * for the mpeg4-generic mime type, setting this flag to 1 will break compatibility with other clients. */
+	if( lp_config_get_int(lc->config, "misc", "aac_use_sbr", FALSE) ) {
+		ms_message("Using SBR for AAC");
+		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
+		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
+	} else {
+		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
+		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
+	}
+	linphone_core_register_payload_type(lc,&payload_type_aaceld_16k,aac_fmtp162248,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aaceld_22k,aac_fmtp162248,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aaceld_32k,aac_fmtp3244,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aaceld_44k,aac_fmtp3244,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aaceld_48k,aac_fmtp162248,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_isac,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_speex_uwb,"vbr=on",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_silk_nb,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_silk_mb,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_silk_swb,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g726_16,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g726_24,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g726_32,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_g726_40,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_16,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_24,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
+	
+	
+
+#ifdef VIDEO_ENABLED
+	/*default enabled video codecs, in order of preference*/
+	linphone_core_register_payload_type(lc,&payload_type_vp8,NULL,TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_h264,"profile-level-id=42801F",TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_mp4v,"profile-level-id=3",TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_h263_1998,"CIF=1;QCIF=1",FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_h263,NULL,FALSE);
+#endif
+	/*register all static payload types declared in av_profile of oRTP, if not already declared above*/
+	linphone_core_register_static_payloads(lc);
+}
+
+static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata){
+	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
@@ -1558,83 +1587,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
-	lc->dyn_pt=96;
-	lc->default_profile=rtp_profile_new("default profile");
-	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_gsm,3,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_pcma8000,8,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_speex_nb,110,"vbr=on");
-	linphone_core_assign_payload_type(lc,&payload_type_speex_wb,111,"vbr=on");
-	linphone_core_assign_payload_type(lc,&payload_type_speex_uwb,112,"vbr=on");
-	linphone_core_assign_payload_type(lc,&payload_type_telephone_event,101,"0-15");
-	linphone_core_assign_payload_type(lc,&payload_type_g722,9,NULL);
-
-#ifdef ENABLE_NONSTANDARD_GSM
-	{
-		PayloadType *pt;
-		pt=payload_type_clone(&payload_type_gsm);
-		pt->clock_rate=11025;
-		linphone_core_assign_payload_type(lc,pt,-1,NULL);
-		pt->clock_rate=22050;
-		linphone_core_assign_payload_type(lc,pt,-1,NULL);
-		payload_type_destroy(pt);
-	}
-#endif
-
-#ifdef VIDEO_ENABLED
-
-	linphone_core_assign_payload_type(lc,&payload_type_h263,34,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_h263_1998,98,"CIF=1;QCIF=1");
-	linphone_core_assign_payload_type(lc,&payload_type_mp4v,99,"profile-level-id=3");
-	linphone_core_assign_payload_type(lc,&payload_type_h264,102,"profile-level-id=42801F");
-	linphone_core_assign_payload_type(lc,&payload_type_vp8,103,NULL);
-
-	/* linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL); commented out to free 1 slot */
-	/* linphone_core_assign_payload_type(lc,&payload_type_x_snow,-1,NULL); commented out to free 1 slot */
-	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
-	/* linphone_core_assign_payload_type(&payload_type_h264,-1,"packetization-mode=1;profile-level-id=428014");*/
-#endif
-
-	/* For AAC, we use a config value to determine if we ought to support SBR. Since it is not offically supported
-	 * for the mpeg4-generic mime type, setting this flag to 1 will break compatibility with other clients. */
-	if( lp_config_get_int(lc->config, "misc", "aac_use_sbr", FALSE) ) {
-		ms_message("Using SBR for AAC");
-		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
-		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5; SBR-enabled=1";
-	} else {
-		aac_fmtp162248 = "config=F8EE2000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
-		aac_fmtp3244   = "config=F8E82000; constantDuration=512; indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5";
-	}
-
-
-	/*add all payload type for which we don't care about the number */
-	linphone_core_assign_payload_type(lc,&payload_type_ilbc,-1,"mode=30");
-	linphone_core_assign_payload_type(lc,&payload_type_amr,-1,"octet-align=1");
-	linphone_core_assign_payload_type(lc,&payload_type_amrwb,-1,"octet-align=1");
-	/* linphone_core_assign_payload_type(lc,&payload_type_lpc1015,-1,NULL); commented out to free 1 slot */
-	linphone_core_assign_payload_type(lc,&payload_type_g726_16,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_g726_24,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_g726_32,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_g726_40,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_16,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_24,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_32,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_aal2_g726_40,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_silk_nb,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_silk_mb,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_16k,-1,aac_fmtp162248);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,aac_fmtp162248);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_32k,-1,aac_fmtp3244);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,aac_fmtp3244);
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_48k,-1,aac_fmtp162248);
-	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; stereo=0; sprop-stereo=0");
-	linphone_core_assign_payload_type(lc,&payload_type_isac,-1,NULL);
-	linphone_core_handle_static_payloads(lc);
-
+	
 	ms_init();
+	
+	linphone_core_register_default_codecs(lc);
 	/* create a mediastreamer2 event queue and set it as global */
 	/* This allows to run event's callback in linphone_core_iterate() */
 	lc->msevq=ms_event_queue_new();
@@ -1841,8 +1797,7 @@ LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
 **/
-int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
-{
+int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs){
 	if (lc->codecs_conf.audio_codecs!=NULL) ms_list_free(lc->codecs_conf.audio_codecs);
 	lc->codecs_conf.audio_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
@@ -1860,8 +1815,7 @@ int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs)
  * The list is taken by the LinphoneCore thus the application should not free it.
  * This list is made of struct PayloadType describing the codec parameters.
 **/
-int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs)
-{
+int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs){
 	if (lc->codecs_conf.video_codecs!=NULL) ms_list_free(lc->codecs_conf.video_codecs);
 	lc->codecs_conf.video_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
@@ -6212,8 +6166,8 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 static void codecs_config_uninit(LinphoneCore *lc)
 {
 	_linphone_core_codec_config_write(lc);
-	ms_list_free(lc->codecs_conf.audio_codecs);
-	ms_list_free(lc->codecs_conf.video_codecs);
+	ms_list_free_with_data(lc->codecs_conf.audio_codecs, (void (*)(void*))payload_type_destroy);
+	ms_list_free_with_data(lc->codecs_conf.video_codecs, (void (*)(void*))payload_type_destroy);
 }
 
 void ui_config_uninit(LinphoneCore* lc)
@@ -6518,20 +6472,6 @@ void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
 const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
 	return lc->sound_conf.ringback_tone;
 }
-
-static PayloadType* find_payload_type_from_list(const char* type, int rate, int channels, const MSList* from) {
-	const MSList *elem;
-	for(elem=from;elem!=NULL;elem=elem->next){
-		PayloadType *pt=(PayloadType*)elem->data;
-		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0)
-			&& (rate == LINPHONE_FIND_PAYLOAD_IGNORE_RATE || rate==pt->clock_rate)
-			&& (channels == LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS || channels==pt->channels)) {
-			return pt;
-		}
-	}
-	return NULL;
-}
-
 
 LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
 	LinphonePayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));

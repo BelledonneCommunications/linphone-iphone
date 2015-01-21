@@ -235,7 +235,10 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
 	belle_sip_header_user_agent_t* user_agent=belle_sip_message_get_header_by_type(message,belle_sip_header_user_agent_t);
 	char user_agent_string[256];
-	if(user_agent && belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
+	if (user_agent && belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
+		if (op->base.remote_ua!=NULL){
+			ms_free(op->base.remote_ua);
+		}
 		op->base.remote_ua=ms_strdup(user_agent_string);
 	}
 }

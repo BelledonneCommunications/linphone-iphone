@@ -2345,7 +2345,18 @@ LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, Linphone
  */
 LINPHONE_PUBLIC	LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
 
+/**
+ * @ingroup media_parameters
+ * Returns the payload type number assigned for this codec.
+**/
 LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * @ingroup media_parameters
+ * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
+ * to override the automatic assignment mechanism.
+**/
+LINPHONE_PUBLIC void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
 
 LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 

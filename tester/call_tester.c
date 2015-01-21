@@ -34,7 +34,6 @@
 
 static void srtp_call(void);
 static void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy);
-static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 static char *create_filepath(const char *dir, const char *filename, const char *ext);
 
 // prototype definition for call_recording()
@@ -727,7 +726,7 @@ static void cancelled_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate){
+void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate){
 	const MSList *elem=linphone_core_get_audio_codecs(lc);
 	PayloadType *pt;
 
@@ -753,40 +752,6 @@ static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mi
 	linphone_core_enable_payload_type(lc, pt, TRUE);
 }
 #endif
-
-static void call_failed_because_of_codecs(void) {
-	int begin,leaked_objects;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
-
-	{
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-		LinphoneCall* out_call;
-
-		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
-		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
-		linphone_call_ref(out_call);
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
-
-		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-		CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-		CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable);
-		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
-		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0);
-
-		linphone_call_unref(out_call);
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_TRUE(leaked_objects==0);
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
-}
 
 static void call_with_dns_time_out(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
@@ -3036,115 +3001,6 @@ static void multiple_early_media(void) {
 }
 #endif
 
-static void profile_call(bool_t avpf1, bool_t srtp1, bool_t avpf2, bool_t srtp2, const char *expected_profile) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
-	LinphoneProxyConfig *lpc;
-	const LinphoneCallParams *params;
-
-	if (avpf1) {
-		linphone_core_get_default_proxy(marie->lc, &lpc);
-		linphone_proxy_config_enable_avpf(lpc, TRUE);
-		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
-	}
-	if (avpf2) {
-		linphone_core_get_default_proxy(pauline->lc, &lpc);
-		linphone_proxy_config_enable_avpf(lpc, TRUE);
-		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
-	}
-	if (srtp1) {
-		if (linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP)) {
-			linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
-		}
-	}
-	if (srtp2) {
-		if (linphone_core_media_encryption_supported(pauline->lc, LinphoneMediaEncryptionSRTP)) {
-			linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionSRTP);
-		}
-	}
-
-	CU_ASSERT_TRUE(call(marie, pauline));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
-	params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
-	params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
-
-	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected, 1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected, 1);
-
-	linphone_core_manager_destroy(pauline);
-	linphone_core_manager_destroy(marie);
-}
-
-static void avp_to_avp_call(void) {
-	profile_call(FALSE, FALSE, FALSE, FALSE, "RTP/AVP");
-}
-
-static void avp_to_avpf_call(void) {
-	profile_call(FALSE, FALSE, TRUE, FALSE, "RTP/AVP");
-}
-
-static void avp_to_savp_call(void) {
-	profile_call(FALSE, FALSE, FALSE, TRUE, "RTP/AVP");
-}
-
-static void avp_to_savpf_call(void) {
-	profile_call(FALSE, FALSE, TRUE, TRUE, "RTP/AVP");
-}
-
-static void avpf_to_avp_call(void) {
-	profile_call(TRUE, FALSE, FALSE, FALSE, "RTP/AVPF");
-}
-
-static void avpf_to_avpf_call(void) {
-	profile_call(TRUE, FALSE, TRUE, FALSE, "RTP/AVPF");
-}
-
-static void avpf_to_savp_call(void) {
-	profile_call(TRUE, FALSE, FALSE, TRUE, "RTP/AVPF");
-}
-
-static void avpf_to_savpf_call(void) {
-	profile_call(TRUE, FALSE, TRUE, TRUE, "RTP/AVPF");
-}
-
-static void savp_to_avp_call(void) {
-	profile_call(FALSE, TRUE, FALSE, FALSE, "RTP/SAVP");
-}
-
-static void savp_to_avpf_call(void) {
-	profile_call(FALSE, TRUE, TRUE, FALSE, "RTP/SAVP");
-}
-
-static void savp_to_savp_call(void) {
-	profile_call(FALSE, TRUE, FALSE, TRUE, "RTP/SAVP");
-}
-
-static void savp_to_savpf_call(void) {
-	profile_call(FALSE, TRUE, TRUE, TRUE, "RTP/SAVP");
-}
-
-static void savpf_to_avp_call(void) {
-	profile_call(TRUE, TRUE, FALSE, FALSE, "RTP/SAVPF");
-}
-
-static void savpf_to_avpf_call(void) {
-	profile_call(TRUE, TRUE, TRUE, FALSE, "RTP/SAVPF");
-}
-
-static void savpf_to_savp_call(void) {
-	profile_call(TRUE, TRUE, FALSE, TRUE, "RTP/SAVPF");
-}
-
-static void savpf_to_savpf_call(void) {
-	profile_call(TRUE, TRUE, TRUE, TRUE, "RTP/SAVPF");
-}
-
 static char *create_filepath(const char *dir, const char *filename, const char *ext) {
 	return ms_strdup_printf("%s/%s.%s",dir,filename,ext);
 }
@@ -3530,7 +3386,6 @@ test_t call_tests[] = {
 	{ "Early cancelled call", early_cancelled_call},
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
-	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
 	{ "Call with timeouted bye", call_with_timeouted_bye },
 	{ "Direct call over IPv6", direct_call_over_ipv6},
@@ -3607,22 +3462,6 @@ test_t call_tests[] = {
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
 	{ "Call redirected by callee", call_redirect},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate},
-	{ "AVP to AVP call", avp_to_avp_call },
-	{ "AVP to AVPF call", avp_to_avpf_call },
-	{ "AVP to SAVP call", avp_to_savp_call },
-	{ "AVP to SAVPF call", avp_to_savpf_call },
-	{ "AVPF to AVP call", avpf_to_avp_call },
-	{ "AVPF to AVPF call", avpf_to_avpf_call },
-	{ "AVPF to SAVP call", avpf_to_savp_call },
-	{ "AVPF to SAVPF call", avpf_to_savpf_call },
-	{ "SAVP to AVP call", savp_to_avp_call },
-	{ "SAVP to AVPF call", savp_to_avpf_call },
-	{ "SAVP to SAVP call", savp_to_savp_call },
-	{ "SAVP to SAVPF call", savp_to_savpf_call },
-	{ "SAVPF to AVP call", savpf_to_avp_call },
-	{ "SAVPF to AVPF call", savpf_to_avpf_call },
-	{ "SAVPF to SAVP call", savpf_to_savp_call },
-	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },

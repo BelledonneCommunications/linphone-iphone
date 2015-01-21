@@ -110,6 +110,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(newp,remote_number);
+			payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
 						  newp->mime_type, local_number, remote_number);
@@ -120,6 +121,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				*/
 				newp=payload_type_clone(newp);
 				payload_type_set_number(newp,local_number);
+				payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
 				res=ms_list_append(res,newp);
 			}
 		}else{
@@ -143,7 +145,8 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			if (!found){
 				ms_message("Adding %s/%i for compatibility, just in case.",p1->mime_type,p1->clock_rate);
 				p1=payload_type_clone(p1);
-				p1->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV;
+				payload_type_set_flag(p1, PAYLOAD_TYPE_FLAG_CAN_RECV);
+				payload_type_set_flag(p1, PAYLOAD_TYPE_FROZEN_NUMBER);
 				res=ms_list_append(res,p1);
 			}
 		}
