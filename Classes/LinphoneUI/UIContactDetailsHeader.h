@@ -39,6 +39,8 @@
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
 
+@property (retain, nonatomic) ImagePickerViewController* popoverController;
+
 @property(nonatomic,getter=isEditing) BOOL editing;
 
 - (IBAction)onAvatarClick:(id)event;

@@ -12,11 +12,11 @@ You will NOT be able to build the SDK if you did not read liblinphone README fir
 
 * Using HomeBrew:
 
-        brew install imagemagick
+        brew install imagemagick yasm nasm
 
 * Using MacPorts:
 
-        sudo port install ImageMagick optipng
+        sudo port install ImageMagick optipng yasm nasm
 
 ### System linking
 
@@ -111,6 +111,11 @@ Now, simply press `Command + U` and the default simulator will launch and try to
 ## LIMITATIONS, KNOWN BUGS
 
 * Video capture does not work in simulator (not implemented by simulator?).
+
+* Link errors with x86_64: this happens when you try to run linphone on the iPhone 5S/6/6+ simulators.
+  This is due to the fact that we're not building the SDK for the x86_64 architecture, due to it being redundant with i386 (and increasing dramatically the compile time and build size).
+  The solution (temporary) is to force the acceptable architectures to be 'armv7' only (remove 'arm64') and disable the "build active architecture" flag in the linphone, XMLRPC and NinePatch projects.
+  Don't forget to re-enable them when archiving your project.
 
 ## DEBUGING THE SDK
 

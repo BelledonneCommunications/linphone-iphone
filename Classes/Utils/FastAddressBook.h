@@ -31,6 +31,7 @@
 + (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
 - (ABRecordRef)getContact:(NSString*)address;
 - (void)reload;
+- (void)saveAddressBook;
 + (BOOL)isAuthorized;
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number;
 + (NSString*)normalizePhoneNumber:(NSString*)number;
