@@ -109,6 +109,14 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	return ret;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_keepAccounts(JNIEnv *env, jclass c, jboolean keep) {
+	liblinphone_tester_keep_accounts((int)keep);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env, jclass c) {
+	liblinphone_tester_clear_accounts();
+}
+
 #endif /* ANDROID */
 
 #ifdef __QNX__
