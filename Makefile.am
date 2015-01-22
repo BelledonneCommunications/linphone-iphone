@@ -22,11 +22,11 @@ OPTIONAL_SOUNDS=\
 
 INSTALLDIR=$(abs_top_builddir)/linphone-install
 INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-$(GITVERSION)-win32.zip
+ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(GITVERSION).zip
 ZIP_EXCLUDED=include lib \
 		$(OPTIONAL_SOUNDS)
 
-SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-$(GITVERSION)-win32.zip
+SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-win32-sdk-$(GITVERSION).zip
 SDK_EXCLUDED= \
 	bin/linphone.exe \
 	lib/*.la \
@@ -175,7 +175,7 @@ setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
 	$(ISCC) $(ISS_SCRIPT)
-	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-$(GITVERSION)-setup.exe
+	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-setup-$(GITVERSION).exe
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
