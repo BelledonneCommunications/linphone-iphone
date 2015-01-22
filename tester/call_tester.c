@@ -2120,12 +2120,16 @@ static void call_with_file_player(void) {
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+#ifndef __arm__
 	CU_ASSERT_TRUE(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL)==0);
 	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
 	if(similar > threshold && similar <=1.0) {
 		remove(recordpath);
 	}
+#else
+	remove(recordpath);
+#endif 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_free(recordpath);
@@ -2188,16 +2192,16 @@ static void call_with_mkv_file_player(void) {
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-#ifdef ANDROID
-	/*inter-correlation process is too much CPU consuming ending in a 20 minutes test on Android...*/
-	remove(recordpath);
-#else
+#ifndef __arm__
 	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
 	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
 	if(similar>threshold && similar<=1.0) {
 		remove(recordpath);
 	}
+#else
+	/*inter-correlation process is too much CPU consuming ending in a 20 minutes test on arm...*/
+	remove(recordpath);
 #endif
 	ms_free(recordpath);
 
