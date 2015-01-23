@@ -3381,6 +3381,65 @@ static void outgoing_reinvite_without_ack_sdp()  {
 #endif
 }
 
+
+static void call_with_paused_no_sdp_on_resume() {
+	int begin;
+	int leaked_objects;
+	int dummy=0;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCall* call_marie = NULL;
+
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	CU_ASSERT_TRUE(call(pauline,marie));
+	liblinphone_tester_check_rtcp(marie,pauline);
+
+	call_marie = linphone_core_get_current_call(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL(call_marie);
+
+	ms_message("== Call is OK ==");
+
+	/* the called party pause the call */
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+
+	linphone_core_pause_call(marie->lc,call_marie);
+	ms_message("== Call pausing ==");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausing,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+
+	/*stay in pause a little while in order to generate traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	ms_message("== Call paused, marie call: %p ==", call_marie);
+	
+	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+	
+	linphone_core_resume_call(marie->lc,call_marie);
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(call_marie)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -3467,6 +3526,7 @@ test_t call_tests[] = {
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
+	{ "Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume },
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE without SDP",incoming_invite_without_sdp},

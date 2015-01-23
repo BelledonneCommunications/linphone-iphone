@@ -3977,7 +3977,11 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
 #endif //BUILD_UPNP
-	sal_call_set_local_media_description(call->op,call->localdesc);
+	if (!lc->sip_conf.sdp_200_ack){
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	} else {
+		sal_call_set_local_media_description(call->op,NULL);
+	}
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params->in_conference && !call->current_params->in_conference) subject="Conference";
 	if ( sal_call_update(call->op,subject,FALSE) != 0){
@@ -3988,6 +3992,12 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 		lc->current_call=call;
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
 	linphone_core_notify_display_status(lc,temp);
+
+	if (lc->sip_conf.sdp_200_ack){
+		/*we are NOT offering, set local media description after sending the call so that we are ready to
+		 process the remote offer when it will arrive*/
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
 	return 0;
 }
 
