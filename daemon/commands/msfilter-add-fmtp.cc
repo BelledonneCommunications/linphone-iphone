@@ -17,10 +17,10 @@ MSFilterAddFmtpCommand::MSFilterAddFmtpCommand() :
 }
 
 void MSFilterAddFmtpCommand::exec(Daemon *app, const char *args) {
-	char type[256], fmtp[256];
+	char type[16]={0}, fmtp[512]={0};
 	int id;
 
-	if (sscanf(args, "%255s %d %255s", type, &id, fmtp) == 3) {
+	if (sscanf(args, "%15s %d %511s", type, &id, fmtp) == 3) {
 		if(strcmp(type, "call") == 0) {
 			LinphoneCall *call = app->findCall(id);
 			if (call == NULL) {
@@ -31,14 +31,14 @@ void MSFilterAddFmtpCommand::exec(Daemon *app, const char *args) {
 				app->sendResponse(Response("This call doesn't have an active audio stream."));
 				return;
 			}
-			ms_filter_call_method(call->audiostream->ms.encoder, MS_FILTER_ADD_FMTP, (void*) args);
+			ms_filter_call_method(call->audiostream->ms.encoder, MS_FILTER_ADD_FMTP, fmtp);
 		} else if(strcmp(type, "stream") == 0) {
 			AudioStream *stream = app->findAudioStream(id);
 			if (stream == NULL) {
 				app->sendResponse(Response("No Audio Stream with such id."));
 				return;
 			}
-			ms_filter_call_method(stream->ms.encoder, MS_FILTER_ADD_FMTP, (void*) args);
+			ms_filter_call_method(stream->ms.encoder, MS_FILTER_ADD_FMTP, fmtp);
 		} else {
 			app->sendResponse(Response("Incorrect parameter(s)."));
 		}

@@ -108,12 +108,8 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 					app->sendResponse(Response("New payload type number is already used.", Response::Error));
 				} else {
 					int idx = atoi(value.c_str());
-					RtpProfile *default_profile=app->getCore()->default_profile;
-					long old_idx = _payload_type_get_number(payload);
-					_payload_type_set_number(payload, idx);
-					rtp_profile_set_payload(default_profile, idx, payload);
-					rtp_profile_clear_payload(default_profile, old_idx);
-					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
+					linphone_core_set_payload_type_number(app->getCore(),payload, idx);
+					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, idx));
 				}
 				return;
 			}

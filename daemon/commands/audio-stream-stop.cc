@@ -20,7 +20,9 @@ void AudioStreamStopCommand::exec(Daemon *app, const char *args) {
 			return;
 		}
 		app->removeAudioStream(id);
+		RtpProfile *prof=rtp_session_get_profile(stream->ms.sessions.rtp_session);
 		audio_stream_stop(stream);
+		rtp_profile_destroy(prof);
 		app->sendResponse(Response());
 	} else {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
