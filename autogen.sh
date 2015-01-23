@@ -33,6 +33,11 @@ fi
 
 INTLTOOLIZE=$(which intltoolize)
 
+#workaround for mingw bug in intltoolize script.
+if test "$INTLTOOLIZE" = "/bin/intltoolize" ; then
+	INTLTOOLIZE=/usr/bin/intltoolize
+fi
+
 echo "Generating build scripts in linphone..."
 set -x
 $LIBTOOLIZE --copy --force
