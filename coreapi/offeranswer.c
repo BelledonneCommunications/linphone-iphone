@@ -66,7 +66,6 @@ static PayloadType * g729A_match(const MSList *l, const PayloadType *refpt){
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
-		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
 		if (strcasecmp(pt->mime_type,"G729")==0 && refpt->channels==pt->channels){
 			candidate=pt;
 		}
