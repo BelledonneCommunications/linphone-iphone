@@ -199,4 +199,5 @@ void linphone_gtk_close_config_fetching(GtkWidget *w, LinphoneConfiguringState s
 const char *linphone_gtk_get_sound_path(const char *file);
 void linphone_gtk_in_call_show_video(LinphoneCall *call);
 char *linphone_gtk_address(const LinphoneAddress *addr);/*return human readable identifier for a LinphoneAddress */
+GtkWidget *linphone_gtk_get_camera_preview_window(void);
 

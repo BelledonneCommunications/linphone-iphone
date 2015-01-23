@@ -62,16 +62,19 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<sal_media_description_get_nb_active_streams(h->result);++i){
-			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
-			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
-			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-			h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
-			strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
-			h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
+		for(i=0;i<h->result->nb_streams;++i){
+			/*copy back parameters from remote description that we need in our result description*/
+			if (h->result->streams[i].rtp_port!=0){ /*if stream was accepted*/
+				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
+				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
+				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
+				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
 
-			if ((h->result->streams[i].proto == SalProtoRtpSavpf) || (h->result->streams[i].proto == SalProtoRtpSavp)) {
-				h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
+				if ((h->result->streams[i].proto == SalProtoRtpSavpf) || (h->result->streams[i].proto == SalProtoRtpSavp)) {
+					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
+				}
 			}
 		}
 	}
@@ -683,6 +686,11 @@ int sal_call(SalOp *op, const char *from, const char *to){
 
 	ms_message("[%s] calling [%s] on op [%p]", from, to, op);
 	invite=sal_op_build_request(op,"INVITE");
+
+	if( invite == NULL ){
+		/* can happen if the op has an invalid address */
+		return -1;
+	}
 
 	sal_op_fill_invite(op,invite);
 

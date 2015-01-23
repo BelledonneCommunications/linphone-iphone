@@ -22,9 +22,9 @@
 #
 # - Find the notify include file and library
 #
-#  NOTIFY_FOUND - system has linphone
-#  NOTIFY_INCLUDE_DIRS - the linphone include directory
-#  NOTIFY_LIBRARIES - The libraries needed to use linphone
+#  NOTIFY_FOUND - system has libnotify
+#  NOTIFY_INCLUDE_DIRS - the libnotify include directory
+#  NOTIFY_LIBRARIES - The libraries needed to use libnotify
 
 set(_NOTIFY_ROOT_PATHS
 	${WITH_NOTIFY}

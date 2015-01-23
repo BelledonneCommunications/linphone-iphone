@@ -63,56 +63,37 @@ static void file_transfer_progress_indication(LinphoneChatMessage *message, cons
 /**
  * function invoked when a file transfer is received.
  **/
-static void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size){
+static void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer){
 	FILE* file=NULL;
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
 		file = fopen("receive_file.dump","wb");
 		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
-	} else {
-		/*next chunk*/
-		file = (FILE*)linphone_chat_message_get_user_data(message);
+	}
 
-		if (size==0) {
-
-			printf("File transfert completed\n");
-			linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
-			linphone_chat_message_destroy(message);
-			fclose(file);
-			running=FALSE;
-		} else { /* store content on a file*/
-			if (fwrite(buff,size,1,file)==-1){
-				ms_warning("file_transfer_received() write failed: %s",strerror(errno));
-			}
+	file = (FILE*)linphone_chat_message_get_user_data(message);
+	if (linphone_buffer_is_empty(buffer)) {
+		printf("File transfert completed\n");
+		linphone_chat_room_destroy(linphone_chat_message_get_chat_room(message));
+		linphone_chat_message_destroy(message);
+		fclose(file);
+		running=FALSE;
+	} else { /* store content on a file*/
+		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
+			ms_warning("file_transfer_received() write failed: %s",strerror(errno));
 		}
 	}
 }
 
 char big_file [128000];
+
 /*
  * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
  * */
-static void file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
-	int offset=-1;
-
-	if (!linphone_chat_message_get_user_data(message)) {
-		/*first chunk*/
-		offset=0;
-	} else {
-		/*subsequent chunk*/
-		offset = (int)((long)(linphone_chat_message_get_user_data(message))&0x00000000FFFFFFFF);
-	}
-	*size = MIN(*size,sizeof(big_file)-offset); /*updating content->size with minimun between remaining data and requested size*/
-
-	if (*size==0) {
-		/*end of file*/
-		return;
-	}
-	memcpy(buff,big_file+offset,*size);
-
-	/*store offset for next chunk*/
-	linphone_chat_message_set_user_data(message,(void*)(offset+*size));
-
+static LinphoneBuffer * file_transfer_send(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size){
+	size_t size_to_send = MIN(size, sizeof(big_file) - offset);
+	if (size == 0) return linphone_buffer_new(); /*end of file*/
+	return linphone_buffer_new_from_data((uint8_t *)big_file + offset, size_to_send);
 }
 
 /*

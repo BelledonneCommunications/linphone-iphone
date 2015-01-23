@@ -8,18 +8,13 @@ import time
 
 class PresenceCoreManager(CoreManager):
 
-    def __init__(self, username, logger = None):
-        CoreManager.__init__(self, 'empty_rc', False, logger=logger)
+    def __init__(self, username):
+        CoreManager.__init__(self, 'empty_rc', False)
         self.identity = self.lc.primary_contact_parsed
         self.identity.username = username
         self.lc.primary_contact = self.identity.as_string()
 
 class TestPresence:
-
-    @classmethod
-    def setup_class(cls):
-        base, ext = os.path.splitext(os.path.basename(__file__))
-        cls.logger = Logger(base + '.log')
 
     def subscribe_to_callee_presence(self, caller_mgr, callee_mgr):
         initial_caller_stats = deepcopy(caller_mgr.stats)
@@ -37,8 +32,8 @@ class TestPresence:
         return result
 
     def test_simple_subscribe(self):
-        marie = PresenceCoreManager('marie', logger=TestPresence.logger)
-        pauline = PresenceCoreManager('pauline', logger=TestPresence.logger)
+        marie = PresenceCoreManager('marie')
+        pauline = PresenceCoreManager('pauline')
         assert_equals(self.subscribe_to_callee_presence(marie, pauline), True)
         marie.stop()
         pauline.stop()

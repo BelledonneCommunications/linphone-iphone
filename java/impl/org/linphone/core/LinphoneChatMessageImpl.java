@@ -27,8 +27,10 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	@Override
 	public String getText() {
+		byte rawText[];
 		try {
-			return new String(getText(nativePtr), "UTF-8");
+			rawText=getText(nativePtr);
+			if (rawText!=null) return new String(rawText, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

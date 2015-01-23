@@ -109,6 +109,14 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	return ret;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_keepAccounts(JNIEnv *env, jclass c, jboolean keep) {
+	liblinphone_tester_keep_accounts((int)keep);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env, jclass c) {
+	liblinphone_tester_clear_accounts();
+}
+
 #endif /* ANDROID */
 
 #ifdef __QNX__
@@ -135,6 +143,8 @@ void helper(const char *name) {
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif
+			"\t\t\t--xml\n"		
+			"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
 			, name);
 }
 
@@ -153,6 +163,8 @@ int main (int argc, char *argv[])
 	int ret;
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
+	const char *xml_file=NULL;
+	int xml = 0;
 	FILE* log_file=NULL;
 #if defined(ANDROID)
 	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
@@ -198,6 +210,11 @@ int main (int argc, char *argv[])
 			suite_name = argv[i];
 			liblinphone_tester_list_suite_tests(suite_name);
 			return 0;
+		} else if (strcmp(argv[i], "--xml-file") == 0){
+			CHECK_ARG("--xml-file", ++i, argc);
+			xml_file = argv[i];
+		} else if (strcmp(argv[i], "--xml") == 0){
+			xml = 1;
 		} else if (strcmp(argv[i],"--log-file")==0){
 			CHECK_ARG("--log-file", ++i, argc);
 			log_file=fopen(argv[i],"w");
@@ -215,6 +232,17 @@ int main (int argc, char *argv[])
 			return -1;
 		}
 	}
+
+	if( xml && (suite_name || test_name) ){
+		printf("Cannot use both xml and specific test suite\n");
+		return -1;
+	}
+
+	if( xml_file != NULL ){
+		liblinphone_tester_set_xml_output(xml_file);
+	}
+	liblinphone_tester_enable_xml(xml);
+
 
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();

@@ -36,6 +36,7 @@
 #define PACKAGE_DATA_DIR "${PACKAGE_DATA_DIR}"
 #define PACKAGE_SOUND_DIR "${PACKAGE_SOUND_DIR}"
 
+#cmakedefine BUILD_WIZARD
 #cmakedefine HAVE_NOTIFY4
 #cmakedefine HAVE_CU_GET_SUITE 1
 #cmakedefine HAVE_CU_CURSES 1

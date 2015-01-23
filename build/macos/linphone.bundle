@@ -16,7 +16,7 @@
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="ms2plugins">${env:MS2_PLUGINS_INSTALL_PREFIX}</prefix>
     <!-- This prefix definition is necessary if some dependencies are to be taken from /usr/local/lib -->
-    <prefix name="local">/usr/local</prefix>
+    <prefix name="local">${env:LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX}</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.

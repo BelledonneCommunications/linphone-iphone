@@ -25,6 +25,7 @@ CLEANFILES=$(GITVERSION_FILE)
 linphone_includedir=$(includedir)/linphone
 
 linphone_include_HEADERS=\
+	buffer.h \
 	call_log.h \
 	call_params.h \
 	content.h \
@@ -44,6 +45,7 @@ lib_LTLIBRARIES=liblinphone.la
 liblinphone_la_SOURCES=\
 	address.c \
 	authentication.c \
+	buffer.c \
 	callbacks.c \
 	call_log.c \
 	call_params.c \
@@ -136,7 +138,9 @@ liblinphone_la_LIBADD= \
 		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
 		$(LIBXML2_LIBS) \
-		$(LDAP_LIBS) $(SASL_LIBS)
+		$(LDAP_LIBS) \
+		$(SASL_LIBS) \
+		$(ZLIB_LIBS)
 
 
 if ENABLE_TESTS
@@ -173,7 +177,9 @@ COMMON_CFLAGS=\
 	$(TUNNEL_CFLAGS) \
 	$(SQLITE3_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
-	$(LDAP_CFLAGS) $(SASL_CFLAGS)
+	$(LDAP_CFLAGS) \
+	$(SASL_CFLAGS) \
+	$(ZLIB_CFLAGS)
 
 if BUILD_WIZARD
 COMMON_CFLAGS+= -DBUILD_WIZARD

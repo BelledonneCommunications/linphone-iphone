@@ -95,7 +95,7 @@ void linphone_chat_message_cbs_set_user_data(LinphoneChatMessageCbs *cbs, void *
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current message state changed callback.
  */
-LinphoneChatMessageMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
 	return cbs->msg_state_changed;
 }
 
@@ -104,7 +104,7 @@ LinphoneChatMessageMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_cha
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The message state changed callback to be used.
  */
-void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageMsgStateChangedCb cb) {
+void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb) {
 	cbs->msg_state_changed = cb;
 }
 
@@ -113,7 +113,7 @@ void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer receive callback.
  */
-LinphoneChatMessageFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_recv;
 }
 
@@ -122,7 +122,7 @@ LinphoneChatMessageFileTransferRecvCb linphone_chat_message_cbs_get_file_transfe
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer receive callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferRecvCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb) {
 	cbs->file_transfer_recv = cb;
 }
 
@@ -131,7 +131,7 @@ void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cb
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer send callback.
  */
-LinphoneChatMessageFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_send;
 }
 
@@ -140,7 +140,7 @@ LinphoneChatMessageFileTransferSendCb linphone_chat_message_cbs_get_file_transfe
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer send callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferSendCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb) {
 	cbs->file_transfer_send = cb;
 }
 
@@ -149,7 +149,7 @@ void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cb
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @return The current file transfer progress indication callback.
  */
-LinphoneChatMessageFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_progress_indication;
 }
 
@@ -158,7 +158,7 @@ LinphoneChatMessageFileTransferProgressIndicationCb linphone_chat_message_cbs_ge
  * @param[in] cbs LinphoneChatMessageCbs object.
  * @param[in] cb The file transfer progress indication callback to be used.
  */
-void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageFileTransferProgressIndicationCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
 	cbs->file_transfer_progress_indication = cb;
 }
 
@@ -246,7 +246,13 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
 		/* get data from call back */
 		if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
-			linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, buf, size);
+			LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
+			if (lb == NULL) *size = 0;
+			else {
+				*size = linphone_buffer_get_size(lb);
+				memcpy(buffer, linphone_buffer_get_content(lb), *size);
+				linphone_buffer_unref(lb);
+			}
 		} else {
 			/* Legacy */
 			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
@@ -287,6 +293,11 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			/* create a user body handler to take care of the file and add the content disposition and content-type headers */
 			if (msg->file_transfer_filepath != NULL) {
 				first_part_bh=(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath,NULL,msg);
+			} else if (linphone_content_get_buffer(msg->file_transfer_information) != NULL) {
+				first_part_bh=(belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
+					linphone_content_get_buffer(msg->file_transfer_information),
+					linphone_content_get_size(msg->file_transfer_information),
+					NULL,msg);
 			} else {
 				first_part_bh=(belle_sip_body_handler_t *)belle_sip_user_body_handler_new(linphone_content_get_size(msg->file_transfer_information),NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
 			}
@@ -473,7 +484,7 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
  * @param lc the linphone core
  * @param addr a linphone address.
- * @returns #LinphoneChatRoom where messaging can take place.
+ * @return #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
@@ -487,7 +498,7 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
  * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
  * @param lc The linphone core
  * @param to The destination address for messages.
- * @returns #LinphoneChatRoom where messaging can take place.
+ * @return #LinphoneChatRoom where messaging can take place.
 **/
 LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);
@@ -578,8 +589,13 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		belle_http_request_listener_t *l;
 		belle_generic_uri_t *uri;
 		belle_http_request_t *req;
+		const char *transfer_server = linphone_core_get_file_transfer_server(cr->lc);
 
-		uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(cr->lc));
+		if (transfer_server == NULL) {
+			ms_warning("Cannot send file transfer message: no file transfer server configured.");
+			return;
+		}
+		uri=belle_generic_uri_parse(transfer_server);
 
 		req=belle_http_request_create("POST",
 				uri,
@@ -1205,7 +1221,9 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		return;
 	}
 	if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
-		linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
+		LinphoneBuffer *lb = linphone_buffer_new_from_data(buffer, size);
+		linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+		linphone_buffer_unref(lb);
 	} else {
 		/* Legacy: call back given by application level */
 		linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
@@ -1262,10 +1280,12 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 				(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
 			);
 		} else {
-			belle_sip_message_set_body_handler(
-				(belle_sip_message_t *)event->response,
-				(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message)
-			);
+			belle_sip_body_handler_t *bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message);
+			if (belle_sip_body_handler_get_size(bh) == 0) {
+				/* If the size of the body has not been initialized from the file stat, use the one from the file_transfer_information. */
+				belle_sip_body_handler_set_size(bh, body_size);
+			}
+			belle_sip_message_set_body_handler((belle_sip_message_t *)event->response, bh);
 		}
 	}
 }
@@ -1279,7 +1299,9 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			LinphoneCore *lc = chatMsg->chat_room->lc;
 			/* file downloaded succesfully, call again the callback with size at zero */
 			if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
-				linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, NULL, 0);
+				LinphoneBuffer *lb = linphone_buffer_new();
+				linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+				linphone_buffer_unref(lb);
 			} else {
 				linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
 			}
@@ -1612,6 +1634,7 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->callbacks=linphone_chat_message_cbs_new();
 	msg->chat_room=(LinphoneChatRoom*)cr;
 	msg->message = NULL;
+	msg->is_read=TRUE;
 	msg->file_transfer_information = linphone_content_copy(initial_content);
 	msg->dir=LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));

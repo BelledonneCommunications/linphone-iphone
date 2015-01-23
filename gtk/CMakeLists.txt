@@ -65,6 +65,14 @@ set(SOURCE_FILES
 	videowindow.c
 )
 
+if(ENABLE_ASSISTANT)
+	list(APPEND SOURCE_FILES setupwizard.c)
+endif()
+
+if(GETTEXT_FOUND)
+	add_definitions("-DENABLE_NLS")
+endif()
+
 add_executable(linphone-gtk ${SOURCE_FILES})
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS})
@@ -72,6 +80,9 @@ target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
 if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
+endif()
+if(ENABLE_ASSISTANT)
+	target_link_libraries(linphone-gtk ${SOUP_LIBRARIES})
 endif()
 
 install(TARGETS linphone-gtk

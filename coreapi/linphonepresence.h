@@ -200,7 +200,7 @@ typedef struct _LinphonePresenceNote LinphonePresenceNote;
  * Creates a presence model specifying an activity.
  * @param[in] activity The activity to set for the created presence model.
  * @param[in] description An additional description of the activity (mainly useful for the 'other' activity). Set it to NULL to not add a description.
- * @returns The created presence model, or NULL if an error occured.
+ * @return The created presence model, or NULL if an error occured.
  * @see linphone_presence_model_new
  * @see linphone_presence_model_new_with_activity_and_note
  *
@@ -214,7 +214,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activit
  * @param[in] description An additional description of the activity (mainly useful for the 'other' activity). Set it to NULL to not add a description.
  * @param[in] note An additional note giving additional information about the contact presence.
  * @param[in] lang The language the note is written in. It can be set to NULL in order to not specify the language of the note.
- * @returns The created presence model, or NULL if an error occured.
+ * @return The created presence model, or NULL if an error occured.
  * @see linphone_presence_model_new_with_activity
  * @see linphone_presence_model_new_with_activity_and_note
  *
@@ -344,7 +344,7 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_notes(LinphonePresenceModel *m
 
 /**
  * Creates a default presence model.
- * @returns The created presence model, NULL on error.
+ * @return The created presence model, NULL on error.
  * @see linphone_presence_model_new_with_activity
  * @see linphone_presence_model_new_with_activity_and_note
  *
@@ -422,7 +422,7 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_persons(LinphonePresenceModel 
  * @param[in] id The id of the presence service to be created. Can be NULL to generate it automatically.
  * @param[in] basic_status The #LinphonePresenceBasicStatus to set for the #LinphonePresenceService object.
  * @param[in] contact The contact string to set.
- * @returns The created presence service, NULL on error.
+ * @return The created presence service, NULL on error.
  *
  * The created presence service has the basic status 'closed'.
  */
@@ -515,7 +515,7 @@ LINPHONE_PUBLIC int linphone_presence_service_clear_notes(LinphonePresenceServic
 /**
  * Creates a presence person.
  * @param[in] id The id of the presence person to be created. Can be NULL to generate it automatically.
- * @returns The created presence person, NULL on error.
+ * @return The created presence person, NULL on error.
  */
 LINPHONE_PUBLIC LinphonePresencePerson * linphone_presence_person_new(const char *id);
 
@@ -635,7 +635,7 @@ LINPHONE_PUBLIC int linphone_presence_person_clear_activities_notes(LinphonePres
  * Creates a presence activity.
  * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.
  * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @returns The created presence activity, NULL on error.
+ * @return The created presence activity, NULL on error.
  */
 LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivityType acttype, const char *description);
 
@@ -687,7 +687,7 @@ LINPHONE_PUBLIC int linphone_presence_activity_set_description(LinphonePresenceA
  * Creates a presence note.
  * @param[in] content The content of the note to be created.
  * @param[in] lang The language of the note to be created. Can be NULL if no language is to be specified for the note.
- * @returns The created presence note, NULL on error.
+ * @return The created presence note, NULL on error.
  */
 LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_note_new(const char *content, const char *lang);
 
@@ -876,14 +876,14 @@ LINPHONE_PUBLIC void * linphone_presence_note_get_user_data(const LinphonePresen
  * @param[in] lc #LinphoneCore object.
  * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.
  * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @returns The created #LinphonePresenceActivity object.
+ * @return The created #LinphonePresenceActivity object.
  */
 LINPHONE_PUBLIC LinphonePresenceActivity * linphone_core_create_presence_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
 
 /**
  * Create a default LinphonePresenceModel.
  * @param[in] lc #LinphoneCore object.
- * @returns The created #LinphonePresenceModel object.
+ * @return The created #LinphonePresenceModel object.
  */
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model(LinphoneCore *lc);
 
@@ -892,7 +892,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model(Linp
  * @param[in] lc #LinphoneCore object.
  * @param[in] acttype The #LinphonePresenceActivityType to set for the activity of the created model.
  * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
- * @returns The created #LinphonePresenceModel object.
+ * @return The created #LinphonePresenceModel object.
  */
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
 
@@ -903,7 +903,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with
  * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
  * @param[in] note The content of the note to be added to the created model.
  * @param[in] lang The language of the note to be added to the created model.
- * @returns The created #LinphonePresenceModel object.
+ * @return The created #LinphonePresenceModel object.
  */
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity_and_note(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang);
 
@@ -912,7 +912,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with
  * @param[in] lc #LinphoneCore object.
  * @param[in] content The content of the note to be created.
  * @param[in] lang The language of the note to be created.
- * @returns The created #LinphonePresenceNote object.
+ * @return The created #LinphonePresenceNote object.
  */
 LINPHONE_PUBLIC LinphonePresenceNote * linphone_core_create_presence_note(LinphoneCore *lc, const char *content, const char *lang);
 
@@ -920,7 +920,7 @@ LINPHONE_PUBLIC LinphonePresenceNote * linphone_core_create_presence_note(Linpho
  * Create a LinphonePresencePerson with the given id.
  * @param[in] lc #LinphoneCore object
  * @param[in] id The id of the person to be created.
- * @returns The created #LinphonePresencePerson object.
+ * @return The created #LinphonePresencePerson object.
  */
 LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(LinphoneCore *lc, const char *id);
 
@@ -930,7 +930,7 @@ LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(Li
  * @param[in] id The id of the service to be created.
  * @param[in] basic_status The basic status of the service to be created.
  * @param[in] contact A string containing a contact information corresponding to the service to be created.
- * @returns The created #LinphonePresenceService object.
+ * @return The created #LinphonePresenceService object.
  */
 LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
 

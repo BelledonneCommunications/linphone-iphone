@@ -4,14 +4,14 @@
 #
 # Translators:
 # Alexander, 2014
-# Alexander, 2014
+# Alexander, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-01 14:27+0100\n"
-"PO-Revision-Date: 2014-12-01 13:28+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-01-13 16:18+0100\n"
+"PO-Revision-Date: 2015-01-13 16:34+0000\n"
+"Last-Translator: Alexander\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ja/)\n"
 "Language: ja\n"
@@ -94,31 +94,31 @@ msgstr "pixmapファイルが見つかりません %s"
 msgid "Invalid sip contact !"
 msgstr "無効なSIP接続です！"
 
-#: ../gtk/main.c:107
+#: ../gtk/main.c:109
 msgid "log to stdout some debug information while running."
 msgstr "実行中にいくつかのデバッグ情報をstdoutに送信します。"
 
-#: ../gtk/main.c:114
+#: ../gtk/main.c:116
 msgid "path to a file to write logs into."
 msgstr "ログを書き込むファイルへのパス。"
 
-#: ../gtk/main.c:121
+#: ../gtk/main.c:123
 msgid "Start linphone with video disabled."
 msgstr "ビデオを無効にしてLinphoneを開始します。"
 
-#: ../gtk/main.c:128
+#: ../gtk/main.c:130
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "主なインターフェイスを表示しないでシステムトレイに移動します。"
 
-#: ../gtk/main.c:135
+#: ../gtk/main.c:137
 msgid "address to call right now"
 msgstr "今すぐに呼び出す"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid "if set automatically answer incoming calls"
 msgstr "着信呼び出しが設定されている場合自動的に応答する"
 
-#: ../gtk/main.c:149
+#: ../gtk/main.c:151
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -126,15 +126,19 @@ msgstr ""
 "作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。"
 "例:c:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:156
+#: ../gtk/main.c:158
 msgid "Configuration file"
 msgstr "設定ファイル"
 
-#: ../gtk/main.c:163
+#: ../gtk/main.c:165
 msgid "Run the audio assistant"
 msgstr "オーディオアシスタントを実行"
 
-#: ../gtk/main.c:1085
+#: ../gtk/main.c:172
+msgid "Run self test and exit 0 if succeed"
+msgstr ""
+
+#: ../gtk/main.c:1083
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -147,72 +151,72 @@ msgstr ""
 "す。\n"
 "あなたが拒否すると、この人は一時的にブラックリストへ登録されます。"
 
-#: ../gtk/main.c:1162
+#: ../gtk/main.c:1160
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1283
+#: ../gtk/main.c:1281
 msgid "Call error"
 msgstr "呼出エラー"
 
-#: ../gtk/main.c:1286 ../coreapi/linphonecore.c:3751
+#: ../gtk/main.c:1284 ../coreapi/linphonecore.c:3767
 msgid "Call ended"
 msgstr "呼出終了"
 
-#: ../gtk/main.c:1289 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1287 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "着信"
 
-#: ../gtk/main.c:1291 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1289 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "応答"
 
-#: ../gtk/main.c:1293 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1291 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "拒否"
 
-#: ../gtk/main.c:1299
+#: ../gtk/main.c:1297
 msgid "Call paused"
 msgstr "呼び出しの一時停止"
 
-#: ../gtk/main.c:1299
+#: ../gtk/main.c:1297
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>%s</b>"
 
-#: ../gtk/main.c:1366
+#: ../gtk/main.c:1367
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1528
+#: ../gtk/main.c:1529
 msgid "Website link"
 msgstr "ウェブサイトリンク"
 
-#: ../gtk/main.c:1577
+#: ../gtk/main.c:1578
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - ビデオインターネット電話"
 
-#: ../gtk/main.c:1669
+#: ../gtk/main.c:1670
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (デフォルト)"
 
-#: ../gtk/main.c:2006 ../coreapi/callbacks.c:983
+#: ../gtk/main.c:2002 ../coreapi/callbacks.c:986
 #, c-format
 msgid "We are transferred to %s"
 msgstr "%s に転送しました"
 
-#: ../gtk/main.c:2016
+#: ../gtk/main.c:2012
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2157
+#: ../gtk/main.c:2156
 msgid "A free SIP video-phone"
 msgstr "無料 SIP ビデオ-電話"
 
@@ -281,7 +285,7 @@ msgstr "パラメーター"
 msgid "Enabled"
 msgstr "使用する"
 
-#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763
+#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:20
 msgid "Disabled"
 msgstr "使用しない"
 
@@ -443,7 +447,7 @@ msgstr ""
 msgid "Enter your linphone.org username"
 msgstr "linphone.orgで取得したユーザー名を入力"
 
-#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:82 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "ユーザー名:"
 
@@ -504,6 +508,7 @@ msgstr ""
 #: ../gtk/setupwizard.c:405
 msgid "Thank you. Your account is now configured and ready for use."
 msgstr ""
+"ありがとう。あなたのアカウントは無事に設定され、使用する準備ができました。"
 
 #: ../gtk/setupwizard.c:413
 msgid ""
@@ -511,10 +516,13 @@ msgid ""
 "email.\n"
 "Then come back here and press Next button."
 msgstr ""
+"送信されたメールの本文内にあるリンクをクリックしてアカウントを有効にしてくだ"
+"さい。\n"
+"その後こちらへ戻って「次へ」を押してください。"
 
 #: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
-msgstr ""
+msgstr "SIPアカウント設定アシスタント"
 
 #: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
@@ -526,19 +534,19 @@ msgstr "アカウント設定アシスタント"
 
 #: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
-msgstr ""
+msgstr "アカウントを設定します (1/1)"
 
 #: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
-msgstr ""
+msgstr "SIPのユーザー名を入力してください (1/1)"
 
 #: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
-msgstr ""
+msgstr "アカウント情報を入力してください (1/2)"
 
 #: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
-msgstr ""
+msgstr "検証します (2/2)"
 
 #: ../gtk/setupwizard.c:654
 msgid "Error"
@@ -546,12 +554,12 @@ msgstr "エラー"
 
 #: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:527
 msgid "Terminating"
-msgstr ""
+msgstr "終了"
 
 #: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
 #, c-format
 msgid "Call #%i"
-msgstr ""
+msgstr "呼び出し #%i"
 
 #: ../gtk/incall_view.c:155
 #, c-format
@@ -588,7 +596,7 @@ msgstr "間接的にリレーサーバーを使う"
 
 #: ../gtk/incall_view.c:239
 msgid "uPnP not activated"
-msgstr ""
+msgstr "uPnPは作動しておりません"
 
 #: ../gtk/incall_view.c:241
 msgid "uPnP in progress"
@@ -596,7 +604,7 @@ msgstr "uPnPを使用中"
 
 #: ../gtk/incall_view.c:243
 msgid "uPnp not available"
-msgstr ""
+msgstr "uPnPは利用できません"
 
 #: ../gtk/incall_view.c:245
 msgid "uPnP is running"
@@ -616,6 +624,8 @@ msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
+"ダウンロード： %f\n"
+"アップロード： %f (kbit/s)"
 
 #: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
@@ -627,7 +637,7 @@ msgstr "%ix%i @ %f fps"
 msgid "%.3f seconds"
 msgstr "%.3f 秒"
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:232
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:235
 msgid "Hang up"
 msgstr ""
 
@@ -645,7 +655,7 @@ msgstr "<b>着信</b>"
 
 #: ../gtk/incall_view.c:562
 msgid "good"
-msgstr ""
+msgstr "良い"
 
 #: ../gtk/incall_view.c:564
 msgid "average"
@@ -653,19 +663,19 @@ msgstr "アベレージ"
 
 #: ../gtk/incall_view.c:566
 msgid "poor"
-msgstr ""
+msgstr "悪い"
 
 #: ../gtk/incall_view.c:568
 msgid "very poor"
-msgstr ""
+msgstr "非常にプアな"
 
 #: ../gtk/incall_view.c:570
 msgid "too bad"
-msgstr ""
+msgstr "非常にバッドな"
 
 #: ../gtk/incall_view.c:571 ../gtk/incall_view.c:587
 msgid "unavailable"
-msgstr ""
+msgstr "利用できません"
 
 #: ../gtk/incall_view.c:679
 msgid "Secured by SRTP"
@@ -674,35 +684,35 @@ msgstr "SRTPのセキュリティ"
 #: ../gtk/incall_view.c:685
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr ""
+msgstr "ZRTP によるセキュリティ - [auth token: %s]"
 
 #: ../gtk/incall_view.c:691
 msgid "Set unverified"
-msgstr ""
+msgstr "セット未検証"
 
 #: ../gtk/incall_view.c:691 ../gtk/main.ui.h:4
 msgid "Set verified"
-msgstr ""
+msgstr "セット検証済"
 
 #: ../gtk/incall_view.c:722
 msgid "In conference"
-msgstr ""
+msgstr "会議で"
 
 #: ../gtk/incall_view.c:722
 msgid "<b>In call</b>"
-msgstr ""
+msgstr "<b>呼び出し中</b>"
 
 #: ../gtk/incall_view.c:758
 msgid "<b>Paused call</b>"
-msgstr ""
+msgstr "<b>呼び出し停止</b>"
 
 #: ../gtk/incall_view.c:794
 msgid "<b>Call ended.</b>"
-msgstr ""
+msgstr "<b>呼び出し終了</b>"
 
 #: ../gtk/incall_view.c:825
 msgid "Transfer in progress"
-msgstr ""
+msgstr "進行中の転送"
 
 #: ../gtk/incall_view.c:828
 msgid "Transfer done."
@@ -748,19 +758,31 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:98
 msgid "No voice detected"
-msgstr ""
+msgstr "音声が検出できません"
 
 #: ../gtk/audio_assistant.c:99
 msgid "Too low"
-msgstr ""
+msgstr "小さい"
 
 #: ../gtk/audio_assistant.c:100
 msgid "Good"
-msgstr ""
+msgstr "丁度よい"
 
 #: ../gtk/audio_assistant.c:101
 msgid "Too loud"
-msgstr ""
+msgstr "大きい"
+
+#: ../gtk/audio_assistant.c:183
+msgid "Did you hear three beeps ?"
+msgstr "3回のビープ音が聞こえましたか？"
+
+#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+msgid "Sound preferences not found "
+msgstr "音声の設定が見つかりません"
+
+#: ../gtk/audio_assistant.c:306
+msgid "Cannot launch system sound control "
+msgstr "音声制御システムを起動できません"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
@@ -770,15 +792,19 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
-msgstr ""
+msgstr "キャプチャーデバイス"
 
 #: ../gtk/audio_assistant.c:329
 msgid "Recorded volume"
-msgstr ""
+msgstr "録音音量"
 
 #: ../gtk/audio_assistant.c:333
 msgid "No voice"
 msgstr "音声なし"
+
+#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+msgid "System sound preferences"
+msgstr "システムサウンド設定"
 
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
@@ -786,7 +812,7 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:370
 msgid "Play three beeps"
-msgstr ""
+msgstr "3回分のビープ音を再生する"
 
 #: ../gtk/audio_assistant.c:403
 msgid "Press the record button and say some words"
@@ -795,6 +821,14 @@ msgstr ""
 #: ../gtk/audio_assistant.c:404
 msgid "Listen to your record voice"
 msgstr "録音した音声を聞く"
+
+#: ../gtk/audio_assistant.c:405
+msgid "Record"
+msgstr "録音"
+
+#: ../gtk/audio_assistant.c:406
+msgid "Play"
+msgstr "再生"
 
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
@@ -830,11 +864,11 @@ msgstr "送信"
 
 #: ../gtk/main.ui.h:3
 msgid "End conference"
-msgstr ""
+msgstr "会議を終了する"
 
 #: ../gtk/main.ui.h:7
 msgid "Record this call to an audio file"
-msgstr ""
+msgstr "この通話をファイルに録音する"
 
 #: ../gtk/main.ui.h:8
 msgid "Video"
@@ -850,11 +884,11 @@ msgstr "転送"
 
 #: ../gtk/main.ui.h:14
 msgid "In call"
-msgstr ""
+msgstr "着信"
 
 #: ../gtk/main.ui.h:15
 msgid "Duration"
-msgstr ""
+msgstr "期限"
 
 #: ../gtk/main.ui.h:16
 msgid "Call quality rating"
@@ -882,7 +916,7 @@ msgstr "デフォルト"
 
 #: ../gtk/main.ui.h:22
 msgid "_Options"
-msgstr ""
+msgstr "_オプション"
 
 #: ../gtk/main.ui.h:23
 msgid "Set configuration URI"
@@ -890,11 +924,11 @@ msgstr ""
 
 #: ../gtk/main.ui.h:24
 msgid "Always start video"
-msgstr ""
+msgstr "いつでもビデオをスタートする"
 
 #: ../gtk/main.ui.h:25
 msgid "Enable self-view"
-msgstr ""
+msgstr "セルフビューを有効にする"
 
 #: ../gtk/main.ui.h:26
 msgid "_Help"
@@ -902,7 +936,7 @@ msgstr "_ヘルプ"
 
 #: ../gtk/main.ui.h:27
 msgid "Show debug window"
-msgstr ""
+msgstr "デバッグウインドウを見る"
 
 #: ../gtk/main.ui.h:28
 msgid "_Homepage"
@@ -910,7 +944,7 @@ msgstr "_ホームページ"
 
 #: ../gtk/main.ui.h:29
 msgid "Check _Updates"
-msgstr ""
+msgstr "チェック _アップデート"
 
 #: ../gtk/main.ui.h:30
 msgid "Account assistant"
@@ -918,7 +952,7 @@ msgstr "アカウントのアシスタント"
 
 #: ../gtk/main.ui.h:32
 msgid "SIP address or phone number:"
-msgstr ""
+msgstr "SIPアドレスもしくは電話番号："
 
 #: ../gtk/main.ui.h:33
 msgid "Initiate a new call"
@@ -938,7 +972,7 @@ msgstr ""
 
 #: ../gtk/main.ui.h:37
 msgid "Add contact"
-msgstr ""
+msgstr "連絡相手に追加する"
 
 #: ../gtk/main.ui.h:38
 msgid "Recent calls"
@@ -966,7 +1000,7 @@ msgstr "自動的にログインする"
 
 #: ../gtk/main.ui.h:44 ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr ""
+msgstr "ユーザーID"
 
 #: ../gtk/main.ui.h:45
 msgid "Login information"
@@ -982,15 +1016,17 @@ msgstr "削除"
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
-msgstr ""
+msgstr "Linphoneについて"
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications, 2010\n"
-msgstr ""
+msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
 msgstr ""
+"インターネットによる動画送信には標準的なSIPプロトコル (rfc3261) を使用してい"
+"ます。"
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -1162,7 +1198,7 @@ msgstr "ビデオのコーデック"
 
 #: ../gtk/parameters.ui.h:10
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
 msgid "SIP (UDP)"
@@ -1197,258 +1233,266 @@ msgid "<b>Transport</b>"
 msgstr "<b>転送</b>"
 
 #: ../gtk/parameters.ui.h:19
-msgid "Media encryption type"
-msgstr "メディアの暗号化の種類"
-
-#: ../gtk/parameters.ui.h:20
-msgid "Video RTP/UDP:"
-msgstr "ビデオ RTP/UDP:"
-
-#: ../gtk/parameters.ui.h:21
-msgid "Audio RTP/UDP:"
-msgstr "オーディオ RTP/UDP:"
-
-#: ../gtk/parameters.ui.h:22
-msgid "Fixed"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:23
-msgid "Media encryption is mandatory"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:24
-msgid "Tunnel"
-msgstr "トンネル"
-
-#: ../gtk/parameters.ui.h:25
-msgid "DSCP fields"
-msgstr "DSCP値"
-
-#: ../gtk/parameters.ui.h:26
-msgid "SIP/TCP port"
-msgstr "SIP/TCP ポート"
-
-#: ../gtk/parameters.ui.h:27
 msgid "SIP/UDP port"
 msgstr "SIP/UDP ポート"
 
+#: ../gtk/parameters.ui.h:21
+msgid "Random"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "SIP/TCP port"
+msgstr "SIP/TCP ポート"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Audio RTP/UDP:"
+msgstr "オーディオ RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Fixed"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:25
+msgid "Video RTP/UDP:"
+msgstr "ビデオ RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:26
+msgid "Media encryption type"
+msgstr "メディアの暗号化の種類"
+
+#: ../gtk/parameters.ui.h:27
+msgid "Media encryption is mandatory"
+msgstr ""
+
 #: ../gtk/parameters.ui.h:28
+msgid "Tunnel"
+msgstr "トンネル"
+
+#: ../gtk/parameters.ui.h:29
+msgid "DSCP fields"
+msgstr "DSCP値"
+
+#: ../gtk/parameters.ui.h:30
 msgid "<b>Network protocol and ports</b>"
 msgstr "<b>ネットワークのプロトコルとポート</b>"
 
-#: ../gtk/parameters.ui.h:29
+#: ../gtk/parameters.ui.h:31
 msgid "Direct connection to the Internet"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:30
+#: ../gtk/parameters.ui.h:32
 msgid "Behind NAT / Firewall (specify gateway IP )"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:31
+#: ../gtk/parameters.ui.h:33
 msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:32
+#: ../gtk/parameters.ui.h:34
 msgid "Behind NAT / Firewall (use ICE)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:33
+#: ../gtk/parameters.ui.h:35
 msgid "Behind NAT / Firewall (use uPnP)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:34
+#: ../gtk/parameters.ui.h:36
 msgid "Public IP address:"
 msgstr "パブリック IP アドレス:"
 
-#: ../gtk/parameters.ui.h:35
+#: ../gtk/parameters.ui.h:37
 msgid "Stun server:"
 msgstr "Stunサーバー:"
 
-#: ../gtk/parameters.ui.h:36
+#: ../gtk/parameters.ui.h:38
 msgid "<b>NAT and Firewall</b>"
 msgstr "<b>NAT と ファイヤーウォール</b>"
 
-#: ../gtk/parameters.ui.h:37
+#: ../gtk/parameters.ui.h:39
 msgid "Network settings"
 msgstr "ネットワーク設定"
 
-#: ../gtk/parameters.ui.h:38
+#: ../gtk/parameters.ui.h:40
 msgid "Ring sound:"
 msgstr "鳴動音:"
 
-#: ../gtk/parameters.ui.h:39
+#: ../gtk/parameters.ui.h:41
 msgid "ALSA special device (optional):"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:40
+#: ../gtk/parameters.ui.h:42
 msgid "Capture device:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:41
+#: ../gtk/parameters.ui.h:43
 msgid "Ring device:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:42
+#: ../gtk/parameters.ui.h:44
 msgid "Playback device:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:43
+#: ../gtk/parameters.ui.h:45
 msgid "Enable echo cancellation"
 msgstr "エコーキャンセラーを有効にする"
 
-#: ../gtk/parameters.ui.h:44
+#: ../gtk/parameters.ui.h:46
 msgid "<b>Audio</b>"
 msgstr "<b>オーディオ</b>"
 
-#: ../gtk/parameters.ui.h:45
+#: ../gtk/parameters.ui.h:47
 msgid "Video input device:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:46
+#: ../gtk/parameters.ui.h:48
 msgid "Prefered video resolution:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:47
+#: ../gtk/parameters.ui.h:49
 msgid "Video output method:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:48
-msgid "<b>Video</b>"
-msgstr "<b>ビデオ</b>"
-
-#: ../gtk/parameters.ui.h:49
-msgid "Multimedia settings"
-msgstr "マルチメディア設定"
-
 #: ../gtk/parameters.ui.h:50
-msgid "This section defines your SIP address when not using a SIP account"
+msgid "Show camera preview"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:51
-msgid "Your display name (eg: John Doe):"
-msgstr "あなたの表示名 (例: John Doe):"
+msgid "<b>Video</b>"
+msgstr "<b>ビデオ</b>"
 
 #: ../gtk/parameters.ui.h:52
-msgid "Your username:"
-msgstr "あなたのユーザー名:"
+msgid "Multimedia settings"
+msgstr "マルチメディア設定"
 
 #: ../gtk/parameters.ui.h:53
-msgid "Your resulting SIP address:"
+msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:54
+msgid "Your display name (eg: John Doe):"
+msgstr "あなたの表示名 (例: John Doe):"
+
+#: ../gtk/parameters.ui.h:55
+msgid "Your username:"
+msgstr "あなたのユーザー名:"
+
+#: ../gtk/parameters.ui.h:56
+msgid "Your resulting SIP address:"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:57
 msgid "<b>Default identity</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:55
+#: ../gtk/parameters.ui.h:58
 msgid "Wizard"
 msgstr "ウィザード"
 
-#: ../gtk/parameters.ui.h:56
+#: ../gtk/parameters.ui.h:59
 msgid "Add"
 msgstr "追加する"
 
-#: ../gtk/parameters.ui.h:57
+#: ../gtk/parameters.ui.h:60
 msgid "Edit"
 msgstr "編集する"
 
-#: ../gtk/parameters.ui.h:58
+#: ../gtk/parameters.ui.h:61
 msgid "Remove"
 msgstr "削除する"
 
-#: ../gtk/parameters.ui.h:59
+#: ../gtk/parameters.ui.h:62
 msgid "<b>Proxy accounts</b>"
-msgstr ""
+msgstr "プロキシアカウント"
 
-#: ../gtk/parameters.ui.h:60
+#: ../gtk/parameters.ui.h:63
 msgid "Erase all passwords"
-msgstr ""
+msgstr "すべてのパスワードを消去する"
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:64
 msgid "<b>Privacy</b>"
 msgstr "<b>プライバシー</b>"
 
-#: ../gtk/parameters.ui.h:62
+#: ../gtk/parameters.ui.h:65
 msgid "Manage SIP Accounts"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:63 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "使用する"
 
-#: ../gtk/parameters.ui.h:64 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:67 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "使用しない"
 
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:68
 msgid "<b>Codecs</b>"
 msgstr "<b>コーデック</b>"
 
-#: ../gtk/parameters.ui.h:66
+#: ../gtk/parameters.ui.h:69
 msgid "0 stands for \"unlimited\""
 msgstr ""
 
-#: ../gtk/parameters.ui.h:67
+#: ../gtk/parameters.ui.h:70
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "アップロード速度制限 Kbit/sec:"
 
-#: ../gtk/parameters.ui.h:68
+#: ../gtk/parameters.ui.h:71
 msgid "Download speed limit in Kbit/sec:"
 msgstr "ダウンロード速度制限 Kbit/sec:"
 
-#: ../gtk/parameters.ui.h:69
+#: ../gtk/parameters.ui.h:72
 msgid "Enable adaptive rate control"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:70
+#: ../gtk/parameters.ui.h:73
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:71
+#: ../gtk/parameters.ui.h:74
 msgid "<b>Bandwidth control</b>"
 msgstr "<b>帯域幅制御</b>"
 
-#: ../gtk/parameters.ui.h:72
+#: ../gtk/parameters.ui.h:75
 msgid "Codecs"
 msgstr "コーデック"
 
-#: ../gtk/parameters.ui.h:73
+#: ../gtk/parameters.ui.h:76
 msgid "<b>Language</b>"
 msgstr "<b>言語</b>"
 
-#: ../gtk/parameters.ui.h:74
+#: ../gtk/parameters.ui.h:77
 msgid "Show advanced settings"
 msgstr "拡張設定を表示する"
 
-#: ../gtk/parameters.ui.h:75
+#: ../gtk/parameters.ui.h:78
 msgid "<b>Level</b>"
 msgstr "<b>レベル</b>"
 
-#: ../gtk/parameters.ui.h:76
+#: ../gtk/parameters.ui.h:79
 msgid "User interface"
 msgstr "ユーザーインターフェイス"
 
-#: ../gtk/parameters.ui.h:77 ../gtk/ldap.ui.h:2
+#: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:2
 msgid "Server address:"
 msgstr "サーバーアドレス:"
 
-#: ../gtk/parameters.ui.h:78 ../gtk/ldap.ui.h:3
+#: ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:80
+#: ../gtk/parameters.ui.h:83
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:81
+#: ../gtk/parameters.ui.h:84
 msgid "LDAP"
-msgstr ""
+msgstr "LDAP"
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:85
 msgid "Done"
-msgstr ""
+msgstr "完了"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
@@ -1492,7 +1536,7 @@ msgstr ""
 
 #: ../gtk/call_statistics.ui.h:1
 msgid "Call statistics"
-msgstr ""
+msgstr "通信統計"
 
 #: ../gtk/call_statistics.ui.h:2
 msgid "Audio codec"
@@ -1504,19 +1548,19 @@ msgstr "ビデオのコーデック"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
-msgstr ""
+msgstr "音声で使用しているIP通信帯域"
 
 #: ../gtk/call_statistics.ui.h:5
 msgid "Audio Media connectivity"
-msgstr ""
+msgstr "接続している音声用メディア"
 
 #: ../gtk/call_statistics.ui.h:6
 msgid "Video IP bandwidth usage"
-msgstr ""
+msgstr "ビデオで使用しているIP通信帯域"
 
 #: ../gtk/call_statistics.ui.h:7
 msgid "Video Media connectivity"
-msgstr ""
+msgstr "接続しているビデオ用メディア"
 
 #: ../gtk/call_statistics.ui.h:8
 msgid "Round trip time"
@@ -1560,7 +1604,7 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
-msgstr ""
+msgstr "LDAP設定"
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
@@ -1580,7 +1624,7 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:10
 msgid "Authname"
-msgstr ""
+msgstr "Authname"
 
 #: ../gtk/ldap.ui.h:11
 msgid "Realm"
@@ -1645,7 +1689,7 @@ msgstr "ダイジェスト-MD5"
 
 #: ../gtk/ldap.ui.h:27
 msgid "NTLM"
-msgstr ""
+msgstr "NTLM"
 
 #: ../gtk/config-uri.ui.h:1
 msgid "Specifying a remote configuration URI"
@@ -1672,62 +1716,62 @@ msgstr ""
 msgid "Ready"
 msgstr "準備"
 
-#: ../coreapi/linphonecore.c:2473
+#: ../coreapi/linphonecore.c:2489
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2638
+#: ../coreapi/linphonecore.c:2654
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2640
+#: ../coreapi/linphonecore.c:2656
 msgid "Could not resolve this number."
 msgstr ""
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2926
+#: ../coreapi/linphonecore.c:2942
 msgid "Contacting"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2931
+#: ../coreapi/linphonecore.c:2947
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3081
+#: ../coreapi/linphonecore.c:3097
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3240
+#: ../coreapi/linphonecore.c:3256
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3241
+#: ../coreapi/linphonecore.c:3257
 msgid " and asked autoanswer."
-msgstr ""
+msgstr "と自動応答を尋ねる"
 
-#: ../coreapi/linphonecore.c:3359
+#: ../coreapi/linphonecore.c:3375
 msgid "Modifying call parameters..."
-msgstr ""
+msgstr "コールパラメーターの変更..."
 
-#: ../coreapi/linphonecore.c:3707
+#: ../coreapi/linphonecore.c:3723
 msgid "Connected."
 msgstr "接続しました。"
 
-#: ../coreapi/linphonecore.c:3732
+#: ../coreapi/linphonecore.c:3748
 msgid "Call aborted"
-msgstr ""
+msgstr "呼び出しを打ち切る"
 
-#: ../coreapi/linphonecore.c:3922
+#: ../coreapi/linphonecore.c:3938
 msgid "Could not pause the call"
-msgstr ""
+msgstr "呼び出しを一時停止できませんでした"
 
-#: ../coreapi/linphonecore.c:3926
+#: ../coreapi/linphonecore.c:3941
 msgid "Pausing the current call..."
-msgstr ""
+msgstr "現在の通話を一時停止..."
 
 #: ../coreapi/misc.c:438
 msgid "Stun lookup in progress..."
-msgstr ""
+msgstr "Stunによるルックアップの進行中…"
 
 #: ../coreapi/misc.c:619
 msgid "ICE local candidates gathering in progress..."
@@ -1783,21 +1827,21 @@ msgstr "休暇中"
 
 #: ../coreapi/friend.c:68
 msgid "Unknown status"
-msgstr ""
+msgstr "不明なステータス"
 
-#: ../coreapi/proxy.c:319
+#: ../coreapi/proxy.c:327
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
 
-#: ../coreapi/proxy.c:325
+#: ../coreapi/proxy.c:333
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 
-#: ../coreapi/proxy.c:1377
+#: ../coreapi/proxy.c:1391
 #, c-format
 msgid "Could not login as %s"
 msgstr ""
@@ -1837,7 +1881,7 @@ msgstr ""
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:826
+#: ../coreapi/callbacks.c:530 ../coreapi/callbacks.c:829
 msgid "Incompatible media parameters."
 msgstr ""
 
@@ -1857,7 +1901,7 @@ msgstr ""
 
 #: ../coreapi/callbacks.c:705
 msgid "Call terminated."
-msgstr ""
+msgstr "呼び出し終了。"
 
 #: ../coreapi/callbacks.c:733
 msgid "User is busy."
@@ -1880,43 +1924,43 @@ msgstr "通話は拒否されました。"
 msgid "Request timeout."
 msgstr "リクエストは時間切れです。"
 
-#: ../coreapi/callbacks.c:780
+#: ../coreapi/callbacks.c:783
 msgid "Redirected"
 msgstr ""
 
-#: ../coreapi/callbacks.c:835
+#: ../coreapi/callbacks.c:838
 msgid "Call failed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:913
+#: ../coreapi/callbacks.c:916
 #, c-format
 msgid "Registration on %s successful."
 msgstr ""
 
-#: ../coreapi/callbacks.c:914
+#: ../coreapi/callbacks.c:917
 #, c-format
 msgid "Unregistration on %s done."
 msgstr ""
 
-#: ../coreapi/callbacks.c:932
+#: ../coreapi/callbacks.c:935
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/callbacks.c:935
+#: ../coreapi/callbacks.c:938
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:942
+#: ../coreapi/callbacks.c:945
 msgid "Service unavailable, retrying"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:174
+#: ../coreapi/linphonecall.c:175
 #, c-format
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3020
+#: ../coreapi/linphonecall.c:3041
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -1933,6 +1977,10 @@ msgstr ""
 #: ../coreapi/call_log.c:215
 msgid "missed"
 msgstr ""
+
+#: ../coreapi/call_log.c:218
+msgid "unknown"
+msgstr "不明"
 
 #: ../coreapi/call_log.c:220
 #, c-format
@@ -1951,4 +1999,4 @@ msgstr ""
 #: ../gtk/videowindow.c:66
 #, c-format
 msgid "Cannot play %s."
-msgstr ""
+msgstr "%s が再生出来ません。"

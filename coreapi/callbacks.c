@@ -96,7 +96,23 @@ static void prepare_early_media_forking(LinphoneCall *call){
 	if (call->videostream){
 		rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,FALSE);
 	}
+}
 
+void linphone_call_update_frozen_payloads(LinphoneCall *call, SalMediaDescription *result_desc){
+	SalMediaDescription *local=call->localdesc;
+	int i;
+	for(i=0;i<result_desc->nb_streams;++i){
+		MSList *elem;
+		for (elem=result_desc->streams[i].payloads;elem!=NULL;elem=elem->next){
+			PayloadType *pt=(PayloadType*)elem->data;
+			if (is_payload_type_number_available(local->streams[i].already_assigned_payloads, payload_type_get_number(pt), NULL)){
+				/*new codec, needs to be added to the list*/
+				local->streams[i].already_assigned_payloads=ms_list_append(local->streams[i].already_assigned_payloads, payload_type_clone(pt));
+				ms_message("LinphoneCall[%p] : payload type %i %s/%i fmtp=%s added to frozen list.",
+					   call, payload_type_get_number(pt), pt->mime_type, pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : NULL);
+			}
+		}
+	}
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -181,6 +197,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
+	linphone_call_update_frozen_payloads(call, new_md);
 	end:
 	if (oldmd)
 		sal_media_description_unref(oldmd);
@@ -772,8 +789,11 @@ static void call_failure(SalOp *op){
 					char* url = linphone_address_as_string(redirection_to);
 					ms_warning("Redirecting call [%p] to %s",call, url);
 					ms_free(url);
-					linphone_call_create_op(call);
-					linphone_core_start_invite(lc, call, redirection_to);
+					if( call->log->to != NULL ) {
+						linphone_address_unref(call->log->to);
+					}
+					call->log->to = linphone_address_ref(redirection_to);
+					linphone_core_restart_invite(lc, call);
 					return;
 				}
 			}

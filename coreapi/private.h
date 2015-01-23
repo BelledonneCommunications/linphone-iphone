@@ -149,10 +149,10 @@ typedef struct _CallCallbackObj
 struct _LinphoneChatMessageCbs {
 	belle_sip_object_t base;
 	void *user_data;
-	LinphoneChatMessageMsgStateChangedCb msg_state_changed;
-	LinphoneChatMessageFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
-	LinphoneChatMessageFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
-	LinphoneChatMessageFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+	LinphoneChatMessageCbsMsgStateChangedCb msg_state_changed;
+	LinphoneChatMessageCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessageCbs);
@@ -365,6 +365,7 @@ static MS2_INLINE void set_string(char **dest, const char *src){
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
+#define PAYLOAD_TYPE_FROZEN_NUMBER	PAYLOAD_TYPE_USER_FLAG_4
 
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
@@ -374,6 +375,8 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presence, const char *contact, char **content);
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
+void linphone_core_soundcard_hint_check(LinphoneCore* lc);
+
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
@@ -407,7 +410,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
-int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
@@ -445,8 +448,14 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
-LINPHONE_PUBLIC bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+typedef enum _LinphoneProxyConfigAddressComparisonResult{
+	LinphoneProxyConfigAddressDifferent,
+	LinphoneProxyConfigAddressEqual,
+	LinphoneProxyConfigAddressWeakEqual
+} LinphoneProxyConfigAddressComparisonResult;
+
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
@@ -635,7 +644,9 @@ typedef struct sound_config
 typedef struct codecs_config
 {
 	MSList *audio_codecs;  /* list of audio codecs in order of preference*/
-	MSList *video_codecs;	/* for later use*/
+	MSList *video_codecs;
+	int dyn_pt;
+	int telephone_event_pt;
 }codecs_config_t;
 
 typedef struct video_config{
@@ -702,7 +713,8 @@ struct _LinphoneCore
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
-	RtpProfile *default_profile;
+	MSList *default_audio_codecs;
+	MSList *default_video_codecs;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;
@@ -711,8 +723,6 @@ struct _LinphoneCore
 	codecs_config_t codecs_conf;
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
-	MSList *payload_types;
-	int dyn_pt;
 	LinphoneProxyConfig *default_proxy;
 	MSList *friends;
 	MSList *auth_info;
@@ -928,6 +938,14 @@ struct _LinphoneContent {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneContent);
 
+struct _LinphoneBuffer {
+	belle_sip_object_t base;
+	void *user_data;
+	uint8_t *content;	/**< A pointer to the buffer content */
+	size_t size;	/**< The size of the buffer content */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
 
 /*****************************************************************************
@@ -998,12 +1016,25 @@ static MS2_INLINE const LinphoneErrorInfo *linphone_error_info_from_sal_op(const
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
 
+static MS2_INLINE void payload_type_set_enable(PayloadType *pt,int value)
+{
+	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
+	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
+}
+
+static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
+	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
+}
+
+bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
+
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 
 /** Belle Sip-based objects need unique ids
   */
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),

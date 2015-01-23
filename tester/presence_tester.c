@@ -336,7 +336,7 @@ static void presence_information(void) {
 	}
 
 	/* Presence timestamp. */
-	current_timestamp = time(NULL);
+	current_timestamp = ms_time(NULL);
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityShopping, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityShopping,1);

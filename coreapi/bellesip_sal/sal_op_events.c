@@ -198,6 +198,9 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 		sal_op_subscribe_fill_cbs(op);
 		/*???sal_exosip_fix_route(op); make sure to ha ;lr*/
 		req=sal_op_build_request(op,"SUBSCRIBE");
+		if( req == NULL ) {
+			return -1;
+		}
 		if (eventname){
 			if (op->event) belle_sip_object_unref(op->event);
 			op->event=belle_sip_header_create("Event",eventname);

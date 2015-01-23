@@ -77,6 +77,7 @@ void account_manager_destroy(void){
 		ms_free(the_am);
 	}
 	the_am=NULL;
+	ms_message("Test account manager destroyed.");
 }
 
 Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *identity){
@@ -118,10 +119,15 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	LinphoneAddress *server_addr;
+	LCSipTransports tr;
 	
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
-	lc=configure_lc_from(&vtable,NULL,NULL,account);
+	lc=configure_lc_from(&vtable,liblinphone_tester_file_prefix,NULL,account);
+	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
+	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
+	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
+	linphone_core_set_sip_transports(lc,&tr);
 	
 	cfg=linphone_core_create_proxy_config(lc);
 	linphone_address_set_password(tmp_identity,account->password);
@@ -133,6 +139,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	
 	server_addr=linphone_address_new(linphone_proxy_config_get_server_addr(refcfg));
 	linphone_address_set_transport(server_addr,LinphoneTransportTcp); /*use tcp for account creation*/
+	linphone_address_set_port(server_addr,0);
 	tmp=linphone_address_as_string(server_addr);
 	linphone_proxy_config_set_server_addr(cfg,tmp);
 	ms_free(tmp);
@@ -144,7 +151,6 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	if (wait_for_until(lc,NULL,&account->auth_requested,1,10000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
-	linphone_proxy_config_stop_refreshing(cfg); /*so that op is destroyed; we need to remove the X-create-account*/
 	linphone_proxy_config_edit(cfg);
 	tmp=linphone_address_as_string(account->modified_identity);
 	linphone_proxy_config_set_identity(cfg,tmp); /*remove the X-Create-Account header*/
@@ -206,10 +212,6 @@ void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
 
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
-		LinphoneAddress *modified_identity=account_manager_check_account(am,cfg);
-		if (m->identity){
-			linphone_address_unref(m->identity);
-		}
-		m->identity=linphone_address_ref(modified_identity);
+		account_manager_check_account(am,cfg);
 	}
 }

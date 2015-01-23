@@ -27,6 +27,10 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
+
 
 /*getline is not available on android...*/
 #ifdef ANDROID
@@ -84,10 +88,24 @@ size_t getline(char **lineptr, size_t *n, FILE *stream) {
 }
 #endif
 
+static LinphoneLogCollectionState old_collection_state;
+void collect_init()  {
+	old_collection_state = linphone_core_log_collection_enabled();
+	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
+}
+
+void collect_cleanup(LinphoneCoreManager *marie)  {
+	linphone_core_manager_destroy(marie);
+
+	linphone_core_enable_log_collection(old_collection_state);
+	linphone_core_reset_log_collection();
+}
+
 LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
 	int timeout = 300;
 
+	collect_init();
 	linphone_core_enable_log_collection(enable_logs);
 
 	marie = linphone_core_manager_new( "marie_rc");
@@ -100,15 +118,50 @@ LinphoneCoreManager* setup(bool_t enable_logs)  {
 	return marie;
 }
 
-time_t check_file(char * filepath)  {
-	time_t time_curr = -1;
+#if HAVE_ZLIB
+/*returns uncompressed log file*/
+FILE* gzuncompress(const char* filepath) {
+		gzFile file = gzopen(filepath, "rb");
+		FILE *output = NULL;
+		char *newname = ms_strdup_printf("%s.txt", filepath);
+		char buffer[512];
+		output = fopen(newname, "w+");
+		while (gzread(file, buffer, 511) > 0) {
+			fputs(buffer, output);
+			memset(buffer, 0, strlen(buffer));
+		}
+
+		CU_ASSERT_EQUAL(gzclose(file), Z_OK);
+		ms_free(newname);
+
+		fseek(output, 0, SEEK_SET);
+		return (FILE*)output;
+}
+#endif
+
+time_t check_file(LinphoneCoreManager* mgr)  {
+
+	time_t last_log = ms_time(NULL);
+	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
+	time_t  time_curr = -1;
+	uint32_t timediff = 0;
+	FILE *file = NULL;
+
+	CU_ASSERT_PTR_NOT_NULL(filepath);
+
 	if (filepath != NULL) {
 		int line_count = 0;
-		FILE *file = fopen(filepath, "r");
 		char *line = NULL;
 		size_t line_size = 256;
 		struct tm tm_curr;
 		time_t time_prev = -1;
+
+#if HAVE_ZLIB
+		// 0) if zlib is enabled, we must decompress the file first
+		file = gzuncompress(filepath);
+#else
+		file = fopen(filepath, "r");
+#endif
 
 		// 1) expect to find folder name in filename path
 		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, liblinphone_tester_writable_dir_prefix));
@@ -117,7 +170,6 @@ time_t check_file(char * filepath)  {
 		while (getline(&line, &line_size, file) != -1) {
 			// a) there should be at least 25 lines
 			++line_count;
-
 			// b) logs should be ordered by date (format: 2014-11-04 15:22:12:606)
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
@@ -133,66 +185,50 @@ time_t check_file(char * filepath)  {
 		free(line);
 		fclose(file);
 		ms_free(filepath);
+
+		timediff = labs((long int)time_curr - (long int)last_log);
+
+		CU_ASSERT_TRUE( timediff <= 1 );
+		if( !(timediff <= 1) ){
+			ms_error("time_curr: %ld, last_log: %ld timediff: %d", time_curr, last_log, timediff );
+		}
 	}
 	// return latest time in file
 	return time_curr;
 }
 
-static LinphoneLogCollectionState old_collection_state;
-static int collect_init()  {
-	old_collection_state = linphone_core_log_collection_enabled();
-	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
-	return 0;
-}
-
-static int collect_cleanup()  {
-	linphone_core_enable_log_collection(old_collection_state);
-	linphone_core_reset_log_collection();
-	return 0;
-}
-
 static void collect_files_disabled()  {
 	LinphoneCoreManager* marie = setup(FALSE);
 	CU_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_filled() {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
-	linphone_core_manager_destroy(marie);
+	check_file(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_small_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath;
 	linphone_core_set_log_collection_max_file_size(5000);
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
-	linphone_core_manager_destroy(marie);
+	check_file(marie);
+	collect_cleanup(marie);
 }
 
 static void collect_files_changing_size()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	char * filepath;
 	int waiting = 100;
 
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
+	check_file(marie);
 
 	linphone_core_set_log_collection_max_file_size(5000);
 	// Generate some logs
 	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
 
-	filepath = linphone_core_compress_log_collection(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL(filepath);
-	CU_ASSERT_EQUAL(ms_time(0), check_file(filepath));
+	check_file(marie);
 
-	linphone_core_manager_destroy(marie);
+	collect_cleanup(marie);
 }
 
 test_t log_collection_tests[] = {
@@ -204,8 +240,8 @@ test_t log_collection_tests[] = {
 
 test_suite_t log_collection_test_suite = {
 	"LogCollection",
-	collect_init,
-	collect_cleanup,
+	NULL,
+	NULL,
 	sizeof(log_collection_tests) / sizeof(log_collection_tests[0]),
 	log_collection_tests
 };

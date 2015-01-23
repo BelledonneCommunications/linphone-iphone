@@ -159,6 +159,13 @@ bool_t linphone_address_is_secure(const LinphoneAddress *uri){
 	return sal_address_is_secure(uri);
 }
 
+/**
+ * returns true if address is a routable sip address
+ */
+bool_t linphone_address_is_sip(const LinphoneAddress *uri){
+	return sal_address_is_sip(uri);
+}
+
 static bool_t strings_equals(const char *s1, const char *s2){
 	if (s1==NULL && s2==NULL) return TRUE;
 	if (s1!=NULL && s2!=NULL && strcmp(s1,s2)==0) return TRUE;
@@ -167,7 +174,10 @@ static bool_t strings_equals(const char *s1, const char *s2){
 
 /**
  * Compare two LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
- * Returns TRUE if they are equal.
+ * @param[in] a1 LinphoneAddress object
+ * @param[in] a2 LinphoneAddress object
+ * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * @see linphone_address_equal()
 **/
 bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2){
 	const char *u1,*u2;
@@ -180,6 +190,27 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 	h1=linphone_address_get_domain(a1);
 	h2=linphone_address_get_domain(a2);
 	return strings_equals(u1,u2) && strings_equals(h1,h2) && p1==p2;
+}
+
+/**
+ * Compare two LinphoneAddress taking the tags and headers into account.
+ * @param[in] a1 LinphoneAddress object
+ * @param[in] a2 LinphoneAddress object
+ * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * @see linphone_address_weak_equal()
+ */
+bool_t linphone_address_equal(const LinphoneAddress *a1, const LinphoneAddress *a2) {
+	char *s1;
+	char *s2;
+	bool_t res;
+	if ((a1 == NULL) && (a2 == NULL)) return TRUE;
+	if ((a1 == NULL) || (a2 == NULL)) return FALSE;
+	s1 = linphone_address_as_string(a1);
+	s2 = linphone_address_as_string(a2);
+	res = (strcmp(s1, s2) == 0) ? TRUE : FALSE;
+	ms_free(s1);
+	ms_free(s2);
+	return res;
 }
 
 /**
