@@ -97,6 +97,7 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
  			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
 			if( error != BELLE_SIP_OK ){
 				bufLen *= 2;
+				length  = 0;
 				buff = belle_sip_realloc(buff,bufLen);
 			}
 		}
