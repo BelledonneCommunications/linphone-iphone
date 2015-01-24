@@ -698,7 +698,6 @@
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
 		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
-		F0A1CE0C1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */; };
 		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F0B89C2818DC973E0050B60E /* wizard_external_sip.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */; };
@@ -1703,8 +1702,6 @@
 		F0A1CE061A6B056E001CA2BE /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		F0A1CE071A6B056E001CA2BE /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		F0A1CE091A6B05A4001CA2BE /* WizardTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WizardTester.h; sourceTree = "<group>"; };
-		F0A1CE0A1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KIFTestCase+LinphoneExtras.h"; sourceTree = "<group>"; };
-		F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KIFTestCase+LinphoneExtras.m"; sourceTree = "<group>"; };
 		F0AF06F01A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutViewController.strings; sourceTree = "<group>"; };
 		F0AF06F11A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatRoomViewController.strings; sourceTree = "<group>"; };
 		F0AF06F21A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatViewController.strings; sourceTree = "<group>"; };
@@ -3023,8 +3020,6 @@
 				F0A1CE091A6B05A4001CA2BE /* WizardTester.h */,
 				F0A1CE061A6B056E001CA2BE /* ChatTester.h */,
 				F0A1CE071A6B056E001CA2BE /* ChatTester.m */,
-				F0A1CE0A1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.h */,
-				F0A1CE0B1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m */,
 				F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */,
 				F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */,
 			);
@@ -3999,7 +3994,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */,
-				F0A1CE0C1A6B08FA001CA2BE /* KIFTestCase+LinphoneExtras.m in Sources */,
 				F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */,
 				F0F952121A6AECD300254160 /* WizardTester.m in Sources */,
 			);

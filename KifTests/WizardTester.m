@@ -9,7 +9,6 @@
 
 #import "WizardTester.h"
 #import <KIF/KIF.h>
-#import "KIFTestCase+LinphoneExtras.h"
 
 @implementation WizardTester
 

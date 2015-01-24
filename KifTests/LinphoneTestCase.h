@@ -9,5 +9,11 @@
 #import <KIF/KIF.h>
 
 @interface LinphoneTestCase : KIFTestCase
+@property BOOL invalidAccountSet;
+
+- (void)switchToValidAccountIfNeeded;
+- (NSString*)accountUsername;
+- (NSString*)accountDomain;
+
 
 @end

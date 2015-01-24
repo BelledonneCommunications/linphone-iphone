@@ -7,7 +7,6 @@
 //
 
 #import "ChatTester.h"
-#import "KIFTestCase+LinphoneExtras.h"
 
 @implementation ChatTester
 
