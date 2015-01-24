@@ -135,7 +135,7 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Kbn-dL-C5h" userLabel="remoteProvisioningButton" customClass="UILinphoneButton">
                     <rect key="frame" x="34" y="327" width="255" height="50"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Sign in SIP account">
+                    <accessibility key="accessibilityConfiguration" label="Remote provisioning">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
