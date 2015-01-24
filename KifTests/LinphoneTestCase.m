@@ -21,6 +21,11 @@
 - (NSString *)accountDomain {
     return @"sip.linphone.org";
 }
+
+- (NSString*)getUUID {
+    return [[NSUUID UUID] UUIDString];
+}
+
 - (void)beforeAll{
     [tester acknowledgeSystemAlert];
     [super beforeAll];

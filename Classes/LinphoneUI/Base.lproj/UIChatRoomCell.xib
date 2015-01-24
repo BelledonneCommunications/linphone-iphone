@@ -87,6 +87,7 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="18" userLabel="deleteButton">
                             <rect key="frame" x="250" y="0.0" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delete message"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                             <inset key="imageEdgeInsets" minX="20" minY="2" maxX="2" maxY="20"/>
                             <state key="normal" image="list_delete_default.png">

@@ -48,6 +48,7 @@
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+    self.tableView.accessibilityIdentifier = @"Chat list";
 	[self reloadData];
 }
 

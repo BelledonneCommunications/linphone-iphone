@@ -15,5 +15,6 @@
 - (NSString*)accountUsername;
 - (NSString*)accountDomain;
 
+- (NSString*)getUUID;
 
 @end
