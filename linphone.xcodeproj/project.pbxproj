@@ -5208,8 +5208,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/KIF\"",
+					"$(inherited)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 				);
 				INFOPLIST_FILE = KifTests/Info.plist;
@@ -5245,8 +5244,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/KIF\"",
+					"$(inherited)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 				);
 				INFOPLIST_FILE = KifTests/Info.plist;
@@ -5283,8 +5281,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/KIF\"",
+					"$(inherited)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 				);
 				INFOPLIST_FILE = KifTests/Info.plist;
@@ -5321,8 +5318,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/KIF\"",
+					"$(inherited)",
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 				);
 				INFOPLIST_FILE = KifTests/Info.plist;
