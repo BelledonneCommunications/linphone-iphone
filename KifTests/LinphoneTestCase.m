@@ -27,8 +27,10 @@
 }
 
 - (void)beforeAll{
+#if TARGET_IPHONE_SIMULATOR
     [tester acknowledgeSystemAlert];
-    [super beforeAll];
+#endif
+	[super beforeAll];
 }
 
 
