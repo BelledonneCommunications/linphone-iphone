@@ -98,5 +98,14 @@
     [self goBackFromChat];
 }
 
+-(void)testShouldFail {
+	[tester fail];
+}
+
+-(void)testShouldSegfault {
+	int* toto = (int*)0;
+	*toto = 1;
+}
+
 
 @end
