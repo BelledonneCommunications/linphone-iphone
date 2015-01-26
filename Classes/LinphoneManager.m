@@ -322,6 +322,14 @@ struct codec_name_pref_table codec_pref_table[]={
 	[super dealloc];
 }
 
+- (void)silentPushFailed:(NSTimer*)timer
+{
+	if( silentPushCompletion ){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion ];
+		silentPushCompletion(UIBackgroundFetchResultNoData);
+		silentPushCompletion = nil;
+	}
+}
 
 #pragma mark - Database Functions
 
@@ -2158,17 +2166,8 @@ static void audioRouteChangeListenerCallback (
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
 	return [self lpConfigIntForKey:key forSection:section] == 1;
 }
-- (void)silentPushFailed:(NSTimer*)timer
-{
-	if( silentPushCompletion ){
-		[LinphoneLogger log:LinphoneLoggerLog format:@"silentPush failed, silentPushCompletion block: %p", silentPushCompletion ];
-		silentPushCompletion(UIBackgroundFetchResultNoData);
-		silentPushCompletion = nil;
-	}
-}
 
-
-#pragma GSM management
+#pragma mark - GSM management
 
 -(void) removeCTCallCenterCb {
 	if (mCallCenter != nil) {
