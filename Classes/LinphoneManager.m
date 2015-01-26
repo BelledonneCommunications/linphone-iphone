@@ -28,6 +28,7 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreTelephony/CTCallCenter.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "LinphoneManager.h"
 #import "LinphoneCoreSettingsStore.h"
@@ -1205,18 +1206,30 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 - (NetworkType)network {
-	UIApplication *app = [UIApplication sharedApplication];
-	NSArray *subviews = [[[app valueForKey:@"statusBar"] valueForKey:@"foregroundView"]    subviews];
-	NSNumber *dataNetworkItemView = nil;
+	if( [[[UIDevice currentDevice] systemVersion] floatValue] < 7 ){
+		UIApplication *app = [UIApplication sharedApplication];
+		NSArray *subviews = [[[app valueForKey:@"statusBar"] valueForKey:@"foregroundView"]    subviews];
+		NSNumber *dataNetworkItemView = nil;
 
-	for (id subview in subviews) {
-		if([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
-			dataNetworkItemView = subview;
-			break;
+		for (id subview in subviews) {
+			if([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
+				dataNetworkItemView = subview;
+				break;
+			}
 		}
+
+		NSNumber *number = (NSNumber*)[dataNetworkItemView valueForKey:@"dataNetworkType"];
+		return [number intValue];
+	} else {
+		CTTelephonyNetworkInfo* info = [[CTTelephonyNetworkInfo alloc] init];
+		NSString* currentRadio = info.currentRadioAccessTechnology;
+		if( [currentRadio isEqualToString:CTRadioAccessTechnologyEdge]){
+			return network_2g;
+		} else if ([currentRadio isEqualToString:CTRadioAccessTechnologyLTE]){
+			return network_4g;
+		}
+		return network_3g;
 	}
-	NSNumber *number = (NSNumber*)[dataNetworkItemView valueForKey:@"dataNetworkType"];
-	return [number intValue];
 }
 
 
