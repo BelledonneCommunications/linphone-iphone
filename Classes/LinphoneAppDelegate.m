@@ -351,9 +351,9 @@
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from"];
         // Go to ChatRoom view
         [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+		LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
-        if(controller != nil) {
-            LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
+        if(controller != nil && room != nil) {
             [controller setChatRoom:room];
         }
     } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
