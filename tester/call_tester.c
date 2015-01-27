@@ -25,7 +25,7 @@
 #include "lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#include "mediastreamer2/dsptools.h"
+#include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
 
 #ifdef WIN32

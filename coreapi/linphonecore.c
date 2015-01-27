@@ -1829,6 +1829,25 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs){
 	return 0;
 }
 
+/**
+ * Enable RFC3389 generic confort noise algorithm (CN payload type).
+ * It is disabled by default, because this algorithm is only relevant for legacy codecs (PCMU, PCMA, G722).
+ * @param lc the LinphoneCore
+ * @param enabled TRUE if enabled, FALSE otherwise.
+**/
+void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled){
+	lp_config_set_int(lc->config, "misc", "use_cn", enabled);
+}
+
+/**
+ * Returns enablement of RFC3389 generic confort noise algorithm.
+ * @param lc the LinphoneCore
+ * @return TRUE or FALSE.
+**/
+bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config, "misc", "use_cn", FALSE);
+}
+
 const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
 {
 	return lc->friends;
