@@ -420,13 +420,11 @@
 		F0ED998C1A16464D00A788CE /* chimes_48000_stereo.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99281A1645C200A788CE /* chimes_48000_stereo.wav */; };
 		F0ED998D1A16464D00A788CE /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99171A1645C200A788CE /* Makefile.am */; };
 		F0ED998E1A16464D00A788CE /* bird_44100_stereo.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99271A1645C200A788CE /* bird_44100_stereo.wav */; };
-		F0ED998F1A16464D00A788CE /* hello_pcmu_h264.mkv in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99301A1645C200A788CE /* hello_pcmu_h264.mkv */; };
 		F0ED99901A16464D00A788CE /* hello8000-1s.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED992B1A1645C200A788CE /* hello8000-1s.wav */; };
 		F0ED99911A16464D00A788CE /* mediastream-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CC177AC70900C40726 /* mediastream-Info.plist */; };
 		F0ED99921A16464D00A788CE /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2E0177ACF5700C40726 /* nowebcamCIF.jpg */; };
 		F0ED99931A16464D00A788CE /* piano_8000_stereo.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99341A1645C200A788CE /* piano_8000_stereo.wav */; };
 		F0ED99941A16464D00A788CE /* hello16000.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED992A1A1645C200A788CE /* hello16000.wav */; };
-		F0ED99951A16464D00A788CE /* hello_opus_h264.mkv in Resources */ = {isa = PBXBuildFile; fileRef = F0ED992E1A1645C200A788CE /* hello_opus_h264.mkv */; };
 		F0ED99961A16464D00A788CE /* hello_pcmu.mka in Resources */ = {isa = PBXBuildFile; fileRef = F0ED992F1A1645C200A788CE /* hello_pcmu.mka */; };
 		F0ED99971A16464D00A788CE /* hello_opus.mka in Resources */ = {isa = PBXBuildFile; fileRef = F0ED992D1A1645C200A788CE /* hello_opus.mka */; };
 		F0ED99981A16464D00A788CE /* arpeggio_8000_mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = F0ED99261A1645C200A788CE /* arpeggio_8000_mono.wav */; };
@@ -792,9 +790,7 @@
 		F0ED992B1A1645C200A788CE /* hello8000-1s.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "hello8000-1s.wav"; sourceTree = "<group>"; };
 		F0ED992C1A1645C200A788CE /* hello8000.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hello8000.wav; sourceTree = "<group>"; };
 		F0ED992D1A1645C200A788CE /* hello_opus.mka */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello_opus.mka; sourceTree = "<group>"; };
-		F0ED992E1A1645C200A788CE /* hello_opus_h264.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello_opus_h264.mkv; sourceTree = "<group>"; };
 		F0ED992F1A1645C200A788CE /* hello_pcmu.mka */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello_pcmu.mka; sourceTree = "<group>"; };
-		F0ED99301A1645C200A788CE /* hello_pcmu_h264.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello_pcmu_h264.mkv; sourceTree = "<group>"; };
 		F0ED99311A1645C200A788CE /* laserrocket_16000_mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = laserrocket_16000_mono.wav; sourceTree = "<group>"; };
 		F0ED99321A1645C200A788CE /* nylon_48000_mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = nylon_48000_mono.wav; sourceTree = "<group>"; };
 		F0ED99331A1645C200A788CE /* owl_44100_mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = owl_44100_mono.wav; sourceTree = "<group>"; };
@@ -1357,9 +1353,7 @@
 				F0ED992B1A1645C200A788CE /* hello8000-1s.wav */,
 				F0ED992C1A1645C200A788CE /* hello8000.wav */,
 				F0ED992D1A1645C200A788CE /* hello_opus.mka */,
-				F0ED992E1A1645C200A788CE /* hello_opus_h264.mkv */,
 				F0ED992F1A1645C200A788CE /* hello_pcmu.mka */,
-				F0ED99301A1645C200A788CE /* hello_pcmu_h264.mkv */,
 				F0ED99311A1645C200A788CE /* laserrocket_16000_mono.wav */,
 				F0ED99321A1645C200A788CE /* nylon_48000_mono.wav */,
 				F0ED99331A1645C200A788CE /* owl_44100_mono.wav */,
@@ -1829,13 +1823,11 @@
 				F0ED998C1A16464D00A788CE /* chimes_48000_stereo.wav in Resources */,
 				F0ED998D1A16464D00A788CE /* Makefile.am in Resources */,
 				F0ED998E1A16464D00A788CE /* bird_44100_stereo.wav in Resources */,
-				F0ED998F1A16464D00A788CE /* hello_pcmu_h264.mkv in Resources */,
 				F0ED99901A16464D00A788CE /* hello8000-1s.wav in Resources */,
 				F0ED99911A16464D00A788CE /* mediastream-Info.plist in Resources */,
 				F0ED99921A16464D00A788CE /* nowebcamCIF.jpg in Resources */,
 				F0ED99931A16464D00A788CE /* piano_8000_stereo.wav in Resources */,
 				F0ED99941A16464D00A788CE /* hello16000.wav in Resources */,
-				F0ED99951A16464D00A788CE /* hello_opus_h264.mkv in Resources */,
 				F0ED99961A16464D00A788CE /* hello_pcmu.mka in Resources */,
 				F0ED99971A16464D00A788CE /* hello_opus.mka in Resources */,
 				F0ED99981A16464D00A788CE /* arpeggio_8000_mono.wav in Resources */,
