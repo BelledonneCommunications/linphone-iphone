@@ -181,11 +181,11 @@ class TestRegister:
         cm = CoreManager('multi_account_rc', False)
         number_of_udp_proxies = reduce(lambda x, y: x + int(y.transport == "udp"), cm.lc.proxy_config_list, 0)
         total_number_of_proxies = len(cm.lc.proxy_config_list)
+        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == total_number_of_proxies), True)
+        register_ok = cm.stats.number_of_LinphoneRegistrationOk
         # Keep only UDP
-        tr = cm.lc.sip_transports
-        tr.tcp_port = 0
-        tr.tls_port = 0
-        tr.dtls_port = 0
+        tr = linphone.SipTransports(0, 0, 0, 0)
+        tr.udp_port = cm.lc.sip_transports.udp_port
         cm.lc.sip_transports = tr
-        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == number_of_udp_proxies), True)
+        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == (register_ok + number_of_udp_proxies)), True)
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == (total_number_of_proxies - number_of_udp_proxies)), True)

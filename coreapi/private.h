@@ -353,6 +353,7 @@ static MS2_INLINE void set_string(char **dest, const char *src){
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
+#define PAYLOAD_TYPE_FROZEN_NUMBER	PAYLOAD_TYPE_USER_FLAG_4
 
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
@@ -631,7 +632,9 @@ typedef struct sound_config
 typedef struct codecs_config
 {
 	MSList *audio_codecs;  /* list of audio codecs in order of preference*/
-	MSList *video_codecs;	/* for later use*/
+	MSList *video_codecs;
+	int dyn_pt;
+	int telephone_event_pt;
 }codecs_config_t;
 
 typedef struct video_config{
@@ -698,7 +701,8 @@ struct _LinphoneCore
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
-	RtpProfile *default_profile;
+	MSList *default_audio_codecs;
+	MSList *default_video_codecs;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;
@@ -707,8 +711,6 @@ struct _LinphoneCore
 	codecs_config_t codecs_conf;
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
-	MSList *payload_types;
-	int dyn_pt;
 	LinphoneProxyConfig *default_proxy;
 	MSList *friends;
 	MSList *auth_info;
@@ -1002,6 +1004,18 @@ static MS2_INLINE const LinphoneErrorInfo *linphone_error_info_from_sal_op(const
 	if (op==NULL) return (LinphoneErrorInfo*)sal_error_info_none();
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
+
+static MS2_INLINE void payload_type_set_enable(PayloadType *pt,int value)
+{
+	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
+	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
+}
+
+static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
+	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
+}
+
+bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 

@@ -77,6 +77,7 @@ void account_manager_destroy(void){
 		ms_free(the_am);
 	}
 	the_am=NULL;
+	ms_message("Test account manager destroyed.");
 }
 
 Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *identity){
@@ -211,10 +212,6 @@ void linphone_core_manager_check_accounts(LinphoneCoreManager *m){
 
 	for(it=linphone_core_get_proxy_config_list(m->lc);it!=NULL;it=it->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig *)it->data;
-		LinphoneAddress *modified_identity=account_manager_check_account(am,cfg);
-		if (m->identity){
-			linphone_address_unref(m->identity);
-		}
-		m->identity=linphone_address_ref(modified_identity);
+		account_manager_check_account(am,cfg);
 	}
 }

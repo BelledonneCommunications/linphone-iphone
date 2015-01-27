@@ -32,8 +32,8 @@
 #endif
 
 
-/*getline is not available on android...*/
-#ifdef ANDROID
+/*getline is POSIX 2008, not available on many systems.*/
+#if defined(ANDROID) || defined(WIN32)
 /* This code is public domain -- Will Hartung 4/9/09 */
 size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	char *bufptr = NULL;
@@ -153,8 +153,10 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		int line_count = 0;
 		char *line = NULL;
 		size_t line_size = 256;
+#ifndef WIN32
 		struct tm tm_curr;
 		time_t time_prev = -1;
+#endif
 
 #if HAVE_ZLIB
 		// 0) if zlib is enabled, we must decompress the file first
@@ -170,6 +172,7 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		while (getline(&line, &line_size, file) != -1) {
 			// a) there should be at least 25 lines
 			++line_count;
+#ifndef WIN32
 			// b) logs should be ordered by date (format: 2014-11-04 15:22:12:606)
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
@@ -180,6 +183,9 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 					time_prev = time_curr;
 				}
 			}
+#else
+			ms_warning("strptime() not available for this platform, test is incomplete.");
+#endif
 		}
 		CU_ASSERT_TRUE(line_count > 25);
 		free(line);

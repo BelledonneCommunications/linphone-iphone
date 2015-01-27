@@ -151,6 +151,11 @@ char *sal_address_as_string(const SalAddress *addr){
 	return ms_strdup(tmp);
 }
 
+bool_t sal_address_is_sip(const SalAddress *addr){
+	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
+	return belle_sip_header_address_get_uri(header_addr) != NULL;
+}
+
 char *sal_address_as_string_uri_only(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* sip_uri = belle_sip_header_address_get_uri(header_addr);
@@ -210,7 +215,7 @@ void sal_address_unref(SalAddress *addr){
 	belle_sip_object_unref(BELLE_SIP_HEADER_ADDRESS(addr));
 }
 
-bool_t sal_address_is_ipv6(SalAddress *addr){
+bool_t sal_address_is_ipv6(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
 	if (uri){

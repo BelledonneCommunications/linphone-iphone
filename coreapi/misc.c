@@ -59,15 +59,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define RTP_HDR_SZ 12
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
-static void payload_type_set_enable(PayloadType *pt,int value)
-{
-	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
-	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
-}
-
-static bool_t payload_type_enabled(const PayloadType *pt) {
-	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
-}
 
 bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
@@ -95,6 +86,10 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt,
 
 int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
 	return payload_type_get_number(pt);
+}
+
+void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number){
+	payload_type_set_number(pt,number);
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){

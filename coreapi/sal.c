@@ -62,9 +62,10 @@ SalMediaDescription *sal_media_description_new(){
 static void sal_media_description_destroy(SalMediaDescription *md){
 	int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
-		ms_list_for_each(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
-		ms_list_free(md->streams[i].payloads);
+		ms_list_free_with_data(md->streams[i].payloads,(void (*)(void *))payload_type_destroy);
+		ms_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
 		md->streams[i].payloads=NULL;
+		md->streams[i].already_assigned_payloads=NULL;
 	}
 	ms_free(md);
 }

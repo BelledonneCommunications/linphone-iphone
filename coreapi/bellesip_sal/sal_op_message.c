@@ -172,6 +172,9 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		op->dir=SalOpDirOutgoing;
 
 		req=sal_op_build_request(op,"MESSAGE");
+		if (req == NULL ){
+			return -1;
+		}
 		if (sal_op_get_contact_address(op)){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
 		}

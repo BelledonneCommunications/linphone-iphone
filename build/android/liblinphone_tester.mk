@@ -18,7 +18,8 @@ common_SRC_FILES := \
 	transport_tester.c \
 	player_tester.c \
 	dtmf_tester.c \
-	accountmanager.c
+	accountmanager.c \
+	offeranswer_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \

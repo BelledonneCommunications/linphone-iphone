@@ -62,7 +62,10 @@ case $target in
 	*mingw*)
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
-		LIBS="$LIBS -L/lib -lws2_32"
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
+		LIBS="$LIBS -lws2_32"
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
@@ -298,7 +301,7 @@ if test "$build_zlib" != "false" ; then
 			AC_MSG_NOTICE([zlib library and headers not found])
 		else
 			AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
-			ZLIBS_LIBS='-z'
+			ZLIB_LIBS='-lz'
 			AC_SUBST(ZLIB_LIBS)
 		fi
 	else

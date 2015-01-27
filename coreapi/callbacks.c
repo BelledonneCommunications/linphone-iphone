@@ -96,7 +96,23 @@ static void prepare_early_media_forking(LinphoneCall *call){
 	if (call->videostream){
 		rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,FALSE);
 	}
+}
 
+void linphone_call_update_frozen_payloads(LinphoneCall *call, SalMediaDescription *result_desc){
+	SalMediaDescription *local=call->localdesc;
+	int i;
+	for(i=0;i<result_desc->nb_streams;++i){
+		MSList *elem;
+		for (elem=result_desc->streams[i].payloads;elem!=NULL;elem=elem->next){
+			PayloadType *pt=(PayloadType*)elem->data;
+			if (is_payload_type_number_available(local->streams[i].already_assigned_payloads, payload_type_get_number(pt), NULL)){
+				/*new codec, needs to be added to the list*/
+				local->streams[i].already_assigned_payloads=ms_list_append(local->streams[i].already_assigned_payloads, payload_type_clone(pt));
+				ms_message("LinphoneCall[%p] : payload type %i %s/%i fmtp=%s added to frozen list.",
+					   call, payload_type_get_number(pt), pt->mime_type, pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : NULL);
+			}
+		}
+	}
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -181,6 +197,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
+	linphone_call_update_frozen_payloads(call, new_md);
 	end:
 	if (oldmd)
 		sal_media_description_unref(oldmd);
@@ -597,7 +614,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		}
 	}
 
-	if (call->state==LinphoneCallStreamsRunning) {
+	if ( call->state == LinphoneCallStreamsRunning) {
 		/*reINVITE and in-dialogs UPDATE go here*/
 		linphone_core_notify_display_status(lc,_("Call is updated by remote."));
 		call->defer_update=FALSE;
@@ -605,8 +622,21 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		if (call->defer_update==FALSE){
 			linphone_core_accept_call_update(lc,call,NULL);
 		}
-		if (rmd==NULL)
+		if (rmd==NULL){
 			call->expect_media_in_ack=TRUE;
+		}
+
+	} else if( call->state == LinphoneCallPausedByRemote ){
+		/* Case where no SDP is present and we were paused by remote.
+		 * We send back an ACK with our SDP and expect the remote to send its own.
+		 * No state change here until an answer is received. */
+		call->defer_update=FALSE;
+		if (call->defer_update==FALSE){
+			_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
+		}
+		if (rmd==NULL){
+			call->expect_media_in_ack=TRUE;
+		}
 	} else if (is_update){ /*SIP UPDATE case, can occur in early states*/
 		linphone_call_set_state(call, LinphoneCallEarlyUpdatedByRemote, "EarlyUpdatedByRemote");
 		_linphone_core_accept_call_update(lc,call,NULL,call->prevstate,linphone_call_state_to_string(call->prevstate));

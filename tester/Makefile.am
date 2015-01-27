@@ -26,7 +26,8 @@ liblinphonetester_la_SOURCES = tester.c \
 				transport_tester.c \
 				player_tester.c \
 				dtmf_tester.c \
-				accountmanager.c
+				accountmanager.c \
+				offeranswer_tester.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)

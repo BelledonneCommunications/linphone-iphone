@@ -420,6 +420,7 @@ void liblinphone_tester_set_writable_dir_prefix(const char* writable_dir_prefix)
 void liblinphone_tester_init(void) {
 	add_test_suite(&setup_test_suite);
 	add_test_suite(&register_test_suite);
+	add_test_suite(&offeranswer_test_suite);
 	add_test_suite(&call_test_suite);
 	add_test_suite(&message_test_suite);
 	add_test_suite(&presence_test_suite);

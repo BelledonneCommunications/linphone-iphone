@@ -31,7 +31,49 @@ static bool_t only_telephone_event(const MSList *l){
 	return TRUE;
 }
 
-static PayloadType * find_payload_type_best_match(const MSList *l, const PayloadType *refpt){
+typedef struct _PayloadTypeMatcher{
+	const char *mime_type;
+	PayloadType *(*match_func)(const MSList *l, const PayloadType *refpt);
+}PayloadTypeMatcher;
+
+static PayloadType * opus_match(const MSList *l, const PayloadType *refpt){
+	PayloadType *pt;
+	const MSList *elem;
+	PayloadType *candidate=NULL;
+
+	for (elem=l;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		
+		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
+		if (strcasecmp(pt->mime_type,"opus")==0 ){
+			if (refpt->channels==1){
+				pt->channels=1; /*so that we respond with same number of channels */
+				candidate=pt;
+			}else if (refpt->channels==2){
+				return pt;
+			}
+		}
+	}
+	return candidate;
+}
+
+/* the reason for this matcher is for some stupid uncompliant phone that offer G729a mime type !*/
+static PayloadType * g729A_match(const MSList *l, const PayloadType *refpt){
+	PayloadType *pt;
+	const MSList *elem;
+	PayloadType *candidate=NULL;
+
+	for (elem=l;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		
+		if (strcasecmp(pt->mime_type,"G729")==0 && refpt->channels==pt->channels){
+			candidate=pt;
+		}
+	}
+	return candidate;
+}
+
+static PayloadType * amr_match(const MSList *l, const PayloadType *refpt){
 	PayloadType *pt;
 	char value[10];
 	const MSList *elem;
@@ -40,38 +82,62 @@ static PayloadType * find_payload_type_best_match(const MSList *l, const Payload
 	for (elem=l;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
-		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
-		if (refpt->mime_type && strcasecmp(refpt->mime_type,"opus")==0 && refpt->channels==1
-			&& strcasecmp(pt->mime_type,refpt->mime_type)==0){
-			pt->channels=1; /*so that we respond with same number of channels */
-			candidate=pt;
-			break;
-		}
-		
-		/* the compare between G729 and G729A is for some stupid uncompliant phone*/
-		if ( pt->mime_type && refpt->mime_type &&
-			(strcasecmp(pt->mime_type,refpt->mime_type)==0  ||
-			(strcasecmp(pt->mime_type, "G729") == 0 && strcasecmp(refpt->mime_type, "G729A") == 0 ))
-			&& pt->clock_rate==refpt->clock_rate && pt->channels==refpt->channels){
-			candidate=pt;
-			/*good candidate, check fmtp for H264 */
-			if (strcasecmp(pt->mime_type,"H264")==0){
-				if (pt->recv_fmtp!=NULL && refpt->recv_fmtp!=NULL){
-					int mode1=0,mode2=0;
-					if (fmtp_get_value(pt->recv_fmtp,"packetization-mode",value,sizeof(value))){
-						mode1=atoi(value);
-					}
-					if (fmtp_get_value(refpt->recv_fmtp,"packetization-mode",value,sizeof(value))){
-						mode2=atoi(value);
-					}
-					if (mode1==mode2)
-						break; /*exact match */
-				}
-			}else break;
+		if ( pt->mime_type && refpt->mime_type 
+			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
+			&& pt->clock_rate==refpt->clock_rate
+			&& pt->channels==refpt->channels) {
+			int octedalign1=0,octedalign2=0;
+			if (pt->recv_fmtp!=NULL && fmtp_get_value(pt->recv_fmtp,"octet-align",value,sizeof(value))){
+				octedalign1=atoi(value);
+			}
+			if (refpt->send_fmtp!=NULL && fmtp_get_value(refpt->send_fmtp,"octet-align",value,sizeof(value))){
+				octedalign2=atoi(value);
+			}
+			if (octedalign1==octedalign2) {
+				candidate=pt;
+				break; /*exact match */
+			}
 		}
 	}
 	return candidate;
 }
+
+static PayloadType * generic_match(const MSList *l, const PayloadType *refpt){
+	PayloadType *pt;
+	const MSList *elem;
+
+	for (elem=l;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		
+		if ( pt->mime_type && refpt->mime_type 
+			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
+			&& pt->clock_rate==refpt->clock_rate
+			&& pt->channels==refpt->channels)
+			return pt;
+	}
+	return NULL;
+}
+
+static PayloadTypeMatcher matchers[]={
+	{"opus", opus_match},
+	{"G729A", g729A_match},
+	{"AMR", amr_match},
+	{"AMR-WB", amr_match},
+	{NULL, NULL}
+};
+
+
+
+static PayloadType * find_payload_type_best_match(const MSList *l, const PayloadType *refpt){
+	PayloadTypeMatcher *m;
+	for(m=matchers;m->mime_type!=NULL;++m){
+		if (refpt->mime_type && strcasecmp(m->mime_type,refpt->mime_type)==0){
+			return m->match_func(l,refpt);
+		}
+	}
+	return generic_match(l,refpt);
+}
+
 
 static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
 	const MSList *e2,*e1;
@@ -110,6 +176,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			res=ms_list_append(res,newp);
 			/* we should use the remote numbering even when parsing a response */
 			payload_type_set_number(newp,remote_number);
+			payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
 						  newp->mime_type, local_number, remote_number);
@@ -120,6 +187,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				*/
 				newp=payload_type_clone(newp);
 				payload_type_set_number(newp,local_number);
+				payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
 				res=ms_list_append(res,newp);
 			}
 		}else{
@@ -143,7 +211,8 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 			if (!found){
 				ms_message("Adding %s/%i for compatibility, just in case.",p1->mime_type,p1->clock_rate);
 				p1=payload_type_clone(p1);
-				p1->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV;
+				payload_type_set_flag(p1, PAYLOAD_TYPE_FLAG_CAN_RECV);
+				payload_type_set_flag(p1, PAYLOAD_TYPE_FROZEN_NUMBER);
 				res=ms_list_append(res,p1);
 			}
 		}
