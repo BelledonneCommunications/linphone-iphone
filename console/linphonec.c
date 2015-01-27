@@ -161,6 +161,7 @@ static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static char zrtpsecrets[PATH_MAX];
+static char usr_certificates_path[PATH_MAX];
 static const char *factory_configfile_name=NULL;
 static char *sip_addr_to_call = NULL; /* for autocall */
 static int window_id = 0; /* 0=standalone window, or window id for embedding video */
@@ -680,6 +681,8 @@ linphonec_init(int argc, char **argv)
 			getenv("HOME"));
 	snprintf(zrtpsecrets, PATH_MAX, "%s/.linphone-zidcache",
 			getenv("HOME"));
+	snprintf(usr_certificates_path, PATH_MAX, "%s/.linphone-usr-crt",
+			getenv("HOME"));
 #elif defined(_WIN32_WCE)
 	strncpy(configfile_name,PACKAGE_DIR "\\linphonerc",PATH_MAX);
 	mylogfile=fopen(PACKAGE_DIR "\\" "linphonec.log","w");
@@ -688,6 +691,8 @@ linphonec_init(int argc, char **argv)
 	snprintf(configfile_name, PATH_MAX, "%s/Linphone/linphonerc",
 			getenv("APPDATA"));
 	snprintf(zrtpsecrets, PATH_MAX, "%s/Linphone/linphone-zidcache",
+			getenv("APPDATA"));
+	snprintf(usr_certificates_path, PATH_MAX, "%s/Linphone/linphone-usr-crt",
 			getenv("APPDATA"));
 #endif
 	/* Handle configuration filename changes */
@@ -745,6 +750,7 @@ linphonec_init(int argc, char **argv)
 
 	linphone_core_set_user_agent(linphonec,"Linphonec", LINPHONE_VERSION);
 	linphone_core_set_zrtp_secrets_file(linphonec,zrtpsecrets);
+	linphone_core_set_user_certificates_path(linphonec,usr_certificates_path);
 	linphone_core_enable_video_capture(linphonec, vcap_enabled);
 	linphone_core_enable_video_display(linphonec, display_enabled);
 	if (display_enabled && window_id != 0)

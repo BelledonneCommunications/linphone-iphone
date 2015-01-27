@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
+#include <mediastreamer2/dtls_srtp.h>
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
@@ -1453,6 +1454,12 @@ static void misc_config_read(LinphoneCore *lc) {
 		lp_config_set_string(config,"misc","uuid",tmp);
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		sal_set_uuid(lc->sal, uuid);
+
+	/* DTLS: if media_encryption DTLS SRTP is available, get or create the certificate directory */
+	/*if (ms_dtls_srtp_available()){
+		*//*JOHAN: USELESS? REMOVE IT*/
+		//const char *user_certificate_config_path = lp_config_get_string(config,"misc","uuid",);
+//	}*/
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
@@ -3094,12 +3101,12 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);
 
-	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
 		if (linphone_call_prepare_ice(call,FALSE)==1)
 			defer=TRUE;
 	}
-	else if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
@@ -4932,23 +4939,8 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	if (linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
-
-LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie){
+LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
 	const char *policy;
-	if(lie) {
-		LinphoneTunnel *tunnel = linphone_core_get_tunnel(lc);
-		if(tunnel != NULL && linphone_tunnel_get_mode(tunnel)) {
-			return LinphonePolicyNoFirewall;
-		}
-	}
 	policy = lp_config_get_string(lc->config, "net", "firewall_policy", NULL);
 	if ((policy == NULL) || (strcmp(policy, "0") == 0))
 		return LinphonePolicyNoFirewall;
@@ -6271,6 +6263,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
 	}
+	if(lc->user_certificates_path != NULL) {
+		ms_free(lc->user_certificates_path);
+	}
 	if(lc->play_file!=NULL){
 		ms_free(lc->play_file);
 	}
@@ -6709,6 +6704,17 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
 }
 
+void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){
+	if (lc->user_certificates_path != NULL) {
+		ms_free(lc->user_certificates_path);
+	}
+	lc->user_certificates_path = path ? ms_strdup(path) : NULL;
+}
+
+const char *linphone_core_get_user_certificates_path(LinphoneCore *lc){
+	return lc->user_certificates_path;
+}
+
 LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
 	MSList *calls;
 	LinphoneCall *c;
@@ -6769,6 +6775,8 @@ const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
 			return "LinphoneMediaEncryptionSRTP";
+		case LinphoneMediaEncryptionDTLS:
+			return "LinphoneMediaEncryptionDTLS";
 		case LinphoneMediaEncryptionZRTP:
 			return "LinphoneMediaEncryptionZRTP";
 		case LinphoneMediaEncryptionNone:
@@ -6785,6 +6793,8 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
 			return ms_srtp_supported();
+		case LinphoneMediaEncryptionDTLS:
+			return ms_dtls_srtp_available();
 		case LinphoneMediaEncryptionZRTP:
 			return ms_zrtp_available();
 		case LinphoneMediaEncryptionNone:
@@ -6808,7 +6818,14 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 			type="none";
 			ret=-1;
 		}else type="zrtp";
+	}else if (menc == LinphoneMediaEncryptionDTLS){
+		if (!ms_dtls_srtp_available()){
+			ms_warning("DTLS not supported by library.");
+			type="none";
+			ret=-1;
+		}else type="dtls";
 	}
+
 	lp_config_set_string(lc->config,"sip","media_encryption",type);
 	return ret;
 }
@@ -6820,6 +6837,8 @@ LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc) {
 		return LinphoneMediaEncryptionNone;
 	else if (strcmp(menc, "srtp")==0)
 		return LinphoneMediaEncryptionSRTP;
+	else if (strcmp(menc, "dtls")==0)
+		return LinphoneMediaEncryptionDTLS;
 	else if (strcmp(menc, "zrtp")==0)
 		return LinphoneMediaEncryptionZRTP;
 	else

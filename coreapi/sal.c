@@ -121,7 +121,9 @@ SalStreamDescription * sal_media_description_find_secure_stream_of_type(SalMedia
 }
 
 SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescription *md, SalStreamType type) {
-	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
+	SalStreamDescription *desc = sal_media_description_find_stream(md, SalProtoUdpTlsRtpSavpf, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoUdpTlsRtpSavp, type);
+	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavpf, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpSavp, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvpf, type);
 	if (desc == NULL) desc = sal_media_description_find_stream(md, SalProtoRtpAvp, type);
@@ -195,11 +197,15 @@ bool_t sal_stream_description_active(const SalStreamDescription *sd) {
 }
 
 bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf));
+	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf) || (sd->proto == SalProtoUdpTlsRtpSavpf));
 }
 
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd) {
 	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
+}
+
+bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd) {
+	return ((sd->proto == SalProtoUdpTlsRtpSavp) || (sd->proto == SalProtoUdpTlsRtpSavpf));
 }
 
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {
@@ -218,6 +224,16 @@ bool_t sal_media_description_has_srtp(const SalMediaDescription *md) {
 	for (i = 0; i < md->nb_streams; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		if (sal_stream_description_has_srtp(&md->streams[i]) != TRUE) return FALSE;
+	}
+	return TRUE;
+}
+
+bool_t sal_media_description_has_dtls(const SalMediaDescription *md) {
+	int i;
+	if (md->nb_streams == 0) return FALSE;
+	for (i = 0; i < md->nb_streams; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (sal_stream_description_has_dtls(&md->streams[i]) != TRUE) return FALSE;
 	}
 	return TRUE;
 }
@@ -608,8 +624,10 @@ const char* sal_media_proto_to_string(SalMediaProto type) {
 	switch (type) {
 	case SalProtoRtpAvp:return "RTP/AVP";
 	case SalProtoRtpSavp:return "RTP/SAVP";
+	case SalProtoUdpTlsRtpSavp:return "UDP/TLS/RTP/SAVP";
 	case SalProtoRtpAvpf:return "RTP/AVPF";
 	case SalProtoRtpSavpf:return "RTP/SAVPF";
+	case SalProtoUdpTlsRtpSavpf:return "UDP/TLS/RTP/SAVPF";
 	default: return "unknown";
 	}
 }

@@ -213,6 +213,7 @@ struct _LinphoneCall{
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
+	LinphoneAddress *me; /*Either from or to based on call dir*/
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
@@ -253,6 +254,7 @@ struct _LinphoneCall{
 	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
+	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -296,20 +298,6 @@ void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
-/**
- * @brief Equivalent to _linphone_core_get_firewall_policy_with_lie(lc, TRUE)
- * @param lc LinphoneCore instance
- * @return Fairewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc);
-/**
- * @brief Get the firwall policy which has been set.
- * @param lc Instance of LinphoneCore
- * @param lie If true, the configured firewall policy will be returned only if no tunnel are enabled.
- * Otherwise, NoFirewallPolicy value will be returned.
- * @return The firewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie);
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenceModel *presence);
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);
@@ -757,6 +745,7 @@ struct _LinphoneCore
 	MSList *hooks;
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
+	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	bool_t use_files;
 	bool_t apply_nat_settings;

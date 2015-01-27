@@ -338,7 +338,7 @@ static void call_received(SalOp *h){
 	linphone_core_add_call(lc,call);
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 
-	if ((_linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");
 		return;

@@ -628,6 +628,16 @@ AC_ARG_ENABLE(zrtp,
 	[zrtp=false]
 )
 
+AC_ARG_ENABLE(dtls,
+	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
+	[case "${enableval}" in
+		yes)	dtls=true ;;
+		no)	dtls=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-dtls) ;;
+	esac],
+	[dtls=false]
+)
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -638,6 +648,7 @@ dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
 AM_CONDITIONAL(BUILD_ZRTP, test x$zrtp = xtrue)
+AM_CONDITIONAL(BUILD_DTLS, test x$dtls = xtrue)
 
 dnl check getenv
 AH_TEMPLATE([HAVE_GETENV])
@@ -985,6 +996,7 @@ printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption"		$zrtp
+printf "* %-30s %s\n" "DTLS encryption"		$dtls
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib

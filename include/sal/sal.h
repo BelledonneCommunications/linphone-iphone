@@ -133,6 +133,8 @@ typedef enum{
 	SalProtoRtpSavp,
 	SalProtoRtpAvpf,
 	SalProtoRtpSavpf,
+	SalProtoUdpTlsRtpSavp,
+	SalProtoUdpTlsRtpSavpf,
 	SalProtoOther
 }SalMediaProto;
 const char* sal_media_proto_to_string(SalMediaProto type);
@@ -163,7 +165,7 @@ typedef struct SalIceCandidate {
 	int rport;
 } SalIceCandidate;
 
-#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 20
 
 typedef struct SalIceRemoteCandidate {
 	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
@@ -186,6 +188,13 @@ typedef struct SalSrtpCryptoAlgo {
 
 #define SAL_CRYPTO_ALGO_MAX 4
 
+typedef enum {
+	SalDtlsRoleInvalid,
+	SalDtlsRoleIsServer,
+	SalDtlsRoleIsClient,
+	SalDtlsRoleUnset
+} SalDtlsRole;
+
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
 	SalMediaProto proto;
@@ -194,6 +203,8 @@ typedef struct SalStreamDescription{
 	char proto_other[32];
 	char rtp_addr[64];
 	char rtcp_addr[64];
+	unsigned int rtp_ssrc;
+	char rtcp_cname[255];
 	int rtp_port;
 	int rtcp_port;
 	MSList *payloads; /*<list of PayloadType */
@@ -212,6 +223,8 @@ typedef struct SalStreamDescription{
 	bool_t ice_mismatch;
 	bool_t ice_completed;
 	bool_t pad[2];
+	char dtls_fingerprint[256];
+	SalDtlsRole dtls_role;
 } SalStreamDescription;
 
 const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc);
@@ -236,6 +249,8 @@ typedef struct SalMediaDescription{
 	bool_t ice_lite;
 	bool_t ice_completed;
 	bool_t pad[2];
+	char dtls_fingerprint[256];
+	SalDtlsRole dtls_role;
 } SalMediaDescription;
 
 typedef struct SalMessage{
@@ -270,8 +285,10 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 bool_t sal_stream_description_active(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd);
+bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd);
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md);
 bool_t sal_media_description_has_srtp(const SalMediaDescription *md);
+bool_t sal_media_description_has_dtls(const SalMediaDescription *md);
 int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 
 
@@ -514,6 +531,18 @@ void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path,
  * @param passwd password (optionnal)
  */
 void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd);
+
+/**
+ * Parse a directory for files containing certificate with the given subject CNAME
+ * @param[out]	certificate_pem				the address of a string to store the certificate in PEM format. To be freed by caller
+ * @param[out]	key_pem						the address of a string to store the key in PEM format. To be freed by caller
+ * @param[in]	path						directory to parse
+ * @param[in]	subject						subject CNAME
+ * @param[in]	format 						either PEM or DER
+ * @param[in]	generate_certificate		if true, if matching certificate and key can't be found, generate it and store it into the given dir, filename will be subject.pem
+ * @param[in]	generate_dtls_fingerprint	if true and we have a certificate, generate the dtls fingerprint as described in rfc4572
+ */
+void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint); 
 
 void sal_certificates_chain_delete(SalCertificatesChain *chain);
 void sal_signing_key_delete(SalSigningKey *key);

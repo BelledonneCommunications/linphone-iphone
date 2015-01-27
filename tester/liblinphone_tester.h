@@ -312,5 +312,6 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) ;
 #endif
 int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...);
 
+void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel);
 #endif /* LIBLINPHONE_TESTER_H_ */
 

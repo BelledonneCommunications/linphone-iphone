@@ -181,9 +181,11 @@ static GOptionEntry linphone_options[]={
 #ifndef WIN32
 #define CONFIG_FILE ".linphonerc"
 #define SECRETS_FILE ".linphone-zidcache"
+#define CERTIFICATES_PATH ".linphone-usr-crt"
 #else
 #define CONFIG_FILE "linphonerc"
 #define SECRETS_FILE "linphone-zidcache"
+#define CERTIFICATES_PATH "linphone-usr-crt"
 #endif
 
 char *linphone_gtk_get_config_file(const char *filename){
@@ -288,6 +290,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
+	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
 
 	vtable.global_state_changed=linphone_gtk_global_state_changed;
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
@@ -325,6 +328,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
+	linphone_core_set_user_certificates_path(the_core,user_certificates_dir);
+	g_free(user_certificates_dir);
 	linphone_core_enable_video_capture(the_core, TRUE);
 	linphone_core_enable_video_display(the_core, TRUE);
 	linphone_core_set_native_video_window_id(the_core,-1);/*don't create the window*/

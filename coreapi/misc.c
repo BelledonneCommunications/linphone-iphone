@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif /*_WIN32_WCE*/
 
 #undef snprintf
-#include <ortp/stun.h>
+#include <mediastreamer2/stun.h>
 
 #ifdef HAVE_GETIFADDRS
 #include <net/if.h>
@@ -891,8 +891,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
 					if (ice_restarted == FALSE
-							&& ice_check_list_remote_ufrag(cl)
-							&& ice_check_list_remote_pwd(cl)) {
+							&& ice_check_list_get_remote_ufrag(cl)
+							&& ice_check_list_get_remote_pwd(cl)) {
 							/* restart onlu if remote ufrag/paswd was already set*/
 						ice_session_restart(call->ice_session);
 						ice_restarted = TRUE;
