@@ -196,7 +196,7 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 
 		CU_ASSERT_TRUE( timediff <= 1 );
 		if( !(timediff <= 1) ){
-			ms_error("time_curr: %ld, last_log: %ld timediff: %d", time_curr, last_log, timediff );
+			ms_error("time_curr: %ld, last_log: %ld timediff: %u", (long int)time_curr, (long int)last_log, timediff );
 		}
 	}
 	// return latest time in file
