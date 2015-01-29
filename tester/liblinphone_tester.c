@@ -214,6 +214,7 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i], "--xml-file") == 0){
 			CHECK_ARG("--xml-file", ++i, argc);
 			xml_file = argv[i];
+			xml = 1;
 		} else if (strcmp(argv[i], "--xml") == 0){
 			xml = 1;
 		} else if (strcmp(argv[i],"--log-file")==0){
