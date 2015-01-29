@@ -60,6 +60,9 @@ case $target in
 		mingwce_found=yes
 	;;
 	*mingw*)
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
 		LIBS="$LIBS -lws2_32"
@@ -804,15 +807,6 @@ AC_SUBST(MEDIASTREAMER_CFLAGS)
 AC_SUBST(MEDIASTREAMER_LIBS)
 AC_SUBST([MS2_VERSION])
 AC_SUBST([MS2_DIR])
-
-
-case $target in
-	*mingw*)
-		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
-		CPPFLAGS="$CPPFLAGS -I/usr/include"
-		LDFLAGS="$LDFLAGS -L/usr/lib"
-	;;
-esac
 
 
 AC_ARG_ENABLE(tunnel,
