@@ -806,6 +806,14 @@ AC_SUBST([MS2_VERSION])
 AC_SUBST([MS2_DIR])
 
 
+case $target in
+	*mingw*)
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
+	;;
+esac
+
 
 AC_ARG_ENABLE(tunnel,
 	[AS_HELP_STRING([--enable-tunnel=[yes/no]], [Turn on compilation of tunnel support (default=no)])],
@@ -940,14 +948,6 @@ case "$target_os" in
 	*linux*)
 		# Eliminate -lstdc++ addition to postdeps for cross compiles.
 		postdeps_CXX=`echo " $postdeps_CXX " | sed 's, -lstdc++ ,,g'`
-	;;
-esac
-
-case $target in
-	*mingw*)
-		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
-		CPPFLAGS="$CPPFLAGS -I/usr/include"
-		LDFLAGS="$LDFLAGS -L/usr/lib"
 	;;
 esac
 
