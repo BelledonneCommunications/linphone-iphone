@@ -1076,6 +1076,20 @@ public interface LinphoneCore {
 	VideoSize getPreferredVideoSize();
 
 	/**
+	 * Set the preferred frame rate for video.
+	 * Based on the available bandwidth constraints and network conditions, the video encoder
+	 * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
+	 * used during a call. Default value is 0, which means "use encoder's default fps value".
+	 * @param fps the target frame rate in number of frames per seconds.
+	**/
+	void setPreferredFramerate(float fps);
+	
+	/**
+	 * Returns the preferred video framerate, previously set by setPreferredFramerate().
+	 * @return frame rate in number of frames per seconds.
+	**/
+	float getPreferredFramerate();
+	/**
 	 * Returns the currently supported audio codecs, as PayloadType elements
 	 * @return
 	 */

@@ -3399,6 +3399,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredFramerate(JN
 	linphone_core_set_preferred_framerate((LinphoneCore *)lc, framerate);
 }
 
+extern "C" float Java_org_linphone_core_LinphoneCoreImpl_getPreferredFramerate(JNIEnv *env, jobject thiz, jlong lc){
+	return linphone_core_get_preferred_framerate((LinphoneCore *)lc);
+}
+
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSizeByName(JNIEnv *env, jobject thiz, jlong lc, jstring jName) {
 	const char* cName = env->GetStringUTFChars(jName, NULL);
 	linphone_core_set_preferred_video_size_by_name((LinphoneCore *)lc, cName);

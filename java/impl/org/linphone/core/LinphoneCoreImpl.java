@@ -1330,4 +1330,15 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	 * @param path The path where the log files will be written.
 	 */
 	public native static void setLogCollectionPath(String path);
+	
+	private native void setPreferredFramerate(long nativePtr, float fps);
+	@Override
+	public void setPreferredFramerate(float fps) {
+		setPreferredFramerate(nativePtr,fps);
+	}
+	private native float getPreferredFramerate(long nativePtr);
+	@Override
+	public float getPreferredFramerate() {
+		return getPreferredFramerate(nativePtr);
+	}
 }
