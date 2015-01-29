@@ -62,9 +62,6 @@ case $target in
 	*mingw*)
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
-		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
-		CPPFLAGS="$CPPFLAGS -I/usr/include"
-		LDFLAGS="$LDFLAGS -L/usr/lib"
 		LIBS="$LIBS -lws2_32"
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
@@ -945,6 +942,15 @@ case "$target_os" in
 		postdeps_CXX=`echo " $postdeps_CXX " | sed 's, -lstdc++ ,,g'`
 	;;
 esac
+
+case $target in
+	*mingw*)
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
+	;;
+esac
+
 
 dnl ##################################################
 dnl # Check for doxygen
