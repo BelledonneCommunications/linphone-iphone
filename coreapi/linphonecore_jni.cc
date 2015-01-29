@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern "C" {
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mscommon.h"
-#include "mediastreamer2/dsptools.h"
 #include "mediastreamer2/msmediaplayer.h"
 #include "mediastreamer2/msutils.h"
 }
