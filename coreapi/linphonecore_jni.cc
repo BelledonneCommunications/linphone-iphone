@@ -29,6 +29,7 @@ extern "C" {
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/dsptools.h"
 #include "mediastreamer2/msmediaplayer.h"
+#include "mediastreamer2/msutils.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -420,7 +421,7 @@ public:
 		if (fileTransferRecvId) {
 			vTable->file_transfer_recv = fileTransferRecv;
 		}
-		
+
 		logCollectionUploadStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$LogCollectionUploadState"));
 		logCollectionUploadStateFromIntId = env->GetStaticMethodID(logCollectionUploadStateClass, "fromInt", "(I)Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;");
 		logCollectionUploadProgressId = env->GetMethodID(listenerClass, "uploadProgressIndication", "(Lorg/linphone/core/LinphoneCore;II)V");
@@ -810,7 +811,7 @@ public:
 			ms_error("cannot attach VM");
 			return;
 		}
-		
+
 		LinphoneCoreVTable *table = (LinphoneCoreVTable*) data;
 		if (table) {
 			LinphoneCoreData* lcData = (LinphoneCoreData*) linphone_core_v_table_get_user_data(table);
@@ -1832,7 +1833,7 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 	LinphoneCoreVTable *vTable = linphone_core_v_table_new();
 	LinphoneCoreData* ldata = new LinphoneCoreData(env, thiz, vTable, data);
 	linphone_core_v_table_set_user_data(vTable, ldata);
-	
+
 	return (jint)linphone_core_start_echo_calibration((LinphoneCore*)lc, ldata->ecCalibrationStatus, NULL, NULL, vTable);
 
 }
