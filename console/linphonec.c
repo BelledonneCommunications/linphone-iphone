@@ -536,7 +536,7 @@ char *linphonec_readline(char *prompt){
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
 		while(1){
-			
+
 			ms_mutex_lock(&prompt_mutex);
 			if (have_prompt){
 				char *ret=strdup(received_prompt);
@@ -931,7 +931,8 @@ print_usage (int exit_status)
 "  -D                   enable video display only (disabled by default)\n"
 "  -S                   show general state messages (disabled by default)\n"
 "  --wid  windowid      force embedding of video window into provided windowid (disabled by default)\n"
-"  -v or --version      display version and exits.\n");
+"  -v or --version      display version and exits.\n"
+);
 
   	exit(exit_status);
 }
