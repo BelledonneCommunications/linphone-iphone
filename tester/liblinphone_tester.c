@@ -143,7 +143,7 @@ void helper(const char *name) {
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif
-			"\t\t\t--xml\n"		
+			"\t\t\t--xml\n"
 			"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
 			, name);
 }
@@ -164,6 +164,7 @@ int main (int argc, char *argv[])
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
 	const char *xml_file=NULL;
+	char *xml_tmp_file=NULL;
 	int xml = 0;
 	FILE* log_file=NULL;
 #if defined(ANDROID)
@@ -213,6 +214,7 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i], "--xml-file") == 0){
 			CHECK_ARG("--xml-file", ++i, argc);
 			xml_file = argv[i];
+			xml_tmp_file = ms_strdup_printf("%s.tmp", argv[i]);
 		} else if (strcmp(argv[i], "--xml") == 0){
 			xml = 1;
 		} else if (strcmp(argv[i],"--log-file")==0){
@@ -238,14 +240,20 @@ int main (int argc, char *argv[])
 		return -1;
 	}
 
-	if( xml_file != NULL ){
-		liblinphone_tester_set_xml_output(xml_file);
+	if( xml_tmp_file != NULL ){
+		liblinphone_tester_set_xml_output(xml_tmp_file);
 	}
 	liblinphone_tester_enable_xml(xml);
 
 
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
+
+	if (xml_tmp_file != NULL) {
+		/*create real xml file only if tester did not crash*/
+		rename(xml_tmp_file, xml_file);
+		ms_free(xml_tmp_file);
+	}
 	return ret;
 }
 #endif /* WINAPI_FAMILY_PHONE_APP */
