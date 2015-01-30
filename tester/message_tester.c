@@ -1006,7 +1006,7 @@ message_tester_copy_file(const char *from, const char *to)
 	size_t n;
 
 	/* Open "from" file for reading */
-	in=fopen(from, "r");
+	in=fopen(from, "rb");
 	if ( in == NULL )
 	{
 		ms_error("Can't open %s for reading: %s\n",from,strerror(errno));
@@ -1014,7 +1014,7 @@ message_tester_copy_file(const char *from, const char *to)
 	}
 
 	/* Open "to" file for writing (will truncate existing files) */
-	out=fopen(to, "w");
+	out=fopen(to, "wb");
 	if ( out == NULL )
 	{
 		ms_error("Can't open %s for writing: %s\n",to,strerror(errno));
