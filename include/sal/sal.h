@@ -196,6 +196,14 @@ typedef enum {
 	SalDtlsRoleUnset
 } SalDtlsRole;
 
+typedef enum {
+	SalMulticastInative=0,
+	SalMulticastRoleSender,
+	SalMulticastRoleReceiver,
+	SalMulticastSenderReceiver
+} SalMulticastRole;
+
+
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
 	SalMediaProto proto;
@@ -226,6 +234,8 @@ typedef struct SalStreamDescription{
 	bool_t pad[2];
 	char dtls_fingerprint[256];
 	SalDtlsRole dtls_role;
+	int ttl; /*for multicast -1 to disable*/
+	SalMulticastRole multicast_role;
 } SalStreamDescription;
 
 const char *sal_stream_description_get_type_as_string(const SalStreamDescription *desc);

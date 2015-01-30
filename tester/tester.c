@@ -453,6 +453,7 @@ void liblinphone_tester_init(void) {
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 	add_test_suite(&video_test_suite);
 #endif
+	add_test_suite(&multicast_call_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

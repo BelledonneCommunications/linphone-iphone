@@ -210,10 +210,18 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	/*only add a c= line within the stream description if address are differents*/
 	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,md->addr)!=0){
 		bool_t inet6;
+		belle_sdp_connection_t *connection;
 		if (strchr(rtp_addr,':')!=NULL){
 			inet6=TRUE;
 		}else inet6=FALSE;
-		belle_sdp_media_description_set_connection(media_desc,belle_sdp_connection_create("IN", inet6 ? "IP6" : "IP4", rtp_addr));
+		connection = belle_sdp_connection_create("IN", inet6 ? "IP6" : "IP4", rtp_addr);
+		if (ms_is_multicast(rtp_addr)) {
+			/*remove session cline in case of multicast*/
+			belle_sdp_session_description_set_connection(session_desc,NULL);
+			if (inet6 == FALSE)
+				belle_sdp_connection_set_ttl(connection,stream->ttl);
+		}
+		belle_sdp_media_description_set_connection(media_desc,connection);
 	}
 
 	if ( stream->bandwidth>0 )
@@ -706,6 +714,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 	if ( ( cnx=belle_sdp_media_description_get_connection ( media_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
 		strncpy ( stream->rtp_addr,belle_sdp_connection_get_address ( cnx ), sizeof ( stream->rtp_addr ) -1 );
+		stream->ttl=belle_sdp_connection_get_ttl(cnx);
 	}
 
 	stream->rtp_port=belle_sdp_media_get_media_port ( media );

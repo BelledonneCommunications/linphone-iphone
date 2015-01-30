@@ -127,8 +127,8 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	}
 }
 
-#ifdef VIDEO_ENABLED
-static void linphone_call_cb(LinphoneCall *call,void * user_data) {
+
+void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
 	stats* counters;
@@ -139,7 +139,6 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	counters = (stats*)get_stats(lc);
 	counters->number_of_IframeDecoded++;
 }
-#endif
 
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
 	LinphoneCall *c1,*c2;
@@ -314,7 +313,7 @@ void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
 	CU_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallReleased,1));
 }
 
-static void simple_call(void) {
+void simple_call_base(bool_t enable_multicast_recv_side) {
 	int begin;
 	int leaked_objects;
 	LinphoneCoreManager* marie;
@@ -347,6 +346,8 @@ static void simple_call(void) {
 		linphone_address_unref(marie_addr);
 	}
 
+	linphone_core_enable_audio_multicast(pauline->lc,enable_multicast_recv_side);
+
 	CU_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	CU_ASSERT_PTR_NOT_NULL(pauline_call);
@@ -375,7 +376,9 @@ static void simple_call(void) {
 		belle_sip_object_dump_active_objects();
 	}
 }
-
+static void simple_call() {
+	simple_call_base(FALSE);
+}
 static void call_with_timeouted_bye(void) {
 	int begin;
 	int leaked_objects;
@@ -1131,11 +1134,13 @@ static void call_with_custom_headers(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_paused_resumed(void) {
+void call_paused_resumed_base(bool_t multicast) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_pauline;
 	const rtp_stats_t * stats;
+
+	linphone_core_enable_audio_multicast(pauline->lc,multicast);
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 	call_pauline = linphone_core_get_current_call(pauline->lc);
@@ -1170,7 +1175,9 @@ static void call_paused_resumed(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-
+static void call_paused_resumed(void) {
+	call_paused_resumed_base(FALSE);
+}
 #define CHECK_CURRENT_LOSS_RATE() \
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
 	/*wait for an RTCP packet to have an accurate cumulative lost value*/ \

@@ -296,9 +296,81 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 						SalStreamDescription *result){
 	if (remote_answer->rtp_port!=0)
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
+	else {
+		ms_message("Local stream description [%p] rejected by peer",local_offer);
+		result->rtp_port=0;
+		return;
+	}
 	result->proto=remote_answer->proto;
 	result->type=local_offer->type;
-	result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
+
+	if (ms_is_multicast(local_offer->rtp_addr)) {
+		/*6.2 Multicast Streams
+		...
+	   If a multicast stream is accepted, the address and port information
+	   in the answer MUST match that of the offer.  Similarly, the
+	   directionality information in the answer (sendonly, recvonly, or
+	   sendrecv) MUST equal that of the offer.  This is because all
+	   participants in a multicast session need to have equivalent views of
+	   the parameters of the session, an underlying assumption of the
+	   multicast bias of RFC 2327.*/
+	  if (strcmp(local_offer->rtp_addr,remote_answer->rtp_addr) !=0 ) {
+		  ms_message("Remote answered IP [%s] does not match offered [%s] for local stream description [%p]"
+				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_addr
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_addr
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+		  result->rtp_port=0;
+		  return;
+	  }
+	  if (local_offer->rtp_port!=remote_answer->rtp_port) {
+		  ms_message("Remote answered rtp port [%i] does not match offered [%i] for local stream description [%p]"
+				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_port
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_port
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+		  result->rtp_port=0;
+		  return;
+	  }
+	  if (local_offer->dir!=remote_answer->dir) {
+		  ms_message("Remote answered dir [%s] does not match offered [%s] for local stream description [%p]"
+				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(remote_answer->dir)
+				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(local_offer->dir)
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+		  result->rtp_port=0;
+		  return;
+	  }
+	  if (local_offer->bandwidth!=remote_answer->bandwidth) {
+		  ms_message("Remote answered bandwidth [%i] does not match offered [%i] for local stream description [%p]"
+				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->bandwidth
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->bandwidth
+				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+		  result->rtp_port=0;
+		  return;
+	  }
+	  if (local_offer->ptime > 0 && local_offer->ptime!=remote_answer->ptime) {
+	  		  ms_message("Remote answered ptime [%i] does not match offered [%i] for local stream description [%p]"
+	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ptime
+	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ptime
+	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+	  	  result->rtp_port=0;
+	  	  return;
+	  }
+	  if (local_offer->ttl > 0 && local_offer->ttl!=remote_answer->ttl) {
+	  	  ms_message("Remote answered ttl [%i] does not match offered [%i] for local stream description [%p]"
+	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ttl
+	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ttl
+	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
+	   	  result->rtp_port=0;
+	   	  return;
+	   }
+	  result->ttl=local_offer->ttl;
+	  result->dir=local_offer->dir;
+	  result->multicast_role = SalMulticastRoleSender;
+
+	} else {
+		result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
+	}
+
+
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->rtp_addr,remote_answer->rtp_addr);
@@ -328,16 +400,34 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
-	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
-	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->rtp_port!=0 || remote_offer->rtp_port==SalStreamSendOnly)){
+	if (!result->payloads || only_telephone_event(result->payloads) || remote_offer->rtp_port==0 || remote_offer->rtp_port==SalStreamSendOnly){
+		result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
+		result->rtp_port=0;
+		return;
+	}
+	if (ms_is_multicast(remote_offer->rtp_addr)) {
+		if (sal_stream_description_has_srtp(result) == TRUE) {
+			ms_message("SAVP not supported for multicast address for remote stream [%p]",remote_offer);
+			result->rtp_port=0;
+			return;
+		}
+		result->dir=remote_offer->dir;
+		strcpy(result->rtp_addr,remote_offer->rtp_addr);
+		strcpy(result->rtcp_addr,remote_offer->rtcp_addr);
+		result->rtp_port=remote_offer->rtp_port;
+		/*result->rtcp_port=remote_offer->rtcp_port;*/
+		result->rtcp_port=0; /* rtcp not supported yet*/
+		result->bandwidth=remote_offer->bandwidth;
+		result->ptime=remote_offer->ptime;
+		result->ttl=remote_offer->ttl;
+		result->multicast_role = SalMulticastRoleReceiver;
+	} else {
 		strcpy(result->rtp_addr,local_cap->rtp_addr);
 		strcpy(result->rtcp_addr,local_cap->rtcp_addr);
 		result->rtp_port=local_cap->rtp_port;
 		result->rtcp_port=local_cap->rtcp_port;
 		result->bandwidth=local_cap->bandwidth;
 		result->ptime=local_cap->ptime;
-	}else{
-		result->rtp_port=0;
 	}
 	if (sal_stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
@@ -357,6 +447,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	strncpy(result->rtcp_cname,local_cap->rtcp_cname,sizeof(result->rtcp_cname));
 
 }
+
 
 /**
  * Returns a media description to run the streams with, based on a local offer

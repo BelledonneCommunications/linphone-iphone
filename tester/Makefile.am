@@ -15,6 +15,7 @@ liblinphonetester_la_SOURCES = tester.c \
 				register_tester.c \
 				message_tester.c \
 				call_tester.c \
+				multicast_call_tester.c \
 				presence_tester.c \
 				upnp_tester.c \
 				eventapi_tester.c \

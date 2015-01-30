@@ -79,6 +79,7 @@ extern "C" {
 #endif
 #endif
 
+
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
 	void *user_data;
@@ -105,6 +106,9 @@ struct _LinphoneCallParams{
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
+	LinphoneCallParamsMediaDirection audio_dir;
+	LinphoneCallParamsMediaDirection video_dir;
+
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -217,6 +221,8 @@ struct _LinphoneCall{
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
+	char local_audio_ip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call or what proposed in sdp in case of multicast*/
+	char local_video_ip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call or what proposed in sdp in case of multicast*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
@@ -589,6 +595,12 @@ typedef struct rtp_config
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
 	bool_t pad;
+	char* audio_multicast_addr;
+	bool_t audio_multicast_enabled;
+	int audio_multicast_ttl;
+	char* video_multicast_addr;
+	int video_multicast_ttl;
+	bool_t video_multicast_enabled;
 }rtp_config_t;
 
 
