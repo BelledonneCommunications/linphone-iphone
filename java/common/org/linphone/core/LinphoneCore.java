@@ -1025,6 +1025,15 @@ public interface LinphoneCore {
 	 */
 	void setRootCA(String path);
 
+	/**
+	 * Sets the path to a wav file used for for ringing back.
+	 *
+	 * Ringback means the ring that is heard when it's ringing at the remote party.
+	 *
+	 * @param path The file must be a wav 16bit linear.
+	 */
+	void setRingback(String path);
+
 	void setUploadBandwidth(int bw);
 	/**
 	 * Sets maximum available download bandwidth
