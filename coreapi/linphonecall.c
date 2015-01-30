@@ -340,6 +340,16 @@ static MSList * create_telephone_events(LinphoneCore *lc, const MSList *codecs){
 	return ret;
 }
 
+static MSList *create_special_payload_types(LinphoneCore *lc, const MSList *codecs){
+	MSList *ret=create_telephone_events(lc, codecs);
+	if (linphone_core_generic_confort_noise_enabled(lc)){
+		PayloadType *cn=payload_type_clone(&payload_type_cn);
+		payload_type_set_number(cn, 13);
+		ret=ms_list_append(ret, cn);
+	}
+	return ret;
+}
+
 typedef struct _CodecConstraints{
 	int bandwidth_limit;
 	int max_codecs;
@@ -348,7 +358,7 @@ typedef struct _CodecConstraints{
 
 static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, const MSList *codecs){
 	MSList *l=NULL;
-	MSList *tevs=NULL;
+	MSList *specials=NULL;
 	const MSList *it;
 	int nb = 0;
 
@@ -379,8 +389,8 @@ static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, const
 		nb++;
 		if ((hints->max_codecs > 0) && (nb >= hints->max_codecs)) break;
 	}
-	tevs=create_telephone_events(lc,l);
-	l=ms_list_concat(l,tevs);
+	specials=create_special_payload_types(lc,l);
+	l=ms_list_concat(l,specials);
 	linphone_core_assign_payload_type_numbers(lc, l);
 	return l;
 }

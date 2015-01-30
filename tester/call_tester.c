@@ -3463,6 +3463,59 @@ static void call_with_paused_no_sdp_on_resume() {
 	}
 }
 
+static void call_with_generic_cn(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCall *pauline_call;
+	char *audio_file_with_silence=ms_strdup_printf("%s/%s",liblinphone_tester_file_prefix,"sounds/ahbahouaismaisbon.wav");
+	char *recorded_file=ms_strdup_printf("%s/%s",liblinphone_tester_writable_dir_prefix,"result.wav");
+	
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	
+	remove(recorded_file);
+
+	linphone_core_use_files(marie->lc,TRUE);
+	linphone_core_use_files(pauline->lc,TRUE);
+	linphone_core_set_play_file(marie->lc, audio_file_with_silence);
+	/*linphone_core_set_play_file(pauline->lc, NULL);*/
+	linphone_core_set_record_file(pauline->lc, recorded_file);
+	linphone_core_enable_generic_confort_noise(marie->lc, TRUE);
+	linphone_core_enable_generic_confort_noise(pauline->lc, TRUE);
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+	if (pauline_call){
+		const rtp_stats_t *rtps;
+		struct stat stbuf;
+		int err;
+		
+		wait_for_until(marie->lc, pauline->lc, NULL, 0, 8000);
+		rtps=rtp_session_get_stats(pauline_call->audiostream->ms.sessions.rtp_session);
+		CU_ASSERT_TRUE(rtps->packet_recv<=300 && rtps->packet_recv>=200);
+		CU_ASSERT_EQUAL((err=stat(recorded_file,&stbuf)), 0);
+		if (err==0){
+			CU_ASSERT_TRUE(stbuf.st_size>120000);
+		}
+	}
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+	ms_free(audio_file_with_silence);
+	ms_free(recorded_file);
+}
+
 
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
@@ -3558,6 +3611,7 @@ test_t call_tests[] = {
 	{ "Outgoing INVITE without ACK SDP",outgoing_invite_without_sdp},
 	{ "Incoming REINVITE without SDP",incoming_reinvite_without_ack_sdp},
 	{ "Outgoing REINVITE without ACK SDP",outgoing_reinvite_without_ack_sdp},
+	{ "Call with generic CN", call_with_generic_cn }
 };
 
 test_suite_t call_test_suite = {
