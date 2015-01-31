@@ -2241,9 +2241,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 
 	stream = sal_media_description_find_best_stream(call->resultdesc, SalAudio);
-	ms_message("DTLS: call_start_audio_stream, stream is %s", stream==NULL?"NULL":"not NULL");
 	if (stream && stream->dir!=SalStreamInactive && stream->rtp_port!=0){
-		ms_message("DTLS: call_start_audio_stream : we have stream and all stuff to start it");
 		playcard=lc->sound_conf.lsd_card ?
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 		captcard=lc->sound_conf.capt_sndcard;
@@ -2252,7 +2250,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
 
 		if (used_pt!=-1){
-			ms_message("DTLS: call_start_audio_stream : we made a profile and have used_pt != -1");
 			call->current_params->audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
 			if (playcard==NULL) {
 				ms_warning("No card defined for playback !");
