@@ -178,8 +178,6 @@
 		225D65821521C009008B2E81 /* scheduler.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6CF11F6CF9F00621220 /* scheduler.c */; };
 		225D65831521C009008B2E81 /* sessionset.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D111F6CF9F00621220 /* sessionset.c */; };
 		225D65841521C009008B2E81 /* str_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D311F6CF9F00621220 /* str_utils.c */; };
-		225D65851521C009008B2E81 /* stun.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D411F6CF9F00621220 /* stun.c */; };
-		225D65861521C009008B2E81 /* stun_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D511F6CF9F00621220 /* stun_udp.c */; };
 		225D65871521C009008B2E81 /* telephonyevents.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6D711F6CF9F00621220 /* telephonyevents.c */; };
 		225D65881521C009008B2E81 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA6F211F6CF9F00621220 /* utils.c */; };
 		225D65B81521C009008B2E81 /* netsim.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F23D145710540035B0D0 /* netsim.c */; };
@@ -346,14 +344,17 @@
 		F02538F919794908002C30F3 /* flowcontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538F819794908002C30F3 /* flowcontrol.c */; };
 		F02538FB1979491B002C30F3 /* videostarter.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538FA1979491B002C30F3 /* videostarter.c */; };
 		F0340ADD1A6D13BD002E4BF1 /* ms_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0340ADC1A6D13BD002E4BF1 /* ms_srtp.c */; };
-		F0340ADF1A6D13FF002E4BF1 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0340ADE1A6D13FF002E4BF1 /* zrtp.c */; };
 		F0497F021A1652F100B67112 /* mediastreamer2_neon_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F0ED9B981A164D7200A788CE /* mediastreamer2_neon_tester.c */; };
-		F0497F0C1A1B483E00B67112 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0497F0B1A1B483E00B67112 /* zrtp.c */; };
 		F0497F0E1A1B4C1700B67112 /* mediastreamer2_tester_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F0497F0D1A1B4C1700B67112 /* mediastreamer2_tester_ios.m */; };
 		F0497F131A1C9E9C00B67112 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CA177AC70900C40726 /* mediastreamViewController.xib */; };
 		F0497F141A1C9EA000B67112 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C8177AC70900C40726 /* MainWindow.xib */; };
 		F0497F161A1C9F8700B67112 /* mediastream-tester-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F0497F151A1C9F8700B67112 /* mediastream-tester-Info.plist */; };
 		F04D51EE1A08E638004DD530 /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = F04D51ED1A08E638004DD530 /* common.c */; };
+		F08272D31A7F892700BB6004 /* extremum.c in Sources */ = {isa = PBXBuildFile; fileRef = F08272D21A7F892700BB6004 /* extremum.c */; };
+		F08272D61A7F895400BB6004 /* stun_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = F08272D41A7F895400BB6004 /* stun_udp.c */; };
+		F08272D71A7F895400BB6004 /* stun.c in Sources */ = {isa = PBXBuildFile; fileRef = F08272D51A7F895400BB6004 /* stun.c */; };
+		F08272DA1A7F898200BB6004 /* dtls_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F08272D81A7F898200BB6004 /* dtls_srtp.c */; };
+		F08272DB1A7F898200BB6004 /* zrtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F08272D91A7F898200BB6004 /* zrtp.c */; };
 		F0BA0A8D1A24D4C900F68203 /* mediastreamer2_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F0ED99201A1645C200A788CE /* mediastreamer2_tester.c */; };
 		F0BA0A8E1A24D4DE00F68203 /* nowebcam.c in Sources */ = {isa = PBXBuildFile; fileRef = 223CA84016D9268D00EF1BEC /* nowebcam.c */; };
 		F0ED99131A16456500A788CE /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0ED99121A16456500A788CE /* libcunit.a */; };
@@ -627,8 +628,6 @@
 		222CA6D011F6CF9F00621220 /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scheduler.h; sourceTree = "<group>"; };
 		222CA6D111F6CF9F00621220 /* sessionset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sessionset.c; sourceTree = "<group>"; };
 		222CA6D311F6CF9F00621220 /* str_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = str_utils.c; sourceTree = "<group>"; };
-		222CA6D411F6CF9F00621220 /* stun.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun.c; sourceTree = "<group>"; };
-		222CA6D511F6CF9F00621220 /* stun_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun_udp.c; sourceTree = "<group>"; };
 		222CA6D611F6CF9F00621220 /* system */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = system; sourceTree = "<group>"; };
 		222CA6D711F6CF9F00621220 /* telephonyevents.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = telephonyevents.c; sourceTree = "<group>"; };
 		222CA6F211F6CF9F00621220 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
@@ -763,11 +762,14 @@
 		F02538F819794908002C30F3 /* flowcontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = flowcontrol.c; sourceTree = "<group>"; };
 		F02538FA1979491B002C30F3 /* videostarter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videostarter.c; sourceTree = "<group>"; };
 		F0340ADC1A6D13BD002E4BF1 /* ms_srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ms_srtp.c; sourceTree = "<group>"; };
-		F0340ADE1A6D13FF002E4BF1 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
-		F0497F0B1A1B483E00B67112 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		F0497F0D1A1B4C1700B67112 /* mediastreamer2_tester_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamer2_tester_ios.m; sourceTree = "<group>"; };
 		F0497F151A1C9F8700B67112 /* mediastream-tester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "mediastream-tester-Info.plist"; sourceTree = "<group>"; };
 		F04D51ED1A08E638004DD530 /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common.c; path = tools/common.c; sourceTree = "<group>"; };
+		F08272D21A7F892700BB6004 /* extremum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = extremum.c; sourceTree = "<group>"; };
+		F08272D41A7F895400BB6004 /* stun_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun_udp.c; sourceTree = "<group>"; };
+		F08272D51A7F895400BB6004 /* stun.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stun.c; sourceTree = "<group>"; };
+		F08272D81A7F898200BB6004 /* dtls_srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtls_srtp.c; sourceTree = "<group>"; };
+		F08272D91A7F898200BB6004 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		F0ED99121A16456500A788CE /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "../liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F0ED99171A1645C200A788CE /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		F0ED99181A1645C200A788CE /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
@@ -1109,6 +1111,7 @@
 				222CA6C211F6CF9F00621220 /* ortp.c */,
 				222CA6C311F6CF9F00621220 /* payloadtype.c */,
 				222CA6C411F6CF9F00621220 /* port.c */,
+				F08272D21A7F892700BB6004 /* extremum.c */,
 				222CA6C511F6CF9F00621220 /* posixtimer.c */,
 				222CA6C611F6CF9F00621220 /* rtcp.c */,
 				F02538F2197948BE002C30F3 /* rtcp_fb.c */,
@@ -1126,8 +1129,6 @@
 				222CA6D011F6CF9F00621220 /* scheduler.h */,
 				222CA6D111F6CF9F00621220 /* sessionset.c */,
 				222CA6D311F6CF9F00621220 /* str_utils.c */,
-				222CA6D411F6CF9F00621220 /* stun.c */,
-				222CA6D511F6CF9F00621220 /* stun_udp.c */,
 				222CA6D611F6CF9F00621220 /* system */,
 				222CA6D711F6CF9F00621220 /* telephonyevents.c */,
 				222CA6F211F6CF9F00621220 /* utils.c */,
@@ -1266,6 +1267,8 @@
 				F0ED9B941A1649C700A788CE /* qosanalyzer.h */,
 				223CA85F16D9268D00EF1BEC /* qualityindicator.c */,
 				223CA86016D9268D00EF1BEC /* rfc2429.h */,
+				F08272D41A7F895400BB6004 /* stun_udp.c */,
+				F08272D51A7F895400BB6004 /* stun.c */,
 				223CA86116D9268D00EF1BEC /* rfc3984.c */,
 				223CA86216D9268D00EF1BEC /* ringstream.c */,
 				223CA86316D9268D00EF1BEC /* scaler.c */,
@@ -1274,8 +1277,6 @@
 				223CA86616D9268D00EF1BEC /* videostream.c */,
 				F02538E71979481D002C30F3 /* vp8rtpfmt.c */,
 				F02538E81979481D002C30F3 /* vp8rtpfmt.h */,
-				F0340ADE1A6D13FF002E4BF1 /* zrtp.c */,
-				F0497F0B1A1B483E00B67112 /* zrtp.c */,
 			);
 			path = voip;
 			sourceTree = "<group>";
@@ -1313,6 +1314,8 @@
 			isa = PBXGroup;
 			children = (
 				F0340ADC1A6D13BD002E4BF1 /* ms_srtp.c */,
+				F08272D81A7F898200BB6004 /* dtls_srtp.c */,
+				F08272D91A7F898200BB6004 /* zrtp.c */,
 			);
 			path = crypto;
 			sourceTree = "<group>";
@@ -1880,10 +1883,9 @@
 				225D65821521C009008B2E81 /* scheduler.c in Sources */,
 				225D65831521C009008B2E81 /* sessionset.c in Sources */,
 				225D65841521C009008B2E81 /* str_utils.c in Sources */,
-				225D65851521C009008B2E81 /* stun.c in Sources */,
-				225D65861521C009008B2E81 /* stun_udp.c in Sources */,
 				225D65871521C009008B2E81 /* telephonyevents.c in Sources */,
 				225D65881521C009008B2E81 /* utils.c in Sources */,
+				F08272D31A7F892700BB6004 /* extremum.c in Sources */,
 				225D65B81521C009008B2E81 /* netsim.c in Sources */,
 				22405EE51600671D00B92522 /* logging.c in Sources */,
 				22405EE61600671D00B92522 /* rtpprofile.c in Sources */,
@@ -1919,6 +1921,8 @@
 				22C8D0AD1769F8FF00DAFB4E /* tonedetector.c in Sources */,
 				22C8D0AE1769F8FF00DAFB4E /* ulaw.c in Sources */,
 				22C8D0B71769F8FF00DAFB4E /* itc.c in Sources */,
+				F08272DB1A7F898200BB6004 /* zrtp.c in Sources */,
+				F08272DA1A7F898200BB6004 /* dtls_srtp.c in Sources */,
 				22C8D0B81769F8FF00DAFB4E /* join.c in Sources */,
 				22C8D0B91769F8FF00DAFB4E /* msrtp.c in Sources */,
 				22C8D0BA1769F8FF00DAFB4E /* tee.c in Sources */,
@@ -1931,6 +1935,7 @@
 				22C8D0C01769F8FF00DAFB4E /* kiss_fftr.c in Sources */,
 				22C8D0C11769F8FF00DAFB4E /* opengles_display.c in Sources */,
 				22C8D0C21769F8FF00DAFB4E /* shaders.c in Sources */,
+				F08272D61A7F895400BB6004 /* stun_udp.c in Sources */,
 				22C8D0C31769F8FF00DAFB4E /* extdisplay.c in Sources */,
 				22C8D0C41769F8FF00DAFB4E /* h264dec.c in Sources */,
 				22C8D0C51769F8FF00DAFB4E /* ioscapture.m in Sources */,
@@ -1949,7 +1954,6 @@
 				22C8D0D11769F8FF00DAFB4E /* bitratecontrol.c in Sources */,
 				22C8D0D21769F8FF00DAFB4E /* bitratedriver.c in Sources */,
 				22C8D0D31769F8FF00DAFB4E /* ice.c in Sources */,
-				F0340ADF1A6D13FF002E4BF1 /* zrtp.c in Sources */,
 				22C8D0D41769F8FF00DAFB4E /* layouts.c in Sources */,
 				22C8D0D51769F8FF00DAFB4E /* mediastream.c in Sources */,
 				22C8D0D61769F8FF00DAFB4E /* msvideo.c in Sources */,
@@ -1966,6 +1970,7 @@
 				22C8D0E01769F8FF00DAFB4E /* msopus.c in Sources */,
 				22C8D0ED176A079600DAFB4E /* aac-eld.c in Sources */,
 				1561A555178D9C71006B4B2F /* ioshardware.m in Sources */,
+				F08272D71A7F895400BB6004 /* stun.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2005,7 +2010,6 @@
 				F0ED995E1A16464D00A788CE /* mediastreamViewController.m in Sources */,
 				F0ED995F1A16464D00A788CE /* mediastreamer2_sound_card_tester.c in Sources */,
 				F0ED99601A16464D00A788CE /* mediastreamer2_framework_tester.c in Sources */,
-				F0497F0C1A1B483E00B67112 /* zrtp.c in Sources */,
 				F0ED99611A16464D00A788CE /* mediastreamer2_tester_private.c in Sources */,
 				F0ED99631A16464D00A788CE /* common.c in Sources */,
 				F0497F0E1A1B4C1700B67112 /* mediastreamer2_tester_ios.m in Sources */,
