@@ -156,26 +156,44 @@ static void call_with_tunnel_auto_without_sip_with_srtp(void) {
 
 #ifdef VIDEO_ENABLED
 static void tunnel_srtp_video_ice_call(void) {
-	call_base(LinphoneMediaEncryptionSRTP,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionSRTP,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 static void tunnel_zrtp_video_ice_call(void) {
-	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 static void tunnel_video_ice_call(void) {
-	call_base(LinphoneMediaEncryptionNone,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionNone,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 #endif
 
 static void tunnel_srtp_ice_call(void) {
-	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 
 static void tunnel_zrtp_ice_call(void) {
-	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 
 static void tunnel_ice_call(void) {
-	call_base(LinphoneMediaEncryptionNone,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionNone,FALSE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 test_t transport_tests[] = {
 	{ "Tunnel only", call_with_tunnel },
