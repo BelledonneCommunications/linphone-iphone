@@ -380,7 +380,10 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 					RtpSession *session=ms->sessions.rtp_session;
 					const char *rtp_addr=new_stream->rtp_addr[0]!='\0' ? new_stream->rtp_addr : md->addr;
 					const char *rtcp_addr=new_stream->rtcp_addr[0]!='\0' ? new_stream->rtcp_addr : md->addr;
-					rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
+					if (ms_is_multicast(new_stream->rtp_addr))
+						ms_message("Multicast addr [%s/%i] does not need auxiliary rtp's destination for call [%p]",new_stream->rtp_addr,new_stream->rtp_port,call);
+					else
+						rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
 				}
 			}
 		}
@@ -425,8 +428,15 @@ static void call_ringing(SalOp *h){
 		if (call->audiostream && audio_stream_started(call->audiostream)){
 			/*streams already started */
 			try_early_media_forking(call,md);
-			return;
+			#ifdef VIDEO_ENABLED
+			if (call->videostream){
+				/*just request for iframe*/
+				video_stream_send_vfu(call->videostream);
+			}
+			#endif
+		return;
 		}
+
 		linphone_core_notify_show_interface(lc);
 		linphone_core_notify_display_status(lc,_("Early media."));
 		linphone_call_set_state(call,LinphoneCallOutgoingEarlyMedia,"Early media");

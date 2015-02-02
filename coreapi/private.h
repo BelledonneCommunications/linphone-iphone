@@ -796,7 +796,6 @@ struct _LinphoneCore
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
-	bool_t real_early_media; /*default value for CallParams.real_early_media*/
 };
 
 

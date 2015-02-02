@@ -1482,7 +1482,6 @@ static void misc_config_read(LinphoneCore *lc) {
 		*//*JOHAN: USELESS? REMOVE IT*/
 		//const char *user_certificate_config_path = lp_config_get_string(config,"misc","uuid",);
 //	}*/
-	lc->real_early_media=lp_config_get_int(config,"misc","real_early_media",FALSE);
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
@@ -6905,7 +6904,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->avpf_enabled=FALSE;
 	params->audio_dir=LinphoneCallParamsMediaDirectionSendRecv;
 	params->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
-	params->real_early_media=lc->real_early_media;
+	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

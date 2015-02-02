@@ -24,6 +24,9 @@
 
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 typedef void (*test_function_t)(void);
 typedef int (*test_suite_function_t)(const char *name);
