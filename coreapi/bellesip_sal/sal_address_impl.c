@@ -49,6 +49,12 @@ const char *sal_address_get_scheme(const SalAddress *addr){
 		return NULL;
 }
 
+void sal_address_set_secure(SalAddress *addr, bool_t enabled){
+	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
+	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
+	if (uri) belle_sip_uri_set_secure(uri,enabled);
+}
+
 bool_t sal_address_is_secure(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);

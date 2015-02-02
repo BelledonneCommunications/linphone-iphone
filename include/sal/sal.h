@@ -92,6 +92,7 @@ const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
 int sal_address_get_port(const SalAddress *addr);
 bool_t sal_address_is_secure(const SalAddress *addr);
+void sal_address_set_secure(SalAddress *addr, bool_t enabled);
 
 SalTransport sal_address_get_transport(const SalAddress* addr);
 const char* sal_address_get_transport_name(const SalAddress* addr);

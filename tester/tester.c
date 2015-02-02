@@ -41,6 +41,7 @@ const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 int liblinphone_tester_use_log_file=0;
 static int liblinphone_tester_keep_accounts_flag = 0;
+static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int manager_count = 0;
 
 static const char* liblinphone_tester_xml_file = NULL;
@@ -81,6 +82,10 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
 	if ((((current.tv_sec-start->tv_sec)*1000LL) + ((current.tv_nsec-start->tv_nsec)/1000000LL))>=value_ms)
 		return TRUE;
 	return FALSE;
+}
+
+void liblinphone_tester_enable_ipv6(bool_t enabled){
+	liblinphone_tester_ipv6_enabled=enabled;
 }
 
 LinphoneAddress * create_linphone_address(const char * domain) {
@@ -157,6 +162,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);
 
+	linphone_core_enable_ipv6(lc, liblinphone_tester_ipv6_enabled);
 
 	ms_free(ringpath);
 	ms_free(ringbackpath);
