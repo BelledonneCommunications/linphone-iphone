@@ -466,9 +466,16 @@ static void prepare(GtkAssistant *w){
 }
 
 void linphone_gtk_close_audio_assistant(GtkWidget *w){
-	gchar *path = g_object_get_data(G_OBJECT(audio_assistant),"path");
+	gchar *path;
+	AudioStream *stream;
+	
+	path = g_object_get_data(G_OBJECT(audio_assistant),"path");
 	if(path != NULL){
 		g_unlink(path);
+	}
+	stream = (AudioStream *)g_object_get_data(G_OBJECT(audio_assistant), "stream");
+	if(stream) {
+		audio_stream_stop(stream);
 	}
 	gtk_widget_destroy(w);
 	if(linphone_gtk_get_audio_assistant_option()){
