@@ -2394,7 +2394,9 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-			if (lc->video_window_id!=0)
+			if (call->video_window_id != 0)
+				video_stream_set_native_window_id(call->videostream,call->video_window_id);
+			else if (lc->video_window_id!=0)
 				video_stream_set_native_window_id(call->videostream,lc->video_window_id);
 			if (lc->preview_window_id!=0)
 				video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
@@ -3594,5 +3596,26 @@ void linphone_call_cancel_dtmfs(LinphoneCall *call) {
 	if (call->dtmf_sequence != NULL) {
 		ms_free(call->dtmf_sequence);
 		call->dtmf_sequence = NULL;
+	}
+}
+
+unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call) {
+	if (call->video_window_id) {
+		/* The video id was previously set by the app. */
+		return call->video_window_id;
+	}
+#ifdef VIDEO_ENABLED
+	else if (call->videostream) {
+		/* It was not set but we want to get the one automatically created by mediastreamer2 (desktop versions only). */
+		return video_stream_get_native_window_id(call->videostream);
+	}
+#endif
+	return 0;
+}
+
+void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id) {
+	call->video_window_id = id;
+	if (call->videostream) {
+		video_stream_set_native_window_id(call->videostream, id);
 	}
 }

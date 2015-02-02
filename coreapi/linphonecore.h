@@ -758,6 +758,19 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
 LINPHONE_PUBLIC	void linphone_call_cancel_dtmfs(LinphoneCall *call);
 
 /**
+ * Get the native window handle of the video window, casted as an unsigned long.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call);
+
+/**
+ * Set the native video window id where the video is to be displayed.
+ * For MacOS, Linux, Windows: if not set or 0 a window will be automatically created, unless the special id -1 is given.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id);
+
+/**
  * Return TRUE if this call is currently part of a conference
  * @param call #LinphoneCall
  * @return TRUE if part of a conference.
