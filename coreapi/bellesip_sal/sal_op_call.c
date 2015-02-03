@@ -389,7 +389,8 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
  *
 **/
 static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
-	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
+	const char *body;
+	belle_sip_header_content_type_t* content_type;
 
 	if (op&&op->sdp_removal){
 		ms_error("Removed willingly SDP because sal_call_enable_sdp_removal was set to TRUE.");
@@ -397,11 +398,18 @@ static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session
 		*error=SalReasonNotAcceptable;
 		return -1;
 	}
-
+	
+	body = belle_sip_message_get_body(message);
+	if(body == NULL) {
+		*session_desc = NULL;
+		return 0;
+	}
+	
+	content_type = belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
 	if (content_type){
 		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
 			&& strcmp("sdp",belle_sip_header_content_type_get_subtype(content_type))==0) {
-			*session_desc=belle_sdp_session_description_parse(belle_sip_message_get_body(message));
+			*session_desc=belle_sdp_session_description_parse(body);
 			if (*session_desc==NULL) {
 				ms_error("Failed to parse SDP message.");
 				*error=SalReasonNotAcceptable;
