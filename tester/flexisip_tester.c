@@ -662,9 +662,6 @@ static void call_with_ipv6(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
-	
-	/*skipped until sip2 has ipv6 address*/
-	return;
 
 	if (!liblinphone_tester_ipv6_available()){
 		ms_warning("Call with ipv6 not tested, no ipv6 connectivity");
