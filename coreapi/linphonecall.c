@@ -784,6 +784,10 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	/*by default local_audio_ip=local_video_ip=local_ip*/
 	strncpy(call->local_audio_ip,call->localip,sizeof(call->local_audio_ip));
 	strncpy(call->local_video_ip,call->localip,sizeof(call->local_video_ip));
+#ifdef ANDROID
+	ms_message("Call [%p] aquires wifi lock");
+	linphone_core_wifi_lock_aquire(call->lc);
+#endif
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1328,6 +1332,10 @@ static void linphone_call_destroy(LinphoneCall *obj){
 	}
 
 	sal_error_info_reset(&obj->non_op_error);
+	#ifdef ANDROID
+	ms_message("Call [%p] releases wifi lock");
+	linphone_core_wifi_lock_release(obj->lc);
+	#endif
 }
 
 /**

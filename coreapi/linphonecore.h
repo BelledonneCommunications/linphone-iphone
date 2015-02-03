@@ -3374,6 +3374,8 @@ LINPHONE_PUBLIC int linphone_core_get_video_multicast_ttl(const LinphoneCore *co
 
 /**
  * Use to enable multicast rtp for audio stream.
+ * * If enable, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+ * <br> For incoming calls behavior is unchanged.
  * @param core the core
  * @param yesno if yes, subsequent calls propose multicast ip set by #linphone_core_set_audio_multicast_addr
  * @return an ipv4/6 multicast address or null
@@ -3391,8 +3393,10 @@ LINPHONE_PUBLIC bool_t linphone_core_audio_multicast_enabled(const LinphoneCore 
 
 /**
  * Use to enable multicast rtp for video stream.
+ * If enable, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into video cline. In case of outgoing call video stream is sent to this a multicast address.
+ * <br> For incoming calls behavior is unchanged.
  * @param core the core
- * @param yesno if yes, subsequent calls propose multicast ip set by #linphone_core_set_video_multicast_addr
+ * @param yesno if yes, subsequent outgoing calls propose multicast ip set by #linphone_core_set_video_multicast_addr
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC void linphone_core_enable_video_multicast(LinphoneCore *core, bool_t yesno);

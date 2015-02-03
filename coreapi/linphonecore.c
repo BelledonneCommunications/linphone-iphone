@@ -7321,3 +7321,17 @@ void linphone_core_enable_video_multicast(LinphoneCore *lc, bool_t yesno) {
 bool_t linphone_core_video_multicast_enabled(const LinphoneCore *lc) {
 	return lc->rtp_conf.video_multicast_enabled;
 }
+#ifdef ANDROID
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {
+	JNIEnv *env=ms_get_jni_env();
+	if (env && lc->wifi_lock)
+		env->CallVoidMethod(lc->wifi_lock,lc->wifi_lock_aquire_id);
+}
+void linphone_core_wifi_lock_release(LinphoneCore *lc) {
+	JNIEnv *env=ms_get_jni_env();
+	if (env && lc->wifi_lock)
+		env->CallVoidMethod(lc->wifi_lock,lc->wifi_lock_release_id);
+
+}
+#endif
+

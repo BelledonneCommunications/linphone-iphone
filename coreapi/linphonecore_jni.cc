@@ -3979,6 +3979,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(J
 #endif
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEnv *env, jobject thiz, jlong lc, jobject wifi_lock) {
+#ifdef ANDROID
+	if (lc->wifi_lock)
+		env->DeleteGlobalRef(lc->wifi_lock);
+	if(wm != NULL) {
+		lc->wifi_lock=env->NewGlobalRef(wifi_lock);
+		jclass wifiLockClass = env->FindClass(env, "android/net/wifi/WifiManager/WifiLock");
+		lc->wifi_lock_aquire_id = env->GetMethodID(wifiLockClass, "acquire", "()V");
+		lc->wifi_lock_release_id = env->GetMethodID(wifiLockClass, "release", "()V");
+	} else {
+		lc->wifi_manager=NULL;
+	}
+
+#endif
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAudioDscp(JNIEnv* env,jobject thiz,jlong ptr){
 	return linphone_core_get_audio_dscp((LinphoneCore*)ptr);
 }

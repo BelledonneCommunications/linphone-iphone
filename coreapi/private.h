@@ -78,7 +78,9 @@ extern "C" {
 #define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
 #endif
 #endif
-
+#ifdef ANDROID
+#include <jni.h>
+#endif
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
@@ -796,6 +798,11 @@ struct _LinphoneCore
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
+#ifdef ANDROID
+	jobject wifi_lock;
+	jmethodID wifi_lock_acquire_id;
+	jmethodID wifi_lock_release_id;
+#endif
 };
 
 
@@ -1091,6 +1098,11 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
+
+#ifdef ANDROID
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
+void linphone_core_wifi_lock_release(LinphoneCore *lc);
+#endif
 
 #ifdef __cplusplus
 }

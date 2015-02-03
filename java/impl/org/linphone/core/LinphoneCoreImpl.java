@@ -157,6 +157,7 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isSdp200AckEnabled(long nativePtr);
 	private native void stopRinging(long nativePtr);
 	private native static void setAndroidPowerManager(Object pm);
+	private native void setAndroidWifiLock(long nativePtr,Object pm);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -184,6 +185,10 @@ public class LinphoneCoreImpl implements LinphoneCore {
 		mContext = (Context)context;
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
+		if (Version.sdkAboveOrEqual(Version.API12_HONEYCOMB_MR1_31X)) {
+			WifiManager wifiManager=(WifiManager) getSystemService(Context.WIFI_SERVICE); 
+			setAndroidWifiLock(nativePtr,wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, this.getPackageName()+"-"+nativePtr+"-wifi-call-lock"));
+		}
 	}
 
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
