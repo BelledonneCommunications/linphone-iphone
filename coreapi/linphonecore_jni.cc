@@ -273,7 +273,6 @@ public:
 		globalStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$GlobalState"));
 		globalStateFromIntId = env->GetStaticMethodID(globalStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$GlobalState;");
 		globalStateId = env->GetMethodID(listenerClass,"globalState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$GlobalState;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (globalStateId) {
 			vTable->global_state_changed = globalStateChange;
 		}
@@ -282,7 +281,6 @@ public:
 		registrationStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RegistrationState"));
 		registrationStateFromIntId = env->GetStaticMethodID(registrationStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RegistrationState;");
 		registrationStateId = env->GetMethodID(listenerClass,"registrationState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneProxyConfig;Lorg/linphone/core/LinphoneCore$RegistrationState;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (registrationStateId) {
 			vTable->registration_state_changed = registrationStateChange;
 		}
@@ -291,7 +289,6 @@ public:
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
 		callStateId = env->GetMethodID(listenerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (callStateId) {
 			vTable->call_state_changed = callStateChange;
 		}
@@ -304,14 +301,12 @@ public:
 
 		/*callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);*/
 		callStatsUpdatedId = env->GetMethodID(listenerClass, "callStatsUpdated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCallStats;)V");
-		env->ExceptionClear();
 		if (callStatsUpdatedId) {
 			vTable->call_stats_updated = callStatsUpdated;
 		}
 
 		/*callEncryption(LinphoneCore lc, LinphoneCall call, boolean encrypted,String auth_token);*/
 		callEncryptionChangedId = env->GetMethodID(listenerClass,"callEncryptionChanged","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;ZLjava/lang/String;)V");
-		env->ExceptionClear();
 		if (callEncryptionChangedId) {
 			vTable->call_encryption_changed = callEncryptionChange;
 		}
@@ -320,7 +315,6 @@ public:
 		ecCalibratorStatusClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$EcCalibratorStatus"));
 		ecCalibratorStatusFromIntId = env->GetStaticMethodID(ecCalibratorStatusClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;");
 		ecCalibrationStatusId = env->GetMethodID(listenerClass,"ecCalibrationStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$EcCalibratorStatus;ILjava/lang/Object;)V");
-		env->ExceptionClear();
 
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listenerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
@@ -362,13 +356,11 @@ public:
 		}
 
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
-		env->ExceptionClear();
 		if (dtmfReceivedId) {
 			vTable->dtmf_received = dtmf_received;
 		}
 
 		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneInfoMessage;)V");
-		env->ExceptionClear();
 		if (infoReceivedId) {
 			vTable->info_received = infoReceived;
 		}
@@ -376,7 +368,6 @@ public:
 		subscriptionStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionState"));
 		subscriptionStateFromIntId = env->GetStaticMethodID(subscriptionStateClass,"fromInt","(I)Lorg/linphone/core/SubscriptionState;");
 		subscriptionStateId = env->GetMethodID(listenerClass,"subscriptionStateChanged", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Lorg/linphone/core/SubscriptionState;)V");
-		env->ExceptionClear();
 		if (subscriptionStateId) {
 			vTable->subscription_state_changed = subscriptionStateChanged;
 		}
@@ -384,13 +375,11 @@ public:
 		publishStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/PublishState"));
 		publishStateFromIntId = env->GetStaticMethodID(publishStateClass,"fromInt","(I)Lorg/linphone/core/PublishState;");
 		publishStateId = env->GetMethodID(listenerClass,"publishStateChanged", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Lorg/linphone/core/PublishState;)V");
-		env->ExceptionClear();
 		if (publishStateId) {
 			vTable->publish_state_changed = publishStateChanged;
 		}
 
 		notifyRecvId = env->GetMethodID(listenerClass,"notifyReceived", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Ljava/lang/String;Lorg/linphone/core/LinphoneContent;)V");
-		env->ExceptionClear();
 		if (notifyRecvId) {
 			vTable->notify_received = notifyReceived;
 		}
@@ -398,25 +387,21 @@ public:
 		configuringStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$RemoteProvisioningState"));
 		configuringStateFromIntId = env->GetStaticMethodID(configuringStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;");
 		configuringStateId = env->GetMethodID(listenerClass,"configuringStatus","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$RemoteProvisioningState;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (configuringStateId) {
 			vTable->configuring_status = configuringStatus;
 		}
 
 		fileTransferProgressIndicationId = env->GetMethodID(listenerClass, "fileTransferProgressIndication", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;I)V");
-		env->ExceptionClear();
 		if (fileTransferProgressIndicationId) {
 			vTable->file_transfer_progress_indication = fileTransferProgressIndication;
 		}
 
 		fileTransferSendId = env->GetMethodID(listenerClass, "fileTransferSend", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Ljava/nio/ByteBuffer;I)I");
-		env->ExceptionClear();
 		if (fileTransferSendId) {
 			vTable->file_transfer_send = fileTransferSend;
 		}
 
 		fileTransferRecvId = env->GetMethodID(listenerClass, "fileTransferRecv", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;[BI)V");
-		env->ExceptionClear();
 		if (fileTransferRecvId) {
 			vTable->file_transfer_recv = fileTransferRecv;
 		}
@@ -424,12 +409,10 @@ public:
 		logCollectionUploadStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCore$LogCollectionUploadState"));
 		logCollectionUploadStateFromIntId = env->GetStaticMethodID(logCollectionUploadStateClass, "fromInt", "(I)Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;");
 		logCollectionUploadProgressId = env->GetMethodID(listenerClass, "uploadProgressIndication", "(Lorg/linphone/core/LinphoneCore;II)V");
-		env->ExceptionClear();
 		if (logCollectionUploadProgressId) {
 			vTable->log_collection_upload_progress_indication = logCollectionUploadProgressIndication;
 		}
 		logCollectionUploadStateId = env->GetMethodID(listenerClass, "uploadStateChanged", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCore$LogCollectionUploadState;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (logCollectionUploadStateId) {
 			vTable->log_collection_upload_state_changed = logCollectionUploadStateChange;
 		}
@@ -1120,19 +1103,20 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addListener(JNIEnv* env,
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* env, jobject thiz, jlong lc, jobject jlistener) {
 	MSList* iterator;
 	LinphoneCore *core = (LinphoneCore*)lc;
-	jobject listener = env->NewGlobalRef(jlistener);
-	for (iterator = core->vtables; iterator != NULL; iterator = iterator->next) {
+	//jobject listener = env->NewGlobalRef(jlistener);
+	for (iterator = core->vtables; iterator != NULL; ) {
 		LinphoneCoreVTable *vTable = (LinphoneCoreVTable*)(iterator->data);
+		iterator = iterator->next; //Because linphone_core_remove_listener may change the list
 		if (vTable) {
 			LinphoneCoreData *data = (LinphoneCoreData*) linphone_core_v_table_get_user_data(vTable);
-			if (data && env->IsSameObject(data->listener, listener)) {
+			if (data && env->IsSameObject(data->listener, jlistener)) {
 				linphone_core_remove_listener(core, vTable);
+				delete data;
 				linphone_core_v_table_destroy(vTable);
-				break;
 			}
 		}
 	}
-	env->DeleteGlobalRef(listener);
+	//env->DeleteGlobalRef(listener);
 }
 
 

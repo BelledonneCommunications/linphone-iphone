@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCoreListener.LinphoneEchoCalibrationListener;
+import org.linphone.core.LinphoneCoreListener;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
@@ -563,7 +563,7 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized boolean isKeepAliveEnabled() {
 		return isKeepAliveEnabled(nativePtr);
 	}
-	public synchronized void startEchoCalibration(LinphoneEchoCalibrationListener listener) throws LinphoneCoreException {
+	public synchronized void startEchoCalibration(LinphoneCoreListener listener) throws LinphoneCoreException {
 		startEchoCalibration(nativePtr, listener);
 	}
 
