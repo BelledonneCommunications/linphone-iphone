@@ -3615,7 +3615,9 @@ unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call)
 
 void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id) {
 	call->video_window_id = id;
+#ifdef VIDEO_ENABLED
 	if (call->videostream) {
 		video_stream_set_native_window_id(call->videostream, id);
 	}
+#endif
 }
