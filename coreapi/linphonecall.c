@@ -548,6 +548,9 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	LinphoneAddress *addr;
 	const char* local_audio_ip;
 	const char* local_video_ip;
+	const char *subject;
+	CodecConstraints codec_hints={0};
+	
 	/*multicast is only set in case of outgoing call*/
 	if (call->dir == LinphoneCallOutgoing && linphone_core_audio_multicast_enabled(lc)) {
 		local_audio_ip=linphone_core_get_audio_multicast_addr(lc);
@@ -564,8 +567,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		local_video_ip=call->localip;
 
 
-	const char *subject=linphone_call_params_get_session_name(call->params);
-	CodecConstraints codec_hints={0};
+	subject=linphone_call_params_get_session_name(call->params);
 
 	linphone_core_adapt_to_network(lc,call->ping_time,call->params);
 

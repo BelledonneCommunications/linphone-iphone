@@ -91,7 +91,6 @@ static void call_multicast_video(void)  {
 static void early_media_with_multicast_base(bool_t video) {
 	LinphoneCoreManager *marie, *pauline, *pauline2;
 	MSList* lcs = NULL;
-	LinphoneCall* marie_call;
 	int dummy=0;
 	int leaked_objects;
 	int begin;
@@ -137,7 +136,7 @@ static void early_media_with_multicast_base(bool_t video) {
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
 
-	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+	linphone_core_invite_address(marie->lc, pauline->identity);
 
 	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));

@@ -408,14 +408,17 @@ static void test_forked_subscribe_notify_publish(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
+	LpConfig *pauline_lp;
+	char* lf_identity;
+	LinphoneFriend *lf;
 	MSList* lcs=ms_list_append(NULL,pauline->lc);
 	lcs=ms_list_append(lcs,marie->lc);
 	lcs=ms_list_append(lcs,marie->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 
-	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
-	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
-	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	pauline_lp = linphone_core_get_config(pauline->lc);
+	lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 
 	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
 
