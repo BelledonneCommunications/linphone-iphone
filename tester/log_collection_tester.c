@@ -154,7 +154,7 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		char *line = NULL;
 		size_t line_size = 256;
 #ifndef WIN32
-		struct tm tm_curr;
+		struct tm tm_curr = {0};
 		time_t time_prev = -1;
 #endif
 
