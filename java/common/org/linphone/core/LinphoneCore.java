@@ -1879,4 +1879,88 @@ public interface LinphoneCore {
 	 * Upload the log collection to the configured server url.
 	 */
 	public void uploadLogCollection();
+	
+	
+	/**
+	 * Use to set multicast address to be used for audio stream.
+	 * @param ip an ipv4/6 multicast address
+	 * @thow LinphoneCoreException
+	**/
+	public setAudioMulticastAddr(String ip) throw LinphoneCoreException;
+	/**
+	 * Use to set multicast address to be used for video stream.
+	 * @param ip an ipv4/6 multicast address
+	 * @thow LinphoneCoreException
+	**/
+	public void setVideoMulticastAddr(String ip);
+
+	/**
+	 * Use to get multicast address to be used for audio stream.
+	 * @return an ipv4/6 multicast address or default value
+	**/
+	public String getAudioMulticastAddr();
+
+	/**
+	 * Use to get multicast address to be used for video stream.
+	 * @return an ipv4/6 multicast address, or default value
+	**/
+	public String getVideoMulticastAddr();
+
+	/**
+	 * Use to set multicast ttl to be used for audio stream.
+	 * @param ttl value or -1 if not used. [0..255] default value is 1
+	 * @thow LinphoneCoreException
+	**/
+	public void setAudioMulticastTtl(int ttl);
+	/**
+	 * Use to set multicast ttl to be used for video stream.
+	 * @param  ttl value or -1 if not used. [0..255] default value is 1
+	 * @thow LinphoneCoreException
+	**/
+	public void setVideoMulticastTtl(int ttl);
+
+	/**
+	 * Use to get multicast ttl to be used for audio stream.
+	 * @return a time to leave value
+	 * @thow LinphoneCoreException
+	 * 	**/
+	public void getAudioMulticastTtl();
+
+	/**
+	 * Use to get multicast ttl to be used for video stream.
+	 * @return a time to leave value
+	 * @thow LinphoneCoreException
+	**/
+	public void getVideoMulticastTtl(const LinphoneCore *core);
+
+
+	/**
+	 * Use to enable multicast rtp for audio stream.
+	 * * If enabled, outgoing calls put a multicast address from {@link linphone_core_get_video_multicast_addr} into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent calls will propose multicast ip set by {@link linphone_core_set_audio_multicast_addr}
+	**/
+	public void enableAudioMulticast(boolean yesno);
+
+	/**
+	 * Use to get multicast state of audio stream.
+	 * @return true if  subsequent calls will propose multicast ip set by {@link linphone_core_set_audio_multicast_addr}
+	**/
+	public  boolean audioMulticastEnabled();
+
+	/**
+	 * Use to enable multicast rtp for video stream.
+	 * If enabled, outgoing calls put a multicast address from {@link linphone_core_get_video_multicast_addr} into video cline. In case of outgoing call video stream is sent to this  multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by {@link linphone_core_set_video_multicast_addr}
+	**/
+	public void enableVideoMulticast(boolean yesno);
+	/**
+	 * Use to get multicast state of video stream.
+	 * @return true if  subsequent calls will propose multicast ip set by {@link linphone_core_set_video_multicast_addr}
+	**/
+	public  boolean videoMulticastEnabled();
+	
+	
+	
 }
