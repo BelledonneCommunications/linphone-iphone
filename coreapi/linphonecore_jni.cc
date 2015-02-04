@@ -264,7 +264,6 @@ public:
 
 		/*displayStatus(LinphoneCore lc,String message);*/
 		displayStatusId = env->GetMethodID(listenerClass,"displayStatus","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (displayStatusId) {
 			vTable->display_status = displayStatusCb;
 		}
@@ -294,7 +293,6 @@ public:
 		}
 
 		transferStateId = env->GetMethodID(listenerClass,"transferState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;)V");
-		env->ExceptionClear();
 		if (transferStateId) {
 			vTable->transfer_state_changed = transferStateChanged;
 		}
@@ -318,39 +316,33 @@ public:
 
 		/*void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf, String url)*/
 		newSubscriptionRequestId = env->GetMethodID(listenerClass,"newSubscriptionRequest","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (newSubscriptionRequestId) {
 			vTable->new_subscription_requested = new_subscription_requested;
 		}
 
 		authInfoRequestedId = env->GetMethodID(listenerClass,"authInfoRequested","(Lorg/linphone/core/LinphoneCore;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (authInfoRequestedId) {
 			vTable->auth_info_requested = authInfoRequested;
 		}
 
 		/*void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);*/
 		notifyPresenceReceivedId = env->GetMethodID(listenerClass,"notifyPresenceReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriend;)V");
-		env->ExceptionClear();
 		if (notifyPresenceReceivedId) {
 			vTable->notify_presence_received = notify_presence_received;
 		}
 
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
-		env->ExceptionClear();
 		if (textReceivedId) {
 			vTable->text_received = text_received;
 		}
 
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
-		env->ExceptionClear();
 		if (messageReceivedId) {
 			vTable->message_received = message_received;
 		}
 
 		isComposingReceivedId = env->GetMethodID(listenerClass,"isComposingReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;)V");
-		env->ExceptionClear();
 		if (isComposingReceivedId) {
 			vTable->is_composing_received = is_composing_received;
 		}
