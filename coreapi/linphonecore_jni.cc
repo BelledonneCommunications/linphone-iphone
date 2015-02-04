@@ -3979,19 +3979,34 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(J
 #endif
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEnv *env, jobject thiz, jlong lc, jobject wifi_lock) {
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEnv *env, jobject thiz, jlong ptr, jobject wifi_lock) {
 #ifdef ANDROID
+	LinphoneCore *lc=(LinphoneCore*)ptr;
 	if (lc->wifi_lock)
 		env->DeleteGlobalRef(lc->wifi_lock);
-	if(wm != NULL) {
+	if (wifi_lock != NULL) {
 		lc->wifi_lock=env->NewGlobalRef(wifi_lock);
-		jclass wifiLockClass = env->FindClass(env, "android/net/wifi/WifiManager/WifiLock");
-		lc->wifi_lock_aquire_id = env->GetMethodID(wifiLockClass, "acquire", "()V");
+		jclass wifiLockClass = env->FindClass("android/net/wifi/WifiManager$WifiLock");
+		lc->wifi_lock_acquire_id = env->GetMethodID(wifiLockClass, "acquire", "()V");
 		lc->wifi_lock_release_id = env->GetMethodID(wifiLockClass, "release", "()V");
 	} else {
-		lc->wifi_manager=NULL;
+		lc->wifi_lock=NULL;
 	}
-
+#endif
+}
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidMulticastLock(JNIEnv *env, jobject thiz, jlong ptr, jobject multicast_lock) {
+#ifdef ANDROID
+	LinphoneCore *lc=(LinphoneCore*)ptr;
+	if (lc->multicast_lock)
+		env->DeleteGlobalRef(lc->multicast_lock);
+	if (multicast_lock != NULL) {
+		lc->multicast_lock=env->NewGlobalRef(multicast_lock);
+		jclass multicastLockClass = env->FindClass("android/net/wifi/WifiManager$MulticastLock");
+		lc->multicast_lock_acquire_id = env->GetMethodID(multicastLockClass, "acquire", "()V");
+		lc->multicast_lock_release_id = env->GetMethodID(multicastLockClass, "release", "()V");
+	} else {
+		lc->multicast_lock=NULL;
+	}
 #endif
 }
 

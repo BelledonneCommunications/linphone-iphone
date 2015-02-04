@@ -802,6 +802,9 @@ struct _LinphoneCore
 	jobject wifi_lock;
 	jmethodID wifi_lock_acquire_id;
 	jmethodID wifi_lock_release_id;
+	jobject multicast_lock;
+	jmethodID multicast_lock_acquire_id;
+	jmethodID multicast_lock_release_id;
 #endif
 };
 
@@ -1102,6 +1105,8 @@ void set_playback_gain_db(AudioStream *st, float gain);
 #ifdef ANDROID
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
 void linphone_core_wifi_lock_release(LinphoneCore *lc);
+void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
+void linphone_core_multicast_lock_release(LinphoneCore *lc);
 #endif
 
 #ifdef __cplusplus

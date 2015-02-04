@@ -7321,17 +7321,35 @@ void linphone_core_enable_video_multicast(LinphoneCore *lc, bool_t yesno) {
 bool_t linphone_core_video_multicast_enabled(const LinphoneCore *lc) {
 	return lc->rtp_conf.video_multicast_enabled;
 }
+
 #ifdef ANDROID
-void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {
+static int linphone_core_call_void_method(jobject obj, jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
-	if (env && lc->wifi_lock)
-		env->CallVoidMethod(lc->wifi_lock,lc->wifi_lock_aquire_id);
+		if (env && obj) {
+			(*env)->CallVoidMethod(env,obj,id);
+			if ((*env)->ExceptionCheck(env)) {
+				(*env)->ExceptionClear(env);
+				return -1;
+			} else
+				return 0;
+		} else
+			return -1;
+}
+
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_acquire_id))
+		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
 }
 void linphone_core_wifi_lock_release(LinphoneCore *lc) {
-	JNIEnv *env=ms_get_jni_env();
-	if (env && lc->wifi_lock)
-		env->CallVoidMethod(lc->wifi_lock,lc->wifi_lock_release_id);
-
+	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_release_id))
+		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
+}
+void linphone_core_multicast_lock_acquire(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_acquire_id))
+			ms_warning("No multicast lock configured or not usable for core [%p]",lc);
+}
+void linphone_core_multicast_lock_release(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_release_id))
+			ms_warning("No wifi lock configured or not usable for core [%p]",lc);
 }
 #endif
-

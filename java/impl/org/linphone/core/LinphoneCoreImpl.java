@@ -26,11 +26,15 @@ import java.io.IOException;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
+import android.net.wifi.WifiManager.WifiLock;
 
 public class LinphoneCoreImpl implements LinphoneCore {
 
@@ -157,7 +161,8 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isSdp200AckEnabled(long nativePtr);
 	private native void stopRinging(long nativePtr);
 	private native static void setAndroidPowerManager(Object pm);
-	private native void setAndroidWifiLock(long nativePtr,Object pm);
+	private native void setAndroidWifiLock(long nativePtr,Object wifi_lock);
+	private native void setAndroidMulticastLock(long nativePtr,Object multicast_lock);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -186,8 +191,16 @@ public class LinphoneCoreImpl implements LinphoneCore {
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
 		if (Version.sdkAboveOrEqual(Version.API12_HONEYCOMB_MR1_31X)) {
-			WifiManager wifiManager=(WifiManager) getSystemService(Context.WIFI_SERVICE); 
-			setAndroidWifiLock(nativePtr,wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, this.getPackageName()+"-"+nativePtr+"-wifi-call-lock"));
+			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE); 
+			WifiLock lock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "linphonecore ["+ nativePtr+"] wifi-lock");
+			lock.setReferenceCounted(true);
+			setAndroidWifiLock(nativePtr,lock);
+		}
+		if (Version.sdkAboveOrEqual(Version.API14_ICE_CREAM_SANDWICH_40)) {
+			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE); 
+			MulticastLock lock = wifiManager.createMulticastLock("linphonecore ["+ nativePtr+"] multicast-lock");
+			lock.setReferenceCounted(true);
+			setAndroidMulticastLock(nativePtr,lock);
 		}
 	}
 

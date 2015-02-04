@@ -88,7 +88,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
-			return new LinphoneCoreImpl(listener, user, factory, userdata);
+			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata);
+			if(context!=null) lc.setContext(context);
+			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
 		}
