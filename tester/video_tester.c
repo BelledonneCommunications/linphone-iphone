@@ -53,6 +53,7 @@ static unsigned long get_native_handle(GdkWindow *gdkw) {
 
 static GtkWidget *create_video_window(LinphoneCall *call) {
 	GtkWidget *video_window;
+	GdkDisplay *display;
 	GdkColor color;
 	MSVideoSize vsize = MS_VIDEO_SIZE_CIF;
 	
@@ -62,7 +63,12 @@ static GtkWidget *create_video_window(LinphoneCall *call) {
 	gtk_widget_modify_bg(video_window, GTK_STATE_NORMAL, &color);
 	gtk_widget_show(video_window);
 	g_object_set_data(G_OBJECT(video_window), "call", call);
-	gdk_display_flush(gdk_window_get_display(gtk_widget_get_window(video_window)));
+#if GTK_CHECK_VERSION(2,24,0)
+	display = gdk_window_get_display(gtk_widget_get_window(video_window));
+#else // backward compatibility with Debian 6 and Centos 6
+	display = gdk_drawable_get_display(gtk_widget_get_window(video_window));
+#endif
+	gdk_display_flush(display);
 	return video_window;
 }
 
