@@ -53,7 +53,6 @@ static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (index) (*index)++;
 		if (payload_type == linphone_core_get_payload_type_number(lc, payload)) {
-			
 			return payload;
 		}
 	}
@@ -75,7 +74,6 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 		app->sendResponse(Response("Incorrect mime type format.", Response::Error));
 		return;
 	}
-	int ptnum = parser.payloadTypeNumber();
 	string param;
 	string value;
 	ist >> param;
@@ -86,9 +84,8 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 	ist >> value;
 	if (value.length() > 255) value.resize(255);
 
-	PayloadType *payload;
-	int index;
-	if ((payload = findPayload(app->getCore(), ptnum, &index)) != NULL) {
+	PayloadType *payload=parser.getPayloadType();
+	if (payload) {
 		bool handled = false;
 		if (param.compare("clock_rate") == 0) {
 			if (value.length() > 0) {
@@ -103,19 +100,22 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 			handled = true;
 		} else if (param.compare("number") == 0) {
 			if (value.length() > 0) {
-				PayloadType *conflict = findPayload(app->getCore(), atoi(value.c_str()), NULL);
+				int idx=atoi(value.c_str());
+				PayloadType *conflict=NULL;
+				if (idx!=-1){
+					conflict=findPayload(app->getCore(), atoi(value.c_str()), NULL);
+				}
 				if (conflict) {
 					app->sendResponse(Response("New payload type number is already used.", Response::Error));
 				} else {
-					int idx = atoi(value.c_str());
 					linphone_core_set_payload_type_number(app->getCore(),payload, idx);
-					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, idx));
+					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, parser.getPosition()));
 				}
 				return;
 			}
 		}
 		if (handled) {
-			app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
+			app->sendResponse(PayloadTypeResponse(app->getCore(), payload, parser.getPosition()));
 		} else {
 			app->sendResponse(Response("Invalid codec parameter.", Response::Error));
 		}

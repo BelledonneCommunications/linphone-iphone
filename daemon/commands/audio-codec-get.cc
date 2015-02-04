@@ -34,11 +34,11 @@ AudioCodecGetCommand::AudioCodecGetCommand() :
 }
 
 void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
-	int ptnum;
 	bool list = false;
 	bool found = false;
 	istringstream ist(args);
 	ostringstream ost;
+	PayloadType *pt=NULL;
 
 	if (ist.peek() == EOF) {
 		found = list = true;
@@ -50,7 +50,7 @@ void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("Incorrect mime type format.", Response::Error));
 			return;
 		}
-		ptnum = parser.payloadTypeNumber();
+		pt = parser.getPayloadType();
 	}
 
 	int index = 0;
@@ -58,7 +58,7 @@ void AudioCodecGetCommand::exec(Daemon *app, const char *args) {
 		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 		if (list) {
 			ost << PayloadTypeResponse(app->getCore(), payload, index).getBody() << "\n";
-		} else if (ptnum == linphone_core_get_payload_type_number(app->getCore(), payload)) {
+		} else if (pt == payload) {
 			ost << PayloadTypeResponse(app->getCore(), payload, index).getBody();
 			found = true;
 			break;

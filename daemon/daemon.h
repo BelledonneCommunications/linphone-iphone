@@ -162,11 +162,17 @@ public:
 	PayloadTypeParser(LinphoneCore *core, const std::string &mime_type, bool accept_all = false);
 	inline bool all() { return mAll; }
 	inline bool successful() { return mSuccesful; }
-	inline int payloadTypeNumber() { return mPayloadTypeNumber; }
+	inline PayloadType * getPayloadType()const{
+		return mPayloadType;
+	}
+	inline int getPosition()const{
+		return mPosition;
+	}
 private:
 	bool mAll;
 	bool mSuccesful;
-	int mPayloadTypeNumber;
+	PayloadType *mPayloadType;
+	int mPosition;
 };
 
 struct AudioStreamAndOther {

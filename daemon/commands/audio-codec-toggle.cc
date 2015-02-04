@@ -14,14 +14,14 @@ void AudioCodecToggleCommand::exec(Daemon *app, const char *args) {
 		app->sendResponse(Response("Missing parameter.", Response::Error));
 	} else {
 		string mime_type;
-		int ptnum = -1;
+		PayloadType *pt = NULL;
 		ist >> mime_type;
 		PayloadTypeParser parser(app->getCore(), mime_type, true);
 		if (!parser.successful()) {
 			app->sendResponse(Response("Incorrect mime type format.", Response::Error));
 			return;
 		}
-		if (!parser.all()) ptnum = parser.payloadTypeNumber();
+		if (!parser.all()) pt = parser.getPayloadType();
 
 		int index = 0;
 		for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
@@ -29,7 +29,7 @@ void AudioCodecToggleCommand::exec(Daemon *app, const char *args) {
 			if (parser.all()) {
 				linphone_core_enable_payload_type(app->getCore(), payload, mEnable);
 			} else {
-				if (ptnum == linphone_core_get_payload_type_number(app->getCore(), payload)) {
+				if (pt == payload) {
 					linphone_core_enable_payload_type(app->getCore(), payload, mEnable);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 					return;

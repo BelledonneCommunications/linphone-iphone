@@ -233,13 +233,14 @@ PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *
 	}
 }
 
-PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type, bool accept_all) : mAll(false), mSuccesful(true), mPayloadTypeNumber(-1) {
+PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type, bool accept_all) : mAll(false), mSuccesful(true), mPayloadType(NULL),mPosition(-1){
+	int number=-1;
 	if (accept_all && (mime_type.compare("ALL") == 0)) {
 		mAll = true;
 		return;
 	}
 	istringstream ist(mime_type);
-	ist >> mPayloadTypeNumber;
+	ist >> number;
 	if (ist.fail()) {
 		char type[12];
 		int rate, channels;
@@ -247,11 +248,15 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 			mSuccesful = false;
 			return;
 		}
-		const PayloadType *pt = linphone_core_find_payload_type(core, type, rate, channels);
-		if (pt == NULL) {
-			mPayloadTypeNumber = -1;
-		} else {
-			mPayloadTypeNumber = linphone_core_get_payload_type_number(core, pt);
+		mPayloadType = linphone_core_find_payload_type(core, type, rate, channels);
+		if (mPayloadType) mPosition=ms_list_index(linphone_core_get_audio_codecs(core), mPayloadType);
+	}else if (number!=-1){
+		const MSList *elem;
+		for(elem=linphone_core_get_audio_codecs(core);elem!=NULL;elem=elem->next){
+			if (number==linphone_core_get_payload_type_number(core,(PayloadType*)elem->data)){
+				mPayloadType=(PayloadType*)elem->data;
+				break;
+			}
 		}
 	}
 }

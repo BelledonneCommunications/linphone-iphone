@@ -49,24 +49,18 @@ void AudioCodecMoveCommand::exec(Daemon *app, const char *args) {
 		app->sendResponse(Response("Incorrect mime type format.", Response::Error));
 		return;
 	}
-	int ptnum = parser.payloadTypeNumber();
+	PayloadType *selected_payload = NULL;
+	selected_payload = parser.getPayloadType();
+	
+	if (selected_payload == NULL) {
+		app->sendResponse(Response("Audio codec not found.", Response::Error));
+		return;
+	}
+	
 	int index;
 	ist >> index;
 	if (ist.fail() || (index < 0)) {
 		app->sendResponse(Response("Incorrect index parameter.", Response::Error));
-		return;
-	}
-
-	PayloadType *selected_payload = NULL;
-	for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
-		PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
-		if (ptnum == linphone_core_get_payload_type_number(app->getCore(), payload)) {
-			selected_payload = payload;
-			break;
-		}
-	}
-	if (selected_payload == NULL) {
-		app->sendResponse(Response("Audio codec not found.", Response::Error));
 		return;
 	}
 
