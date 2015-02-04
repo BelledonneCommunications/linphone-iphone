@@ -1364,4 +1364,72 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	public float getPreferredFramerate() {
 		return getPreferredFramerate(nativePtr);
 	}
+	
+	
+	private native int setAudioMulticastAddr(long nativePtr, String ip);
+	@Override
+	public void setAudioMulticastAddr(String ip) throws LinphoneCoreException {
+		if (setAudioMulticastAddr(nativePtr, ip)!=0)
+			throw new LinphoneCoreException("bad ip address ["+ip+"]");
+	}
+	private native int setVideoMulticastAddr(long nativePtr, String ip);
+	@Override
+	public void setVideoMulticastAddr(String ip) throws LinphoneCoreException {
+		if (setVideoMulticastAddr(nativePtr, ip)!=0)
+			throw new LinphoneCoreException("bad ip address ["+ip+"]");
+	}
+	private native String getAudioMulticastAddr(long ptr);
+	@Override
+	public String getAudioMulticastAddr() {
+		return getAudioMulticastAddr() ;
+	}
+	private native String getVideoMulticastAddr(long ptr);
+	@Override
+	public String getVideoMulticastAddr() {
+		return getVideoMulticastAddr();
+	}
+	private native int setAudioMulticastTtl(long ptr,int ttl);
+	@Override
+	public void setAudioMulticastTtl(int ttl) throws LinphoneCoreException {
+		if (setAudioMulticastTtl(nativePtr, ttl)!=0)
+			throw new LinphoneCoreException("bad ttl value ["+ttl+"]");
+		
+	}
+	private native int setVideoMulticastTtl(long ptr,int ttl);
+	@Override
+	public void setVideoMulticastTtl(int ttl) throws LinphoneCoreException {
+		if (setVideoMulticastTtl(nativePtr, ttl)!=0)
+			throw new LinphoneCoreException("bad ttl value ["+ttl+"]");	
+	}
+	private native int getAudioMulticastTtl(long ptr);
+	@Override
+	public int getAudioMulticastTtl() {
+		return getAudioMulticastTtl(nativePtr);	
+	}
+	private native int getVideoMulticastTtl(long ptr);
+	@Override
+	public int getVideoMulticastTtl() {
+		return getVideoMulticastTtl(nativePtr);
+	}
+	private native void enableAudioMulticast(long ptr,boolean yesno);
+	@Override
+	public void enableAudioMulticast(boolean yesno) {
+		enableAudioMulticast(nativePtr,yesno);
+	}
+	private native boolean audioMulticastEnabled(long ptr);
+	@Override
+	public boolean audioMulticastEnabled() {
+		return audioMulticastEnabled(nativePtr);
+	}
+	private native void enableVideoMulticast(long ptr,boolean yesno);
+	
+	@Override
+	public void enableVideoMulticast(boolean yesno) {
+		enableVideoMulticast(nativePtr,yesno);
+	}
+	private native boolean videoMulticastEnabled(long ptr);
+	@Override
+	public boolean videoMulticastEnabled() {
+		return videoMulticastEnabled(nativePtr);
+	}
 }

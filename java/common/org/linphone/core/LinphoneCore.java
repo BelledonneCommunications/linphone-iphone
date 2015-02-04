@@ -1884,15 +1884,16 @@ public interface LinphoneCore {
 	/**
 	 * Use to set multicast address to be used for audio stream.
 	 * @param ip an ipv4/6 multicast address
+	 * @return 
 	 * @thow LinphoneCoreException
 	**/
-	public setAudioMulticastAddr(String ip) throw LinphoneCoreException;
+	public void setAudioMulticastAddr(String ip) throws LinphoneCoreException;
 	/**
 	 * Use to set multicast address to be used for video stream.
 	 * @param ip an ipv4/6 multicast address
 	 * @thow LinphoneCoreException
 	**/
-	public void setVideoMulticastAddr(String ip);
+	public void setVideoMulticastAddr(String ip) throws LinphoneCoreException;
 
 	/**
 	 * Use to get multicast address to be used for audio stream.
@@ -1911,27 +1912,27 @@ public interface LinphoneCore {
 	 * @param ttl value or -1 if not used. [0..255] default value is 1
 	 * @thow LinphoneCoreException
 	**/
-	public void setAudioMulticastTtl(int ttl);
+	public void setAudioMulticastTtl(int ttl)  throws LinphoneCoreException;
 	/**
 	 * Use to set multicast ttl to be used for video stream.
 	 * @param  ttl value or -1 if not used. [0..255] default value is 1
 	 * @thow LinphoneCoreException
 	**/
-	public void setVideoMulticastTtl(int ttl);
+	public void setVideoMulticastTtl(int ttl) throws LinphoneCoreException;
 
 	/**
 	 * Use to get multicast ttl to be used for audio stream.
 	 * @return a time to leave value
 	 * @thow LinphoneCoreException
 	 * 	**/
-	public void getAudioMulticastTtl();
+	public int getAudioMulticastTtl();
 
 	/**
 	 * Use to get multicast ttl to be used for video stream.
 	 * @return a time to leave value
 	 * @thow LinphoneCoreException
 	**/
-	public void getVideoMulticastTtl(const LinphoneCore *core);
+	public int getVideoMulticastTtl();
 
 
 	/**
