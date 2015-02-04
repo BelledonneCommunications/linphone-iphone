@@ -25,6 +25,9 @@
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
+#ifdef HAVE_GTK
+#include <gtk/gtk.h>
+#endif
 
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
@@ -201,6 +204,11 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	liblinphone_tester_clock_start(&start);
 	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
+#ifdef HAVE_GTK
+			gdk_threads_enter();
+			gtk_main_iteration_do(FALSE);
+			gdk_threads_leave();
+#endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
 		ms_usleep(20000);
@@ -442,6 +450,9 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&transport_test_suite);
 	add_test_suite(&player_test_suite);
 	add_test_suite(&dtmf_test_suite);
+#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
+	add_test_suite(&video_test_suite);
+#endif
 }
 
 void liblinphone_tester_uninit(void) {

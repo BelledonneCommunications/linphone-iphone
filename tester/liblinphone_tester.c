@@ -24,6 +24,9 @@
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
+#ifdef HAVE_GTK
+#include <gtk/gtk.h>
+#endif
 
 extern int liblinphone_tester_use_log_file;
 
@@ -167,6 +170,12 @@ int main (int argc, char *argv[])
 	char *xml_tmp_file=NULL;
 	int xml = 0;
 	FILE* log_file=NULL;
+
+#ifdef HAVE_GTK
+	gdk_threads_init();
+	gtk_init(&argc, &argv);
+#endif
+
 #if defined(ANDROID)
 	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
 #elif defined(__QNX__)
@@ -245,7 +254,6 @@ int main (int argc, char *argv[])
 		liblinphone_tester_set_xml_output(xml_tmp_file);
 	}
 	liblinphone_tester_enable_xml(xml);
-
 
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();

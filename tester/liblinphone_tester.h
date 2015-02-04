@@ -63,6 +63,7 @@ extern test_suite_t transport_test_suite;
 extern test_suite_t player_test_suite;
 extern test_suite_t dtmf_test_suite;
 extern test_suite_t offeranswer_test_suite;
+extern test_suite_t video_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -295,6 +296,7 @@ bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
+void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);
 stats * get_stats(LinphoneCore *lc);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
 const char *liblinphone_tester_get_subscribe_content(void);

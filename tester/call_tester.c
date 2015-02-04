@@ -740,7 +740,7 @@ void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int
 }
 
 #ifdef VIDEO_ENABLED
-static void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
+void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime) {
 	const MSList *codecs = linphone_core_get_video_codecs(lc);
 	const MSList *it = NULL;
 	PayloadType *pt = NULL;

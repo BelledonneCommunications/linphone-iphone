@@ -27,13 +27,21 @@ liblinphonetester_la_SOURCES = tester.c \
 				player_tester.c \
 				dtmf_tester.c \
 				accountmanager.c \
-				offeranswer_tester.c
+				offeranswer_tester.c \
+				video_tester.c
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
+
+if BUILD_GTK_UI
+
+liblinphone_tester_la_LIBADD += $(LIBGTK_LIBS) $(LIBGTKMAC_LIBS)
+AM_CFLAGS += $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) -DHAVE_GTK
+
+endif
 
 if !BUILD_IOS
 
