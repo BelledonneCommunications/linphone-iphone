@@ -380,8 +380,9 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 					RtpSession *session=ms->sessions.rtp_session;
 					const char *rtp_addr=new_stream->rtp_addr[0]!='\0' ? new_stream->rtp_addr : md->addr;
 					const char *rtcp_addr=new_stream->rtcp_addr[0]!='\0' ? new_stream->rtcp_addr : md->addr;
-					if (ms_is_multicast(new_stream->rtp_addr))
-						ms_message("Multicast addr [%s/%i] does not need auxiliary rtp's destination for call [%p]",new_stream->rtp_addr,new_stream->rtp_port,call);
+					if (ms_is_multicast(rtp_addr))
+						ms_message("Multicast addr [%s/%i] does not need auxiliary rtp's destination for call [%p]",
+							   rtp_addr,new_stream->rtp_port,call);
 					else
 						rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
 				}

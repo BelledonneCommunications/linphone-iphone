@@ -202,6 +202,7 @@ typedef struct StunCandidate{
 
 
 typedef struct _PortConfig{
+	char multicast_ip[LINPHONE_IPADDR_SIZE];
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
@@ -223,8 +224,6 @@ struct _LinphoneCall{
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
-	char local_audio_ip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call or what proposed in sdp in case of multicast*/
-	char local_video_ip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call or what proposed in sdp in case of multicast*/
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/

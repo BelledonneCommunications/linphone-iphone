@@ -307,7 +307,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	result->proto=remote_answer->proto;
 	result->type=local_offer->type;
 
-	if (ms_is_multicast(local_offer->rtp_addr)) {
+	if (local_offer->rtp_addr[0]!='\0' && ms_is_multicast(local_offer->rtp_addr)) {
 		/*6.2 Multicast Streams
 		...
 	   If a multicast stream is accepted, the address and port information
@@ -408,7 +408,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->rtp_port=0;
 		return;
 	}
-	if (ms_is_multicast(remote_offer->rtp_addr)) {
+	if (remote_offer->rtp_addr[0]!='\0' && ms_is_multicast(remote_offer->rtp_addr)) {
 		if (sal_stream_description_has_srtp(result) == TRUE) {
 			ms_message("SAVP not supported for multicast address for remote stream [%p]",remote_offer);
 			result->rtp_port=0;
