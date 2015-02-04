@@ -400,8 +400,8 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
-	if (!result->payloads || only_telephone_event(result->payloads) || remote_offer->rtp_port==0 || remote_offer->rtp_port==SalStreamSendOnly){
-		result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
+	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
+	if (!result->payloads || only_telephone_event(result->payloads) || remote_offer->rtp_port==0 || remote_offer->dir==SalStreamRecvOnly){
 		result->rtp_port=0;
 		return;
 	}
