@@ -15,6 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "private.h"
 
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 
@@ -23,7 +24,7 @@
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
-#include "private.h"
+
 
 #include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
@@ -167,7 +168,7 @@ static void early_media_video_during_video_call_test(void) {
 	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
 	linphone_call_params_enable_video(pauline_params, TRUE);
 	disable_all_video_codecs_except_one(pauline->lc, "VP8");
-
+	
 	CU_ASSERT_TRUE(video_call_with_params(marie, pauline, marie_params, pauline_params));
 
 	/* Wait for 3s. */
