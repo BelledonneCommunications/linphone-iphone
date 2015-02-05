@@ -172,8 +172,8 @@ int main (int argc, char *argv[])
 	FILE* log_file=NULL;
 
 #ifdef HAVE_GTK
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
+	gdk_threads_init();
 #endif
 
 #if defined(ANDROID)
