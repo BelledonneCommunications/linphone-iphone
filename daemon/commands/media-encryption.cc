@@ -21,6 +21,9 @@ MediaEncryptionResponse::MediaEncryptionResponse(LinphoneCore *core) : Response(
 		case LinphoneMediaEncryptionZRTP:
 			ost << "zrtp\n";
 			break;
+		case LinphoneMediaEncryptionDTLS:
+			ost << "DTLS\n";
+			break;
 	}
 	setBody(ost.str().c_str());
 }
