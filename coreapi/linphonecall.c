@@ -2175,6 +2175,8 @@ static int get_video_bw(LinphoneCall *call, const SalMediaDescription *md, const
 	else if (md->bandwidth>0) {
 		/*case where b=AS is given globally, not per stream*/
 		remote_bw=get_remaining_bandwidth_for_video(md->bandwidth,call->audio_bw);
+	} else {
+		remote_bw = lp_config_get_int(call->core->config, "net", "default_max_bandwidth", 1500);
 	}
 	bw=get_min_bandwidth(get_remaining_bandwidth_for_video(linphone_core_get_upload_bandwidth(call->core),call->audio_bw),remote_bw);
 	return bw;
