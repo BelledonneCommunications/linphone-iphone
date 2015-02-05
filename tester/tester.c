@@ -25,6 +25,9 @@
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
+#ifdef HAVE_GTK
+#include <gtk/gtk.h>
+#endif
 
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
@@ -41,6 +44,7 @@ const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 int liblinphone_tester_use_log_file=0;
 static int liblinphone_tester_keep_accounts_flag = 0;
+static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int manager_count = 0;
 
 static const char* liblinphone_tester_xml_file = NULL;
@@ -81,6 +85,10 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
 	if ((((current.tv_sec-start->tv_sec)*1000LL) + ((current.tv_nsec-start->tv_nsec)/1000000LL))>=value_ms)
 		return TRUE;
 	return FALSE;
+}
+
+void liblinphone_tester_enable_ipv6(bool_t enabled){
+	liblinphone_tester_ipv6_enabled=enabled;
 }
 
 LinphoneAddress * create_linphone_address(const char * domain) {
@@ -157,6 +165,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 	linphone_core_set_static_picture(lc,nowebcampath);
 
+	linphone_core_enable_ipv6(lc, liblinphone_tester_ipv6_enabled);
 
 	ms_free(ringpath);
 	ms_free(ringbackpath);
@@ -195,6 +204,11 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	liblinphone_tester_clock_start(&start);
 	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
+#ifdef HAVE_GTK
+			gdk_threads_enter();
+			gtk_main_iteration_do(FALSE);
+			gdk_threads_leave();
+#endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
 		ms_usleep(20000);
@@ -436,6 +450,10 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&transport_test_suite);
 	add_test_suite(&player_test_suite);
 	add_test_suite(&dtmf_test_suite);
+#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
+	add_test_suite(&video_test_suite);
+#endif
+	add_test_suite(&multicast_call_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

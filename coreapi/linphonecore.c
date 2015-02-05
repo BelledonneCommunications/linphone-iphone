@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
+#include <mediastreamer2/dtls_srtp.h>
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
@@ -946,6 +947,8 @@ static void rtp_config_read(LinphoneCore *lc)
 	int nortp_timeout;
 	bool_t rtp_no_xmit_on_audio_mute;
 	bool_t adaptive_jitt_comp_enabled;
+	const char* tmp;
+	int tmp_int;
 
 	if (lp_config_get_range(lc->config, "rtp", "audio_rtp_port", &min_port, &max_port, 7078, 7078) == TRUE) {
 		if (min_port <= 0) min_port = 1;
@@ -980,6 +983,26 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 	lc->rtp_conf.disable_upnp = lp_config_get_int(lc->config, "rtp", "disable_upnp", FALSE);
 	linphone_core_set_avpf_mode(lc,lp_config_get_int(lc->config,"rtp","avpf",0));
+	if ((tmp=lp_config_get_string(lc->config,"rtp","audio_multicast_addr",NULL)))
+		linphone_core_set_audio_multicast_addr(lc,tmp);
+	else
+		lc->rtp_conf.audio_multicast_addr=ms_strdup("224.1.2.3");
+	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_enabled",-1)) >-1)
+		linphone_core_enable_audio_multicast(lc,tmp_int);
+	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_ttl",-1))>0)
+			linphone_core_set_audio_multicast_ttl(lc,tmp_int);
+	else
+		lc->rtp_conf.audio_multicast_ttl=1;/*local network*/
+	if ((tmp=lp_config_get_string(lc->config,"rtp","video_multicast_addr",NULL)))
+		linphone_core_set_video_multicast_addr(lc,tmp);
+	else
+		lc->rtp_conf.video_multicast_addr=ms_strdup("224.1.2.3");
+	if ((tmp_int=lp_config_get_int(lc->config,"rtp","video_multicast_ttl",-1))>-1)
+		linphone_core_set_video_multicast_ttl(lc,tmp_int);
+	else
+		lc->rtp_conf.video_multicast_ttl=1;/*local network*/
+	if ((tmp_int=lp_config_get_int(lc->config,"rtp","video_multicast_enabled",-1)) >0)
+		linphone_core_enable_video_multicast(lc,tmp_int);
 }
 
 static PayloadType * find_payload(const MSList *default_list, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
@@ -1453,6 +1476,12 @@ static void misc_config_read(LinphoneCore *lc) {
 		lp_config_set_string(config,"misc","uuid",tmp);
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		sal_set_uuid(lc->sal, uuid);
+
+	/* DTLS: if media_encryption DTLS SRTP is available, get or create the certificate directory */
+	/*if (ms_dtls_srtp_available()){
+		*//*JOHAN: USELESS? REMOVE IT*/
+		//const char *user_certificate_config_path = lp_config_get_string(config,"misc","uuid",);
+//	}*/
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
@@ -1820,6 +1849,25 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs){
 	lc->codecs_conf.video_codecs=codecs;
 	_linphone_core_codec_config_write(lc);
 	return 0;
+}
+
+/**
+ * Enable RFC3389 generic confort noise algorithm (CN payload type).
+ * It is disabled by default, because this algorithm is only relevant for legacy codecs (PCMU, PCMA, G722).
+ * @param lc the LinphoneCore
+ * @param enabled TRUE if enabled, FALSE otherwise.
+**/
+void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled){
+	lp_config_set_int(lc->config, "misc", "use_cn", enabled);
+}
+
+/**
+ * Returns enablement of RFC3389 generic confort noise algorithm.
+ * @param lc the LinphoneCore
+ * @return TRUE or FALSE.
+**/
+bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config, "misc", "use_cn", FALSE);
 }
 
 const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
@@ -3094,12 +3142,12 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	call->log->start_date_time=ms_time(NULL);
 	linphone_call_init_media_streams(call);
 
-	if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		/* Defer the start of the call after the ICE gathering process. */
 		if (linphone_call_prepare_ice(call,FALSE)==1)
 			defer=TRUE;
 	}
-	else if (_linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
 #ifdef BUILD_UPNP
 		if (linphone_core_update_upnp(lc,call)<0) {
 			/* uPnP port mappings failed, proceed with the call anyway. */
@@ -3977,7 +4025,11 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
 #endif //BUILD_UPNP
-	sal_call_set_local_media_description(call->op,call->localdesc);
+	if (!lc->sip_conf.sdp_200_ack){
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	} else {
+		sal_call_set_local_media_description(call->op,NULL);
+	}
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params->in_conference && !call->current_params->in_conference) subject="Conference";
 	if ( sal_call_update(call->op,subject,FALSE) != 0){
@@ -3988,6 +4040,12 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 		lc->current_call=call;
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
 	linphone_core_notify_display_status(lc,temp);
+
+	if (lc->sip_conf.sdp_200_ack){
+		/*we are NOT offering, set local media description after sending the call so that we are ready to
+		 process the remote offer when it will arrive*/
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
 	return 0;
 }
 
@@ -4922,23 +4980,8 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	if (linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
-
-LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, FALSE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc) {
-	return _linphone_core_get_firewall_policy_with_lie(lc, TRUE);
-}
-
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie){
+LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
 	const char *policy;
-	if(lie) {
-		LinphoneTunnel *tunnel = linphone_core_get_tunnel(lc);
-		if(tunnel != NULL && linphone_tunnel_get_mode(tunnel)) {
-			return LinphonePolicyNoFirewall;
-		}
-	}
 	policy = lp_config_get_string(lc->config, "net", "firewall_policy", NULL);
 	if ((policy == NULL) || (strcmp(policy, "0") == 0))
 		return LinphonePolicyNoFirewall;
@@ -6102,6 +6145,8 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);
 	lp_config_set_int(lc->config,"rtp","audio_adaptive_jitt_comp_enabled",config->audio_adaptive_jitt_comp_enabled);
 	lp_config_set_int(lc->config,"rtp","video_adaptive_jitt_comp_enabled",config->video_adaptive_jitt_comp_enabled);
+	ms_free(lc->rtp_conf.audio_multicast_addr);
+	ms_free(lc->rtp_conf.video_multicast_addr);
 	ms_free(config->srtp_suites);
 }
 
@@ -6260,6 +6305,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if(lc->zrtp_secrets_cache != NULL) {
 		ms_free(lc->zrtp_secrets_cache);
+	}
+	if(lc->user_certificates_path != NULL) {
+		ms_free(lc->user_certificates_path);
 	}
 	if(lc->play_file!=NULL){
 		ms_free(lc->play_file);
@@ -6699,6 +6747,17 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
 }
 
+void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){
+	if (lc->user_certificates_path != NULL) {
+		ms_free(lc->user_certificates_path);
+	}
+	lc->user_certificates_path = path ? ms_strdup(path) : NULL;
+}
+
+const char *linphone_core_get_user_certificates_path(LinphoneCore *lc){
+	return lc->user_certificates_path;
+}
+
 LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
 	MSList *calls;
 	LinphoneCall *c;
@@ -6759,6 +6818,8 @@ const char *linphone_media_encryption_to_string(LinphoneMediaEncryption menc){
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
 			return "LinphoneMediaEncryptionSRTP";
+		case LinphoneMediaEncryptionDTLS:
+			return "LinphoneMediaEncryptionDTLS";
 		case LinphoneMediaEncryptionZRTP:
 			return "LinphoneMediaEncryptionZRTP";
 		case LinphoneMediaEncryptionNone:
@@ -6775,6 +6836,8 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
 			return ms_srtp_supported();
+		case LinphoneMediaEncryptionDTLS:
+			return ms_dtls_srtp_available();
 		case LinphoneMediaEncryptionZRTP:
 			return ms_zrtp_available();
 		case LinphoneMediaEncryptionNone:
@@ -6798,7 +6861,14 @@ int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption
 			type="none";
 			ret=-1;
 		}else type="zrtp";
+	}else if (menc == LinphoneMediaEncryptionDTLS){
+		if (!ms_dtls_srtp_available()){
+			ms_warning("DTLS not supported by library.");
+			type="none";
+			ret=-1;
+		}else type="dtls";
 	}
+
 	lp_config_set_string(lc->config,"sip","media_encryption",type);
 	return ret;
 }
@@ -6810,6 +6880,8 @@ LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc) {
 		return LinphoneMediaEncryptionNone;
 	else if (strcmp(menc, "srtp")==0)
 		return LinphoneMediaEncryptionSRTP;
+	else if (strcmp(menc, "dtls")==0)
+		return LinphoneMediaEncryptionDTLS;
 	else if (strcmp(menc, "zrtp")==0)
 		return LinphoneMediaEncryptionZRTP;
 	else
@@ -6830,6 +6902,9 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->in_conference=FALSE;
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=FALSE;
+	params->audio_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	params->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
@@ -7168,3 +7243,113 @@ void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *v
 	ms_message("Vtable [%p] unregistered on core [%p]",lc,vtable);
 	lc->vtables=ms_list_remove(lc->vtables,(void*)vtable);
 }
+
+int linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {
+	char* new_value;
+	if (ip && !ms_is_multicast(ip)) {
+		ms_error("Cannot set multicast audio addr to core [%p] because [%s] is not multicast",lc,ip);
+		return -1;
+	}
+	new_value = ip?ms_strdup(ip):NULL;
+	if (lc->rtp_conf.audio_multicast_addr) ms_free(lc->rtp_conf.audio_multicast_addr);
+	lp_config_set_string(lc->config,"rtp","audio_multicast_addr",lc->rtp_conf.audio_multicast_addr=new_value);
+	return 0;
+}
+
+int linphone_core_set_video_multicast_addr(LinphoneCore *lc, const char* ip) {
+	char* new_value;
+	if (ip && !ms_is_multicast(ip)) {
+		ms_error("Cannot set multicast video addr to core [%p] because [%s] is not multicast",lc,ip);
+		return -1;
+	}
+	new_value = ip?ms_strdup(ip):NULL;
+	if (lc->rtp_conf.video_multicast_addr) ms_free(lc->rtp_conf.video_multicast_addr);
+	lp_config_set_string(lc->config,"rtp","video_multicast_addr",lc->rtp_conf.video_multicast_addr=new_value);
+	return 0;
+}
+
+const char* linphone_core_get_audio_multicast_addr(const LinphoneCore *lc) {
+	return lc->rtp_conf.audio_multicast_addr;
+}
+
+
+const char* linphone_core_get_video_multicast_addr(const LinphoneCore *lc){
+	return lc->rtp_conf.video_multicast_addr;
+}
+
+int linphone_core_set_audio_multicast_ttl(LinphoneCore *lc, int ttl) {
+	if (ttl>255) {
+		ms_error("Cannot set multicast audio ttl to core [%p] to [%i] value must be <256",lc,ttl);
+		return -1;
+	}
+
+	lp_config_set_int(lc->config,"rtp","audio_multicast_ttl",lc->rtp_conf.audio_multicast_ttl=ttl);
+	return 0;
+}
+
+int linphone_core_set_video_multicast_ttl(LinphoneCore *lc, int ttl) {
+	if (ttl>255) {
+		ms_error("Cannot set multicast video ttl to core [%p] to [%i] value must be <256",lc,ttl);
+		return -1;
+	}
+
+	lp_config_set_int(lc->config,"rtp","video_multicast_ttl",lc->rtp_conf.video_multicast_ttl=ttl);
+	return 0;
+}
+
+int linphone_core_get_audio_multicast_ttl(const LinphoneCore *lc) {
+	return lc->rtp_conf.audio_multicast_ttl;
+}
+
+
+int linphone_core_get_video_multicast_ttl(const LinphoneCore *lc){
+	return lc->rtp_conf.video_multicast_ttl;
+}
+
+void linphone_core_enable_audio_multicast(LinphoneCore *lc, bool_t yesno) {
+	lp_config_set_int(lc->config,"rtp","audio_multicast_enabled",lc->rtp_conf.audio_multicast_enabled=yesno);
+}
+
+ bool_t linphone_core_audio_multicast_enabled(const LinphoneCore *lc) {
+	return lc->rtp_conf.audio_multicast_enabled;
+}
+
+void linphone_core_enable_video_multicast(LinphoneCore *lc, bool_t yesno) {
+	lp_config_set_int(lc->config,"rtp","video_multicast_enabled",lc->rtp_conf.video_multicast_enabled=yesno);
+}
+
+bool_t linphone_core_video_multicast_enabled(const LinphoneCore *lc) {
+	return lc->rtp_conf.video_multicast_enabled;
+}
+
+#ifdef ANDROID
+static int linphone_core_call_void_method(jobject obj, jmethodID id) {
+	JNIEnv *env=ms_get_jni_env();
+		if (env && obj) {
+			(*env)->CallVoidMethod(env,obj,id);
+			if ((*env)->ExceptionCheck(env)) {
+				(*env)->ExceptionClear(env);
+				return -1;
+			} else
+				return 0;
+		} else
+			return -1;
+}
+
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_acquire_id))
+		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
+}
+void linphone_core_wifi_lock_release(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_release_id))
+		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
+}
+void linphone_core_multicast_lock_acquire(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_acquire_id))
+			ms_warning("No multicast lock configured or not usable for core [%p]",lc);
+}
+void linphone_core_multicast_lock_release(LinphoneCore *lc) {
+	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_release_id))
+			ms_warning("No wifi lock configured or not usable for core [%p]",lc);
+}
+#endif

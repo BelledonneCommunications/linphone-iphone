@@ -583,6 +583,116 @@ static void early_media_call_forking(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_sips(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_sips_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	
+	lcs=ms_list_append(lcs,pauline1->lc);
+	lcs=ms_list_append(lcs,pauline2->lc);
+	
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline1->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline2->lc,"Natted Linphone",NULL);
+	
+	linphone_core_invite_address(marie->lc,pauline1->identity);
+
+	/*marie should hear ringback*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*Only the sips registered device from pauline should ring*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	
+	/*pauline accepts the call */
+	linphone_core_accept_call(pauline1->lc,linphone_core_get_current_call(pauline1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	
+	/*pauline2 should not have ring*/
+	CU_ASSERT_TRUE(pauline2->stat.number_of_LinphoneCallIncomingReceived==0);
+	
+	linphone_core_terminate_call(pauline1->lc,linphone_core_get_current_call(pauline1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallEnd,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,3000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	ms_list_free(lcs);
+}
+
+static void call_with_sips_not_achievable(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	LinphoneAddress *dest;
+	LinphoneCall *call;
+	const LinphoneErrorInfo *ei;
+	
+	lcs=ms_list_append(lcs,pauline1->lc);
+	lcs=ms_list_append(lcs,pauline2->lc);
+
+	
+	dest=linphone_address_clone(pauline1->identity);
+	linphone_address_set_secure(dest,TRUE);
+	call=linphone_core_invite_address(marie->lc,dest);
+	linphone_call_ref(call);
+	linphone_address_unref(dest);
+
+	/*Call should be rejected by server with 480*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallError,1,3000));
+	ei=linphone_call_get_error_info(call);
+	CU_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		CU_ASSERT_EQUAL(linphone_error_info_get_reason(ei), LinphoneReasonTemporarilyUnavailable);
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	ms_list_free(lcs);
+}
+
+static void call_with_ipv6(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCall *pauline_call;
+
+	if (!liblinphone_tester_ipv6_available()){
+		ms_warning("Call with ipv6 not tested, no ipv6 connectivity");
+		return;
+	}
+	
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	liblinphone_tester_enable_ipv6(TRUE);
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+
+	liblinphone_tester_check_rtcp(marie,pauline);
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	liblinphone_tester_enable_ipv6(FALSE);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
 
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
@@ -598,6 +708,9 @@ test_t flexisip_tests[] = {
 	{ "Call forking with push notification (multiple)", call_forking_with_push_notification_multiple },
 	{ "Call forking not responded", call_forking_not_responded },
 	{ "Early-media call forking", early_media_call_forking },
+	{ "Call with sips", call_with_sips },
+	{ "Call with sips not achievable", call_with_sips_not_achievable },
+	{ "Call with ipv6", call_with_ipv6 }
 };
 
 

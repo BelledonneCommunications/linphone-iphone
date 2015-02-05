@@ -35,7 +35,7 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListener.LinphoneListener;
+import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
@@ -53,7 +53,7 @@ import org.linphone.core.SubscriptionState;
  * @author Guillaume Beraudo
  *
  */
-public class TutorialHelloWorld implements LinphoneListener {
+public class TutorialHelloWorld implements LinphoneCoreListener {
 	private boolean running;
 	private TutorialNotifier TutorialNotifier;
 

@@ -8,29 +8,32 @@ register_only_when_network_is_up=0
 composing_idle_timeout=1
 
 [auth_info_0]
-username=pauline
-userid=pauline
+username=marie
+userid=marie
 passwd=secret
-realm=sip.example.org
+realm=sip2.linphone.org
 
 
 [proxy_0]
-reg_proxy=sip2.linphone.org;transport=tls
-reg_route=sip2.linphone.org;transport=tls
-reg_identity=sip:pauline@sip.example.org
+reg_proxy=sips:sip2.linphone.org
+reg_route=sips:sip2.linphone.org
+reg_identity="Super Marie" <sips:marie@sip.example.org>
 reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
+quality_reporting_collector=sip:collector@sip2.linphone.org
+quality_reporting_enabled=1
 
-#[friend_0]
-#url="Mariette" <sip:marie@sip.example.org>
-#pol=accept
-#subscribe=0
+[friend_0]
+url="Paupoche" <sip:pauline@sip2.linphone.org>
+pol=accept
+subscribe=0
+
 
 [rtp]
-audio_rtp_port=18070-28000
-video_rtp_port=39072-49000
+audio_rtp_port=8070
+video_rtp_port=9072
 
 [video]
 display=0

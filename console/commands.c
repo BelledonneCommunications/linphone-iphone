@@ -150,6 +150,15 @@ static LPC_COMMAND commands[] = {
 		"'help <command>'\t: displays specific help for command.\n"
 		"'help advanced'\t: shows advanced commands.\n"
 	},
+	{ "answer", lpc_cmd_answer, "Answer a call",
+		"'answer' : Answer the current incoming call\n"
+		"'answer <call id>' : Answer the call with given id\n"
+	},
+	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
+		"'autoanswer'       \t: show current autoanswer mode\n"
+		"'autoanswer enable'\t: enable autoanswer mode\n"
+		"'autoanswer disable'\t: disable autoanswer mode\n"
+	},
 	{ "call", lpc_cmd_call, "Call a SIP uri or number",
 #ifdef VIDEO_ENABLED
 		"'call <sip-url or number>  [options]' \t: initiate a call to the specified destination.\n"
@@ -162,83 +171,24 @@ static LPC_COMMAND commands[] = {
 		},
 	{ "calls", lpc_cmd_calls, "Show all the current calls with their id and status.",
 		NULL
-		},
+	},
+	{ "call-logs", lpc_cmd_call_logs, "Calls history", NULL
+	},
+#ifdef VIDEO_ENABLED
+	{ "camera", lpc_cmd_camera, "Send camera output for current call.",
+		"'camera on'\t: allow sending of local camera video to remote end.\n"
+		"'camera off'\t: disable sending of local camera's video to remote end.\n"
+	},
+#endif
 	{ "chat", lpc_cmd_chat, "Chat with a SIP uri",
 		"'chat <sip-url> \"message\"' "
 		": send a chat message \"message\" to the specified destination."
-		},
-	{ "terminate", lpc_cmd_terminate, "Terminate a call",
-		"'terminate' : Terminate the current call\n"
-		"'terminate <call id>' : Terminate the call with supplied id\n"
-		"'terminate <all>' : Terminate all the current calls\n"
-		},
-	{ "answer", lpc_cmd_answer, "Answer a call",
-		"'answer' : Answer the current incoming call\n"
-		"'answer <call id>' : Answer the call with given id\n"
-	},
-	{ "pause", lpc_cmd_pause, "pause a call",
-		"'pause' : pause the current call\n"},
-	{ "resume", lpc_cmd_resume, "resume a call",
-		"'resume' : resume the unique call\n"
-		"'resume <call id>' : hold off the call with given id\n"},
-	{ "transfer", lpc_cmd_transfer,
-		"Transfer a call to a specified destination.",
-		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri\n"
-		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri\n"
-		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
 	},
 	{ "conference", lpc_cmd_conference, "Create and manage an audio conference.",
 		"'conference add <call id> : join the call with id 'call id' into the audio conference."
 		"'conference rm <call id> : remove the call with id 'call id' from the audio conference."
 	},
-	{ "mute", lpc_cmd_mute_mic,
-	  "Mute microphone and suspend voice transmission."},
-#ifdef VIDEO_ENABLED
-	{ "camera", lpc_cmd_camera, "Send camera output for current call.",
-		"'camera on'\t: allow sending of local camera video to remote end.\n"
-		"'camera off'\t: disable sending of local camera's video to remote end.\n"},
-#endif
-	{ "unmute", lpc_cmd_unmute_mic,
-		  "Unmute microphone and resume voice transmission."},
-	{ "playbackgain", lpc_cmd_playback_gain,
-		  "Adjust playback gain."},
-	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL },
-
-	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
-		"'autoanswer'       \t: show current autoanswer mode\n"
-		"'autoanswer enable'\t: enable autoanswer mode\n"
-		"'autoanswer disable'\t: disable autoanswer mode��\n"},
-	{ "proxy", lpc_cmd_proxy, "Manage proxies",
-		"'proxy list' : list all proxy setups.\n"
-		"'proxy add' : add a new proxy setup.\n"
-		"'proxy remove <index>' : remove proxy setup with number index.\n"
-		"'proxy use <index>' : use proxy with number index as default proxy.\n"
-		"'proxy unuse' : don't use a default proxy.\n"
-		"'proxy show <index>' : show configuration and status of the proxy numbered by index.\n"
-		"'proxy show default' : show configuration and status of the default proxy.\n"
-	},
-	{ "soundcard", lpc_cmd_soundcard, "Manage soundcards",
-		"'soundcard list' : list all sound devices.\n"
-		"'soundcard show' : show current sound devices configuration.\n"
-		"'soundcard use <index>' : select a sound device.\n"
-		"'soundcard use files' : use .wav files instead of soundcard\n"
-	},
-	{ "webcam", lpc_cmd_webcam, "Manage webcams",
-		"'webcam list' : list all known devices.\n"
-		"'webcam use <index>' : select a video device.\n"
-	},
-	{ "ipv6", lpc_cmd_ipv6, "Use IPV6",
-		"'ipv6 status' : show ipv6 usage status.\n"
-		"'ipv6 enable' : enable the use of the ipv6 network.\n"
-		"'ipv6 disable' : do not use ipv6 network."
-	},
-	{ "nat", lpc_cmd_nat, "Set nat address",
-		"'nat'        : show nat settings.\n"
-		"'nat <addr>' : set nat address.\n"
-	},
-	{ "stun", lpc_cmd_stun, "Set stun server address",
-		"'stun'        : show stun settings.\n"
-		"'stun <addr>' : set stun server address.\n"
+	{ "duration", lpc_cmd_duration, "Print duration in seconds of the last call.", NULL
 	},
 	{ "firewall", lpc_cmd_firewall, "Set firewall policy",
 		"'firewall'        : show current firewall policy.\n"
@@ -248,7 +198,6 @@ static LPC_COMMAND commands[] = {
 		"'firewall ice'    : use ice.\n"
 		"'firewall upnp'   : use uPnP IGD.\n"
 	},
-	{ "call-logs", lpc_cmd_call_logs, "Calls history", NULL },
 	{ "friend", lpc_cmd_friend, "Manage friends",
 		"'friend list [<pattern>]'    : list friends.\n"
 		"'friend call <index>'        : call a friend.\n"
@@ -257,18 +206,79 @@ static LPC_COMMAND commands[] = {
 	    "                               there.  Don't use '<' '>' around <addr>.\n"
 		"'friend delete <index>'      : remove friend, 'all' removes all\n"
 	},
+	{ "ipv6", lpc_cmd_ipv6, "Use IPV6",
+		"'ipv6 status' : show ipv6 usage status.\n"
+		"'ipv6 enable' : enable the use of the ipv6 network.\n"
+		"'ipv6 disable' : do not use ipv6 network."
+	},
+	{ "mute", lpc_cmd_mute_mic,
+	  "Mute microphone and suspend voice transmission."
+	},
+	{ "nat", lpc_cmd_nat, "Set nat address",
+		"'nat'        : show nat settings.\n"
+		"'nat <addr>' : set nat address.\n"
+	},
+	{ "pause", lpc_cmd_pause, "pause a call",
+		"'pause' : pause the current call\n"
+	},
 	{ "play", lpc_cmd_play, "play a wav file",
 		"This command has two roles:\n"
 		"Plays a file instead of capturing from soundcard - only available in file mode (see 'help soundcard')\n"
 		"Specifies a wav file to be played to play music to far end when putting it on hold (pause)\n"
 		"'play <wav file>'    : play a wav file."
 	},
+	{ "playbackgain", lpc_cmd_playback_gain,
+		"Adjust playback gain."
+	},
+	{ "proxy", lpc_cmd_proxy, "Manage proxies",
+		"'proxy list' : list all proxy setups.\n"
+		"'proxy add' : add a new proxy setup.\n"
+		"'proxy remove <index>' : remove proxy setup with number index.\n"
+		"'proxy use <index>' : use proxy with number index as default proxy.\n"
+		"'proxy unuse' : don't use a default proxy.\n"
+		"'proxy show <index>' : show configuration and status of the proxy numbered by index.\n"
+		"'proxy show default' : show configuration and status of the default proxy.\n"
+	},
 	{ "record", lpc_cmd_record, "record to a wav file",
 		"This feature is available only in file mode (see 'help soundcard')\n"
 		"'record <wav file>'    : record into wav file."
 	},
-	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL },
-	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL }
+	{ "resume", lpc_cmd_resume, "resume a call",
+		"'resume' : resume the unique call\n"
+		"'resume <call id>' : hold off the call with given id\n"
+	},
+	{ "soundcard", lpc_cmd_soundcard, "Manage soundcards",
+		"'soundcard list' : list all sound devices.\n"
+		"'soundcard show' : show current sound devices configuration.\n"
+		"'soundcard use <index>' : select a sound device.\n"
+		"'soundcard use files' : use .wav files instead of soundcard\n"
+	},
+	{ "stun", lpc_cmd_stun, "Set stun server address",
+		"'stun'        : show stun settings.\n"
+		"'stun <addr>' : set stun server address.\n"
+	},
+	{ "terminate", lpc_cmd_terminate, "Terminate a call",
+		"'terminate' : Terminate the current call\n"
+		"'terminate <call id>' : Terminate the call with supplied id\n"
+		"'terminate <all>' : Terminate all the current calls\n"
+	},
+	{ "transfer", lpc_cmd_transfer,
+		"Transfer a call to a specified destination.",
+		"'transfer <sip-uri>' : transfers the current active call to the destination sip-uri\n"
+		"'transfer <call id> <sip-uri>': transfers the call with 'id' to the destination sip-uri\n"
+		"'transfer <call id1> --to-call <call id2>': transfers the call with 'id1' to the destination of call 'id2' (attended transfer)\n"
+	},
+	{ "unmute", lpc_cmd_unmute_mic,
+		"Unmute microphone and resume voice transmission."
+	},
+	{ "webcam", lpc_cmd_webcam, "Manage webcams",
+		"'webcam list' : list all known devices.\n"
+		"'webcam use <index>' : select a video device.\n"
+	},
+	{ "quit", lpc_cmd_quit, "Exit linphonec", NULL
+	},
+	{ (char *)NULL, (lpc_cmd_handler)NULL, (char *)NULL, (char *)NULL
+	}
 };
 
 
@@ -292,7 +302,8 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "nortp-on-audio-mute", lpc_cmd_rtp_no_xmit_on_audio_mute,
 		  "Set the rtp_no_xmit_on_audio_mute configuration parameter",
 		  "   If set to 1 then rtp transmission will be muted when\n"
-		  "   audio is muted , otherwise rtp is always sent."},
+		  "   audio is muted , otherwise rtp is always sent."
+		},
 #ifdef VIDEO_ENABLED
 	{ "vwindow", lpc_cmd_video_window, "Control video display window",
 		"'vwindow show': shows video window\n"
@@ -316,14 +327,16 @@ static LPC_COMMAND advanced_commands[] = {
 	{ "preview-snapshot", lpc_cmd_preview_snapshot, "Take a snapshot of currently captured video stream",
 		"'preview-snapshot <file path>': take a snapshot and records it in jpeg format into the supplied path\n"
 	},
-	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"},
+	{ "vfureq", lpc_cmd_vfureq, "Request the other side to send VFU for the current call"
+},
 #endif
 	{ "states", lpc_cmd_states, "Show internal states of liblinphone, registrations and calls, according to linphonecore.h definitions",
 		"'states global': shows global state of liblinphone \n"
 		"'states calls': shows state of calls\n"
 		"'states proxies': shows state of proxy configurations"
 	},
-	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"},
+	{ "register", lpc_cmd_register, "Register in one line to a proxy" , "register <sip identity> <sip proxy> <password>"
+},
 	{ "unregister", lpc_cmd_unregister, "Unregister from default proxy", NULL	},
 	{ "status", lpc_cmd_status, "Print various status information",
 			"'status register'  \t: print status concerning registration\n"

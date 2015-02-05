@@ -160,13 +160,13 @@ test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 endif
 
 AM_CPPFLAGS=\
-	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir)
+	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
+		$(ORTP_CFLAGS) \
+		$(MEDIASTREAMER_CFLAGS) 
 
 COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
-	$(ORTP_CFLAGS) \
-	$(MEDIASTREAMER_CFLAGS) \
 	$(SIPSTACK_CFLAGS) \
 	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\

@@ -24,13 +24,17 @@ import java.io.File;
 import java.io.IOException;
 
 import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCoreListener.LinphoneEchoCalibrationListener;
+import org.linphone.core.LinphoneCoreListener;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
+import android.net.wifi.WifiManager.WifiLock;
 
 public class LinphoneCoreImpl implements LinphoneCore {
 
@@ -110,6 +114,7 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native void setRing(long nativePtr, String path);
 	private native String getRing(long nativePtr);
 	private native void setRootCA(long nativePtr, String path);
+	private native void setRingback(long nativePtr, String path);	
 	private native long[] listVideoPayloadTypes(long nativePtr);
 	private native LinphoneProxyConfig[] getProxyConfigList(long nativePtr);
 	private native long[] getAuthInfosList(long nativePtr);
@@ -156,6 +161,8 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isSdp200AckEnabled(long nativePtr);
 	private native void stopRinging(long nativePtr);
 	private native static void setAndroidPowerManager(Object pm);
+	private native void setAndroidWifiLock(long nativePtr,Object wifi_lock);
+	private native void setAndroidMulticastLock(long nativePtr,Object multicast_lock);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -183,6 +190,18 @@ public class LinphoneCoreImpl implements LinphoneCore {
 		mContext = (Context)context;
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
+		if (Version.sdkAboveOrEqual(Version.API12_HONEYCOMB_MR1_31X)) {
+			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE); 
+			WifiLock lock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "linphonecore ["+ nativePtr+"] wifi-lock");
+			lock.setReferenceCounted(true);
+			setAndroidWifiLock(nativePtr,lock);
+		}
+		if (Version.sdkAboveOrEqual(Version.API14_ICE_CREAM_SANDWICH_40)) {
+			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE); 
+			MulticastLock lock = wifiManager.createMulticastLock("linphonecore ["+ nativePtr+"] multicast-lock");
+			lock.setReferenceCounted(true);
+			setAndroidMulticastLock(nativePtr,lock);
+		}
 	}
 
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
@@ -519,6 +538,10 @@ public class LinphoneCoreImpl implements LinphoneCore {
 		setRootCA(nativePtr, path);
 	}
 
+	public synchronized void setRingback(String path) {
+		setRingback(nativePtr, path);
+	}
+
 	public synchronized LinphoneProxyConfig[] getProxyConfigList() {
 		return getProxyConfigList(nativePtr);
 	}
@@ -558,7 +581,7 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized boolean isKeepAliveEnabled() {
 		return isKeepAliveEnabled(nativePtr);
 	}
-	public synchronized void startEchoCalibration(LinphoneEchoCalibrationListener listener) throws LinphoneCoreException {
+	public synchronized void startEchoCalibration(LinphoneCoreListener listener) throws LinphoneCoreException {
 		startEchoCalibration(nativePtr, listener);
 	}
 
@@ -1330,4 +1353,83 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	 * @param path The path where the log files will be written.
 	 */
 	public native static void setLogCollectionPath(String path);
+	
+	private native void setPreferredFramerate(long nativePtr, float fps);
+	@Override
+	public void setPreferredFramerate(float fps) {
+		setPreferredFramerate(nativePtr,fps);
+	}
+	private native float getPreferredFramerate(long nativePtr);
+	@Override
+	public float getPreferredFramerate() {
+		return getPreferredFramerate(nativePtr);
+	}
+	
+	
+	private native int setAudioMulticastAddr(long nativePtr, String ip);
+	@Override
+	public void setAudioMulticastAddr(String ip) throws LinphoneCoreException {
+		if (setAudioMulticastAddr(nativePtr, ip)!=0)
+			throw new LinphoneCoreException("bad ip address ["+ip+"]");
+	}
+	private native int setVideoMulticastAddr(long nativePtr, String ip);
+	@Override
+	public void setVideoMulticastAddr(String ip) throws LinphoneCoreException {
+		if (setVideoMulticastAddr(nativePtr, ip)!=0)
+			throw new LinphoneCoreException("bad ip address ["+ip+"]");
+	}
+	private native String getAudioMulticastAddr(long ptr);
+	@Override
+	public String getAudioMulticastAddr() {
+		return getAudioMulticastAddr() ;
+	}
+	private native String getVideoMulticastAddr(long ptr);
+	@Override
+	public String getVideoMulticastAddr() {
+		return getVideoMulticastAddr();
+	}
+	private native int setAudioMulticastTtl(long ptr,int ttl);
+	@Override
+	public void setAudioMulticastTtl(int ttl) throws LinphoneCoreException {
+		if (setAudioMulticastTtl(nativePtr, ttl)!=0)
+			throw new LinphoneCoreException("bad ttl value ["+ttl+"]");
+		
+	}
+	private native int setVideoMulticastTtl(long ptr,int ttl);
+	@Override
+	public void setVideoMulticastTtl(int ttl) throws LinphoneCoreException {
+		if (setVideoMulticastTtl(nativePtr, ttl)!=0)
+			throw new LinphoneCoreException("bad ttl value ["+ttl+"]");	
+	}
+	private native int getAudioMulticastTtl(long ptr);
+	@Override
+	public int getAudioMulticastTtl() {
+		return getAudioMulticastTtl(nativePtr);	
+	}
+	private native int getVideoMulticastTtl(long ptr);
+	@Override
+	public int getVideoMulticastTtl() {
+		return getVideoMulticastTtl(nativePtr);
+	}
+	private native void enableAudioMulticast(long ptr,boolean yesno);
+	@Override
+	public void enableAudioMulticast(boolean yesno) {
+		enableAudioMulticast(nativePtr,yesno);
+	}
+	private native boolean audioMulticastEnabled(long ptr);
+	@Override
+	public boolean audioMulticastEnabled() {
+		return audioMulticastEnabled(nativePtr);
+	}
+	private native void enableVideoMulticast(long ptr,boolean yesno);
+	
+	@Override
+	public void enableVideoMulticast(boolean yesno) {
+		enableVideoMulticast(nativePtr,yesno);
+	}
+	private native boolean videoMulticastEnabled(long ptr);
+	@Override
+	public boolean videoMulticastEnabled() {
+		return videoMulticastEnabled(nativePtr);
+	}
 }

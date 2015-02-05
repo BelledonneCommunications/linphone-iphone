@@ -24,6 +24,9 @@
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
+#ifdef HAVE_GTK
+#include <gtk/gtk.h>
+#endif
 
 extern int liblinphone_tester_use_log_file;
 
@@ -143,7 +146,7 @@ void helper(const char *name) {
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif
-			"\t\t\t--xml\n"		
+			"\t\t\t--xml\n"
 			"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
 			, name);
 }
@@ -163,9 +166,16 @@ int main (int argc, char *argv[])
 	int ret;
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
-	const char *xml_file=NULL;
+	const char *xml_file="CUnitAutomated-Results.xml";
+	char *xml_tmp_file=NULL;
 	int xml = 0;
 	FILE* log_file=NULL;
+
+#ifdef HAVE_GTK
+	gdk_threads_init();
+	gtk_init(&argc, &argv);
+#endif
+
 #if defined(ANDROID)
 	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
 #elif defined(__QNX__)
@@ -213,6 +223,7 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i], "--xml-file") == 0){
 			CHECK_ARG("--xml-file", ++i, argc);
 			xml_file = argv[i];
+			xml = 1;
 		} else if (strcmp(argv[i], "--xml") == 0){
 			xml = 1;
 		} else if (strcmp(argv[i],"--log-file")==0){
@@ -238,14 +249,21 @@ int main (int argc, char *argv[])
 		return -1;
 	}
 
-	if( xml_file != NULL ){
-		liblinphone_tester_set_xml_output(xml_file);
+	if( xml ){
+		xml_tmp_file = ms_strdup_printf("%s.tmp", xml_file);
+		liblinphone_tester_set_xml_output(xml_tmp_file);
 	}
 	liblinphone_tester_enable_xml(xml);
 
-
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
+
+	if ( xml ) {
+		/*create real xml file only if tester did not crash*/
+		ms_strcat_printf(xml_tmp_file, "-Results.xml");
+		rename(xml_tmp_file, xml_file);
+		ms_free(xml_tmp_file);
+	}
 	return ret;
 }
 #endif /* WINAPI_FAMILY_PHONE_APP */

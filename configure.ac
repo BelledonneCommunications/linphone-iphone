@@ -60,9 +60,12 @@ case $target in
 		mingwce_found=yes
 	;;
 	*mingw*)
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
-		LIBS="$LIBS -L/lib -lws2_32"
+		LIBS="$LIBS -lws2_32"
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
@@ -625,6 +628,16 @@ AC_ARG_ENABLE(zrtp,
 	[zrtp=false]
 )
 
+AC_ARG_ENABLE(dtls,
+	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
+	[case "${enableval}" in
+		yes)	dtls=true ;;
+		no)	dtls=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-dtls) ;;
+	esac],
+	[dtls=false]
+)
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -635,6 +648,7 @@ dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
 AM_CONDITIONAL(BUILD_ZRTP, test x$zrtp = xtrue)
+AM_CONDITIONAL(BUILD_DTLS, test x$dtls = xtrue)
 
 dnl check getenv
 AH_TEMPLATE([HAVE_GETENV])
@@ -795,7 +809,6 @@ AC_SUBST([MS2_VERSION])
 AC_SUBST([MS2_DIR])
 
 
-
 AC_ARG_ENABLE(tunnel,
 	[AS_HELP_STRING([--enable-tunnel=[yes/no]], [Turn on compilation of tunnel support (default=no)])],
 	[case "${enableval}" in
@@ -932,6 +945,7 @@ case "$target_os" in
 	;;
 esac
 
+
 dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
@@ -983,6 +997,7 @@ printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption"		$zrtp
+printf "* %-30s %s\n" "DTLS encryption"		$dtls
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib

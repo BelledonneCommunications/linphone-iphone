@@ -287,7 +287,8 @@ typedef enum _LinphoneAVPFMode  LinphoneAVPFMode;
 enum _LinphoneMediaEncryption {
 	LinphoneMediaEncryptionNone, /**< No media encryption is used */
 	LinphoneMediaEncryptionSRTP, /**< Use SRTP media encryption */
-	LinphoneMediaEncryptionZRTP /**< Use ZRTP media encryption */
+	LinphoneMediaEncryptionZRTP, /**< Use ZRTP media encryption */
+	LinphoneMediaEncryptionDTLS /**< Use DTLS media encryption */
 };
 
 /**
@@ -396,7 +397,9 @@ LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const cha
 LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
-LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *uri);
+LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *addr);
+LINPHONE_PUBLIC bool_t linphone_address_get_secure(const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_address_is_sip(const LinphoneAddress *uri);
 LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
 LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
@@ -755,6 +758,19 @@ LINPHONE_PUBLIC	int linphone_call_send_dtmfs(LinphoneCall *call,char *dtmfs);
  * @param call The LinphoneCall object
 **/
 LINPHONE_PUBLIC	void linphone_call_cancel_dtmfs(LinphoneCall *call);
+
+/**
+ * Get the native window handle of the video window, casted as an unsigned long.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call);
+
+/**
+ * Set the native video window id where the video is to be displayed.
+ * For MacOS, Linux, Windows: if not set or 0 a window will be automatically created, unless the special id -1 is given.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id);
 
 /**
  * Return TRUE if this call is currently part of a conference
@@ -2277,6 +2293,10 @@ LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore 
 
 LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
+LINPHONE_PUBLIC void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled);
+
+LINPHONE_PUBLIC bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc);
+
 /**
  * Tells whether the specified payload type is enabled.
  * @param[in] lc #LinphoneCore object.
@@ -3049,6 +3069,22 @@ LINPHONE_PUBLIC void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const
 LINPHONE_PUBLIC const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 
 /**
+ * Set the path to the directory storing the user's x509 certificates (used by dtls)
+ * @param[in] lc #LinphoneCore object
+ * @param[in] path The path to the directory to use to store the user's certificates.
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path);
+
+/**
+ * Get the path to the directory storing the user's certificates.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The path to the directory storing the user's certificates.
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC const char *linphone_core_get_user_certificates_path(LinphoneCore *lc);
+
+/**
  * Search from the list of current calls if a remote address match uri
  * @ingroup call_control
  * @param lc
@@ -3268,6 +3304,108 @@ LINPHONE_PUBLIC LinphoneAVPFMode linphone_core_get_avpf_mode(const LinphoneCore 
 LINPHONE_PUBLIC void linphone_core_set_avpf_rr_interval(LinphoneCore *lc, int interval);
 
 LINPHONE_PUBLIC int linphone_core_get_avpf_rr_interval(const LinphoneCore *lc);
+
+/**
+ * Use to set multicast address to be used for audio stream.
+ * @param core #LinphoneCore
+ * @param ip an ipv4/6 multicast address
+ * @return 0 in case of success
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_set_audio_multicast_addr(LinphoneCore *core, const char* ip);
+/**
+ * Use to set multicast address to be used for video stream.
+ * @param core #LinphoneCore
+ * @param ip an ipv4/6 multicast address
+ * @return 0 in case of success
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_set_video_multicast_addr(LinphoneCore *lc, const char *ip);
+
+/**
+ * Use to get multicast address to be used for audio stream.
+ * @param core #LinphoneCore
+ * @return an ipv4/6 multicast address or default value
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const char* linphone_core_get_audio_multicast_addr(const LinphoneCore *core);
+
+/**
+ * Use to get multicast address to be used for video stream.
+ * @param core #LinphoneCore
+ * @return an ipv4/6 multicast address, or default value
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const char* linphone_core_get_video_multicast_addr(const LinphoneCore *core);
+
+/**
+ * Use to set multicast ttl to be used for audio stream.
+ * @param core #LinphoneCore
+ * @param ttl value or -1 if not used. [0..255] default value is 1
+ * @return 0 in case of success
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_set_audio_multicast_ttl(LinphoneCore *core, int ttl);
+/**
+ * Use to set multicast ttl to be used for video stream.
+ * @param core #LinphoneCore
+ * @param  ttl value or -1 if not used. [0..255] default value is 1
+ * @return 0 in case of success
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_set_video_multicast_ttl(LinphoneCore *lc, int ttl);
+
+/**
+ * Use to get multicast ttl to be used for audio stream.
+ * @param core #LinphoneCore
+ * @return a time to leave value
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_get_audio_multicast_ttl(const LinphoneCore *core);
+
+/**
+ * Use to get multicast ttl to be used for video stream.
+ * @param core #LinphoneCore
+ * @return a time to leave value
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_core_get_video_multicast_ttl(const LinphoneCore *core);
+
+
+/**
+ * Use to enable multicast rtp for audio stream.
+ * * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+ * <br> For incoming calls behavior is unchanged.
+ * @param core #LinphoneCore
+ * @param yesno if yes, subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_audio_multicast(LinphoneCore *core, bool_t yesno);
+
+/**
+ * Use to get multicast state of audio stream.
+ * @param core #LinphoneCore
+ * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_audio_multicast_enabled(const LinphoneCore *core);
+
+/**
+ * Use to enable multicast rtp for video stream.
+ * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into video cline. In case of outgoing call video stream is sent to this  multicast address.
+ * <br> For incoming calls behavior is unchanged.
+ * @param core #LinphoneCore
+ * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_video_multicast(LinphoneCore *core, bool_t yesno);
+/**
+ * Use to get multicast state of video stream.
+ * @param core #LinphoneCore
+ * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore *core);
 
 #ifdef __cplusplus
 }

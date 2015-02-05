@@ -15,9 +15,9 @@ realm=sip.example.org
 
 
 [proxy_0]
-reg_proxy=sip2.linphone.org;transport=tls
-reg_route=sip2.linphone.org;transport=tls
-reg_identity=sip:pauline@sip.example.org
+reg_proxy=sips:sip2.linphone.org
+reg_route=sips:sip2.linphone.org
+reg_identity=sips:pauline@sip.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0
@@ -29,8 +29,8 @@ dial_escape_plus=0
 #subscribe=0
 
 [rtp]
-audio_rtp_port=18070-28000
-video_rtp_port=39072-49000
+audio_rtp_port=8090
+video_rtp_port=9092
 
 [video]
 display=0

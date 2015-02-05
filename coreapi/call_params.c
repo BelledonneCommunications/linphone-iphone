@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
 	if ((params->media_encryption == LinphoneMediaEncryptionSRTP) && params->avpf_enabled) return SalProtoRtpSavpf;
 	if (params->media_encryption == LinphoneMediaEncryptionSRTP) return SalProtoRtpSavp;
+	if ((params->media_encryption == LinphoneMediaEncryptionDTLS) && params->avpf_enabled) return SalProtoUdpTlsRtpSavpf;
+	if (params->media_encryption == LinphoneMediaEncryptionDTLS) return SalProtoUdpTlsRtpSavp;
 	if (params->avpf_enabled) return SalProtoRtpAvpf;
 	return SalProtoRtpAvp;
 }
@@ -49,6 +51,7 @@ LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
 	 */
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
+
 	return ncp;
 }
 
@@ -156,6 +159,21 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
+LinphoneCallParamsMediaDirection linphone_call_params_get_audio_direction(const LinphoneCallParams *cp) {
+	return cp->audio_dir;
+}
+
+LinphoneCallParamsMediaDirection linphone_call_params_get_video_direction(const LinphoneCallParams *cp) {
+	return cp->video_dir;
+}
+
+void linphone_call_params_set_audio_direction(LinphoneCallParams *cp,LinphoneCallParamsMediaDirection dir) {
+	cp->audio_dir=dir;
+}
+
+void linphone_call_params_set_video_direction(LinphoneCallParams *cp,LinphoneCallParamsMediaDirection dir) {
+	cp->video_dir=dir;
+}
 
 
 /*******************************************************************************

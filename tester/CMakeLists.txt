@@ -20,6 +20,8 @@
 #
 ############################################################################
 
+find_package(GTK2 2.18 COMPONENTS gtk)
+
 set(SOURCE_FILES
 	accountmanager.c
 	call_tester.c
@@ -29,6 +31,7 @@ set(SOURCE_FILES
 	liblinphone_tester.c
 	log_collection_tester.c
 	message_tester.c
+	offeranswer_tester.c
 	player_tester.c
 	presence_tester.c
 	quality_reporting_tester.c
@@ -39,8 +42,14 @@ set(SOURCE_FILES
 	tester.c
 	transport_tester.c
 	upnp_tester.c
+	video_tester.c
 )
 
 add_executable(liblinphone_tester ${SOURCE_FILES})
 target_include_directories(liblinphone_tester PUBLIC ${CUNIT_INCLUDE_DIRS})
 target_link_libraries(liblinphone_tester linphone ${CUNIT_LIBRARIES})
+if (GTK2_FOUND)
+	target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
+	target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
+	target_link_libraries(liblinphone_tester linphone ${GTK2_LIBRARIES})
+endif()

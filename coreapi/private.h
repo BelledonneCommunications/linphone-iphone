@@ -78,6 +78,9 @@ extern "C" {
 #define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
 #endif
 #endif
+#ifdef ANDROID
+#include <jni.h>
+#endif
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
@@ -105,6 +108,9 @@ struct _LinphoneCallParams{
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
+	LinphoneCallParamsMediaDirection audio_dir;
+	LinphoneCallParamsMediaDirection video_dir;
+
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -196,6 +202,7 @@ typedef struct StunCandidate{
 
 
 typedef struct _PortConfig{
+	char multicast_ip[LINPHONE_IPADDR_SIZE];
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
@@ -213,6 +220,7 @@ struct _LinphoneCall{
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
+	LinphoneAddress *me; /*Either from or to based on call dir*/
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
@@ -225,7 +233,7 @@ struct _LinphoneCall{
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
-
+	unsigned long video_window_id;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams *params;
@@ -253,6 +261,7 @@ struct _LinphoneCall{
 	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
+	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -296,20 +305,6 @@ void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
-/**
- * @brief Equivalent to _linphone_core_get_firewall_policy_with_lie(lc, TRUE)
- * @param lc LinphoneCore instance
- * @return Fairewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc);
-/**
- * @brief Get the firwall policy which has been set.
- * @param lc Instance of LinphoneCore
- * @param lie If true, the configured firewall policy will be returned only if no tunnel are enabled.
- * Otherwise, NoFirewallPolicy value will be returned.
- * @return The firewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie);
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenceModel *presence);
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);
@@ -601,6 +596,12 @@ typedef struct rtp_config
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
 	bool_t pad;
+	char* audio_multicast_addr;
+	bool_t audio_multicast_enabled;
+	int audio_multicast_ttl;
+	char* video_multicast_addr;
+	int video_multicast_ttl;
+	bool_t video_multicast_enabled;
 }rtp_config_t;
 
 
@@ -757,6 +758,7 @@ struct _LinphoneCore
 	MSList *hooks;
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
+	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	bool_t use_files;
 	bool_t apply_nat_settings;
@@ -795,6 +797,14 @@ struct _LinphoneCore
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
+#ifdef ANDROID
+	jobject wifi_lock;
+	jmethodID wifi_lock_acquire_id;
+	jmethodID wifi_lock_release_id;
+	jobject multicast_lock;
+	jmethodID multicast_lock_acquire_id;
+	jmethodID multicast_lock_release_id;
+#endif
 };
 
 
@@ -1090,6 +1100,13 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
+
+#ifdef ANDROID
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
+void linphone_core_wifi_lock_release(LinphoneCore *lc);
+void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
+void linphone_core_multicast_lock_release(LinphoneCore *lc);
+#endif
 
 #ifdef __cplusplus
 }

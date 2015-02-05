@@ -1796,6 +1796,8 @@ void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presen
 		return;
 	}
 
+	xmlTextWriterSetIndent(writer,1);
+
 	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
 	if (err >= 0) {
 		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"presence", (const xmlChar *)"urn:ietf:params:xml:ns:pidf");

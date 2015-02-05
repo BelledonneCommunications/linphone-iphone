@@ -338,7 +338,7 @@ static void call_received(SalOp *h){
 	linphone_core_add_call(lc,call);
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 
-	if ((_linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");
 		return;
@@ -380,7 +380,11 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 					RtpSession *session=ms->sessions.rtp_session;
 					const char *rtp_addr=new_stream->rtp_addr[0]!='\0' ? new_stream->rtp_addr : md->addr;
 					const char *rtcp_addr=new_stream->rtcp_addr[0]!='\0' ? new_stream->rtcp_addr : md->addr;
-					rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
+					if (ms_is_multicast(rtp_addr))
+						ms_message("Multicast addr [%s/%i] does not need auxiliary rtp's destination for call [%p]",
+							   rtp_addr,new_stream->rtp_port,call);
+					else
+						rtp_session_add_aux_remote_addr_full(session,rtp_addr,new_stream->rtp_port,rtcp_addr,new_stream->rtcp_port);
 				}
 			}
 		}
@@ -425,8 +429,15 @@ static void call_ringing(SalOp *h){
 		if (call->audiostream && audio_stream_started(call->audiostream)){
 			/*streams already started */
 			try_early_media_forking(call,md);
-			return;
+			#ifdef VIDEO_ENABLED
+			if (call->videostream){
+				/*just request for iframe*/
+				video_stream_send_vfu(call->videostream);
+			}
+			#endif
+		return;
 		}
+
 		linphone_core_notify_show_interface(lc);
 		linphone_core_notify_display_status(lc,_("Early media."));
 		linphone_call_set_state(call,LinphoneCallOutgoingEarlyMedia,"Early media");
@@ -614,7 +625,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		}
 	}
 
-	if (call->state==LinphoneCallStreamsRunning) {
+	if ( call->state == LinphoneCallStreamsRunning) {
 		/*reINVITE and in-dialogs UPDATE go here*/
 		linphone_core_notify_display_status(lc,_("Call is updated by remote."));
 		call->defer_update=FALSE;
@@ -622,8 +633,21 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		if (call->defer_update==FALSE){
 			linphone_core_accept_call_update(lc,call,NULL);
 		}
-		if (rmd==NULL)
+		if (rmd==NULL){
 			call->expect_media_in_ack=TRUE;
+		}
+
+	} else if( call->state == LinphoneCallPausedByRemote ){
+		/* Case where no SDP is present and we were paused by remote.
+		 * We send back an ACK with our SDP and expect the remote to send its own.
+		 * No state change here until an answer is received. */
+		call->defer_update=FALSE;
+		if (call->defer_update==FALSE){
+			_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
+		}
+		if (rmd==NULL){
+			call->expect_media_in_ack=TRUE;
+		}
 	} else if (is_update){ /*SIP UPDATE case, can occur in early states*/
 		linphone_call_set_state(call, LinphoneCallEarlyUpdatedByRemote, "EarlyUpdatedByRemote");
 		_linphone_core_accept_call_update(lc,call,NULL,call->prevstate,linphone_call_state_to_string(call->prevstate));
