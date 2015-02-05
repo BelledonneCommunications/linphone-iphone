@@ -2663,6 +2663,47 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 #endif
 }
 
+static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
+{
+	int i;
+	const MSCryptoSuite *srtp_suites;
+
+	if (params == NULL) return;
+	if (lc == NULL) return;
+
+	srtp_suites = linphone_core_get_srtp_crypto_suites(lc);
+	if (srtp_suites!=NULL) {
+		for(i=0; srtp_suites[i]!=MS_CRYPTO_SUITE_INVALID && i<SAL_CRYPTO_ALGO_MAX && i<MS_MAX_ZRTP_CRYPTO_TYPES; ++i){
+			switch (srtp_suites[i]) {
+				case MS_AES_128_SHA1_32:
+					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES1;
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS32;
+					break;
+				case MS_AES_128_NO_AUTH:
+					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES1;
+					break;
+				case MS_NO_CIPHER_SHA1_80:
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+					break;
+				case MS_AES_128_SHA1_80:
+					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES1;
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+					break;
+				case MS_AES_256_SHA1_80:
+					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+					break;
+				case MS_AES_256_SHA1_32:
+					params->ciphers[params->ciphersCount++] = MS_ZRTP_CIPHER_AES3;
+					params->authTags[params->authTagsCount++] = MS_ZRTP_AUTHTAG_HS80;
+					break;
+				case MS_CRYPTO_SUITE_INVALID:
+					break;
+			}
+		}
+	}
+}
+
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
 	LinphoneCore *lc=call->core;
 	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
@@ -2707,6 +2748,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		memset(&params,0,sizeof(MSZrtpParams));
 		/*call->current_params.media_encryption will be set later when zrtp is activated*/
 		params.zid_file=lc->zrtp_secrets_cache;
+		setZrtpCryptoTypesParameters(&params,call->core);
 		audio_stream_enable_zrtp(call->audiostream,&params);
 #if VIDEO_ENABLED
 		if (media_stream_secured((MediaStream *)call->audiostream) && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
