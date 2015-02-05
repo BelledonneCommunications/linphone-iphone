@@ -2702,6 +2702,8 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 			}
 		}
 	}
+
+	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreements(lc, params->keyAgreements);
 }
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
