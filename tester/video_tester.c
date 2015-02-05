@@ -51,13 +51,20 @@ static unsigned long get_native_handle(GdkWindow *gdkw) {
 	return 0;
 }
 
-static GtkWidget *create_video_window(LinphoneCall *call) {
+static GtkWidget *create_video_window(LinphoneCall *call, LinphoneCallState cstate) {
 	GtkWidget *video_window;
 	GdkDisplay *display;
 	GdkColor color;
 	MSVideoSize vsize = MS_VIDEO_SIZE_CIF;
-	
+	const char *cstate_str;
+	char *title;
+	stats* counters = get_stats(call->core);
+
+	cstate_str = linphone_call_state_to_string(cstate);
+	title = g_strdup_printf("%s", cstate_str);
 	video_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(video_window), title);
+	g_free(title);
 	gtk_window_resize(GTK_WINDOW(video_window), vsize.width, vsize.height);
 	gdk_color_parse("black", &color);
 	gtk_widget_modify_bg(video_window, GTK_STATE_NORMAL, &color);
@@ -69,13 +76,14 @@ static GtkWidget *create_video_window(LinphoneCall *call) {
 	display = gdk_drawable_get_display(gtk_widget_get_window(video_window));
 #endif
 	gdk_display_flush(display);
+	counters->number_of_video_windows_created++;
 	return video_window;
 }
 
-static void show_video_window(LinphoneCall *call) {
+static void show_video_window(LinphoneCall *call, LinphoneCallState cstate) {
 	GtkWidget *video_window = (GtkWidget *)linphone_call_get_user_data(call);
 	if (video_window == NULL) {
-		video_window = create_video_window(call);
+		video_window = create_video_window(call, cstate);
 		linphone_call_set_user_data(call, video_window);
 		linphone_call_set_native_video_window_id(call, get_native_handle(gtk_widget_get_window(video_window)));
 	}
@@ -92,8 +100,10 @@ static void hide_video_video(LinphoneCall *call) {
 
 static void video_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
 	switch (cstate) {
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallConnected:
-			show_video_window(call);
+			show_video_window(call, cstate);
 			break;
 		case LinphoneCallEnd:
 			hide_video_video(call);
@@ -103,18 +113,45 @@ static void video_call_state_changed(LinphoneCore *lc, LinphoneCall *call, Linph
 	}
 }
 
-static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCoreManager* callee_mgr, const LinphoneCallParams *caller_params, const LinphoneCallParams *callee_params) {
+static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
+	LinphoneCallParams *params;
+
+	video_call_state_changed(lc, call, cstate, msg);
+	switch (cstate) {
+		case LinphoneCallIncomingReceived:
+			params = linphone_core_create_default_call_parameters(lc);
+			linphone_call_params_enable_video(params, TRUE);
+			linphone_core_accept_early_media_with_params(lc, call, params);
+			linphone_call_params_unref(params);
+			break;
+		default:
+			break;
+	}
+}
+
+bool_t wait_for_three_cores(LinphoneCore *lc1, LinphoneCore *lc2, LinphoneCore *lc3, int timeout) {
+	MSList *lcs = NULL;
+	bool_t result;
+	int dummy = 0;
+	if (lc1) lcs = ms_list_append(lcs, lc1);
+	if (lc2) lcs = ms_list_append(lcs, lc2);
+	if (lc3) lcs = ms_list_append(lcs, lc3);
+	result = wait_for_list(lcs, &dummy, 1, timeout);
+	ms_list_free(lcs);
+	return result;
+}
+
+static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCoreManager* callee_mgr, const LinphoneCallParams *caller_params, const LinphoneCallParams *callee_params, bool_t automatically_accept) {
 	int retry = 0;
 	stats initial_caller = caller_mgr->stat;
 	stats initial_callee = callee_mgr->stat;
-	bool_t result = FALSE;
+	bool_t result = TRUE;
 	bool_t did_received_call;
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc, callee_mgr->identity, caller_params));
 	did_received_call = wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, initial_callee.number_of_LinphoneCallIncomingReceived + 1);
 	if (!did_received_call) return 0;
 
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, initial_caller.number_of_LinphoneCallOutgoingProgress + 1);
 
 	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging != (initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
@@ -133,61 +170,91 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 		return 0;
 	}
 
-	linphone_core_accept_call_with_params(callee_mgr->lc, linphone_core_get_current_call(callee_mgr->lc), callee_params);
+	if (automatically_accept == TRUE) {
+		linphone_core_accept_call_with_params(callee_mgr->lc, linphone_core_get_current_call(callee_mgr->lc), callee_params);
 
-	CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
-	CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
-	result = wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_caller.number_of_LinphoneCallStreamsRunning + 1)
-		&& wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_callee.number_of_LinphoneCallStreamsRunning + 1);
+		CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
+		CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
+		result = wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_caller.number_of_LinphoneCallStreamsRunning + 1)
+			&& wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_callee.number_of_LinphoneCallStreamsRunning + 1);
+	}
 	return result;
+}
+
+static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, LinphoneCoreCallStateChangedCb cb) {
+	LinphoneCallParams *params;
+	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
+	vtable->call_state_changed = cb;
+	linphone_core_add_listener(manager->lc, vtable);
+	linphone_core_set_video_device(manager->lc, "StaticImage: Static picture");
+	linphone_core_enable_video_capture(manager->lc, TRUE);
+	linphone_core_enable_video_display(manager->lc, TRUE);
+	params = linphone_core_create_default_call_parameters(manager->lc);
+	linphone_call_params_enable_video(params, TRUE);
+	disable_all_video_codecs_except_one(manager->lc, "VP8");
+	return params;
+}
+
+static LinphoneCallParams * configure_for_video(LinphoneCoreManager *manager) {
+	return _configure_for_video(manager, video_call_state_changed);
+}
+
+static LinphoneCallParams * configure_for_early_media_video_sending(LinphoneCoreManager *manager) {
+	LinphoneCallParams *params = _configure_for_video(manager, video_call_state_changed);
+	linphone_call_params_enable_early_media_sending(params, TRUE);
+	return params;
+}
+
+static LinphoneCallParams * configure_for_early_media_video_receiving(LinphoneCoreManager *manager) {
+	return _configure_for_video(manager, early_media_video_call_state_changed);
 }
 
 
 static void early_media_video_during_video_call_test(void) {
 	LinphoneCoreManager *marie;
 	LinphoneCoreManager *pauline;
+	LinphoneCoreManager *laure;
 	LinphoneCallParams *marie_params;
 	LinphoneCallParams *pauline_params;
-	LinphoneCoreVTable *marie_vtable;
-	LinphoneCoreVTable *pauline_vtable;
-	int dummy = 0;
+	LinphoneCallParams *laure_params;
 
-	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
-	marie_vtable = linphone_core_v_table_new();
-	marie_vtable->call_state_changed = video_call_state_changed;
-	linphone_core_add_listener(marie->lc, marie_vtable);
-	linphone_core_set_video_device(marie->lc, "StaticImage: Static picture");
-	//linphone_core_set_video_device(marie->lc, "V4L2: /dev/video0");
-	linphone_core_enable_video_capture(marie->lc, TRUE);
-	linphone_core_enable_video_display(marie->lc, TRUE);
-	linphone_core_set_avpf_mode(marie->lc, LinphoneAVPFEnabled);
-	marie_params = linphone_core_create_default_call_parameters(marie->lc);
-	linphone_call_params_enable_video(marie_params, TRUE);
-	disable_all_video_codecs_except_one(marie->lc, "VP8");
-	pauline_vtable = linphone_core_v_table_new();
-	pauline_vtable->call_state_changed = video_call_state_changed;
-	linphone_core_add_listener(pauline->lc, pauline_vtable);
-	linphone_core_set_video_device(pauline->lc, "StaticImage: Static picture");
-	linphone_core_enable_video_capture(pauline->lc, TRUE);
-	linphone_core_enable_video_display(pauline->lc, TRUE);
-	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
-	linphone_call_params_enable_video(pauline_params, TRUE);
-	disable_all_video_codecs_except_one(pauline->lc, "VP8");
-	
-	CU_ASSERT_TRUE(video_call_with_params(marie, pauline, marie_params, pauline_params));
+	marie = linphone_core_manager_new("marie_rc");
+	pauline = linphone_core_manager_new("pauline_rc");
+	laure = linphone_core_manager_new("laure_rc");
+	marie_params = configure_for_early_media_video_receiving(marie);
+	pauline_params = configure_for_video(pauline);
+	laure_params = configure_for_early_media_video_sending(laure);
 
-	/* Wait for 3s. */
-	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
+	/* Normal automatically accepted video call from marie to pauline. */
+	CU_ASSERT_TRUE(video_call_with_params(marie, pauline, marie_params, pauline_params, TRUE));
+
+	/* Wait for 2s. */
+	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
+
+	/* Early media video call from laure to marie. */
+	CU_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
+
+	/* Wait for 2s. */
+	wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 2000);
 
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
 
+	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
+	CU_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1);
+
+	linphone_call_params_unref(marie_params);
+	linphone_call_params_unref(pauline_params);
+	linphone_call_params_unref(laure_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
 }
 
 test_t video_tests[] = {
