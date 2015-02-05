@@ -1381,12 +1381,12 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native String getAudioMulticastAddr(long ptr);
 	@Override
 	public String getAudioMulticastAddr() {
-		return getAudioMulticastAddr() ;
+		return getAudioMulticastAddr(nativePtr) ;
 	}
 	private native String getVideoMulticastAddr(long ptr);
 	@Override
 	public String getVideoMulticastAddr() {
-		return getVideoMulticastAddr();
+		return getVideoMulticastAddr(nativePtr);
 	}
 	private native int setAudioMulticastTtl(long ptr,int ttl);
 	@Override

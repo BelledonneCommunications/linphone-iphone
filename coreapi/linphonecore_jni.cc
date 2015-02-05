@@ -5631,9 +5631,9 @@ extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoMulticas
  * Signature: (J)Ljava/lang/String;
  */
 extern "C" jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getAudioMulticastAddr
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_getAudioMulticastAddr not implemented yet");
-	return NULL;
+  (JNIEnv *env , jobject, jlong ptr) {
+	const char *tmp=linphone_core_get_audio_multicast_addr((LinphoneCore*)ptr);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
 }
 
 /*
@@ -5642,9 +5642,9 @@ extern "C" jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getAudioMulti
  * Signature: (J)Ljava/lang/String;
  */
 extern "C" jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoMulticastAddr
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_getVideoMulticastAddr not implemented yet");
-	return NULL;
+  (JNIEnv * env, jobject, jlong ptr) {
+	const char *tmp=linphone_core_get_video_multicast_addr((LinphoneCore*)ptr);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
 }
 
 /*
@@ -5653,9 +5653,8 @@ extern "C" jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoMulti
  * Signature: (JI)I
  */
 extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_setAudioMulticastTtl
-  (JNIEnv *, jobject, jlong, jint) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_setAudioMulticastTtl not implemented yet");
-	return -1;
+  (JNIEnv *, jobject, jlong ptr, jint value) {
+	return linphone_core_set_audio_multicast_ttl((LinphoneCore*)ptr,value);
 }
 
 /*
@@ -5664,9 +5663,8 @@ extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_setAudioMulticas
  * Signature: (JI)I
  */
 extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoMulticastTtl
-  (JNIEnv *, jobject, jlong, jint) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_setVideoMulticastTtl not implemented yet");
-	return -1;
+  (JNIEnv *, jobject, jlong ptr, jint value) {
+	return linphone_core_set_video_multicast_ttl((LinphoneCore*)ptr,value);
 }
 
 /*
@@ -5675,9 +5673,8 @@ extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoMulticas
  * Signature: (J)I
  */
 extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getAudioMulticastTtl
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_getAudioMulticastTtl not implemented yet");
-	return -1;
+  (JNIEnv *, jobject, jlong ptr) {
+	return linphone_core_get_audio_multicast_ttl((LinphoneCore*)ptr);
 }
 
 /*
@@ -5686,9 +5683,8 @@ extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getAudioMulticas
  * Signature: (J)I
  */
 extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoMulticastTtl
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_getVideoMulticastTtl not implemented yet");
-	return -1;
+  (JNIEnv *, jobject, jlong ptr) {
+	return linphone_core_get_video_multicast_ttl((LinphoneCore*)ptr);
 }
 
 /*
@@ -5697,8 +5693,8 @@ extern "C" jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoMulticas
  * Signature: (JZ)V
  */
 extern "C" void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableAudioMulticast
-  (JNIEnv *, jobject, jlong, jboolean) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_enableAudioMulticast not implemented yet");
+  (JNIEnv *, jobject, jlong ptr, jboolean yesno) {
+	return linphone_core_enable_audio_multicast((LinphoneCore*)ptr,yesno);
 }
 
 /*
@@ -5707,9 +5703,8 @@ extern "C" void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableAudioMulti
  * Signature: (J)Z
  */
 extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_audioMulticastEnabled
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_audioMulticastEnabled not implemented yet");
-	return false;
+  (JNIEnv *, jobject, jlong ptr) {
+	return linphone_core_audio_multicast_enabled((LinphoneCore*)ptr);
 }
 
 /*
@@ -5718,8 +5713,8 @@ extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_audioMultica
  * Signature: (JZ)V
  */
 extern "C" void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableVideoMulticast
-  (JNIEnv *, jobject, jlong, jboolean) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_enableVideoMulticast not implemented yet");
+  (JNIEnv *, jobject, jlong ptr, jboolean yesno) {
+	return linphone_core_enable_video_multicast((LinphoneCore*)ptr,yesno);
 }
 
 /*
@@ -5728,9 +5723,8 @@ extern "C" void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableVideoMulti
  * Signature: (J)Z
  */
 extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_videoMulticastEnabled
-  (JNIEnv *, jobject, jlong) {
-	ms_error("Java_org_linphone_core_LinphoneCoreImpl_videoMulticastEnabled not implemented yet");
-	return false;
+  (JNIEnv *, jobject, jlong ptr) {
+	return linphone_core_video_multicast_enabled((LinphoneCore*)ptr);
 }
 
 
