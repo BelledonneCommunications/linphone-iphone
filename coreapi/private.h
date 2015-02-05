@@ -476,6 +476,7 @@ struct _LinphoneProxyConfig
 	int expires;
 	int publish_expires;
 	SalOp *op;
+	SalCustomHeader *sent_headers;
 	char *type;
 	struct _SipSetupContext *ssctx;
 	int auth_failures;

@@ -1149,6 +1149,21 @@ LINPHONE_PUBLIC LinphoneAVPFMode linphone_proxy_config_get_avpf_mode(const Linph
 LINPHONE_PUBLIC void linphone_proxy_config_set_avpf_mode(LinphoneProxyConfig *cfg, LinphoneAVPFMode mode);
 
 /**
+ * Obtain the value of a header sent by the server in last answer to REGISTER.
+ * @param cfg the proxy config object
+ * @param header_name the header name for which to fetch corresponding value
+ * @return the value of the queried header.
+**/
+LINPHONE_PUBLIC const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name);
+
+/**
+ * Set the value of a custom header sent to the server in REGISTERs request.
+ * @param cfg the proxy config object
+ * @param header_name the header name 
+ * @param header_value the header's value
+**/
+LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value);
+/**
  * @}
 **/
 
