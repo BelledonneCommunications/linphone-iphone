@@ -4411,15 +4411,13 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 		}
 	}
 	if (sndcard==NULL) {
-		/* get a card that has read+write capabilities */
-		sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
-		/* otherwise refine to the first card having the right capability*/
-		if (sndcard==NULL){
-			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
-			for(;elem!=NULL;elem=elem->next){
-				sndcard=(MSSndCard*)elem->data;
-				if (ms_snd_card_get_capabilities(sndcard) & cap) break;
-			}
+		if ((cap & MS_SND_CARD_CAP_CAPTURE) && (cap & MS_SND_CARD_CAP_PLAYBACK)){
+			sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
+		}else if (cap & MS_SND_CARD_CAP_CAPTURE){
+			sndcard=ms_snd_card_manager_get_default_capture_card(ms_snd_card_manager_get());
+		}
+		else if (cap & MS_SND_CARD_CAP_PLAYBACK){
+			sndcard=ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
 		}
 		if (sndcard==NULL){/*looks like a bug! take the first one !*/
 			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
