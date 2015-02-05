@@ -367,7 +367,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	   }
 	  result->ttl=local_offer->ttl;
 	  result->dir=local_offer->dir;
-	  result->multicast_role = SalMulticastRoleSender;
+	  result->multicast_role = SalMulticastSender;
 
 	} else {
 		result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
@@ -423,7 +423,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->bandwidth=remote_offer->bandwidth;
 		result->ptime=remote_offer->ptime;
 		result->ttl=remote_offer->ttl;
-		result->multicast_role = SalMulticastRoleReceiver;
+		result->multicast_role = SalMulticastReceiver;
 	} else {
 		strcpy(result->rtp_addr,local_cap->rtp_addr);
 		strcpy(result->rtcp_addr,local_cap->rtcp_addr);

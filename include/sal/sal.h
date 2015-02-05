@@ -197,9 +197,9 @@ typedef enum {
 } SalDtlsRole;
 
 typedef enum {
-	SalMulticastInative=0,
-	SalMulticastRoleSender,
-	SalMulticastRoleReceiver,
+	SalMulticastInactive=0,
+	SalMulticastSender,
+	SalMulticastReceiver,
 	SalMulticastSenderReceiver
 } SalMulticastRole;
 
