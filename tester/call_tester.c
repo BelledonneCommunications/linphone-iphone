@@ -1110,7 +1110,7 @@ static void call_with_custom_headers(void) {
 	pauline_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_pauline), "Contact"));
 
 	marie_remote_contact        = ms_strdup(linphone_call_get_remote_contact(call_marie));
-	marie_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(marie_remote_params, "Contact"));
+	marie_remote_contact_header = ms_strdup(linphone_call_params_get_custom_header(linphone_call_get_remote_params(call_marie), "Contact"));
 
 	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact);
 	CU_ASSERT_PTR_NOT_NULL(pauline_remote_contact_header);
