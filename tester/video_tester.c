@@ -121,6 +121,8 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 		case LinphoneCallIncomingReceived:
 			params = linphone_core_create_default_call_parameters(lc);
 			linphone_call_params_enable_video(params, TRUE);
+			linphone_call_params_set_audio_direction(params, LinphoneCallParamsMediaDirectionSendOnly);
+			linphone_call_params_set_video_direction(params, LinphoneCallParamsMediaDirectionRecvOnly);
 			linphone_core_accept_early_media_with_params(lc, call, params);
 			linphone_call_params_unref(params);
 			break;
@@ -258,12 +260,15 @@ static void early_media_video_during_video_call_test(void) {
 }
 
 static void two_incoming_early_media_video_calls_test(void) {
+	char *ringback_path;
 	LinphoneCoreManager *marie;
 	LinphoneCoreManager *pauline;
 	LinphoneCoreManager *laure;
 	LinphoneCallParams *marie_params;
 	LinphoneCallParams *pauline_params;
 	LinphoneCallParams *laure_params;
+	LinphoneCall *call;
+	const MSList *calls_list;
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_rc");
@@ -271,6 +276,12 @@ static void two_incoming_early_media_video_calls_test(void) {
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
 	laure_params = configure_for_early_media_video_sending(laure);
+
+	/* Configure early media audio to play ring during early-media and send remote ring back tone. */
+	linphone_core_set_ring_during_incoming_early_media(marie->lc, TRUE);
+	ringback_path = ms_strdup_printf("%s/sounds/ringback.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_remote_ringback_tone(marie->lc, ringback_path);
+	ms_free(ringback_path);
 
 	/* Early media video call from pauline to marie. */
 	CU_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
@@ -283,6 +294,22 @@ static void two_incoming_early_media_video_calls_test(void) {
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 2000);
+
+	CU_ASSERT_EQUAL(linphone_core_get_calls_nb(marie->lc), 2);
+	if (linphone_core_get_calls_nb(marie->lc) == 2) {
+		calls_list = linphone_core_get_calls(marie->lc);
+		call = (LinphoneCall *)ms_list_nth_data(calls_list, 0);
+		CU_ASSERT_PTR_NOT_NULL(call);
+		if (call != NULL) {
+			LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_current_params(call));
+			linphone_call_params_set_audio_direction(params, LinphoneCallParamsMediaDirectionSendRecv);
+			linphone_call_params_set_video_direction(params, LinphoneCallParamsMediaDirectionSendRecv);
+			linphone_core_accept_call_with_params(marie->lc, call, params);
+
+			/* Wait for 5s. */
+			wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 5000);
+		}
+	}
 
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
