@@ -680,6 +680,22 @@ static void call_with_ipv6(void) {
 	CU_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+	if (pauline_call){
+		/*check that the remote contact is IPv6*/
+		const char *contact=linphone_call_get_remote_contact(pauline_call);
+		LinphoneAddress *ct_addr;
+		
+		CU_ASSERT_PTR_NOT_NULL(contact);
+		if (contact){
+			ct_addr=linphone_address_new(contact);
+			CU_ASSERT_PTR_NOT_NULL(ct_addr);
+			if (ct_addr){
+				CU_ASSERT_TRUE(linphone_address_get_domain(ct_addr)[0]=='[');
+			}
+			linphone_address_destroy(ct_addr);
+		}
+		
+	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 	end_call(marie,pauline);
