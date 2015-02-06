@@ -5,8 +5,7 @@
 * Xcode (download from apple or using appstore application)
 * [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or openJDK
  This is required to generate a C sourcefile from SIP grammar using [antlr3](http://www.antlr3.org/) generator.
- * [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
- * [XQuartz](https://xquartz.macosforge.org) for GTK version.
+* [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
 
 ### Dependencies
 

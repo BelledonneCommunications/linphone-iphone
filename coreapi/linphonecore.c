@@ -3292,6 +3292,12 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 
 	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	/*from now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
+	We can then drop our background task.*/
+	if (call->bg_task_id!=0) {
+		sal_end_background_task(call->bg_task_id);
+		call->bg_task_id=0;
+	}
 
 	if (call->state==LinphoneCallIncomingReceived){
 		/*try to be best-effort in giving real local or routable contact address for 100Rel case*/

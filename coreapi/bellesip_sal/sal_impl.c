@@ -1135,6 +1135,16 @@ void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	belle_sip_main_loop_remove_source(ml, timer);
 }
+
+unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data){
+	return belle_sip_begin_background_task(name, max_time_reached, data);
+}
+
+void sal_end_background_task(unsigned long id){
+	belle_sip_end_background_task(id);
+}
+
+
 void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
 	ctx->enable_sip_update=value;
 }
