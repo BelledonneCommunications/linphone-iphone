@@ -690,7 +690,7 @@ static void call_with_ipv6(void) {
 			ct_addr=linphone_address_new(contact);
 			CU_ASSERT_PTR_NOT_NULL(ct_addr);
 			if (ct_addr){
-				CU_ASSERT_TRUE(linphone_address_get_domain(ct_addr)[0]=='[');
+				CU_ASSERT_TRUE(strchr(linphone_address_get_domain(ct_addr),':')!=NULL);
 			}
 			linphone_address_destroy(ct_addr);
 		}
