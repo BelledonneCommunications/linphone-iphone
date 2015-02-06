@@ -2672,8 +2672,35 @@ LINPHONE_PUBLIC const char *linphone_core_get_root_ca(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC const char * linphone_core_get_ringback(const LinphoneCore *lc);
 
-LINPHONE_PUBLIC void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,const char *);
+/**
+ * Specify a ring back tone to be played to far end during incoming calls.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] ring The path to the ring back tone to be played.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *ring);
+
+/**
+ * Get the ring back tone played to far end during incoming calls.
+ * @param[in] lc #LinphoneCore object
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
+
+/**
+ * Enable or disable the ring play during an incoming early media call.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] enable A boolean value telling whether to enable ringing during an incoming early media call.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_ring_during_incoming_early_media(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether the ring play is enabled during an incoming early media call.
+ * @param[in] lc #LinphoneCore object
+ * @ingroup media_paramaters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
 LINPHONE_PUBLIC int linphone_core_play_local(LinphoneCore *lc, const char *audiofile);

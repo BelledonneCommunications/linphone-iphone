@@ -120,7 +120,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
 
-	linphone_core_stop_ringing(lc);
+	if (!((call->state == LinphoneCallIncomingEarlyMedia) && (linphone_core_get_ring_during_incoming_early_media(lc)))) {
+		linphone_core_stop_ringing(lc);
+	}
 	if (!new_md) {
 		ms_error("linphone_core_update_streams() called with null media description");
 		return;
