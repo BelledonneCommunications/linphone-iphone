@@ -1,5 +1,5 @@
 ############################################################################
-# mssilk.mk 
+# mssilk.mk
 # Copyright (C) 2011  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -28,7 +28,7 @@ ifeq ($(LINPHONE_CCACHE), ccache)
 endif
 
 $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure:
-	echo -e "\033[01;32m Running autogen for mssilk in $(BUILDER_SRC_DIR)/$(mssilk_dir) \033[0m"
+	@echo -e "\033[01;32m Running autogen for mssilk in $(BUILDER_SRC_DIR)/$(mssilk_dir) \033[0m"
 	cd $(BUILDER_SRC_DIR)/$(mssilk_dir) && ./autogen.sh
 
 $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure
@@ -42,7 +42,7 @@ $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mssilk_dir)/co
 ifeq ($(enable_silk),yes)
 
 build-mssilk: $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile
-	echo -e "\033[01;32m building silk \033[0m"
+	@echo -e "\033[01;32m building silk \033[0m"
 	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) \
 		&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig \
 		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
@@ -57,14 +57,14 @@ else
 build-mssilk:
 	echo "SILK is disabled"
 
-endif # enable_silk	
+endif # enable_silk
 
-clean-mssilk: 
+clean-mssilk:
 	-cd  $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make clean
 
-veryclean-mssilk: 
-	-cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make distclean 
+veryclean-mssilk:
+	-cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && make distclean
 	rm -f $(BUILDER_SRC_DIR)/$(mssilk_dir)/configure
 
-clean-makefile-mssilk: 
+clean-makefile-mssilk:
 	-cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) && rm -f Makefile
