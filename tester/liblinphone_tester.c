@@ -173,6 +173,9 @@ int main (int argc, char *argv[])
 
 #ifdef HAVE_GTK
 	gtk_init(&argc, &argv);
+#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
+	g_thread_init(NULL);
+#endif
 	gdk_threads_init();
 #endif
 
