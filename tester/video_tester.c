@@ -257,8 +257,56 @@ static void early_media_video_during_video_call_test(void) {
 	linphone_core_manager_destroy(laure);
 }
 
+static void two_incoming_early_media_video_calls_test(void) {
+	LinphoneCoreManager *marie;
+	LinphoneCoreManager *pauline;
+	LinphoneCoreManager *laure;
+	LinphoneCallParams *marie_params;
+	LinphoneCallParams *pauline_params;
+	LinphoneCallParams *laure_params;
+
+	marie = linphone_core_manager_new("marie_rc");
+	pauline = linphone_core_manager_new("pauline_rc");
+	laure = linphone_core_manager_new("laure_rc");
+	marie_params = configure_for_early_media_video_receiving(marie);
+	pauline_params = configure_for_early_media_video_sending(pauline);
+	laure_params = configure_for_early_media_video_sending(laure);
+
+	/* Early media video call from pauline to marie. */
+	CU_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
+
+	/* Wait for 2s. */
+	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
+
+	/* Early media video call from laure to marie. */
+	CU_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
+
+	/* Wait for 2s. */
+	wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 2000);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
+	CU_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1);
+
+	linphone_call_params_unref(marie_params);
+	linphone_call_params_unref(pauline_params);
+	linphone_call_params_unref(laure_params);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
+
 test_t video_tests[] = {
-	{ "Early-media video during video call", early_media_video_during_video_call_test }
+	{ "Early-media video during video call", early_media_video_during_video_call_test },
+	{ "Two incoming early-media video calls", two_incoming_early_media_video_calls_test }
 };
 
 test_suite_t video_test_suite = {
