@@ -298,6 +298,8 @@ LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
 LinphoneCallParams * linphone_call_params_new(void);
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);
+SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params);
+SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 

@@ -33,6 +33,28 @@ SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
 	return SalProtoRtpAvp;
 }
 
+static SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirection cpdir) {
+	switch (cpdir) {
+		default:
+		case LinphoneCallParamsMediaDirectionInactive:
+			return SalStreamInactive;
+		case LinphoneCallParamsMediaDirectionSendOnly:
+			return SalStreamSendOnly;
+		case LinphoneCallParamsMediaDirectionRecvOnly:
+			return SalStreamRecvOnly;
+		case LinphoneCallParamsMediaDirectionSendRecv:
+			return SalStreamSendRecv;
+	}
+}
+
+SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params) {
+	return sal_dir_from_call_params_dir(linphone_call_params_get_audio_direction(params));
+}
+
+SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params) {
+	return sal_dir_from_call_params_dir(linphone_call_params_get_video_direction(params));
+}
+
 
 /*******************************************************************************
  * Public functions                                                            *

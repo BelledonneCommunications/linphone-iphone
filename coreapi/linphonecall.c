@@ -612,6 +612,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->streams[0].rtp_port=call->media_ports[0].rtp_port;
 	md->streams[0].rtcp_port=call->media_ports[0].rtcp_port;
 	md->streams[0].proto=get_proto_from_call_params(call->params);
+	md->streams[0].dir=get_audio_dir_from_call_params(call->params);
 	md->streams[0].type=SalAudio;
 	if (call->params->down_ptime)
 		md->streams[0].ptime=call->params->down_ptime;
@@ -640,6 +641,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		md->streams[1].rtp_port=call->media_ports[1].rtp_port;
 		md->streams[1].rtcp_port=call->media_ports[1].rtcp_port;
 		md->streams[1].proto=md->streams[0].proto;
+		md->streams[1].dir=get_video_dir_from_call_params(call->params);
 		md->streams[1].type=SalVideo;
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;
