@@ -33,17 +33,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
  * Indicates for a given media the stream direction
  * */
-enum _LinphoneCallParamsMediaDirection {
-	LinphoneCallParamsMediaDirectionInactive, /** No active media not supported yet*/
-	LinphoneCallParamsMediaDirectionSendOnly, /** Send only mode*/
-	LinphoneCallParamsMediaDirectionRecvOnly, /** recv only mode*/
-	LinphoneCallParamsMediaDirectionSendRecv, /*send receive mode not supported yet*/
+enum _LinphoneMediaDirection {
+	LinphoneMediaDirectionInactive, /** No active media not supported yet*/
+	LinphoneMediaDirectionSendOnly, /** Send only mode*/
+	LinphoneMediaDirectionRecvOnly, /** recv only mode*/
+	LinphoneMediaDirectionSendRecv, /*send receive mode not supported yet*/
 
 };
 /**
  * Typedef for enum
 **/
-typedef enum _LinphoneCallParamsMediaDirection LinphoneCallParamsMediaDirection;
+typedef enum _LinphoneMediaDirection LinphoneMediaDirection;
 
 /**
  * Private structure definition for LinphoneCallParams.
@@ -266,28 +266,28 @@ LINPHONE_PUBLIC bool_t linphone_call_params_video_enabled(const LinphoneCallPara
  * @param[in] cl LinphoneCallParams object
  * @return The audio stream direction associated with the call params.
 **/
-LINPHONE_PUBLIC  LinphoneCallParamsMediaDirection linphone_call_params_get_audio_direction(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC  LinphoneMediaDirection linphone_call_params_get_audio_direction(const LinphoneCallParams *cp);
 
 /**
  * Get the video stream direction.
  * @param[in] cl LinphoneCallParams object
  * @return The video stream direction associated with the call params.
 **/
-LINPHONE_PUBLIC  LinphoneCallParamsMediaDirection linphone_call_params_get_video_direction(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC  LinphoneMediaDirection linphone_call_params_get_video_direction(const LinphoneCallParams *cp);
 
 /**
  * Set the audio stream direction. Only relevant for multicast
  * @param[in] cl LinphoneCallParams object
  * @param[in] The audio stream direction associated with this call params.
 **/
-LINPHONE_PUBLIC void linphone_call_params_set_audio_direction(LinphoneCallParams *cp, LinphoneCallParamsMediaDirection dir);
+LINPHONE_PUBLIC void linphone_call_params_set_audio_direction(LinphoneCallParams *cp, LinphoneMediaDirection dir);
 
 /**
  * Set the video stream direction. Only relevant for multicast
  * @param[in] cl LinphoneCallParams object
  * @param[in] The video stream direction associated with this call params.
 **/
-LINPHONE_PUBLIC void linphone_call_params_set_video_direction(LinphoneCallParams *cp, LinphoneCallParamsMediaDirection dir);
+LINPHONE_PUBLIC void linphone_call_params_set_video_direction(LinphoneCallParams *cp, LinphoneMediaDirection dir);
 
 
 /*******************************************************************************

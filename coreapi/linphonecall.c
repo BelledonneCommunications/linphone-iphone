@@ -1422,9 +1422,9 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	}
 	if (md){
 		SalStreamDescription *sd=sal_media_description_find_best_stream(md,SalAudio);
-		call->current_params->audio_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneCallParamsMediaDirectionInactive;
+		call->current_params->audio_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 		sd=sal_media_description_find_best_stream(md,SalVideo);
-		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneCallParamsMediaDirectionInactive;
+		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 	}
 
 	return call->current_params;

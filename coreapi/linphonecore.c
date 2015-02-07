@@ -6907,8 +6907,8 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->in_conference=FALSE;
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=FALSE;
-	params->audio_dir=LinphoneCallParamsMediaDirectionSendRecv;
-	params->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	params->audio_dir=LinphoneMediaDirectionSendRecv;
+	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 }
 

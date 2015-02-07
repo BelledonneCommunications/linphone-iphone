@@ -108,8 +108,8 @@ struct _LinphoneCallParams{
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
-	LinphoneCallParamsMediaDirection audio_dir;
-	LinphoneCallParamsMediaDirection video_dir;
+	LinphoneMediaDirection audio_dir;
+	LinphoneMediaDirection video_dir;
 
 };
 
@@ -1105,8 +1105,8 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
 
-LinphoneCallParamsMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
-SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirection cpdir);
+LinphoneMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
+SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
 
 #ifdef ANDROID
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);

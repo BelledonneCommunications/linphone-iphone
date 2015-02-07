@@ -121,8 +121,8 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 		case LinphoneCallIncomingReceived:
 			params = linphone_core_create_default_call_parameters(lc);
 			linphone_call_params_enable_video(params, TRUE);
-			linphone_call_params_set_audio_direction(params, LinphoneCallParamsMediaDirectionSendOnly);
-			linphone_call_params_set_video_direction(params, LinphoneCallParamsMediaDirectionRecvOnly);
+			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
+			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
 			linphone_core_accept_early_media_with_params(lc, call, params);
 			linphone_call_params_unref(params);
 			break;
@@ -302,8 +302,8 @@ static void two_incoming_early_media_video_calls_test(void) {
 		CU_ASSERT_PTR_NOT_NULL(call);
 		if (call != NULL) {
 			LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_current_params(call));
-			linphone_call_params_set_audio_direction(params, LinphoneCallParamsMediaDirectionSendRecv);
-			linphone_call_params_set_video_direction(params, LinphoneCallParamsMediaDirectionSendRecv);
+			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
+			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_core_accept_call_with_params(marie->lc, call, params);
 
 			/* Wait for 5s. */
