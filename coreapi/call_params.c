@@ -33,9 +33,8 @@ SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params) {
 	return SalProtoRtpAvp;
 }
 
-static SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirection cpdir) {
+SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirection cpdir) {
 	switch (cpdir) {
-		default:
 		case LinphoneCallParamsMediaDirectionInactive:
 			return SalStreamInactive;
 		case LinphoneCallParamsMediaDirectionSendOnly:
@@ -44,6 +43,19 @@ static SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirectio
 			return SalStreamRecvOnly;
 		case LinphoneCallParamsMediaDirectionSendRecv:
 			return SalStreamSendRecv;
+	}
+}
+
+LinphoneCallParamsMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir){
+	switch (dir) {
+		case SalStreamInactive:
+			return LinphoneCallParamsMediaDirectionInactive;
+		case SalStreamSendOnly:
+			return LinphoneCallParamsMediaDirectionSendOnly;
+		case SalStreamRecvOnly:
+			return LinphoneCallParamsMediaDirectionRecvOnly;
+		case SalStreamSendRecv:
+			return LinphoneCallParamsMediaDirectionSendRecv;
 	}
 }
 
@@ -91,6 +103,8 @@ void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t en
 
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
+	if (cp->video_dir==LinphoneCallParamsMediaDirectionInactive)
+		cp->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
 }
 
 const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name){
@@ -229,7 +243,10 @@ static void _linphone_call_params_destroy(LinphoneCallParams *cp){
 }
 
 LinphoneCallParams * linphone_call_params_new(void) {
-	return belle_sip_object_new(LinphoneCallParams);
+	LinphoneCallParams *cp=belle_sip_object_new(LinphoneCallParams);
+	cp->audio_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	cp->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	return cp;
 }
 
 /* DEPRECATED */

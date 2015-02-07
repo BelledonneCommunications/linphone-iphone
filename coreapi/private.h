@@ -1105,6 +1105,9 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
 
+LinphoneCallParamsMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
+SalStreamDir sal_dir_from_call_params_dir(LinphoneCallParamsMediaDirection cpdir);
+
 #ifdef ANDROID
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
 void linphone_core_wifi_lock_release(LinphoneCore *lc);

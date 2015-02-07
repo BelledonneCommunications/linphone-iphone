@@ -1384,6 +1384,7 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
+	SalMediaDescription *md=call->resultdesc;
 #ifdef VIDEO_ENABLED
 	VideoStream *vstream;
 #endif
@@ -1418,6 +1419,12 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {
 		call->current_params->avpf_rr_interval = 0;
+	}
+	if (md){
+		SalStreamDescription *sd=sal_media_description_find_best_stream(md,SalAudio);
+		call->current_params->audio_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneCallParamsMediaDirectionInactive;
+		sd=sal_media_description_find_best_stream(md,SalVideo);
+		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneCallParamsMediaDirectionInactive;
 	}
 
 	return call->current_params;
