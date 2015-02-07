@@ -105,7 +105,7 @@ void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t en
 
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
-	if (cp->video_dir==LinphoneMediaDirectionInactive)
+	if (enabled && cp->video_dir==LinphoneMediaDirectionInactive)
 		cp->video_dir=LinphoneMediaDirectionSendRecv;
 }
 

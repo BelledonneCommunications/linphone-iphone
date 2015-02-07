@@ -3587,7 +3587,7 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		return 0;
 	}
 	if (params==NULL){
-		call->params->has_video=lc->video_policy.automatically_accept || call->current_params->has_video;
+		linphone_call_params_enable_video(call->params, lc->video_policy.automatically_accept || call->current_params->has_video);
 	}else
 		linphone_call_set_new_params(call,params);
 
