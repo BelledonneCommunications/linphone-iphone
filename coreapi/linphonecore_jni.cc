@@ -1220,6 +1220,18 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setChatDatabasePath(JNIE
 	env->ReleaseStringUTFChars(jpath, path);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact2(JNIEnv* env, jobject  thiz, jlong lc, jstring jcontact) {
+	const char* contact = env->GetStringUTFChars(jcontact, NULL);
+	linphone_core_set_primary_contact((LinphoneCore*)lc, contact);
+	env->ReleaseStringUTFChars(jcontact, contact);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc) {
+	LinphoneAddress* identity = linphone_core_get_primary_contact_parsed((LinphoneCore*)lc);
+	return identity ? env->NewStringUTF(linphone_address_as_string(identity)) : NULL;
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
 	const char* displayname = jdisplayname ? env->GetStringUTFChars(jdisplayname, NULL) : NULL;
 	const char* username = jusername ? env->GetStringUTFChars(jusername, NULL) : NULL;

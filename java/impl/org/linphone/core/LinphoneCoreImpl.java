@@ -150,6 +150,8 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native void setVideoPortRange(long nativePtr, int minPort, int maxPort);
 	private native void setIncomingTimeout(long nativePtr, int timeout);
 	private native void setInCallTimeout(long nativePtr, int timeout);
+	private native void setPrimaryContact2(long nativePtr, String contact);
+	private native String getPrimaryContact(long nativePtr);
 	private native void setPrimaryContact(long nativePtr, String displayName, String username);
 	private native String getPrimaryContactUsername(long nativePtr);
 	private native String getPrimaryContactDisplayName(long nativePtr);
@@ -975,6 +977,14 @@ public class LinphoneCoreImpl implements LinphoneCore {
 	private native void setMicrophoneGain(long ptr, float gain);
 	public synchronized void setMicrophoneGain(float gain) {
 		setMicrophoneGain(nativePtr, gain);
+	}
+
+	public synchronized void setPrimaryContact(String address) {
+		setPrimaryContact2(nativePtr, address);
+	}
+
+	public synchronized String getPrimaryContact() {
+		return getPrimaryContact(nativePtr);
 	}
 
 	public synchronized void setPrimaryContact(String displayName, String username) {
