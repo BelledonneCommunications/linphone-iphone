@@ -242,9 +242,9 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 	istringstream ist(mime_type);
 	ist >> number;
 	if (ist.fail()) {
-		char type[12];
+		char type[64]={0};
 		int rate, channels;
-		if (sscanf(mime_type.c_str(), "%11[^/]/%u/%u", type, &rate, &channels) != 3) {
+		if (sscanf(mime_type.c_str(), "%63[^/]/%u/%u", type, &rate, &channels) != 3) {
 			mSuccesful = false;
 			return;
 		}
