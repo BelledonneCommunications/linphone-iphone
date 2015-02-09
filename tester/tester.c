@@ -491,8 +491,12 @@ static void test_complete_message_handler(const CU_pTest pTest,
 
 
 static void test_all_tests_complete_message_handler(const CU_pFailureRecord pFailure) {
-  if (liblinphone_tester_use_log_file) ms_warning("\n\n %s",CU_get_run_results_string());
-  liblinphone_tester_fprintf(stdout,"\n\n %s",CU_get_run_results_string());
+  	char * results = CU_get_run_results_string();
+  	if (liblinphone_tester_use_log_file) {
+  		ms_warning("\n\n %s", results);
+  	}
+	liblinphone_tester_fprintf(stdout,"\n\n %s",results);
+	ms_free(results);
 }
 
 static void test_suite_init_failure_message_handler(const CU_pSuite pSuite) {
@@ -556,7 +560,7 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 				CU_pTest test=CU_get_test_by_name(test_name, suite);
 				if (!test) {
 					ms_error("Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
-					// do not use suite_name here, since this method is case sentisitive
+					// do not use suite_name here, since this method is case sensitive
 					liblinphone_tester_list_suite_tests(suite->pName);
 					return -2;
 				} else {
