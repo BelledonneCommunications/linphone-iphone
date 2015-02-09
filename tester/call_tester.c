@@ -3509,7 +3509,8 @@ static void call_with_generic_cn(void) {
 		wait_for_until(marie->lc, pauline->lc, NULL, 0, 8000);
 		rtps=rtp_session_get_stats(pauline_call->audiostream->ms.sessions.rtp_session);
 		CU_ASSERT_TRUE(rtps->packet_recv<=300 && rtps->packet_recv>=200);
-		CU_ASSERT_EQUAL((err=stat(recorded_file,&stbuf)), 0);
+		err=stat(recorded_file,&stbuf);
+		CU_ASSERT_EQUAL(err, 0);
 		if (err==0){
 			CU_ASSERT_TRUE(stbuf.st_size>120000);
 		}
