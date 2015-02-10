@@ -127,6 +127,12 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneFriend createLinphoneFriend() {
 		return createLinphoneFriend(null);
 	}
+	
+	@Override
+	public native void enableLogCollection(boolean enable);
+
+	@Override
+	public native void setLogCollectionPath(String path);
 
 	public static boolean isArmv7()
 	{

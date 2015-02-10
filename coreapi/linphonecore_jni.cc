@@ -161,6 +161,21 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIE
 		linphone_core_disable_logs();
 	}
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_enableLogCollection(JNIEnv* env
+		,jobject  thiz
+		,jboolean enable) {
+	linphone_core_enable_log_collection(enable ? LinphoneLogCollectionEnabledWithoutPreviousLogHandler : LinphoneLogCollectionDisabled);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setLogCollectionPath(JNIEnv* env
+		,jobject  thiz
+		,jstring jpath) {
+
+	const char* path = env->GetStringUTFChars(jpath, NULL);
+	linphone_core_set_log_collection_path(path);
+	env->ReleaseStringUTFChars(jpath, path);
+}
 // LinphoneCore
 
 /*
@@ -1073,6 +1088,10 @@ public:
 							,lcData->core
 							,(jlong)offset
 							,(jlong)total);
+		if (env->ExceptionCheck()) {
+			ms_error("Listener %p raised an exception",lcData->listener);
+			env->ExceptionClear();
+		}
 	}
 	static void logCollectionUploadStateChange(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
 		JNIEnv *env = 0;
@@ -1089,6 +1108,10 @@ public:
 							,lcData->core
 							,env->CallStaticObjectMethod(lcData->logCollectionUploadStateClass,lcData->logCollectionUploadStateFromIntId,(jint)state),
 							msg);
+		if (env->ExceptionCheck()) {
+			ms_error("Listener %p raised an exception",lcData->listener);
+			env->ExceptionClear();
+		}
 		if (msg) {
 			env->DeleteLocalRef(msg);
 		}
@@ -1175,20 +1198,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* e
 	//env->DeleteGlobalRef(listener);
 }
 
-
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_uploadLogCollection(JNIEnv* env, jobject thiz, jlong lc) {
 	LinphoneCore *core = (LinphoneCore*)lc;
 	linphone_core_upload_log_collection(core);
-}
-
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableLogCollection(JNIEnv* env, jclass cls, jboolean enable) {
-	linphone_core_enable_log_collection(enable ? LinphoneLogCollectionEnabledWithoutPreviousLogHandler : LinphoneLogCollectionDisabled);
-}
-
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setLogCollectionPath(JNIEnv* env, jclass cls, jstring jpath) {
-	const char* path = env->GetStringUTFChars(jpath, NULL);
-	linphone_core_set_log_collection_path(path);
-	env->ReleaseStringUTFChars(jpath, path);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_migrateToMultiTransport(JNIEnv*  env
