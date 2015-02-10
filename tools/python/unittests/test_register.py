@@ -81,6 +81,7 @@ class TestRegister:
         cm = RegisterCoreManager()
         cm.register_with_refresh(False, None, None)
         assert_equals(cm.stats.number_of_auth_info_requested, 0)
+        cm.stop()
 
     def test_simple_unregister(self):
         cm = RegisterCoreManager()
@@ -93,18 +94,22 @@ class TestRegister:
         pc.register_enabled = False
         pc.done()
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationCleared == 1), True)
+        cm.stop()
 
     def test_simple_tcp_register(self):
         cm = RegisterCoreManager()
         cm.register_with_refresh(False, test_domain, "sip:{route};transport=tcp".format(route=test_route))
+        cm.stop()
 
     def test_simple_tcp_register_compatibility_mode(self):
         cm = RegisterCoreManager()
         cm.register_with_refresh(False, test_domain, "sip:{route}".format(route=test_route), transport=linphone.SipTransports(0, 5070, 0, 0))
+        cm.stop()
 
     def test_simple_tls_register(self):
         cm = RegisterCoreManager()
         cm.register_with_refresh(False, test_domain, "sip:{route};transport=tls".format(route=test_route))
+        cm.stop()
 
     def test_tls_register_with_alt_name(self):
         cm = CoreManager('pauline_alt_rc', False)
@@ -112,6 +117,7 @@ class TestRegister:
         cm.lc.refresh_registers()
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == 1), True)
         assert_equals(cm.stats.number_of_LinphoneRegistrationFailed, 0)
+        cm.stop()
 
     def test_tls_wildcard_register(self):
         cm = CoreManager('pauline_wild_rc', False)
@@ -119,6 +125,7 @@ class TestRegister:
         cm.lc.refresh_registers()
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == 2), True)
         assert_equals(cm.stats.number_of_LinphoneRegistrationFailed, 0)
+        cm.stop()
 
     def test_tls_certificate_failure(self):
         cm = CoreManager('pauline_rc', False)
@@ -132,6 +139,7 @@ class TestRegister:
         cm.lc.refresh_registers()
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == 1), True)
         assert_equals(cm.stats.number_of_LinphoneRegistrationFailed, 2)
+        cm.stop()
 
     def test_tls_with_non_tls_server(self):
         cm = CoreManager('marie_rc', False)
@@ -145,6 +153,7 @@ class TestRegister:
         pc.server_addr = "sip:{domain}:{port};transport=tls".format(domain=addr.domain, port=port)
         pc.done()
         assert_equals(CoreManager.wait_for_until(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == 1, 5000), True)
+        cm.stop()
 
     def test_simple_authenticated_register(self):
         cm = RegisterCoreManager()
@@ -152,36 +161,40 @@ class TestRegister:
         cm.lc.add_auth_info(info)
         cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route))
         assert_equals(cm.stats.number_of_auth_info_requested, 0)
+        cm.stop()
 
     def test_digest_auth_without_initial_credentials(self):
         cm = RegisterCoreManager(with_auth=True)
         cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route))
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
+        cm.stop()
 
     def test_authenticated_register_with_late_credentials(self):
         cm = RegisterCoreManager()
         cm.register_with_refresh(False, auth_domain, "sip:{route}".format(route=test_route), True, linphone.SipTransports(5070, 5070, 5071, 0))
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
+        cm.stop()
 
     def test_simple_register_with_refresh(self):
         cm = RegisterCoreManager()
         cm.register_with_refresh(True, None, None)
         assert_equals(cm.stats.number_of_auth_info_requested, 0)
+        cm.stop()
 
     def test_simple_auth_register_with_refresh(self):
         cm = RegisterCoreManager(with_auth=True)
         cm.register_with_refresh(True, auth_domain, "sip:{route}".format(route=test_route))
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
+        cm.stop()
 
     def test_multiple_accounts(self):
-        cm = CoreManager('multi_account_rc', False)
-        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == len(cm.lc.proxy_config_list)), True)
+        cm = CoreManager('multi_account_rc', True)
+        cm.stop()
 
     def test_transport_change(self):
-        cm = CoreManager('multi_account_rc', False)
+        cm = CoreManager('multi_account_rc', True)
         number_of_udp_proxies = reduce(lambda x, y: x + int(y.transport == "udp"), cm.lc.proxy_config_list, 0)
         total_number_of_proxies = len(cm.lc.proxy_config_list)
-        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == total_number_of_proxies), True)
         register_ok = cm.stats.number_of_LinphoneRegistrationOk
         # Keep only UDP
         tr = linphone.SipTransports(0, 0, 0, 0)
@@ -189,3 +202,4 @@ class TestRegister:
         cm.lc.sip_transports = tr
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == (register_ok + number_of_udp_proxies)), True)
         assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationFailed == (total_number_of_proxies - number_of_udp_proxies)), True)
+        cm.stop()

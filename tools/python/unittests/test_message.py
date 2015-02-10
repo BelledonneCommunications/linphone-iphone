@@ -147,6 +147,8 @@ class TestMessage:
         assert_equals(filecmp.cmp(send_filepath, receive_filepath, shallow=False), True)
         if os.path.exists(receive_filepath):
             os.remove(receive_filepath)
+        marie.stop()
+        pauline.stop()
 
     def test_small_file_transfer_message(self):
         send_buf = "small file"
@@ -183,6 +185,8 @@ class TestMessage:
         assert_equals(pauline.stats.number_of_LinphoneMessageDelivered, 1)
         assert_equals(marie.stats.number_of_LinphoneMessageExtBodyReceived, 1)
         assert_equals(send_buf, marie.stats.last_received_chat_message.user_data)
+        marie.stop()
+        pauline.stop()
 
     def test_file_transfer_message_upload_cancelled(self):
         send_buf = "big file"
@@ -214,3 +218,5 @@ class TestMessage:
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneMessageNotDelivered == 1), True)
         assert_equals(pauline.stats.number_of_LinphoneMessageNotDelivered, 1)
         assert_equals(marie.stats.number_of_LinphoneMessageExtBodyReceived, 0)
+        marie.stop()
+        pauline.stop()
