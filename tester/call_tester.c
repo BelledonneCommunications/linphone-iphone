@@ -2096,8 +2096,6 @@ static void call_with_file_player(void) {
 	LinphonePlayer *player;
 	char hellopath[256];
 	char *recordpath = create_filepath(liblinphone_tester_writable_dir_prefix, "record", "wav");
-	double similar;
-	const double threshold = 0.9;
 
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
@@ -2129,16 +2127,22 @@ static void call_with_file_player(void) {
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-#ifndef __arm__
-	CU_ASSERT_TRUE(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL)==0);
-	CU_ASSERT_TRUE(similar>threshold);
-	CU_ASSERT_TRUE(similar<=1.0);
-	if(similar > threshold && similar <=1.0) {
-		remove(recordpath);
+	/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
+	on another thread) */
+#if !defined(__arm__) && !defined(__arm64__) && TARGET_IPHONE_SIMULATOR
+	{
+		double similar;
+		const double threshold = 0.9;
+		CU_ASSERT_TRUE(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL)==0);
+		CU_ASSERT_TRUE(similar>threshold);
+		CU_ASSERT_TRUE(similar<=1.0);
+		if(similar > threshold && similar <=1.0) {
+			remove(recordpath);
+		}
 	}
 #else
 	remove(recordpath);
-#endif 
+#endif
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_free(recordpath);
@@ -3447,9 +3451,9 @@ static void call_with_paused_no_sdp_on_resume() {
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
 	ms_message("== Call paused, marie call: %p ==", call_marie);
-	
+
 	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
-	
+
 	linphone_core_resume_call(marie->lc,call_marie);
 
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
@@ -3478,13 +3482,13 @@ static void call_with_generic_cn(void) {
 	LinphoneCall *pauline_call;
 	char *audio_file_with_silence=ms_strdup_printf("%s/%s",liblinphone_tester_file_prefix,"sounds/ahbahouaismaisbon.wav");
 	char *recorded_file=ms_strdup_printf("%s/%s",liblinphone_tester_writable_dir_prefix,"result.wav");
-	
+
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
-	
+
 	remove(recorded_file);
 
 	linphone_core_use_files(marie->lc,TRUE);
@@ -3501,7 +3505,7 @@ static void call_with_generic_cn(void) {
 		const rtp_stats_t *rtps;
 		struct stat stbuf;
 		int err;
-		
+
 		wait_for_until(marie->lc, pauline->lc, NULL, 0, 8000);
 		rtps=rtp_session_get_stats(pauline_call->audiostream->ms.sessions.rtp_session);
 		CU_ASSERT_TRUE(rtps->packet_recv<=300 && rtps->packet_recv>=200);
