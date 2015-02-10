@@ -1075,6 +1075,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		pt->mime_type=ortp_strdup(mime);
 		pt->clock_rate=rate;
 		pt->channels=channels;
+		payload_type_set_number(pt,-1); /*dynamic assignment*/
 		payload_type_set_recv_fmtp(pt,fmtp);
 		*default_list=ms_list_append(*default_list, pt);
 	}

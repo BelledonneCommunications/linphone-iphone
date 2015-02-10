@@ -2763,10 +2763,6 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[0]);
-		rtp_session_unregister_event_queue(call->audiostream->ms.sessions.rtp_session,call->audiostream_app_evq);
-		ortp_ev_queue_flush(call->audiostream_app_evq);
-		ortp_ev_queue_destroy(call->audiostream_app_evq);
-		call->audiostream_app_evq=NULL;
 
 		if (call->audiostream->ec){
 			const char *state_str=NULL;
@@ -2782,6 +2778,9 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 			linphone_call_remove_from_conf(call);
 		}
 		audio_stream_stop(call->audiostream);
+		ortp_ev_queue_flush(call->audiostream_app_evq);
+		ortp_ev_queue_destroy(call->audiostream_app_evq);
+		call->audiostream_app_evq=NULL;
 		call->audiostream=NULL;
 		call->current_params->audio_codec = NULL;
 	}
@@ -2792,13 +2791,12 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 	if (call->videostream!=NULL){
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_VIDEO);
 		media_stream_reclaim_sessions(&call->videostream->ms,&call->sessions[1]);
-		rtp_session_unregister_event_queue(call->videostream->ms.sessions.rtp_session,call->videostream_app_evq);
-		ortp_ev_queue_flush(call->videostream_app_evq);
-		ortp_ev_queue_destroy(call->videostream_app_evq);
-		call->videostream_app_evq=NULL;
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		ortp_ev_queue_flush(call->videostream_app_evq);
+		ortp_ev_queue_destroy(call->videostream_app_evq);
+		call->videostream_app_evq=NULL;
 		call->current_params->video_codec = NULL;
 	}
 #endif
