@@ -153,6 +153,8 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 	return linphone_call_get_remote_address(call);
 }
 
+static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args);
+
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	if (ortp_logv_out == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
