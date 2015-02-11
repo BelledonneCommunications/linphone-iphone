@@ -2129,7 +2129,7 @@ static void call_with_file_player(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
 	on another thread) */
-#if !defined(__arm__) && !defined(__arm64__) && TARGET_IPHONE_SIMULATOR
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR
 	{
 		double similar;
 		const double threshold = 0.9;
