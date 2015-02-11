@@ -2778,6 +2778,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 			linphone_call_remove_from_conf(call);
 		}
 		audio_stream_stop(call->audiostream);
+		rtp_session_unregister_event_queue(call->sessions[0].rtp_session, call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
 		call->audiostream_app_evq=NULL;
@@ -2794,6 +2795,7 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		rtp_session_unregister_event_queue(call->sessions[1].rtp_session, call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
 		call->videostream_app_evq=NULL;
