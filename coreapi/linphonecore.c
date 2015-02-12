@@ -1015,7 +1015,7 @@ static PayloadType * find_payload(const MSList *default_list, const char *mime_t
 	PayloadType *candidate=NULL;
 	PayloadType *it;
 	const MSList *elem;
-	
+
 	for(elem=default_list;elem!=NULL;elem=elem->next){
 		it=(PayloadType*)elem->data;
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
@@ -1096,7 +1096,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 static MSList *add_missing_codecs(const MSList *default_list, MSList *l){
 	const MSList *elem;
 	MSList *newlist;
-	
+
 	for(elem=default_list; elem!=NULL; elem=elem->next){
 		MSList *elem2=ms_list_find(l,elem->data);
 		if (!elem2){
@@ -1134,10 +1134,10 @@ static void codecs_config_read(LinphoneCore *lc)
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
 	MSList *video_codecs=NULL;
-	
+
 	lc->codecs_conf.dyn_pt=96;
 	lc->codecs_conf.telephone_event_pt=lp_config_get_int(lc->config,"misc","telephone_event_pt",101);
-	
+
 	for (i=0;get_codec(lc,SalAudio,i,&pt);i++){
 		if (pt){
 			audio_codecs=codec_append_if_new(audio_codecs, pt);
@@ -1434,8 +1434,8 @@ static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadT
 		 and the payload type number will be determined dynamically later, at call time.*/
 		payload_type_set_number(pt,
 			(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
-		); 
-		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate, 
+		);
+		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate,
 			   pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
 		*codec_list=ms_list_append(*codec_list,pt);
 	}
@@ -1557,7 +1557,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
-	
+
 	/*other audio codecs, not enabled by default, in order of preference*/
 	linphone_core_register_payload_type(lc,&payload_type_gsm,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_g722,NULL,FALSE);
@@ -1593,8 +1593,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_24,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
-	
-	
+
+
 
 #ifdef VIDEO_ENABLED
 	/*default enabled video codecs, in order of preference*/
@@ -1623,9 +1623,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
-	
+
 	ms_init();
-	
+
 	linphone_core_register_default_codecs(lc);
 	/* create a mediastreamer2 event queue and set it as global */
 	/* This allows to run event's callback in linphone_core_iterate() */
@@ -6100,7 +6100,7 @@ void sip_config_uninit(LinphoneCore *lc)
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
 	config->proxies=ms_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
-	
+
 	config->deleted_proxies=ms_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
@@ -7137,7 +7137,7 @@ void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
 	return lc->current_vtable;
 }
- 
+
 #define NOTIFY_IF_EXIST(function_name) \
 	MSList* iterator; \
 	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\

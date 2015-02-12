@@ -60,9 +60,6 @@ extern "C" void libmswebrtc_init();
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
 
-/*force linking of ms_audio_diff symbol because the tester requires it.*/
-static void *audiodiff=(void*)&ms_audio_diff;
-
 #define RETURN_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
 	{ \
 		jclass jUserDataObjectClass; \
