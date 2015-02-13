@@ -811,4 +811,10 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
 char* sal_op_get_public_uri(SalOp *sal);
+
+unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data); 
+void sal_end_background_task(unsigned long id);
+
 #endif
+
+

@@ -194,7 +194,9 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 		create_account=TRUE;
 		m->accounts=ms_list_append(m->accounts,account);
 	}
-	tmp=linphone_address_as_string(account->modified_identity);
+	/*modify the username of the identity of the proxy config*/
+	linphone_address_set_username(id_addr, linphone_address_get_username(account->modified_identity));
+	tmp=linphone_address_as_string(id_addr);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	ms_free(tmp);
 	

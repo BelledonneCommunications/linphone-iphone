@@ -1577,6 +1577,16 @@ public interface LinphoneCore {
 	void setMicrophoneGain(float gain);
 
 	/**
+	 * Set address to use if no LinphoneProxyConfig configured
+	 */
+	void setPrimaryContact(String address);
+
+	/**
+	 * Returns the address used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContact();
+
+	/**
 	 * Set username and display name to use if no LinphoneProxyConfig configured
 	 */
 	void setPrimaryContact(String displayName, String username);

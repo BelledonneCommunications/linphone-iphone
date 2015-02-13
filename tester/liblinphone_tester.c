@@ -41,6 +41,8 @@ static JNIEnv *current_env = NULL;
 static jobject current_obj = 0;
 static const char* LogDomain = "liblinphone_tester";
 
+int main(int argc, char** argv);
+
 void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	char str[4096];
 	char *current;
@@ -172,8 +174,11 @@ int main (int argc, char *argv[])
 	FILE* log_file=NULL;
 
 #ifdef HAVE_GTK
-	gdk_threads_init();
 	gtk_init(&argc, &argv);
+#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
+	g_thread_init(NULL);
+#endif
+	gdk_threads_init();
 #endif
 
 #if defined(ANDROID)

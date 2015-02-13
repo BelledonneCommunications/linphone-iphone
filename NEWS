@@ -8,6 +8,7 @@ linphone-3.8.0 -- Date to be defined
 	* Support for RTP/AVPF (RFCxxxx) for video streams, allowing fast transmission error recovery with VP8 codec only.
 	* API enhancements, most objects can be ref-counted.
 	* Call video recording feature, in mkv format (H264 streams only for the moment)
+	* Support of SRTP by using packages from GNU/Linux distributions
 
 linphone-3.7.0 -- February 20th, 2014
 	Application level improvements:

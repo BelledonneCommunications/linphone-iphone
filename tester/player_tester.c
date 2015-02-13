@@ -57,7 +57,8 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 	}
 	if(res == -1) goto fail;
 
-	CU_ASSERT_EQUAL((res = linphone_player_start(player)), 0);
+	res = linphone_player_start(player);
+	CU_ASSERT_EQUAL(res, 0);
 	if(res == -1) goto fail;
 
 	CU_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, 13000));

@@ -70,7 +70,6 @@ class RegisterCoreManager(CoreManager):
 
     def register_with_refresh(self, refresh, domain, route, late_auth_info = False, transport = linphone.SipTransports(5070, 5070, 5071, 0), expected_final_state = linphone.RegistrationState.Ok):
         self.register_with_refresh_base(refresh, domain, route, late_auth_info, expected_final_state = expected_final_state)
-        self.stop()
         # Not testable as the callbacks can not be called once the core destruction has started
         #assert_equals(self.stats.number_of_LinphoneRegistrationCleared, 1)
 
@@ -174,14 +173,12 @@ class TestRegister:
         assert_equals(cm.stats.number_of_auth_info_requested, 1)
 
     def test_multiple_accounts(self):
-        cm = CoreManager('multi_account_rc', False)
-        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == len(cm.lc.proxy_config_list)), True)
+        CoreManager('multi_account_rc', True)
 
     def test_transport_change(self):
-        cm = CoreManager('multi_account_rc', False)
+        cm = CoreManager('multi_account_rc', True)
         number_of_udp_proxies = reduce(lambda x, y: x + int(y.transport == "udp"), cm.lc.proxy_config_list, 0)
         total_number_of_proxies = len(cm.lc.proxy_config_list)
-        assert_equals(CoreManager.wait_for(cm, cm, lambda cm1, cm2: cm1.stats.number_of_LinphoneRegistrationOk == total_number_of_proxies), True)
         register_ok = cm.stats.number_of_LinphoneRegistrationOk
         # Keep only UDP
         tr = linphone.SipTransports(0, 0, 0, 0)

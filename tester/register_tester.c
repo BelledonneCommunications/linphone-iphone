@@ -190,6 +190,25 @@ static void simple_register(){
 	linphone_core_manager_destroy(lcm);
 }
 
+static void register_with_custom_headers(void){
+	LinphoneCoreManager *marie=linphone_core_manager_new("marie_rc");
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
+	int initial_register_ok=marie->stat.number_of_LinphoneRegistrationOk;
+	const char *value;
+	
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	linphone_proxy_config_set_custom_header(cfg, "ah-bah-ouais", "...mais bon.");
+	/*unfortunately it is difficult to programmatically check that sent custom headers are actually sent.
+	 * A server development would be required here.*/
+	
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk,initial_register_ok+1);
+	value=linphone_proxy_config_get_custom_header(cfg, "Server");
+	CU_ASSERT_PTR_NOT_NULL(value);
+	if (value) CU_ASSERT_TRUE(strstr(value, "Flexisip")!=NULL);
+	linphone_core_manager_destroy(marie);
+}
+
 static void simple_unregister(){
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
@@ -814,6 +833,7 @@ test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "Simple register unregister", simple_unregister },
 	{ "TCP register", simple_tcp_register },
+	{ "Register with custom headers", register_with_custom_headers },
 	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 	{ "TLS register", simple_tls_register },
 	{ "TLS register with alt. name certificate", tls_alt_name_register },

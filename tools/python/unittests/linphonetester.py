@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import time
+import weakref
 
 
 test_domain = "sipopen.example.org"
@@ -93,13 +94,13 @@ class AccountManager:
     @classmethod
     def account_created_on_server_cb(cls, lc, cfg, state, message):
         if state == linphone.RegistrationState.Ok:
-            lc.user_data.created = True
+            lc.user_data().created = True
         elif state == linphone.RegistrationState.Cleared:
-            lc.user_data.done = True
+            lc.user_data().done = True
 
     @classmethod
     def account_created_auth_requested_cb(cls, lc, realm, username, domain):
-        lc.user_data.auth_requested = True
+        lc.user_data().auth_requested = True
 
     def check_account(self, cfg):
         create_account = False
@@ -142,7 +143,7 @@ class AccountManager:
         cfg.server_addr = server_addr.as_string()
         cfg.expires = 3600
         lc.add_proxy_config(cfg)
-        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.auth_requested == True, 10000) != True:
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().auth_requested == True, 10000) != True:
             linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
             sys.exit(-1)
         cfg.edit()
@@ -150,11 +151,11 @@ class AccountManager:
         cfg.done()
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
-        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.created == True, 3000) != True:
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().created == True, 3000) != True:
             linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity))
             sys.exit(-1)
         lc.remove_proxy_config(cfg)
-        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data.done == True, 3000) != True:
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().done == True, 3000) != True:
             linphonetester_logger.critical("[TESTER] Account creation could not clean the registration context.")
             sys.exit(-1)
 
@@ -287,7 +288,7 @@ class CoreManager:
         lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
         lc.ringback = os.path.join(resources_path, 'sounds', 'ringback.wav')
         lc.static_picture = os.path.join(resources_path, 'images', 'nowebcamCIF.jpg')
-        lc.user_data = user_data
+        lc.user_data = weakref.ref(user_data)
         return lc
 
     @classmethod
@@ -389,7 +390,7 @@ class CoreManager:
 
     @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
-        manager = lc.user_data
+        manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
             state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
         if state == linphone.RegistrationState.None:
@@ -407,14 +408,14 @@ class CoreManager:
 
     @classmethod
     def auth_info_requested(cls, lc, realm, username, domain):
-        manager = lc.user_data
+        manager = lc.user_data()
         linphonetester_logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
             username=username, realm=realm))
         manager.stats.number_of_auth_info_requested +=1
 
     @classmethod
     def call_state_changed(cls, lc, call, state, msg):
-        manager = lc.user_data
+        manager = lc.user_data()
         to_address = call.call_log.to_address.as_string()
         from_address = call.call_log.from_address.as_string()
         direction = "Outgoing"
@@ -463,7 +464,7 @@ class CoreManager:
 
     @classmethod
     def message_received(cls, lc, room, message):
-        manager = lc.user_data
+        manager = lc.user_data()
         from_str = message.from_address.as_string()
         text_str = message.text
         external_body_url = message.external_body_url
@@ -478,7 +479,7 @@ class CoreManager:
 
     @classmethod
     def new_subscription_requested(cls, lc, lf, url):
-        manager = lc.user_data
+        manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
             from_str=lf.address.as_string(), url=url))
         manager.stats.number_of_NewSubscriptionRequest += 1
@@ -486,7 +487,7 @@ class CoreManager:
 
     @classmethod
     def notify_presence_received(cls, lc, lf):
-        manager = lc.user_data
+        manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New notify request: from [{from_str}]".format(
             from_str=lf.address.as_string()))
         manager.stats.number_of_NotifyReceived += 1
@@ -599,9 +600,6 @@ class CoreManager:
         if self.lc.default_proxy_config is not None:
             self.identity = linphone.Address.new(self.lc.default_proxy_config.identity)
             self.identity.clean()
-
-    def stop(self):
-        self.lc = None
 
     def enable_audio_codec(self, mime, rate):
         codecs = self.lc.audio_codecs

@@ -120,7 +120,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
 
-	linphone_core_stop_ringing(lc);
+	if (!((call->state == LinphoneCallIncomingEarlyMedia) && (linphone_core_get_ring_during_incoming_early_media(lc)))) {
+		linphone_core_stop_ringing(lc);
+	}
 	if (!new_md) {
 		ms_error("linphone_core_update_streams() called with null media description");
 		return;
@@ -232,17 +234,13 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 	return FALSE;
 }
 
-static bool_t already_a_call_pending(LinphoneCore *lc){
+static bool_t already_an_outgoing_call_pending(LinphoneCore *lc){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (call->state==LinphoneCallIncomingReceived
-			|| call->state==LinphoneCallIncomingEarlyMedia
-			|| call->state==LinphoneCallOutgoingInit
+		if (call->state==LinphoneCallOutgoingInit
 			|| call->state==LinphoneCallOutgoingProgress
-			|| call->state==LinphoneCallOutgoingEarlyMedia
-			|| call->state==LinphoneCallOutgoingRinging
-			|| call->state==LinphoneCallIdle){ /*case of an incoming call for which ICE candidate gathering is pending.*/
+			|| call->state==LinphoneCallOutgoingRinging){
 			return TRUE;
 		}
 	}
@@ -312,8 +310,8 @@ static void call_received(SalOp *h){
 		from_addr=linphone_address_new(sal_op_get_from(h));
 	to_addr=linphone_address_new(sal_op_get_to(h));
 
-	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_a_call_pending(lc)){
-		ms_warning("Receiving another call while one is ringing or initiated, refusing this one with busy message.");
+	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_an_outgoing_call_pending(lc)){
+		ms_warning("Receiving a call while one is initiated, refusing this one with busy message.");
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_destroy(from_addr);
@@ -338,6 +336,8 @@ static void call_received(SalOp *h){
 	linphone_core_add_call(lc,call);
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 
+	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
+	
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");

@@ -347,7 +347,7 @@ static void presence_information(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-#define USE_PRESENCE_SERVER 1
+#define USE_PRESENCE_SERVER 0
 
 #if USE_PRESENCE_SERVER
 static void test_subscribe_notify_publish(void) {

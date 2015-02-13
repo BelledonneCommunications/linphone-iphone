@@ -12,7 +12,7 @@ class TestMessage:
 
     @classmethod
     def msg_state_changed(cls, msg, state):
-        stats = msg.chat_room.core.user_data.stats
+        stats = msg.chat_room.core.user_data().stats
         linphonetester_logger.info("[TESTER] Message [{text}] [{state}]".format(text=msg.text, state=linphone.ChatMessageState.string(state)))
         if state == linphone.ChatMessageState.Delivered:
             stats.number_of_LinphoneMessageDelivered += 1
@@ -27,7 +27,7 @@ class TestMessage:
 
     @classmethod
     def file_transfer_progress_indication(cls, msg, content, offset, total):
-        stats = msg.chat_room.core.user_data.stats
+        stats = msg.chat_room.core.user_data().stats
         progress = int((offset * 100) / total)
         direction = 'received'
         tofrom = 'from'
@@ -57,7 +57,7 @@ class TestMessage:
     @classmethod
     def file_transfer_recv(cls, msg, content, buf):
         receive_filepath = msg.user_data
-        stats = msg.chat_room.core.user_data.stats
+        stats = msg.chat_room.core.user_data().stats
         if buf.empty: # Transfer complete
             stats.number_of_LinphoneMessageExtBodyReceived += 1
         else: # Store content
@@ -77,7 +77,7 @@ class TestMessage:
 
     @classmethod
     def memory_file_transfer_recv(cls, msg, content, buf):
-        stats = msg.chat_room.core.user_data.stats
+        stats = msg.chat_room.core.user_data().stats
         if buf.empty: # Transfer complete
             stats.number_of_LinphoneMessageExtBodyReceived += 1
         else: # Store content
@@ -98,8 +98,6 @@ class TestMessage:
         chat_room.send_chat_message(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         assert marie.lc.get_chat_room(pauline.identity) is not None
-        marie.stop()
-        pauline.stop()
 
     def test_text_message_within_dialog(self):
         marie = CoreManager('marie_rc')
@@ -112,8 +110,6 @@ class TestMessage:
         chat_room.send_chat_message(msg)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneMessageReceived == 1), True)
         assert marie.lc.get_chat_room(pauline.identity) is not None
-        marie.stop()
-        pauline.stop()
 
     def test_file_transfer_message(self):
         marie = CoreManager('marie_rc')

@@ -182,6 +182,7 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->contact_uri_params) ms_free(obj->contact_uri_params);
 	if (obj->saved_proxy!=NULL) linphone_address_destroy(obj->saved_proxy);
 	if (obj->saved_identity!=NULL) linphone_address_destroy(obj->saved_identity);
+	if (obj->sent_headers!=NULL) sal_custom_header_free(obj->sent_headers);
 	_linphone_proxy_config_release_ops(obj);
 }
 
@@ -467,7 +468,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
 
-		linphone_configure_op(obj->lc, obj->op, to, NULL, FALSE);
+		linphone_configure_op(obj->lc, obj->op, to, obj->sent_headers, FALSE);
 		linphone_address_destroy(to);
 
 		if ((contact=guess_contact_for_register(obj))) {
@@ -1145,6 +1146,17 @@ const char *linphone_proxy_config_get_contact_uri_parameters(const LinphoneProxy
 
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj){
 	return obj->lc;
+}
+
+const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name){
+	const SalCustomHeader *ch;
+	if (!cfg->op) return NULL;
+	ch = sal_op_get_recv_custom_header(cfg->op);
+	return sal_custom_header_find(ch, header_name);
+}
+
+void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value){
+	cfg->sent_headers=sal_custom_header_append(cfg->sent_headers, header_name, header_value);
 }
 
 /**

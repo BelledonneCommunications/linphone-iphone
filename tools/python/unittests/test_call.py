@@ -22,8 +22,6 @@ class TestCall:
             out_call_log = pauline.lc.call_logs[0]
             assert out_call_log is not None
             assert_equals(out_call_log.status, linphone.CallStatus.Aborted)
-        marie.stop()
-        pauline.stop()
 
     def test_declined_call(self):
         marie = CoreManager('marie_rc')
@@ -40,8 +38,6 @@ class TestCall:
             assert_equals(pauline.stats.number_of_LinphoneCallEnd, 1)
             assert_equals(in_call.reason, linphone.Reason.Declined)
             assert_equals(out_call.reason, linphone.Reason.Declined)
-        marie.stop()
-        pauline.stop()
 
     def test_cancelled_call(self):
         marie = CoreManager('marie_rc')
@@ -53,8 +49,6 @@ class TestCall:
         assert_equals(pauline.stats.number_of_LinphoneCallEnd, 1)
         assert_equals(marie.stats.number_of_LinphoneCallIncomingReceived, 0)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallReleased == 1), True)
-        marie.stop()
-        pauline.stop()
 
     def test_early_cancelled_call(self):
         marie = CoreManager('marie_rc')
@@ -72,8 +66,6 @@ class TestCall:
         # Now the CANCEL should have been sent and the the call at marie's side should terminate
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: marie.stats.number_of_LinphoneCallEnd == 1), True)
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: pauline.stats.number_of_LinphoneCallReleased == 1), True)
-        marie.stop()
-        pauline.stop()
 
     def test_cancelled_ringing_call(self):
         marie = CoreManager('marie_rc')
@@ -84,8 +76,6 @@ class TestCall:
         assert_equals(CoreManager.wait_for(pauline, marie, lambda pauline, marie: (pauline.stats.number_of_LinphoneCallReleased == 1) and (marie.stats.number_of_LinphoneCallReleased == 1)), True)
         assert_equals(marie.stats.number_of_LinphoneCallEnd, 1)
         assert_equals(pauline.stats.number_of_LinphoneCallEnd, 1)
-        marie.stop()
-        pauline.stop()
 
     def test_call_failed_because_of_codecs(self):
         marie = CoreManager('marie_rc')
@@ -100,8 +90,6 @@ class TestCall:
         assert_equals(out_call.reason, linphone.Reason.NotAcceptable)
         assert_equals(marie.stats.number_of_LinphoneCallIncomingReceived, 0)
         assert_equals(marie.stats.number_of_LinphoneCallReleased, 0)
-        marie.stop()
-        pauline.stop()
 
     def test_simple_call(self):
         marie = CoreManager('marie_rc')
@@ -109,5 +97,3 @@ class TestCall:
         assert_equals(CoreManager.call(pauline, marie), True)
         #liblinphone_tester_check_rtcp(marie,pauline);
         CoreManager.end_call(marie, pauline)
-        marie.stop()
-        pauline.stop()

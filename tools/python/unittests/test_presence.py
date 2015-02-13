@@ -35,5 +35,3 @@ class TestPresence:
         marie = PresenceCoreManager('marie')
         pauline = PresenceCoreManager('pauline')
         assert_equals(self.subscribe_to_callee_presence(marie, pauline), True)
-        marie.stop()
-        pauline.stop()

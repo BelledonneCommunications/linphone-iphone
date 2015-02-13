@@ -239,6 +239,8 @@ typedef struct _stats {
 	int number_of_rtcp_sent;
 	int number_of_rtcp_received;
 
+	int number_of_video_windows_created;
+
 }stats;
 
 typedef struct _LinphoneCoreManager {

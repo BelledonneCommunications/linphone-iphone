@@ -153,8 +153,14 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 	return linphone_call_get_remote_address(call);
 }
 
+static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args);
+
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	ortp_set_log_handler(logfunc);
+	if (ortp_logv_out == linphone_core_log_collection_handler) {
+		ms_message("There is already a log collection handler, keep it");
+		liblinphone_log_func = logfunc;
+	} else
+		ortp_set_log_handler(logfunc);
 }
 
 void linphone_core_set_log_file(FILE *file) {
@@ -645,7 +651,7 @@ void linphone_core_enable_logs(FILE *file){
 **/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	ortp_set_log_handler(logfunc);
+	linphone_core_set_log_handler(logfunc);
 	sal_enable_logs();
 }
 
@@ -1009,7 +1015,7 @@ static PayloadType * find_payload(const MSList *default_list, const char *mime_t
 	PayloadType *candidate=NULL;
 	PayloadType *it;
 	const MSList *elem;
-	
+
 	for(elem=default_list;elem!=NULL;elem=elem->next){
 		it=(PayloadType*)elem->data;
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
@@ -1075,6 +1081,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		pt->mime_type=ortp_strdup(mime);
 		pt->clock_rate=rate;
 		pt->channels=channels;
+		payload_type_set_number(pt,-1); /*dynamic assignment*/
 		payload_type_set_recv_fmtp(pt,fmtp);
 		*default_list=ms_list_append(*default_list, pt);
 	}
@@ -1089,7 +1096,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 static MSList *add_missing_codecs(const MSList *default_list, MSList *l){
 	const MSList *elem;
 	MSList *newlist;
-	
+
 	for(elem=default_list; elem!=NULL; elem=elem->next){
 		MSList *elem2=ms_list_find(l,elem->data);
 		if (!elem2){
@@ -1127,10 +1134,10 @@ static void codecs_config_read(LinphoneCore *lc)
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
 	MSList *video_codecs=NULL;
-	
+
 	lc->codecs_conf.dyn_pt=96;
 	lc->codecs_conf.telephone_event_pt=lp_config_get_int(lc->config,"misc","telephone_event_pt",101);
-	
+
 	for (i=0;get_codec(lc,SalAudio,i,&pt);i++){
 		if (pt){
 			audio_codecs=codec_append_if_new(audio_codecs, pt);
@@ -1427,8 +1434,8 @@ static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadT
 		 and the payload type number will be determined dynamically later, at call time.*/
 		payload_type_set_number(pt,
 			(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
-		); 
-		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate, 
+		);
+		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate,
 			   pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
 		*codec_list=ms_list_append(*codec_list,pt);
 	}
@@ -1550,7 +1557,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
-	
+
 	/*other audio codecs, not enabled by default, in order of preference*/
 	linphone_core_register_payload_type(lc,&payload_type_gsm,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_g722,NULL,FALSE);
@@ -1586,8 +1593,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_24,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
-	
-	
+
+
 
 #ifdef VIDEO_ENABLED
 	/*default enabled video codecs, in order of preference*/
@@ -1616,9 +1623,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
-	
+
 	ms_init();
-	
+
 	linphone_core_register_default_codecs(lc);
 	/* create a mediastreamer2 event queue and set it as global */
 	/* This allows to run event's callback in linphone_core_iterate() */
@@ -3258,7 +3265,6 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	char *tmp;
 	LinphoneAddress *from_parsed;
 	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
-	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 
 	from_parsed=linphone_address_new(sal_op_get_from(call->op));
 	linphone_address_clean(from_parsed);
@@ -3293,12 +3299,18 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 
 	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+	/*from now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
+	We can then drop our background task.*/
+	if (call->bg_task_id!=0) {
+		sal_end_background_task(call->bg_task_id);
+		call->bg_task_id=0;
+	}
 
 	if (call->state==LinphoneCallIncomingReceived){
 		/*try to be best-effort in giving real local or routable contact address for 100Rel case*/
 		linphone_call_set_contact_op(call);
 
-		if (propose_early_media || ringback_tone!=NULL){
+		if (propose_early_media){
 			linphone_core_accept_early_media(lc,call);
 		}else sal_call_notify_ringing(call->op,FALSE);
 
@@ -3582,7 +3594,7 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		return 0;
 	}
 	if (params==NULL){
-		call->params->has_video=lc->video_policy.automatically_accept || call->current_params->has_video;
+		linphone_call_params_enable_video(call->params, lc->video_policy.automatically_accept || call->current_params->has_video);
 	}else
 		linphone_call_set_new_params(call,params);
 
@@ -4411,15 +4423,13 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap){
 		}
 	}
 	if (sndcard==NULL) {
-		/* get a card that has read+write capabilities */
-		sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
-		/* otherwise refine to the first card having the right capability*/
-		if (sndcard==NULL){
-			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
-			for(;elem!=NULL;elem=elem->next){
-				sndcard=(MSSndCard*)elem->data;
-				if (ms_snd_card_get_capabilities(sndcard) & cap) break;
-			}
+		if ((cap & MS_SND_CARD_CAP_CAPTURE) && (cap & MS_SND_CARD_CAP_PLAYBACK)){
+			sndcard=ms_snd_card_manager_get_default_card(ms_snd_card_manager_get());
+		}else if (cap & MS_SND_CARD_CAP_CAPTURE){
+			sndcard=ms_snd_card_manager_get_default_capture_card(ms_snd_card_manager_get());
+		}
+		else if (cap & MS_SND_CARD_CAP_PLAYBACK){
+			sndcard=ms_snd_card_manager_get_default_playback_card(ms_snd_card_manager_get());
 		}
 		if (sndcard==NULL){/*looks like a bug! take the first one !*/
 			const MSList *elem=ms_snd_card_manager_get_list(ms_snd_card_manager_get());
@@ -6090,7 +6100,7 @@ void sip_config_uninit(LinphoneCore *lc)
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
 	config->proxies=ms_list_free_with_data(config->proxies,(void (*)(void*)) _linphone_proxy_config_release);
-	
+
 	config->deleted_proxies=ms_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
 	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
@@ -6502,9 +6512,6 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
-/**
- * Specifies a ring back tone to be played to far end during incoming calls.
-**/
 void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
 	if (lc->sound_conf.ringback_tone){
 		ms_free(lc->sound_conf.ringback_tone);
@@ -6514,11 +6521,16 @@ void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
 		lc->sound_conf.ringback_tone=ms_strdup(file);
 }
 
-/**
- * Returns the ring back tone played to far end during incoming calls.
-**/
 const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
 	return lc->sound_conf.ringback_tone;
+}
+
+void linphone_core_set_ring_during_incoming_early_media(LinphoneCore *lc, bool_t enable) {
+	lp_config_set_int(lc->config, "sound", "ring_during_incoming_early_media", (int)enable);
+}
+
+bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc) {
+	return (bool_t)lp_config_get_int(lc->config, "sound", "ring_during_incoming_early_media", 0);
 }
 
 LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
@@ -6902,8 +6914,8 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->in_conference=FALSE;
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=FALSE;
-	params->audio_dir=LinphoneCallParamsMediaDirectionSendRecv;
-	params->video_dir=LinphoneCallParamsMediaDirectionSendRecv;
+	params->audio_dir=LinphoneMediaDirectionSendRecv;
+	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 }
 
@@ -7125,7 +7137,7 @@ void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
 	return lc->current_vtable;
 }
- 
+
 #define NOTIFY_IF_EXIST(function_name) \
 	MSList* iterator; \
 	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\

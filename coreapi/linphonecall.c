@@ -612,6 +612,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->streams[0].rtp_port=call->media_ports[0].rtp_port;
 	md->streams[0].rtcp_port=call->media_ports[0].rtcp_port;
 	md->streams[0].proto=get_proto_from_call_params(call->params);
+	md->streams[0].dir=get_audio_dir_from_call_params(call->params);
 	md->streams[0].type=SalAudio;
 	if (call->params->down_ptime)
 		md->streams[0].ptime=call->params->down_ptime;
@@ -640,6 +641,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		md->streams[1].rtp_port=call->media_ports[1].rtp_port;
 		md->streams[1].rtcp_port=call->media_ports[1].rtcp_port;
 		md->streams[1].proto=md->streams[0].proto;
+		md->streams[1].dir=get_video_dir_from_call_params(call->params);
 		md->streams[1].type=SalVideo;
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;
@@ -1382,6 +1384,7 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
+	SalMediaDescription *md=call->resultdesc;
 #ifdef VIDEO_ENABLED
 	VideoStream *vstream;
 #endif
@@ -1416,6 +1419,12 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {
 		call->current_params->avpf_rr_interval = 0;
+	}
+	if (md){
+		SalStreamDescription *sd=sal_media_description_find_best_stream(md,SalAudio);
+		call->current_params->audio_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
+		sd=sal_media_description_find_best_stream(md,SalVideo);
+		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 	}
 
 	return call->current_params;
@@ -2175,6 +2184,8 @@ static int get_video_bw(LinphoneCall *call, const SalMediaDescription *md, const
 	else if (md->bandwidth>0) {
 		/*case where b=AS is given globally, not per stream*/
 		remote_bw=get_remaining_bandwidth_for_video(md->bandwidth,call->audio_bw);
+	} else {
+		remote_bw = lp_config_get_int(call->core->config, "net", "default_max_bandwidth", 1500);
 	}
 	bw=get_min_bandwidth(get_remaining_bandwidth_for_video(linphone_core_get_upload_bandwidth(call->core),call->audio_bw),remote_bw);
 	return bw;
@@ -2752,10 +2763,6 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[0]);
-		rtp_session_unregister_event_queue(call->audiostream->ms.sessions.rtp_session,call->audiostream_app_evq);
-		ortp_ev_queue_flush(call->audiostream_app_evq);
-		ortp_ev_queue_destroy(call->audiostream_app_evq);
-		call->audiostream_app_evq=NULL;
 
 		if (call->audiostream->ec){
 			const char *state_str=NULL;
@@ -2771,6 +2778,10 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 			linphone_call_remove_from_conf(call);
 		}
 		audio_stream_stop(call->audiostream);
+		rtp_session_unregister_event_queue(call->sessions[0].rtp_session, call->audiostream_app_evq);
+		ortp_ev_queue_flush(call->audiostream_app_evq);
+		ortp_ev_queue_destroy(call->audiostream_app_evq);
+		call->audiostream_app_evq=NULL;
 		call->audiostream=NULL;
 		call->current_params->audio_codec = NULL;
 	}
@@ -2781,13 +2792,13 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 	if (call->videostream!=NULL){
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_VIDEO);
 		media_stream_reclaim_sessions(&call->videostream->ms,&call->sessions[1]);
-		rtp_session_unregister_event_queue(call->videostream->ms.sessions.rtp_session,call->videostream_app_evq);
-		ortp_ev_queue_flush(call->videostream_app_evq);
-		ortp_ev_queue_destroy(call->videostream_app_evq);
-		call->videostream_app_evq=NULL;
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		rtp_session_unregister_event_queue(call->sessions[1].rtp_session, call->videostream_app_evq);
+		ortp_ev_queue_flush(call->videostream_app_evq);
+		ortp_ev_queue_destroy(call->videostream_app_evq);
+		call->videostream_app_evq=NULL;
 		call->current_params->video_codec = NULL;
 	}
 #endif
