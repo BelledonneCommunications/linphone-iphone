@@ -2430,6 +2430,30 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				setup_ring_player(lc,call);
 			}
 
+			if (sal_stream_description_has_dtls(stream) == TRUE) {
+				/* DTLS engine was already initialised during stream init. Before starting it we must be sure that the role(client or server) is set.
+				 * Role may have already been set to server if we initiate the call and already received a packet from peer, in that case do nothing */
+				SalDtlsRole salRole = stream->dtls_role;
+				if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
+					salRole = call->resultdesc->dtls_role;
+				}
+
+				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
+					/* give the peer certificate fingerprint to dtls context */
+					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+					ms_dtls_srtp_set_peer_fingerprint(call->audiostream->ms.sessions.dtls_context, remote_desc->streams[0].dtls_fingerprint);
+				} else {
+					ms_warning("unable to start DTLS engine on audiostream, Dtls role in resulting media description is invalid\n");
+				}
+				if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
+					ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
+					ms_dtls_srtp_start(call->audiostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
+				} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
+					ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
+					/* no need to start engine, we are waiting for DTLS Client Hello */
+				}
+			}
+
 			if (call->params->in_conference){
 				/*transform the graph to connect it to the conference filter */
 				mute=stream->dir==SalStreamRecvOnly;
@@ -2555,6 +2579,28 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 									   used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				}
 			}
+			if (sal_stream_description_has_dtls(vstream) == TRUE) {
+				/*DTLS*/
+				SalDtlsRole salRole = vstream->dtls_role;
+				if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
+					salRole = call->resultdesc->dtls_role;
+				}
+
+				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
+					/* give the peer certificate fingerprint to dtls context */
+					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+					ms_dtls_srtp_set_peer_fingerprint(call->videostream->ms.sessions.dtls_context, remote_desc->streams[1].dtls_fingerprint);
+				} else {
+					ms_warning("unable to start DTLS engine on videostream, Dtls role in resulting media description is invalid\n");
+				}
+				if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
+					ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
+					ms_dtls_srtp_start(call->videostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
+				} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
+					ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
+					/* no need to start engine, we are waiting for DTLS Client Hello */
+				}
+			}
 		}else ms_warning("No video stream accepted.");
 	}else{
 		ms_message("No valid video stream defined.");
@@ -2605,6 +2651,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->playing_ringbacktone=send_ringbacktone;
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 
+	/*might be moved in audio/video stream_start*/
 	if (call->params->media_encryption==LinphoneMediaEncryptionZRTP) {
 		MSZrtpParams params;
 		memset(&params,0,sizeof(MSZrtpParams));
@@ -2618,52 +2665,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 		}
 #endif
-	} else if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
-		/* DTLS engine was already initialised during stream init. Before starting it we must be sure that the role(client or server) is set.
-		 * Role may have already been set to server if we initiate the call and already received a packet from peer, in that case do nothing */
-		SalDtlsRole salRole = call->resultdesc->streams[0].dtls_role; /* TODO: is streams[0] necessary the audiostream in the media description ? */
-		if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
-			salRole = call->resultdesc->dtls_role;
-		}
-
-		if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
-			/* give the peer certificate fingerprint to dtls context */
-			SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-			ms_dtls_srtp_set_peer_fingerprint(call->audiostream->ms.sessions.dtls_context, remote_desc->streams[0].dtls_fingerprint);
-		} else {
-			ms_warning("unable to start DTLS engine on audiostream, Dtls role in resulting media description is invalid\n");
-		}
-		if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
-			ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
-			ms_dtls_srtp_start(call->audiostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
-		} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
-			ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
-			/* no need to start engine, we are waiting for DTLS Client Hello */
-		}
-#ifdef VIDEO_ENABLED
-		salRole = call->resultdesc->streams[1].dtls_role; /* TODO: is streams[1] necessary the videostream in the media description ? */
-		if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
-			salRole = call->resultdesc->dtls_role;
-		}
-
-		if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
-			/* give the peer certificate fingerprint to dtls context */
-			SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-			ms_dtls_srtp_set_peer_fingerprint(call->videostream->ms.sessions.dtls_context, remote_desc->streams[1].dtls_fingerprint);
-		} else {
-			ms_warning("unable to start DTLS engine on videostream, Dtls role in resulting media description is invalid\n");
-		}
-		if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
-			ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
-			ms_dtls_srtp_start(call->videostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
-		} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
-			ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
-			/* no need to start engine, we are waiting for DTLS Client Hello */
-		}
-
-#endif
-
-	} else {
+	}else if (call->params->media_encryption==LinphoneMediaEncryptionSRTP){
 		call->current_params->media_encryption=linphone_call_all_streams_encrypted(call) ?
 		LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
@@ -3269,10 +3271,18 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 		LinphoneCallParams *params = linphone_call_params_copy(call->current_params);
-		if (call->params->media_encryption == LinphoneMediaEncryptionZRTP) {
-			/* preserve media encryption param because at that time ZRTP negociation may still be ongoing*/
+		switch (call->params->media_encryption) {
+			case LinphoneMediaEncryptionZRTP:
+			case LinphoneMediaEncryptionDTLS:
+			/* preserve media encryption param because at that time ZRTP/SRTP-DTLS negociation may still be ongoing*/
 			params->media_encryption=call->params->media_encryption;
+			break;
+			case LinphoneMediaEncryptionSRTP:
+			case LinphoneMediaEncryptionNone:
+			/*keep all values to make sure a warning will be generated by compiler if new enum value is added*/
+				break;
 		}
+
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
 				ice_session_select_candidates(call->ice_session);

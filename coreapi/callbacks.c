@@ -221,7 +221,7 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 
 static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
 	MSList *elem;
-	ms_warning(" searching for already_a_call_with_remote_address.");
+	ms_message("Searching for already_a_call_with_remote_address.");
 
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		const LinphoneCall *call=(LinphoneCall*)elem->data;
