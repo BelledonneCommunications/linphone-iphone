@@ -41,6 +41,8 @@ static JNIEnv *current_env = NULL;
 static jobject current_obj = 0;
 static const char* LogDomain = "liblinphone_tester";
 
+int main(int argc, char** argv);
+
 void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	char str[4096];
 	char *current;

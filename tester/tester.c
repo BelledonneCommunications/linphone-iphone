@@ -614,7 +614,7 @@ int  liblinphone_tester_fprintf(FILE * stream, const char * format, ...) {
 #else
 	/*used by liblinphone tester to retrieve suite list*/
 	result = 0;
-	cunit_android_trace_handler(stream, format, args);
+	cunit_android_trace_handler(stream == stderr, format, args);
 #endif
 	va_end(args);
 	return result;
