@@ -10,9 +10,15 @@
 
 #import "LinphoneManager.h"
 
+#import <KIFTypist.h>
+
 @implementation LinphoneTestCase
 
-
++ (void)initialize {
+	// default is 0.01, which sometimes confuses the simulator to the point that
+	// it will miss some keys
+	[KIFTypist setKeystrokeDelay:0.1];
+}
 
 - (NSString *)accountUsername {
     return @"testios";
