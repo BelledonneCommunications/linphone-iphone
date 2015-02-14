@@ -193,7 +193,12 @@ static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, L
 	linphone_core_enable_video_display(manager->lc, TRUE);
 	params = linphone_core_create_default_call_parameters(manager->lc);
 	linphone_call_params_enable_video(params, TRUE);
-	disable_all_video_codecs_except_one(manager->lc, "VP8");
+	if (linphone_core_find_payload_type(manager->lc,"VP8", 90000, -1)!=NULL){
+		disable_all_video_codecs_except_one(manager->lc, "VP8");
+	}else{
+		ms_warning("VP8 codec not available, will use MP4V-ES instead");
+		disable_all_video_codecs_except_one(manager->lc, "MP4V-ES");
+	}
 	return params;
 }
 
