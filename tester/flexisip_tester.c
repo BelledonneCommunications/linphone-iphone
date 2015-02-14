@@ -396,7 +396,7 @@ static void call_forking_with_push_notification_single(void){
 	
 	/*marie accepts the call*/
 	linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,5000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
@@ -404,8 +404,8 @@ static void call_forking_with_push_notification_single(void){
 	liblinphone_tester_check_rtcp(pauline,marie);
 	
 	linphone_core_terminate_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
 	
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
