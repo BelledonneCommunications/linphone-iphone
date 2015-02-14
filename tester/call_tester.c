@@ -2230,7 +2230,7 @@ static void call_with_mkv_file_player(void) {
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
-	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000_mkv_ref.wav", liblinphone_tester_file_prefix);
 	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", liblinphone_tester_file_prefix);
 
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
@@ -3563,19 +3563,24 @@ static void call_with_generic_cn(void) {
 	CU_ASSERT_PTR_NOT_NULL(pauline_call);
 	if (pauline_call){
 		const rtp_stats_t *rtps;
-		struct stat stbuf;
-		int err;
 
 		wait_for_until(marie->lc, pauline->lc, NULL, 0, 8000);
 		rtps=rtp_session_get_stats(pauline_call->audiostream->ms.sessions.rtp_session);
 		CU_ASSERT_TRUE(rtps->packet_recv<=300 && rtps->packet_recv>=200);
+	}
+	end_call(marie,pauline);
+	
+	if (pauline_call){
+		struct stat stbuf;
+		int err;
+		
 		err=stat(recorded_file,&stbuf);
 		CU_ASSERT_EQUAL(err, 0);
 		if (err==0){
 			CU_ASSERT_TRUE(stbuf.st_size>120000);
 		}
 	}
-	end_call(marie,pauline);
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 
