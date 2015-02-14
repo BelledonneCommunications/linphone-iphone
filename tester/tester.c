@@ -211,6 +211,15 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 #endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
+#ifdef WIN32
+		{
+			MSG msg;
+			while (PeekMessage(&msg, NULL, 0, 0,1)){
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+#endif
 		ms_usleep(20000);
 	}
 	if(counter && *counter<value) return FALSE;
