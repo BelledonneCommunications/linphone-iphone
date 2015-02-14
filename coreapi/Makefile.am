@@ -131,9 +131,9 @@ endif
 endif
 
 liblinphone_la_LIBADD= \
-		$(SIPSTACK_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
-		$(ORTP_LIBS) $(OPENSSL_LIBS) \
+		$(ORTP_LIBS) \
+		$(SIPSTACK_LIBS) \
 		$(TUNNEL_LIBS) \
 		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
