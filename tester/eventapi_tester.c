@@ -247,11 +247,11 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
 	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
 	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
 	/*make sure marie receives first notification before terminating*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
@@ -259,7 +259,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	}else if (refresh_type==ManualRefresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
-		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,2000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,5000));
 	}
 
 	if (terminated_by_subscriber){
@@ -269,8 +269,8 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 		linphone_event_terminate(pauline->lev);
 	}
 
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 
 	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);

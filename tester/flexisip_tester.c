@@ -574,8 +574,8 @@ static void early_media_call_forking(void) {
 					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<99 );
 	
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,5000));
 
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
@@ -643,7 +643,7 @@ static void call_with_sips_not_achievable(void){
 	linphone_address_unref(dest);
 
 	/*Call should be rejected by server with 480*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallError,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallError,1,6000));
 	ei=linphone_call_get_error_info(call);
 	CU_ASSERT_PTR_NOT_NULL(ei);
 	if (ei){
