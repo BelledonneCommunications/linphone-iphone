@@ -52,7 +52,8 @@ EXTRA_DIST =					$(LINPHONE_SOUNDS) \
 						audio-assistant.desktop.in   \
 						linphone.pc.in \
 						Makefile.inc \
-						archived-rootca.pem
+						archived-rootca.pem \
+						$(appdata_DATA)
 
 CLEANFILES=rootca.pem
 
