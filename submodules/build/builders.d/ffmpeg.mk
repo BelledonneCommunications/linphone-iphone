@@ -9,7 +9,7 @@ ffmpeg_configure_options=\
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
 	--enable-static --disable-shared --target-os=darwin \
-	--extra-cflags="$$COMMON_FLAGS" --extra-ldflags="$$COMMON_FLAGS" \
+	--extra-cflags="-w $$COMMON_FLAGS" --extra-ldflags="$$COMMON_FLAGS" \
 	--disable-iconv \
 	--ar="$$AR" \
 	--nm="$$NM" \
@@ -19,11 +19,11 @@ ffmpeg_configure_options=\
 
 #--sysinclude=PATH        location of cross-build system headers
 ifneq (,$(findstring armv6,$(host)))
-	ffmpeg_configure_options+= --cpu=arm1176jzf-s --disable-armv5te  --enable-armv6 --enable-armv6t2 
+	ffmpeg_configure_options+= --cpu=arm1176jzf-s --disable-armv5te  --enable-armv6 --enable-armv6t2
 endif
 
 ifneq (,$(findstring armv7,$(host)))
-	ffmpeg_configure_options+= --enable-neon --cpu=cortex-a8 --disable-armv5te  --enable-armv6 --enable-armv6t2 
+	ffmpeg_configure_options+= --enable-neon --cpu=cortex-a8 --disable-armv5te  --enable-armv6 --enable-armv6t2
 endif
 
 ffmpeg_dir?=externals/ffmpeg
@@ -31,7 +31,7 @@ $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched :
 	cd $(BUILDER_SRC_DIR)/$(ffmpeg_dir) \
 	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/ffmpeg.patch \
 	&& touch $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched
-	
+
 $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/ \
