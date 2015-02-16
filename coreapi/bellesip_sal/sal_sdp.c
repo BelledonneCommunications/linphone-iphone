@@ -825,7 +825,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	/*DTLS attributes can be defined at session level.*/
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"setup");
 	if (value){
-		SalDtlsRole session_role;
+		SalDtlsRole session_role=SalDtlsRoleInvalid;
 		if (strncmp(value, "actpass", 7) == 0) {
 			session_role = SalDtlsRoleUnset;
 		} else if (strncmp(value, "active", 6) == 0) {
