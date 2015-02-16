@@ -260,8 +260,6 @@ typedef struct SalMediaDescription{
 	bool_t ice_lite;
 	bool_t ice_completed;
 	bool_t pad[2];
-	char dtls_fingerprint[256];
-	SalDtlsRole dtls_role;
 } SalMediaDescription;
 
 typedef struct SalMessage{

@@ -438,7 +438,22 @@ static int setup_encryption_key(SalSrtpCryptoAlgo *crypto, MSCryptoSuite suite, 
 	}
 	return 0;
 }
+static void setup_dtls_keys(LinphoneCall *call, SalMediaDescription *md){
+	int i;
+	for(i=0; i<md->nb_streams; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		/* if media encryption is set to DTLS check presence of fingerprint in the call which shall have been set at stream init but it may have failed when retrieving certificate resulting in no fingerprint present and then DTLS not usable */
+		if (sal_stream_description_has_dtls(&md->streams[i]) == TRUE) {
+			strncpy(md->streams[i].dtls_fingerprint, call->dtls_certificate_fingerprint, sizeof(md->streams[i].dtls_fingerprint)); /* get the self fingerprint from call(it's computed at stream init) */
+			md->streams[i].dtls_role = SalDtlsRoleUnset; /* if we are offering, SDP will have actpass setup attribute when role is unset, if we are responding the result mediadescription will be set to SalDtlsRoleIsClient */
+		} else {
+			md->streams[i].dtls_fingerprint[0] = '\0';
+			md->streams[i].dtls_role = SalDtlsRoleInvalid;
 
+		}
+	}
+
+}
 static void setup_encryption_keys(LinphoneCall *call, SalMediaDescription *md){
 	LinphoneCore *lc=call->core;
 	int i,j;
@@ -675,16 +690,8 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		l = make_codec_list(lc, &codec_hints, lc->codecs_conf.video_codecs);
 		md->streams[i].payloads = l;
 	}
-
 	setup_encryption_keys(call,md);
-	/* if media encryption is set to DTLS check presence of fingerprint in the call which shall have been set at stream init but it may have failed when retrieving certificate resulting in no fingerprint present and then DTLS not usable */
-	if ((call->params->media_encryption==LinphoneMediaEncryptionDTLS) && (call->dtls_certificate_fingerprint!= NULL)) {
-		memcpy(md->dtls_fingerprint, call->dtls_certificate_fingerprint, strlen((const char *)(call->dtls_certificate_fingerprint))); /* get the self fingerprint from call(it's computed at stream init) */
-		md->dtls_role = SalDtlsRoleUnset; /* if we are offering, SDP will have actpass setup attribute when role is unset, if we are responding the result mediadescription will be set to SalDtlsRoleIsClient */
-	} else {
-		md->dtls_fingerprint[0] = '\0';
-		md->dtls_role = SalDtlsRoleInvalid;
-	}
+	setup_dtls_keys(call,md);
 	setup_rtcp_fb(call, md);
 	setup_rtcp_xr(call, md);
 
@@ -2434,10 +2441,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				/* DTLS engine was already initialised during stream init. Before starting it we must be sure that the role(client or server) is set.
 				 * Role may have already been set to server if we initiate the call and already received a packet from peer, in that case do nothing */
 				SalDtlsRole salRole = stream->dtls_role;
-				if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
-					salRole = call->resultdesc->dtls_role;
-				}
-
 				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
 					/* give the peer certificate fingerprint to dtls context */
 					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
@@ -2582,10 +2585,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 			if (sal_stream_description_has_dtls(vstream) == TRUE) {
 				/*DTLS*/
 				SalDtlsRole salRole = vstream->dtls_role;
-				if (salRole==SalDtlsRoleInvalid) { /* it's invalid in streams[0] but check also at session level */
-					salRole = call->resultdesc->dtls_role;
-				}
-
 				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
 					/* give the peer certificate fingerprint to dtls context */
 					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);

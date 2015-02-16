@@ -389,23 +389,6 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 	if (desc->ice_pwd[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-pwd",desc->ice_pwd));
 	if (desc->ice_ufrag[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-ufrag",desc->ice_ufrag));
 
-	/* insert DTLS session attribute if needed */
-	if ((desc->dtls_role != SalDtlsRoleInvalid) && (strlen(desc->dtls_fingerprint)>0)) {
-		switch(desc->dtls_role) {
-			case SalDtlsRoleIsClient:
-				belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("setup","active"));
-				break;
-			case SalDtlsRoleIsServer:
-				belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("setup","passive"));
-				break;
-			case SalDtlsRoleUnset:
-			default:
-				belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("setup","actpass"));
-				break;
-		}
-		belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("fingerprint",desc->dtls_fingerprint));
-	}
-
 	if (desc->rtcp_xr.enabled == TRUE) {
 		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
 	}
@@ -777,20 +760,10 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 			} else if (strncmp(value, "passive", 7) == 0) {
 				stream->dtls_role = SalDtlsRoleIsServer;
 			}
-
-			if (stream->dtls_role != SalDtlsRoleInvalid || md->dtls_role != SalDtlsRoleInvalid) {
+			if (stream->dtls_role != SalDtlsRoleInvalid) {
 				attribute=belle_sdp_media_description_get_attribute(media_desc,"fingerprint");
-				if (attribute && (value=belle_sdp_attribute_get_value(attribute))!=NULL){
-					strncpy(stream->dtls_fingerprint, value, sizeof(stream->dtls_fingerprint)-1);
-				} else {
-					/* no valid stream attributes, get them from session */
-					if (stream->dtls_role == SalDtlsRoleInvalid) stream->dtls_role = md->dtls_role;
-					strncpy(stream->dtls_fingerprint, md->dtls_fingerprint, strlen(md->dtls_fingerprint)+1);
-				}
+				strncpy(stream->dtls_fingerprint, belle_sdp_attribute_get_value(attribute),sizeof(stream->dtls_fingerprint));
 			}
-		} else { /* no setup attribute found in the stream, get the one from the session */
-			stream->dtls_role = md->dtls_role;
-			strncpy(stream->dtls_fingerprint, md->dtls_fingerprint, strlen(md->dtls_fingerprint)+1);
 		}
 	}
 
@@ -849,26 +822,30 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 		desc->dir=SalStreamInactive;
 	}
 
-	/* Read dtls specific session attributes if any (setup and fingerprint - rfc5763) */
-	/* Presence of a valid dtls offer(setup and fingerprint attribute) is set in media Description by a dtls_fingerprint string longer than 0
-	 * and a dtls_role != SalDtlsRoleInvalid */
-	desc->dtls_role = SalDtlsRoleInvalid;
-	desc->dtls_fingerprint[0] = '\0';
+	/*DTLS attributes can be defined at session level.*/
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"setup");
 	if (value){
+		SalDtlsRole session_role;
 		if (strncmp(value, "actpass", 7) == 0) {
-			desc->dtls_role = SalDtlsRoleUnset;
+			session_role = SalDtlsRoleUnset;
 		} else if (strncmp(value, "active", 6) == 0) {
-			desc->dtls_role = SalDtlsRoleIsClient;
+			session_role = SalDtlsRoleIsClient;
 		} else if (strncmp(value, "passive", 7) == 0) {
-			desc->dtls_role = SalDtlsRoleIsServer;
+			session_role = SalDtlsRoleIsServer;
 		}
+		value=belle_sdp_session_description_get_attribute_value(session_desc,"fingerprint");
+		if (value){
+			int i;
+			/*copy dtls attributes to every streams, might be overwritten stream by stream*/
+			for (i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++) {
+				strncpy(desc->streams[i].dtls_fingerprint, value, sizeof(desc->streams[i].dtls_fingerprint));
+				desc->streams[i].dtls_role=session_role;
+			}
+		}
+
 	}
 
-	value=belle_sdp_session_description_get_attribute_value(session_desc,"fingerprint");
-	if (value){
-		strncpy(desc->dtls_fingerprint, value, sizeof(desc->dtls_fingerprint)-1);
-	}
+
 
 	/* Get ICE remote ufrag and remote pwd, and ice_lite flag */
 	value=belle_sdp_session_description_get_attribute_value(session_desc,"ice-ufrag");
