@@ -168,6 +168,15 @@ filelist: zip
 		fi \
 	done
 
+### LOCALIZATION
+
+pull-transifex:
+	tx pull -af
+	$(MAKE) -C po update-po
+
+push-transifex:
+	tx push -s -t -f
+
 
 ### WINDOWS
 
