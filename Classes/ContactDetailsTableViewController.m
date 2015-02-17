@@ -55,14 +55,6 @@
 
 @implementation ContactDetailsTableViewController
 
-typedef enum _ContactSections {
-    ContactSections_None = 0,
-    ContactSections_Number,
-    ContactSections_Sip,
-    ContactSections_Email,
-    ContactSections_MAX
-} ContactSections_e;
-
 static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number, ContactSections_Sip, ContactSections_Email};
 
 @synthesize footerController;
@@ -124,6 +116,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     [super viewDidLoad];
     [headerController view]; // Force view load
     [footerController view]; // Force view load
+    
+    self.tableView.accessibilityIdentifier = @"Contact numbers table";
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

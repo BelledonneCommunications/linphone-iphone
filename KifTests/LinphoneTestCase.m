@@ -17,7 +17,7 @@
 + (void)initialize {
 	// default is 0.01, which sometimes confuses the simulator to the point that
 	// it will miss some keys
-	[KIFTypist setKeystrokeDelay:0.1];
+	[KIFTypist setKeystrokeDelay:0.05];
 }
 
 - (NSString *)accountUsername {
@@ -30,6 +30,14 @@
 
 - (NSString*)getUUID {
     return [[NSUUID UUID] UUIDString];
+}
+
+- (NSArray *)getUUIDArrayOfSize:(size_t)size {
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:size];
+    for (NSInteger i=0; i<size; i++) {
+        [array setObject:[self getUUID] atIndexedSubscript:i];
+    }
+    return array;
 }
 
 - (void)beforeAll{
