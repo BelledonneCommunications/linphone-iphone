@@ -1,3 +1,4 @@
+wbelle_sip
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
@@ -64,7 +65,7 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>belle-sip.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>belle-sip_no_tunnel.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
     </Link>
