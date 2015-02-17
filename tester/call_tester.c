@@ -3072,7 +3072,7 @@ static void multiple_early_media(void) {
 	marie2_call=linphone_core_get_current_call(marie2->lc);
 
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,3000);
+	wait_for_list(lcs,&dummy,1,6000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
@@ -3085,18 +3085,18 @@ static void multiple_early_media(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
 
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,1000);
+	wait_for_list(lcs,&dummy,1,3000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
 
 	/*send an INFO in reverse side to check that dialogs are properly established*/
 	info=linphone_core_create_info_message(marie1->lc);
 	linphone_call_send_info_message(marie1_call,info);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_inforeceived,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_inforeceived,1,3000));
 
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,3000));
 
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie1);

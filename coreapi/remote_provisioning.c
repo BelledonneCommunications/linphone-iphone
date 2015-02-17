@@ -62,9 +62,9 @@ static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml
 
 int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
 	int status = -1;
-	FILE* f = fopen(file_path, "r");
+	FILE* f = fopen(file_path, "rb");
 
-	if( f ){
+	if ( f ){
 		long fsize;
 		char* provisioning;
 

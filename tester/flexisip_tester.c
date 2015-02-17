@@ -464,7 +464,7 @@ static void call_forking_with_push_notification_multiple(void){
 	linphone_core_manager_destroy(marie2);
 }
 
-void call_forking_not_responded(void){
+static void call_forking_not_responded(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -551,7 +551,7 @@ static void early_media_call_forking(void) {
 	marie2_call=linphone_core_get_current_call(marie2->lc);
 	
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,3000);
+	wait_for_list(lcs,&dummy,1,6000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>60
 					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<99);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>60
@@ -663,6 +663,9 @@ static void call_with_ipv6(void) {
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
 
+	/*calling ortp_init() here is done to have WSAStartup() done, otherwise liblinphone_tester_ipv6_available() will not work.*/
+	ortp_init();
+	
 	if (!liblinphone_tester_ipv6_available()){
 		ms_warning("Call with ipv6 not tested, no ipv6 connectivity");
 		return;
@@ -708,6 +711,7 @@ static void call_with_ipv6(void) {
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
+	ortp_exit();
 }
 
 test_t flexisip_tests[] = {
