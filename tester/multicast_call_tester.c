@@ -96,15 +96,6 @@ static void early_media_with_multicast_base(bool_t video) {
 	int begin;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
-	
-#ifdef WIN32
-	/*
-	 * "Do not call IP_ADD_MEMBERSHIP with the same group more than once on the same network interface."
-	 * https://msdn.microsoft.com/en-us/library/windows/desktop/ms739174%28v=vs.85%29.aspx
-	*/
-	ms_warning("Call forking with multicast can't be tested on windows, test skipped");
-	return;
-#endif
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
