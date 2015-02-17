@@ -2313,7 +2313,20 @@ static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *ca
 	}
 	rtp_session_configure_rtcp_xr(session, &currentconfig);
 }
-
+void static start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
+	if (sal_stream_description_has_dtls(sd) == TRUE) {
+		/*DTLS*/
+		SalDtlsRole salRole = sd->dtls_role;
+		if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
+			/* give the peer certificate fingerprint to dtls context */
+			ms_dtls_srtp_set_peer_fingerprint(sessions->dtls_context, remote->dtls_fingerprint);
+			ms_dtls_srtp_set_role(sessions->dtls_context, (salRole == SalDtlsRoleIsClient)?MSDtlsSrtpRoleIsClient:MSDtlsSrtpRoleIsServer); /* set the role to client */
+			ms_dtls_srtp_start(sessions->dtls_context);  /* then start the engine, it will send the DTLS client Hello */
+		} else {
+			ms_warning("unable to start DTLS engine on stream session [%p], Dtls role in resulting media description is invalid",sessions);
+		}
+	}
+}
 static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	LpConfig* conf;
@@ -2436,25 +2449,9 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			if (send_ringbacktone){
 				setup_ring_player(lc,call);
 			}
-
-			if (sal_stream_description_has_dtls(stream) == TRUE) {
-				/* DTLS engine was already initialised during stream init. Before starting it we must be sure that the role(client or server) is set.
-				 * Role may have already been set to server if we initiate the call and already received a packet from peer, in that case do nothing */
-				SalDtlsRole salRole = stream->dtls_role;
-				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
-					/* give the peer certificate fingerprint to dtls context */
-					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-					ms_dtls_srtp_set_peer_fingerprint(call->audiostream->ms.sessions.dtls_context, remote_desc->streams[0].dtls_fingerprint);
-				} else {
-					ms_warning("unable to start DTLS engine on audiostream, Dtls role in resulting media description is invalid\n");
-				}
-				if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
-					ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
-					ms_dtls_srtp_start(call->audiostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
-				} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
-					ms_dtls_srtp_set_role(call->audiostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
-					/* no need to start engine, we are waiting for DTLS Client Hello */
-				}
+			{
+				SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+				start_dtls(&call->audiostream->ms.sessions,stream,&remote_desc->streams[0]);
 			}
 
 			if (call->params->in_conference){
@@ -2582,24 +2579,11 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 									   used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				}
 			}
-			if (sal_stream_description_has_dtls(vstream) == TRUE) {
-				/*DTLS*/
-				SalDtlsRole salRole = vstream->dtls_role;
-				if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
-					/* give the peer certificate fingerprint to dtls context */
-					SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-					ms_dtls_srtp_set_peer_fingerprint(call->videostream->ms.sessions.dtls_context, remote_desc->streams[1].dtls_fingerprint);
-				} else {
-					ms_warning("unable to start DTLS engine on videostream, Dtls role in resulting media description is invalid\n");
-				}
-				if (salRole == SalDtlsRoleIsClient) { /* local endpoint is client */
-					ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsClient); /* set the role to client */
-					ms_dtls_srtp_start(call->videostream->ms.sessions.dtls_context);  /* then start the engine, it will send the DTLS client Hello */
-				} else if (salRole == SalDtlsRoleIsServer) { /* local endpoint is server */
-					ms_dtls_srtp_set_role(call->videostream->ms.sessions.dtls_context, MSDtlsSrtpRoleIsServer); /* this may complete the server setup */
-					/* no need to start engine, we are waiting for DTLS Client Hello */
-				}
+			{
+				SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+				start_dtls(&call->videostream->ms.sessions,vstream,&remote_desc->streams[1]);
 			}
+
 		}else ms_warning("No video stream accepted.");
 	}else{
 		ms_message("No valid video stream defined.");
@@ -2710,6 +2694,10 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	if (call->audiostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->audiostream->ms)){
 	}
+	if (call->audiostream) {
+		SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+		start_dtls(&call->audiostream->ms.sessions,&new_md->streams[0],&remote_desc->streams[0]);
+	}
 
 #ifdef VIDEO_ENABLED
 	local_st_desc = sal_media_description_find_secure_stream_of_type(call->localdesc, SalVideo);
@@ -2717,6 +2705,10 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_secure_stream_of_type(new_md, SalVideo);
 	if (call->videostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->videostream->ms)){
+	}
+	if (call->videostream) {
+		SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+		start_dtls(&call->videostream->ms.sessions,&new_md->streams[1],&remote_desc->streams[1]);
 	}
 #endif
 }
@@ -3285,7 +3277,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
 				ice_session_select_candidates(call->ice_session);
-				if (ice_session_role(call->ice_session) == IR_Controlling) {
+				if (ice_session_role(call->ice_session) == IR_Controlling
+						&& lp_config_get_int(call->core->config, "sip", "update_call_when_ice_completed", TRUE)) {
 					linphone_core_update_call(call->core, call, params);
 				}
 				change_ice_media_destinations(call);
