@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>belle-sip_no_tunnel.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>belle-sip_no_tunnel.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;libxml2.lib;sqlite.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
     </Link>
@@ -82,6 +82,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
