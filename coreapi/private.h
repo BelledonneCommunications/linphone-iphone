@@ -203,6 +203,8 @@ typedef struct StunCandidate{
 
 typedef struct _PortConfig{
 	char multicast_ip[LINPHONE_IPADDR_SIZE];
+	int mcast_rtp_port;
+	int mcast_rtcp_port;
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;

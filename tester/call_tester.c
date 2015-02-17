@@ -3272,7 +3272,7 @@ static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_STRING_EQUAL("PCMA",linphone_payload_type_get_mime_type(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))));
-	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth>70);
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
 
