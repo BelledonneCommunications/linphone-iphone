@@ -555,14 +555,11 @@ static void transfer_already_assigned_payload_types(SalMediaDescription *old, Sa
 
 static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *bind_ip=call->af==AF_INET6 ? "::0" : "0.0.0.0";
-	
+
 	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
-			 /*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
+			/*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
 			bind_ip=call->localip;
-		}else{
-			/*as receiver, just bind to the multicast address*/
-			bind_ip=call->media_ports[stream_index].multicast_ip;
 		}
 	}
 	return bind_ip;
@@ -1003,8 +1000,8 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 		if (md->streams[i].rtp_addr[i]!='\0' && ms_is_multicast(md->streams[i].rtp_addr)) {
 			strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
 			ms_message("Disabling rtcp on call [%p], stream [%i] because of multicast",call,i);
-			call->media_ports[i].rtp_port=md->streams[i].rtp_port;
-			call->media_ports[i].rtcp_port=0;
+			call->media_ports[i].mcast_rtp_port=md->streams[i].rtp_port;
+			call->media_ports[i].mcast_rtcp_port=0;
 		}
 	}
 }
@@ -1844,7 +1841,12 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	return 0;
 }
 
-
+/*eventually join to a multicast group if told to do so*/
+static void linphone_call_join_multicast_group(LinphoneCall *call, int stream_index, MediaStream *ms){
+	if (call->media_ports[stream_index].multicast_ip[stream_index]!='\0' && call->media_ports[stream_index].mcast_rtp_port!=0){
+		media_stream_join_multicast_group(ms, call->media_ports[stream_index].multicast_ip);
+	}
+}
 
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
@@ -1859,7 +1861,10 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if (call->audiostream != NULL) return;
 	if (call->sessions[0].rtp_session==NULL){
 		call->audiostream=audiostream=audio_stream_new2(linphone_call_get_bind_ip_for_stream(call,0),
-				call->media_ports[0].rtp_port, call->media_ports[0].rtcp_port);
+				call->media_ports[0].mcast_rtp_port ? call->media_ports[0].mcast_rtp_port : call->media_ports[0].rtp_port, 
+				call->media_ports[0].mcast_rtcp_port ? call->media_ports[0].mcast_rtcp_port : call->media_ports[0].rtcp_port);
+		linphone_call_join_multicast_group(call, 0, &audiostream->ms);
+		
 		cname = linphone_address_as_string_uri_only(call->me);
 		audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 		ms_free(cname);
@@ -1965,7 +1970,9 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 		if (call->sessions[1].rtp_session==NULL){
 			call->videostream=video_stream_new2(linphone_call_get_bind_ip_for_stream(call,1),
-					call->media_ports[1].rtp_port,call->media_ports[1].rtcp_port);
+				call->media_ports[1].mcast_rtp_port>0 ?  call->media_ports[1].mcast_rtp_port : call->media_ports[1].rtp_port,
+				call->media_ports[1].mcast_rtcp_port>0 ? call->media_ports[1].mcast_rtcp_port : call->media_ports[1].rtcp_port);
+			linphone_call_join_multicast_group(call, 1, &call->videostream->ms);
 			cname = linphone_address_as_string_uri_only(call->me);
 			video_stream_set_rtcp_information(call->videostream, cname, rtcp_tool);
 			ms_free(cname);
