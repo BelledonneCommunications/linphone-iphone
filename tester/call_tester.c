@@ -1584,6 +1584,11 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 		linphone_core_set_video_policy(pauline->lc,&pauline_policy);
 	}
 
+	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
+		marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", liblinphone_tester_file_prefix);
+		pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", liblinphone_tester_file_prefix);
+	}
+
 	linphone_core_set_media_encryption(marie->lc,mode);
 	linphone_core_set_media_encryption(pauline->lc,mode);
 
