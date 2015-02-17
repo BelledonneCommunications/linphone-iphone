@@ -2747,6 +2747,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getPlayer(JNIEnv *env, 
 	return (jlong)linphone_call_get_player((LinphoneCall *)callPtr);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_mediaInProgress(	JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong ptr) {
+	return (jboolean) linphone_call_media_in_progress((LinphoneCall*)ptr);
+}
+
 //LinphoneFriend
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env
 																		,jobject  thiz

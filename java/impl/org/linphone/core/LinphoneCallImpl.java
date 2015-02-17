@@ -43,6 +43,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native int getDuration(long nativePtr);
 	private native float getCurrentQuality(long nativePtr);
 	private native float getAverageQuality(long nativePtr);
+	private native boolean mediaInProgress(long nativePtr);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
@@ -167,6 +168,8 @@ class LinphoneCallImpl implements LinphoneCall {
 		return params.localConferenceMode();
 	}
 
+	public boolean mediaInProgress() { return mediaInProgress(nativePtr);}
+
 	@Override
 	public String toString() {
 		return "Call " + nativePtr;
@@ -251,4 +254,5 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphonePlayer getPlayer() {
 		return new LinphonePlayerImpl(getPlayer(nativePtr));
 	}
+
 }
