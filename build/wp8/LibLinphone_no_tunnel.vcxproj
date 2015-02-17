@@ -177,7 +177,7 @@
     <ProjectReference Include="..\..\..\bcg729\build\wp8\bcg729\bcg729.vcxproj">
       <Project>{1db09afe-fc9b-472e-a746-0e33f8ef8883}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip.vcxproj">
+    <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip_no_tunnel.vcxproj">
       <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\msamr\build\wp8\msamr\msamr.vcxproj">
