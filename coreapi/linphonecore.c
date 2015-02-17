@@ -5747,6 +5747,10 @@ void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
+const char * linphone_core_get_play_file(const LinphoneCore *lc) {
+	return lc->play_file;
+}
+
 /**
  * Sets a wav file to be played when putting somebody on hold,
  * or when files are used instead of soundcards (see linphone_core_set_use_files()).
@@ -5769,6 +5773,9 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 }
 
+const char * linphone_core_get_record_file(const LinphoneCore *lc) {
+	return lc->rec_file;
+}
 
 /**
  * Sets a wav file where incoming stream is to be recorded,

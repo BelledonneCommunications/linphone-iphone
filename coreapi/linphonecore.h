@@ -3006,7 +3006,32 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 #define linphone_core_use_files(lc, yesno) linphone_core_set_use_files(lc, yesno)
 /*play/record support: use files instead of soundcard*/
 LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno);
+
+/**
+ * Get the wav file that is played when putting somebody on hold,
+ * or when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * The file is a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @return The path to the file that is played when putting somebody on hold.
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_play_file(const LinphoneCore *lc);
+
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
+
+/**
+ * Get the wav file where incoming stream is recorded,
+ * when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * This feature is different from call recording (linphone_call_params_set_record_file())
+ * The file is a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @return The path to the file where incoming stream is recorded.
+**/
+LINPHONE_PUBLIC const char * linphone_core_get_record_file(const LinphoneCore *lc);
+
 LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
