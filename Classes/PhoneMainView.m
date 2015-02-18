@@ -325,6 +325,7 @@ static RootViewManager* rootViewManagerInstance = nil;
     
 	switch (state) {					
 		case LinphoneCallIncomingReceived: 
+        case LinphoneCallIncomingEarlyMedia:
         {
 			[self displayIncomingCall:call];
 			break;
