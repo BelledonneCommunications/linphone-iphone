@@ -54,7 +54,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;$(ProjectDir)..\..\..\sqlite\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR=".";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
