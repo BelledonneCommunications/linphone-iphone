@@ -127,7 +127,6 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
-		877ED6FD21D0CFEFA7E2A40A /* libPods-KifTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FE76362DA6217E7341ED1DF /* libPods-KifTests.a */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */; };
 		C9C8254315AE204D00D493FA /* options_add_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8253F15AE204D00D493FA /* options_add_disabled.png */; };
 		C9C8254515AE204D00D493FA /* options_transfer_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8254015AE204D00D493FA /* options_transfer_disabled.png */; };
@@ -774,6 +773,7 @@
 		F0C1F9211A2CA35A009402C9 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
 		F0C1F9221A2CA35C009402C9 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
 		F0C1F9231A2CA35E009402C9 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
+		F0C773921A94828900E0C486 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C773871A94822700E0C486 /* libKIF.a */; };
 		F0F952121A6AECD300254160 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F952111A6AECD300254160 /* WizardTester.m */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BC1939FE37006ABAB5 /* test_failed.png */; };
@@ -819,6 +819,48 @@
 			proxyType = 1;
 			remoteGlobalIDString = F0BB8BD41936208100974404;
 			remoteInfo = LinphoneTester;
+		};
+		F0C773861A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46AA1857A0C700A5F081;
+			remoteInfo = KIF;
+		};
+		F0C773881A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB72047C1680DDAD00278DA2;
+			remoteInfo = "KIF-OCUnit";
+		};
+		F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECC1177F8C83005A041A;
+			remoteInfo = "Test Host";
+		};
+		F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46CD1857A0F300A5F081;
+			remoteInfo = "KIF Tests";
+		};
+		F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECEB177F8DB3005A041A;
+			remoteInfo = "KIF Tests-OCUnit";
+		};
+		F0C773901A94827E00E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EABD46791857A0C700A5F081;
+			remoteInfo = KIF;
 		};
 		F0F952061A6AEB1000254160 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1783,6 +1825,7 @@
 		F0C1F90A1A28781F009402C9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		F0C1F90B1A28781F009402C9 /* strech-bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-bottom.png"; sourceTree = "<group>"; };
 		F0C1F90C1A28781F009402C9 /* strech-top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-top.png"; sourceTree = "<group>"; };
+		F0C7737D1A94822600E0C486 /* KIF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KIF.xcodeproj; path = Classes/KIF/KIF.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F0F952001A6AEB1000254160 /* KifTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KifTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0F952031A6AEB1000254160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0F952111A6AECD300254160 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
@@ -1925,7 +1968,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				877ED6FD21D0CFEFA7E2A40A /* libPods-KifTests.a in Frameworks */,
+				F0C773921A94828900E0C486 /* libKIF.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3015,9 +3058,22 @@
 			path = Resources/launchscreen;
 			sourceTree = "<group>";
 		};
+		F0C7737E1A94822600E0C486 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F0C773871A94822700E0C486 /* libKIF.a */,
+				F0C773891A94822700E0C486 /* libKIF-OCUnit.a */,
+				F0C7738B1A94822700E0C486 /* Test Host.app */,
+				F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */,
+				F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F0F952011A6AEB1000254160 /* KifTests */ = {
 			isa = PBXGroup;
 			children = (
+				F0C7737D1A94822600E0C486 /* KIF.xcodeproj */,
 				F0F952021A6AEB1000254160 /* Supporting Files */,
 				F0F952111A6AECD300254160 /* WizardTester.m */,
 				F0A1CE091A6B05A4001CA2BE /* WizardTester.h */,
@@ -3104,15 +3160,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "KifTests" */;
 			buildPhases = (
-				0B22B73E22C69EAFDC887972 /* Check Pods Manifest.lock */,
 				F0F951FC1A6AEB1000254160 /* Sources */,
 				F0F951FD1A6AEB1000254160 /* Frameworks */,
 				F0F951FE1A6AEB1000254160 /* Resources */,
-				44F0A710CE6C6548D01CE14B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F0C773911A94827E00E0C486 /* PBXTargetDependency */,
 				F0F952071A6AEB1000254160 /* PBXTargetDependency */,
 			);
 			name = KifTests;
@@ -3164,6 +3219,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F0C7737E1A94822600E0C486 /* Products */;
+					ProjectRef = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+				},
+				{
 					ProductGroup = D3B90E1215C2CB5700F64F8C /* Products */;
 					ProjectRef = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 				},
@@ -3195,6 +3254,41 @@
 			fileType = archive.ar;
 			path = libNinePatch.a;
 			remoteRef = D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C773871A94822700E0C486 /* libKIF.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libKIF.a;
+			remoteRef = F0C773861A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C773891A94822700E0C486 /* libKIF-OCUnit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libKIF-OCUnit.a";
+			remoteRef = F0C773881A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738B1A94822700E0C486 /* Test Host.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Test Host.app";
+			remoteRef = F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests - XCTest.xctest";
+			remoteRef = F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests-OCUnit.octest";
+			remoteRef = F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3797,36 +3891,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0B22B73E22C69EAFDC887972 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		44F0A710CE6C6548D01CE14B /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-KifTests/Pods-KifTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4023,6 +4087,11 @@
 			isa = PBXTargetDependency;
 			target = F0BB8BD41936208100974404 /* LinphoneTester */;
 			targetProxy = F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */;
+		};
+		F0C773911A94827E00E0C486 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KIF;
+			targetProxy = F0C773901A94827E00E0C486 /* PBXContainerItemProxy */;
 		};
 		F0F952071A6AEB1000254160 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5187,7 +5256,6 @@
 		};
 		F0F952081A6AEB1000254160 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5223,6 +5291,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5231,7 +5305,6 @@
 		};
 		F0F952091A6AEB1000254160 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5261,6 +5334,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5270,7 +5349,6 @@
 		};
 		F0F9520A1A6AEB1000254160 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5300,6 +5378,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5309,7 +5393,6 @@
 		};
 		F0F9520B1A6AEB1000254160 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5339,6 +5422,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";

@@ -10,7 +10,7 @@
 
 #import "LinphoneManager.h"
 
-#import <KIFTypist.h>
+#import "KIF/KIFTypist.h"
 
 @implementation LinphoneTestCase
 
