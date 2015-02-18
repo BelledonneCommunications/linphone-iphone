@@ -845,6 +845,10 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 
 		cr->remote_is_composing = state;
 		linphone_core_notify_is_composing_received(cr->lc, cr);
+		linphone_free_xml_text_content(state_str);
+	}
+	if (refresh_str != NULL) {
+		linphone_free_xml_text_content(refresh_str);
 	}
 }
 
