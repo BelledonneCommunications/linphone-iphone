@@ -169,9 +169,9 @@ static void tunnel_zrtp_video_ice_call(void) {
 }
 
 static void tunnel_dtls_video_ice_call(void) {
-	if (linphone_core_tunnel_available())
+/*	if (linphone_core_tunnel_available())
 		call_base(LinphoneMediaEncryptionDTLS,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
-	else
+	else*/
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 
