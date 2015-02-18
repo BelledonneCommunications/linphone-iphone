@@ -18,23 +18,23 @@
     [super beforeAll];
     [self switchToValidAccountIfNeeded];
     
-    [tester tapViewWithAccessibilityLabel:@"Chat"];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Chat")];
 }
 
 #pragma mark - tools
 
 - (void)goBackFromChat {
-    [tester tapViewWithAccessibilityLabel:@"Back"];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Back")];
 }
 
 - (void)startChatWith:(NSString*)user {
-    [tester enterText:user intoViewWithAccessibilityLabel:@"Enter a address"];
-    [tester tapViewWithAccessibilityLabel:@"New Discussion"];
+    [tester enterText:user intoViewWithAccessibilityLabel:LOCALIZED(@"Enter a address")];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"New Discussion")];
 }
 
 - (void)sendMessage:(NSString*)message {
-    [tester enterText:message intoViewWithAccessibilityLabel:@"Message field"];
-    [tester tapViewWithAccessibilityLabel:@"Send"];
+    [tester enterText:message intoViewWithAccessibilityLabel:LOCALIZED(@"Message field")];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Send")];
 }
 
 
@@ -45,10 +45,10 @@
     
     [self sendMessage:@"Hello"];
     
-    [tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-    [tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
+    [tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Outgoing message") value:@"Hello" traits:UIAccessibilityTraitStaticText];
+    [tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Incoming message") value:@"Hello" traits:UIAccessibilityTraitStaticText];
     
-    [tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
+    [tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Message status") value:@"delivered" traits:UIAccessibilityTraitImage];
     
     [self goBackFromChat];
 }
@@ -57,8 +57,8 @@
     
     [self startChatWith:@"sip://toto"];
     
-    [tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
-    [tester tapViewWithAccessibilityLabel:@"Cancel"];
+    [tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Invalid address") traits:UIAccessibilityTraitStaticText];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Cancel")];
 }
 
 -(void)testSendToSIPAddress{
@@ -66,7 +66,7 @@
     
     [self startChatWith:sipAddr];
     
-    [tester waitForViewWithAccessibilityLabel:@"Contact name" value:@"testios" traits:0];
+    [tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Contact name") value:@"testios" traits:0];
     
     [self goBackFromChat];
 }
@@ -78,11 +78,11 @@
     [self startChatWith:user];
     [self sendMessage:@"Hello Bro"];
     
-    [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Edit") traits:UIAccessibilityTraitButton];
     
-    [tester tapViewWithAccessibilityLabel:@"Delete message"];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Delete message")];
     
-    [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
+    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Edit") traits:UIAccessibilityTraitButton];
     
 
    

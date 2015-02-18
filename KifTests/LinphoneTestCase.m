@@ -91,23 +91,23 @@ static bool invalidAccount = true;
     
     if( invalidAccount && ! [self hasValidProxyConfig] ){
         
-        [tester tapViewWithAccessibilityLabel:@"Settings"];
-        [tester tapViewWithAccessibilityLabel:@"Run assistant"];
+        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Settings")];
+        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Wizard")];
         [tester waitForTimeInterval:0.5];
-        if( [tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]){
-            [tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
+        if( [tester tryFindingViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard") error:nil]){
+            [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard")];
             [tester waitForTimeInterval:0.5];
         }
         
         NSLog(@"Switching to a valid account");
         
-        [tester tapViewWithAccessibilityLabel:@"Start"];
-        [tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
+        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Start")];
+        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Sign in linphone.org account")];
         
-        [tester enterText:@"testios" intoViewWithAccessibilityLabel:@"Username"];
-        [tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];
+        [tester enterText:@"testios" intoViewWithAccessibilityLabel:LOCALIZED(@"Username")];
+        [tester enterText:@"testtest" intoViewWithAccessibilityLabel:LOCALIZED(@"Password")];
         
-        [tester tapViewWithAccessibilityLabel:@"Sign in"];
+        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Sign in")];
         
         invalidAccount = false;
     }

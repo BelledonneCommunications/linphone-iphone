@@ -8,6 +8,8 @@
 
 #import <KIF/KIF.h>
 
+#define LOCALIZED(X) NSLocalizedString(X, nil)
+
 @interface LinphoneTestCase : KIFTestCase
 @property BOOL invalidAccountSet;
 
