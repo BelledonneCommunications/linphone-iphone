@@ -225,7 +225,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     } else {
         [editButton setHidden:TRUE];
     }
-    }   
+}
 
 #pragma mark - UICompositeViewDelegate Functions
 

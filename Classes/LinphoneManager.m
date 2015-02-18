@@ -585,10 +585,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 
 - (void)displayStatus:(NSString*) message {
 	// Post event
-	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-						   message, @"message",
-						   nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate object:self userInfo:dict];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate
+                                                        object:self
+                                                      userInfo:@{@"message":message}];
 }
 
 
@@ -788,10 +787,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		[self setupGSMInteraction];
 	}
 	// Post event
-	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-						   [NSValue valueWithPointer:call], @"call",
-						   [NSNumber numberWithInt:state], @"state",
-						   [NSString stringWithUTF8String:message], @"message", nil];
+    NSDictionary* dict = @{@"call":   [NSValue valueWithPointer:call],
+                           @"state":  [NSNumber numberWithInt:state],
+                           @"message":[NSString stringWithUTF8String:message]};
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
 }
 
