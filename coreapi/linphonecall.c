@@ -2334,6 +2334,21 @@ void static start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescrip
 		}
 	}
 }
+void static start_dtls_on_all_streams(LinphoneCall *call) {
+	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
+	if (call->audiostream && (media_stream_get_state((const MediaStream *)call->audiostream) == MSStreamStarted))/*dtls must start at the end of ice*/
+			start_dtls(&call->audiostream->ms.sessions
+							,sal_media_description_find_best_stream(result_desc,SalAudio)
+							,sal_media_description_find_best_stream(remote_desc,SalAudio));
+#if VIDEO_ENABLED
+	if (call->videostream && (media_stream_get_state((const MediaStream *)call->videostream) == MSStreamStarted))/*dtls must start at the end of ice*/
+			start_dtls(&call->videostream->ms.sessions
+						,sal_media_description_find_best_stream(result_desc,SalVideo)
+						,sal_media_description_find_best_stream(remote_desc,SalVideo));
+#endif
+	return;
+}
 static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	LpConfig* conf;
@@ -2455,10 +2470,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			}
 			if (send_ringbacktone){
 				setup_ring_player(lc,call);
-			}
-			{
-				SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-				start_dtls(&call->audiostream->ms.sessions,stream,&remote_desc->streams[0]);
 			}
 
 			if (call->params->in_conference){
@@ -2586,11 +2597,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 									   used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				}
 			}
-			{
-				SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-				start_dtls(&call->videostream->ms.sessions,vstream,&remote_desc->streams[1]);
-			}
-
 		}else ms_warning("No video stream accepted.");
 	}else{
 		ms_message("No valid video stream defined.");
@@ -2662,6 +2668,9 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 	if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed)) {
 		ice_session_start_connectivity_checks(call->ice_session);
+	} else {
+		/*should not start dtls until ice is completed*/
+		start_dtls_on_all_streams(call);
 	}
 
 }
@@ -2701,10 +2710,8 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	if (call->audiostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->audiostream->ms)){
 	}
-	if (call->audiostream) {
-		SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-		start_dtls(&call->audiostream->ms.sessions,&new_md->streams[0],&remote_desc->streams[0]);
-	}
+
+	start_dtls_on_all_streams(call);
 
 #ifdef VIDEO_ENABLED
 	local_st_desc = sal_media_description_find_secure_stream_of_type(call->localdesc, SalVideo);
@@ -2712,10 +2719,6 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_secure_stream_of_type(new_md, SalVideo);
 	if (call->videostream && local_st_desc && old_stream && new_stream &&
 		update_stream_crypto_params(call,local_st_desc,old_stream,new_stream,&call->videostream->ms)){
-	}
-	if (call->videostream) {
-		SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
-		start_dtls(&call->videostream->ms.sessions,&new_md->streams[1],&remote_desc->streams[1]);
 	}
 #endif
 }
@@ -3289,6 +3292,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 					linphone_core_update_call(call->core, call, params);
 				}
 				change_ice_media_destinations(call);
+				start_dtls_on_all_streams(call);
 				break;
 			case IS_Failed:
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
