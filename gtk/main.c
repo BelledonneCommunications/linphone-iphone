@@ -49,6 +49,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <locale.h>
 #endif
 
+#include "coreapi/liblinphone_gitversion.h"
+
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 
@@ -561,7 +563,7 @@ void linphone_gtk_show_about(){
 		}
 		g_free(license);
 	}
-	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LINPHONE_VERSION);
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LIBLINPHONE_GIT_VERSION);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
 	if (logo)	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about),logo);
