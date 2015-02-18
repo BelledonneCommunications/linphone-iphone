@@ -3549,6 +3549,77 @@ static void call_with_paused_no_sdp_on_resume() {
 	}
 }
 
+
+static void call_with_183_and_no_sdp_in_200(){
+LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	MSList* lcs = NULL;
+	LinphoneCall* marie_call;
+	LinphoneCallParams* params = NULL;
+	LinphoneCallLog *marie_call_log;
+	uint64_t connected_time=0;
+	uint64_t ended_time=0;
+	int dummy=0;
+
+	lcs = ms_list_append(lcs,marie->lc);
+	lcs = ms_list_append(lcs,pauline->lc);
+	/*
+		Marie calls Pauline, and after the call has rung, transitions to an early_media session
+	*/
+	params = linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_enable_video(params, TRUE);
+
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, FALSE);
+
+	marie_call = linphone_core_invite_address_with_params(marie->lc, pauline->identity, params);
+	marie_call_log = linphone_call_get_call_log(marie_call);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+
+	if (linphone_core_inc_invite_pending(pauline->lc)) {
+		LinphoneCall* pauline_call = linphone_core_get_current_call(pauline->lc);
+
+		/* send a 183 to initiate the early media */
+		linphone_core_accept_early_media(pauline->lc, pauline_call);
+
+		CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+		CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+
+		liblinphone_tester_check_rtcp(marie, pauline);
+
+		// will send the 200OK _without_ SDP
+		sal_call_set_sdp_handling(pauline_call->op, SalOpSDPSimulateRemove);
+		linphone_core_accept_call(pauline->lc, pauline_call);
+
+		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
+		connected_time=ms_get_cur_time_ms();
+		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,3000));
+
+		ms_error("Streams running= %d", marie->stat.number_of_LinphoneCallStreamsRunning);
+
+		CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+
+		liblinphone_tester_check_rtcp(marie, pauline);
+		/*just to have a call duration !=0*/
+		wait_for_list(lcs,&dummy,1,2000);
+
+		linphone_core_terminate_all_calls(pauline->lc);
+
+		CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+		ended_time=ms_get_cur_time_ms();
+		CU_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time)) <=1000 );
+		ms_list_free(lcs);
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_generic_cn(void) {
 	int begin;
 	int leaked_objects;
@@ -3704,6 +3775,7 @@ test_t call_tests[] = {
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
 	{ "Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume },
+	{ "Call with 183 and no SDP on 200", call_with_183_and_no_sdp_in_200 },
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE without SDP",incoming_invite_without_sdp},

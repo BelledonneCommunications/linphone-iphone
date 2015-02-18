@@ -494,6 +494,14 @@ static void call_accepted(SalOp *op){
 		break;
 	}
 
+	if( (call->prevstate == LinphoneCallOutgoingEarlyMedia) && (md == NULL || sal_media_description_empty(md)) ){
+		/* media description is null or empty because no SDP was received in the 200 OK, we can possibly use the early-media SDP. */
+		if( call->resultdesc != NULL){
+			ms_message("Using early media SDP since none were received with the 200 OK");
+			md = call->resultdesc;
+		}
+	}
+
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
