@@ -392,19 +392,23 @@ static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session
 	const char *body;
 	belle_sip_header_content_type_t* content_type;
 
-	if (op&&op->sdp_removal){
-		ms_error("Removed willingly SDP because sal_call_enable_sdp_removal was set to TRUE.");
+	if (op&&op->sdp_handling == SalOpSDPSimulateError){
+		ms_error("Simulating SDP parsing error for op %p", op);
 		*session_desc=NULL;
 		*error=SalReasonNotAcceptable;
 		return -1;
+	} else if( op && op->sdp_handling == SalOpSDPSimulateRemove){
+		ms_error("Simulating no SDP for op %p", op);
+		*session_desc = NULL;
+		return 0;
 	}
-	
+
 	body = belle_sip_message_get_body(message);
 	if(body == NULL) {
 		*session_desc = NULL;
 		return 0;
 	}
-	
+
 	content_type = belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
 	if (content_type){
 		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
@@ -735,8 +739,14 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),op->base.local_media);
 		}else{
 
-			if (op->sdp_answer==NULL)
-				sdp_process(op);
+			if ( op->sdp_answer==NULL )
+			{
+				if( op->sdp_handling == SalOpSDPSimulateRemove ){
+					ms_warning("Simulating SDP removal in answer for op %p", op);
+				} else {
+					sdp_process(op);
+				}
+			}
 
 			if (op->sdp_answer){
 				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);

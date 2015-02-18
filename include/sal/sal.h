@@ -203,6 +203,11 @@ typedef enum {
 	SalMulticastSenderReceiver
 } SalMulticastRole;
 
+typedef enum {
+	SalOpSDPNormal = 0, /** No special handling for SDP */
+	SalOpSDPSimulateError, /** Will simulate an SDP parsing error */
+	SalOpSDPSimulateRemove /** Will simulate no SDP in the op */
+} SalOpSDPHandling;
 
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
@@ -682,11 +687,20 @@ void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 /* Call test API */
-/*willingly fails to parse SDP from received packets (INVITE and/or ACK) if value=true */
-/* First version: for all new SalOp created (eg. each incoming or outgoing call). Do not forget to reset previous value when you are done!*/
-void sal_default_enable_sdp_removal(Sal* h, bool_t enable) ;
+
+
+/**
+ * @brief Invoking this on the SAL will modify every subsequent SalOp to have a special handling for SDP.
+ * @details This is especially useful while testing, to simulate some specific behaviors, like missing SDP or an error in parsing.
+ *
+ * @warning Don't forget to reset the handling method to SalOpSDPNormal afterwards.
+ *
+ * @param h the Sal instance
+ * @param handling_method Could be SalOpSDPNormal, SalOpSDPSimulateError, SalOpSDPSimulateRemoval (\ref SalOpSDPHandling)
+ */
+void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) ;
 /* Second version: for a specific call*/
-void sal_call_enable_sdp_removal(SalOp *h, bool_t enable) ;
+void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);

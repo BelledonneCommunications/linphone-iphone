@@ -25,7 +25,7 @@ SalOp * sal_op_new(Sal *sal){
 	op->type=SalOpUnknown;
 	op->privacy=SalPrivacyNone;
 	op->manual_refresher=FALSE;/*tells that requests with expiry (SUBSCRIBE, PUBLISH) will be automatically refreshed*/
-	op->sdp_removal=sal->default_sdp_removal;
+	op->sdp_handling=sal->default_sdp_handling;
 	sal_op_ref(op);
 	return op;
 }
@@ -799,7 +799,7 @@ void sal_op_stop_refreshing(SalOp *op){
 	}
 }
 
-void sal_call_enable_sdp_removal(SalOp *h, bool_t enable)  {
-	if (enable) ms_message("Enabling SDP removal feature for SalOp[%p]!", h);
-	h->sdp_removal = enable;
+void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling)  {
+	if (handling != SalOpSDPNormal) ms_message("Enabling special SDP handling for SalOp[%p]!", h);
+	h->sdp_handling = handling;
 }

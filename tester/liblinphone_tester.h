@@ -93,12 +93,12 @@ extern const char* liblinphone_tester_get_xml_output(void);
 /**
  * @brief Tells the tester whether or not to clean the accounts it has created between runs.
  * @details Setting this to 1 will not clear the list of created accounts between successive
- * calls to liblinphone_run_tests(). Some testing APIs call this function for *each* test, 
+ * calls to liblinphone_run_tests(). Some testing APIs call this function for *each* test,
  * in which case we should keep the accounts that were created for further testing.
- * 
- * You are supposed to manually call liblinphone_tester_clear_account when all the tests are 
+ *
+ * You are supposed to manually call liblinphone_tester_clear_account when all the tests are
  * finished.
- * 
+ *
  * @param keep 1 to keep the accounts in-between runs, 0 to clear them after each run.
  */
 extern void liblinphone_tester_keep_accounts( int keep );
@@ -255,6 +255,7 @@ typedef struct _LinphoneCoreManager {
 typedef struct _LinphoneCallTestParams {
 	LinphoneCallParams *base;
 	bool_t sdp_removal;
+	bool_t sdp_simulate_error;
 } LinphoneCallTestParams;
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
