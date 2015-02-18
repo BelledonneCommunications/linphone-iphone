@@ -91,21 +91,9 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
 
 ## TESTING THE APPLICATION
 
-You need the cocoapods gem installed:
+We are using the KIF framework to test the UI of Linphone. It is used as a submodule (instead of CocoaPods) for ease.
 
-        sudo gem install cocoapods
-        pod setup # the first time that cocoapods is installed, not needed if you have it already
-        pod init
-
-This will install the KIF framework, which is used for testing:
-
-        pod install
-
-After this, you should open the xcworkspace instead of the xcodeproj
-
-        open linphone.xcworkspace
-
-Now, simply press `Command + U` and the default simulator will launch and try to pass all the tests.
+Simply press `Command + U` and the default simulator / device will launch and try to pass all the tests.
 
 
 ## LIMITATIONS, KNOWN BUGS
