@@ -676,7 +676,14 @@ LINPHONE_PUBLIC void *linphone_call_get_user_data(const LinphoneCall *call);
 **/
 LINPHONE_PUBLIC void linphone_call_set_user_data(LinphoneCall *call, void *ud);
 
+/**
+ * Get the core that has created the specified call.
+ * @param[in] call LinphoneCall object
+ * @return The LinphoneCore object that has created the specified call.
+ * @ingroup call_control
+ */
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
+
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 
