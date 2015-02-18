@@ -556,7 +556,7 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
  * @param[in]	generate_certificate		if true, if matching certificate and key can't be found, generate it and store it into the given dir, filename will be subject.pem
  * @param[in]	generate_dtls_fingerprint	if true and we have a certificate, generate the dtls fingerprint as described in rfc4572
  */
-void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint); 
+void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint);
 
 void sal_certificates_chain_delete(SalCertificatesChain *chain);
 void sal_signing_key_delete(SalSigningKey *key);
@@ -824,7 +824,7 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
 char* sal_op_get_public_uri(SalOp *sal);
 
-unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data); 
+unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data);
 void sal_end_background_task(unsigned long id);
 
 #endif

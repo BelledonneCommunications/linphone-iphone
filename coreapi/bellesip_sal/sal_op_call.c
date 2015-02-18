@@ -94,7 +94,7 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
 
 		/* try to marshal the description. This could go higher than 2k so we iterate */
 		while( error != BELLE_SIP_OK && bufLen <= hardlimit && buff != NULL){
- 			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
+			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
 			if( error != BELLE_SIP_OK ){
 				bufLen *= 2;
 				length  = 0;
