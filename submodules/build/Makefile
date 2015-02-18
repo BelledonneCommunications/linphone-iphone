@@ -96,6 +96,12 @@ simu-%:
 arm64:
 	make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) V=1 VERBOSE=1
 
+x64:
+	make -f builder-iphone-os.mk host=x86_64-apple-darwin $(LINPHONE_OPTIONS)
+
+x64-%:
+	make -f builder-iphone-os.mk host=x86_64-apple-darwin $(LINPHONE_OPTIONS) $* V=1 VERBOSE=1
+
 
 # sends the target after 'broadcast_' to all sub-architectures (armv7, simu, arm64)
 broadcast_%:

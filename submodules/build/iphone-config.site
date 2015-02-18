@@ -19,6 +19,11 @@ elif test "${host_alias}" = "aarch64-apple-darwin" ; then
 	ARCH=arm64
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"
+elif test "${host_alias}" = "x86_64-apple-darwin" ; then 
+	ARCH=x86_64
+	PLATFORM=Simulator
+	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=x86_64"
+	CLANG_TARGET_SPECIFIER=mios-simulator-version-min
 else 
 	echo "bad host ${host_alias} must be either i386-apple-darwin or arm[v7,64]-apple-darwin"
 	exit
