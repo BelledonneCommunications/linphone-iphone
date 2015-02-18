@@ -3550,7 +3550,7 @@ static void call_with_paused_no_sdp_on_resume() {
 }
 
 
-static void call_with_183_and_no_sdp_in_200(){
+static void call_with_early_media_and_no_sdp_in_200(){
 LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
@@ -3591,7 +3591,7 @@ LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 
 		liblinphone_tester_check_rtcp(marie, pauline);
 
-		// will send the 200OK _without_ SDP
+		/* will send the 200OK _without_ SDP. We expect the early-media SDP to be used instead */
 		sal_call_set_sdp_handling(pauline_call->op, SalOpSDPSimulateRemove);
 		linphone_core_accept_call(pauline->lc, pauline_call);
 
@@ -3775,7 +3775,7 @@ test_t call_tests[] = {
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
 	{ "Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume },
-	{ "Call with 183 and no SDP on 200", call_with_183_and_no_sdp_in_200 },
+	{ "Call with early media and no SDP on 200 Ok", call_with_early_media_and_no_sdp_in_200 },
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE with invalid SDP",incoming_invite_with_invalid_sdp},
