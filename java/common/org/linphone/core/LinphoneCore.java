@@ -787,6 +787,26 @@ public interface LinphoneCore {
 	int getPayloadTypeBitrate(PayloadType pt);
 
 	/**
+	 * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
+	 * @param pt the payload type
+	 * @param number target IP bitrate in kbit/s
+	 */
+
+	/**
+	 * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
+	 * to override the automatic assignment mechanism.
+	 * @param pt the payload type
+	 * @param number
+	 **/
+	void setPayloadTypeNumber(PayloadType pt, int number);
+
+	/**
+	 * @param pt the payload type
+	 * @return the payload type number assigned for this codec.
+	 */
+	int getPayloadTypeNumber(PayloadType pt);
+
+	/**
 	 * Enable adaptive rate control.
 	 * @param enable
 	 */
@@ -1889,6 +1909,11 @@ public interface LinphoneCore {
 	 * Upload the log collection to the configured server url.
 	 */
 	public void uploadLogCollection();
+
+	/**
+	 * Reset the log collection by removing the log files.
+	 */
+	public void resetLogCollection();
 	
 	
 	/**

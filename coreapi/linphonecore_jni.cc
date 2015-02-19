@@ -1200,6 +1200,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_uploadLogCollection(JNIE
 	linphone_core_upload_log_collection(core);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_resetLogCollection(JNIEnv* env, jobject thiz) {
+	linphone_core_reset_log_collection();
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_migrateToMultiTransport(JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
@@ -1603,6 +1607,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*
 	env->ReleaseStringUTFChars(jmime, mime);
 	return result;
 }
+
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTypes(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc) {
@@ -1673,6 +1678,21 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getPayloadTypeBitrate(JN
 																			,jlong lc
 																			,jlong pt) {
 	return (jint)linphone_core_get_payload_type_bitrate((LinphoneCore*)lc,(PayloadType*)pt);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPayloadTypeNumber(JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong lc
+                                                                            ,jlong pt
+                                                                            ,jint number) {
+    linphone_core_set_payload_type_number((LinphoneCore*)lc,(PayloadType*)pt,number);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getPayloadTypeNumber(JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong lc
+                                                                            ,jlong pt) {
+    return (jint)linphone_core_get_payload_type_number((LinphoneCore*)lc,(PayloadType*)pt);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableAdaptiveRateControl(JNIEnv*  env
