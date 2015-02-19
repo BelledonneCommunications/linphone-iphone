@@ -23,8 +23,8 @@ dial_escape_plus=0
 
 
 [rtp]
-audio_rtp_port=9010
-video_rtp_port=9012
+audio_rtp_port=9010-9390
+video_rtp_port=9410-9910
 
 [video]
 display=0
