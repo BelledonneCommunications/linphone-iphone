@@ -217,7 +217,8 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	dialog_state=dialog ? belle_sip_dialog_get_state(dialog) : BELLE_SIP_DIALOG_NULL;
 	method=belle_sip_request_get_method(req);
 	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,dialog,belle_sip_dialog_state_to_string(dialog_state));
-
+	/*to make sure no cb will destroy op*/
+	sal_op_ref(op);
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {
@@ -316,6 +317,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 		}
 		break;
 	}
+	sal_op_unref(op);
 }
 
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
