@@ -161,16 +161,19 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	if(g_strcmp0(from_message,from_str)!=0){
 		gtk_text_buffer_get_iter_at_offset(buffer,&iter,off);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,get_display_name(from),-1,"bold",me ? "bg":NULL,NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, get_display_name(from), -1,
+		                                         "bold", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter," : ",-1,"bold",me ? "bg":NULL,NULL);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter, " : ", -1,
+		                                         "bold", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_free(from_message);
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
-	gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,linphone_chat_message_get_text(msg),-1,"margin",me ? "bg":NULL,NULL);
+	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,
+	                                         "margin", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
@@ -378,21 +381,15 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *text=linphone_gtk_get_widget(chat_view,"textview");
-	GdkColor color;
-	GdkColor colorb;
+	GdkColor color_grey = {0, 32512, 32512, 32512};
+	GdkColor color_light_grey = {0, 56832, 60928, 61952};
+	GdkColor color_black = {0};
 	int idx;
 	GtkWidget *button;
 	GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
 	MSList *messages;
 	GHashTable *table;
 	char *with_str;
-
-	color.red = 32512;
-  	color.green = 32512;
-  	color.blue = 32512;
-	colorb.red = 56832;
-  	colorb.green = 60928;
-  	colorb.blue = 61952;
 
 	with_str=linphone_address_as_string_uri_only(with);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_WORD_CHAR);
@@ -417,11 +414,13 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 	                           	"small","size",9*PANGO_SCALE,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"font_grey","foreground-gdk",&color,NULL);
+	                           	"font_grey","foreground-gdk",&color_grey,NULL);
+	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+	                           	"font_black","foreground-gdk",&color_black,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 	                           	"margin","indent",10,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"bg","paragraph-background-gdk",&colorb,NULL);
+	                           	"bg","paragraph-background-gdk",&color_light_grey,NULL);
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");
