@@ -92,7 +92,7 @@ static bool invalidAccount = true;
     if( invalidAccount && ! [self hasValidProxyConfig] ){
         
         [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Settings")];
-        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Wizard")];
+		[tester tapViewWithAccessibilityLabel:@"Run assistant"];
         [tester waitForTimeInterval:0.5];
         if( [tester tryFindingViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard") error:nil]){
             [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard")];
