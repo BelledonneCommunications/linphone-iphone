@@ -2349,6 +2349,36 @@ void static start_dtls_on_all_streams(LinphoneCall *call) {
 #endif
 	return;
 }
+
+void static set_dtls_fingerprint( MSMediaStreamSessions *sessions,  const SalStreamDescription *sd,const SalStreamDescription *remote) {
+	if (sal_stream_description_has_dtls(sd) == TRUE) {
+		/*DTLS*/
+		SalDtlsRole salRole = sd->dtls_role;
+		if (salRole!=SalDtlsRoleInvalid) { /* if DTLS is available at both end points */
+			/* give the peer certificate fingerprint to dtls context */
+			ms_dtls_srtp_set_peer_fingerprint(sessions->dtls_context, remote->dtls_fingerprint);
+		} else {
+			ms_warning("unable to start DTLS engine on stream session [%p], Dtls role in resulting media description is invalid",sessions);
+		}
+	}
+}
+
+void static set_dtls_fingerprint_on_all_streams(LinphoneCall *call) {
+	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
+	if (call->audiostream && (media_stream_get_state((const MediaStream *)call->audiostream) == MSStreamStarted))/*dtls must start at the end of ice*/
+			set_dtls_fingerprint(&call->audiostream->ms.sessions
+							,sal_media_description_find_best_stream(result_desc,SalAudio)
+							,sal_media_description_find_best_stream(remote_desc,SalAudio));
+#if VIDEO_ENABLED
+	if (call->videostream && (media_stream_get_state((const MediaStream *)call->videostream) == MSStreamStarted))/*dtls must start at the end of ice*/
+			set_dtls_fingerprint(&call->videostream->ms.sessions
+						,sal_media_description_find_best_stream(result_desc,SalVideo)
+						,sal_media_description_find_best_stream(remote_desc,SalVideo));
+#endif
+	return;
+}
+
 static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	LpConfig* conf;
@@ -2665,6 +2695,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		call->current_params->media_encryption=linphone_call_all_streams_encrypted(call) ?
 		LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
+
+	set_dtls_fingerprint_on_all_streams(call);
 
 	if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed)) {
 		ice_session_start_connectivity_checks(call->ice_session);
