@@ -76,7 +76,7 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 static void _clear_early_media_destinations(LinphoneCall *call, MediaStream *ms){
 	RtpSession *session=ms->sessions.rtp_session;
 	rtp_session_clear_aux_remote_addr(session);
-	if (!call->ice_session) rtp_session_set_symmetric_rtp(session,TRUE);/*restore symmetric rtp if ICE is not used*/
+	if (!call->ice_session) rtp_session_set_symmetric_rtp(session,linphone_core_symmetric_rtp_enabled(call->core));/*restore symmetric rtp if ICE is not used*/
 }
 
 static void clear_early_media_destinations(LinphoneCall *call){

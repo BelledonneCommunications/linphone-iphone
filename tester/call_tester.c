@@ -240,7 +240,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
 	if(!linphone_core_get_current_call(caller_mgr->lc) || !linphone_core_get_current_call(callee_mgr->lc) || !linphone_core_get_current_call_remote_address(callee_mgr->lc)) {
 		return 0;
-	} else {
+	} else if (caller_mgr->identity){
 		LinphoneAddress* callee_from=linphone_address_clone(caller_mgr->identity);
 		linphone_address_set_port(callee_from,0); /*remove port because port is never present in from header*/
 
@@ -3678,7 +3678,67 @@ static void call_with_generic_cn(void) {
 	ms_free(audio_file_with_silence);
 	ms_free(recorded_file);
 }
+void static call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+	LCSipTransports sip_tr;
+	if (cstate==LinphoneCallReleased) {
+		/*to make sure transport is changed*/
+		sip_tr.udp_port = 0;
+		sip_tr.tcp_port = 45876;
+		sip_tr.tls_port = 0;
 
+		linphone_core_set_sip_transports(lc,&sip_tr);
+	}
+}
+
+static void call_with_transport_change_base(bool_t succesfull_call) {
+	int begin;
+	int leaked_objects;
+	LCSipTransports sip_tr;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCoreVTable * v_table;
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+	v_table = linphone_core_v_table_new();
+	v_table->call_state_changed=call_state_changed_2;
+	marie = linphone_core_manager_new("marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	linphone_core_add_listener(marie->lc,v_table);
+
+	sip_tr.udp_port = 0;
+	sip_tr.tcp_port = 45875;
+	sip_tr.tls_port = 0;
+	linphone_core_set_sip_transports(marie->lc,&sip_tr);
+	if (succesfull_call) {
+		CU_ASSERT_TRUE(call(marie,pauline));
+		linphone_core_terminate_all_calls(marie->lc);
+	}
+	else
+		linphone_core_invite(marie->lc,"nexiste_pas");
+
+	if (succesfull_call)
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1));
+	if (succesfull_call) {
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+
+}
+static void call_with_transport_change_after_released(void) {
+	call_with_transport_change_base(TRUE);
+}
+static void unsucessfull_call_with_transport_change_after_released(void) {
+	call_with_transport_change_base(FALSE);
+}
 
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
@@ -3782,7 +3842,9 @@ test_t call_tests[] = {
 	{ "Outgoing INVITE with invalid ACK SDP",outgoing_invite_with_invalid_sdp},
 	{ "Incoming REINVITE with invalid SDP in ACK",incoming_reinvite_with_invalid_ack_sdp},
 	{ "Outgoing REINVITE with invalid SDP in ACK",outgoing_reinvite_with_invalid_ack_sdp},
-	{ "Call with generic CN", call_with_generic_cn }
+	{ "Call with generic CN", call_with_generic_cn },
+	{ "Call with transport change after released", call_with_transport_change_after_released },
+	{ "Unsuccessful call with transport change after released",unsucessfull_call_with_transport_change_after_released}
 };
 
 test_suite_t call_test_suite = {

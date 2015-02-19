@@ -1792,7 +1792,6 @@ static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		IceCheckList *cl;
 		rtp_session_set_pktinfo(ms->sessions.rtp_session, TRUE);
-		rtp_session_set_symmetric_rtp(ms->sessions.rtp_session, FALSE);
 		cl=ice_session_check_list(call->ice_session, stream_index);
 		if (cl == NULL && create_checklist) {
 			cl=ice_check_list_new();
@@ -3283,6 +3282,7 @@ static void change_ice_media_destinations(LinphoneCall *call) {
         result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, 0), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
         if (result == TRUE) {
             ms_message("Change audio stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+            rtp_session_set_symmetric_rtp(call->audiostream->ms.sessions.rtp_session, FALSE);
             rtp_session_set_remote_addr_full(call->audiostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
         }
     }
@@ -3291,6 +3291,7 @@ static void change_ice_media_destinations(LinphoneCall *call) {
         result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, 1), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
         if (result == TRUE) {
             ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+            rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session, FALSE);
             rtp_session_set_remote_addr_full(call->videostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
         }
     }
