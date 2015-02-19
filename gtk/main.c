@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 #include "lpconfig.h"
+#include "liblinphone_gitversion.h"
 
 
 #include <sys/types.h>
@@ -49,7 +50,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <locale.h>
 #endif
 
-#include "coreapi/liblinphone_gitversion.h"
 
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;

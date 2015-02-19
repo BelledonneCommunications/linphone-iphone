@@ -207,15 +207,13 @@ make_gitversion_h:
 		else \
 			$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		fi ; \
-	else \
-		$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+		if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
+			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
+		fi ; \
+		if test "`cat $(builddir)/$(GITVERSION_FILE_TMP)`" != "`cat $(builddir)/$(GITVERSION_FILE)`" ; then \
+			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
+		fi ; \
+		rm -f $(builddir)/$(GITVERSION_FILE_TMP) ; \
 	fi
-	if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
-		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
-	fi
-	if test "`cat $(builddir)/$(GITVERSION_FILE_TMP)`" != "`cat $(builddir)/$(GITVERSION_FILE)`" ; then \
-		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
-	fi
-	rm -f $(builddir)/$(GITVERSION_FILE_TMP) ;
 
 $(GITVERSION_FILE): make_gitversion_h
