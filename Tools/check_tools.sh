@@ -18,7 +18,7 @@ check_installed() {
 cd $(dirname $0)/..
 
 #autoconf pkg-config java ant yasm nasm wget
-for prog in autoconf automake pkg-config doxygen antlr3 java nasm gettext wget yasm optipng; do
+for prog in autoconf automake pkg-config doxygen java nasm gettext wget yasm optipng; do
 	check_installed "$prog" "it"
 done
 
