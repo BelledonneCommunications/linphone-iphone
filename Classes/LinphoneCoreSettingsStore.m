@@ -200,7 +200,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		switch(menc){
 			case LinphoneMediaEncryptionSRTP: val="SRTP"; break;
 			case LinphoneMediaEncryptionZRTP: val="ZRTP"; break;
-			default:                          val="None"; break;
+			case LinphoneMediaEncryptionDTLS: val="DTLS"; break;
+			case LinphoneMediaEncryptionNone: val="None"; break;
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
@@ -573,6 +574,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionSRTP);
 	else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionZRTP);
+	else if (menc && [menc compare:@"DTLS"] == NSOrderedSame)
+		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionDTLS);
 	else
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
 

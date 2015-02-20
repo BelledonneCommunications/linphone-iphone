@@ -1477,7 +1477,8 @@ static BOOL libStarted = FALSE;
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-
+	linphone_core_set_user_certificates_path(theLinphoneCore,[[LinphoneManager cacheDirectory] UTF8String]);
+	
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
 	 Wait for this to finish the code configuration */
 

@@ -564,6 +564,14 @@ static UICompositeViewDescription *compositeDescription = nil;
             [values removeObject:@"SRTP"];
             [dict setObject:values forKey:@"Values"];
         }
+		if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionDTLS)) {
+			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+			[titles removeObject:@"DTLS"];
+			[dict setObject:titles forKey:@"Titles"];
+			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+			[values removeObject:@"DTLS"];
+			[dict setObject:values forKey:@"Values"];
+		}
         return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
     }
 
