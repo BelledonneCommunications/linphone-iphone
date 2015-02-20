@@ -25,8 +25,16 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 
+# Checks
+CHECK_MSG=$(shell ../../Tools/check_tools.sh)
+
+ifneq ($(CHECK_MSG),)
+	$(error Some tools are missing.)
+endif
+
+
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
 	enable_gpl_third_parties=no

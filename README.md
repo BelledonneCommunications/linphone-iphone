@@ -4,19 +4,26 @@
 
 ## Build prerequisite
 
-Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts. Before building Linphone on iPhone, please read and execute [liblinphone README](submodule/linphone/README.macos.md).
+Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
 
-You will NOT be able to build the SDK if you did not read liblinphone README first!
+* Xcode (download from apple or using appstore application)
+* [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or openJDK
+ This is required to generate a C sourcefile from SIP grammar using [antlr3](http://www.antlr3.org/) generator.
+* [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
 
-### Additional dependencies
+
+### Install dependencies
 
 * Using HomeBrew:
 
-        brew install imagemagick yasm nasm
+        brew install autoconf automake pkg-config doxygen java nasm gettext wget yasm optipng imagemagick coreutils intltool
+        # antlr3.2 is faster than default homebrew version 3.4 - you can install official antlr3 though
+        brew tap Gui13/linphone
+        brew install antlr3.2
 
 * Using MacPorts:
 
-        sudo port install ImageMagick optipng yasm nasm
+        sudo port install autoconf automake pkg-config doxygen antlr3 java nasm gettext wget yasm optipng ImageMagick coreutils intltool
 
 ### System linking
 
@@ -30,13 +37,13 @@ You will NOT be able to build the SDK if you did not read liblinphone README fir
 
         export PATH=$LOCAL_BIN_DIR:$PATH
 
-* Install [gas-preprosessor.pl](http://github.com/yuvi/gas-preprocessor/) (version above July 2013) into your `LOCAL_BIN_DIR` directory
+* Install [gas-preprosessor.pl](http://github.com/yuvi/gas-preprocessor/) (version above July 2013) into your PATH. Suppose you use `LOCAL_BIN_DIR` directory:
 
         wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
         chmod +x gas-preprocessor.pl
         sudo mv gas-preprocessor.pl $LOCAL_BIN_DIR
 
-* Link `libtoolize` to `glibtoolize`
+* (HomeBrew only) Link `libtoolize` to `glibtoolize`
 
         sudo ln -s $LOCAL_BIN_DIR/glibtoolize $LOCAL_BIN_DIR/libtoolize
 
