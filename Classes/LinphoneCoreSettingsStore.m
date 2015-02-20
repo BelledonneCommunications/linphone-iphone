@@ -438,7 +438,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		} else {
 			// was a new proxy config, add it
 			linphone_core_add_proxy_config(lc, proxyCfg);
-			linphone_core_set_default_proxy(lc,proxyCfg);
+			linphone_core_set_default_proxy_config(lc,proxyCfg);
 		}
 
 	bad_proxy:
