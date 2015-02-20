@@ -591,6 +591,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 		errmsg=sqlite3_errmsg(db);
 		ms_error("Error in the opening: %s.\n", errmsg);
 		sqlite3_close(db);
+		return;
 	}
 
 	linphone_message_storage_activate_debug(db, lc->debug_storage);
