@@ -337,14 +337,17 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
-	if (linphone_core_get_record_file(mgr->lc)){
-		if (CU_get_number_of_failures()>0) {
-			ms_message ("Test has failed, keeping recorded file [%s]",linphone_core_get_record_file(mgr->lc));
-		} else {
-			unlink(linphone_core_get_record_file(mgr->lc));
+	if (mgr->lc){
+		const char *record_file=linphone_core_get_record_file(mgr->lc);
+		if (record_file){
+			if (CU_get_number_of_failures()>0) {
+				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
+			} else {
+				unlink(record_file);
+			}
 		}
+		linphone_core_destroy(mgr->lc);
 	}
-	if (mgr->lc) linphone_core_destroy(mgr->lc);
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
 	if (mgr->stat.last_received_chat_message) linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	manager_count--;
