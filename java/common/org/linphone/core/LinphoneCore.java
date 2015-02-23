@@ -269,6 +269,10 @@ public interface LinphoneCore {
 		 * ZRTP
 		 */
 		static public final MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		/**
+		 * DTLS
+		 */
+		static public final MediaEncryption DTLS = new MediaEncryption(3,"DTLS");
 		protected final int mValue;
 		private final String mStringValue;
 
