@@ -202,8 +202,8 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 		return;
 	}
 	ms_message("TunnelManager: switching mode from %s to %s",
-			   tunnel_mode_to_string(mMode),
-			   tunnel_mode_to_string(mode));
+			   linphone_tunnel_mode_to_string(mMode),
+			   linphone_tunnel_mode_to_string(mode));
 	switch(mode) {
 	case LinphoneTunnelModeEnable:
 		if(mState == disabled) {
