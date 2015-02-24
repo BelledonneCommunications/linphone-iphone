@@ -1459,14 +1459,8 @@ static BOOL libStarted = FALSE;
     libmsbcg729_init(); // load g729 plugin
 #endif
 
-    /*to make sure we don't loose debug trace*/
-    if ([self lpConfigBoolForKey:@"debugenable_preference"]) {
-        linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-        ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-		/*must be done before creating linphone core to get its traces too*/
-    }
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"debugenable_preference"]);
+	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
 
 
 	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
@@ -2080,10 +2074,12 @@ static void audioRouteChangeListenerCallback (
 
 -(void)setLogsEnabled:(BOOL)enabled {
 	if (enabled) {
+		NSLog(@"Enabling debug logs");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 		linphone_core_enable_log_collection(enabled);
 	} else {
+		NSLog(@"Disabling debug logs");
 		linphone_core_enable_log_collection(enabled);
 		linphone_core_disable_logs();
 	}
