@@ -827,6 +827,41 @@ static void file_transfer_message_download_cancelled(void) {
 	ms_error("Test skipped");
 }
 
+static void file_transfer_using_external_body_url(void) {
+	char *to;
+	LinphoneChatMessageCbs *cbs;
+	LinphoneChatRoom *chat_room;
+	LinphoneChatMessage *message;
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
+	/* create a chatroom on pauline's side */
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	
+	message = linphone_chat_room_create_message(chat_room, NULL);
+	
+	cbs = linphone_chat_message_get_callbacks(message);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	
+	linphone_chat_message_set_external_body_url(message, "https://www.linphone.org:444//tmp/54ec58280ace9_c30709218df8eaba61d1.jpg");
+	linphone_chat_room_send_chat_message(chat_room, message);
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+	if (marie->stat.last_received_chat_message) {
+		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+	}
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void text_message_with_send_error(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1203,6 +1238,7 @@ test_t message_tests[] = {
 /*	{ "File transfer message with io error at download", file_transfer_message_io_error_download },*/
 	{ "File transfer message upload cancelled", file_transfer_message_upload_cancelled },
 	{ "File transfer message download cancelled", file_transfer_message_download_cancelled },
+	{ "File transfer message using external body url", file_transfer_using_external_body_url },
 	{ "Text message denied", text_message_denied },
 	{ "Info message", info_message },
 	{ "Info message with body", info_message_with_body },
