@@ -2354,18 +2354,18 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 
 		}
 
-		if (policy == LinphonePolicyUseIce)
+		if (policy == LinphonePolicyUseIce){
+			int i=0;
 			CU_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
+			for (i=0;i<100;i++) { /*fixme to workaround a crash*/
+				ms_usleep(20000);
+				linphone_core_iterate(marie->lc);
+				linphone_core_iterate(pauline->lc);
+			}
+		}
 #ifdef VIDEO_ENABLED
 		if (enable_video) {
-			int i=0;
 			if (linphone_core_video_supported(marie->lc)) {
-				for (i=0;i<100;i++) { /*fixme to workaround a crash*/
-					ms_usleep(20000);
-					linphone_core_iterate(marie->lc);
-					linphone_core_iterate(pauline->lc);
-				}
-
 				add_video(pauline,marie);
 				if (policy == LinphonePolicyUseIce)
 					CU_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
@@ -2376,7 +2376,6 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 			} else {
 				ms_warning ("not tested because video not available");
 			}
-
 		}
 #endif
 

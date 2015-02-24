@@ -3481,6 +3481,27 @@ LINPHONE_PUBLIC void linphone_core_enable_video_multicast(LinphoneCore *core, bo
 **/
 LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore *core);
 
+/**
+ * Set the network simulator parameters.
+ * Liblinphone has the capabability of simulating the effects of a network (latency, lost packets, jitter, max bandwidth).
+ * Please refer to the oRTP documentation for the meaning of the parameters of the OrtpNetworkSimulatorParams structure.
+ * This function has effect for future calls, but not for currently running calls, though this behavior may be changed in future versions.
+ * @warning Due to design of network simulation in oRTP, simulation is applied independently for audio and video stream. This means for example that a bandwidth
+ * limit of 250kbit/s will have no effect on an audio stream running at 40kbit/s while a videostream targetting 400kbit/s will be highly affected.
+ * @param lc the LinphoneCore
+ * @param params the parameters used for the network simulation.
+ * @return 0 if successful, -1 otherwise.
+**/
+LINPHONE_PUBLIC int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params);
+
+
+/**
+ * Get the previously set network simulation parameters.
+ * @see linphone_core_set_network_simulator_params
+ * @return a OrtpNetworkSimulatorParams structure.
+**/
+LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif

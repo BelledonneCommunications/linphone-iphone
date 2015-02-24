@@ -1600,3 +1600,43 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
 	return lp_config_get_int(lc->config,"rtp","symmetric",1);
 }
 
+int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){
+	if (params!=&lc->net_conf.netsim_params)
+		lc->net_conf.netsim_params=*params;
+	/*TODO: should we make some sanity checks on the parameters here*/
+	return 0;
+}
+
+const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc){
+	return &lc->net_conf.netsim_params;
+}
+
+static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
+
+LinphoneTunnelMode linphone_tunnel_mode_from_string(const char *string) {
+	if(string != NULL) {
+		int i;
+		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
+		if(i<3) {
+			return (LinphoneTunnelMode)i;
+		} else {
+			ms_error("Invalid tunnel mode '%s'", string);
+			return LinphoneTunnelModeDisable;
+		}
+	} else {
+		return LinphoneTunnelModeDisable;
+	}
+}
+
+const char *linphone_tunnel_mode_to_string(LinphoneTunnelMode mode) {
+	switch(mode){
+		case LinphoneTunnelModeAuto:
+			return "auto";
+		case LinphoneTunnelModeDisable:
+			return "disable";
+		case LinphoneTunnelModeEnable:
+			return "enable";
+	}
+	return "invalid";
+}
+

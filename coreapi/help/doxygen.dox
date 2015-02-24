@@ -221,6 +221,12 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
  * 
 **/
 
+
+/**
+ * @defgroup event_api Managing generic subscriptions and publishes
+ * The LinphoneEvent api allows application to control subscriptions, receive notifications and make publish to peers, in a generic manner.
+ */
+
 /**
  * @defgroup misc Miscenalleous: logs, version strings, config storage
 **/

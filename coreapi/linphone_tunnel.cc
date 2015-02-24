@@ -29,8 +29,6 @@
 #include "private.h"
 #include "lpconfig.h"
 
-static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
-
 LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
 }
@@ -234,7 +232,7 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_set_mode(LinphoneTunnel *tunnel, LinphoneTunnelMode mode){
-	lp_config_set_string(config(tunnel),"tunnel","mode", tunnel_mode_to_string(mode));
+	lp_config_set_string(config(tunnel),"tunnel","mode", linphone_tunnel_mode_to_string(mode));
 	bcTunnel(tunnel)->setMode(mode);
 }
 
@@ -336,31 +334,13 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(level,fmt,args);
 }
 
-LinphoneTunnelMode string_to_tunnel_mode(const char *string) {
-	if(string != NULL) {
-		int i;
-		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
-		if(i<3) {
-			return (LinphoneTunnelMode)i;
-		} else {
-			ms_error("Invalid tunnel mode '%s'", string);
-			return LinphoneTunnelModeDisable;
-		}
-	} else {
-		return LinphoneTunnelModeDisable;
-	}
-}
-
-const char *tunnel_mode_to_string(LinphoneTunnelMode mode) {
-	return _tunnel_mode_str[mode];
-}
 
 /**
  * Startup tunnel using configuration.
  * Called internally from linphonecore at startup.
  */
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-	LinphoneTunnelMode mode = string_to_tunnel_mode(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
+	LinphoneTunnelMode mode = linphone_tunnel_mode_from_string(lp_config_get_string(config(tunnel), "tunnel", "mode", NULL));
 	bool_t tunnelizeSIPPackets = (bool_t)lp_config_get_int(config(tunnel), "tunnel", "sip", TRUE);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
 	linphone_tunnel_load_config(tunnel);

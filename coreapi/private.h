@@ -622,6 +622,7 @@ typedef struct net_config
 	int download_bw;
 	int upload_bw;
 	int mtu;
+	OrtpNetworkSimulatorParams netsim_params;
 	bool_t nat_sdp_only;
 }net_config_t;
 
