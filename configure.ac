@@ -79,7 +79,7 @@ case $target in
 	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
 		dnl use macport installation
-		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
+		AS_IF([test -d "/opt/local/share/aclocal"], [ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"])
 		build_macos=yes
 	;;
 
