@@ -4,22 +4,22 @@ SDK_VERSION_MAJOR=5
 SDK_VERSION=5.0
 MCPU=""
 CLANG_TARGET_SPECIFIER=miphoneos-version-min
-if test "${host_alias}" = "i386-apple-darwin" ; then 
+if test "${host_alias}" = "i386-apple-darwin" ; then
 	PLATFORM=Simulator
 	ARCH=i386
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=i386"
 	MCPU=""
 	CLANG_TARGET_SPECIFIER=mios-simulator-version-min
-elif test "${host_alias}" = "armv7-apple-darwin" ; then 
+elif test "${host_alias}" = "armv7-apple-darwin" ; then
 	ARCH=armv7
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 	MCPU="-mcpu=cortex-a8"
-elif test "${host_alias}" = "aarch64-apple-darwin" ; then 
+elif test "${host_alias}" = "aarch64-apple-darwin" ; then
 	ARCH=arm64
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"
-else 
+else
 	echo "bad host ${host_alias} must be either i386-apple-darwin or arm[v7,64]-apple-darwin"
 	exit
 fi
@@ -28,12 +28,12 @@ XCODE_DEV_PATH=`xcode-select -print-path`
 #new path with Xcode 4.3:
 if test -d ${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
 	SDK_PATH_LIST=`ls -drt ${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-	SDK_BIN_PATH=${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+	SDK_BIN_PATH=${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin
 else
 	SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin
 fi
-   
+
 for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
 echo "Selecting SDK path = ${SYSROOT_PATH}"
 
@@ -47,23 +47,24 @@ COMMON_FLAGS="$COMMON_FLAGS -Dsha256=polarssl_sha256"
 COMMON_FLAGS="-Qunused-arguments -Wno-unknown-warning-option -Wno-unused-command-line-argument-hard-error-in-future $COMMON_FLAGS"
 
 # you can use ccache to speed up build, in which case just define LINPHONE_CCACHE to 'ccache'
-
-if test "$LINPHONE_CCACHE" = "ccache" ; then 
+if test "$LINPHONE_CCACHE" = "ccache" ; then
 	# ccache doesn't like some options
 	COMMON_FLAGS="$COMMON_FLAGS -Wno-variadic-macros -Wno-pointer-arith -Wno-return-type -Wno-tautological-compare -Wno-unused-function -Wno-error"
 fi
 
-CC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
-OBJC="xcrun $LINPHONE_CCACHE clang -std=c99 $COMMON_FLAGS"
-CXX="xcrun $LINPHONE_CCACHE clang++ $COMMON_FLAGS"
-LD="xcrun ld -arch ${ARCH}"
+CC="xcrun $LINPHONE_CCACHE clang"
+OBJC="xcrun $LINPHONE_CCACHE clang"
+CXX="xcrun $LINPHONE_CCACHE clang++"
+LD="xcrun ld"
 AR="xcrun ar"
 RANLIB="xcrun ranlib"
 STRIP="xcrun strip"
 NM="xcrun nm"
 
-CPPFLAGS="-Dasm=__asm"
-OBJCFLAGS="-x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"
+LDFLAGS="-arch ${ARCH}"
+CFLAGS="$COMMON_FLAGS -std=c99"
+CPPFLAGS="$COMMON_FLAGS -Dasm=__asm"
+OBJCFLAGS="$COMMON_FLAGS -std=c99 -x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"
 #Force install script to use -C so that header files don't get re-written if not changed.
 INSTALL_DATA="ginstall -C"
 
