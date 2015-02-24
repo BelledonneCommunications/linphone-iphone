@@ -175,7 +175,7 @@ pull-transifex:
 	$(MAKE) -C po update-po
 
 push-transifex:
-	tx push -s -t -f
+	tx push -s -t -f --no-interactive
 
 
 ### WINDOWS
