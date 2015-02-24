@@ -638,6 +638,16 @@ AC_ARG_ENABLE(dtls,
 	[dtls=false]
 )
 
+AC_ARG_ENABLE(g729bCN,
+	[AS_HELP_STRING([--enable-g729bCN], [Turn on or off usage of G729AnnexB in RFC3389 implementation of Comfort Noise Payload (default=no)])],
+	[case "${enableval}" in
+		yes)	g729bCN=true ;;
+		no)	g729bCN=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-g729bCN) ;;
+	esac],
+	[g729bCN=false]
+)
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
