@@ -356,9 +356,8 @@ typedef struct _CodecConstraints{
 	MSList *previously_used;
 }CodecConstraints;
 
-static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, const MSList *codecs){
+static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, SalStreamType stype, const MSList *codecs){
 	MSList *l=NULL;
-	MSList *specials=NULL;
 	const MSList *it;
 	int nb = 0;
 
@@ -389,8 +388,10 @@ static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, const
 		nb++;
 		if ((hints->max_codecs > 0) && (nb >= hints->max_codecs)) break;
 	}
-	specials=create_special_payload_types(lc,l);
-	l=ms_list_concat(l,specials);
+	if (stype==SalAudio){
+		MSList *specials=create_special_payload_types(lc,l);
+		l=ms_list_concat(l,specials);
+	}
 	linphone_core_assign_payload_type_numbers(lc, l);
 	return l;
 }
@@ -633,7 +634,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	codec_hints.bandwidth_limit=call->params->audio_bw;
 	codec_hints.max_codecs=-1;
 	codec_hints.previously_used=old_md ? old_md->streams[0].already_assigned_payloads : NULL;
-	l=make_codec_list(lc, &codec_hints, lc->codecs_conf.audio_codecs);
+	l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
 	md->streams[0].max_rate=get_max_codec_sample_rate(l);
 	md->streams[0].payloads=l;
 	if (call->audiostream && call->audiostream->ms.sessions.rtp_session) {
@@ -658,7 +659,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;
 		codec_hints.previously_used=old_md ? old_md->streams[1].already_assigned_payloads : NULL;
-		l=make_codec_list(lc, &codec_hints, lc->codecs_conf.video_codecs);
+		l=make_codec_list(lc, &codec_hints, SalVideo, lc->codecs_conf.video_codecs);
 		md->streams[1].payloads=l;
 		if (call->videostream && call->videostream->ms.sessions.rtp_session) {
 			char* me = linphone_address_as_string_uri_only(call->me);
@@ -684,7 +685,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=1;
 		codec_hints.previously_used=NULL;
-		l = make_codec_list(lc, &codec_hints, lc->codecs_conf.video_codecs);
+		l = make_codec_list(lc, &codec_hints, SalVideo, lc->codecs_conf.video_codecs);
 		md->streams[i].payloads = l;
 	}
 	setup_encryption_keys(call,md);
