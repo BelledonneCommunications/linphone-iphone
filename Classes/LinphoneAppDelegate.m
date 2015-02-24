@@ -347,8 +347,8 @@
         {
             [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
         }
-    } else if([notification.userInfo objectForKey:@"from"] != nil) {
-        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from"];
+    } else if([notification.userInfo objectForKey:@"from_addr"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from_addr"];
         // Go to ChatRoom view
         [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 		LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
@@ -428,7 +428,7 @@
                 // use the standard handler
                 [self application:application didReceiveLocalNotification:notification];
             } else if( [identifier isEqualToString:@"mark_read"] ){
-                NSString* from = [notification.userInfo objectForKey:@"from"];
+                NSString* from = [notification.userInfo objectForKey:@"from_addr"];
                 LinphoneChatRoom* room = linphone_core_get_or_create_chat_room(lc, [from UTF8String]);
                 if( room ){
                     linphone_chat_room_mark_as_read(room);

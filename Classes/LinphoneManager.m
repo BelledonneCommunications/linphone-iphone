@@ -895,6 +895,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
     char* c_address                      = linphone_address_as_string_uri_only(remoteAddress);
     NSString* address                    = [NSString stringWithUTF8String:c_address];
+    NSString* remote_uri                 = [NSString stringWithUTF8String:c_address];
     const char* call_id                  = linphone_chat_message_get_custom_header(msg, "Call-ID");
     NSString* callID                     = [NSString stringWithUTF8String:call_id];
 
@@ -926,7 +927,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction    = NSLocalizedString(@"Show", nil);
 			notif.soundName      = @"msg.caf";
-			notif.userInfo       = @{@"from":address, @"call-id":callID};
+			notif.userInfo       = @{@"from":address, @"from_addr":remote_uri, @"call-id":callID};
 
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
