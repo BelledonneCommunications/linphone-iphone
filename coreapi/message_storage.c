@@ -25,6 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PRIu64 "I64u"
 #endif
 
+#ifndef WIN32
+#ifndef ANDROID
+#	include <langinfo.h>
+#	include <iconv.h>
+#	include <string.h>
+#endif
+#else
+#include <Windows.h>
+#endif
+
+#define MAX_PATH_SIZE 1024
+
 #include "sqlite3.h"
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
@@ -579,6 +591,34 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
 	}
 }
 
+static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
+#ifdef ANDROID
+	return sqlite3_open(db_file, db);
+#elif defined(WIN32)
+	int ret;
+	wchar_t db_file_utf16[MAX_PATH_SIZE];
+	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, MAX_PATH_SIZE, db_file_utf16, MAX_PATH_SIZE);
+	if(ret == 0) db_file_utf16[0] = '\0';
+	return sqlite3_open16(db_file_utf16, db);
+#else
+	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
+	char db_file_utf8[MAX_PATH_SIZE] = "";
+	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
+	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
+	iconv_t cb;
+	
+	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
+	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
+	if(cb != (iconv_t)-1) {
+		int ret;
+		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+		if(ret == -1) db_file_utf8[0] = '\0';
+		iconv_close(cb);
+	}
+	return sqlite3_open(db_file_utf8, db);
+#endif
+}
+
 void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
@@ -586,7 +626,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 
 	linphone_core_message_storage_close(lc);
 
-	ret=sqlite3_open(lc->chat_db_file,&db);
+	ret=_linphone_sqlite3_open(lc->chat_db_file,&db);
 	if(ret != SQLITE_OK) {
 		errmsg=sqlite3_errmsg(db);
 		ms_error("Error in the opening: %s.\n", errmsg);
