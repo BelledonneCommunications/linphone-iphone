@@ -5,3 +5,5 @@ liblinphone-sdk
 liblinphone-iphone-sdk*.zip
 xcuserdata/
 Classes/LinphoneIOSVersion.h
+Pods/
+build

@@ -25,6 +25,15 @@
 #import "UIContactDetailsHeader.h"
 #import "UIContactDetailsFooter.h"
 
+
+typedef enum _ContactSections {
+    ContactSections_None = 0,
+    ContactSections_Number,
+    ContactSections_Sip,
+    ContactSections_Email,
+    ContactSections_MAX
+} ContactSections_e;
+
 @interface ContactDetailsTableViewController : UITableViewController<ContactDetailsLabelViewDelegate, UITextFieldDelegate> {
 @private
     NSMutableArray *dataCache;

@@ -197,17 +197,21 @@ static UIFont *CELL_FONT = nil;
     [dateFormatter release];
 
     LinphoneChatMessageState state = linphone_chat_message_get_state(chat);
+    BOOL outgoing = linphone_chat_message_is_outgoing(chat);
 
-    if( !linphone_chat_message_is_outgoing(chat) ){
+    if( !outgoing ){
         statusImage.hidden = TRUE; // not useful for incoming chats..
     } else if (state== LinphoneChatMessageStateInProgress) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"]];
+        [statusImage setAccessibilityValue:@"in progress"];
 		statusImage.hidden = FALSE;
 	} else if (state == LinphoneChatMessageStateDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"]];
+        [statusImage setAccessibilityValue:@"delivered"];
 		statusImage.hidden = FALSE;
 	} else {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
+        [statusImage setAccessibilityValue:@"not delivered"];
 		statusImage.hidden = FALSE;
 
         NSAttributedString* resend_text = [[NSAttributedString alloc]
@@ -216,6 +220,13 @@ static UIFont *CELL_FONT = nil;
         [dateLabel setAttributedText:resend_text];
         [resend_text release];
 	}
+    
+    if( outgoing){
+        [messageText setAccessibilityLabel:@"Outgoing message"];
+    } else {
+        [messageText setAccessibilityLabel:@"Incoming message"];
+    }
+    
 }
 
 - (void)setEditing:(BOOL)editing {

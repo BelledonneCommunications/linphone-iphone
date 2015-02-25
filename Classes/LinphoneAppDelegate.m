@@ -172,24 +172,29 @@
 
     UIApplication* app= [UIApplication sharedApplication];
     UIApplicationState state = app.applicationState;
-    
-    if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
-        /* iOS8 notifications can be actioned! Awesome: */
-        UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
-       
-        NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
-        UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
-        [app registerUserNotificationSettings:userSettings];
-        [app registerForRemoteNotifications];
-    } else {
-        NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
-        [app registerForRemoteNotificationTypes:notifTypes];
-    }
 
 	LinphoneManager* instance = [LinphoneManager instance];
     BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
     BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-
+    
+    
+    if( !instance.isTesting ){
+        if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
+            /* iOS8 notifications can be actioned! Awesome: */
+            UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+            
+            NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
+            UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
+            [app registerUserNotificationSettings:userSettings];
+            [app registerForRemoteNotifications];
+        } else {
+            NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
+            [app registerForRemoteNotificationTypes:notifTypes];
+        }
+    } else {
+        NSLog(@"No remote push for testing");
+    }
+    
 
     if (state == UIApplicationStateBackground)
     {
@@ -342,13 +347,13 @@
         {
             [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
         }
-    } else if([notification.userInfo objectForKey:@"from"] != nil) {
-        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from"];
+    } else if([notification.userInfo objectForKey:@"from_addr"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"from_addr"];
         // Go to ChatRoom view
         [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+		LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
-        if(controller != nil) {
-            LinphoneChatRoom*room = [self findChatRoomForContact:remoteContact];
+        if(controller != nil && room != nil) {
             [controller setChatRoom:room];
         }
     } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
@@ -423,7 +428,7 @@
                 // use the standard handler
                 [self application:application didReceiveLocalNotification:notification];
             } else if( [identifier isEqualToString:@"mark_read"] ){
-                NSString* from = [notification.userInfo objectForKey:@"from"];
+                NSString* from = [notification.userInfo objectForKey:@"from_addr"];
                 LinphoneChatRoom* room = linphone_core_get_or_create_chat_room(lc, [from UTF8String]);
                 if( room ){
                     linphone_chat_room_mark_as_read(room);
@@ -472,7 +477,6 @@
                                               otherButtonTitles:nil];
         [error show];
         [error release];
-        
     }
 }
 

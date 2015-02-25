@@ -210,7 +210,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         [addressBookMap setObject:lPerson forKey:lNormalizedKey];
                         CFRelease(lValue);
                         if (lLabel) CFRelease(lLabel);
-                        if (lLocalizedLabel) CFRelease(lLocalizedLabel);                    }
+                        if (lLocalizedLabel) CFRelease(lLocalizedLabel);
+                    }
                     CFRelease(lMap);
                 }
             }

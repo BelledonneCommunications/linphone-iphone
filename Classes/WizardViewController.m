@@ -514,7 +514,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info([LinphoneManager getLc], info);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
-	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
+	linphone_core_set_default_proxy_config([LinphoneManager getLc], proxyCfg);
 }
 
 - (NSString*)identityFromUsername:(NSString*)username {

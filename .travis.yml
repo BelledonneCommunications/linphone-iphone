@@ -1,0 +1,27 @@
+language: objective-c
+xcode_project: linphone.xcworkspace
+xcode_scheme: linphone
+
+git:
+  submodules: false
+
+env:
+    global:
+        - VERSION="8.1"
+        - KIF_SCREENSHOTS="${TRAVIS_BUILD_DIR}/Screenshots"
+
+install: 
+    - cd submodules/build 
+    - make download-sdk
+    - cd ../..
+    - pod install
+    - ls -la
+
+script:
+    - export KIF_SCREENSHOTS=$TRAVIS_BUILD_DIR/Screenshots
+    - mkdir -p "$KIF_SCREENSHOTS"
+    - echo $KIF_SCREENSHOTS
+    - xcodebuild -scheme linphone -workspace linphone.xcworkspace -sdk iphonesimulator8.1 test
+
+after_failure:
+    - ls -la $KIF_SCREENSHOTS

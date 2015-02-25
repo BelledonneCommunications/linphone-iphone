@@ -27,7 +27,7 @@
 #import "UITransferButton.h"
 #import "UIDigitButton.h"
 
-@interface DialerViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+@interface DialerViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate, MFMailComposeViewControllerDelegate> {
 }
 
 - (void)setAddress:(NSString*)address;

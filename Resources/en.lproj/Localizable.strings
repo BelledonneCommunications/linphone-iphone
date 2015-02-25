@@ -44,6 +44,9 @@
 "Answer" = "Answer";
 
 /* No comment provided by engineer. */
+"Are you sure to want to clear your proxy setup?" = "Are you sure to want to clear your proxy setup?";
+
+/* No comment provided by engineer. */
 "Average" = "Average";
 
 /* No comment provided by engineer. */
@@ -251,6 +254,9 @@
 "No codec" = "No codec";
 
 /* No comment provided by engineer. */
+"No connectivity" = "No connectivity";
+
+/* No comment provided by engineer. */
 "No microphone" = "No microphone";
 
 /* No comment provided by engineer. */
@@ -282,6 +288,9 @@
 
 /* No comment provided by engineer. */
 "Please enter a valid domain.\n" = "Please enter a valid domain.\n";
+
+/* No comment provided by engineer. */
+"Please enter a valid username" = "Please enter a valid username";
 
 /* No comment provided by engineer. */
 "Please enter a valid username.\n" = "Please enter a valid username.\n";
@@ -347,6 +356,9 @@
 "SIP addresses" = "SIP addresses";
 
 /* No comment provided by engineer. */
+"Stay here" = "Stay here";
+
+/* No comment provided by engineer. */
 "Stop video" = "Stop video";
 
 /* No comment provided by engineer. */
@@ -396,6 +408,9 @@
 
 /* No comment provided by engineer. */
 "Yes" = "Yes";
+
+/* No comment provided by engineer. */
+"You can either skip verification or connect to the Internet first." = "You can either skip verification or connect to the Internet first.";
 
 /* No comment provided by engineer. */
 "You missed a call from %@" = "You missed a call from %@";

@@ -176,11 +176,12 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 					if ([ContactSelection getNameOrEmailFilter] == nil ||
 						(ms_strcmpfuz([[[ContactSelection getNameOrEmailFilter] lowercaseString] UTF8String], [[name lowercaseString] UTF8String]) == 0)) {
 
-						//Get first char. However translate them to ASCII first, because foreign languages (spanish) use tildes for instance
-						NSString *firstCharUTF8 = [[name substringToIndex:1] uppercaseString];
-						NSData *data = [firstCharUTF8 dataUsingEncoding:NSASCIIStringEncoding
-													 allowLossyConversion:YES];
-						NSString *firstChar = [[[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] autorelease];
+						//Sort contacts by first letter. We need to translate the name to ASCII first, because of UTF-8 issues. For instance
+						// we expect order:  Alberta(A tilde) before ASylvano.
+						NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+						NSString *name2ASCII = [[[NSString alloc] initWithData:name2ASCIIdata encoding:NSASCIIStringEncoding] autorelease];
+						NSString *firstChar = [[name2ASCII substringToIndex:1] uppercaseString];
+
 						// Put in correct subDic
 						if([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {
 							firstChar = @"#";
@@ -190,7 +191,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 							subDic = [[[OrderedDictionary alloc] init] autorelease];
 							[addressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
 						}
-						[subDic insertObject:lPerson forKey:name selector:@selector(caseInsensitiveCompare:)];
+						[subDic insertObject:lPerson forKey:name2ASCII selector:@selector(caseInsensitiveCompare:)];
 					}
 				}
 				if(lLocalizedlOrganization != nil)

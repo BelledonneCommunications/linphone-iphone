@@ -157,6 +157,7 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
++ (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
@@ -180,6 +181,7 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
 - (void)silentPushFailed:(NSTimer*)timer;
 
+@property (readonly) BOOL isTesting;
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) NetworkType network;

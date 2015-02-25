@@ -25,8 +25,16 @@ enable_ffmpeg=no
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 
+# Checks
+CHECK_MSG=$(shell ../../Tools/check_tools.sh)
+
+ifneq ($(CHECK_MSG),)
+	$(error Some tools are missing.)
+endif
+
+
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
 	enable_gpl_third_parties=no
@@ -102,12 +110,12 @@ broadcast_%:
 	@echo "Broadcasting target '$*' to all sub-architectures"
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* 
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $*
 
 build-% clean-% veryclean-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@ 
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@
 
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
@@ -129,6 +137,11 @@ veryclean: broadcast_veryclean
 list-packages:
 	@make -f builder-iphone-os.mk list-packages
 
+pull-transifex:
+	cd ../../ && tx pull -af
+
+push-transifex:
+	cd ../../ && ./Tools/generate_strings_files.sh && tx push -s -t -f --no-interactive
 
 zipres:
 	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork

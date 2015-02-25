@@ -1,5 +1,5 @@
 ############################################################################
-# libxml2.mk 
+# libxml2.mk
 # Copyright (C) 2013  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -40,7 +40,7 @@ $(BUILDER_BUILD_DIR)/$(libxml2_dir)/Makefile: $(BUILDER_SRC_DIR)/$(libxml2_dir)/
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libxml2_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libxml2_dir) \
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(libxml2_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} ${libxml2_configure_options}
+	$(BUILDER_SRC_DIR)/$(libxml2_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} ${libxml2_configure_options} CFLAGS=-w
 
 build-libxml2: $(BUILDER_BUILD_DIR)/$(libxml2_dir)/Makefile
 	@echo -e "\033[01;32m building libxml2 \033[0m"
@@ -48,15 +48,15 @@ build-libxml2: $(BUILDER_BUILD_DIR)/$(libxml2_dir)/Makefile
 	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	make && make install
 
-clean-libxml2: 
+clean-libxml2:
 	-cd  $(BUILDER_BUILD_DIR)/$(libxml2_dir) && make clean
 
-veryclean-libxml2: 
-	-cd $(BUILDER_BUILD_DIR)/$(libxml2_dir) && make distclean 
+veryclean-libxml2:
+	-cd $(BUILDER_BUILD_DIR)/$(libxml2_dir) && make distclean
 	rm -f $(BUILDER_SRC_DIR)/$(libxml2_dir)/configure
 	cd $(BUILDER_SRC_DIR)/$(libxml2_dir) \
 	&& git checkout configure.in \
-	&& rm -f patched.stamp 
+	&& rm -f patched.stamp
 
-clean-makefile-libxml2: 
+clean-makefile-libxml2:
 	-cd $(BUILDER_BUILD_DIR)/$(libxml2_dir) && rm -f Makefile

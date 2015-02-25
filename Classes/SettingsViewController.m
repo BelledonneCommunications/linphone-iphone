@@ -32,6 +32,8 @@
 #import "IASKTextField.h"
 #include "linphone/lpconfig.h"
 
+#import "DTAlertView.h"
+
 #ifdef DEBUG
 @interface UIDevice (debug)
 
@@ -562,6 +564,14 @@ static UICompositeViewDescription *compositeDescription = nil;
             [values removeObject:@"SRTP"];
             [dict setObject:values forKey:@"Values"];
         }
+		if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionDTLS)) {
+			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+			[titles removeObject:@"DTLS"];
+			[dict setObject:titles forKey:@"Titles"];
+			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+			[values removeObject:@"DTLS"];
+			[dict setObject:values forKey:@"Values"];
+		}
         return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
     }
 
@@ -686,6 +696,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
     NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
+	LinphoneCore* lc = [LinphoneManager getLc];
 #ifdef DEBUG
     if([key isEqual:@"release_button"]) {
         [UIApplication sharedApplication].keyWindow.rootViewController = nil;
@@ -701,9 +712,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 #endif
     if([key isEqual:@"wizard_button"]) {
-		LinphoneProxyConfig* proxy = NULL;
-		linphone_core_get_default_proxy([LinphoneManager getLc], &proxy);
-		if (proxy == NULL ) {
+		if (linphone_core_get_default_proxy_config(lc) == NULL ) {
 			[self goToWizard];
 			return;
 		}
@@ -714,12 +723,30 @@ static UICompositeViewDescription *compositeDescription = nil;
                                               otherButtonTitles:NSLocalizedString(@"Launch Wizard",nil), nil];
         [alert show];
         [alert release];
-    } else if([key isEqual:@"about_button"]) {
+	} else if ( [key isEqual:@"clear_proxy_button"] ) {
+		if ( linphone_core_get_default_proxy_config(lc) == NULL ) {
+			return;
+		}
+
+		DTAlertView* alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Warning", nil) message:NSLocalizedString(@"Are you sure to want to clear your proxy setup?",nil)];
+
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[alert addButtonWithTitle:NSLocalizedString(@"Yes", nil)
+							block:^{
+								linphone_core_clear_proxy_config(lc);
+								linphone_core_clear_all_auth_info(lc);
+								[settingsStore transformLinphoneCoreToKeys];
+								[settingsController.tableView reloadData];
+							}];
+		[alert show];
+		[alert release];
+
+	} else if([key isEqual:@"about_button"]) {
         [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
 	} else if ([key isEqualToString:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
-		char * filepath = linphone_core_compress_log_collection([LinphoneManager getLc]);
+		char * filepath = linphone_core_compress_log_collection(lc);
 		if (filepath == NULL) {
 			[LinphoneLogger log:LinphoneLoggerError format:@"Cannot sent logs: file is NULL"];
 			return;

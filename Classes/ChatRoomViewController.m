@@ -298,6 +298,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		ms_free(address);
     }
     [addressLabel setText:displayName];
+    [addressLabel setAccessibilityValue:displayName];
 
     // Avatar
     if(image == nil) {
