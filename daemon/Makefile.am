@@ -79,6 +79,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/quit.h \
 			commands/contact.h \
 			commands/netsim.cc commands/netsim.h\
+			commands/cn.cc commands/cn.h \
 			commands/version.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
