@@ -54,7 +54,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;$(ProjectDir)..\..\..\sqlite\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>belle-sip.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>belle-sip_no_tunnel.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;libxml2.lib;sqlite.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
     </Link>
@@ -82,6 +82,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -124,8 +127,8 @@
     <ClCompile Include="..\..\coreapi\info.c" />
     <ClCompile Include="..\..\coreapi\linphonecall.c" />
     <ClCompile Include="..\..\coreapi\linphonecore.c" />
-    <ClCompile Include="..\..\coreapi\linphone_tunnel.cc" />
     <ClCompile Include="..\..\coreapi\linphone_tunnel_config.c" />
+    <ClCompile Include="..\..\coreapi\linphone_tunnel_stubs.c" />
     <ClCompile Include="..\..\coreapi\localplayer.c" />
     <ClCompile Include="..\..\coreapi\lpconfig.c" />
     <ClCompile Include="..\..\coreapi\lsd.c" />
@@ -140,7 +143,6 @@
     <ClCompile Include="..\..\coreapi\sal.c" />
     <ClCompile Include="..\..\coreapi\siplogin.c" />
     <ClCompile Include="..\..\coreapi\sipsetup.c" />
-    <ClCompile Include="..\..\coreapi\TunnelManager.cc" />
     <ClCompile Include="..\..\coreapi\xml.c" />
     <ClCompile Include="..\..\coreapi\xml2lpc.c" />
   </ItemGroup>
@@ -172,13 +174,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\coreapi\TunnelManager.hh" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\bcg729\build\wp8\bcg729\bcg729.vcxproj">
       <Project>{1db09afe-fc9b-472e-a746-0e33f8ef8883}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip.vcxproj">
+    <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip_no_tunnel.vcxproj">
       <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\msamr\build\wp8\msamr\msamr.vcxproj">
@@ -201,9 +200,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\sqlite\sqlite.vcxproj">
       <Project>{a45d63b9-60de-476c-8836-f8eedbe139d0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\tunnel\build\wp8\tunnel\tunnel.vcxproj">
-      <Project>{59500dd1-b192-4ddf-a402-8a8e3739e032}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\mediastreamer2\build\wp8\mediastreamer2\mediastreamer2.vcxproj">
       <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>

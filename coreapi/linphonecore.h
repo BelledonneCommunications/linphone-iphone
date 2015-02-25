@@ -676,7 +676,14 @@ LINPHONE_PUBLIC void *linphone_call_get_user_data(const LinphoneCall *call);
 **/
 LINPHONE_PUBLIC void linphone_call_set_user_data(LinphoneCall *call, void *ud);
 
+/**
+ * Get the core that has created the specified call.
+ * @param[in] call LinphoneCall object
+ * @return The LinphoneCore object that has created the specified call.
+ * @ingroup call_control
+ */
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
+
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 LINPHONE_PUBLIC bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 
@@ -3006,7 +3013,32 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 #define linphone_core_use_files(lc, yesno) linphone_core_set_use_files(lc, yesno)
 /*play/record support: use files instead of soundcard*/
 LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno);
+
+/**
+ * Get the wav file that is played when putting somebody on hold,
+ * or when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * The file is a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @return The path to the file that is played when putting somebody on hold.
+ */
+LINPHONE_PUBLIC const char * linphone_core_get_play_file(const LinphoneCore *lc);
+
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
+
+/**
+ * Get the wav file where incoming stream is recorded,
+ * when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * This feature is different from call recording (linphone_call_params_set_record_file())
+ * The file is a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @return The path to the file where incoming stream is recorded.
+**/
+LINPHONE_PUBLIC const char * linphone_core_get_record_file(const LinphoneCore *lc);
+
 LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
@@ -3448,6 +3480,27 @@ LINPHONE_PUBLIC void linphone_core_enable_video_multicast(LinphoneCore *core, bo
  * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore *core);
+
+/**
+ * Set the network simulator parameters.
+ * Liblinphone has the capabability of simulating the effects of a network (latency, lost packets, jitter, max bandwidth).
+ * Please refer to the oRTP documentation for the meaning of the parameters of the OrtpNetworkSimulatorParams structure.
+ * This function has effect for future calls, but not for currently running calls, though this behavior may be changed in future versions.
+ * @warning Due to design of network simulation in oRTP, simulation is applied independently for audio and video stream. This means for example that a bandwidth
+ * limit of 250kbit/s will have no effect on an audio stream running at 40kbit/s while a videostream targetting 400kbit/s will be highly affected.
+ * @param lc the LinphoneCore
+ * @param params the parameters used for the network simulation.
+ * @return 0 if successful, -1 otherwise.
+**/
+LINPHONE_PUBLIC int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params);
+
+
+/**
+ * Get the previously set network simulation parameters.
+ * @see linphone_core_set_network_simulator_params
+ * @return a OrtpNetworkSimulatorParams structure.
+**/
+LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

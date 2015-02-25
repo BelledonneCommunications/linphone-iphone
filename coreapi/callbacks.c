@@ -76,7 +76,7 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 static void _clear_early_media_destinations(LinphoneCall *call, MediaStream *ms){
 	RtpSession *session=ms->sessions.rtp_session;
 	rtp_session_clear_aux_remote_addr(session);
-	if (!call->ice_session) rtp_session_set_symmetric_rtp(session,TRUE);/*restore symmetric rtp if ICE is not used*/
+	if (!call->ice_session) rtp_session_set_symmetric_rtp(session,linphone_core_symmetric_rtp_enabled(call->core));/*restore symmetric rtp if ICE is not used*/
 }
 
 static void clear_early_media_destinations(LinphoneCall *call){
@@ -221,7 +221,7 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 
 static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
 	MSList *elem;
-	ms_warning(" searching for already_a_call_with_remote_address.");
+	ms_message("Searching for already_a_call_with_remote_address.");
 
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		const LinphoneCall *call=(LinphoneCall*)elem->data;
@@ -492,6 +492,14 @@ static void call_accepted(SalOp *op){
 		break;
 		default:
 		break;
+	}
+
+	if( (call->prevstate == LinphoneCallOutgoingEarlyMedia) && (md == NULL || sal_media_description_empty(md)) ){
+		/* media description is null or empty because no SDP was received in the 200 OK, we can possibly use the early-media SDP. */
+		if( call->resultdesc != NULL){
+			ms_message("Using early media SDP since none were received with the 200 OK");
+			md = call->resultdesc;
+		}
 	}
 
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){

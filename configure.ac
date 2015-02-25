@@ -79,7 +79,7 @@ case $target in
 	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
 		dnl use macport installation
-		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
+		AS_IF([test -d "/opt/local/share/aclocal"], [ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"])
 		build_macos=yes
 	;;
 
@@ -636,6 +636,16 @@ AC_ARG_ENABLE(dtls,
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-dtls) ;;
 	esac],
 	[dtls=false]
+)
+
+AC_ARG_ENABLE(g729bCN,
+	[AS_HELP_STRING([--enable-g729bCN], [Turn on or off usage of G729AnnexB in RFC3389 implementation of Comfort Noise Payload (default=no)])],
+	[case "${enableval}" in
+		yes)	g729bCN=true ;;
+		no)	g729bCN=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-g729bCN) ;;
+	esac],
+	[g729bCN=false]
 )
 
 dnl build console if required

@@ -211,6 +211,15 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 #endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
+#ifdef WIN32
+		{
+			MSG msg;
+			while (PeekMessage(&msg, NULL, 0, 0,1)){
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+#endif
 		ms_usleep(20000);
 	}
 	if(counter && *counter<value) return FALSE;
@@ -287,10 +296,13 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 
 	if( manager_count >= 2){
 		char hellopath[512];
+		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",liblinphone_tester_writable_dir_prefix,mgr->lc);
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
 		linphone_core_use_files(mgr->lc, TRUE);
 		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
 		linphone_core_set_play_file(mgr->lc,hellopath);
+		linphone_core_set_record_file(mgr->lc,recordpath);
+		ms_free(recordpath);
 	}
 
 	if (proxy_count){
@@ -325,10 +337,21 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
-	if (mgr->lc) linphone_core_destroy(mgr->lc);
+	if (mgr->lc){
+		const char *record_file=linphone_core_get_record_file(mgr->lc);
+		if (record_file){
+			if (CU_get_number_of_failures()>0) {
+				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
+			} else {
+				unlink(record_file);
+			}
+		}
+		linphone_core_destroy(mgr->lc);
+	}
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
 	if (mgr->stat.last_received_chat_message) linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	manager_count--;
+
 	ms_free(mgr);
 }
 

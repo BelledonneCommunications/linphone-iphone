@@ -85,7 +85,8 @@ LOCAL_CFLAGS += \
 	-DHAVE_CONFIG_H \
 	-DLIBLINPHONE_VERSION=\"$(LIBLINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DUSE_BELLESIP
+	-DUSE_BELLESIP \
+	-DHAVE_ZLIB
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -118,7 +119,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
 	$(LOCAL_PATH)/../../externals/build/libxml2
 
-LOCAL_LDLIBS += -llog -ldl
+LOCAL_LDLIBS += -llog -ldl -lz
 
 LOCAL_STATIC_LIBRARIES := \
 	cpufeatures \

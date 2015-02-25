@@ -2,12 +2,26 @@ linphone-3.8.0 -- Date to be defined
 	Application level improvements:
 	* The video window has now controls in order to switch fullscreen mode and terminate call.
 	* The out of call video preview feature (to test camera) is moved into the settings and is no longer linked to the in-call video preview feature.
-	* Lots of updated translations.
+	* Add an assistant to help users to set audio/video parameters
+	* Some ergonomics improvments (checkbox to set random port for UDP and TCP, ...)
+	* Lots of updated translations. Arabic translation has been added
+	* Experimental feature: play an MKV file by drag-and-dropping it on the video call window
 
 	Liblinphone level improvements:
-	* Support for RTP/AVPF (RFCxxxx) for video streams, allowing fast transmission error recovery with VP8 codec only.
+	* Support for RTP/AVPF (RFC4585) for video streams, allowing fast transmission error recovery with VP8 codec only.
 	* API enhancements, most objects can be ref-counted.
+	* Add some getter funtctions to the call information API
+	* Add a function in the API to accept early-media calls
+	* Add a function to set the SIP transport timeout
+	* Add a function to change adaptive rate algorithm at runtime
+	* Add support of file transfer
 	* Call video recording feature, in mkv format (H264 streams only for the moment)
+	* Call playing feature: play an MKV file and send the audio/video stream through a call
+	* Local player API. Play WAV and MKV file and display video on a specified window display
+	* A wrapper for Python has been made
+	* Support of Wake Locks on Android
+	* Support of multicast IP addresses
+	* Support of incoming UPDATEs within dialog (RFC3311)
 	* Support of SRTP by using packages from GNU/Linux distributions
 
 linphone-3.7.0 -- February 20th, 2014

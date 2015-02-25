@@ -33,6 +33,7 @@ static void linphone_content_destroy(LinphoneContent *content) {
 }
 
 static void linphone_content_clone(LinphoneContent *obj, const LinphoneContent *ref) {
+	obj->owned_fields = TRUE;
 	linphone_content_set_type(obj, linphone_content_get_type(ref));
 	linphone_content_set_subtype(obj, linphone_content_get_subtype(ref));
 	linphone_content_set_encoding(obj, linphone_content_get_encoding(ref));

@@ -35,7 +35,7 @@
 /*getline is POSIX 2008, not available on many systems.*/
 #if defined(ANDROID) || defined(WIN32)
 /* This code is public domain -- Will Hartung 4/9/09 */
-size_t getline(char **lineptr, size_t *n, FILE *stream) {
+static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	char *bufptr = NULL;
 	char *p = bufptr;
 	size_t size;
@@ -66,9 +66,12 @@ size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	}
 	p = bufptr;
 	while(c != EOF) {
-		if ((p - bufptr) > (size - 1)) {
+		size_t curpos = p-bufptr;
+		
+		if (curpos > (size - 1)) {
 			size = size + 128;
 			bufptr = realloc(bufptr, size);
+			p = bufptr + curpos;
 			if (bufptr == NULL) {
 				return -1;
 			}
@@ -89,19 +92,19 @@ size_t getline(char **lineptr, size_t *n, FILE *stream) {
 #endif
 
 static LinphoneLogCollectionState old_collection_state;
-void collect_init()  {
+static void collect_init()  {
 	old_collection_state = linphone_core_log_collection_enabled();
 	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
 }
 
-void collect_cleanup(LinphoneCoreManager *marie)  {
+static void collect_cleanup(LinphoneCoreManager *marie)  {
 	linphone_core_manager_destroy(marie);
 
 	linphone_core_enable_log_collection(old_collection_state);
 	linphone_core_reset_log_collection();
 }
 
-LinphoneCoreManager* setup(bool_t enable_logs)  {
+static LinphoneCoreManager* setup(bool_t enable_logs)  {
 	LinphoneCoreManager *marie;
 	int timeout = 300;
 
@@ -119,27 +122,28 @@ LinphoneCoreManager* setup(bool_t enable_logs)  {
 }
 
 #if HAVE_ZLIB
+
 /*returns uncompressed log file*/
-FILE* gzuncompress(const char* filepath) {
+static FILE* gzuncompress(const char* filepath) {
 		gzFile file = gzopen(filepath, "rb");
 		FILE *output = NULL;
+		FILE *ret;
 		char *newname = ms_strdup_printf("%s.txt", filepath);
-		char buffer[512];
-		output = fopen(newname, "w+");
+		char buffer[512]={0};
+		output = fopen(newname, "wb");
 		while (gzread(file, buffer, 511) > 0) {
 			fputs(buffer, output);
 			memset(buffer, 0, strlen(buffer));
 		}
-
+		fclose(output);
 		CU_ASSERT_EQUAL(gzclose(file), Z_OK);
+		ret=fopen(newname, "rb");
 		ms_free(newname);
-
-		fseek(output, 0, SEEK_SET);
-		return (FILE*)output;
+		return ret;
 }
 #endif
 
-time_t check_file(LinphoneCoreManager* mgr)  {
+static time_t check_file(LinphoneCoreManager* mgr)  {
 
 	time_t last_log = ms_time(NULL);
 	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
@@ -162,9 +166,10 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		// 0) if zlib is enabled, we must decompress the file first
 		file = gzuncompress(filepath);
 #else
-		file = fopen(filepath, "r");
+		file = fopen(filepath, "rb");
 #endif
-
+		CU_ASSERT_PTR_NOT_NULL(file);
+		if (!file) return 0;
 		// 1) expect to find folder name in filename path
 		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, liblinphone_tester_writable_dir_prefix));
 
@@ -183,8 +188,6 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 					time_prev = time_curr;
 				}
 			}
-#else
-			ms_warning("strptime() not available for this platform, test is incomplete.");
 #endif
 		}
 		CU_ASSERT_TRUE(line_count > 25);
@@ -192,12 +195,17 @@ time_t check_file(LinphoneCoreManager* mgr)  {
 		fclose(file);
 		ms_free(filepath);
 
-		timediff = labs((long int)time_curr - (long int)last_log);
 
+		timediff = labs((long int)time_curr - (long int)last_log);
+		(void)timediff;
+#ifndef WIN32
 		CU_ASSERT_TRUE( timediff <= 1 );
 		if( !(timediff <= 1) ){
 			ms_error("time_curr: %ld, last_log: %ld timediff: %u", (long int)time_curr, (long int)last_log, timediff );
 		}
+#else
+		ms_warning("strptime() not available for this platform, test is incomplete.");
+#endif
 	}
 	// return latest time in file
 	return time_curr;

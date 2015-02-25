@@ -46,6 +46,10 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 	CU_ASSERT_TRUE(call(pauline,marie));
 
 	marie_call = linphone_core_get_current_call(marie->lc);
+	
+	CU_ASSERT_PTR_NOT_NULL(marie_call);
+	
+	if (!marie_call) return;
 
 	if (dtmf != '\0') {
 		dtmf_count_prev = pauline->stat.dtmf_count;

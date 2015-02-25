@@ -96,9 +96,8 @@ static void linphone_interpret_url_test()
 }
 
 static void linphone_lpconfig_from_buffer(){
-
-	static const char* buffer = "[buffer]\ntest=ok";
-	static const char* buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok";
+	const char* buffer = "[buffer]\ntest=ok";
+	const char* buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok";
 	LpConfig* conf;
 
 	conf = lp_config_new_from_buffer(buffer);
@@ -112,7 +111,7 @@ static void linphone_lpconfig_from_buffer(){
 
 static void linphone_lpconfig_from_buffer_zerolen_value(){
 	/* parameters that have no value should return NULL, not "". */
-	static const char* zerolen = "[test]\nzero_len=\nnon_zero_len=test";
+	const char* zerolen = "[test]\nzero_len=\nnon_zero_len=test";
 	LpConfig* conf;
 
 	conf = lp_config_new_from_buffer(zerolen);
@@ -128,7 +127,7 @@ static void linphone_lpconfig_from_buffer_zerolen_value(){
 
 static void linphone_lpconfig_from_file_zerolen_value(){
 	/* parameters that have no value should return NULL, not "". */
-	static const char* zero_rc_file = "zero_length_params_rc";
+	const char* zero_rc_file = "zero_length_params_rc";
 	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", liblinphone_tester_file_prefix, zero_rc_file);
 	LpConfig* conf;
 
@@ -144,11 +143,12 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
 
+	ms_free(rc_path);
 	lp_config_destroy(conf);
 }
 
 static void linphone_lpconfig_from_xml_zerolen_value(){
-	static const char* zero_xml_file = "remote_zero_length_params_rc";
+	const char* zero_xml_file = "remote_zero_length_params_rc";
 	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", liblinphone_tester_file_prefix, zero_xml_file);
 	LpConfig* conf;
 
@@ -165,7 +165,7 @@ static void linphone_lpconfig_from_xml_zerolen_value(){
 	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
 
 	linphone_core_manager_destroy(mgr);
-
+	ms_free(xml_path);
 }
 
 void linphone_proxy_config_address_equal_test() {

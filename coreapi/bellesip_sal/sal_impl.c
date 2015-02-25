@@ -1149,7 +1149,7 @@ void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
 	ctx->enable_sip_update=value;
 }
 
-void sal_default_enable_sdp_removal(Sal *sal, bool_t enable)  {
-	if (enable) ms_message("Enabling SDP removal feature by default for all new SalOp in Sal[%p]!", sal);
-	sal->default_sdp_removal = enable;
+void sal_default_set_sdp_handling(Sal *sal, SalOpSDPHandling sdp_handling_method)  {
+	if (sdp_handling_method != SalOpSDPNormal ) ms_message("Enabling special SDP handling for all new SalOp in Sal[%p]!", sal);
+	sal->default_sdp_handling = sdp_handling_method;
 }

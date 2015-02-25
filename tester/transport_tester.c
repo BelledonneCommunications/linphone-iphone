@@ -167,6 +167,14 @@ static void tunnel_zrtp_video_ice_call(void) {
 	else
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
+
+static void tunnel_dtls_video_ice_call(void) {
+	if (linphone_core_tunnel_available())
+		call_base(LinphoneMediaEncryptionDTLS,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
+	else
+		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
+}
+
 static void tunnel_video_ice_call(void) {
 	if (linphone_core_tunnel_available())
 		call_base(LinphoneMediaEncryptionNone,TRUE,FALSE,LinphonePolicyUseIce,TRUE);
@@ -207,6 +215,7 @@ test_t transport_tests[] = {
 #ifdef VIDEO_ENABLED
 	{ "Tunnel ice video call", tunnel_video_ice_call },
 	{ "Tunnel SRTP ice video call", tunnel_srtp_video_ice_call },
+	{ "Tunnel DTLS ice video call", tunnel_dtls_video_ice_call },
 	{ "Tunnel ZRTP ice video call", tunnel_zrtp_video_ice_call },
 #endif
 };

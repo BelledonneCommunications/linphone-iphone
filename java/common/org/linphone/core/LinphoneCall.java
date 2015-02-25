@@ -268,6 +268,16 @@ public interface LinphoneCall {
 	void setAuthenticationTokenVerified(boolean verified);
 
 	boolean isInConference();
+
+	/**
+	 * Indicates whether an operation is in progress at the media side.
+	 * It can a bad idea to initiate signaling operations (adding video, pausing the call, removing video, changing video parameters) while
+	 * the media is busy in establishing the connection (typically ICE connectivity checks). It can result in failures generating loss of time
+	 * in future operations in the call.
+	 * Applications are invited to check this function after each call state change to decide whether certain operations are permitted or not.
+	 * @return TRUE if media is busy in establishing the connection, FALSE otherwise.
+	 **/
+	boolean mediaInProgress();
 	
 	float getPlayVolume();
 
@@ -349,4 +359,5 @@ public interface LinphoneCall {
 	 * @return A player
 	 */
 	public LinphonePlayer getPlayer();
+
 }

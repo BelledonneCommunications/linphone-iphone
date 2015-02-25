@@ -1274,6 +1274,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized int getPayloadTypeBitrate(PayloadType pt) {
 		return getPayloadTypeBitrate(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
+
+	private native void setPayloadTypeNumber(long coreptr, long payload_ptr, int number);
+	@Override
+	public synchronized void setPayloadTypeNumber(PayloadType pt, int number) {
+		setPayloadTypeNumber(nativePtr, ((PayloadTypeImpl)pt).nativePtr, number);
+	}
+	private native int getPayloadTypeNumber(long coreptr, long payload_ptr);
+	@Override
+	public synchronized int getPayloadTypeNumber(PayloadType pt) {
+		return getPayloadTypeNumber(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+	}
+
 	@Override
 	public synchronized void enableAdaptiveRateControl(boolean enable) {
 		enableAdaptiveRateControl(nativePtr,enable);
@@ -1352,6 +1364,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void uploadLogCollection() {
 		uploadLogCollection(nativePtr);
 	}
+
+	@Override
+	public native void resetLogCollection();
 	
 	private native void setPreferredFramerate(long nativePtr, float fps);
 	@Override

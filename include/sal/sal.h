@@ -203,6 +203,11 @@ typedef enum {
 	SalMulticastSenderReceiver
 } SalMulticastRole;
 
+typedef enum {
+	SalOpSDPNormal = 0, /** No special handling for SDP */
+	SalOpSDPSimulateError, /** Will simulate an SDP parsing error */
+	SalOpSDPSimulateRemove /** Will simulate no SDP in the op */
+} SalOpSDPHandling;
 
 typedef struct SalStreamDescription{
 	char name[16]; /*unique name of stream, in order to ease offer/answer model algorithm*/
@@ -260,8 +265,6 @@ typedef struct SalMediaDescription{
 	bool_t ice_lite;
 	bool_t ice_completed;
 	bool_t pad[2];
-	char dtls_fingerprint[256];
-	SalDtlsRole dtls_role;
 } SalMediaDescription;
 
 typedef struct SalMessage{
@@ -553,7 +556,7 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
  * @param[in]	generate_certificate		if true, if matching certificate and key can't be found, generate it and store it into the given dir, filename will be subject.pem
  * @param[in]	generate_dtls_fingerprint	if true and we have a certificate, generate the dtls fingerprint as described in rfc4572
  */
-void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint); 
+void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint);
 
 void sal_certificates_chain_delete(SalCertificatesChain *chain);
 void sal_signing_key_delete(SalSigningKey *key);
@@ -684,11 +687,20 @@ void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
 int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 /* Call test API */
-/*willingly fails to parse SDP from received packets (INVITE and/or ACK) if value=true */
-/* First version: for all new SalOp created (eg. each incoming or outgoing call). Do not forget to reset previous value when you are done!*/
-void sal_default_enable_sdp_removal(Sal* h, bool_t enable) ;
+
+
+/**
+ * @brief Invoking this on the SAL will modify every subsequent SalOp to have a special handling for SDP.
+ * @details This is especially useful while testing, to simulate some specific behaviors, like missing SDP or an error in parsing.
+ *
+ * @warning Don't forget to reset the handling method to SalOpSDPNormal afterwards.
+ *
+ * @param h the Sal instance
+ * @param handling_method Could be SalOpSDPNormal, SalOpSDPSimulateError, SalOpSDPSimulateRemoval (\ref SalOpSDPHandling)
+ */
+void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) ;
 /* Second version: for a specific call*/
-void sal_call_enable_sdp_removal(SalOp *h, bool_t enable) ;
+void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
@@ -812,7 +824,7 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
 char* sal_op_get_public_uri(SalOp *sal);
 
-unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data); 
+unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data);
 void sal_end_background_task(unsigned long id);
 
 #endif

@@ -1484,11 +1484,7 @@ static void misc_config_read(LinphoneCore *lc) {
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		sal_set_uuid(lc->sal, uuid);
 
-	/* DTLS: if media_encryption DTLS SRTP is available, get or create the certificate directory */
-	/*if (ms_dtls_srtp_available()){
-		*//*JOHAN: USELESS? REMOVE IT*/
-		//const char *user_certificate_config_path = lp_config_get_string(config,"misc","uuid",);
-//	}*/
+	lc->user_certificates_path=ms_strdup(lp_config_get_string(config,"misc","user_certificates_path","."));
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
@@ -1616,6 +1612,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
+
 
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	lc->vtables=ms_list_append(lc->vtables,local_vtable);
@@ -5750,6 +5747,10 @@ void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
+const char * linphone_core_get_play_file(const LinphoneCore *lc) {
+	return lc->play_file;
+}
+
 /**
  * Sets a wav file to be played when putting somebody on hold,
  * or when files are used instead of soundcards (see linphone_core_set_use_files()).
@@ -5772,6 +5773,9 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 }
 
+const char * linphone_core_get_record_file(const LinphoneCore *lc) {
+	return lc->rec_file;
+}
 
 /**
  * Sets a wav file where incoming stream is to be recorded,
@@ -6760,10 +6764,11 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 }
 
 void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){
-	if (lc->user_certificates_path != NULL) {
-		ms_free(lc->user_certificates_path);
-	}
-	lc->user_certificates_path = path ? ms_strdup(path) : NULL;
+	char* new_value;
+	new_value = path?ms_strdup(path):NULL;
+	if (lc->user_certificates_path) ms_free(lc->user_certificates_path);
+	lp_config_set_string(lc->config,"misc","user_certificates_path",lc->user_certificates_path=new_value);
+	return ;
 }
 
 const char *linphone_core_get_user_certificates_path(LinphoneCore *lc){

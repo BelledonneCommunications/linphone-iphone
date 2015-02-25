@@ -90,6 +90,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/linphone
 %{_datadir}/pixmaps/linphone.png
 %{_datadir}/sounds/linphone
+%{_datadir}/appdata/linphone.appdata.xml
 
 %files devel
 %defattr(-,root,root)

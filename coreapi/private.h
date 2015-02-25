@@ -203,6 +203,8 @@ typedef struct StunCandidate{
 
 typedef struct _PortConfig{
 	char multicast_ip[LINPHONE_IPADDR_SIZE];
+	int mcast_rtp_port;
+	int mcast_rtcp_port;
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
@@ -620,6 +622,7 @@ typedef struct net_config
 	int download_bw;
 	int upload_bw;
 	int mtu;
+	OrtpNetworkSimulatorParams netsim_params;
 	bool_t nat_sdp_only;
 }net_config_t;
 
@@ -803,9 +806,11 @@ struct _LinphoneCore
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
 #ifdef ANDROID
 	jobject wifi_lock;
+	jclass wifi_lock_class;
 	jmethodID wifi_lock_acquire_id;
 	jmethodID wifi_lock_release_id;
 	jobject multicast_lock;
+	jclass multicast_lock_class;
 	jmethodID multicast_lock_acquire_id;
 	jmethodID multicast_lock_release_id;
 #endif
