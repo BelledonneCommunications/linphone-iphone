@@ -1128,10 +1128,20 @@ public interface LinphoneCore {
 	 */
 	PayloadType[] getAudioCodecs();
 	/**
+	 * Set the list of audio codecs.
+	 * @param codecs List of PayloadType objects
+	 */
+	void setAudioCodecs(PayloadType[] codecs);
+	/**
 	 * Returns the currently supported video codecs, as PayloadType elements
 	 * @return
 	 */
 	PayloadType[] getVideoCodecs();
+	/**
+	 * Set the list of video codecs.
+	 * @param codecs List of PayloadType objects
+	 */
+	void setVideoCodecs(PayloadType[] codecs);
 	/**
 	 * enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
 	 */
@@ -2000,7 +2010,17 @@ public interface LinphoneCore {
 	 * @return true if  subsequent calls will propose multicast ip set by {@link linphone_core_set_video_multicast_addr}
 	**/
 	public  boolean videoMulticastEnabled();
-	
-	
-	
+
+	/**
+	 * Enable or disable DNS SRV resolution.
+	 * @param yesno true to enable DNS SRV resolution, false to disable it.
+	 */
+	public void enableDnsSrv(boolean yesno);
+
+	/**
+	 * Tells whether DNS SRV resolution is enabled.
+	 * @return true if DNS SRV resolution is enabled, false if disabled.
+	 */
+	public boolean dnsSrvEnabled();
+
 }
