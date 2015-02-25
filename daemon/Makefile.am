@@ -78,6 +78,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/unregister.h \
 			commands/quit.h \
 			commands/contact.h \
+			commands/netsim.cc commands/netsim.h\
 			commands/version.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c

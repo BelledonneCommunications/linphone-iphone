@@ -50,6 +50,7 @@
 #include "commands/unregister.h"
 #include "commands/quit.h"
 #include "commands/configcommand.h"
+#include "commands/netsim.h"
 #include "commands/version.h"
 
 #include "private.h"
@@ -469,6 +470,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new HelpCommand());
 	mCommands.push_back(new ConfigGetCommand());
 	mCommands.push_back(new ConfigSetCommand());
+	mCommands.push_back(new NetsimCommand());
 }
 
 void Daemon::uninitCommands() {
