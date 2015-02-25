@@ -250,6 +250,7 @@ typedef struct _LinphoneCoreManager {
 	LinphoneAddress* identity;
 	LinphoneEvent *lev;
 	bool_t decline_subscribe;
+	int number_of_cunit_error_at_creation;
 } LinphoneCoreManager;
 
 typedef struct _LinphoneCallTestParams {

@@ -257,7 +257,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	LinphoneProxyConfig* proxy;
 	char *rc_path = NULL;
 	int proxy_count;
-
+	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -340,7 +340,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		if (record_file){
-			if (CU_get_number_of_failures()>0) {
+			if ((CU_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
 				unlink(record_file);
