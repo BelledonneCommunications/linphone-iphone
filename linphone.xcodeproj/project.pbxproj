@@ -2176,12 +2176,11 @@
 			children = (
 				633E388219FFB0F400936D1C /* README.md */,
 				080E96DDFE201D6D7F000001 /* Classes */,
-				F0F952011A6AEB1000254160 /* KifTests */,
+				F0F952011A6AEB1000254160 /* UITests */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F04892FE180C3296002FED35 /* ImageOptim.sh */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				F0BB8BD91936208100974404 /* LinphoneTester */,
-				F08F118819C09C6B007D70C2 /* LinphoneTester Tests */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -2503,7 +2502,7 @@
 				F08F118919C09C6B007D70C2 /* Supporting Files */,
 			);
 			path = "LinphoneTester Tests";
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		F08F118919C09C6B007D70C2 /* Supporting Files */ = {
 			isa = PBXGroup;
@@ -3006,6 +3005,7 @@
 		F0BB8BD91936208100974404 /* LinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
+				F08F118819C09C6B007D70C2 /* LinphoneTester Tests */,
 				F0BB8BE21936208100974404 /* AppDelegate.h */,
 				F0BB8BE31936208100974404 /* AppDelegate.m */,
 				F0BB8BEE1936208200974404 /* DetailViewController.h */,
@@ -3070,7 +3070,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F0F952011A6AEB1000254160 /* KifTests */ = {
+		F0F952011A6AEB1000254160 /* UITests */ = {
 			isa = PBXGroup;
 			children = (
 				F0C7737D1A94822600E0C486 /* KIF.xcodeproj */,
@@ -3084,6 +3084,7 @@
 				F844AB121A93E3A200428306 /* ContactsTester.h */,
 				F844AB131A93E3A200428306 /* ContactsTester.m */,
 			);
+			name = UITests;
 			path = KifTests;
 			sourceTree = "<group>";
 		};
