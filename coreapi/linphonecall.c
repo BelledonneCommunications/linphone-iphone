@@ -818,11 +818,6 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
 	
-#ifdef ANDROID
-	ms_message("Call [%p] acquires both wifi and multicast lock",call);
-	linphone_core_wifi_lock_acquire(call->core);
-	linphone_core_multicast_lock_acquire(call->core); /*does no affect battery more than regular rtp traffic*/
-#endif
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1248,13 +1243,14 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		call->prevstate=call->state;
 		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
 			if (cstate!=LinphoneCallReleased){
-				ms_warning("Spurious call state change from %s to %s, ignored.",linphone_call_state_to_string(call->state),
-				   linphone_call_state_to_string(cstate));
+				ms_warning("Spurious call state change from %s to %s, ignored."	,linphone_call_state_to_string(call->state)
+																				,linphone_call_state_to_string(cstate));
 				return;
 			}
 		}
-		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
-							   linphone_call_state_to_string(cstate));
+		ms_message("Call %p: moving from state %s to %s",call
+														,linphone_call_state_to_string(call->state)
+														,linphone_call_state_to_string(cstate));
 
 		if (cstate!=LinphoneCallRefered){
 			/*LinphoneCallRefered is rather an event, not a state.
@@ -1262,32 +1258,53 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 
-		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
+		switch (cstate) {
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallIncomingReceived:
+#ifdef ANDROID
+			ms_message("Call [%p] acquires both wifi and multicast lock",call);
+			linphone_core_wifi_lock_acquire(call->core);
+			linphone_core_multicast_lock_acquire(call->core); /*does no affect battery more than regular rtp traffic*/
+#endif
+			break;
+		case LinphoneCallEnd:
+		case LinphoneCallError:
 			switch(call->non_op_error.reason){
-				case SalReasonDeclined:
-					call->log->status=LinphoneCallDeclined;
-					break;
-				case SalReasonRequestTimeout:
-					call->log->status=LinphoneCallMissed;
+			case SalReasonDeclined:
+				call->log->status=LinphoneCallDeclined;
 				break;
-				default:
+			case SalReasonRequestTimeout:
+				call->log->status=LinphoneCallMissed;
+				break;
+			default:
 				break;
 			}
 			linphone_call_set_terminated(call);
-		}
-		if (cstate == LinphoneCallConnected) {
+			break;
+		case LinphoneCallConnected:
 			call->log->status=LinphoneCallSuccess;
 			call->log->connected_date_time=time(NULL);
-		}
+			break;
+		case LinphoneCallStreamsRunning:
+			if (call->dtmfs_timer!=NULL){
+				/*cancelling DTMF sequence, if any*/
+				linphone_call_cancel_dtmfs(call);
+			}
+			break;
+		case LinphoneCallReleased:
+#ifdef ANDROID
+			ms_message("Call [%p] releases wifi/multicast lock",call);
+			linphone_core_wifi_lock_release(call->core);
+			linphone_core_multicast_lock_release(call->core);
+#endif
+			break;
+		default:
+			break;
 
+		}
 		linphone_core_notify_call_state_changed(lc,call,cstate,message);
 		linphone_reporting_call_state_updated(call);
-		
-		/*cancelling DTMF sequence, if any*/
-		if (cstate!=LinphoneCallStreamsRunning && call->dtmfs_timer!=NULL){
-			linphone_call_cancel_dtmfs(call);
-		}
-		if (cstate==LinphoneCallReleased){
+		if (cstate==LinphoneCallReleased) {/*shall be performed after  app notification*/
 			linphone_call_set_released(call);
 		}
 		linphone_core_soundcard_hint_check(lc);
@@ -1364,11 +1381,6 @@ static void linphone_call_destroy(LinphoneCall *obj){
 	}
 
 	sal_error_info_reset(&obj->non_op_error);
-	#ifdef ANDROID
-	ms_message("Call [%p] releases wifi/multicast lock",obj);
-	linphone_core_wifi_lock_release(obj->core);
-	linphone_core_multicast_lock_release(obj->core);
-	#endif
 }
 
 /**

@@ -21,7 +21,7 @@ package org.linphone.core;
 
 class PayloadTypeImpl implements PayloadType {
 
-	protected final long nativePtr;
+	public final long nativePtr;
 	
 	private native String toString(long ptr);
 	private native String getMime(long ptr);

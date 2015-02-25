@@ -1639,6 +1639,18 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTy
 	return jCodecs;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoCodecs(JNIEnv *env, jobject thiz, jlong lc, jlongArray jCodecs) {
+	MSList *pts = NULL;
+	int codecsCount = env->GetArrayLength(jCodecs);
+	jlong *codecs = env->GetLongArrayElements(jCodecs, NULL);
+	for (int i = 0; i < codecsCount; i++) {
+		PayloadType *pt = (PayloadType *)codecs[i];
+		ms_list_append(pts, pt);
+	}
+	linphone_core_set_video_codecs((LinphoneCore *)lc, pts);
+	env->ReleaseLongArrayElements(jCodecs, codecs, 0);
+}
+
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listAudioPayloadTypes(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc) {
@@ -1655,6 +1667,18 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listAudioPayloadTy
 	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
 
 	return jCodecs;
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setAudioCodecs(JNIEnv *env, jobject thiz, jlong lc, jlongArray jCodecs) {
+	MSList *pts = NULL;
+	int codecsCount = env->GetArrayLength(jCodecs);
+	jlong *codecs = env->GetLongArrayElements(jCodecs, NULL);
+	for (int i = 0; i < codecsCount; i++) {
+		PayloadType *pt = (PayloadType *)codecs[i];
+		pts = ms_list_append(pts, pt);
+	}
+	linphone_core_set_audio_codecs((LinphoneCore *)lc, pts);
+	env->ReleaseLongArrayElements(jCodecs, codecs, 0);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv*  env
@@ -5861,4 +5885,10 @@ extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_videoMultica
 	return linphone_core_video_multicast_enabled((LinphoneCore*)ptr);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableDnsSrv(JNIEnv *env, jobject thiz, jlong lc, jboolean yesno) {
+	linphone_core_enable_dns_srv((LinphoneCore *)lc, yesno);
+}
 
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_dnsSrvEnabled(JNIEnv *env, jobject thiz, jlong lc) {
+	return linphone_core_dns_srv_enabled((LinphoneCore *)lc);
+}
