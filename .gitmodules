@@ -66,6 +66,7 @@
 [submodule "submodules/cunit"]
 	path = submodules/cunit
 	url = git://git.linphone.org/cunit.git
+	ignore = dirty
 [submodule "submodules/externals/openh264"]
 	path = submodules/externals/openh264
 	url = https://github.com/cisco/openh264
