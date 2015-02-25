@@ -998,7 +998,6 @@
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = Resources/ringback.wav; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.release.xcconfig"; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340751961506459A00B89C47 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
@@ -1011,7 +1010,6 @@
 		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		57F005C615EE2D9200914747 /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
 		57F005C715EE2D9200914747 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
-		58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		631C4FAF19D2A8F2004BFE77 /* UIDigitButtonLongPlus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongPlus.h; sourceTree = "<group>"; };
 		631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongPlus.m; sourceTree = "<group>"; };
 		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
@@ -1041,7 +1039,6 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsViewController.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsViewController.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -1838,7 +1835,6 @@
 		F844AB131A93E3A200428306 /* ContactsTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTester.m; sourceTree = "<group>"; };
 		F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
 		F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
-		F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.debug.xcconfig"; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2185,7 +2181,6 @@
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				D398D3031594B0FB00FD553C /* Settings */,
-				60099578873114C41E4882F8 /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2300,17 +2295,6 @@
 				F03A9B7E18C0D9C900C4D7FE /* libcunit.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		60099578873114C41E4882F8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */,
-				2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */,
-				9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */,
-				58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
