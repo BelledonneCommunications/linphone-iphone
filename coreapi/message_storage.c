@@ -26,9 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifndef WIN32
-#include <langinfo.h>
-#include <iconv.h>
-#include <string.h>
+#ifndef ANDROID
+#	include <langinfo.h>
+#	include <iconv.h>
+#	include <string.h>
+#endif
 #else
 #include <Windows.h>
 #endif
