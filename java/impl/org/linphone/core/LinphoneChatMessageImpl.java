@@ -1,8 +1,10 @@
 package org.linphone.core;
 
+import java.io.UnsupportedEncodingException;
+
 public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	protected final long nativePtr;
-	private native String getText(long ptr);
+	private native byte[] getText(long ptr);
 	private native long getPeerAddress(long ptr);
 	private native String getExternalBodyUrl(long ptr);
 	private native void setExternalBodyUrl(long ptr, String url);
@@ -25,7 +27,14 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	@Override
 	public String getText() {
-		return getText(nativePtr);
+		byte rawText[];
+		try {
+			rawText=getText(nativePtr);
+			if (rawText!=null) return new String(rawText, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@Override

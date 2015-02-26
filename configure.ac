@@ -60,6 +60,9 @@ case $target in
 		mingwce_found=yes
 	;;
 	*mingw*)
+		dnl Workaround for mingw, whose compiler does not check in /usr/include ...
+		CPPFLAGS="$CPPFLAGS -I/usr/include"
+		LDFLAGS="$LDFLAGS -L/usr/lib"
 		CFLAGS="$CFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501 "
 		CXXFLAGS="$CXXFLAGS -DORTP_STATIC -D_WIN32_WINNT=0x0501"
 		LIBS="$LIBS -lws2_32"
@@ -76,7 +79,7 @@ case $target in
 	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
 		dnl use macport installation
-		ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"
+		AS_IF([test -d "/opt/local/share/aclocal"], [ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"])
 		build_macos=yes
 	;;
 
@@ -129,7 +132,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW he sr"
+ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -158,13 +161,16 @@ dnl AC_CHECK_LIB(intl,libintl_gettext)
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
 AC_ARG_ENABLE(x11,
-	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=no)])],
+	[AS_HELP_STRING([--disable-x11], [Disable X11 support (default=yes for MacOSX, no otherwise)])],
 	[case "${enableval}" in
 		yes)	enable_x11=true ;;
 		no)	enable_x11=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
 	esac],
-	[enable_x11=true]
+	[case "$target_os" in
+		*darwin*) enable_x11=false ;; #disable x11 on MacOS by default
+		*) enable_x11=true ;;
+	esac]
 )
 
 dnl conditional build of LDAP support
@@ -268,6 +274,43 @@ if test "$build_upnp" != "false" ; then
 	AC_DEFINE(BUILD_UPNP, 1, [Define if upnp enabled])
 fi
 
+dnl check zlib
+AC_ARG_ENABLE(zlib,
+	[AS_HELP_STRING([--disable-zlib], [Disable ZLib support])],
+	[case "${enableval}" in
+		yes)	build_zlib=true ;;
+		no)	build_zlib=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-zlib) ;;
+	esac],
+	[build_zlib=auto]
+)
+if test "$build_zlib" != "false" ; then
+	PKG_CHECK_MODULES(ZLIB, [zlib], [found_zlib=yes], [found_zlib=no])
+	if test "x$found_zlib" = "xno" ; then
+		AC_CHECK_LIB(z, inflate,
+			[AC_CHECK_HEADER([zlib.h],
+			[AC_COMPILE_IFELSE(
+				[AC_LANG_PROGRAM([[
+				 #include <zlib.h>
+				 #if !defined(ZLIB_VERNUM) || (ZLIB_VERNUM < 0x1230)
+				 // compile error
+				 #endif
+			]],[])],
+			[found_zlib=yes])])])
+		if test "x$found_zlib" = "xno" ; then
+			AC_MSG_NOTICE([zlib library and headers not found])
+		else
+			AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
+			ZLIB_LIBS='-lz'
+			AC_SUBST(ZLIB_LIBS)
+		fi
+	else
+		AC_MSG_NOTICE([ZLIB found])
+		AC_DEFINE( HAVE_ZLIB, 1, [ZLIB support] )
+	fi
+fi
+
+
 dnl check libxml2
 PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[libxml2_found=yes],foo=bar)
 if test "$libxml2_found" != "yes" ; then
@@ -330,7 +373,6 @@ if test "$gtk_ui" = "true" ; then
 				AC_DEFINE([HAVE_NOTIFY1],[1],[NOTIFY1 support])
 		esac
 	else
-		NotifyNotification *n;
 		echo "Libnotify support is disabled."
 	fi
 fi
@@ -586,6 +628,26 @@ AC_ARG_ENABLE(zrtp,
 	[zrtp=false]
 )
 
+AC_ARG_ENABLE(dtls,
+	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
+	[case "${enableval}" in
+		yes)	dtls=true ;;
+		no)	dtls=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-dtls) ;;
+	esac],
+	[dtls=false]
+)
+
+AC_ARG_ENABLE(g729bCN,
+	[AS_HELP_STRING([--enable-g729bCN], [Turn on or off usage of G729AnnexB in RFC3389 implementation of Comfort Noise Payload (default=no)])],
+	[case "${enableval}" in
+		yes)	g729bCN=true ;;
+		no)	g729bCN=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-g729bCN) ;;
+	esac],
+	[g729bCN=false]
+)
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -596,6 +658,7 @@ dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
 AM_CONDITIONAL(BUILD_ZRTP, test x$zrtp = xtrue)
+AM_CONDITIONAL(BUILD_DTLS, test x$dtls = xtrue)
 
 dnl check getenv
 AH_TEMPLATE([HAVE_GETENV])
@@ -756,7 +819,6 @@ AC_SUBST([MS2_VERSION])
 AC_SUBST([MS2_DIR])
 
 
-
 AC_ARG_ENABLE(tunnel,
 	[AS_HELP_STRING([--enable-tunnel=[yes/no]], [Turn on compilation of tunnel support (default=no)])],
 	[case "${enableval}" in
@@ -782,8 +844,6 @@ AC_ARG_ENABLE(msg-storage,
 	[enable_msg_storage=auto]
 )
 
-AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
-
 if test x$enable_msg_storage != xfalse; then
 	PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
 	if test "$found_sqlite" = "no"; then
@@ -792,6 +852,7 @@ if test x$enable_msg_storage != xfalse; then
 	fi
 	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		enable_msg_storage=true
 	else
 		if test x$enable_msg_storage = xtrue; then
 			AC_MSG_ERROR([sqlite3, required for message storage, not found])
@@ -803,7 +864,7 @@ if test x$enable_msg_storage != xfalse; then
 	AC_SUBST(SQLITE3_LIBS)
 fi
 
-
+AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
 
@@ -894,6 +955,7 @@ case "$target_os" in
 	;;
 esac
 
+
 dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
@@ -944,8 +1006,10 @@ printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption"		$zrtp
+printf "* %-30s %s\n" "DTLS encryption"		$dtls
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
+printf "* %-30s %s\n" "ZLIB support" 		$found_zlib
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"

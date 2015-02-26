@@ -29,10 +29,12 @@ void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	*dst = *dst ?
 				ms_strcat_printf(*dst, "%c", dtmf)
 				: ms_strdup_printf("%c", dtmf);
+	counters->dtmf_count++;
 }
 
 void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtmf_seq) {
 	char* expected = NULL;
+	int dtmf_count_prev;
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -44,21 +46,27 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 	CU_ASSERT_TRUE(call(pauline,marie));
 
 	marie_call = linphone_core_get_current_call(marie->lc);
+	
+	CU_ASSERT_PTR_NOT_NULL(marie_call);
+	
+	if (!marie_call) return;
 
 	if (dtmf != '\0') {
+		dtmf_count_prev = pauline->stat.dtmf_count;
 		linphone_call_send_dtmf(marie_call, dtmf);
 
 		/*wait for the DTMF to be received from pauline*/
-		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
+		CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev+1, 10000));
 		expected = ms_strdup_printf("%c", dtmf);
 	}
 
 	if (dtmf_seq != NULL) {
 		int dtmf_delay_ms = lp_config_get_int(marie_call->core->config,"net","dtmf_delay_ms",200);
+		dtmf_count_prev = pauline->stat.dtmf_count;
 		linphone_call_send_dtmfs(marie_call, dtmf_seq);
 
 		/*wait for the DTMF sequence to be received from pauline*/
-		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000 + dtmf_delay_ms * strlen(dtmf_seq));
+		CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev + strlen(dtmf_seq), 10000 + dtmf_delay_ms * strlen(dtmf_seq)));
 		expected = (dtmf!='\0')?ms_strdup_printf("%c%s",dtmf,dtmf_seq):ms_strdup(dtmf_seq);
 	}
 

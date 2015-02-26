@@ -40,3 +40,5 @@ coreapi/proxy.c
 coreapi/callbacks.c
 coreapi/linphonecall.c
 
+coreapi/call_log.c
+gtk/videowindow.c

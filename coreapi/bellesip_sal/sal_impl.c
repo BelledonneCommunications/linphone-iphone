@@ -204,7 +204,7 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
 	belle_sip_header_address_t* origin_address;
-	belle_sip_header_address_t* address;
+	belle_sip_header_address_t* address=NULL;
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to;
 	belle_sip_response_t* resp;
@@ -266,8 +266,14 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	}
 
 	if (!op->base.from_address)  {
-		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
-														,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		if (belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)))
+			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		else if ((belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(from_header))))
+			address=belle_sip_header_address_create2(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+					,belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+		else
+			ms_error("Cannot not find from uri from request [%p]",req);
 		sal_op_set_from_address(op,(SalAddress*)address);
 		belle_sip_object_unref(address);
 	}
@@ -278,8 +284,15 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 
 	if (!op->base.to_address) {
 		to=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_to_t);
-		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
-												,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		if (belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)))
+			address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
+					,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		else if ((belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(to))))
+			address=belle_sip_header_address_create2(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))
+					,belle_sip_header_address_get_absolute_uri(BELLE_SIP_HEADER_ADDRESS(to)));
+		else
+			ms_error("Cannot not find to uri from request [%p]",req);
+
 		sal_op_set_to_address(op,(SalAddress*)address);
 		belle_sip_object_unref(address);
 	}
@@ -1060,8 +1073,51 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
 	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
 }
 
+/**
+ * Parse a directory to get a certificate with the given subject common name
+ *
+ */
+void sal_certificates_chain_parse_directory(char **certificate_pem, char **key_pem, char **fingerprint, const char* path, const char *subject, SalCertificateRawFormat format, bool_t generate_certificate, bool_t generate_dtls_fingerprint) {
+	belle_sip_certificates_chain_t *certificate = NULL;
+	belle_sip_signing_key_t *key = NULL;
+	*certificate_pem = NULL;
+	*key_pem = NULL;
+	if (belle_sip_get_certificate_and_pkey_in_dir(path, subject, &certificate, &key, (belle_sip_certificate_raw_format_t)format) == 0) {
+		*certificate_pem = belle_sip_certificates_chain_get_pem(certificate);
+		*key_pem = belle_sip_signing_key_get_pem(key);
+		ms_message("Retrieve certificate with CN=%s successful\n", subject);
+	} else {
+		if (generate_certificate == TRUE) {
+			if ( belle_sip_generate_self_signed_certificate(path, subject, &certificate, &key) == 0) {
+				*certificate_pem = belle_sip_certificates_chain_get_pem(certificate);
+				*key_pem = belle_sip_signing_key_get_pem(key);
+				ms_message("Generate self-signed certificate with CN=%s successful\n", subject);
+			}
+		}
+	}
+	/* generate the fingerprint as described in RFC4572 if needed */
+	if ((generate_dtls_fingerprint == TRUE) && (fingerprint != NULL)) {
+		if (*fingerprint != NULL) {
+			ms_free(*fingerprint);
+		}
+		*fingerprint = belle_sip_certificates_chain_get_fingerprint(certificate);
+	}
+
+	/* free key and certificate */
+	if ( certificate != NULL ) {
+		belle_sip_object_unref(certificate);
+	}
+	if ( key != NULL ) {
+		belle_sip_object_unref(key);
+	}
+}
+
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
 	return belle_sip_random_bytes(ret,size);
+}
+
+char *sal_get_random_token(int size){
+	return belle_sip_random_token(ms_malloc(size),size);
 }
 
 unsigned int sal_get_random(void){
@@ -1079,11 +1135,21 @@ void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer) {
 	belle_sip_main_loop_t *ml = belle_sip_stack_get_main_loop(sal->stack);
 	belle_sip_main_loop_remove_source(ml, timer);
 }
+
+unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data){
+	return belle_sip_begin_background_task(name, max_time_reached, data);
+}
+
+void sal_end_background_task(unsigned long id){
+	belle_sip_end_background_task(id);
+}
+
+
 void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
 	ctx->enable_sip_update=value;
 }
 
-void sal_default_enable_sdp_removal(Sal *sal, bool_t enable)  {
-	if (enable) ms_message("Enabling SDP removal feature by default for all new SalOp in Sal[%p]!", sal);
-	sal->default_sdp_removal = enable;
+void sal_default_set_sdp_handling(Sal *sal, SalOpSDPHandling sdp_handling_method)  {
+	if (sdp_handling_method != SalOpSDPNormal ) ms_message("Enabling special SDP handling for all new SalOp in Sal[%p]!", sal);
+	sal->default_sdp_handling = sdp_handling_method;
 }

@@ -32,6 +32,9 @@ pkgconfig_DATA=linphone.pc
 linphonedir=$(datadir)/linphone
 linphone_DATA=rootca.pem
 
+appdatadir=$(datadir)/appdata
+appdata_DATA=linphone.appdata.xml
+
 #download root ca from mozilla using script from curl (mk-ca-bundle.pl).
 #if that fails (no connection, no perl SSL...) , then a rootca bundle archived in the source tree is taken instead.
 rootca.pem:
@@ -49,7 +52,8 @@ EXTRA_DIST =					$(LINPHONE_SOUNDS) \
 						audio-assistant.desktop.in   \
 						linphone.pc.in \
 						Makefile.inc \
-						archived-rootca.pem
+						archived-rootca.pem \
+						$(appdata_DATA)
 
 CLEANFILES=rootca.pem
 

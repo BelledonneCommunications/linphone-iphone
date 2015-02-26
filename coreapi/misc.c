@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif /*_WIN32_WCE*/
 
 #undef snprintf
-#include <ortp/stun.h>
+#include <mediastreamer2/stun.h>
 
 #ifdef HAVE_GETIFADDRS
 #include <net/if.h>
@@ -59,15 +59,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define RTP_HDR_SZ 12
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
-static void payload_type_set_enable(PayloadType *pt,int value)
-{
-	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
-	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
-}
-
-static bool_t payload_type_enabled(const PayloadType *pt) {
-	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
-}
 
 bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
@@ -95,6 +86,10 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt,
 
 int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt){
 	return payload_type_get_number(pt);
+}
+
+void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number){
+	payload_type_set_number(pt,number);
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
@@ -177,7 +172,7 @@ static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
 static int get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt, int maxbw){
 	if (linphone_core_payload_type_is_vbr(lc,pt)){
 		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
-			ms_message("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
+			ms_debug("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
 			return pt->normal_bitrate/1000;
 		}
 		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
@@ -641,6 +636,24 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
+const char *linphone_ice_state_to_string(LinphoneIceState state){
+	switch(state){
+		case LinphoneIceStateFailed:
+			return "IceStateFailed";
+		case LinphoneIceStateHostConnection:
+			return "IceStateHostConnection";
+		case LinphoneIceStateInProgress:
+			return "IceStateInProgress";
+		case LinphoneIceStateNotActivated:
+			return "IceStateNotActivated";
+		case LinphoneIceStateReflexiveConnection:
+			return "IceStateReflexiveConnection";
+		case LinphoneIceStateRelayConnection:
+			return "IceStateRelayConnection";
+	}
+	return "invalid";
+}
+
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 {
 	IceCheckList *audio_check_list;
@@ -699,6 +712,8 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}
+	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call, 
+		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
@@ -825,8 +840,25 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	bool_t ice_restarted = FALSE;
-
-	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
+	bool_t ice_params_found=FALSE;
+	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0'))  {
+		ice_params_found=TRUE;
+	} else {
+		int i;
+		for (i = 0; i < md->nb_streams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl) {
+				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+					ice_params_found=TRUE;
+				} else {
+					ice_params_found=FALSE;
+					break;
+				}
+			}
+		}
+	}
+	if (ice_params_found) {
 		int i, j;
 
 		/* Check for ICE restart and set remote credentials. */
@@ -858,11 +890,14 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
-					if (ice_restarted == FALSE) {
+					if (ice_restarted == FALSE
+							&& ice_check_list_get_remote_ufrag(cl)
+							&& ice_check_list_get_remote_pwd(cl)) {
+							/* restart onlu if remote ufrag/paswd was already set*/
 						ice_session_restart(call->ice_session);
 						ice_restarted = TRUE;
 					}
-					ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
 					break;
 				}
 			}
@@ -1409,7 +1444,7 @@ static void linphone_core_migrate_proxy_config(LinphoneCore *lc, LinphoneTranspo
  * Existing proxy configuration are added a transport parameter so that they continue using the unique transport that was set previously.
  * This function must be used just after creating the core, before any call to linphone_core_iterate()
  * @param lc the linphone core
- * @returns 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
+ * @return 1 if migration was done, 0 if not done because unnecessary or already done, -1 in case of error.
  * @ingroup initializing
 **/
 int linphone_core_migrate_to_multi_transport(LinphoneCore *lc){
@@ -1563,5 +1598,45 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 
 bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
 	return lp_config_get_int(lc->config,"rtp","symmetric",1);
+}
+
+int linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){
+	if (params!=&lc->net_conf.netsim_params)
+		lc->net_conf.netsim_params=*params;
+	/*TODO: should we make some sanity checks on the parameters here*/
+	return 0;
+}
+
+const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc){
+	return &lc->net_conf.netsim_params;
+}
+
+static const char *_tunnel_mode_str[3] = { "disable", "enable", "auto" };
+
+LinphoneTunnelMode linphone_tunnel_mode_from_string(const char *string) {
+	if(string != NULL) {
+		int i;
+		for(i=0; i<3 && strcmp(string, _tunnel_mode_str[i]) != 0; i++);
+		if(i<3) {
+			return (LinphoneTunnelMode)i;
+		} else {
+			ms_error("Invalid tunnel mode '%s'", string);
+			return LinphoneTunnelModeDisable;
+		}
+	} else {
+		return LinphoneTunnelModeDisable;
+	}
+}
+
+const char *linphone_tunnel_mode_to_string(LinphoneTunnelMode mode) {
+	switch(mode){
+		case LinphoneTunnelModeAuto:
+			return "auto";
+		case LinphoneTunnelModeDisable:
+			return "disable";
+		case LinphoneTunnelModeEnable:
+			return "enable";
+	}
+	return "invalid";
 }
 

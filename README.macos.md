@@ -1,12 +1,17 @@
-# Compiling Linphone on MacOS X
+# Linphone on MacOS X
 
-## Dependencies
+## Build prerequisite
 
 * Xcode (download from apple or using appstore application)
-* Java SE
+* [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or openJDK
+ This is required to generate a C sourcefile from SIP grammar using [antlr3](http://www.antlr3.org/) generator.
 * [HomeBrew](http://brew.sh) or [Macports](http://www.macports.org/).
 
-### Multiple MacOS version support
+### Dependencies
+
+#### Using MacPorts
+
+##### Multiple MacOS version support
 
 In order to enable generation of bundle for multiple MacOS version and 32 bit processors, it is recommended to:
 
@@ -18,17 +23,16 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
 
  > +universal
 
-### Build time dependencies
 
-#### Using MacPorts
+##### Linphone library (liblinphone)
 
-* Linphone core dependencies
-
-        sudo port install automake autoconf libtool intltool wget cunit \
+        sudo port install automake autoconf libtool pkgconfig intltool wget cunit \
         antlr3 speex libvpx readline sqlite3 libsoup openldap libupnp \
         ffmpeg-devel -gpl2
 
-* UI dependencies: install `GTK`. It is recommended to use the `quartz` backend for better integration.
+##### Linphone UI (GTK version)
+
+Install `GTK`. It is recommended to use the `quartz` backend for better integration.
 
         sudo port install gtk2 +quartz +no_x11
         sudo port install gtk-osx-application -python27
@@ -36,24 +40,21 @@ In order to enable generation of bundle for multiple MacOS version and 32 bit pr
 
 #### Using HomeBrew
 
-        brew install automake intltool libtool pkg-config coreutils \
-        yasm nasm wget imagemagick gettext gtk+ speex ffmpeg pygtk
-        brew link gettext --force
-        # readline is required from linphonec.c otherwise compilation will fail
+##### Linphone library (liblinphone)
+
+        brew tap Gui13/linphone
+        brew install intltool libtool wget pkg-config automake libantlr3.4c \
+                antlr3.2 gettext speex ffmpeg readline libvpx opus
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        brew link --force gettext
+
+##### Linphone UI (GTK version)
+
+	brew install cairo --without-x11
+        brew install gtk+ --without-x11
+        brew install gettext gtk-mac-integration libsoup hicolor-icon-theme
+        #readline is required from linphonec.c otherwise compilation will fail
         brew link readline --force
-
-        # then you have to install antlr3 from a tap.
-        wget https://gist.githubusercontent.com/Gui13/f5cf103f50d34c28c7be/raw/f50242f5e0c3a6d25ed7fca1462bce3a7b738971/antlr3.rb
-        mv antlr3.rb /usr/local/Library/Formula/
-        brew install antlr3
-
-        brew tap marekjelen/gtk
-        brew install gtk+-quartz
-
-        # gtk-mac-integration is not available in main repository or Brew yet.
-        wget https://gist.github.com/Gui13/cdcad37faa6b8ffa0588/raw/bf2277d45e261ad48ae1344c4c97f2684974ed87/gtk-mac-integration.rb
-        mv gtk-mac-integration.rb /usr/local/Library/Formula/
-        brew install gtk-mac-integration
 
 ### Building Linphone
 
@@ -67,7 +68,7 @@ The next pieces need to be compiled manually.
         export CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
         export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5 -Wl,-headerpad_max_install_names -Wl,-read_only_relocs -Wl,suppress"
 
-* Install libantlr3c (library used by belle-sip for parsing)
+* (MacPorts only) Install libantlr3c (library used by belle-sip for parsing)
 
         git clone -b linphone git://git.linphone.org/antlr3.git
         cd antlr3/runtime/C
@@ -121,14 +122,12 @@ The libvpx build isn't able to produce dual architecture files. To workaround th
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, :
 
-        # HomeBrew
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/usr/local && make
-        # MacPorts
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict --with-readline=/opt/local && make
+        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
 * Install on the system
 
         sudo make install
+
  You are done.
 
 ### Generate portable bundle
@@ -138,7 +137,7 @@ If you want to generate a portable bundle, then install `gtk-mac-bundler`:
         git clone https://github.com/jralls/gtk-mac-bundler.git
         cd gtk-mac-bundler && make install
         export PATH=$PATH:~/.local/bin
-        #make this dummy charset.alias file for the bundler to be happy:
+        # make this dummy charset.alias file for the bundler to be happy:
         sudo touch /opt/local/lib/charset.alias
 
 The bundler file in `build/MacOS/linphone.bundle` expects some plugins to be installed in `/opt/local/lib/mediastreamer/plugins`.
@@ -147,6 +146,15 @@ If you don't need plugins, remove or comment out this line from the bundler file
         <binary>
         ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
         </binary>
+
+If using HomeBrew, this is not working yet. However you will at least need to:
+
+        brew install shared-mime-info glib-networking hicolor-icon-theme
+        update-mime-database /usr/local/share/mime
+
+ And modify also:
+
+        <prefix name="default">/usr/local</prefix>
 
 Then run, inside Linphone source tree configure as told before but with `--enable-relativeprefix` appended.
 

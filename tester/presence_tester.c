@@ -336,7 +336,7 @@ static void presence_information(void) {
 	}
 
 	/* Presence timestamp. */
-	current_timestamp = time(NULL);
+	current_timestamp = ms_time(NULL);
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityShopping, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityShopping,1);
@@ -382,25 +382,90 @@ static void test_subscribe_notify_publish(void) {
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,2,2000);
 	CU_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf));
 
-	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,NULL);
+	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
 
 	/*wait for new status*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,3,2000);
-	CU_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf));
+	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
 
 	/*wait for refresh*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,4,5000);
-	CU_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf));
+	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
 
-	//linphone_core_remove_friend(pauline->lc,lf);
+	/*linphone_core_remove_friend(pauline->lc,lf);*/
 	/*wait for final notify*/
-	//wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,4,5000);
-	//CU_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf));
-
+	/*wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,4,5000);
+	CU_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf));
+	 */
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void test_forked_subscribe_notify_publish(void) {
+
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneProxyConfig* proxy;
+	LinphonePresenceModel* presence;
+	LpConfig *pauline_lp;
+	char* lf_identity;
+	LinphoneFriend *lf;
+	MSList* lcs=ms_list_append(NULL,pauline->lc);
+	lcs=ms_list_append(lcs,marie->lc);
+	lcs=ms_list_append(lcs,marie->lc);
+	lcs=ms_list_append(lcs,marie2->lc);
+
+	pauline_lp = linphone_core_get_config(pauline->lc);
+	lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+
+	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
+
+	linphone_core_add_friend(pauline->lc,lf);
+
+	/*wait for subscribe acknowledgment*/
+	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,1,2000);
+	CU_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf));
+
+	/*enable publish*/
+
+	linphone_core_get_default_proxy(marie->lc,&proxy);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,TRUE);
+	linphone_proxy_config_set_publish_expires(proxy,3);
+	linphone_proxy_config_done(proxy);
+
+	linphone_core_get_default_proxy(marie2->lc,&proxy);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,TRUE);
+	linphone_proxy_config_set_publish_expires(proxy,3);
+	linphone_proxy_config_done(proxy);
+
+
+	/*wait for marie status*/
+	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,3,2000);
+	CU_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf));
+
+	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
+	linphone_core_set_presence_model(marie->lc,presence);
+
+	/*wait for new status*/
+	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,4,2000);
+	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
+
+
+	presence =linphone_presence_model_new_with_activity(  LinphonePresenceActivityMeeting,NULL);
+	linphone_core_set_presence_model(marie2->lc,presence);
+	/*wait for new status*/
+	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,5,2000);
+	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf)); /*because liblinphone compositor is very simple for now (I.E only take first occurence)*/
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 #endif
 
@@ -414,6 +479,7 @@ test_t presence_tests[] = {
 	{ "App managed presence failure", subscribe_failure_handle_by_app },
 #if USE_PRESENCE_SERVER
 	{ "Subscribe with late publish", test_subscribe_notify_publish },
+	{ "Forked subscribe with late publish", test_forked_subscribe_notify_publish },
 #endif
 };
 

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 #include "lpconfig.h"
+#include "liblinphone_gitversion.h"
 
 
 #include <sys/types.h>
@@ -48,6 +49,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef ENABLE_NLS
 #include <locale.h>
 #endif
+
 
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
@@ -77,6 +79,7 @@ void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
 void linphone_gtk_on_uribar_changed(GtkEditable *uribar, gpointer user_data);
 static void linphone_gtk_init_ui(void);
+static void linphone_gtk_quit(void);
 
 #ifndef HAVE_GTK_OSX
 static gint main_window_x=0;
@@ -90,6 +93,7 @@ static int start_option = START_LINPHONE;
 static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
 static gboolean run_audio_assistant=FALSE;
+static gboolean selftest=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
@@ -162,6 +166,13 @@ static GOptionEntry linphone_options[]={
 		.arg_data = (gpointer) &run_audio_assistant,
 		.description = N_("Run the audio assistant")
 	},
+	{
+		.long_name = "selftest",
+		.short_name = '\0',
+		.arg = G_OPTION_ARG_NONE,
+		.arg_data = (gpointer) &selftest,
+		.description = N_("Run self test and exit 0 if succeed")
+	},
 	{0}
 };
 
@@ -172,9 +183,11 @@ static GOptionEntry linphone_options[]={
 #ifndef WIN32
 #define CONFIG_FILE ".linphonerc"
 #define SECRETS_FILE ".linphone-zidcache"
+#define CERTIFICATES_PATH ".linphone-usr-crt"
 #else
 #define CONFIG_FILE "linphonerc"
 #define SECRETS_FILE "linphone-zidcache"
+#define CERTIFICATES_PATH "linphone-usr-crt"
 #endif
 
 char *linphone_gtk_get_config_file(const char *filename){
@@ -279,6 +292,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
+	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
 
 	vtable.global_state_changed=linphone_gtk_global_state_changed;
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
@@ -316,6 +330,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
+	linphone_core_set_user_certificates_path(the_core,user_certificates_dir);
+	g_free(user_certificates_dir);
 	linphone_core_enable_video_capture(the_core, TRUE);
 	linphone_core_enable_video_display(the_core, TRUE);
 	linphone_core_set_native_video_window_id(the_core,-1);/*don't create the window*/
@@ -547,7 +563,7 @@ void linphone_gtk_show_about(){
 		}
 		g_free(license);
 	}
-	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LINPHONE_VERSION);
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LIBLINPHONE_GIT_VERSION);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
 	if (logo)	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about),logo);
@@ -818,9 +834,6 @@ bool_t linphone_gtk_video_enabled(void){
 
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
-	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
-	    	VIDEOSELFVIEW_DEFAULT));
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -1014,13 +1027,6 @@ void _linphone_gtk_enable_video(gboolean val){
 	linphone_core_enable_video_capture(linphone_gtk_get_core(), TRUE);
 	linphone_core_enable_video_display(linphone_gtk_get_core(), TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
-
-	if (val){
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
-	}else{
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
-	}
 }
 
 void linphone_gtk_enable_video(GtkWidget *w){
@@ -1032,7 +1038,6 @@ void linphone_gtk_enable_video(GtkWidget *w){
 void linphone_gtk_enable_self_view(GtkWidget *w){
 	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	LinphoneCore *lc=linphone_gtk_get_core();
-	linphone_core_enable_video_preview(lc,val);
 	linphone_core_enable_self_view(lc,val);
 	linphone_gtk_set_ui_config_int("videoselfview",val);
 }
@@ -1228,14 +1233,19 @@ static bool_t notify_actions_supported() {
 }
 
 static NotifyNotification* build_notification(const char *title, const char *body) {
-	const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
-	GdkPixbuf *pbuf = create_pixbuf(icon_path);
 	NotifyNotification *n = notify_notification_new(title, body, NULL
 #ifdef HAVE_NOTIFY1
 		,NULL
 #endif
 	);
-	notify_notification_set_icon_from_pixbuf(n, pbuf);
+#ifndef HAVE_NOTIFY1
+	{
+		const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
+		GdkPixbuf *pbuf = create_pixbuf(icon_path);
+		/*with notify1, this function makes the notification crash the app with obscure dbus glib critical errors*/
+		notify_notification_set_icon_from_pixbuf(n, pbuf);
+	}
+#endif
 	return n;
 }
 
@@ -1314,6 +1324,9 @@ static void linphone_gtk_global_state_changed(LinphoneCore *lc, LinphoneGlobalSt
 		break;
 		case LinphoneGlobalOn:
 			linphone_gtk_init_ui();
+			if (selftest) {
+				gtk_timeout_add(300,(GtkFunction)gtk_main_quit,NULL);
+			}
 		break;
 		default:
 		break;
@@ -1821,10 +1834,11 @@ void linphone_gtk_manage_login(void){
 gboolean linphone_gtk_close(GtkWidget *mw){
 	/*shutdown calls if any*/
 	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *camera_preview=linphone_gtk_get_camera_preview_window();
 	if (linphone_core_in_call(lc)){
 		linphone_core_terminate_all_calls(lc);
 	}
-	linphone_core_enable_video_preview(lc,FALSE);
+	if (camera_preview) gtk_widget_destroy(camera_preview);
 #ifdef __APPLE__ /*until with have a better option*/
 	gtk_window_iconify(GTK_WINDOW(mw));
 #else
@@ -1835,13 +1849,6 @@ gboolean linphone_gtk_close(GtkWidget *mw){
 
 #ifdef HAVE_GTK_OSX
 static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
-	bool_t video_enabled=linphone_gtk_video_enabled();
-	if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||(event->new_window_state & GDK_WINDOW_STATE_WITHDRAWN) ){
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
-	}else{
-		linphone_core_enable_video_preview(linphone_gtk_get_core(),
-		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT) && video_enabled);
-	}
 	return FALSE;
 }
 #endif
@@ -1952,6 +1959,7 @@ static void linphone_gtk_init_main_window(){
 	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
 	linphone_gtk_check_menu_items();
+	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 }
 
 void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
@@ -2096,6 +2104,7 @@ int main(int argc, char *argv[]){
 	LpConfig *factory;
 	const char *db_file;
 	GError *error=NULL;
+	const char *tmp;
 
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
@@ -2105,6 +2114,8 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 
 	config_file=linphone_gtk_get_config_file(NULL);
+	
+	workingdir= (tmp=g_getenv("LINPHONE_WORKDIR")) ? g_strdup(tmp) : NULL;
 
 #ifdef WIN32
 	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */

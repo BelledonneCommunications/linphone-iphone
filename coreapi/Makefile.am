@@ -24,46 +24,64 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h xml2lpc.h lpc2xml.h linphone_tunnel.h call_log.h call_params.h
+linphone_include_HEADERS=\
+	buffer.h \
+	call_log.h \
+	call_params.h \
+	content.h \
+	event.h \
+	linphonecore.h \
+	linphonecore_utils.h \
+	linphonefriend.h \
+	linphonepresence.h \
+	linphone_tunnel.h \
+	lpc2xml.h \
+	lpconfig.h \
+	sipsetup.h \
+	xml2lpc.h
 
 lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
-	linphonecore.c linphonecore.h private.h\
-	offeranswer.c offeranswer.h\
-	sal.c \
-	callbacks.c \
-	misc.c  \
 	address.c \
-	enum.c enum.h \
-	presence.c \
-	proxy.c \
-	friend.c \
 	authentication.c \
-	lpconfig.c lpconfig.h \
-	chat.c \
-	linphonecall.c \
-	sipsetup.c sipsetup.h \
-	siplogin.c \
-	lsd.c linphonecore_utils.h \
-	ec-calibrator.c \
-	conference.c \
-	message_storage.c \
-	info.c \
-	event.c event.h \
-	contactprovider.c contactprovider.h contact_providers_priv.h \
-	ldap/ldapprovider.c ldap/ldapprovider.h \
-	dict.c \
-	xml.c \
-	xml2lpc.c \
-	lpc2xml.c \
-	remote_provisioning.c \
-	lime.c \
-	quality_reporting.c quality_reporting.h\
+	buffer.c \
+	callbacks.c \
 	call_log.c \
 	call_params.c \
-	player.c \
+	chat.c \
+	conference.c \
+	contactprovider.c contactprovider.h contact_providers_priv.h \
+	content.c \
+	dict.c \
+	ec-calibrator.c \
+	enum.c enum.h \
+	event.c event.h \
+	friend.c \
+	info.c \
+	ldap/ldapprovider.c ldap/ldapprovider.h \
+	linphonecall.c \
+	linphonecore.c linphonecore.h \
+	linphonecore_utils.h \
 	localplayer.c \
+	lpc2xml.c \
+	lime.c \
+	lpconfig.c lpconfig.h \
+	lsd.c \
+	message_storage.c \
+	misc.c  \
+	offeranswer.c offeranswer.h\
+	player.c \
+	presence.c \
+	private.h \
+	proxy.c \
+	quality_reporting.c quality_reporting.h\
+	remote_provisioning.c \
+	sal.c \
+	siplogin.c \
+	sipsetup.c sipsetup.h \
+	xml2lpc.c \
+	xml.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -114,14 +132,16 @@ endif
 endif
 
 liblinphone_la_LIBADD= \
-		$(SIPSTACK_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
-		$(ORTP_LIBS) $(OPENSSL_LIBS) \
+		$(ORTP_LIBS) \
+		$(SIPSTACK_LIBS) \
 		$(TUNNEL_LIBS) \
 		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
 		$(LIBXML2_LIBS) \
-		$(LDAP_LIBS) $(SASL_LIBS)
+		$(LDAP_LIBS) \
+		$(SASL_LIBS) \
+		$(ZLIB_LIBS)
 
 
 if ENABLE_TESTS
@@ -141,13 +161,13 @@ test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 endif
 
 AM_CPPFLAGS=\
-	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir)
+	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
+		$(ORTP_CFLAGS) \
+		$(MEDIASTREAMER_CFLAGS) 
 
 COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
-	$(ORTP_CFLAGS) \
-	$(MEDIASTREAMER_CFLAGS) \
 	$(SIPSTACK_CFLAGS) \
 	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
@@ -158,7 +178,9 @@ COMMON_CFLAGS=\
 	$(TUNNEL_CFLAGS) \
 	$(SQLITE3_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
-	$(LDAP_CFLAGS) $(SASL_CFLAGS)
+	$(LDAP_CFLAGS) \
+	$(SASL_CFLAGS) \
+	$(ZLIB_CFLAGS)
 
 if BUILD_WIZARD
 COMMON_CFLAGS+= -DBUILD_WIZARD
@@ -186,15 +208,13 @@ make_gitversion_h:
 		else \
 			$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		fi ; \
-	else \
-		$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+		if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
+			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
+		fi ; \
+		if test "`cat $(builddir)/$(GITVERSION_FILE_TMP)`" != "`cat $(builddir)/$(GITVERSION_FILE)`" ; then \
+			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
+		fi ; \
+		rm -f $(builddir)/$(GITVERSION_FILE_TMP) ; \
 	fi
-	if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
-		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
-	fi
-	if test "`cat $(builddir)/$(GITVERSION_FILE_TMP)`" != "`cat $(builddir)/$(GITVERSION_FILE)`" ; then \
-		cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
-	fi
-	rm -f $(builddir)/$(GITVERSION_FILE_TMP) ;
 
 $(GITVERSION_FILE): make_gitversion_h

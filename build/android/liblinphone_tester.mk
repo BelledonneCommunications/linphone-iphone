@@ -17,7 +17,10 @@ common_SRC_FILES := \
 	log_collection_tester.c \
 	transport_tester.c \
 	player_tester.c \
-	dtmf_tester.c
+	dtmf_tester.c \
+	accountmanager.c \
+	offeranswer_tester.c \
+ 	multicast_call_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
@@ -34,10 +37,10 @@ LOCAL_MODULE_FILENAME := liblinphone_tester-$(TARGET_ARCH_ABI)
 LOCAL_SRC_FILES += $(common_SRC_FILES)
 LOCAL_C_INCLUDES = $(common_C_INCLUDES)
 LOCAL_CFLAGS = -DIN_LINPHONE
-LOCAL_LDLIBS := -llog
+LOCAL_LDLIBS := -llog -lz
 
 ifeq ($(BUILD_MATROSKA), 1)
-LOCAL_CFLAGS += -DHAVE_MATROSKA
+LOCAL_CFLAGS += -DHAVE_MATROSKA -DHAVE_ZLIB
 endif
 
 LOCAL_SHARED_LIBRARIES := cunit liblinphone

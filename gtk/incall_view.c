@@ -428,7 +428,7 @@ void linphone_gtk_update_video_button(LinphoneCall *call){
 	gboolean has_video=linphone_call_params_video_enabled(params);
 	gboolean button_sensitive=FALSE;
 	if (call_view==NULL) return;
-	
+
 	button=linphone_gtk_get_widget(call_view,"video_button");
 
 	gtk_button_set_image(GTK_BUTTON(button),
@@ -680,6 +680,12 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 			gtk_widget_hide(status_icon);
 			gtk_widget_hide(verify_button);
 		break;
+		case LinphoneMediaEncryptionDTLS:
+			gtk_widget_show_all(encryption_box);
+			gtk_label_set_markup(GTK_LABEL(label),_("Secured by DTLS"));
+			gtk_widget_hide(status_icon);
+			gtk_widget_hide(verify_button);
+		break;
 		case LinphoneMediaEncryptionZRTP:
 		{
 			gchar *text=g_strdup_printf(_("Secured by ZRTP - [auth token: %s]"),linphone_call_get_authentication_token(call));
@@ -715,7 +721,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
 	linphone_gtk_in_call_show_video(call);
-	
+
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
@@ -768,7 +774,7 @@ void linphone_gtk_in_call_view_update_duration(LinphoneCall *call){
 	int seconds=duration%60;
 	int minutes=(duration/60)%60;
 	int hours=duration/3600;
-	snprintf(tmp,sizeof(tmp)-1,_("%02i::%02i::%02i"),hours,minutes,seconds);
+	snprintf(tmp,sizeof(tmp)-1,"%02i::%02i::%02i",hours,minutes,seconds);
 	gtk_label_set_text(GTK_LABEL(duration_label),tmp);
 }
 

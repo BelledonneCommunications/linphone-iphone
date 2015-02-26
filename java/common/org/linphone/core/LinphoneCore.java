@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCoreListener;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
@@ -268,6 +269,10 @@ public interface LinphoneCore {
 		 * ZRTP
 		 */
 		static public final MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		/**
+		 * DTLS
+		 */
+		static public final MediaEncryption DTLS = new MediaEncryption(3,"DTLS");
 		protected final int mValue;
 		private final String mStringValue;
 
@@ -424,6 +429,45 @@ public interface LinphoneCore {
 				if (mstate.mValue == value) return mstate;
 			}
 			throw new RuntimeException("UpnpState not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * linphone log collection upload states
+	 */
+	static public class LogCollectionUploadState {
+
+		static private Vector<LogCollectionUploadState> values = new Vector<LogCollectionUploadState>();
+		/**
+		 * Delivery in progress
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateInProgress = new LogCollectionUploadState(0,"LinphoneCoreLogCollectionUploadStateInProgress");
+		/**
+		 * Log collection upload successfully delivered and acknowledged by remote end point
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateDelivered = new LogCollectionUploadState(1,"LinphoneCoreLogCollectionUploadStateDelivered");
+		/**
+		 * Log collection upload was not delivered
+		 */
+		static public LogCollectionUploadState LogCollectionUploadStateNotDelivered = new LogCollectionUploadState(2,"LinphoneCoreLogCollectionUploadStateNotDelivered");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private LogCollectionUploadState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue=stringValue;
+		}
+		public static LogCollectionUploadState fromInt(int value) {
+
+			for (int i=0; i<values.size();i++) {
+				LogCollectionUploadState state = (LogCollectionUploadState) values.elementAt(i);
+				if (state.mValue == value) return state;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
 		}
 		public String toString() {
 			return mStringValue;
@@ -747,6 +791,26 @@ public interface LinphoneCore {
 	int getPayloadTypeBitrate(PayloadType pt);
 
 	/**
+	 * Set an explicit bitrate (IP bitrate, not codec bitrate) for a given codec, in kbit/s.
+	 * @param pt the payload type
+	 * @param number target IP bitrate in kbit/s
+	 */
+
+	/**
+	 * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically. THis function is to be used mainly for tests, in order
+	 * to override the automatic assignment mechanism.
+	 * @param pt the payload type
+	 * @param number
+	 **/
+	void setPayloadTypeNumber(PayloadType pt, int number);
+
+	/**
+	 * @param pt the payload type
+	 * @return the payload type number assigned for this codec.
+	 */
+	int getPayloadTypeNumber(PayloadType pt);
+
+	/**
 	 * Enable adaptive rate control.
 	 * @param enable
 	 */
@@ -985,6 +1049,15 @@ public interface LinphoneCore {
 	 */
 	void setRootCA(String path);
 
+	/**
+	 * Sets the path to a wav file used for for ringing back.
+	 *
+	 * Ringback means the ring that is heard when it's ringing at the remote party.
+	 *
+	 * @param path The file must be a wav 16bit linear.
+	 */
+	void setRingback(String path);
+
 	void setUploadBandwidth(int bw);
 	/**
 	 * Sets maximum available download bandwidth
@@ -1036,6 +1109,20 @@ public interface LinphoneCore {
 	VideoSize getPreferredVideoSize();
 
 	/**
+	 * Set the preferred frame rate for video.
+	 * Based on the available bandwidth constraints and network conditions, the video encoder
+	 * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
+	 * used during a call. Default value is 0, which means "use encoder's default fps value".
+	 * @param fps the target frame rate in number of frames per seconds.
+	**/
+	void setPreferredFramerate(float fps);
+	
+	/**
+	 * Returns the preferred video framerate, previously set by setPreferredFramerate().
+	 * @return frame rate in number of frames per seconds.
+	**/
+	float getPreferredFramerate();
+	/**
 	 * Returns the currently supported audio codecs, as PayloadType elements
 	 * @return
 	 */
@@ -1057,10 +1144,10 @@ public interface LinphoneCore {
 	/**
 	 * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
 	 * status is notified to {@link LinphoneCoreListener#ecCalibrationStatus(EcCalibratorStatus, int, Object)}
-	 * @param User object
+	 * @param listener the LinphoneEchoCalibrationListener to call when the calibration is done
 	 * @throws LinphoneCoreException if operation is still in progress;
 	**/
-	void startEchoCalibration(Object data) throws LinphoneCoreException;
+	void startEchoCalibration(LinphoneCoreListener listener) throws LinphoneCoreException;
 
 	/**
 	 * Returns true if echo calibration is recommended.
@@ -1514,6 +1601,16 @@ public interface LinphoneCore {
 	void setMicrophoneGain(float gain);
 
 	/**
+	 * Set address to use if no LinphoneProxyConfig configured
+	 */
+	void setPrimaryContact(String address);
+
+	/**
+	 * Returns the address used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContact();
+
+	/**
 	 * Set username and display name to use if no LinphoneProxyConfig configured
 	 */
 	void setPrimaryContact(String displayName, String username);
@@ -1787,4 +1884,123 @@ public interface LinphoneCore {
 	 * @return An object that implement LinphonePlayer
 	 */
 	public LinphonePlayer createLocalPlayer(AndroidVideoWindowImpl window);
+	
+	/**
+	 * Adds a new listener to be called by the core
+	 * @param listener to add
+	 */
+	public void addListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Removes a listener previously added with addListener
+	 * @param listener to remove
+	 */
+	public void removeListener(LinphoneCoreListener listener);
+	
+	/**
+	 * Specifies a ring back tone to be played to far end during incoming calls, when early media is requested.
+	 * @param file
+	 */
+	public void setRemoteRingbackTone(String file);
+
+	/**
+	 * Return the ringback tone file used when doing early media. It may be null.
+	 * @return the ringback tone file path.
+	 */
+	String getRemoteRingbackTone();
+	
+	/**
+	 * Upload the log collection to the configured server url.
+	 */
+	public void uploadLogCollection();
+
+	/**
+	 * Reset the log collection by removing the log files.
+	 */
+	public void resetLogCollection();
+	
+	
+	/**
+	 * Use to set multicast address to be used for audio stream.
+	 * @param ip an ipv4/6 multicast address
+	 * @return 
+	 * @thow LinphoneCoreException
+	**/
+	public void setAudioMulticastAddr(String ip) throws LinphoneCoreException;
+	/**
+	 * Use to set multicast address to be used for video stream.
+	 * @param ip an ipv4/6 multicast address
+	 * @thow LinphoneCoreException
+	**/
+	public void setVideoMulticastAddr(String ip) throws LinphoneCoreException;
+
+	/**
+	 * Use to get multicast address to be used for audio stream.
+	 * @return an ipv4/6 multicast address or default value
+	**/
+	public String getAudioMulticastAddr();
+
+	/**
+	 * Use to get multicast address to be used for video stream.
+	 * @return an ipv4/6 multicast address, or default value
+	**/
+	public String getVideoMulticastAddr();
+
+	/**
+	 * Use to set multicast ttl to be used for audio stream.
+	 * @param ttl value or -1 if not used. [0..255] default value is 1
+	 * @thow LinphoneCoreException
+	**/
+	public void setAudioMulticastTtl(int ttl)  throws LinphoneCoreException;
+	/**
+	 * Use to set multicast ttl to be used for video stream.
+	 * @param  ttl value or -1 if not used. [0..255] default value is 1
+	 * @thow LinphoneCoreException
+	**/
+	public void setVideoMulticastTtl(int ttl) throws LinphoneCoreException;
+
+	/**
+	 * Use to get multicast ttl to be used for audio stream.
+	 * @return a time to leave value
+	 * @thow LinphoneCoreException
+	 * 	**/
+	public int getAudioMulticastTtl();
+
+	/**
+	 * Use to get multicast ttl to be used for video stream.
+	 * @return a time to leave value
+	 * @thow LinphoneCoreException
+	**/
+	public int getVideoMulticastTtl();
+
+
+	/**
+	 * Use to enable multicast rtp for audio stream.
+	 * * If enabled, outgoing calls put a multicast address from {@link linphone_core_get_video_multicast_addr} into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent calls will propose multicast ip set by {@link linphone_core_set_audio_multicast_addr}
+	**/
+	public void enableAudioMulticast(boolean yesno);
+
+	/**
+	 * Use to get multicast state of audio stream.
+	 * @return true if  subsequent calls will propose multicast ip set by {@link linphone_core_set_audio_multicast_addr}
+	**/
+	public  boolean audioMulticastEnabled();
+
+	/**
+	 * Use to enable multicast rtp for video stream.
+	 * If enabled, outgoing calls put a multicast address from {@link linphone_core_get_video_multicast_addr} into video cline. In case of outgoing call video stream is sent to this  multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by {@link linphone_core_set_video_multicast_addr}
+	**/
+	public void enableVideoMulticast(boolean yesno);
+	/**
+	 * Use to get multicast state of video stream.
+	 * @return true if  subsequent calls will propose multicast ip set by {@link linphone_core_set_video_multicast_addr}
+	**/
+	public  boolean videoMulticastEnabled();
+	
+	
+	
 }

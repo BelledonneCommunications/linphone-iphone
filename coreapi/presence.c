@@ -1211,19 +1211,15 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 			service_id_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			service = presence_service_new(service_id_str, basic_status);
 			if (service != NULL) {
-				if (timestamp_str != NULL) {
-					presence_service_set_timestamp(service, parse_timestamp(timestamp_str));
-					linphone_free_xml_text_content(timestamp_str);
-				}
-				if (contact_str != NULL) {
-					linphone_presence_service_set_contact(service, contact_str);
-					linphone_free_xml_text_content(contact_str);
-				}
+				if (timestamp_str != NULL) presence_service_set_timestamp(service, parse_timestamp(timestamp_str));
+				if (contact_str != NULL) linphone_presence_service_set_contact(service, contact_str);
 				process_pidf_xml_presence_service_notes(xml_ctx, service, i);
 				linphone_presence_model_add_service(model, service);
 			}
-			linphone_free_xml_text_content(basic_status_str);
+			if (timestamp_str != NULL) linphone_free_xml_text_content(timestamp_str);
+			if (contact_str != NULL) linphone_free_xml_text_content(contact_str);
 			if (service_id_str != NULL) linphone_free_xml_text_content(service_id_str);
+			linphone_free_xml_text_content(basic_status_str);
 		}
 	}
 	if (service_object != NULL) xmlXPathFreeObject(service_object);
@@ -1795,6 +1791,8 @@ void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presen
 		ms_error("Error creating the XML writer");
 		return;
 	}
+
+	xmlTextWriterSetIndent(writer,1);
 
 	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
 	if (err >= 0) {

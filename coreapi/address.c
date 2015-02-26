@@ -154,9 +154,32 @@ char *linphone_address_as_string_uri_only(const LinphoneAddress *u){
 
 /**
  * Returns true if address refers to a secure location (sips)
+ * @deprecated use linphone_address_get_secure()
 **/
 bool_t linphone_address_is_secure(const LinphoneAddress *uri){
 	return sal_address_is_secure(uri);
+}
+
+/**
+ * Returns true if address refers to a secure location (sips)
+**/
+bool_t linphone_address_get_secure(const LinphoneAddress *uri){
+	return sal_address_is_secure(uri);
+}
+
+/**
+ * Make the address refer to a secure location (sips scheme)
+ * @param enabled TRUE if address is requested to be secure.
+**/
+void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled){
+	sal_address_set_secure(addr, enabled);
+}
+
+/**
+ * returns true if address is a routable sip address
+ */
+bool_t linphone_address_is_sip(const LinphoneAddress *uri){
+	return sal_address_is_sip(uri);
 }
 
 static bool_t strings_equals(const char *s1, const char *s2){
@@ -167,7 +190,10 @@ static bool_t strings_equals(const char *s1, const char *s2){
 
 /**
  * Compare two LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
- * Returns TRUE if they are equal.
+ * @param[in] a1 LinphoneAddress object
+ * @param[in] a2 LinphoneAddress object
+ * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * @see linphone_address_equal()
 **/
 bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2){
 	const char *u1,*u2;
@@ -180,6 +206,27 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 	h1=linphone_address_get_domain(a1);
 	h2=linphone_address_get_domain(a2);
 	return strings_equals(u1,u2) && strings_equals(h1,h2) && p1==p2;
+}
+
+/**
+ * Compare two LinphoneAddress taking the tags and headers into account.
+ * @param[in] a1 LinphoneAddress object
+ * @param[in] a2 LinphoneAddress object
+ * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * @see linphone_address_weak_equal()
+ */
+bool_t linphone_address_equal(const LinphoneAddress *a1, const LinphoneAddress *a2) {
+	char *s1;
+	char *s2;
+	bool_t res;
+	if ((a1 == NULL) && (a2 == NULL)) return TRUE;
+	if ((a1 == NULL) || (a2 == NULL)) return FALSE;
+	s1 = linphone_address_as_string(a1);
+	s2 = linphone_address_as_string(a2);
+	res = (strcmp(s1, s2) == 0) ? TRUE : FALSE;
+	ms_free(s1);
+	ms_free(s2);
+	return res;
 }
 
 /**
@@ -199,6 +246,37 @@ void linphone_address_destroy(LinphoneAddress *u){
  */
 int linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
+}
+
+/**
+ * Set the password encoded in the address.
+ * It is used for basic authentication (not recommended).
+ * @param addr the LinphoneAddress
+ * @param passwd the password to set.
+**/
+void linphone_address_set_password(LinphoneAddress *addr, const char *passwd){
+	sal_address_set_password(addr,passwd);
+}
+
+/**
+ * Get the password encoded in the address.
+ * It is used for basic authentication (not recommended).
+ * @param addr the address
+ * @return the password, if any, NULL otherwise.
+**/
+const char *linphone_address_get_password(const LinphoneAddress *addr){
+	return sal_address_get_password(addr);
+}
+
+/**
+ * Set a header into the address.
+ * Headers appear in the URI with '?', such as <sip:test@linphone.org?SomeHeader=SomeValue>.
+ * @param addr the address
+ * @param header_name the header name
+ * @param header_value the header value
+**/
+void linphone_address_set_header(LinphoneAddress *addr, const char *header_name, const char *header_value){
+	sal_address_set_header(addr,header_name,header_value);
 }
 
 LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {

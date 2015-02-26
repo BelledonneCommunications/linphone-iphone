@@ -27,7 +27,7 @@ static void subscribe_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires=  600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -35,12 +35,12 @@ static void subscribe_forking(void) {
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,pauline2->lc);
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)liblinphone_tester_get_subscribe_content();
-	content.size=strlen(liblinphone_tester_get_subscribe_content());
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content, liblinphone_tester_get_subscribe_content(), strlen(liblinphone_tester_get_subscribe_content()));
 	
-	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,&content);
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
@@ -51,7 +51,8 @@ static void subscribe_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
 
 	linphone_event_terminate(lev);
-	
+
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(pauline2);
@@ -145,7 +146,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	
 	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
 	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,5000));
 	/*flexisip will accept the message with 202 after 16 seconds*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,18000));
 	CU_ASSERT_TRUE( marie->stat.number_of_LinphoneMessageReceived==0);
@@ -194,9 +195,9 @@ static void call_forking(void){
 	/*pauline should hear ringback*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
 	/*all devices from Marie should be ringing*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	
 	/*marie accepts the call on its first device*/
 	linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
@@ -306,7 +307,6 @@ static void call_forking_cancelled(void){
 }
 
 static void call_forking_declined(bool_t declined_globaly){
-	char hellopath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -321,11 +321,6 @@ static void call_forking_declined(bool_t declined_globaly){
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
-	
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (pauline->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(pauline->lc,hellopath);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	/*pauline should hear ringback*/
@@ -375,7 +370,6 @@ static void call_forking_declined_localy(void){
 }
 
 static void call_forking_with_push_notification_single(void){
-	char hellopath[256];
 	MSList* lcs;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -390,11 +384,6 @@ static void call_forking_with_push_notification_single(void){
 	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	
-	/*use playfile for callee to avoid locking on capture card*/
-	linphone_core_use_files (pauline->lc,TRUE);
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_set_play_file(pauline->lc,hellopath);
-	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	
 	/*the server is expected to send a push notification to marie, this will wake up linphone, that will reconnect:*/
@@ -407,7 +396,7 @@ static void call_forking_with_push_notification_single(void){
 	
 	/*marie accepts the call*/
 	linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,5000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
@@ -415,8 +404,8 @@ static void call_forking_with_push_notification_single(void){
 	liblinphone_tester_check_rtcp(pauline,marie);
 	
 	linphone_core_terminate_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
 	
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
@@ -424,7 +413,6 @@ static void call_forking_with_push_notification_single(void){
 }
 
 static void call_forking_with_push_notification_multiple(void){
-	char hellopath[256];
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -440,13 +428,6 @@ static void call_forking_with_push_notification_multiple(void){
 	
 	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
-	
-	/*use playfile for callee to avoid locking on capture card*/
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
-	linphone_core_use_files (marie->lc,TRUE);
-	linphone_core_set_play_file(marie->lc,hellopath);
-	linphone_core_use_files (marie2->lc,TRUE);
-	linphone_core_set_play_file(marie2->lc,hellopath);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	
@@ -483,7 +464,7 @@ static void call_forking_with_push_notification_multiple(void){
 	linphone_core_manager_destroy(marie2);
 }
 
-void call_forking_not_responded(void){
+static void call_forking_not_responded(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
@@ -522,9 +503,9 @@ void call_forking_not_responded(void){
 }
 
 static void early_media_call_forking(void) {
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	MSList *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneVideoPolicy pol;
@@ -532,9 +513,7 @@ static void early_media_call_forking(void) {
 	LinphoneCall *marie2_call;
 	LinphoneCall *pauline_call;
 	int dummy=0;
-	char ringbackpath[256];
-	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/hello8000.wav" /*use hello because rinback is too short*/, liblinphone_tester_file_prefix);
-	
+
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
 	
@@ -546,18 +525,11 @@ static void early_media_call_forking(void) {
 	
 	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
-	/*use playfile for marie1 to avoid locking on capture card*/
-	linphone_core_use_files (marie1->lc,TRUE);
-	linphone_core_set_play_file(marie1->lc,ringbackpath);
-
+	
 	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
-	/*use playfile for marie2 to avoid locking on capture card*/
-	linphone_core_use_files (marie2->lc,TRUE);
-	linphone_core_set_play_file(marie2->lc,ringbackpath);
-	
 	
 	lcs=ms_list_append(lcs,marie1->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
@@ -572,16 +544,20 @@ static void early_media_call_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,3000));
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
 	
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie1_call=linphone_core_get_current_call(marie1->lc);
 	marie2_call=linphone_core_get_current_call(marie2->lc);
 	
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,3000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
+	wait_for_list(lcs,&dummy,1,6000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>60
+					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<99);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>60
+					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<99);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>60
+					&& linphone_call_get_audio_stats(marie2_call)->download_bandwidth<99);
 	
 	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
@@ -591,13 +567,15 @@ static void early_media_call_forking(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
 	
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,1000);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
-	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
+	wait_for_list(lcs,&dummy,1,3000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>60
+					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<99 );
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>60
+					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<99 );
 	
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,5000));
 
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie1);
@@ -605,6 +583,136 @@ static void early_media_call_forking(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_sips(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_sips_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	
+	lcs=ms_list_append(lcs,pauline1->lc);
+	lcs=ms_list_append(lcs,pauline2->lc);
+	
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline1->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline2->lc,"Natted Linphone",NULL);
+	
+	linphone_core_invite_address(marie->lc,pauline1->identity);
+
+	/*marie should hear ringback*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*Only the sips registered device from pauline should ring*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+	
+	/*pauline accepts the call */
+	linphone_core_accept_call(pauline1->lc,linphone_core_get_current_call(pauline1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	
+	/*pauline2 should not have ring*/
+	CU_ASSERT_TRUE(pauline2->stat.number_of_LinphoneCallIncomingReceived==0);
+	
+	linphone_core_terminate_call(pauline1->lc,linphone_core_get_current_call(pauline1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallEnd,1,3000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,3000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	ms_list_free(lcs);
+}
+
+static void call_with_sips_not_achievable(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_sips_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new( "pauline_tcp_rc");
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	LinphoneAddress *dest;
+	LinphoneCall *call;
+	const LinphoneErrorInfo *ei;
+	
+	lcs=ms_list_append(lcs,pauline1->lc);
+	lcs=ms_list_append(lcs,pauline2->lc);
+
+	
+	dest=linphone_address_clone(pauline1->identity);
+	linphone_address_set_secure(dest,TRUE);
+	call=linphone_core_invite_address(marie->lc,dest);
+	linphone_call_ref(call);
+	linphone_address_unref(dest);
+
+	/*Call should be rejected by server with 480*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallError,1,6000));
+	ei=linphone_call_get_error_info(call);
+	CU_ASSERT_PTR_NOT_NULL(ei);
+	if (ei){
+		CU_ASSERT_EQUAL(linphone_error_info_get_reason(ei), LinphoneReasonTemporarilyUnavailable);
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	ms_list_free(lcs);
+}
+
+static void call_with_ipv6(void) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	LinphoneCall *pauline_call;
+
+	/*calling ortp_init() here is done to have WSAStartup() done, otherwise liblinphone_tester_ipv6_available() will not work.*/
+	ortp_init();
+	
+	if (!liblinphone_tester_ipv6_available()){
+		ms_warning("Call with ipv6 not tested, no ipv6 connectivity");
+		return;
+	}
+	
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	liblinphone_tester_enable_ipv6(TRUE);
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+	if (pauline_call){
+		/*check that the remote contact is IPv6*/
+		const char *contact=linphone_call_get_remote_contact(pauline_call);
+		LinphoneAddress *ct_addr;
+		
+		CU_ASSERT_PTR_NOT_NULL(contact);
+		if (contact){
+			ct_addr=linphone_address_new(contact);
+			CU_ASSERT_PTR_NOT_NULL(ct_addr);
+			if (ct_addr){
+				CU_ASSERT_TRUE(strchr(linphone_address_get_domain(ct_addr),':')!=NULL);
+			}
+			linphone_address_destroy(ct_addr);
+		}
+		
+	}
+
+	liblinphone_tester_check_rtcp(marie,pauline);
+	end_call(marie,pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	liblinphone_tester_enable_ipv6(FALSE);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+	ortp_exit();
+}
 
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
@@ -620,6 +728,9 @@ test_t flexisip_tests[] = {
 	{ "Call forking with push notification (multiple)", call_forking_with_push_notification_multiple },
 	{ "Call forking not responded", call_forking_not_responded },
 	{ "Early-media call forking", early_media_call_forking },
+	{ "Call with sips", call_with_sips },
+	{ "Call with sips not achievable", call_with_sips_not_achievable },
+	{ "Call with ipv6", call_with_ipv6 }
 };
 
 

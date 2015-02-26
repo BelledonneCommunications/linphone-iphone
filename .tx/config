@@ -1,0 +1,20 @@
+[main]
+host = https://www.transifex.com
+minimum_perc = 1
+
+[linphone-gtk.linphonepot]
+file_filter = po/<lang>.po
+source_file = po/linphone.pot
+source_lang = en
+type = PO
+
+[linphone-gtk.linphonedesktopin]
+source_file = share/linphone.desktop.in
+source_lang = en
+type = DESKTOP
+
+[linphone-gtk.audio-assistantdesktopin]
+source_file = share/audio-assistant.desktop.in
+source_lang = en
+type = DESKTOP
+

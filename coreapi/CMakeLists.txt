@@ -31,6 +31,7 @@ set(SOURCE_FILES
 	authentication.c
 	bellesip_sal/sal_address_impl.c
 	bellesip_sal/sal_impl.c
+	bellesip_sal/sal_impl.h
 	bellesip_sal/sal_op_call.c
 	bellesip_sal/sal_op_call_transfer.c
 	bellesip_sal/sal_op_events.c
@@ -41,46 +42,51 @@ set(SOURCE_FILES
 	bellesip_sal/sal_op_publish.c
 	bellesip_sal/sal_op_registration.c
 	bellesip_sal/sal_sdp.c
+	buffer.c
 	callbacks.c
 	call_log.c
 	call_params.c
 	chat.c
 	conference.c
+	contactprovider.c
+	content.c
+	dict.c
 	ec-calibrator.c
 	enum.c
+	enum.h
 	event.c
+	event.h
 	friend.c
 	info.c
+	ldap/ldapprovider.c
 	linphonecall.c
 	linphonecore.c
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
 	linphone_tunnel_config.c
+	linphone_tunnel.h
+	localplayer.c
 	lpconfig.c
+	lpconfig.h
 	lsd.c
 	message_storage.c
 	misc.c
 	offeranswer.c
+	offeranswer.h
 	player.c
 	presence.c
+	private.h
 	proxy.c
 	quality_reporting.c
 	remote_provisioning.c
 	sal.c
 	siplogin.c
 	sipsetup.c
-	xml.c
-	xml2lpc.c
-	bellesip_sal/sal_impl.h
-	enum.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphone_tunnel.h
-	lpconfig.h
-	offeranswer.h
-	private.h
 	sipsetup.h
+	xml2lpc.c
 	xml2lpc.h
+	xml.c
 )
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
@@ -90,6 +96,9 @@ if(ENABLE_TUNNEL)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
 	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
+endif()
+if(ENABLE_ASSISTANT)
+	list(APPEND SOURCE_FILES sipwizard.c)
 endif()
 
 set(GENERATED_SOURCE_FILES
@@ -101,14 +110,9 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
 	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
 
 add_definitions(
-	-DIN_LINPHONE
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
 )
-
-if(ENABLE_VIDEO)
-	add_definitions(-DVIDEO_ENABLED)
-endif()
 
 set(LIBS
 	${LIBGCC}
@@ -117,8 +121,14 @@ set(LIBS
 	${MS2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
+if(SQLITE3_FOUND)
+	list(APPEND LIBS ${SQLITE3_LIBRARIES})
+endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
+endif()
+if(ENABLE_ASSISTANT)
+	list(APPEND LIBS ${SOUP_LIBRARIES})
 endif()
 if(WIN32)
 	list(APPEND LIBS shlwapi)
@@ -129,7 +139,7 @@ if(ENABLE_STATIC)
 	target_link_libraries(linphone ${LIBS})
 else()
 	add_library(linphone SHARED ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
-	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_VERSION} SOVERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
+	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
 		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -150,8 +160,10 @@ install(TARGETS linphone
 
 
 set(HEADER_FILES
+	buffer.h
 	call_log.h
 	call_params.h
+	content.h
 	event.h
 	linphonecore.h
 	linphonecore_utils.h

@@ -26,51 +26,53 @@ include $(CLEAR_VARS)
 LOCAL_CPP_EXTENSION := .cc
 
 LOCAL_SRC_FILES := \
-	linphonecore.c \
-	misc.c  \
-	enum.c \
-	presence.c \
-	proxy.c \
-	friend.c \
-	authentication.c \
-	lpconfig.c \
-	chat.c \
-	sipsetup.c \
-	siplogin.c \
 	address.c \
-	linphonecore_jni.cc \
+	authentication.c \
 	bellesip_sal/sal_address_impl.c \
 	bellesip_sal/sal_impl.c \
 	bellesip_sal/sal_op_call.c \
 	bellesip_sal/sal_op_call_transfer.c \
+	bellesip_sal/sal_op_events.c \
 	bellesip_sal/sal_op_impl.c \
+	bellesip_sal/sal_op_info.c \
 	bellesip_sal/sal_op_message.c \
 	bellesip_sal/sal_op_presence.c \
-	bellesip_sal/sal_op_registration.c \
 	bellesip_sal/sal_op_publish.c \
-	bellesip_sal/sal_op_info.c \
-	bellesip_sal/sal_op_events.c \
+	bellesip_sal/sal_op_registration.c \
 	bellesip_sal/sal_sdp.c \
-	sal.c \
-	offeranswer.c \
+	buffer.c \
 	callbacks.c \
-	linphonecall.c \
-	conference.c \
-	ec-calibrator.c \
-	linphone_tunnel_config.c \
-	message_storage.c \
-	info.c \
-	event.c \
-	xml.c \
-	xml2lpc.c \
-	lpc2xml.c \
-	remote_provisioning.c \
-	quality_reporting.c \
 	call_log.c \
 	call_params.c \
+	chat.c \
+	conference.c \
+	content.c \
+	ec-calibrator.c \
+	enum.c \
+	event.c \
+	friend.c \
+	info.c \
+	linphonecall.c \
+	linphonecore.c \
+	linphonecore_jni.cc \
+	linphone_tunnel_config.c \
+	localplayer.c \
+	lpc2xml.c \
 	lime.c \
-	player.c
-	localplayer.c
+	lpconfig.c \
+	message_storage.c \
+	misc.c  \
+	offeranswer.c \
+	player.c \
+	presence.c \
+	proxy.c \
+	quality_reporting.c \
+	remote_provisioning.c \
+	sal.c \
+	siplogin.c \
+	sipsetup.c \
+	xml2lpc.c \
+	xml.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
@@ -84,7 +86,8 @@ LOCAL_CFLAGS += \
 	-DHAVE_CONFIG_H \
 	-DLIBLINPHONE_VERSION=\"$(LIBLINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DUSE_BELLESIP
+	-DUSE_BELLESIP \
+	-DHAVE_ZLIB
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -118,7 +121,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/build/libxml2 \
 	$(LOCAL_PATH)/../../externals/polarssl/include
 
-LOCAL_LDLIBS += -llog -ldl
+LOCAL_LDLIBS += -llog -ldl -lz
 
 LOCAL_STATIC_LIBRARIES := \
 	cpufeatures \
@@ -218,15 +221,17 @@ LOCAL_CFLAGS += -DBUILD_UPNP
 LOCAL_SRC_FILES += upnp.c
 endif
 
-LOCAL_STATIC_LIBRARIES += libspeex 
+LOCAL_STATIC_LIBRARIES += libspeex
 
 ifeq ($(BUILD_SRTP), 1)
 	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
 endif
 
+ifeq ($(BUILD_ILBC), 1)
 ifneq ($(TARGET_ARCH_ABI),armeabi)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
 LOCAL_STATIC_LIBRARIES += libmsilbc
+endif
 endif
 
 LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES)
@@ -253,8 +258,8 @@ endif
 ifeq ($(BUILD_OPUS),1)
 LOCAL_STATIC_LIBRARIES += libopus
 endif
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
-LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
+LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 ifeq ($(_BUILD_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \

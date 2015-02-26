@@ -200,6 +200,7 @@ namespace belledonnecomm {
 		LinphoneRtpTransportFactories mTransportFactories;
 		Mutex mMutex;
 		std::queue<Event> mEvq;
+		char mLocalAddr[64];
 	};
 
 /**

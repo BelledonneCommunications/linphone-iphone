@@ -29,111 +29,24 @@
 
 
 struct _LinphoneInfoMessage{
-	LinphoneContent content;
+	LinphoneContent *content;
 	SalCustomHeader *headers;
 };
 
-#define SET_STRING(ptr,field,val) \
-	if (ptr->field) { \
-		ms_free(ptr->field); \
-		ptr->field=NULL; \
-	} \
-	if (val){ \
-		ptr->field=ms_strdup(val); \
-	}
-
-void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref){
-	SET_STRING(obj,type,ref->type);
-	SET_STRING(obj,subtype,ref->subtype);
-	SET_STRING(obj,encoding,ref->encoding);
-	SET_STRING(obj,name,ref->name);
-	if (obj->key) {
-		ms_free(obj->key);
-		obj->key=NULL;
-	}
-	if (ref->key) {
-		obj->key = (unsigned char *)ms_strdup((const char *)ref->key);
-	}
-
-	if (obj->data) {
-		ms_free(obj->data);
-		obj->data=NULL;
-	}
-	if (ref->data){
-		obj->data=ms_malloc(ref->size+1);
-		memcpy(obj->data, ref->data, ref->size);
-		((char*)obj->data)[ref->size]='\0';
-	}
-	obj->size=ref->size;
-}
-
-void linphone_content_uninit(LinphoneContent * obj){
-	if (obj->type) ms_free(obj->type);
-	if (obj->subtype) ms_free(obj->subtype);
-	if (obj->data) ms_free(obj->data);
-	if (obj->encoding) ms_free(obj->encoding);
-	if (obj->name) ms_free(obj->name);
-	if (obj->key) ms_free(obj->key);
-}
-
-LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
-	SET_STRING(obj,type,ref->type);
-	SET_STRING(obj,subtype,ref->subtype);
-	SET_STRING(obj,encoding,ref->encoding);
-	if (obj->data) {
-		ms_free(obj->data);
-		obj->data=NULL;
-	}
-	if (ref->data){
-		obj->data=ms_malloc(ref->size+1);
-		memcpy(obj->data, ref->data, ref->size);
-		((char*)obj->data)[ref->size]='\0';
-	}
-	obj->size=ref->size;
-	obj->name = NULL;
-	obj->key = NULL;
-	return obj;
-}
-
-const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref){
-	if (ref && ref->type){
-		obj->type=(char*)ref->type;
-		obj->subtype=(char*)ref->subtype;
-		obj->data=(void*)ref->data;
-		obj->encoding=(char*)ref->encoding;
-		obj->size=ref->size;
-		obj->name = NULL;
-		obj->key = NULL;
-		return obj;
-	}
-	return NULL;
-}
-
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
-	if (lc && lc->type){
-		body->type=lc->type;
-		body->subtype=lc->subtype;
-		body->data=lc->data;
-		body->size=lc->size;
-		body->encoding=lc->encoding;
-		return body;
-	}
-	return NULL;
-}
 
 /**
  * Destroy a LinphoneInfoMessage
 **/
 void linphone_info_message_destroy(LinphoneInfoMessage *im){
-	linphone_content_uninit(&im->content);
-	sal_custom_header_free(im->headers);
+	if (im->content) linphone_content_unref(im->content);
+	if (im->headers) sal_custom_header_free(im->headers);
 	ms_free(im);
 }
 
 
 LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig){
 	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
-	linphone_content_copy(&im->content,&orig->content);
+	if (orig->content) im->content=linphone_content_copy(orig->content);
 	if (orig->headers) im->headers=sal_custom_header_clone(orig->headers);
 	return im;
 }
@@ -159,7 +72,7 @@ LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info){
 	SalBody body;
 	sal_op_set_sent_custom_header(call->op,info->headers);
-	return sal_send_info(call->op,NULL, NULL, sal_body_from_content(&body,&info->content));
+	return sal_send_info(call->op,NULL, NULL, sal_body_from_content(&body,info->content));
 }
 
 /**
@@ -189,14 +102,14 @@ const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, cons
  * All fields of the LinphoneContent are copied, thus the application can destroy/modify/recycloe the content object freely ater the function returns.
 **/
 void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content){
-	linphone_content_copy(&im->content,content);
+	im->content=linphone_content_copy(content);
 }
 
 /**
  * Returns the info message's content as a #LinphoneContent structure.
 **/
 const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im){
-	return im->content.type ? &im->content : NULL;
+	return (im->content && linphone_content_get_type(im->content)) ? im->content : NULL;
 }
 
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body){
@@ -204,7 +117,7 @@ void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody
 	if (call){
 		LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
-		if (body) linphone_content_copy_from_sal_body(&info->content,body);
+		if (body) info->content=linphone_content_from_sal_body(body);
 		linphone_core_notify_info_received(lc,call,info);
 		linphone_info_message_destroy(info);
 	}

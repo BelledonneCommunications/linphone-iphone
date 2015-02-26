@@ -62,16 +62,19 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<sal_media_description_get_nb_active_streams(h->result);++i){
-			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
-			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
-			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-			h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
-			strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
-			h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
+		for(i=0;i<h->result->nb_streams;++i){
+			/*copy back parameters from remote description that we need in our result description*/
+			if (h->result->streams[i].rtp_port!=0){ /*if stream was accepted*/
+				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
+				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
+				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
+				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
 
-			if ((h->result->streams[i].proto == SalProtoRtpSavpf) || (h->result->streams[i].proto == SalProtoRtpSavp)) {
-				h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
+				if ((h->result->streams[i].proto == SalProtoRtpSavpf) || (h->result->streams[i].proto == SalProtoRtpSavp)) {
+					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
+				}
 			}
 		}
 	}
@@ -91,9 +94,10 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
 
 		/* try to marshal the description. This could go higher than 2k so we iterate */
 		while( error != BELLE_SIP_OK && bufLen <= hardlimit && buff != NULL){
- 			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
+			error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
 			if( error != BELLE_SIP_OK ){
 				bufLen *= 2;
+				length  = 0;
 				buff = belle_sip_realloc(buff,bufLen);
 			}
 		}
@@ -213,7 +217,8 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 	dialog_state=dialog ? belle_sip_dialog_get_state(dialog) : BELLE_SIP_DIALOG_NULL;
 	method=belle_sip_request_get_method(req);
 	ms_message("Op [%p] receiving call response [%i], dialog is [%p] in state [%s]",op,code,dialog,belle_sip_dialog_state_to_string(dialog_state));
-
+	/*to make sure no cb will destroy op*/
+	sal_op_ref(op);
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {
@@ -312,6 +317,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 		}
 		break;
 	}
+	sal_op_unref(op);
 }
 
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
@@ -385,19 +391,31 @@ static void unsupported_method(belle_sip_server_transaction_t* server_transactio
  *
 **/
 static int extract_sdp(SalOp *op, belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
-	belle_sip_header_content_type_t* content_type=belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
+	const char *body;
+	belle_sip_header_content_type_t* content_type;
 
-	if (op&&op->sdp_removal){
-		ms_error("Removed willingly SDP because sal_call_enable_sdp_removal was set to TRUE.");
+	if (op&&op->sdp_handling == SalOpSDPSimulateError){
+		ms_error("Simulating SDP parsing error for op %p", op);
 		*session_desc=NULL;
 		*error=SalReasonNotAcceptable;
 		return -1;
+	} else if( op && op->sdp_handling == SalOpSDPSimulateRemove){
+		ms_error("Simulating no SDP for op %p", op);
+		*session_desc = NULL;
+		return 0;
 	}
 
+	body = belle_sip_message_get_body(message);
+	if(body == NULL) {
+		*session_desc = NULL;
+		return 0;
+	}
+
+	content_type = belle_sip_message_get_header_by_type(message,belle_sip_header_content_type_t);
 	if (content_type){
 		if (strcmp("application",belle_sip_header_content_type_get_type(content_type))==0
 			&& strcmp("sdp",belle_sip_header_content_type_get_subtype(content_type))==0) {
-			*session_desc=belle_sdp_session_description_parse(belle_sip_message_get_body(message));
+			*session_desc=belle_sdp_session_description_parse(body);
 			if (*session_desc==NULL) {
 				ms_error("Failed to parse SDP message.");
 				*error=SalReasonNotAcceptable;
@@ -684,6 +702,11 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	ms_message("[%s] calling [%s] on op [%p]", from, to, op);
 	invite=sal_op_build_request(op,"INVITE");
 
+	if( invite == NULL ){
+		/* can happen if the op has an invalid address */
+		return -1;
+	}
+
 	sal_op_fill_invite(op,invite);
 
 	sal_op_call_fill_cbs(op);
@@ -718,8 +741,14 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),op->base.local_media);
 		}else{
 
-			if (op->sdp_answer==NULL)
-				sdp_process(op);
+			if ( op->sdp_answer==NULL )
+			{
+				if( op->sdp_handling == SalOpSDPSimulateRemove ){
+					ms_warning("Simulating SDP removal in answer for op %p", op);
+				} else {
+					sdp_process(op);
+				}
+			}
 
 			if (op->sdp_answer){
 				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);

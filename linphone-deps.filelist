@@ -2,9 +2,9 @@
 ./bin/libspeex-1.dll
 ./bin/libspeexdsp-1.dll
 ./bin/avutil-51.dll
+./bin/libpolarssl-0.dll
 ./bin/libbellesip-0.dll
 ./bin/libantlr3c.dll
-./lib/libpolarssl.dll
 ./bin/libogg-0.dll
 ./bin/libtheora-0.dll
 ./bin/libxml2-2.dll

@@ -281,12 +281,14 @@ LINPHONE_PUBLIC void lp_config_unref(LpConfig *lpconfig);
 LINPHONE_PUBLIC void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data);
 
 /**
- * @brief Read a string from a file placed relatively with the Linphone configuration file
+ * @brief Read a string from a file placed beside the Linphone configuration file
  * @param lpconfig LpConfig instance used as a reference
  * @param filename Name of the file where data will be read from. The name is relative to the place of the config file
- * @return The read string
+ * @param data Buffer where read string will be stored
+ * @param max_length Length of the buffer
+ * @return 0 on success, -1 on failure
  */
-LINPHONE_PUBLIC char *lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename);
+LINPHONE_PUBLIC int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length);
 
 #ifdef __cplusplus
 }

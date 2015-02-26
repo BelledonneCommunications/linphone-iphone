@@ -4,9 +4,13 @@ from copy import deepcopy
 import linphone
 import logging
 import os
+import sys
 import time
+import weakref
 
 
+test_domain = "sipopen.example.org"
+auth_domain = "sip.example.org"
 test_username = "liblinphone_tester"
 test_password = "secret"
 test_route = "sip2.linphone.org"
@@ -16,6 +20,22 @@ if os.path.isdir(os.path.join(os.path.dirname(__file__), "rcfiles")):
 else:
     # Running unit tests from the linphone sources
     tester_resources_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../tester/"))
+
+
+def linphonetester_log_handler(level, msg):
+    import logging
+    method = getattr(logging.getLogger("linphonetester"), level)
+    if not msg.strip().startswith('[PYLINPHONE]'):
+        msg = '[CORE] ' + msg
+    method(msg)
+
+linphonetester_logger = logging.getLogger("linphonetester")
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', '%H:%M:%S')
+handler.setFormatter(formatter)
+linphonetester_logger.addHandler(handler)
+linphone.set_log_handler(linphonetester_log_handler)
 
 
 def create_address(domain):
@@ -33,22 +53,114 @@ def create_address(domain):
     return addr
 
 
-class Logger(logging.Logger):
+class Account:
+    def __init__(self, id_addr, unique_id):
+        self.created = False
+        self.done = False
+        self.auth_requested = False
+        self.identity = id_addr.clone()
+        self.password = linphone.testing.get_random_token(8)
+        self.modified_identity = id_addr.clone()
+        modified_username = "{username}_{unique_id}".format(username=id_addr.username, unique_id=unique_id)
+        self.modified_identity.username = modified_username
 
-    def __init__(self, filename):
-        logging.Logger.__init__(self, filename)
-        handler = logging.FileHandler(filename)
-        handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', '%H:%M:%S')
-        handler.setFormatter(formatter)
-        self.addHandler(handler)
-        linphone.set_log_handler(self.log_handler)
 
-    def log_handler(self, level, msg):
-        method = getattr(self, level)
-        if not msg.strip().startswith('[PYLINPHONE]'):
-            msg = '[CORE] ' + msg
-        method(msg)
+class AccountManager:
+    def __init__(self):
+        self.unique_id = linphone.testing.get_random_token(6)
+        self.accounts = []
+
+    @classmethod
+    def wait_for_until(cls, lc1, lc2, func, timeout):
+        lcs = []
+        if lc1 is not None:
+            lcs.append(lc1)
+        if lc2 is not None:
+            lcs.append(lc2)
+        return cls.wait_for_list(lcs, func, timeout)
+
+    @classmethod
+    def wait_for_list(cls, lcs, func, timeout):
+        start = datetime.now()
+        end = start + timedelta(milliseconds = timeout)
+        res = func(*lcs)
+        while not res and datetime.now() < end:
+            for lc in lcs:
+                lc.iterate()
+            time.sleep(0.02)
+            res = func(*lcs)
+        return res
+
+    @classmethod
+    def account_created_on_server_cb(cls, lc, cfg, state, message):
+        if state == linphone.RegistrationState.Ok:
+            lc.user_data().created = True
+        elif state == linphone.RegistrationState.Cleared:
+            lc.user_data().done = True
+
+    @classmethod
+    def account_created_auth_requested_cb(cls, lc, realm, username, domain):
+        lc.user_data().auth_requested = True
+
+    def check_account(self, cfg):
+        create_account = False
+        lc = cfg.core
+        identity = cfg.identity
+        id_addr = linphone.Address.new(identity)
+        account = self._get_account(id_addr)
+        if account is None:
+            linphonetester_logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=identity))
+            account = Account(id_addr, self.unique_id)
+            self.accounts.append(account)
+            create_account = True
+        cfg.identity = account.modified_identity.as_string()
+        if create_account:
+            self._create_account_on_server(account, cfg)
+        ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
+        lc.add_auth_info(ai)
+        return account.modified_identity
+
+    def _get_account(self, id_addr):
+        for account in self.accounts:
+            if account.identity.weak_equal(id_addr):
+                return account
+        return None
+
+    def _create_account_on_server(self, account, refcfg):
+        vtable = {}
+        tmp_identity = account.modified_identity.clone()
+        vtable['registration_state_changed'] = AccountManager.account_created_on_server_cb
+        vtable['auth_info_requested'] = AccountManager.account_created_auth_requested_cb
+        lc = CoreManager.configure_lc_from(vtable, tester_resources_path, None, account)
+        lc.sip_transports = linphone.SipTransports(-1, -1, -1, -1)
+        cfg = lc.create_proxy_config()
+        tmp_identity.password = account.password
+        tmp_identity.set_header("X-Create-Account", "yes")
+        cfg.identity = tmp_identity.as_string()
+        server_addr = linphone.Address.new(refcfg.server_addr)
+        server_addr.transport = linphone.TransportType.Tcp;
+        server_addr.port = 0
+        cfg.server_addr = server_addr.as_string()
+        cfg.expires = 3600
+        lc.add_proxy_config(cfg)
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().auth_requested == True, 10000) != True:
+            linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
+            sys.exit(-1)
+        cfg.edit()
+        cfg.identity = account.modified_identity.as_string()
+        cfg.done()
+        ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
+        lc.add_auth_info(ai)
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().created == True, 3000) != True:
+            linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity))
+            sys.exit(-1)
+        lc.remove_proxy_config(cfg)
+        if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().done == True, 3000) != True:
+            linphonetester_logger.critical("[TESTER] Account creation could not clean the registration context.")
+            sys.exit(-1)
+
+
+account_manager = AccountManager()
 
 
 class CoreManagerStats:
@@ -159,8 +271,25 @@ class CoreManagerStats:
         self.number_of_LinphoneCallEncryptedOn = 0
         self.number_of_LinphoneCallEncryptedOff = 0
 
+        self.last_received_chat_message = None
+
 
 class CoreManager:
+
+    @classmethod
+    def configure_lc_from(cls, vtable, resources_path, rc_path, user_data=None):
+        filepath = None
+        if rc_path is not None:
+            filepath = os.path.join(resources_path, rc_path)
+            assert_equals(os.path.isfile(filepath), True)
+        lc = linphone.Core.new(vtable, None, filepath)
+        linphone.testing.set_dns_user_hosts_file(lc, os.path.join(resources_path, 'tester_hosts'))
+        lc.root_ca = os.path.join(resources_path, 'certificates', 'cn', 'cafile.pem')
+        lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
+        lc.ringback = os.path.join(resources_path, 'sounds', 'ringback.wav')
+        lc.static_picture = os.path.join(resources_path, 'images', 'nowebcamCIF.jpg')
+        lc.user_data = weakref.ref(user_data)
+        return lc
 
     @classmethod
     def wait_for_until(cls, manager1, manager2, func, timeout):
@@ -240,12 +369,12 @@ class CoreManager:
             lambda callee_manager, caller_manager: (callee_manager.stats.number_of_LinphoneCallStreamsRunning == initial_callee_stats.number_of_LinphoneCallStreamsRunning + 1) and \
                 (caller_manager.stats.number_of_LinphoneCallStreamsRunning == initial_caller_stats.number_of_LinphoneCallStreamsRunning + 1))
 
-        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone:
+        if caller_manager.lc.media_encryption != linphone.MediaEncryption.MediaEncryptionNone and callee_manager.lc.media_encryption != linphone.MediaEncryption.None:
             # Wait for encryption to be on, in case of zrtp, it can take a few seconds
-            if caller_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+            if caller_manager.lc.media_encryption == linphone.MediaEncryption.ZRTP:
                 CoreManager.wait_for(callee_manager, caller_manager,
                     lambda callee_manager, caller_manager: caller_manager.stats.number_of_LinphoneCallEncryptedOn == initial_caller_stats.number_of_LinphoneCallEncryptedOn + 1)
-            if callee_manager.lc.media_encryption == linphone.MediaEncryption.MediaEncryptionZRTP:
+            if callee_manager.lc.media_encryption == linphone.MediaEncryption.ZRTP:
                 CoreManager.wait_for(callee_manager, caller_manager,
                     lambda callee_manager, caller_manager: callee_manager.stats.number_of_LinphoneCallEncryptedOn == initial_callee_stats.number_of_LinphoneCallEncryptedOn + 1)
             assert_equals(callee_manager.lc.current_call.current_params.media_encryption, caller_manager.lc.media_encryption)
@@ -261,174 +390,169 @@ class CoreManager:
 
     @classmethod
     def registration_state_changed(cls, lc, cfg, state, message):
-        manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
-                state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
-        if state == linphone.RegistrationState.RegistrationNone:
+        manager = lc.user_data()
+        linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
+            state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
+        if state == linphone.RegistrationState.None:
             manager.stats.number_of_LinphoneRegistrationNone += 1
-        elif state == linphone.RegistrationState.RegistrationProgress:
+        elif state == linphone.RegistrationState.Progress:
             manager.stats.number_of_LinphoneRegistrationProgress += 1
-        elif state == linphone.RegistrationState.RegistrationOk:
+        elif state == linphone.RegistrationState.Ok:
             manager.stats.number_of_LinphoneRegistrationOk += 1
-        elif state == linphone.RegistrationState.RegistrationCleared:
+        elif state == linphone.RegistrationState.Cleared:
             manager.stats.number_of_LinphoneRegistrationCleared += 1
-        elif state == linphone.RegistrationState.RegistrationFailed:
+        elif state == linphone.RegistrationState.Failed:
             manager.stats.number_of_LinphoneRegistrationFailed += 1
         else:
             raise Exception("Unexpected registration state")
 
     @classmethod
     def auth_info_requested(cls, lc, realm, username, domain):
-        manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
-                username=username, realm=realm))
+        manager = lc.user_data()
+        linphonetester_logger.info("[TESTER] Auth info requested  for user id [{username}] at realm [{realm}]".format(
+            username=username, realm=realm))
         manager.stats.number_of_auth_info_requested +=1
 
     @classmethod
     def call_state_changed(cls, lc, call, state, msg):
-        manager = lc.user_data
+        manager = lc.user_data()
         to_address = call.call_log.to_address.as_string()
         from_address = call.call_log.from_address.as_string()
         direction = "Outgoing"
-        if call.call_log.dir == linphone.CallDir.CallIncoming:
+        if call.call_log.dir == linphone.CallDir.Incoming:
             direction = "Incoming"
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] {direction} call from [{from_address}] to [{to_address}], new state is [{state}]".format(
-                direction=direction, from_address=from_address, to_address=to_address, state=linphone.CallState.string(state)))
-        if state == linphone.CallState.CallIncomingReceived:
+        linphonetester_logger.info("[TESTER] {direction} call from [{from_address}] to [{to_address}], new state is [{state}]".format(
+            direction=direction, from_address=from_address, to_address=to_address, state=linphone.CallState.string(state)))
+        if state == linphone.CallState.IncomingReceived:
             manager.stats.number_of_LinphoneCallIncomingReceived += 1
-        elif state == linphone.CallState.CallOutgoingInit:
+        elif state == linphone.CallState.OutgoingInit:
             manager.stats.number_of_LinphoneCallOutgoingInit += 1
-        elif state == linphone.CallState.CallOutgoingProgress:
+        elif state == linphone.CallState.OutgoingProgress:
             manager.stats.number_of_LinphoneCallOutgoingProgress += 1
-        elif state == linphone.CallState.CallOutgoingRinging:
+        elif state == linphone.CallState.OutgoingRinging:
             manager.stats.number_of_LinphoneCallOutgoingRinging += 1
-        elif state == linphone.CallState.CallOutgoingEarlyMedia:
+        elif state == linphone.CallState.OutgoingEarlyMedia:
             manager.stats.number_of_LinphoneCallOutgoingEarlyMedia += 1
-        elif state == linphone.CallState.CallConnected:
+        elif state == linphone.CallState.Connected:
             manager.stats.number_of_LinphoneCallConnected += 1
-        elif state == linphone.CallState.CallStreamsRunning:
+        elif state == linphone.CallState.StreamsRunning:
             manager.stats.number_of_LinphoneCallStreamsRunning += 1
-        elif state == linphone.CallState.CallPausing:
+        elif state == linphone.CallState.Pausing:
             manager.stats.number_of_LinphoneCallPausing += 1
-        elif state == linphone.CallState.CallPaused:
+        elif state == linphone.CallState.Paused:
             manager.stats.number_of_LinphoneCallPaused += 1
-        elif state == linphone.CallState.CallResuming:
+        elif state == linphone.CallState.Resuming:
             manager.stats.number_of_LinphoneCallResuming += 1
-        elif state == linphone.CallState.CallRefered:
+        elif state == linphone.CallState.Refered:
             manager.stats.number_of_LinphoneCallRefered += 1
-        elif state == linphone.CallState.CallError:
+        elif state == linphone.CallState.Error:
             manager.stats.number_of_LinphoneCallError += 1
-        elif state == linphone.CallState.CallEnd:
+        elif state == linphone.CallState.End:
             manager.stats.number_of_LinphoneCallEnd += 1
-        elif state == linphone.CallState.CallPausedByRemote:
+        elif state == linphone.CallState.PausedByRemote:
             manager.stats.number_of_LinphoneCallPausedByRemote += 1
-        elif state == linphone.CallState.CallUpdatedByRemote:
+        elif state == linphone.CallState.UpdatedByRemote:
             manager.stats.number_of_LinphoneCallUpdatedByRemote += 1
-        elif state == linphone.CallState.CallIncomingEarlyMedia:
+        elif state == linphone.CallState.IncomingEarlyMedia:
             manager.stats.number_of_LinphoneCallIncomingEarlyMedia += 1
-        elif state == linphone.CallState.CallUpdating:
+        elif state == linphone.CallState.Updating:
             manager.stats.number_of_LinphoneCallUpdating += 1
-        elif state == linphone.CallState.CallReleased:
+        elif state == linphone.CallState.Released:
             manager.stats.number_of_LinphoneCallReleased += 1
         else:
             raise Exception("Unexpected call state")
 
     @classmethod
     def message_received(cls, lc, room, message):
-        manager = lc.user_data
+        manager = lc.user_data()
         from_str = message.from_address.as_string()
         text_str = message.text
         external_body_url = message.external_body_url
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
-                from_str=from_str, text_str=text_str, external_body_url=external_body_url))
+        linphonetester_logger.info("[TESTER] Message from [{from_str}] is [{text_str}], external URL [{external_body_url}]".format(
+            from_str=from_str, text_str=text_str, external_body_url=external_body_url))
         manager.stats.number_of_LinphoneMessageReceived += 1
-
-        if message.external_body_url is not None:
+        manager.stats.last_received_chat_message = message
+        if message.file_transfer_information is not None:
+            manager.stats.number_of_LinphoneMessageReceivedWithFile += 1
+        elif message.external_body_url is not None:
             manager.stats.number_of_LinphoneMessageExtBodyReceived += 1
 
     @classmethod
     def new_subscription_requested(cls, lc, lf, url):
-        manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
-                from_str=lf.address.as_string(), url=url))
+        manager = lc.user_data()
+        linphonetester_logger.info("[TESTER] New subscription request: from [{from_str}], url [{url}]".format(
+            from_str=lf.address.as_string(), url=url))
         manager.stats.number_of_NewSubscriptionRequest += 1
         lc.add_friend(lf) # Accept subscription
 
     @classmethod
     def notify_presence_received(cls, lc, lf):
-        manager = lc.user_data
-        if manager.logger is not None:
-            manager.logger.info("[TESTER] New notify request: from [{from_str}]".format(
-                from_str=lf.address.as_string()))
+        manager = lc.user_data()
+        linphonetester_logger.info("[TESTER] New notify request: from [{from_str}]".format(
+            from_str=lf.address.as_string()))
         manager.stats.number_of_NotifyReceived += 1
         manager.stats.last_received_presence = lf.presence_model
         acttype = manager.stats.last_received_presence.activity.type
-        if acttype == linphone.PresenceActivityType.PresenceActivityOffline:
+        if acttype == linphone.PresenceActivityType.Offline:
             manager.stats.number_of_LinphonePresenceActivityOffline += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOnline:
+        elif acttype == linphone.PresenceActivityType.Online:
             manager.stats.number_of_LinphonePresenceActivityOnline += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityAppointment:
+        elif acttype == linphone.PresenceActivityType.Appointment:
             manager.stats.number_of_LinphonePresenceActivityAppointment += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityAway:
+        elif acttype == linphone.PresenceActivityType.Away:
             manager.stats.number_of_LinphonePresenceActivityAway += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityBreakfast:
+        elif acttype == linphone.PresenceActivityType.Breakfast:
             manager.stats.number_of_LinphonePresenceActivityBreakfast += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityBusy:
+        elif acttype == linphone.PresenceActivityType.Busy:
             manager.stats.number_of_LinphonePresenceActivityBusy += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityDinner:
+        elif acttype == linphone.PresenceActivityType.Dinner:
             manager.stats.number_of_LinphonePresenceActivityDinner += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityHoliday:
+        elif acttype == linphone.PresenceActivityType.Holiday:
             manager.stats.number_of_LinphonePresenceActivityHoliday += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityInTransit:
+        elif acttype == linphone.PresenceActivityType.InTransit:
             manager.stats.number_of_LinphonePresenceActivityInTransit += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityLookingForWork:
+        elif acttype == linphone.PresenceActivityType.LookingForWork:
             manager.stats.number_of_LinphonePresenceActivityLookingForWork += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityLunch:
+        elif acttype == linphone.PresenceActivityType.Lunch:
             manager.stats.number_of_LinphonePresenceActivityLunch += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityMeal:
+        elif acttype == linphone.PresenceActivityType.Meal:
             manager.stats.number_of_LinphonePresenceActivityMeal += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityMeeting:
+        elif acttype == linphone.PresenceActivityType.Meeting:
             manager.stats.number_of_LinphonePresenceActivityMeeting += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOnThePhone:
+        elif acttype == linphone.PresenceActivityType.OnThePhone:
             manager.stats.number_of_LinphonePresenceActivityOnThePhone += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityOther:
+        elif acttype == linphone.PresenceActivityType.Other:
             manager.stats.number_of_LinphonePresenceActivityOther += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPerformance:
+        elif acttype == linphone.PresenceActivityType.Performance:
             manager.stats.number_of_LinphonePresenceActivityPerformance += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPermanentAbsence:
+        elif acttype == linphone.PresenceActivityType.PermanentAbsence:
             manager.stats.number_of_LinphonePresenceActivityPermanentAbsence += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPlaying:
+        elif acttype == linphone.PresenceActivityType.Playing:
             manager.stats.number_of_LinphonePresenceActivityPlaying += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityPresentation:
+        elif acttype == linphone.PresenceActivityType.Presentation:
             manager.stats.number_of_LinphonePresenceActivityPresentation += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityShopping:
+        elif acttype == linphone.PresenceActivityType.Shopping:
             manager.stats.number_of_LinphonePresenceActivityShopping += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySleeping:
+        elif acttype == linphone.PresenceActivityType.Sleeping:
             manager.stats.number_of_LinphonePresenceActivitySleeping += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySpectator:
+        elif acttype == linphone.PresenceActivityType.Spectator:
             manager.stats.number_of_LinphonePresenceActivitySpectator += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivitySteering:
+        elif acttype == linphone.PresenceActivityType.Steering:
             manager.stats.number_of_LinphonePresenceActivitySteering += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityTravel:
+        elif acttype == linphone.PresenceActivityType.Travel:
             manager.stats.number_of_LinphonePresenceActivityTravel += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityTV:
+        elif acttype == linphone.PresenceActivityType.TV:
             manager.stats.number_of_LinphonePresenceActivityTV += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityUnknown:
+        elif acttype == linphone.PresenceActivityType.Unknown:
             manager.stats.number_of_LinphonePresenceActivityUnknown += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityVacation:
+        elif acttype == linphone.PresenceActivityType.Vacation:
             manager.stats.number_of_LinphonePresenceActivityVacation += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityWorking:
+        elif acttype == linphone.PresenceActivityType.Working:
             manager.stats.number_of_LinphonePresenceActivityWorking += 1
-        elif acttype == linphone.PresenceActivityType.PresenceActivityWorship:
+        elif acttype == linphone.PresenceActivityType.Worship:
             manager.stats.number_of_LinphonePresenceActivityWorship += 1
 
-    def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}, logger=None):
-        self.logger = logger
+    def __init__(self, rc_file = None, check_for_proxies = True, vtable = {}):
         if not vtable.has_key('registration_state_changed'):
             vtable['registration_state_changed'] = CoreManager.registration_state_changed
         if not vtable.has_key('auth_info_requested'):
@@ -437,12 +561,6 @@ class CoreManager:
             vtable['call_state_changed'] = CoreManager.call_state_changed
         if not vtable.has_key('message_received'):
             vtable['message_received'] = CoreManager.message_received
-        #if not vtable.has_key('file_transfer_recv'):
-            #vtable['file_transfer_recv'] = CoreManager.file_transfer_recv
-        #if not vtable.has_key('file_transfer_send'):
-            #vtable['file_transfer_send'] = CoreManager.file_transfer_send
-        #if not vtable.has_key('file_transfer_progress_indication'):
-            #vtable['file_transfer_progress_indication'] = CoreManager.file_transfer_progress_indication
         #if not vtable.has_key('is_composing_received'):
             #vtable['is_composing_received'] = CoreManager.is_composing_received
         if not vtable.has_key('new_subscription_requested'):
@@ -468,8 +586,8 @@ class CoreManager:
         rc_path = None
         if rc_file is not None:
             rc_path = os.path.join('rcfiles', rc_file)
-        self.lc = self.configure_lc_from(vtable, tester_resources_path, rc_path)
-        self.lc.user_data = self
+        self.lc = CoreManager.configure_lc_from(vtable, tester_resources_path, rc_path, self)
+        self.check_accounts()
         if check_for_proxies and rc_file is not None:
             proxy_count = len(self.lc.proxy_config_list)
         else:
@@ -483,22 +601,6 @@ class CoreManager:
             self.identity = linphone.Address.new(self.lc.default_proxy_config.identity)
             self.identity.clean()
 
-    def stop(self):
-        self.lc = None
-
-    def configure_lc_from(self, vtable, resources_path, rc_path):
-        filepath = None
-        if rc_path is not None:
-            filepath = os.path.join(resources_path, rc_path)
-            assert_equals(os.path.isfile(filepath), True)
-        lc = linphone.Core.new(vtable, None, filepath)
-        linphone.testing.set_dns_user_hosts_file(lc, os.path.join(resources_path, 'tester_hosts'))
-        lc.root_ca = os.path.join(resources_path, 'certificates', 'cn', 'cafile.pem')
-        lc.ring = os.path.join(resources_path, 'sounds', 'oldphone.wav')
-        lc.ringback = os.path.join(resources_path, 'sounds', 'ringback.wav')
-        lc.static_picture = os.path.join(resources_path, 'images', 'nowebcamCIF.jpg')
-        return lc
-
     def enable_audio_codec(self, mime, rate):
         codecs = self.lc.audio_codecs
         for codec in codecs:
@@ -510,3 +612,8 @@ class CoreManager:
 
     def disable_all_audio_codecs_except_one(self, mime):
         self.enable_audio_codec(mime, -1)
+
+    def check_accounts(self):
+        pcl = self.lc.proxy_config_list
+        for cfg in pcl:
+            self.identity = account_manager.check_account(cfg)

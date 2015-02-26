@@ -210,10 +210,18 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	/*only add a c= line within the stream description if address are differents*/
 	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,md->addr)!=0){
 		bool_t inet6;
+		belle_sdp_connection_t *connection;
 		if (strchr(rtp_addr,':')!=NULL){
 			inet6=TRUE;
 		}else inet6=FALSE;
-		belle_sdp_media_description_set_connection(media_desc,belle_sdp_connection_create("IN", inet6 ? "IP6" : "IP4", rtp_addr));
+		connection = belle_sdp_connection_create("IN", inet6 ? "IP6" : "IP4", rtp_addr);
+		if (ms_is_multicast(rtp_addr)) {
+			/*remove session cline in case of multicast*/
+			belle_sdp_session_description_set_connection(session_desc,NULL);
+			if (inet6 == FALSE)
+				belle_sdp_connection_set_ttl(connection,stream->ttl);
+		}
+		belle_sdp_media_description_set_connection(media_desc,connection);
 	}
 
 	if ( stream->bandwidth>0 )
@@ -233,6 +241,29 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			}else break;
 		}
 	}
+
+	/* insert DTLS session attribute if needed */
+	if ((stream->proto == SalProtoUdpTlsRtpSavpf) || (stream->proto == SalProtoUdpTlsRtpSavp)) {
+		char* ssrc_attribute = ms_strdup_printf("%u cname:%s",htonl(stream->rtp_ssrc),stream->rtcp_cname);
+		if ((stream->dtls_role != SalDtlsRoleInvalid) && (strlen(stream->dtls_fingerprint)>0)) {
+			switch(stream->dtls_role) {
+				case SalDtlsRoleIsClient:
+					belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("setup","active"));
+					break;
+				case SalDtlsRoleIsServer:
+					belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("setup","passive"));
+					break;
+				case SalDtlsRoleUnset:
+				default:
+					belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("setup","actpass"));
+					break;
+			}
+			belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("fingerprint",stream->dtls_fingerprint));
+		}
+		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute)); /* truc de Jehan a virer? */
+		ms_free(ssrc_attribute);
+	}
+
 	switch ( stream->dir ) {
 		case SalStreamSendRecv:
 			/*dir="sendrecv";*/
@@ -301,6 +332,13 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			belle_sip_object_unref((belle_sip_object_t*)media_attribute);
 		}
 	}
+	/*
+	 * rfc5576
+	 * 4.1.  The "ssrc" Media Attribute
+	 * <ssrc-id> is the synchronization source (SSRC) ID of the
+	 * source being described, interpreted as a 32-bit unsigned integer in
+	 * network byte order and represented in decimal.*/
+
 
 	belle_sdp_session_description_add_media_description(session_desc, media_desc);
 }
@@ -450,12 +488,15 @@ static void sdp_parse_media_ice_parameters(belle_sdp_media_description_t *media_
 		att_name = belle_sdp_attribute_get_name(attribute);
 		value = belle_sdp_attribute_get_value(attribute);
 
-		if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
+		if (	(nb_ice_candidates < sizeof (stream->ice_candidates)/sizeof(SalIceCandidate))
+				&& (keywordcmp("candidate", att_name) == 0)
+				&& (value != NULL)) {
 			SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
-			int nb = sscanf(value, "%s %u UDP %u %s %d typ %s raddr %s rport %d",
-				candidate->foundation, &candidate->componentID, &candidate->priority, candidate->addr, &candidate->port,
+			char proto[4];
+			int nb = sscanf(value, "%s %u %3s %u %s %d typ %s raddr %s rport %d",
+				candidate->foundation, &candidate->componentID, proto, &candidate->priority, candidate->addr, &candidate->port,
 				candidate->type, candidate->raddr, &candidate->rport);
-			if ((nb == 6) || (nb == 8)) nb_ice_candidates++;
+			if (strcasecmp("udp",proto)==0 && ((nb == 7) || (nb == 9))) nb_ice_candidates++;
 			else memset(candidate, 0, sizeof(*candidate));
 		} else if ((keywordcmp("remote-candidates", att_name) == 0) && (value != NULL)) {
 			SalIceRemoteCandidate candidate;
@@ -633,8 +674,6 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
 
-	memset ( stream,0,sizeof ( *stream ) );
-
 	proto = belle_sdp_media_get_protocol ( media );
 	stream->proto=SalProtoOther;
 	if ( proto ) {
@@ -646,12 +685,17 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 			stream->proto = SalProtoRtpAvpf;
 		} else if (strcasecmp(proto, "RTP/SAVPF") == 0) {
 			stream->proto = SalProtoRtpSavpf;
+		} else if (strcasecmp(proto, "UDP/TLS/RTP/SAVP") == 0) {
+			stream->proto = SalProtoUdpTlsRtpSavp;
+		} else if (strcasecmp(proto, "UDP/TLS/RTP/SAVPF") == 0) {
+			stream->proto = SalProtoUdpTlsRtpSavpf;
 		} else {
 			strncpy(stream->proto_other,proto,sizeof(stream->proto_other)-1);
 		}
 	}
 	if ( ( cnx=belle_sdp_media_description_get_connection ( media_desc ) ) && belle_sdp_connection_get_address ( cnx ) ) {
 		strncpy ( stream->rtp_addr,belle_sdp_connection_get_address ( cnx ), sizeof ( stream->rtp_addr ) -1 );
+		stream->ttl=belle_sdp_connection_get_ttl(cnx);
 	}
 
 	stream->rtp_port=belle_sdp_media_get_media_port ( media );
@@ -701,6 +745,23 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 		}
 	}
 
+	/* Read DTLS specific attributes : check is some are found in the stream description otherwise copy the session description one(which are at least set to Invalid) */
+	if (((stream->proto == SalProtoUdpTlsRtpSavpf) || (stream->proto == SalProtoUdpTlsRtpSavp))) {
+		attribute=belle_sdp_media_description_get_attribute(media_desc,"setup");
+		if (attribute && (value=belle_sdp_attribute_get_value(attribute))!=NULL){
+			if (strncmp(value, "actpass", 7) == 0) {
+				stream->dtls_role = SalDtlsRoleUnset;
+			} else if (strncmp(value, "active", 6) == 0) {
+				stream->dtls_role = SalDtlsRoleIsClient;
+			} else if (strncmp(value, "passive", 7) == 0) {
+				stream->dtls_role = SalDtlsRoleIsServer;
+			}
+		}
+		if (stream->dtls_role != SalDtlsRoleInvalid && (attribute=belle_sdp_media_description_get_attribute(media_desc,"fingerprint"))) {
+			strncpy(stream->dtls_fingerprint, belle_sdp_attribute_get_value(attribute),sizeof(stream->dtls_fingerprint));
+		}
+	}
+
 	/* Read crypto lines if any */
 	if ((stream->proto == SalProtoRtpSavpf) || (stream->proto == SalProtoRtpSavp)) {
 		sdp_parse_media_crypto_parameters(media_desc, stream);
@@ -730,6 +791,8 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	belle_sdp_media_description_t* media_desc;
 	belle_sdp_session_name_t *sname;
 	const char* value;
+	SalDtlsRole session_role=SalDtlsRoleInvalid;
+	int i;
 	
 	desc->nb_streams = 0;
 	desc->dir = SalStreamSendRecv;
@@ -754,6 +817,25 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 		desc->dir=SalStreamRecvOnly;
 	} else if ( belle_sdp_session_description_get_attribute ( session_desc,"inactive" ) ) {
 		desc->dir=SalStreamInactive;
+	}
+
+	/*DTLS attributes can be defined at session level.*/
+	value=belle_sdp_session_description_get_attribute_value(session_desc,"setup");
+	if (value){
+		if (strncmp(value, "actpass", 7) == 0) {
+			session_role = SalDtlsRoleUnset;
+		} else if (strncmp(value, "active", 6) == 0) {
+			session_role = SalDtlsRoleIsClient;
+		} else if (strncmp(value, "passive", 7) == 0) {
+			session_role = SalDtlsRoleIsServer;
+		}
+	}
+	value=belle_sdp_session_description_get_attribute_value(session_desc,"fingerprint");
+	/*copy dtls attributes to every streams, might be overwritten stream by stream*/
+	for (i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++) {
+		if (value)
+			strncpy(desc->streams[i].dtls_fingerprint, value, sizeof(desc->streams[i].dtls_fingerprint));
+		desc->streams[i].dtls_role=session_role; /*set or reset value*/
 	}
 
 	/* Get ICE remote ufrag and remote pwd, and ice_lite flag */

@@ -109,7 +109,18 @@ abstract public class LinphoneCoreFactory {
 	 * @param enable true to enable debug mode, false to disable it
 	 * @param tag Tag which prefixes each log message.
 	 */
-	abstract public  void setDebugMode(boolean enable, String tag);
+	abstract public void setDebugMode(boolean enable, String tag);
+	
+	/**
+	 * Enable the linphone core log collection to upload logs on a server.
+	 */
+	abstract public void enableLogCollection(boolean enable);
+
+	/**
+	 * Set the path where the log files will be written for log collection.
+	 * @param path The path where the log files will be written.
+	 */
+	abstract public void setLogCollectionPath(String path);
 	
 	abstract public void setLogHandler(LinphoneLogHandler handler);
 	

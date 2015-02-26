@@ -106,7 +106,8 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 		linphone_core_notify_publish_state_changed(lev->lc,lev,state);
 		switch(state){
 			case LinphonePublishCleared:
-				linphone_event_unref(lev);
+				if (lev->expires!=-1)
+					linphone_event_unref(lev);
 				break;
 			case LinphonePublishOk:
 			case LinphonePublishError:

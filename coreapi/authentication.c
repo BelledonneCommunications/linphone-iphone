@@ -200,7 +200,7 @@ static char * remove_quotes(char * input){
 	return input;
 }
 
-static int realm_match(const char *realm1, const char *realm2){
+static bool_t realm_match(const char *realm1, const char *realm2){
 	if (realm1==NULL && realm2==NULL) return TRUE;
 	if (realm1!=NULL && realm2!=NULL){
 		if (strcmp(realm1,realm2)==0) return TRUE;
@@ -226,7 +226,7 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 		LinphoneAuthInfo *pinfo = (LinphoneAuthInfo*)elem->data;
 		if (username && pinfo->username && strcmp(username,pinfo->username)==0) {
 			if (realm && domain){
-				if (pinfo->realm && strcmp(realm,pinfo->realm)==0
+				if (pinfo->realm && realm_match(realm,pinfo->realm)
 					&& pinfo->domain && strcmp(domain,pinfo->domain)==0) {
 					return pinfo;
 				}
@@ -238,9 +238,9 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 					}
 					ret=pinfo;
 				}
-			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0) {
+			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0 && pinfo->ha1==NULL) {
 				return pinfo;
-			} else if (!domain) {
+			} else if (!domain && pinfo->ha1==NULL) {
 				return pinfo;
 			}
 		}
@@ -271,6 +271,7 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 	if (ai==NULL){
 		ai=find_auth_info(lc,username,NULL,NULL);
 	}
+	/*if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username, ai->realm);*/
 	return ai;
 }
 

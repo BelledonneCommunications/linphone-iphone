@@ -261,14 +261,14 @@ LINPHONE_PUBLIC void linphone_friend_set_ref_key(LinphoneFriend *lf, const char 
 /**
  * Get the reference key of a friend.
  * @param[in] lf #LinphoneFriend object.
- * @returns The reference key of the friend.
+ * @return The reference key of the friend.
 **/
 LINPHONE_PUBLIC const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
 
 /**
  * Check that the given friend is in a friend list.
  * @param[in] lf #LinphoneFriend object.
- * @returns TRUE if the friend is in a friend list, FALSE otherwise.
+ * @return TRUE if the friend is in a friend list, FALSE otherwise.
 **/
 LINPHONE_PUBLIC bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
@@ -372,7 +372,7 @@ LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, Linphone
  * Search a LinphoneFriend by its address.
  * @param[in] lc #LinphoneCore object.
  * @param[in] addr The address to use to search the friend.
- * @returns The #LinphoneFriend object corresponding to the given address.
+ * @return The #LinphoneFriend object corresponding to the given address.
  * @deprecated use linphone_core_find_friend() instead.
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
@@ -381,7 +381,7 @@ LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const Linpho
  * Search a LinphoneFriend by its address.
  * @param[in] lc #LinphoneCore object.
  * @param[in] addr The address to use to search the friend.
- * @returns The #LinphoneFriend object corresponding to the given address.
+ * @return The #LinphoneFriend object corresponding to the given address.
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr);
 
@@ -389,7 +389,7 @@ LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc
  * Search a LinphoneFriend by its reference key.
  * @param[in] lc #LinphoneCore object.
  * @param[in] key The reference key to use to search the friend.
- * @returns The #LinphoneFriend object corresponding to the given reference key.
+ * @return The #LinphoneFriend object corresponding to the given reference key.
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 

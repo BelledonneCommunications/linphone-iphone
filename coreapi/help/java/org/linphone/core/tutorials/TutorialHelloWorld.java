@@ -22,12 +22,16 @@ import java.nio.ByteBuffer;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
+import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.LogCollectionUploadState;
+import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
@@ -36,9 +40,6 @@ import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCore.GlobalState;
-import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
@@ -241,6 +242,19 @@ public class TutorialHelloWorld implements LinphoneCoreListener {
 			LinphoneContent content, ByteBuffer buffer, int size) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadStateChanged(LinphoneCore lc,
+			LogCollectionUploadState state, String info) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -40,7 +40,7 @@ const char *liblinphone_tester_get_notify_content(void){
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
 	CU_ASSERT_PTR_NOT_NULL_FATAL(content);
-	CU_ASSERT_TRUE(strcmp(notify_content,(const char*)content->data)==0);
+	CU_ASSERT_TRUE(strcmp(notify_content,(const char*)linphone_content_get_buffer(content))==0);
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }
@@ -48,13 +48,13 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	stats* counters = get_stats(lc);
 	LinphoneCoreManager *mgr=get_manager(lc);
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	const LinphoneAddress* from_addr = linphone_event_get_from(lev);
 	char* from = linphone_address_as_string(from_addr);
-	content.type="application";
-	content.subtype="somexml2";
-	content.data=(void*)notify_content;
-	content.size=strlen(notify_content);
+	content = linphone_core_create_content(lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml2");
+	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
 	
 	ms_message("Subscription state [%s] from [%s]",linphone_subscription_state_to_string(state),from);
 	ms_free(from);
@@ -80,7 +80,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			counters->number_of_LinphoneSubscriptionActive++;
 			if (linphone_event_get_subscription_dir(lev)==LinphoneSubscriptionIncoming){
 				mgr->lev=lev;
-				linphone_event_notify(lev,&content);
+				linphone_event_notify(lev,content);
 			}
 		break;
 		case LinphoneSubscriptionTerminated:
@@ -96,6 +96,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			mgr->lev=NULL;
 		break;
 	}
+	linphone_content_unref(content);
 }
 
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
@@ -123,23 +124,22 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	const LinphoneErrorInfo *ei;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)subscribe_content;
-	content.size=strlen(subscribe_content);
-	
 	pauline->decline_subscribe=TRUE;
-	
-	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,content);
 	linphone_event_ref(lev);
-	
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionError,1,21000));/*yes flexisip may wait 20 secs in case of forking*/
@@ -150,7 +150,8 @@ static void subscribe_test_declined(void) {
 		CU_ASSERT_PTR_NOT_NULL(linphone_error_info_get_phrase(ei));
 	}
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
-	
+
+	linphone_content_unref(content);
 	linphone_event_unref(lev);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -165,23 +166,23 @@ typedef enum RefreshTestType{
 static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-	
+
 	lcs=ms_list_append(lcs,pauline->lc);
 
 	if (refresh_type==ManualRefresh){
 		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
 	}
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)subscribe_content;
-	content.size=strlen(subscribe_content);
-	
-	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,&content);
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
@@ -190,7 +191,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 
 	/*make sure marie receives first notification before terminating*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
-	
+
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
 		CU_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
@@ -206,10 +207,11 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 		CU_ASSERT_PTR_NOT_NULL_FATAL(pauline->lev);
 		linphone_event_terminate(pauline->lev);
 	}
-	
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
-	
+
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -217,7 +219,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -228,28 +230,28 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
 	}
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)subscribe_content;
-	content.size=strlen(subscribe_content);
-	
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
 	linphone_event_add_custom_header(lev,"My-Header2","pimpon");
-	linphone_event_send_subscribe(lev,&content);
-	
+	linphone_event_send_subscribe(lev,content);
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
-	
+
 	/*check good receipt of custom headers*/
 	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
 	CU_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
 	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
 	/*make sure marie receives first notification before terminating*/
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
@@ -257,7 +259,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	}else if (refresh_type==ManualRefresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
-		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,2000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,5000));
 	}
 
 	if (terminated_by_subscriber){
@@ -266,10 +268,11 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 		CU_ASSERT_PTR_NOT_NULL_FATAL(pauline->lev);
 		linphone_event_terminate(pauline->lev);
 	}
-	
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
-	
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -300,30 +303,29 @@ static void subscribe_test_manually_refreshed(void){
 static void publish_test_with_args(bool_t refresh, int expires){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content={0};
+	LinphoneContent* content;
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
+	content = linphone_core_create_content(marie->lc);
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"somexml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
 
-	content.type="application";
-	content.subtype="somexml";
-	content.data=(char*)subscribe_content;
-	content.size=strlen(subscribe_content);
-	
 	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
 
 	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
-	linphone_event_send_publish(lev,&content);
+	linphone_event_send_publish(lev,content);
 	linphone_event_ref(lev);
-	
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
-	
+
 	if (!refresh){
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishExpiring,1,5000));
-		linphone_event_update_publish(lev,&content);
+		linphone_event_update_publish(lev,content);
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
 		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
 	}else{
@@ -331,11 +333,12 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	}
 
 	linphone_event_terminate(lev);
-	
+
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,3000));
-	
+
 	linphone_event_unref(lev);
-	
+
+	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

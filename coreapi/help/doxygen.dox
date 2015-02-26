@@ -53,6 +53,11 @@
 
 /**
  * @defgroup media_parameters Controlling media parameters
+ *<b> Multicast </b>
+ *<br> Call using rtp multicast addresses are supported for both audio and video with some limitations. Limitations are, no stun, no ice, no encryption. 
+ *<br><li> Incoming call with multicast address are automatically accepted. The called party switches in a media receive only mode.
+ *<br><li> Outgoing call willing to send media to a multicast address can activate multicast using \link linphone_core_enable_video_multicast\endlink or
+ *\link linphone_core_enable_audio_multicast\endlink . The calling party switches in a media listen send only mode.
 **/
 
 /**
@@ -215,6 +220,12 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
  * the effective limit can be lower.
  * 
 **/
+
+
+/**
+ * @defgroup event_api Managing generic subscriptions and publishes
+ * The LinphoneEvent api allows application to control subscriptions, receive notifications and make publish to peers, in a generic manner.
+ */
 
 /**
  * @defgroup misc Miscenalleous: logs, version strings, config storage

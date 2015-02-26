@@ -54,18 +54,15 @@ static int callback_content(void *data, int argc, char **argv, char **colName) {
 	LinphoneChatMessage *message = (LinphoneChatMessage *)data;
 
 	if (message->file_transfer_information) {
-		linphone_content_uninit(message->file_transfer_information);
-		ms_free(message->file_transfer_information);
+		linphone_content_unref(message->file_transfer_information);
 		message->file_transfer_information = NULL;
 	}
-	message->file_transfer_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-	memset(message->file_transfer_information, 0, sizeof(*(message->file_transfer_information)));
-
-	message->file_transfer_information->type = argv[1] ? ms_strdup(argv[1]) : NULL;
-	message->file_transfer_information->subtype = argv[2] ? ms_strdup(argv[2]) : NULL;
-	message->file_transfer_information->name = argv[3] ? ms_strdup(argv[3]) : NULL;
-	message->file_transfer_information->encoding = argv[4] ? ms_strdup(argv[4]) : NULL;
-	message->file_transfer_information->size = (size_t) atoi(argv[5]);
+	message->file_transfer_information = linphone_content_new();
+	if (argv[1]) linphone_content_set_type(message->file_transfer_information, argv[1]);
+	if (argv[2]) linphone_content_set_subtype(message->file_transfer_information, argv[2]);
+	if (argv[3]) linphone_content_set_name(message->file_transfer_information, argv[3]);
+	if (argv[4]) linphone_content_set_encoding(message->file_transfer_information, argv[4]);
+	linphone_content_set_size(message->file_transfer_information, (size_t)atoi(argv[5]));
 
 	return 0;
 }
@@ -199,13 +196,13 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 	if (lc->db) {
 		LinphoneContent *content = msg->file_transfer_information;
 		char *buf = sqlite3_mprintf("INSERT INTO content VALUES(NULL,%Q,%Q,%Q,%Q,%i,%Q);",
-						content->type,
-						content->subtype,
-						content->name,
-						content->encoding,
-						content->size,
+						linphone_content_get_type(content),
+						linphone_content_get_subtype(content),
+						linphone_content_get_name(content),
+						linphone_content_get_encoding(content),
+						linphone_content_get_size(content),
 						NULL
- 					);
+					);
 		linphone_sql_request(lc->db, buf);
 		sqlite3_free(buf);
 		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
@@ -240,7 +237,7 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 						(int64_t)msg->time,
 						msg->appdata,
 						content_id
- 					);
+					);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -257,13 +254,6 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg){
 								  msg->state,msg->storage_id);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
-	}
-
-	if( msg->state == LinphoneChatMessageStateDelivered
-			|| msg->state == LinphoneChatMessageStateNotDelivered ){
-		// message is not transient anymore, we can remove it from our transient list:
-		msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
-		linphone_chat_message_unref(msg);
 	}
 }
 
@@ -381,7 +371,7 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 
 	if (startm<0) startm=0;
 
-	if (endm>0&&endm>=startm){
+	if ((endm>0&&endm>=startm) || (startm == 0 && endm == 0) ){
 		buf2=ms_strdup_printf("%s LIMIT %i ",buf,endm+1-startm);
 		ms_free(buf);
 		buf = buf2;
@@ -601,6 +591,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 		errmsg=sqlite3_errmsg(db);
 		ms_error("Error in the opening: %s.\n", errmsg);
 		sqlite3_close(db);
+		return;
 	}
 
 	linphone_message_storage_activate_debug(db, lc->debug_storage);

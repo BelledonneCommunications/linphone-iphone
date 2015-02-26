@@ -257,7 +257,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 }
 
 static int send_report(LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
-	LinphoneContent content = {0};
+	LinphoneContent *content = linphone_content_new();
 	LinphoneAddress *addr;
 	int expires = -1;
 	size_t offset = 0;
@@ -294,9 +294,9 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		goto end;
 	}
 
-	buffer = (char *) ms_malloc(size);
-	content.type = ms_strdup("application");
-	content.subtype = ms_strdup("vq-rtcpxr");
+	buffer = (char *) belle_sip_malloc(size);
+	linphone_content_set_type(content, "application");
+	linphone_content_set_subtype(content, "vq-rtcpxr");
 
 	append_to_buffer(&buffer, &size, &offset, "%s\r\n", report_event);
 	append_to_buffer(&buffer, &size, &offset, "CallID: %s\r\n", report->info.call_id);
@@ -331,17 +331,17 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		append_to_buffer(&buffer, &size, &offset, "\r\n");
 	}
 
-	content.data = buffer;
-	content.size = strlen(buffer);
+	linphone_content_set_buffer(content, buffer, strlen(buffer));
+	ms_free(buffer);
 
 	if (call->log->reporting.on_report_sent != NULL){
 		call->log->reporting.on_report_sent(
 			call,
 			(report==call->log->reporting.reports[0])?LINPHONE_CALL_STATS_AUDIO:LINPHONE_CALL_STATS_VIDEO,
-			&content);
+			content);
 	}
 
-	if (! linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, &content)){
+	if (! linphone_core_publish(call->core, addr, "vq-rtcpxr", expires, content)){
 		ret=4;
 	} else {
 		reset_avg_metrics(report);
@@ -354,7 +354,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	linphone_address_destroy(addr);
 
-	linphone_content_uninit(&content);
+	linphone_content_unref(content);
 
 	end:
 	ms_message("QualityReporting[%p]: Send '%s' with status %d",

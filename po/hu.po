@@ -1,21 +1,23 @@
-# Hungarian translation for Linphone.
-# Copyright 2013.
-# This file is distributed under the same license as the linphone package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
 #
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: Linphone\n"
+"Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-15 09:24+0200\n"
-"PO-Revision-Date: 2013-03-26 19:00+0100\n"
-"Last-Translator: Viktor <viktorbarczi@lavabit.com>\n"
-"Language-Team:  <LL@li.org>\n"
-"Language: Hungarian\n"
+"POT-Creation-Date: 2015-02-17 12:28+0100\n"
+"PO-Revision-Date: 2015-02-17 11:28+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/linphone-gtk/"
+"language/hu/)\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
-"Plural-Forms: nplurals=1; plural=1 == 1 ? 0 : 1;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
 #, c-format
@@ -28,9 +30,9 @@ msgid "Send text to %s"
 msgstr "Szöveg küldése a következőnek: %s"
 
 #: ../gtk/calllogs.c:232
-#, fuzzy, c-format
+#, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "<b>vonalban</b>"
+msgstr ""
 
 #: ../gtk/calllogs.c:314
 msgid "n/a"
@@ -52,38 +54,27 @@ msgstr "Elutasítva"
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] "%i perc"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/calllogs.c:332
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] "%i másodperc"
-
-#: ../gtk/calllogs.c:335 ../gtk/calllogs.c:341
-#, fuzzy, c-format
-msgid "<big><b>%s</b></big>\t%s"
-msgstr ""
-"<nagy><b>%s</b></nagy>\t<kis><i>%s</i></kis>\t\n"
-"%s\t%s"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/calllogs.c:337
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr ""
-"<nagy><b>%s</b></nagy>\t<kis><i>%s</i>\t<i>Minőség: %s</i></kis>\n"
-"%s\t%s %s\t"
 
-#: ../gtk/calllogs.c:343
-#, fuzzy, c-format
-msgid ""
-"<small><i>%s</i></small>\t\n"
-"%s"
+#: ../gtk/calllogs.c:341
+#, c-format
+msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
-"<nagy><b>%s</b></nagy>\t<kis><i>%s</i></kis>\t\n"
-"%s\t%s"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
@@ -98,35 +89,35 @@ msgstr "én"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nemtalálható a pixmap fájl: %s"
 
-#: ../gtk/chat.c:364 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "Érvénytelen sip partner !"
 
-#: ../gtk/main.c:107
+#: ../gtk/main.c:109
 msgid "log to stdout some debug information while running."
 msgstr "Futás közben némi hibakeresési információ az stdout-ra naplózása."
 
-#: ../gtk/main.c:114
+#: ../gtk/main.c:116
 msgid "path to a file to write logs into."
 msgstr "fájl elérési útja, melybe a naplók kerülnek."
 
-#: ../gtk/main.c:121
+#: ../gtk/main.c:123
 msgid "Start linphone with video disabled."
 msgstr "Linphone indítása, videó kikpacsolva. "
 
-#: ../gtk/main.c:128
+#: ../gtk/main.c:130
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Csak a tálcaikon indítása, ne mutassa a fő ablakot."
 
-#: ../gtk/main.c:135
+#: ../gtk/main.c:137
 msgid "address to call right now"
 msgstr "Cím azonnali híváshoz"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid "if set automatically answer incoming calls"
 msgstr "Bekapcsolva automatikusan válaszol a bejövő hívásokra"
 
-#: ../gtk/main.c:149
+#: ../gtk/main.c:151
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -134,22 +125,19 @@ msgstr ""
 "Adjon meg egy munkakönyvtárat (ennek az installációs könyvtárnak kéne "
 "lennie, pl. C:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:156
-#, fuzzy
+#: ../gtk/main.c:158
 msgid "Configuration file"
-msgstr "Információk"
+msgstr ""
 
-#: ../gtk/main.c:163
-#, fuzzy
+#: ../gtk/main.c:165
 msgid "Run the audio assistant"
-msgstr "Fiók beállítása varázsló"
+msgstr ""
 
-#: ../gtk/main.c:590
-#, c-format
-msgid "Call with %s"
-msgstr "Hívás %s -el"
+#: ../gtk/main.c:172
+msgid "Run self test and exit 0 if succeed"
+msgstr ""
 
-#: ../gtk/main.c:1183
+#: ../gtk/main.c:1088
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -162,68 +150,66 @@ msgstr ""
 "szeretné adni a partnerlistához?\n"
 "Ha nemmel válaszol, ez a személy átmenetileg tiltólistára kerül."
 
-#: ../gtk/main.c:1260
-#, fuzzy, c-format
+#: ../gtk/main.c:1165
+#, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
-"Kérem, adja meg jelszavát a következő felhasználónévhez: <i>%s</i>\n"
-"tartomány <i>%s</i>:"
 
-#: ../gtk/main.c:1376
+#: ../gtk/main.c:1286
 msgid "Call error"
 msgstr "Hiba a hívás közben"
 
-#: ../gtk/main.c:1379 ../coreapi/linphonecore.c:3240
+#: ../gtk/main.c:1289 ../coreapi/linphonecore.c:3787
 msgid "Call ended"
 msgstr "Hívás vége"
 
-#: ../gtk/main.c:1382
+#: ../gtk/main.c:1292 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Beérkező hívás"
 
-#: ../gtk/main.c:1384 ../gtk/incall_view.c:522 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1294 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Hívás fogadása"
 
-#: ../gtk/main.c:1386 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1296 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Elutasítás"
 
-#: ../gtk/main.c:1392
+#: ../gtk/main.c:1302
 msgid "Call paused"
 msgstr "Hívás várakoztatva"
 
-#: ../gtk/main.c:1392
+#: ../gtk/main.c:1302
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>a következő által: %s</b>"
 
-#: ../gtk/main.c:1459
+#: ../gtk/main.c:1372
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s szerené elidítani a videót. Elfogadja?"
 
-#: ../gtk/main.c:1621
+#: ../gtk/main.c:1534
 msgid "Website link"
 msgstr "Internetes oldal"
 
-#: ../gtk/main.c:1670
+#: ../gtk/main.c:1583
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - internetes videó telefon"
 
-#: ../gtk/main.c:1762
+#: ../gtk/main.c:1675
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Alapértelmezett)"
 
-#: ../gtk/main.c:2099 ../coreapi/callbacks.c:949
+#: ../gtk/main.c:2007 ../coreapi/callbacks.c:1027
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Át vagyunk irányítva ide: %s"
 
-#: ../gtk/main.c:2109
+#: ../gtk/main.c:2017
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -231,7 +217,7 @@ msgstr ""
 "Hangkártya nincs érzékelve ezen a számítógépen.\n"
 "Nem fog tudni hang hívásokat küldeni vagy fogadni."
 
-#: ../gtk/main.c:2250
+#: ../gtk/main.c:2161
 msgid "A free SIP video-phone"
 msgstr "Egy ingyenes SIP video-telefon"
 
@@ -271,9 +257,9 @@ msgid "Delete contact '%s'"
 msgstr "'%s' partner törlése"
 
 #: ../gtk/friendlist.c:978
-#, fuzzy, c-format
+#, c-format
 msgid "Delete chat history of '%s'"
-msgstr "'%s' partner törlése"
+msgstr ""
 
 #: ../gtk/friendlist.c:1029
 #, c-format
@@ -289,9 +275,8 @@ msgid "Status"
 msgstr "Állapot"
 
 #: ../gtk/propertybox.c:570
-#, fuzzy
 msgid "IP Bitrate (kbit/s)"
-msgstr "Min bitrate (kbit/s)"
+msgstr ""
 
 #: ../gtk/propertybox.c:577
 msgid "Parameters"
@@ -301,7 +286,7 @@ msgstr "Paraméterek"
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763
+#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:20
 msgid "Disabled"
 msgstr "Tiltva"
 
@@ -309,94 +294,98 @@ msgstr "Tiltva"
 msgid "Account"
 msgstr "Hozzáférés"
 
-#: ../gtk/propertybox.c:1063
+#: ../gtk/propertybox.c:1072
 msgid "English"
 msgstr "angol"
 
-#: ../gtk/propertybox.c:1064
+#: ../gtk/propertybox.c:1073
 msgid "French"
 msgstr "francia"
 
-#: ../gtk/propertybox.c:1065
+#: ../gtk/propertybox.c:1074
 msgid "Swedish"
 msgstr "svéd"
 
-#: ../gtk/propertybox.c:1066
+#: ../gtk/propertybox.c:1075
 msgid "Italian"
 msgstr "olasz"
 
-#: ../gtk/propertybox.c:1067
+#: ../gtk/propertybox.c:1076
 msgid "Spanish"
 msgstr "spanyol"
 
-#: ../gtk/propertybox.c:1068
+#: ../gtk/propertybox.c:1077
 msgid "Brazilian Portugese"
 msgstr "brazil-portugál"
 
-#: ../gtk/propertybox.c:1069
+#: ../gtk/propertybox.c:1078
 msgid "Polish"
 msgstr "lengyel"
 
-#: ../gtk/propertybox.c:1070
+#: ../gtk/propertybox.c:1079
 msgid "German"
 msgstr "német"
 
-#: ../gtk/propertybox.c:1071
+#: ../gtk/propertybox.c:1080
 msgid "Russian"
 msgstr "orosz"
 
-#: ../gtk/propertybox.c:1072
+#: ../gtk/propertybox.c:1081
 msgid "Japanese"
 msgstr "japán"
 
-#: ../gtk/propertybox.c:1073
+#: ../gtk/propertybox.c:1082
 msgid "Dutch"
 msgstr "holland"
 
-#: ../gtk/propertybox.c:1074
+#: ../gtk/propertybox.c:1083
 msgid "Hungarian"
 msgstr "magyar"
 
-#: ../gtk/propertybox.c:1075
+#: ../gtk/propertybox.c:1084
 msgid "Czech"
 msgstr "cseh"
 
-#: ../gtk/propertybox.c:1076
+#: ../gtk/propertybox.c:1085
 msgid "Chinese"
 msgstr "egyszerúsített kínai"
 
-#: ../gtk/propertybox.c:1077
+#: ../gtk/propertybox.c:1086
 msgid "Traditional Chinese"
 msgstr "tradícionális kínai"
 
-#: ../gtk/propertybox.c:1078
+#: ../gtk/propertybox.c:1087
 msgid "Norwegian"
 msgstr "norvég"
 
-#: ../gtk/propertybox.c:1079
+#: ../gtk/propertybox.c:1088
 msgid "Hebrew"
 msgstr "héber"
 
-#: ../gtk/propertybox.c:1080
+#: ../gtk/propertybox.c:1089
 msgid "Serbian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1147
+#: ../gtk/propertybox.c:1156
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
 "Újra kell indítania a linphone-t, hogy az új nyelv kiválasztása érvényre "
 "jusson. "
 
-#: ../gtk/propertybox.c:1225
+#: ../gtk/propertybox.c:1236
 msgid "None"
 msgstr "Nincs"
 
-#: ../gtk/propertybox.c:1229
+#: ../gtk/propertybox.c:1240
 msgid "SRTP"
 msgstr "SRTP"
 
-#: ../gtk/propertybox.c:1235
+#: ../gtk/propertybox.c:1246
+msgid "DTLS"
+msgstr ""
+
+#: ../gtk/propertybox.c:1253
 msgid "ZRTP"
 msgstr "ZRTP"
 
@@ -437,15 +426,14 @@ msgstr "Adatok fogadása..."
 #, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] "Találat: %i partner"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/setupwizard.c:34
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
-"Üdvözöljük !\n"
-"Ez a varázsló segít Önnek, hogy sip fiókot használjon hívásaihoz."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -467,7 +455,7 @@ msgstr ""
 msgid "Enter your linphone.org username"
 msgstr "Adja meg linphone.org felhasználónevét"
 
-#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:82 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "Felhasználónév:"
 
@@ -542,40 +530,39 @@ msgstr ""
 "hivatkozásra kattintva.\n"
 "Azután térjen vissza ide és kattintson a Következő gombra."
 
-#: ../gtk/setupwizard.c:600
-#, fuzzy
+#: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
-msgstr "Fiók beállítása varázsló"
+msgstr ""
 
-#: ../gtk/setupwizard.c:618
+#: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
 msgstr "A fiók beállítása varázsló üdvözli Önt"
 
-#: ../gtk/setupwizard.c:623
+#: ../gtk/setupwizard.c:625
 msgid "Account setup assistant"
 msgstr "Fiók beállítása varázsló"
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
 msgstr "Az Ön fiókjának beállítása (1/1 lépés)"
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
 msgstr "Adja meg sip felhasználónevét (1/2 lépés)"
 
-#: ../gtk/setupwizard.c:638
+#: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
 msgstr "Adja meg a fiókinformációt (1/2 lépés)"
 
-#: ../gtk/setupwizard.c:647
+#: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
 msgstr "Érvényesítés (2/2 lépés)"
 
-#: ../gtk/setupwizard.c:652
+#: ../gtk/setupwizard.c:654
 msgid "Error"
 msgstr "Hiba"
 
-#: ../gtk/setupwizard.c:656 ../gtk/audio_assistant.c:527
+#: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:534
 msgid "Terminating"
 msgstr "Befejezés"
 
@@ -660,105 +647,104 @@ msgstr ""
 msgid "%.3f seconds"
 msgstr "%.3f másodperc"
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:235
 msgid "Hang up"
 msgstr "Befejezés"
 
-#: ../gtk/incall_view.c:501
+#: ../gtk/incall_view.c:511
 msgid "<b>Calling...</b>"
 msgstr "<b>Hívás folyamatban...</b>"
 
-#: ../gtk/incall_view.c:504 ../gtk/incall_view.c:707
+#: ../gtk/incall_view.c:514 ../gtk/incall_view.c:733
 msgid "00::00::00"
 msgstr "00::00::00"
 
-#: ../gtk/incall_view.c:515
+#: ../gtk/incall_view.c:525
 msgid "<b>Incoming call</b>"
 msgstr "<b>Beérkező hívás</b>"
 
-#: ../gtk/incall_view.c:552
+#: ../gtk/incall_view.c:562
 msgid "good"
 msgstr "jó"
 
-#: ../gtk/incall_view.c:554
+#: ../gtk/incall_view.c:564
 msgid "average"
 msgstr "közepes"
 
-#: ../gtk/incall_view.c:556
+#: ../gtk/incall_view.c:566
 msgid "poor"
 msgstr "gyenge"
 
-#: ../gtk/incall_view.c:558
+#: ../gtk/incall_view.c:568
 msgid "very poor"
 msgstr "nagyon gyenge"
 
-#: ../gtk/incall_view.c:560
+#: ../gtk/incall_view.c:570
 msgid "too bad"
 msgstr "rossz"
 
-#: ../gtk/incall_view.c:561 ../gtk/incall_view.c:577
+#: ../gtk/incall_view.c:571 ../gtk/incall_view.c:587
 msgid "unavailable"
 msgstr "nem elérhető"
 
-#: ../gtk/incall_view.c:669
+#: ../gtk/incall_view.c:679
 msgid "Secured by SRTP"
 msgstr "SRTP-vel titkosítva"
 
-#: ../gtk/incall_view.c:675
+#: ../gtk/incall_view.c:685
+msgid "Secured by DTLS"
+msgstr ""
+
+#: ../gtk/incall_view.c:691
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "ZRTP-vel titkosítva - [hitelesítési jel: %s]"
 
-#: ../gtk/incall_view.c:681
+#: ../gtk/incall_view.c:697
 msgid "Set unverified"
 msgstr "Beállítás ellenőrizetlenként"
 
-#: ../gtk/incall_view.c:681 ../gtk/main.ui.h:4
+#: ../gtk/incall_view.c:697 ../gtk/main.ui.h:4
 msgid "Set verified"
 msgstr "Beállítás ellenőrzöttként"
 
-#: ../gtk/incall_view.c:702
+#: ../gtk/incall_view.c:728
 msgid "In conference"
 msgstr "Konferencián"
 
-#: ../gtk/incall_view.c:702
+#: ../gtk/incall_view.c:728
 msgid "<b>In call</b>"
 msgstr "<b>vonalban</b>"
 
-#: ../gtk/incall_view.c:738
+#: ../gtk/incall_view.c:764
 msgid "<b>Paused call</b>"
 msgstr "<b>Várakoztatott hívás</b>"
 
-#: ../gtk/incall_view.c:751
-#, c-format
-msgid "%02i::%02i::%02i"
-msgstr "%02i::%02i::%02i"
-
-#: ../gtk/incall_view.c:772
+#: ../gtk/incall_view.c:800
 msgid "<b>Call ended.</b>"
 msgstr "<b>Hívás vége.</b>"
 
-#: ../gtk/incall_view.c:803
+#: ../gtk/incall_view.c:831
 msgid "Transfer in progress"
 msgstr "Átvitel folyamatban"
 
-#: ../gtk/incall_view.c:806
+#: ../gtk/incall_view.c:834
 msgid "Transfer done."
 msgstr "Átvitel befejezve."
 
-#: ../gtk/incall_view.c:809
+#: ../gtk/incall_view.c:837
 msgid "Transfer failed."
 msgstr "Az átvitel sikertelen."
 
-#: ../gtk/incall_view.c:853
+#: ../gtk/incall_view.c:881
 msgid "Resume"
 msgstr "Visszatérés"
 
-#: ../gtk/incall_view.c:860 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:888 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr "Várakoztatás"
 
-#: ../gtk/incall_view.c:926
+#: ../gtk/incall_view.c:954
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
@@ -767,7 +753,7 @@ msgstr ""
 "<small><i>Felvétel a következőbe\n"
 "%s %s</i></small>"
 
-#: ../gtk/incall_view.c:926
+#: ../gtk/incall_view.c:954
 msgid "(Paused)"
 msgstr "(Várakoztatva)"
 
@@ -777,9 +763,9 @@ msgid "Please enter login information for %s"
 msgstr "Kérem, adja meg a bejelentkezési információt %s -hoz"
 
 #: ../gtk/config-fetching.c:57
-#, fuzzy, c-format
+#, c-format
 msgid "fetching from %s"
-msgstr "Beérkező hívás"
+msgstr ""
 
 #: ../gtk/config-fetching.c:73
 #, c-format
@@ -802,33 +788,43 @@ msgstr ""
 msgid "Too loud"
 msgstr ""
 
+#: ../gtk/audio_assistant.c:183
+msgid "Did you hear three beeps ?"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+msgid "Sound preferences not found "
+msgstr ""
+
+#: ../gtk/audio_assistant.c:306
+msgid "Cannot launch system sound control "
+msgstr ""
+
 #: ../gtk/audio_assistant.c:318
-#, fuzzy
 msgid ""
-"Welcome !\n"
+"Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr ""
-"Üdvözöljük !\n"
-"Ez a varázsló segít Önnek, hogy sip fiókot használjon hívásaihoz."
 
 #: ../gtk/audio_assistant.c:328
-#, fuzzy
 msgid "Capture device"
-msgstr "Felvevő hang eszköz:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:329
-#, fuzzy
 msgid "Recorded volume"
-msgstr "Felvételi forrás:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:333
 msgid "No voice"
 msgstr ""
 
+#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+msgid "System sound preferences"
+msgstr ""
+
 #: ../gtk/audio_assistant.c:369
-#, fuzzy
 msgid "Playback device"
-msgstr "Lejátszó hang eszköz:"
+msgstr ""
 
 #: ../gtk/audio_assistant.c:370
 msgid "Play three beeps"
@@ -842,29 +838,35 @@ msgstr ""
 msgid "Listen to your record voice"
 msgstr ""
 
+#: ../gtk/audio_assistant.c:405
+msgid "Record"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:406
+msgid "Play"
+msgstr ""
+
 #: ../gtk/audio_assistant.c:433
 msgid "Let's start Linphone now"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:496
-#, fuzzy
+#: ../gtk/audio_assistant.c:503
 msgid "Audio Assistant"
-msgstr "Fiók varázsló"
+msgstr ""
 
-#: ../gtk/audio_assistant.c:506 ../gtk/main.ui.h:31
-#, fuzzy
+#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:31
 msgid "Audio assistant"
-msgstr "Fiók varázsló"
+msgstr ""
 
-#: ../gtk/audio_assistant.c:511
+#: ../gtk/audio_assistant.c:518
 msgid "Mic Gain calibration"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:517
+#: ../gtk/audio_assistant.c:524
 msgid "Speaker volume calibration"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:522
+#: ../gtk/audio_assistant.c:529
 msgid "Record and Play"
 msgstr ""
 
@@ -933,9 +935,8 @@ msgid "_Options"
 msgstr "_Beállítások"
 
 #: ../gtk/main.ui.h:23
-#, fuzzy
 msgid "Set configuration URI"
-msgstr "Proxy/Regisztráció konfigurációs doboz"
+msgstr ""
 
 #: ../gtk/main.ui.h:24
 msgid "Always start video"
@@ -1022,20 +1023,20 @@ msgid "Login information"
 msgstr "Bejelentkezési információ"
 
 #: ../gtk/main.ui.h:46
-msgid "<b>Welcome !</b>"
-msgstr "<b>Üdvözöljük !</b>"
+msgid "<b>Welcome!</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:47
 msgid "Delete"
 msgstr "Törlés"
 
 #: ../gtk/about.ui.h:1
-msgid "About linphone"
-msgstr "Linphone névjegy"
+msgid "About Linphone"
+msgstr ""
 
 #: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications,2010\n"
-msgstr "(C) Belledonne Communications,2010\n"
+msgid "(C) Belledonne Communications, 2010\n"
+msgstr ""
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
@@ -1044,7 +1045,6 @@ msgstr ""
 "használja."
 
 #: ../gtk/about.ui.h:5
-#, fuzzy
 msgid ""
 "fr: Simon Morlat\n"
 "en: Simon Morlat and Delphine Perreau\n"
@@ -1059,17 +1059,6 @@ msgid ""
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
 msgstr ""
-"francia: Simon Morlat\n"
-"angol: Simon Morlat és Delphine Perreau\n"
-"olasz: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"német: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"svéd: Daniel Nylander <po@danielnylander.se>\n"
-"spanyol: Jesus Benitez <gnelson at inMail dot sk>\n"
-"japán: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"brazil-portugál: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"lengyel: Robert Nasiadek <darkone@darkone.pl>\n"
-"cseh: Petr Pisar <petr.pisar@atlas.cz>\n"
-"magyar: anonymous és Barczi Viktor <viktorbarczi@lavabit.com>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1144,9 +1133,8 @@ msgid "Registration duration (sec):"
 msgstr "Regisztrálási Időköz (mp):"
 
 #: ../gtk/sip_account.ui.h:8
-#, fuzzy
 msgid "Contact params (optional):"
-msgstr "Út (nem kötelező):"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:9
 msgid "AVPF regular RTCP interval (sec):"
@@ -1157,9 +1145,8 @@ msgid "Route (optional):"
 msgstr "Út (nem kötelező):"
 
 #: ../gtk/sip_account.ui.h:11
-#, fuzzy
 msgid "Transport"
-msgstr "<b>Átvitel</b>"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:12
 msgid "Register"
@@ -1170,9 +1157,8 @@ msgid "Publish presence information"
 msgstr "Jelenléti információ közlése"
 
 #: ../gtk/sip_account.ui.h:14
-#, fuzzy
 msgid "Enable AVPF"
-msgstr "Engedélyezés"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
@@ -1214,7 +1200,7 @@ msgstr "Audió kódekek"
 msgid "Video codecs"
 msgstr "Videó kódekek"
 
-#: ../gtk/parameters.ui.h:10 ../gtk/keypad.ui.h:5
+#: ../gtk/parameters.ui.h:10
 msgid "C"
 msgstr "C"
 
@@ -1251,214 +1237,218 @@ msgid "<b>Transport</b>"
 msgstr "<b>Átvitel</b>"
 
 #: ../gtk/parameters.ui.h:19
-msgid "Media encryption type"
-msgstr "Média titkosítás típusa"
-
-#: ../gtk/parameters.ui.h:20
-msgid "Video RTP/UDP:"
-msgstr "Videó RTP/UDP:"
+msgid "SIP/UDP port"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:21
+msgid "Random"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "SIP/TCP port"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:23
 msgid "Audio RTP/UDP:"
 msgstr "Audió RTP/UDP:"
 
-#: ../gtk/parameters.ui.h:22
+#: ../gtk/parameters.ui.h:24
 msgid "Fixed"
 msgstr "Javítva"
 
-#: ../gtk/parameters.ui.h:23
+#: ../gtk/parameters.ui.h:25
+msgid "Video RTP/UDP:"
+msgstr "Videó RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:26
+msgid "Media encryption type"
+msgstr "Média titkosítás típusa"
+
+#: ../gtk/parameters.ui.h:27
 msgid "Media encryption is mandatory"
 msgstr "Média titkosítás kötelező"
 
-#: ../gtk/parameters.ui.h:24
+#: ../gtk/parameters.ui.h:28
 msgid "Tunnel"
 msgstr "Alagút"
 
-#: ../gtk/parameters.ui.h:25
+#: ../gtk/parameters.ui.h:29
 msgid "DSCP fields"
 msgstr "DSCP mezők"
 
-#: ../gtk/parameters.ui.h:26
-#, fuzzy
-msgid "SIP/TCP port"
-msgstr "SIP port"
-
-#: ../gtk/parameters.ui.h:27
-#, fuzzy
-msgid "SIP/UDP port"
-msgstr "SIP port"
-
-#: ../gtk/parameters.ui.h:28
+#: ../gtk/parameters.ui.h:30
 msgid "<b>Network protocol and ports</b>"
 msgstr "<b>Hálózati protokoll és port</b>"
 
-#: ../gtk/parameters.ui.h:29
+#: ../gtk/parameters.ui.h:31
 msgid "Direct connection to the Internet"
 msgstr "Közvetlen Internet kapcsolat"
 
-#: ../gtk/parameters.ui.h:30
-#, fuzzy
+#: ../gtk/parameters.ui.h:32
 msgid "Behind NAT / Firewall (specify gateway IP )"
-msgstr "NAT / tűzfal mögött (adja meg az átjáró IP címét)"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:31
+#: ../gtk/parameters.ui.h:33
 msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr "NAT / tűzfal mögött (STUN használata a feloldáshoz)"
 
-#: ../gtk/parameters.ui.h:32
+#: ../gtk/parameters.ui.h:34
 msgid "Behind NAT / Firewall (use ICE)"
 msgstr "NAT / tűzfal mögött (ICE használata)"
 
-#: ../gtk/parameters.ui.h:33
+#: ../gtk/parameters.ui.h:35
 msgid "Behind NAT / Firewall (use uPnP)"
 msgstr "NAT / tűzfal mögött (uPnP használata)"
 
-#: ../gtk/parameters.ui.h:34
+#: ../gtk/parameters.ui.h:36
 msgid "Public IP address:"
 msgstr "Publikus IP cím:"
 
-#: ../gtk/parameters.ui.h:35
+#: ../gtk/parameters.ui.h:37
 msgid "Stun server:"
 msgstr "STUN kiszolgáló:"
 
-#: ../gtk/parameters.ui.h:36
+#: ../gtk/parameters.ui.h:38
 msgid "<b>NAT and Firewall</b>"
 msgstr "<b>NAT és tűzfal</b>"
 
-#: ../gtk/parameters.ui.h:37
+#: ../gtk/parameters.ui.h:39
 msgid "Network settings"
 msgstr "Hálózati beállítások"
 
-#: ../gtk/parameters.ui.h:38
+#: ../gtk/parameters.ui.h:40
 msgid "Ring sound:"
 msgstr "Csengőhang:"
 
-#: ../gtk/parameters.ui.h:39
+#: ../gtk/parameters.ui.h:41
 msgid "ALSA special device (optional):"
 msgstr "Különleges ALSA eszköz (nem kötelező):"
 
-#: ../gtk/parameters.ui.h:40
+#: ../gtk/parameters.ui.h:42
 msgid "Capture device:"
 msgstr "Felvevő hang eszköz:"
 
-#: ../gtk/parameters.ui.h:41
+#: ../gtk/parameters.ui.h:43
 msgid "Ring device:"
 msgstr "Csengőhang eszköz:"
 
-#: ../gtk/parameters.ui.h:42
+#: ../gtk/parameters.ui.h:44
 msgid "Playback device:"
 msgstr "Lejátszó hang eszköz:"
 
-#: ../gtk/parameters.ui.h:43
+#: ../gtk/parameters.ui.h:45
 msgid "Enable echo cancellation"
 msgstr "Visszhang-elnyomás engedélyezése"
 
-#: ../gtk/parameters.ui.h:44
+#: ../gtk/parameters.ui.h:46
 msgid "<b>Audio</b>"
 msgstr "<b>Audió</b>"
 
-#: ../gtk/parameters.ui.h:45
+#: ../gtk/parameters.ui.h:47
 msgid "Video input device:"
 msgstr "Videó bemeneti eszköz:"
 
-#: ../gtk/parameters.ui.h:46
+#: ../gtk/parameters.ui.h:48
 msgid "Prefered video resolution:"
 msgstr "Kívánt videó felbontás:"
 
-#: ../gtk/parameters.ui.h:47
-#, fuzzy
+#: ../gtk/parameters.ui.h:49
 msgid "Video output method:"
-msgstr "Videó bemeneti eszköz:"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:48
+#: ../gtk/parameters.ui.h:50
+msgid "Show camera preview"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
 msgstr "<b>Videó</b>"
 
-#: ../gtk/parameters.ui.h:49
+#: ../gtk/parameters.ui.h:52
 msgid "Multimedia settings"
 msgstr "Multimédia beállítások"
 
-#: ../gtk/parameters.ui.h:50
+#: ../gtk/parameters.ui.h:53
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr "Ez a rész határozza meg az Ön SIP címét, amikor nem használ SIP fiókot"
 
-#: ../gtk/parameters.ui.h:51
+#: ../gtk/parameters.ui.h:54
 msgid "Your display name (eg: John Doe):"
 msgstr "Az Ön megjelenített neve (pl. Kis József):"
 
-#: ../gtk/parameters.ui.h:52
+#: ../gtk/parameters.ui.h:55
 msgid "Your username:"
 msgstr "Az Ön felhasználóneve:"
 
-#: ../gtk/parameters.ui.h:53
+#: ../gtk/parameters.ui.h:56
 msgid "Your resulting SIP address:"
 msgstr "Az Ön így keletkezett SIP címe:"
 
-#: ../gtk/parameters.ui.h:54
+#: ../gtk/parameters.ui.h:57
 msgid "<b>Default identity</b>"
 msgstr "<b>Alapértelmezett identitás</b>"
 
-#: ../gtk/parameters.ui.h:55
+#: ../gtk/parameters.ui.h:58
 msgid "Wizard"
 msgstr "Varázsló"
 
-#: ../gtk/parameters.ui.h:56
+#: ../gtk/parameters.ui.h:59
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: ../gtk/parameters.ui.h:57
+#: ../gtk/parameters.ui.h:60
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: ../gtk/parameters.ui.h:58
+#: ../gtk/parameters.ui.h:61
 msgid "Remove"
 msgstr "Eltávolítás"
 
-#: ../gtk/parameters.ui.h:59
+#: ../gtk/parameters.ui.h:62
 msgid "<b>Proxy accounts</b>"
 msgstr "<b>Proxy fiókok</b>"
 
-#: ../gtk/parameters.ui.h:60
+#: ../gtk/parameters.ui.h:63
 msgid "Erase all passwords"
 msgstr "Minden kulcsszó törlése"
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:64
 msgid "<b>Privacy</b>"
 msgstr "<b>Titoktartás</b>"
 
-#: ../gtk/parameters.ui.h:62
+#: ../gtk/parameters.ui.h:65
 msgid "Manage SIP Accounts"
 msgstr "SIP fiókok beállítása"
 
-#: ../gtk/parameters.ui.h:63 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "Engedélyezés"
 
-#: ../gtk/parameters.ui.h:64 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:67 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "Tiltás"
 
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:68
 msgid "<b>Codecs</b>"
 msgstr "<b>Kódekek</b>"
 
-#: ../gtk/parameters.ui.h:66
+#: ../gtk/parameters.ui.h:69
 msgid "0 stands for \"unlimited\""
 msgstr "A 0 jelentése \"végtelen\""
 
-#: ../gtk/parameters.ui.h:67
+#: ../gtk/parameters.ui.h:70
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "Feltöltési sebesség korlát (kbit/mp):"
 
-#: ../gtk/parameters.ui.h:68
+#: ../gtk/parameters.ui.h:71
 msgid "Download speed limit in Kbit/sec:"
 msgstr "Letöltési sebesség korlát (kbit/mp):"
 
-#: ../gtk/parameters.ui.h:69
+#: ../gtk/parameters.ui.h:72
 msgid "Enable adaptive rate control"
 msgstr "Alkalmazkodó mérték-szabályozás engedélyezése"
 
-#: ../gtk/parameters.ui.h:70
+#: ../gtk/parameters.ui.h:73
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
@@ -1466,54 +1456,47 @@ msgstr ""
 "<i>Az alkalmazkodó mérték-szabályozás egy módszer, mely erőteljesen próbálja "
 "megállapítani a rendelkezésre álló sávszélességet hívás alatt.</i>"
 
-#: ../gtk/parameters.ui.h:71
+#: ../gtk/parameters.ui.h:74
 msgid "<b>Bandwidth control</b>"
 msgstr "<b>Sávszélesség szabályozása</b>"
 
-#: ../gtk/parameters.ui.h:72
+#: ../gtk/parameters.ui.h:75
 msgid "Codecs"
 msgstr "Kódekek"
 
-#: ../gtk/parameters.ui.h:73
+#: ../gtk/parameters.ui.h:76
 msgid "<b>Language</b>"
 msgstr "<b>Nyelv</b>"
 
-#: ../gtk/parameters.ui.h:74
+#: ../gtk/parameters.ui.h:77
 msgid "Show advanced settings"
 msgstr "Haladó beállítások megjelenítése"
 
-#: ../gtk/parameters.ui.h:75
+#: ../gtk/parameters.ui.h:78
 msgid "<b>Level</b>"
 msgstr "<b>Szint</b>"
 
-#: ../gtk/parameters.ui.h:76
+#: ../gtk/parameters.ui.h:79
 msgid "User interface"
 msgstr "Felhasználói környezet"
 
-#: ../gtk/parameters.ui.h:77 ../gtk/ldap.ui.h:2
-#, fuzzy
+#: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:2
 msgid "Server address:"
-msgstr "Sip cím:"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:78 ../gtk/ldap.ui.h:3
-#, fuzzy
+#: ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
-msgstr "Hitelesítési információ"
-
-#: ../gtk/parameters.ui.h:80
-msgid "label"
-msgstr "címke"
-
-#: ../gtk/parameters.ui.h:81
-#, fuzzy
-msgid "<b>LDAP Account setup</b>"
-msgstr "<b>Proxy fiókok</b>"
-
-#: ../gtk/parameters.ui.h:82
-msgid "LDAP"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:83
+msgid "<b>LDAP Account setup</b>"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:84
+msgid "LDAP"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:85
 msgid "Done"
 msgstr "Kész"
 
@@ -1538,9 +1521,8 @@ msgid "Please wait"
 msgstr "Kérem várjon"
 
 #: ../gtk/dscp_settings.ui.h:1
-#, fuzzy
 msgid "DSCP settings"
-msgstr "DSCP beállítások"
+msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
@@ -1595,9 +1577,8 @@ msgid "Video resolution received"
 msgstr ""
 
 #: ../gtk/call_statistics.ui.h:10
-#, fuzzy
 msgid "Video resolution sent"
-msgstr "Kívánt videó felbontás:"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:11
 msgid "RTP profile"
@@ -1627,84 +1608,21 @@ msgstr "<b>Alagút beállítása</b>"
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr "<b>http proxy beállítása (nem kötelező)</b>"
 
-#: ../gtk/keypad.ui.h:1
-msgid "D"
-msgstr "D"
-
-#: ../gtk/keypad.ui.h:2
-msgid "#"
-msgstr "#"
-
-#: ../gtk/keypad.ui.h:3
-msgid "0"
-msgstr "0"
-
-#: ../gtk/keypad.ui.h:4
-msgid "*"
-msgstr "*"
-
-#: ../gtk/keypad.ui.h:6
-msgid "9"
-msgstr "9"
-
-#: ../gtk/keypad.ui.h:7
-msgid "8"
-msgstr "8"
-
-#: ../gtk/keypad.ui.h:8
-msgid "7"
-msgstr "7"
-
-#: ../gtk/keypad.ui.h:9
-msgid "B"
-msgstr "B"
-
-#: ../gtk/keypad.ui.h:10
-msgid "6"
-msgstr "6"
-
-#: ../gtk/keypad.ui.h:11
-msgid "5"
-msgstr "5"
-
-#: ../gtk/keypad.ui.h:12
-msgid "4"
-msgstr "4"
-
-#: ../gtk/keypad.ui.h:13
-msgid "A"
-msgstr "A"
-
-#: ../gtk/keypad.ui.h:14
-msgid "3"
-msgstr "3"
-
-#: ../gtk/keypad.ui.h:15
-msgid "2"
-msgstr "2"
-
-#: ../gtk/keypad.ui.h:16
-msgid "1"
-msgstr "1"
-
 #: ../gtk/ldap.ui.h:1
-#, fuzzy
 msgid "LDAP Settings"
-msgstr "Beállítások"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:7
-#, fuzzy
 msgid "Not yet available"
-msgstr "uPnP nem elérhető"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:8
-#, fuzzy
 msgid "<b>Connection</b>"
-msgstr "<b>Kódekek</b>"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:9
 msgid "Bind DN"
@@ -1715,14 +1633,12 @@ msgid "Authname"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:11
-#, fuzzy
 msgid "Realm"
-msgstr "tartomány:"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:12
-#, fuzzy
 msgid "<b>SASL</b>"
-msgstr "<b>Audió</b>"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:13
 msgid "Base object:"
@@ -1738,18 +1654,16 @@ msgid "Name Attribute:"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:17
-#, fuzzy
 msgid "SIP address attribute:"
-msgstr "Sip cím:"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:18
 msgid "Attributes to query:"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:19
-#, fuzzy
 msgid "<b>Search</b>"
-msgstr "<b>Keres valakit</b>"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:20
 msgid "Timeout for search:"
@@ -1764,9 +1678,8 @@ msgid "Follow Aliases"
 msgstr ""
 
 #: ../gtk/ldap.ui.h:23
-#, fuzzy
 msgid "<b>Miscellaneous</b>"
-msgstr "<b>Videó</b>"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:24
 msgid "ANONYMOUS"
@@ -1797,86 +1710,76 @@ msgid ""
 "the new configuration. "
 msgstr ""
 
-#: ../gtk/config-uri.ui.h:4
-msgid "https://"
-msgstr ""
-
 #: ../gtk/provisioning-fetch.ui.h:1
-#, fuzzy
 msgid "Configuring..."
-msgstr "Kapcsolódás..."
+msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:2
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1034
+#: ../coreapi/linphonecore.c:1508
 msgid "Ready"
 msgstr "Kész"
 
-#: ../coreapi/linphonecore.c:1967
-#, fuzzy
+#: ../coreapi/linphonecore.c:2495
 msgid "Configuring"
-msgstr "Információk"
+msgstr ""
 
-#: ../coreapi/linphonecore.c:2133
+#: ../coreapi/linphonecore.c:2669
 msgid "Looking for telephone number destination..."
 msgstr "Telefonszám-cél keresése..."
 
-#: ../coreapi/linphonecore.c:2136
+#: ../coreapi/linphonecore.c:2671
 msgid "Could not resolve this number."
 msgstr "Nem sikkerült értelmezni a számot."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2418
+#: ../coreapi/linphonecore.c:2957
 msgid "Contacting"
 msgstr "Kapcsolódás"
 
-#: ../coreapi/linphonecore.c:2425
+#: ../coreapi/linphonecore.c:2962
 msgid "Could not call"
 msgstr "Nem sikerült hívni"
 
-#: ../coreapi/linphonecore.c:2576
+#: ../coreapi/linphonecore.c:3112
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Elnézést, elértük a egyidejű hívások maximális számát"
 
-#: ../coreapi/linphonecore.c:2745
+#: ../coreapi/linphonecore.c:3270
 msgid "is contacting you"
 msgstr "kapcsolatba lépett veled."
 
-#: ../coreapi/linphonecore.c:2746
+#: ../coreapi/linphonecore.c:3271
 msgid " and asked autoanswer."
 msgstr "és automatikus választ kért."
 
-#: ../coreapi/linphonecore.c:2746
-msgid "."
-msgstr "."
-
-#: ../coreapi/linphonecore.c:2865
+#: ../coreapi/linphonecore.c:3395
 msgid "Modifying call parameters..."
 msgstr "A hívási jellemzők módosítása..."
 
-#: ../coreapi/linphonecore.c:3194
+#: ../coreapi/linphonecore.c:3743
 msgid "Connected."
 msgstr "Kapcsolódva."
 
-#: ../coreapi/linphonecore.c:3220
+#: ../coreapi/linphonecore.c:3768
 msgid "Call aborted"
 msgstr "Hívás megszakítva"
 
-#: ../coreapi/linphonecore.c:3412
+#: ../coreapi/linphonecore.c:3958
 msgid "Could not pause the call"
 msgstr "Nem sikerült várakoztatni a hívást"
 
-#: ../coreapi/linphonecore.c:3417
+#: ../coreapi/linphonecore.c:3961
 msgid "Pausing the current call..."
 msgstr "Jelenlegi hívás várakoztatásának aktiválása..."
 
-#: ../coreapi/misc.c:425
+#: ../coreapi/misc.c:433
 msgid "Stun lookup in progress..."
 msgstr "Stun keresés folyamatban..."
 
-#: ../coreapi/misc.c:607
+#: ../coreapi/misc.c:614
 msgid "ICE local candidates gathering in progress..."
 msgstr "ICE helyi jelentkezők begyűjtése folyamatban..."
 
@@ -1925,15 +1828,14 @@ msgid "Pending"
 msgstr "Függőben"
 
 #: ../coreapi/friend.c:66
-#, fuzzy
 msgid "Vacation"
-msgstr "Időtartam"
+msgstr ""
 
 #: ../coreapi/friend.c:68
-msgid "Unknown-bug"
-msgstr "Ismeretlen programhiba"
+msgid "Unknown status"
+msgstr ""
 
-#: ../coreapi/proxy.c:314
+#: ../coreapi/proxy.c:328
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
@@ -1941,7 +1843,7 @@ msgstr ""
 "Az Ön által megadott SIP proxy cím érvénytelen. \"sip:\"-tal kell kezdődnie, "
 "ezt egy hosztnév követi."
 
-#: ../coreapi/proxy.c:320
+#: ../coreapi/proxy.c:334
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1950,670 +1852,165 @@ msgstr ""
 "Így kéne kinéznie: sip:felhasznalonev@proxytartomany, például sip:"
 "aladar@pelda.hu"
 
-#: ../coreapi/proxy.c:1369
+#: ../coreapi/proxy.c:1403
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nem sikerült belépni ezzel: %s"
 
-#: ../coreapi/callbacks.c:355
+#: ../coreapi/callbacks.c:404
 msgid "Remote ringing."
 msgstr "Távoli csengés."
 
-#: ../coreapi/callbacks.c:373
+#: ../coreapi/callbacks.c:425
 msgid "Remote ringing..."
 msgstr "Távoli csengés..."
 
-#: ../coreapi/callbacks.c:384
+#: ../coreapi/callbacks.c:442
 msgid "Early media."
 msgstr "Korai médiák."
 
-#: ../coreapi/callbacks.c:435
+#: ../coreapi/callbacks.c:503
 #, c-format
 msgid "Call with %s is paused."
 msgstr "A hívás a következővel: %s várakoztatva"
 
-#: ../coreapi/callbacks.c:448
+#: ../coreapi/callbacks.c:516
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "%s fogadta a hívást - várakoztatva."
 
-#: ../coreapi/callbacks.c:459
+#: ../coreapi/callbacks.c:526
 msgid "Call resumed."
 msgstr "Hívás visszatért"
 
-#: ../coreapi/callbacks.c:464
+#: ../coreapi/callbacks.c:530
 #, c-format
 msgid "Call answered by %s."
 msgstr "%s válaszolt a hívásra."
 
-#: ../coreapi/callbacks.c:483
+#: ../coreapi/callbacks.c:553
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 "Nem kompatibilis, ellenőrizze a kódek- vagy a biztonsági beállításokat..."
 
-#: ../coreapi/callbacks.c:512
+#: ../coreapi/callbacks.c:558 ../coreapi/callbacks.c:870
+msgid "Incompatible media parameters."
+msgstr "Nem kompatibilis médiajellemzők."
+
+#: ../coreapi/callbacks.c:588
 msgid "We have been resumed."
 msgstr "Visszatértünk."
 
-#: ../coreapi/callbacks.c:521
+#. we are being paused
+#: ../coreapi/callbacks.c:596
 msgid "We are paused by other party."
 msgstr "Megállítva a másik fél által."
 
-#: ../coreapi/callbacks.c:556
+#. reINVITE and in-dialogs UPDATE go here
+#: ../coreapi/callbacks.c:630
 msgid "Call is updated by remote."
 msgstr "A hívás távolról frissítve."
 
-#: ../coreapi/callbacks.c:658
+#: ../coreapi/callbacks.c:746
 msgid "Call terminated."
 msgstr "A hívás befejezve."
 
-#: ../coreapi/callbacks.c:687
+#: ../coreapi/callbacks.c:774
 msgid "User is busy."
 msgstr "A felhasználó foglalt."
 
-#: ../coreapi/callbacks.c:688
+#: ../coreapi/callbacks.c:775
 msgid "User is temporarily unavailable."
 msgstr "A felhasználó ideiglenesen nem elérhető"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:690
+#: ../coreapi/callbacks.c:777
 msgid "User does not want to be disturbed."
 msgstr "A felhasználó nem akarja, hogy zavarják."
 
-#: ../coreapi/callbacks.c:691
+#: ../coreapi/callbacks.c:778
 msgid "Call declined."
 msgstr "Hívás elutasítva"
 
-#: ../coreapi/callbacks.c:706
+#: ../coreapi/callbacks.c:793
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:737
+#: ../coreapi/callbacks.c:824
 msgid "Redirected"
 msgstr "Átirányítva"
 
-#: ../coreapi/callbacks.c:787
-msgid "Incompatible media parameters."
-msgstr "Nem kompatibilis médiajellemzők."
-
-#: ../coreapi/callbacks.c:798
+#: ../coreapi/callbacks.c:879
 msgid "Call failed."
 msgstr "Nem sikerült a hívás."
 
-#: ../coreapi/callbacks.c:878
+#: ../coreapi/callbacks.c:957
 #, c-format
 msgid "Registration on %s successful."
 msgstr "A regisztáció a %s -n sikerült."
 
-#: ../coreapi/callbacks.c:879
+#: ../coreapi/callbacks.c:958
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "A kiregisztrálás kész a következőn: %s ."
 
-#: ../coreapi/callbacks.c:897
+#: ../coreapi/callbacks.c:976
 msgid "no response timeout"
 msgstr "időtúllépés után nincs válasz"
 
-#: ../coreapi/callbacks.c:900
+#: ../coreapi/callbacks.c:979
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "A regisztáció a %s -n nem sikerült: %s"
 
-#: ../coreapi/callbacks.c:907
+#: ../coreapi/callbacks.c:986
 msgid "Service unavailable, retrying"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:177
+#. if encryption is DTLS, no status to be displayed
+#: ../coreapi/linphonecall.c:180
 #, c-format
 msgid "Authentication token is %s"
 msgstr "Hitelesítési jel: %s"
 
-#: ../coreapi/linphonecall.c:2932
+#: ../coreapi/linphonecall.c:3492
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "Van %i nem fogadott hivás."
-
-#~ msgid "aborted"
-#~ msgstr "megszakítva"
-
-#~ msgid "completed"
-#~ msgstr "befejezve"
-
-#~ msgid "missed"
-#~ msgstr "elhibázva"
-
-#~ msgid ""
-#~ "%s at %s\n"
-#~ "From: %s\n"
-#~ "To: %s\n"
-#~ "Status: %s\n"
-#~ "Duration: %i mn %i sec\n"
-#~ msgstr ""
-#~ "%s nél %s\n"
-#~ "Tól: %s\n"
-#~ "Ig: %s\n"
-#~ "Állapot: %s\n"
-#~ "Időtartam: %i perc %i másodperc\n"
-
-#~ msgid "Outgoing call"
-#~ msgstr "Kimenő hívás"
-
-#~ msgid "No response."
-#~ msgstr "Nincs válasz."
-
-#~ msgid "Protocol error."
-#~ msgstr "Protokol hiba."
-
-#~ msgid ""
-#~ "Could not parse given sip address. A sip url usually looks like sip:"
-#~ "user@domain"
-#~ msgstr ""
-#~ "Az adott szám nem értelmezhető. Egy sip cím általában így néz ki: "
-#~ "user@domain"
-
-#~ msgid ""
-#~ "Your computer appears to be using ALSA sound drivers.\n"
-#~ "This is the best choice. However the pcm oss emulation module\n"
-#~ "is missing and linphone needs it. Please execute\n"
-#~ "'modprobe snd-pcm-oss' as root to load it."
-#~ msgstr ""
-#~ "A számítógéped úgy tűnik, hogy ALSA hangot használ.\n"
-#~ "Ez a legjobb választás. Mindazonáltal a pcm* OSS emuláció modulra\n"
-#~ " a linphone-nak szüksége van és ez hiányzik. Kérem futassa le a\n"
-#~ "'modprobe snd-pcm-oss' parancsot rendszergazdaként."
-
-#~ msgid ""
-#~ "Your computer appears to be using ALSA sound drivers.\n"
-#~ "This is the best choice. However the mixer oss emulation module\n"
-#~ "is missing and linphone needs it. Please execute\n"
-#~ " 'modprobe snd-mixer-oss' as root to load it."
-#~ msgstr ""
-#~ "A számítógéped úgy tűnik, hogy ALSA hangot használ.\n"
-#~ "Ez a legjobb választás. Mindazonáltal a mixer OSS emuláció modulra\n"
-#~ " a linphone-nak szüksége van és ez hiányzik. Kérem futassa le a\n"
-#~ "'modprobe snd-pcm-oss' parancsot rendszergazdaként."
-
-#~ msgid "Chat with %s"
-#~ msgstr "Chat-elés %s -el"
-
-#, fuzzy
-#~ msgid "Choosing a username"
-#~ msgstr "felhasználónév:"
-
-#, fuzzy
-#~ msgid "Enable video"
-#~ msgstr "Engedélyezve"
-
-#, fuzzy
-#~ msgid "Unmute"
-#~ msgstr "Korlátlan"
-
-#, fuzzy
-#~ msgid "<b>Contact list</b>"
-#~ msgstr "Kapcsolatilista"
-
-#, fuzzy
-#~ msgid "Audio & video"
-#~ msgstr "Audio kodekek"
-
-#, fuzzy
-#~ msgid "Audio only"
-#~ msgstr "Audio kodekek"
-
-#, fuzzy
-#~ msgid "Duration:"
-#~ msgstr "Információk"
-
-#, fuzzy
-#~ msgid "_Call history"
-#~ msgstr "Linphone - Híváselőzmények"
-
-#, fuzzy
-#~ msgid "_Linphone"
-#~ msgstr "Linphone"
-
-#, fuzzy
-#~ msgid "gtk-cancel"
-#~ msgstr "Kapcsolódva."
-
-#, fuzzy
-#~ msgid "gtk-ok"
-#~ msgstr "Eltávolítás"
-
-#, fuzzy
-#~ msgid "gtk-close"
-#~ msgstr "Kapcsolódva."
-
-#~ msgid ""
-#~ "Your machine appears to be connected to an IPv6 network. By default "
-#~ "linphone always uses IPv4. Please update your configuration if you want "
-#~ "to use IPv6"
-#~ msgstr ""
-#~ "A géped úgy tűnik, hogy csatlakozik egy IPv6 hálózathoz. Alapból a "
-#~ "linphone mindig az IPv4-et használja. Frissítsd a konfigurációdat, ha "
-#~ "használni akarod az IPv6-ot"
-
-#, fuzzy
-#~ msgid "_Modes"
-#~ msgstr "Kodekek"
-
-#~ msgid "Accept"
-#~ msgstr "Elfogad"
-
-#, fuzzy
-#~ msgid "Incoming call from"
-#~ msgstr "Beérkező hívás"
-
-#, fuzzy
-#~ msgid "Linphone - Incoming call"
-#~ msgstr "Beérkező hívás"
-
-#, fuzzy
-#~ msgid ""
-#~ "Audio codecs\n"
-#~ "Video codecs"
-#~ msgstr "Audio és video kodekek"
-
-#~ msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-#~ msgstr "Bocsánat, a többszörös egyidejű hívások még nem támogatottak!"
-
-#~ msgid "Could not reach destination."
-#~ msgstr "A cél elérhetetlen."
-
-#~ msgid "Request Cancelled."
-#~ msgstr "Kérelem elutasítva."
-
-#~ msgid "Bad request"
-#~ msgstr "Rossz kérés"
-
-#~ msgid "User cannot be found at given address."
-#~ msgstr "Nem telálható felhasználó at adott címen."
-
-#~ msgid "Remote user cannot support any of proposed codecs."
-#~ msgstr ""
-#~ "A távoli felhasználó nem rendelkezik a javasolt kódoló-dekódolókkal "
-#~ "(codecs)"
-
-#~ msgid "Timeout."
-#~ msgstr "Időtúllépés."
-
-#~ msgid "Remote host was found but refused connection."
-#~ msgstr "A távoli gép elérhető, de a kapcsolatot visszautasította."
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you\n"
-#~ "to contact him using the following alternate resource:"
-#~ msgstr ""
-#~ "A felhasználó nem elérhető pillanatnyilag de meghívja Önt\n"
-#~ "thogy lépjen kapcsolatba vele miközben használja a következő alternatív "
-#~ "erőforrást:"
-
-#~ msgid "No nat/firewall address supplied !"
-#~ msgstr "Nincs nat/tűzfal cím megadva!"
-
-#~ msgid "Invalid nat address '%s' : %s"
-#~ msgstr "Hibás nat cím '%s' : %s"
-
-#~ msgid "Gone"
-#~ msgstr "Elveszítve"
-
-#~ msgid "Waiting for Approval"
-#~ msgstr "Jóváhagyásra vár"
-
-#~ msgid "Be Right Back"
-#~ msgstr "Legyen igazad"
-
-#~ msgid "On The Phone"
-#~ msgstr "Telefonál"
-
-#~ msgid "Out To Lunch"
-#~ msgstr "Ebédelni ment"
-
-#~ msgid "Closed"
-#~ msgstr "Lezárva"
-
-#, fuzzy
-#~ msgid "_View"
-#~ msgstr "Video"
-
-#, fuzzy
-#~ msgid "_Properties"
-#~ msgstr "RTP beállítások"
-
-#, fuzzy
-#~ msgid "Show logs"
-#~ msgstr "Mutasd a hívásokat"
-
-#, fuzzy
-#~ msgid "_About"
-#~ msgstr "Hozzáférés"
-
-#, fuzzy
-#~ msgid "Proxy in use"
-#~ msgstr "Használt SIP Proxy:"
-
-#~ msgid "Sound"
-#~ msgstr "Hang"
-
-#, fuzzy
-#~ msgid "Proxy accounts"
-#~ msgstr "Használt SIP Proxy:"
-
-#~ msgid "Go"
-#~ msgstr "Ugrás"
-
-#~ msgid "Exit"
-#~ msgstr "Kilépés"
-
-#~ msgid "Shows the address book"
-#~ msgstr "Mutasd a címjegyzéket"
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid ""
-#~ "Hangup\n"
-#~ "or refuse"
-#~ msgstr ""
-#~ "Lerak vagy\n"
-#~ "Nem válaszol"
-
-#~ msgid "Or chat !"
-#~ msgstr "Vagy chat-elj!"
-
-#~ msgid "Show more..."
-#~ msgstr "További beállítások..."
-
-#~ msgid "Playback level:"
-#~ msgstr "Lejátszási hangerő:"
-
-#~ msgid "Recording level:"
-#~ msgstr "Felvételi hangerő:"
-
-#~ msgid "Ring level:"
-#~ msgstr "Csengetési hangerő:"
-
-#~ msgid "Controls"
-#~ msgstr "Vezérlés"
-
-#~ msgid "Reachable"
-#~ msgstr "Elérhető"
-
-#~ msgid "Busy, I'll be back in "
-#~ msgstr "Foglalt vagyok, jövök vissza"
-
-#~ msgid "The other party will be informed that you'll be back in X minutes"
-#~ msgstr "A másik fél tájékoztatva lesz, hogy X perc alatt vissza fogsz jönni"
-
-#~ msgid "mn"
-#~ msgstr "perc"
-
-#~ msgid "Moved temporarily"
-#~ msgstr "Ideiglenesen nem elérhető"
-
-#~ msgid "Alternative service"
-#~ msgstr "Átirányítás"
-
-#~ msgid "URL:"
-#~ msgstr "URL:"
-
-#~ msgid "Presence"
-#~ msgstr "Elérhető"
-
-#~ msgid "Press digits to send DTMFs."
-#~ msgstr "Nyomja le a számokat a DTMF küldéshez"
-
-#~ msgid ""
-#~ "  3\n"
-#~ "def"
-#~ msgstr ""
-#~ "  3\n"
-#~ "def"
-
-#~ msgid ""
-#~ "  2\n"
-#~ "abc"
-#~ msgstr ""
-#~ "  2\n"
-#~ "abc"
-
-#~ msgid ""
-#~ "  4\n"
-#~ "ghi"
-#~ msgstr ""
-#~ "  4\n"
-#~ "ghi"
-
-#~ msgid ""
-#~ " 5\n"
-#~ "jkl"
-#~ msgstr ""
-#~ " 5\n"
-#~ "jkl"
-
-#~ msgid ""
-#~ "  6\n"
-#~ "mno"
-#~ msgstr ""
-#~ "  6\n"
-#~ "mno"
-
-#~ msgid ""
-#~ "   7\n"
-#~ "pqrs"
-#~ msgstr ""
-#~ "   7\n"
-#~ "pqrs"
-
-#~ msgid ""
-#~ "  8\n"
-#~ "tuv"
-#~ msgstr ""
-#~ "  8\n"
-#~ "tuv"
-
-#~ msgid ""
-#~ "   9\n"
-#~ "wxyz"
-#~ msgstr ""
-#~ "   9\n"
-#~ "wxyz"
-
-#~ msgid "DTMF"
-#~ msgstr "DTMF"
-
-#~ msgid "My online friends"
-#~ msgstr "Elérhető partnerek"
-
-#~ msgid ""
-#~ "C: 2001\n"
-#~ "Made in Old Europe"
-#~ msgstr ""
-#~ "C: 2001\n"
-#~ "Made in Old Europe"
-
-#~ msgid ""
-#~ "Linphone is a web-phone.\n"
-#~ "It is compatible with SIP and RTP protocols."
-#~ msgstr ""
-#~ "A Linphone egy web-telefon.\n"
-#~ "SIP és RTP kompatíbilis."
-
-#~ msgid "http://www.linphone.org"
-#~ msgstr "http://www.linphone.org"
-
-#~ msgid "Use IPv6 network (if available)"
-#~ msgstr "IPv6 hálózat használata (ha elérhető)"
-
-#~ msgid ""
-#~ "Toggle this if you are on an ipv6 network and you wish linphone to use it."
-#~ msgstr "Ha egy IPv6 hálózat elérhető, akkor a linphone használja azt."
-
-#~ msgid "Global"
-#~ msgstr "Általános"
-
-#~ msgid ""
-#~ "These options is only for users in a private network, behind a gateway. "
-#~ "If you are not in this situation, then leave this empty."
-#~ msgstr ""
-#~ "Ez az opció azoknak a felhasználóknak kell, akik egy privát hálózaton "
-#~ "tűzfal mögül interneteznek. Egyébként üresen kell hagyni."
-
-#~ msgid "No firewall"
-#~ msgstr "Nincs tűzfal"
-
-#~ msgid "Use this STUN server to guess firewall address :"
-#~ msgstr "STUN szerver használata a tűzfal címének meghatározásához."
-
-#~ msgid "Specify firewall address manually:"
-#~ msgstr "Tűzfal külső címe:"
-
-#~ msgid "NAT traversal options (experimental)"
-#~ msgstr "NAT beállítások áttekintése (kísérleti)"
-
-#~ msgid "Number of buffered miliseconds (jitter compensation):"
-#~ msgstr "A pufferelt milisecondok száma (jitter compensation):"
-
-#~ msgid "RTP port used for audio:"
-#~ msgstr "RTP port, audió használatra:"
-
-#~ msgid "Use SIP INFO message instead of RTP rfc2833 for DTMF transmitting"
-#~ msgstr "Használj SIP INFO üzenetet RTP rfc2833 helyett a DTMF átvitelnél"
-
-#~ msgid "RTP-RFC2833 is the recommended way."
-#~ msgstr "RTP-RFC2833 az ajánlott."
-
-#~ msgid "Other"
-#~ msgstr "Egyéb"
-
-#~ msgid "micro"
-#~ msgstr "mikrofon"
-
-#~ msgid "Enable echo-canceler (cancels the echo heard by the remote party)"
-#~ msgstr ""
-#~ "Visszhang törlés engedélyezése (törli a visszhangot, amit hall a távoli "
-#~ "partner"
-
-#~ msgid "Choose file"
-#~ msgstr "Fájl kiválasztás"
-
-#~ msgid "Listen"
-#~ msgstr "Hallgatás"
-
-#~ msgid "Run sip user agent on port:"
-#~ msgstr "SIP felhasználó ügynök által használt port:"
-
-#~ msgid "It is strongly recommended to use port 5060."
-#~ msgstr "Erősen ajánlott az 5060-as port használata."
-
-#~ msgid "@"
-#~ msgstr "@"
-
-#~ msgid "Identity"
-#~ msgstr "Azonosító"
-
-#~ msgid "Add proxy/registrar"
-#~ msgstr "Proxy vagy regisztráció hozzáadás"
-
-#~ msgid "Clear all stored authentication information (username,password...)"
-#~ msgstr ""
-#~ "Az összes tárolt hitelesítési információ törlése (felhasználónév, "
-#~ "jelszó...)"
-
-#~ msgid "List of audio codecs, in order of preference:"
-#~ msgstr "Az audió kódoló-dekódolók listája, a preferencia rendjében:"
-
-#~ msgid ""
-#~ "Note: Codecs in red are not usable regarding to your connection type to "
-#~ "the internet."
-#~ msgstr ""
-#~ "Figyelem: A pirosban lévő kodekek nem használhatók a jelenlegi "
-#~ "internetkapcsolattal."
-
-#~ msgid "Codec information"
-#~ msgstr "Kodekinformáció"
-
-#~ msgid "Address Book"
-#~ msgstr "Címjegyzék"
-
-#~ msgid "Select"
-#~ msgstr "Kiválasztás"
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you to contact him "
-#~ "using the following alternate ressource:"
-#~ msgstr ""
-#~ "A felhasználó jelenleg nem elérhető, de kéri, hogy lépj vele kapcsolatba "
-#~ "itt:"
-
-#~ msgid "None."
-#~ msgstr "Nincs."
-
-#~ msgid "Send registration:"
-#~ msgstr "Regisztárció küldés:"
-
-#~ msgid "Name:"
-#~ msgstr "Név:"
-
-#~ msgid "Subscribe policy:"
-#~ msgstr "Láthatósági szabály:"
-
-#~ msgid "Send subscription (see person's online status)"
-#~ msgstr "Láthatóság küldése (látszik a személy elérhetőségi státusza)"
-
-#~ msgid "New incoming subscription"
-#~ msgstr "Új beérkező előfizetés"
-
-#~ msgid "You have received a new subscription..."
-#~ msgstr "Megkaptál egy új előfizetést."
-
-#~ msgid "Refuse"
-#~ msgstr "Hulladék"
-
-#~ msgid "Authentication required for realm"
-#~ msgstr "Hitelesítési kérelem a tartománynak"
-
-#~ msgid "userid:"
-#~ msgstr "felhasználói azonosító:"
-
-#~ msgid "Text:"
-#~ msgstr "Szöveg:"
-
-#~ msgid "The caller asks for resource reservation. Do you agree ?"
-#~ msgstr "A hívó forrásfoglalást kér. Egyetértesz?"
-
-#~ msgid ""
-#~ "The caller doesn't use resource reservation. \t\t\t\t\tDo you wish to "
-#~ "continue anyway ?"
-#~ msgstr ""
-#~ "A hívó nem használ forrásfoglalást. \t\t\t\t\tÍgy is szeretnéd folytatni?"
-
-#~ msgid "linphone - receiving call from %s"
-#~ msgstr "linphone - hívást fogad innen %s"
-
-#~ msgid ""
-#~ "You have received a subscription from %s.This means that this person "
-#~ "wishes to be notified of your presence information (online, busy, "
-#~ "away...).\n"
-#~ "Do you agree ?"
-#~ msgstr ""
-#~ "Kaptál egy előfizetést tőle %s. Ez azt jelenti, hogy ez a személy "
-#~ "szeretné, hogy értesítsék a jelenlétinformációd (online, elfoglalt, "
-#~ "away...).\n"
-#~ "Egyetértesz?"
-
-#~ msgid "Authentication required for realm %s"
-#~ msgstr "Hitelesítési kérelem ebből a tartományból %s"
-
-#~ msgid "Wait"
-#~ msgstr "Várakozás"
-
-#~ msgid "Deny"
-#~ msgstr "Tiltás"
-
-#~ msgid "Bad sip address: a sip address looks like sip:user@domain"
-#~ msgstr "Rossz sip cím: egy sip cím általában így néz ki: user@domain"
-
-#~ msgid "Stun lookup done..."
-#~ msgstr "Stun keresés kész..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../coreapi/call_log.c:209
+msgid "aborted"
+msgstr ""
+
+#: ../coreapi/call_log.c:212
+msgid "completed"
+msgstr ""
+
+#: ../coreapi/call_log.c:215
+msgid "missed"
+msgstr ""
+
+#: ../coreapi/call_log.c:218
+msgid "unknown"
+msgstr ""
+
+#: ../coreapi/call_log.c:220
+#, c-format
+msgid ""
+"%s at %s\n"
+"From: %s\n"
+"To: %s\n"
+"Status: %s\n"
+"Duration: %i mn %i sec\n"
+msgstr ""
+
+#: ../coreapi/call_log.c:221
+msgid "Outgoing call"
+msgstr ""
+
+#: ../gtk/videowindow.c:66
+#, c-format
+msgid "Cannot play %s."
+msgstr ""

@@ -30,6 +30,7 @@ import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.LogCollectionUploadState;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
@@ -239,6 +240,19 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 			LinphoneContent content, ByteBuffer buffer, int size) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadStateChanged(LinphoneCore lc,
+			LogCollectionUploadState state, String info) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

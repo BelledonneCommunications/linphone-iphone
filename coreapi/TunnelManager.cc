@@ -16,9 +16,6 @@
 #include "ortp/rtpsession.h"
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
-#ifndef USE_BELLESIP
-#include "eXosip2/eXosip_transport_hook.h"
-#endif
 #include "private.h"
 
 #ifdef ANDROID
@@ -97,7 +94,7 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 
 void TunnelManager::startClient() {
 	ms_message("TunnelManager: Starting tunnel client");
-	mTunnelClient = new TunnelClient();
+	mTunnelClient = new TunnelClient(TRUE);
 	mTunnelClient->setCallback((TunnelClientController::StateCallback)tunnelCallback,this);
 	list<ServerAddr>::iterator it;
 	for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
@@ -122,18 +119,16 @@ int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags
 }
 
 int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen){
+	memset(&msg->recv_addr,0,sizeof(msg->recv_addr));
 	int err=((TunnelSocket*)t->data)->recvfrom(msg->b_wptr,msg->b_datap->db_lim-msg->b_datap->db_base,from,*fromlen);
+	//to make ice happy
+	inet_aton(((TunnelManager*)((TunnelSocket*)t->data)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
 	if (err>0) return err;
 	return 0;
 }
 
-
 TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mCore(lc),
-#ifndef USE_BELLESIP
-	mSipSocket(NULL),
-	mExosipTransport(NULL),
-#endif
 	mMode(LinphoneTunnelModeDisable),
 	mState(disabled),
 	mTunnelizeSipPackets(true),
@@ -153,6 +148,7 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mVTable = linphone_core_v_table_new();
 	mVTable->network_reachable = networkReachableCb;
 	linphone_core_add_listener(mCore, mVTable);
+	linphone_core_get_local_ip_for(AF_INET, NULL, mLocalAddr);
 }
 
 TunnelManager::~TunnelManager(){
@@ -206,8 +202,8 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 		return;
 	}
 	ms_message("TunnelManager: switching mode from %s to %s",
-			   tunnel_mode_to_string(mMode),
-			   tunnel_mode_to_string(mode));
+			   linphone_tunnel_mode_to_string(mMode),
+			   linphone_tunnel_mode_to_string(mode));
 	switch(mode) {
 	case LinphoneTunnelModeEnable:
 		if(mState == disabled) {
@@ -371,6 +367,7 @@ void TunnelManager::networkReachableCb(LinphoneCore *lc, bool_t reachable) {
 		tunnel->startAutoDetection();
 		tunnel->mState = autodetecting;
 	}
+	linphone_core_get_local_ip_for(AF_INET, NULL,tunnel->mLocalAddr);
 }
 
 bool TunnelManager::startAutoDetection() {
@@ -388,7 +385,7 @@ bool TunnelManager::startAutoDetection() {
 bool TunnelManager::isActivated() const{
 	switch(getMode()){
 		case LinphoneTunnelModeAuto:
-			return !mState==disabled;
+			return !(mState==disabled);
 		case LinphoneTunnelModeDisable:
 			return false;
 		case LinphoneTunnelModeEnable:

@@ -33,6 +33,9 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
 	}
 	sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
+	if (status_code>=200){
+		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
+	}
 	if(status_code == 200) {
 		/*check service route rfc3608*/
 		belle_sip_header_service_route_t* service_route;
@@ -71,6 +74,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
+	belle_sip_header_t* accept_header;
 	
 	if (op->refresher){
 		belle_sip_refresher_stop(op->refresher);
@@ -89,6 +93,8 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 		time_t curtime=time(NULL);
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
 	}
+	accept_header = belle_sip_header_create("Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), accept_header);
 	belle_sip_message_set_header(BELLE_SIP_MESSAGE(req),(belle_sip_header_t*)sal_op_create_contact(op));
 	return sal_op_send_and_create_refresher(op,req,expires,register_refresher_listener);
 }

@@ -78,6 +78,9 @@ extern "C" {
 #define ngettext(singular, plural, number)	(((number)==1)?(singular):(plural))
 #endif
 #endif
+#ifdef ANDROID
+#include <jni.h>
+#endif
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
@@ -105,6 +108,9 @@ struct _LinphoneCallParams{
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	LinphonePrivacyMask privacy;
+	LinphoneMediaDirection audio_dir;
+	LinphoneMediaDirection video_dir;
+
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -146,6 +152,17 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
+struct _LinphoneChatMessageCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneChatMessageCbsMsgStateChangedCb msg_state_changed;
+	LinphoneChatMessageCbsFileTransferRecvCb file_transfer_recv; /**< Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferSendCb file_transfer_send; /**< Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication; /**< Callback to indicate file transfer progress */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneChatMessageCbs);
+
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
 	LinphoneChatMessageOutgoing
@@ -154,6 +171,7 @@ typedef enum _LinphoneChatMessageDir{
 struct _LinphoneChatMessage {
 	belle_sip_object_t base;
 	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
 	LinphoneChatMessageStateChangedCb cb;
@@ -184,6 +202,9 @@ typedef struct StunCandidate{
 
 
 typedef struct _PortConfig{
+	char multicast_ip[LINPHONE_IPADDR_SIZE];
+	int mcast_rtp_port;
+	int mcast_rtcp_port;
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
@@ -201,6 +222,7 @@ struct _LinphoneCall{
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
+	LinphoneAddress *me; /*Either from or to based on call dir*/
 	SalOp *op;
 	SalOp *ping_op;
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
@@ -213,7 +235,7 @@ struct _LinphoneCall{
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
-
+	unsigned long video_window_id;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams *params;
@@ -237,10 +259,12 @@ struct _LinphoneCall{
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	int localdesc_changed;/*not a boolean, contains a mask representing changes*/
 	LinphonePlayer *player;
+	unsigned long bg_task_id; /*used to prevent device to suspend app while a call is received in background*/
 
 	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
+	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -277,6 +301,8 @@ LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
 LinphoneCallParams * linphone_call_params_new(void);
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);
+SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params);
+SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 
@@ -284,20 +310,6 @@ void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
-/**
- * @brief Equivalent to _linphone_core_get_firewall_policy_with_lie(lc, TRUE)
- * @param lc LinphoneCore instance
- * @return Fairewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy(const LinphoneCore *lc);
-/**
- * @brief Get the firwall policy which has been set.
- * @param lc Instance of LinphoneCore
- * @param lie If true, the configured firewall policy will be returned only if no tunnel are enabled.
- * Otherwise, NoFirewallPolicy value will be returned.
- * @return The firewall policy
- */
-LinphoneFirewallPolicy _linphone_core_get_firewall_policy_with_lie(const LinphoneCore *lc, bool_t lie);
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenceModel *presence);
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);
@@ -353,6 +365,7 @@ static MS2_INLINE void set_string(char **dest, const char *src){
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
+#define PAYLOAD_TYPE_FROZEN_NUMBER	PAYLOAD_TYPE_USER_FLAG_4
 
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
@@ -362,6 +375,8 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presence, const char *contact, char **content);
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
+void linphone_core_soundcard_hint_check(LinphoneCore* lc);
+
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
@@ -395,7 +410,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
-int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
@@ -433,14 +448,21 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
-LINPHONE_PUBLIC bool_t linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+typedef enum _LinphoneProxyConfigAddressComparisonResult{
+	LinphoneProxyConfigAddressDifferent,
+	LinphoneProxyConfigAddressEqual,
+	LinphoneProxyConfigAddressWeakEqual
+} LinphoneProxyConfigAddressComparisonResult;
+
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
+LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
+void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg );
 /**/
 
 struct _LinphoneProxyConfig
@@ -459,6 +481,7 @@ struct _LinphoneProxyConfig
 	int expires;
 	int publish_expires;
 	SalOp *op;
+	SalCustomHeader *sent_headers;
 	char *type;
 	struct _SipSetupContext *ssctx;
 	int auth_failures;
@@ -579,6 +602,12 @@ typedef struct rtp_config
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
 	bool_t pad;
+	char* audio_multicast_addr;
+	bool_t audio_multicast_enabled;
+	int audio_multicast_ttl;
+	char* video_multicast_addr;
+	int video_multicast_ttl;
+	bool_t video_multicast_enabled;
 }rtp_config_t;
 
 
@@ -593,6 +622,7 @@ typedef struct net_config
 	int download_bw;
 	int upload_bw;
 	int mtu;
+	OrtpNetworkSimulatorParams netsim_params;
 	bool_t nat_sdp_only;
 }net_config_t;
 
@@ -622,7 +652,9 @@ typedef struct sound_config
 typedef struct codecs_config
 {
 	MSList *audio_codecs;  /* list of audio codecs in order of preference*/
-	MSList *video_codecs;	/* for later use*/
+	MSList *video_codecs;
+	int dyn_pt;
+	int telephone_event_pt;
 }codecs_config_t;
 
 typedef struct video_config{
@@ -689,7 +721,8 @@ struct _LinphoneCore
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
-	RtpProfile *default_profile;
+	MSList *default_audio_codecs;
+	MSList *default_video_codecs;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;
@@ -698,8 +731,6 @@ struct _LinphoneCore
 	codecs_config_t codecs_conf;
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
-	MSList *payload_types;
-	int dyn_pt;
 	LinphoneProxyConfig *default_proxy;
 	MSList *friends;
 	MSList *auth_info;
@@ -734,6 +765,7 @@ struct _LinphoneCore
 	MSList *hooks;
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
+	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	bool_t use_files;
 	bool_t apply_nat_settings;
@@ -773,6 +805,17 @@ struct _LinphoneCore
 	char *file_transfer_server;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
+	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
+#ifdef ANDROID
+	jobject wifi_lock;
+	jclass wifi_lock_class;
+	jmethodID wifi_lock_acquire_id;
+	jmethodID wifi_lock_release_id;
+	jobject multicast_lock;
+	jclass multicast_lock_class;
+	jmethodID multicast_lock_acquire_id;
+	jmethodID multicast_lock_release_id;
+#endif
 };
 
 
@@ -889,10 +932,9 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
-void linphone_content_uninit(LinphoneContent * obj);
-void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref);
-LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
+LinphoneContent * linphone_content_new(void);
+LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
@@ -904,8 +946,28 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
+LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
+
+struct _LinphoneContent {
+	belle_sip_object_t base;
+	void *user_data;
+	struct _LinphoneContentPrivate lcp;
+	bool_t owned_fields;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneContent);
+
+struct _LinphoneBuffer {
+	belle_sip_object_t base;
+	void *user_data;
+	uint8_t *content;	/**< A pointer to the buffer content */
+	size_t size;	/**< The size of the buffer content */
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
+
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *
@@ -975,19 +1037,34 @@ static MS2_INLINE const LinphoneErrorInfo *linphone_error_info_from_sal_op(const
 	return (const LinphoneErrorInfo*)sal_op_get_error_info(op);
 }
 
+static MS2_INLINE void payload_type_set_enable(PayloadType *pt,int value)
+{
+	if ((value)!=0) payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED); \
+	else payload_type_unset_flag(pt,PAYLOAD_TYPE_ENABLED);
+}
+
+static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
+	return (((pt)->flags & PAYLOAD_TYPE_ENABLED)!=0);
+}
+
+bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
+
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
 
 /** Belle Sip-based objects need unique ids
   */
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCall),
 BELLE_SIP_TYPE_ID(LinphoneCallLog),
 BELLE_SIP_TYPE_ID(LinphoneCallParams),
 BELLE_SIP_TYPE_ID(LinphoneChatMessage),
+BELLE_SIP_TYPE_ID(LinphoneChatMessageCbs),
 BELLE_SIP_TYPE_ID(LinphoneChatRoom),
+BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig)
@@ -1034,6 +1111,47 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);
+
+LinphoneMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
+SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
+
+/*****************************************************************************
+ * LINPHONE CONTENT PRIVATE ACCESSORS                                        *
+ ****************************************************************************/
+/**
+ * Get the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key to encrypt/decrypt the file associated to this content.
+ */
+const char *linphone_content_get_key(const LinphoneContent *content);
+
+/**
+ * Get the size of key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key size in bytes
+ */
+size_t linphone_content_get_key_size(const LinphoneContent *content);
+/**
+ * Set the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
+ */
+void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
+
+/**
+ * Get the address of the crypto context associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The address of the pointer to the crypto context. Crypto context is managed(alloc/free)
+ *         by the encryption/decryption functions, so we give the address to store/retrieve the pointer
+ */
+void ** linphone_content_get_cryptoContext_address(LinphoneContent *content);
+
+#ifdef ANDROID
+void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
+void linphone_core_wifi_lock_release(LinphoneCore *lc);
+void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
+void linphone_core_multicast_lock_release(LinphoneCore *lc);
+#endif
 
 #ifdef __cplusplus
 }

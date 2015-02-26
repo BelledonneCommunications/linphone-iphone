@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belle-sip/belle-sip.h"
 #include "belle-sip/belle-sdp.h"
 
-
-
 struct Sal{
 	SalCallbacks callbacks;
 	MSList *pending_auths;/*MSList of SalOp */
@@ -52,7 +50,7 @@ struct Sal{
 	bool_t enable_test_features;
 	bool_t no_initial_route;
 	bool_t enable_sip_update; /*true by default*/
-	bool_t default_sdp_removal;
+	SalOpSDPHandling default_sdp_handling;
 };
 
 typedef enum SalOpState {
@@ -107,7 +105,7 @@ struct SalOp{
 	bool_t call_released;
 	bool_t manual_refresher;
 	bool_t has_auth_pending;
-	bool_t sdp_removal; /* do not add SDP in outgoing INVITE and remove it from incoming INVITE */
+	SalOpSDPHandling sdp_handling;
 	int auth_requests; /*number of auth requested for this op*/
 };
 

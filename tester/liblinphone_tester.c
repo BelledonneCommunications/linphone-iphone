@@ -24,6 +24,11 @@
 #if HAVE_CU_CURSES
 #include "CUnit/CUCurses.h"
 #endif
+#ifdef HAVE_GTK
+#include <gtk/gtk.h>
+#endif
+
+extern int liblinphone_tester_use_log_file;
 
 #ifdef ANDROID
 
@@ -35,6 +40,8 @@
 static JNIEnv *current_env = NULL;
 static jobject current_obj = 0;
 static const char* LogDomain = "liblinphone_tester";
+
+int main(int argc, char** argv);
 
 void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	char str[4096];
@@ -107,6 +114,14 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	return ret;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_keepAccounts(JNIEnv *env, jclass c, jboolean keep) {
+	liblinphone_tester_keep_accounts((int)keep);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env, jclass c) {
+	liblinphone_tester_clear_accounts();
+}
+
 #endif /* ANDROID */
 
 #ifdef __QNX__
@@ -114,6 +129,8 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 	ortp_qnx_log_handler("liblinphone_tester", lev, fmt, args);
 }
 #endif /* __QNX__ */
+
+
 
 void helper(const char *name) {
 	liblinphone_tester_fprintf(stderr,"%s --help\n"
@@ -127,9 +144,12 @@ void helper(const char *name) {
 			"\t\t\t--suite <suite name>\n"
 			"\t\t\t--test <test name>\n"
 			"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
+			"\t\t\t--log-file <output log file path>\n"
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif
+			"\t\t\t--xml\n"
+			"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
 			, name);
 }
 
@@ -148,6 +168,18 @@ int main (int argc, char *argv[])
 	int ret;
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
+	const char *xml_file="CUnitAutomated-Results.xml";
+	char *xml_tmp_file=NULL;
+	int xml = 0;
+	FILE* log_file=NULL;
+
+#ifdef HAVE_GTK
+	gtk_init(&argc, &argv);
+#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
+	g_thread_init(NULL);
+#endif
+	gdk_threads_init();
+#endif
 
 #if defined(ANDROID)
 	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
@@ -193,15 +225,50 @@ int main (int argc, char *argv[])
 			suite_name = argv[i];
 			liblinphone_tester_list_suite_tests(suite_name);
 			return 0;
-		} else {
+		} else if (strcmp(argv[i], "--xml-file") == 0){
+			CHECK_ARG("--xml-file", ++i, argc);
+			xml_file = argv[i];
+			xml = 1;
+		} else if (strcmp(argv[i], "--xml") == 0){
+			xml = 1;
+		} else if (strcmp(argv[i],"--log-file")==0){
+			CHECK_ARG("--log-file", ++i, argc);
+			log_file=fopen(argv[i],"w");
+			if (!log_file) {
+				ms_fatal("Cannot open file [%s] for writting logs because [%s]",argv[i],strerror(errno));
+			} else {
+				liblinphone_tester_use_log_file=1;
+				liblinphone_tester_fprintf(stdout,"Redirecting traces to file [%s]",argv[i]);
+				linphone_core_set_log_file(log_file);
+			}
+
+		}else {
 			liblinphone_tester_fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
 			helper(argv[0]);
 			return -1;
 		}
 	}
 
+	if( xml && (suite_name || test_name) ){
+		printf("Cannot use both xml and specific test suite\n");
+		return -1;
+	}
+
+	if( xml ){
+		xml_tmp_file = ms_strdup_printf("%s.tmp", xml_file);
+		liblinphone_tester_set_xml_output(xml_tmp_file);
+	}
+	liblinphone_tester_enable_xml(xml);
+
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
+
+	if ( xml ) {
+		/*create real xml file only if tester did not crash*/
+		ms_strcat_printf(xml_tmp_file, "-Results.xml");
+		rename(xml_tmp_file, xml_file);
+		ms_free(xml_tmp_file);
+	}
 	return ret;
 }
 #endif /* WINAPI_FAMILY_PHONE_APP */

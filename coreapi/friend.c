@@ -65,7 +65,7 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		case LinphoneStatusVacation:
 		str=_("Vacation");
 		default:
-		str=_("Unknown-bug");
+		str=_("Unknown status");
 	}
 	return str;
 }
