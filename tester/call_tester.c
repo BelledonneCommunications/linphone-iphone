@@ -3571,9 +3571,8 @@ static void call_with_paused_no_sdp_on_resume() {
 	}
 }
 
-
-static void call_with_early_media_and_no_sdp_in_200(){
-LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
+static void early_media_without_sdp_in_200_base( bool_t use_video ){
+	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
 	LinphoneCall* marie_call;
@@ -3589,12 +3588,16 @@ LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
 	params = linphone_core_create_default_call_parameters(marie->lc);
-	linphone_call_params_enable_video(params, TRUE);
 
-	linphone_core_enable_video_capture(pauline->lc, TRUE);
-	linphone_core_enable_video_display(pauline->lc, TRUE);
-	linphone_core_enable_video_capture(marie->lc, TRUE);
-	linphone_core_enable_video_display(marie->lc, FALSE);
+	if( use_video){
+
+		linphone_call_params_enable_video(params, TRUE);
+
+		linphone_core_enable_video_capture(pauline->lc, TRUE);
+		linphone_core_enable_video_display(pauline->lc, TRUE);
+		linphone_core_enable_video_capture(marie->lc, TRUE);
+		linphone_core_enable_video_display(marie->lc, FALSE);
+	}
 
 	marie_call = linphone_core_invite_address_with_params(marie->lc, pauline->identity, params);
 	marie_call_log = linphone_call_get_call_log(marie_call);
@@ -3621,8 +3624,6 @@ LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 		connected_time=ms_get_cur_time_ms();
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,3000));
 
-		ms_error("Streams running= %d", marie->stat.number_of_LinphoneCallStreamsRunning);
-
 		CU_ASSERT_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
 
 		liblinphone_tester_check_rtcp(marie, pauline);
@@ -3640,6 +3641,14 @@ LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_early_media_and_no_sdp_in_200_with_video(){
+	early_media_without_sdp_in_200_base(TRUE); 
+}
+
+static void call_with_early_media_and_no_sdp_in_200(){
+	early_media_without_sdp_in_200_base(FALSE); 
 }
 
 static void call_with_generic_cn(void) {
@@ -3858,6 +3867,7 @@ test_t call_tests[] = {
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
 	{ "Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume },
 	{ "Call with early media and no SDP on 200 Ok", call_with_early_media_and_no_sdp_in_200 },
+	{ "Call with early media and no SDP on 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video },
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE with invalid SDP",incoming_invite_with_invalid_sdp},
