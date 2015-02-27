@@ -20,7 +20,11 @@
 #
 ############################################################################
 
+if(WIN32)
+	set(GTK2_ADDITIONAL_SUFFIXES "../lib/glib-2.0/include" "../lib/gtk-2.0/include")
+endif()
 find_package(GTK2 2.18 REQUIRED gtk)
+find_package(Intl REQUIRED)
 
 set(UI_FILES
 	about.ui
@@ -75,8 +79,11 @@ endif()
 
 add_executable(linphone-gtk ${SOURCE_FILES})
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone)
-target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS})
-target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
+target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
+target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES} ${INTL_LIBRARIES})
+if(WIN32)
+	target_link_libraries(linphone-gtk Wininet)
+endif()
 if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})

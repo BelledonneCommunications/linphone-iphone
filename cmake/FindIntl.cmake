@@ -1,5 +1,5 @@
 ############################################################################
-# CMakeLists.txt
+# FindIntl.cmake
 # Copyright (C) 2014  Belledonne Communications, Grenoble France
 #
 ############################################################################
@@ -19,41 +19,38 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
+#
+# - Find the libintl include file and library
+#
+#  INTL_FOUND - system has libintl
+#  INTL_INCLUDE_DIRS - the libintl include directory
+#  INTL_LIBRARIES - The libraries needed to use libintl
 
-if(WIN32)
-	set(GTK2_ADDITIONAL_SUFFIXES "../lib/glib-2.0/include" "../lib/gtk-2.0/include")
-endif()
-find_package(GTK2 2.18 COMPONENTS gtk)
-
-set(SOURCE_FILES
-	accountmanager.c
-	call_tester.c
-	dtmf_tester.c
-	eventapi_tester.c
-	flexisip_tester.c
-	liblinphone_tester.c
-	log_collection_tester.c
-	message_tester.c
-	multicast_call_tester.c
-	offeranswer_tester.c
-	player_tester.c
-	presence_tester.c
-	quality_reporting_tester.c
-	register_tester.c
-	remote_provisioning_tester.c
-	setup_tester.c
-	stun_tester.c
-	tester.c
-	transport_tester.c
-	upnp_tester.c
-	video_tester.c
+set(_INTL_ROOT_PATHS
+	${WITH_INTL}
+	${CMAKE_INSTALL_PREFIX}
 )
 
-add_executable(liblinphone_tester ${SOURCE_FILES})
-target_include_directories(liblinphone_tester PUBLIC ${CUNIT_INCLUDE_DIRS})
-target_link_libraries(liblinphone_tester linphone ${CUNIT_LIBRARIES})
-if (GTK2_FOUND)
-	target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
-	target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
-	target_link_libraries(liblinphone_tester linphone ${GTK2_LIBRARIES})
+find_path(INTL_INCLUDE_DIRS
+	NAMES libintl.h
+	HINTS _INTL_ROOT_PATHS
+	PATH_SUFFIXES include
+)
+
+if(INTL_INCLUDE_DIRS)
+	set(HAVE_LIBINTL_H 1)
 endif()
+
+find_library(INTL_LIBRARIES
+	NAMES intl
+	HINTS ${_INTL_ROOT_PATHS}
+	PATH_SUFFIXES bin lib
+)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Intl
+	DEFAULT_MSG
+	INTL_INCLUDE_DIRS INTL_LIBRARIES HAVE_LIBINTL_H
+)
+
+mark_as_advanced(INTL_INCLUDE_DIRS INTL_LIBRARIES HAVE_LIBINTL_H)
