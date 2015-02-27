@@ -459,6 +459,7 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&register_test_suite);
 	add_test_suite(&offeranswer_test_suite);
 	add_test_suite(&call_test_suite);
+	add_test_suite(&multi_call_test_suite);
 	add_test_suite(&message_test_suite);
 	add_test_suite(&presence_test_suite);
 #ifdef UPNP
@@ -572,7 +573,11 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 			ms_warning("Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'\n", suite_name);
 		}
 #else
-		if (suite_name){
+	if (!test_name && suite_name && strcmp("Call",suite_name) == 0) {
+		/*special case for suite Call which is now splitted into simple and multi*/
+		CU_run_suite(CU_get_suite("Single call"));
+		CU_run_suite(CU_get_suite("Multi call"));
+	} else if (suite_name){
 			CU_pSuite suite;
 			suite=CU_get_suite(suite_name);
 			if (!suite) {

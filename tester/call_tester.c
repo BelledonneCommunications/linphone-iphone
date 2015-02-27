@@ -1242,7 +1242,7 @@ static void call_paused_resumed_with_loss(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2) {
+bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2) {
 	stats initial_call_stat_1=mgr_1->stat;
 	stats initial_call_stat_2=mgr_2->stat;
 	linphone_core_pause_call(mgr_1->lc,call_1);
@@ -3722,6 +3722,18 @@ void static call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 		linphone_core_set_sip_transports(lc,&sip_tr);
 	}
 }
+void static call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+/*just to check multi listener in such situation*/
+	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
+	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
+	ms_message("Third call listener reports: %s call from [%s] to [%s], new state is [%s]"	,linphone_call_get_call_log(call)->dir==LinphoneCallIncoming?"Incoming":"Outgoing"
+																,from
+																,to
+																,linphone_call_state_to_string(cstate));
+	ms_free(to);
+	ms_free(from);
+}
+
 
 static void call_with_transport_change_base(bool_t succesfull_call) {
 	int begin;
@@ -3736,6 +3748,9 @@ static void call_with_transport_change_base(bool_t succesfull_call) {
 	v_table->call_state_changed=call_state_changed_2;
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
+	linphone_core_add_listener(marie->lc,v_table);
+	v_table = linphone_core_v_table_new();
+	v_table->call_state_changed=call_state_changed_3;
 	linphone_core_add_listener(marie->lc,v_table);
 
 	sip_tr.udp_port = 0;
@@ -3844,14 +3859,6 @@ test_t call_tests[] = {
 	{ "Call rejected because of wrong credential", call_rejected_because_wrong_credentials},
 	{ "Call rejected without 403 because of wrong credential", call_rejected_without_403_because_wrong_credentials},
 	{ "Call rejected without 403 because of wrong credential and no auth req cb", call_rejected_without_403_because_wrong_credentials_no_auth_req_cb},
-	{ "Call waiting indication", call_waiting_indication },
-	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
-	{ "Simple conference", simple_conference },
-	{ "Simple conference with ICE",simple_conference_with_ice},
-	{ "Simple call transfer", simple_call_transfer },
-	{ "Unattended call transfer", unattended_call_transfer },
-	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
-	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
 	{ "Call with ICE without SDP", call_with_ice_no_sdp },
 	{ "Call with ICE (random ports)", call_with_ice_random_ports },
@@ -3882,7 +3889,7 @@ test_t call_tests[] = {
 };
 
 test_suite_t call_test_suite = {
-	"Call",
+	"Single Call",
 	NULL,
 	NULL,
 	sizeof(call_tests) / sizeof(call_tests[0]),
