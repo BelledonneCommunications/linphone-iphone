@@ -34,6 +34,7 @@ set(SOURCE_FILES
 	liblinphone_tester.c
 	log_collection_tester.c
 	message_tester.c
+	multi_call.c
 	multicast_call_tester.c
 	offeranswer_tester.c
 	player_tester.c
