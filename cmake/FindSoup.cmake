@@ -26,6 +26,9 @@
 #  SOUP_INCLUDE_DIRS - the libsoup include directory
 #  SOUP_LIBRARIES - The libraries needed to use libsoup
 
+if(WIN32)
+	set(GTK2_ADDITIONAL_SUFFIXES "../lib/glib-2.0/include" "../lib/gtk-2.0/include")
+endif()
 find_package(GTK2 2.18 REQUIRED gtk)
 
 set(_SOUP_ROOT_PATHS
