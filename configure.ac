@@ -852,6 +852,9 @@ if test x$enable_msg_storage != xfalse; then
 	fi
 	if test "$found_sqlite" = "yes"; then
 		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
+			SQLITE3_LIBS+=" -liconv"
+		fi
 		enable_msg_storage=true
 	else
 		if test x$enable_msg_storage = xtrue; then
