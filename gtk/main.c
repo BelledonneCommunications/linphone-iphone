@@ -560,7 +560,7 @@ void linphone_gtk_show_about(void){
 	if (filestat.st_size>0){
 		char *license=g_malloc(filestat.st_size+1);
 		FILE *f=fopen(license_file,"r");
-		if (f && fread(license,filestat.st_size,1,f)==1){
+		if (f && fread(license,1,filestat.st_size,f)>0){
 			license[filestat.st_size]='\0';
 			gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about),license);
 		}
