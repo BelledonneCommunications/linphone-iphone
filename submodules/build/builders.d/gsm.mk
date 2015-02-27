@@ -14,10 +14,7 @@ build-libgsm:
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
 	&& mkdir -p $(prefix)/include/gsm \
 	&& host_alias=$(host)  . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make install \
-			CC="$${CC} $${COMMON_FLAGS} -w" \
-			INSTALL_ROOT=$(prefix) \
-			GSM_INSTALL_INC=$(prefix)/include/gsm
+	&&  make -j1 CC="$${CC}" INSTALL_ROOT=$(prefix)  GSM_INSTALL_INC=$(prefix)/include/gsm  install
 
 clean-libgsm:
 	cd $(BUILDER_BUILD_DIR)/$(gsm_dir)\
