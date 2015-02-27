@@ -321,7 +321,7 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -973,7 +973,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
-int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
+LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
 
 /*****************************************************************************
  * Player interface

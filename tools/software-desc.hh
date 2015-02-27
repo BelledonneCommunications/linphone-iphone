@@ -21,10 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef software_desc_hh
 #define software_desc_hh
 
+#include <functional>
 #include <iostream>
 #include <list>
 #include <map>
 #include <algorithm>
+#include <string>
 
 #include <sys/types.h>
 #include <sys/stat.h>

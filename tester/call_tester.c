@@ -30,6 +30,7 @@
 
 #ifdef WIN32
 #define unlink _unlink
+#define F_OK 00
 #endif
 
 static void srtp_call(void);
@@ -3148,6 +3149,7 @@ static void record_call(const char *filename, bool_t enableVideo) {
 	const char **formats, *format;
 	char *filepath;
 	int dummy=0, i;
+	bool_t call_succeeded = FALSE;
 
 #if defined(HAVE_OPENH264) && defined(ANDROID)
 	ms_init();
@@ -3180,9 +3182,9 @@ static void record_call(const char *filename, bool_t enableVideo) {
 		filepath = create_filepath(liblinphone_tester_writable_dir_prefix, filename, format);
 		remove(filepath);
 		linphone_call_params_set_record_file(marieParams, filepath);
-		if((CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams)))
-				&& (CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc)))) {
-
+		CU_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
+		CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
+		if ((call_succeeded == TRUE) && (callInst != NULL)) {
 			ms_message("call_recording(): start recording into %s", filepath);
 			linphone_call_start_recording(callInst);
 			wait_for_until(marie->lc,pauline->lc,&dummy,1,5000);

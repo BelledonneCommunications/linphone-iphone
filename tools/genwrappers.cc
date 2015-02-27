@@ -129,7 +129,7 @@ static Argument *parseArgument(XmlNode node, bool isReturn){
 }
 
 static string classNameToPrefix(const std::string &classname){
-	char tmp[classname.size()*2];
+	char *tmp = new char[classname.size()*2];
 	char *w=tmp;
 	size_t i;
 	
@@ -143,11 +143,13 @@ static string classNameToPrefix(const std::string &classname){
 		}else *w++=p;
 	}
 	*w++='\0';
-	return tmp;
+	string ret(tmp);
+	delete[] tmp;
+	return ret;
 }
 
 static string makeMethodName(const string & suffix){
-	char tmp[suffix.size()];
+	char *tmp = new char[suffix.size()];
 	char *w=tmp;
 	size_t i;
 	bool useUpper=false;
@@ -167,7 +169,9 @@ static string makeMethodName(const string & suffix){
 		}
 	}
 	*w++='\0';
-	return tmp;
+	string ret(tmp);
+	delete[] tmp;
+	return ret;
 }
 
 static string extractMethodName(const string &c_name, const std::string& class_name){

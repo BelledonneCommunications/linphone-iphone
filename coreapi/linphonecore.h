@@ -583,15 +583,15 @@ typedef struct _LinphonePlayer LinphonePlayer;
 **/
 typedef void (*LinphonePlayerEofCallback)(struct _LinphonePlayer *obj, void *user_data);
 
-int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
-int linphone_player_start(LinphonePlayer *obj);
-int linphone_player_pause(LinphonePlayer *obj);
-int linphone_player_seek(LinphonePlayer *obj, int time_ms);
-MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
-int linphone_player_get_duration(LinphonePlayer *obj);
-int linphone_player_get_current_position(LinphonePlayer *obj);
-void linphone_player_close(LinphonePlayer *obj);
-void linphone_player_destroy(LinphonePlayer *obj);
+LINPHONE_PUBLIC int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
+LINPHONE_PUBLIC int linphone_player_start(LinphonePlayer *obj);
+LINPHONE_PUBLIC int linphone_player_pause(LinphonePlayer *obj);
+LINPHONE_PUBLIC int linphone_player_seek(LinphonePlayer *obj, int time_ms);
+LINPHONE_PUBLIC MSPlayerState linphone_player_get_state(LinphonePlayer *obj);
+LINPHONE_PUBLIC int linphone_player_get_duration(LinphonePlayer *obj);
+LINPHONE_PUBLIC int linphone_player_get_current_position(LinphonePlayer *obj);
+LINPHONE_PUBLIC void linphone_player_close(LinphonePlayer *obj);
+LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
 
 /**
  * @brief Create an independent media file player.
