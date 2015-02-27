@@ -40,16 +40,8 @@ find_path(SOUP_INCLUDE_DIRS
 )
 
 if(SOUP_INCLUDE_DIRS)
-	find_path(GIO_INCLUDE_DIRS
-		NAMES gio/gio.h
-		HINTS _SOUP_ROOT_PATHS
-		PATH_SUFFIXES include/glib-2.0
-	)
-
-	if(GIO_INCLUDE_DIRS)
-		set(HAVE_LIBSOUP_SOUP_H 1)
-		list(APPEND SOUP_INCLUDE_DIRS ${GIO_INCLUDE_DIRS} ${GTK2_INCLUDE_DIRS})
-	endif()
+	set(HAVE_LIBSOUP_SOUP_H 1)
+	list(APPEND SOUP_INCLUDE_DIRS ${GTK2_INCLUDE_DIRS})
 endif()
 
 find_library(SOUP_LIBRARIES
@@ -59,15 +51,7 @@ find_library(SOUP_LIBRARIES
 )
 
 if(SOUP_LIBRARIES)
-	find_library(GIO_LIBRARIES
-		NAMES gio-2.0
-		HINTS ${_SOUP_ROOT_PATHS}
-		PATH_SUFFIXES bin lib
-	)
-
-	if(GIO_LIBRARIES)
-		list(APPEND SOUP_LIBRARIES ${GIO_LIBRARIES} ${GTK2_LIBRARIES})
-	endif()
+	list(APPEND SOUP_LIBRARIES ${GTK2_LIBRARIES})
 endif()
 
 include(FindPackageHandleStandardArgs)
