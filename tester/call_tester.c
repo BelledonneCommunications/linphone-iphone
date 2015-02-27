@@ -2966,31 +2966,33 @@ static void call_redirect(void){
 static void call_established_with_rejected_reinvite_with_error(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	bool_t call_ok=TRUE;
 
-	CU_ASSERT_TRUE(call(pauline,marie));
+	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	
+	if (call_ok){
+		linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*add PCMA*/
 
-	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*add PCMA*/
+		sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+
+		linphone_core_update_call(	pauline->lc
+						,linphone_core_get_current_call(pauline->lc)
+						,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
 
 
-	sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
-	linphone_core_update_call(	pauline->lc
-					,linphone_core_get_current_call(pauline->lc)
-					,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+		CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable); /*might be change later*/
 
+		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
+		check_call_state(pauline,LinphoneCallStreamsRunning);
+		check_call_state(marie,LinphoneCallStreamsRunning);
 
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-
-	CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable); /*might be change later*/
-
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
-	check_call_state(pauline,LinphoneCallStreamsRunning);
-	check_call_state(marie,LinphoneCallStreamsRunning);
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+		/*just to sleep*/
+		linphone_core_terminate_all_calls(pauline->lc);
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	}
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
