@@ -1741,7 +1741,7 @@ static int read_dscp(GtkWidget *entry){
 	return -1;
 }
 
-void linphone_gtk_dscp_edit(){
+void linphone_gtk_dscp_edit(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *widget=linphone_gtk_create_window("dscp_settings");
 	show_dscp(linphone_gtk_get_widget(widget,"sip_dscp"),
