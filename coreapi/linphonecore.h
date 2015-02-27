@@ -200,9 +200,9 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 
 /* linphone dictionary */
 LINPHONE_PUBLIC	LinphoneDictionary* linphone_dictionary_new(void);
-LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
-LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
-void linphone_dictionary_unref(LinphoneDictionary* obj);
+LINPHONE_PUBLIC LinphoneDictionary * linphone_dictionary_clone(const LinphoneDictionary* src);
+LINPHONE_PUBLIC LinphoneDictionary * linphone_dictionary_ref(LinphoneDictionary* obj);
+LINPHONE_PUBLIC void linphone_dictionary_unref(LinphoneDictionary* obj);
 LINPHONE_PUBLIC void linphone_dictionary_set_int(LinphoneDictionary* obj, const char* key, int value);
 LINPHONE_PUBLIC int linphone_dictionary_get_int(LinphoneDictionary* obj, const char* key, int default_value);
 LINPHONE_PUBLIC void linphone_dictionary_set_string(LinphoneDictionary* obj, const char* key, const char*value);
@@ -218,14 +218,14 @@ LINPHONE_PUBLIC void linphone_dictionary_foreach( const LinphoneDictionary* obj,
  * @return a #LinphoneDictionary with all the keys from a section, or NULL if the section doesn't exist
  * @ingroup misc
  */
-LinphoneDictionary* lp_config_section_to_dict( const LpConfig* lpconfig, const char* section );
+LINPHONE_PUBLIC LinphoneDictionary* lp_config_section_to_dict( const LpConfig* lpconfig, const char* section );
 
 /**
  * Loads a dictionary into a section of the lpconfig. If the section doesn't exist it is created.
  * Overwrites existing keys, creates non-existing keys.
  * @ingroup misc
  */
-void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, const LinphoneDictionary* dict);
+LINPHONE_PUBLIC void lp_config_load_dict_to_section( LpConfig* lpconfig, const char* section, const LinphoneDictionary* dict);
 
 
 /**
@@ -1062,7 +1062,7 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphonePr
 /* destruction is called automatically when removing the proxy config */
 LINPHONE_PUBLIC void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC void linphone_proxy_config_set_sip_setup(LinphoneProxyConfig *cfg, const char *type);
-SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
 
 /**
@@ -2423,7 +2423,7 @@ LINPHONE_PUBLIC	const MSList *linphone_core_get_proxy_config_list(const Linphone
 /** @deprecated Use linphone_core_set_default_proxy_config() instead. */
 #define linphone_core_set_default_proxy(lc, config) linphone_core_set_default_proxy_config(lc, config)
 
-void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index);
+LINPHONE_PUBLIC void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index);
 
 LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
 
@@ -3090,10 +3090,10 @@ LINPHONE_PUBLIC LpConfig * linphone_core_get_config(LinphoneCore *lc);
 LINPHONE_PUBLIC LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename);
 
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
-void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context);
+LINPHONE_PUBLIC void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context);
 
 /*returns the list of registered SipSetup (linphonecore plugins) */
-const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_destroy(LinphoneCore *lc);
 
@@ -3177,8 +3177,8 @@ LINPHONE_PUBLIC	float linphone_core_get_conference_local_input_volume(LinphoneCo
 
 LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
-int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
-int linphone_core_stop_conference_recording(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
+LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
 /**
  * Get the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
  * @ingroup initializing
