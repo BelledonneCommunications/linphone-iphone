@@ -2269,3 +2269,8 @@ core_start:
 	return 0;
 }
 
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	return main(__argc, __argv);
+}
+#endif
