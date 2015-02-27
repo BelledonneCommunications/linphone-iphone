@@ -27,7 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 #ifdef HAVE_GTK_OSX
 #include <gtkosxapplication.h>
@@ -35,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WIN32
 #define chdir _chdir
+#define F_OK 00
 #include "direct.h"
 #endif
 
@@ -538,7 +541,7 @@ static void about_url_clicked(GtkAboutDialog *dialog, const char *url, gpointer 
 	linphone_gtk_open_browser(url);
 }
 
-void linphone_gtk_show_about(){
+void linphone_gtk_show_about(void){
 	struct stat filestat;
 	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
 	GtkWidget *about;
@@ -2166,7 +2169,7 @@ int main(int argc, char *argv[]){
 		g_critical("%s", error->message);
 		return -1;
 	}
-	if (config_file) free(config_file);
+	if (config_file) g_free(config_file);
 	if (custom_config_file && !g_path_is_absolute(custom_config_file)) {
 		gchar *res = g_get_current_dir();
 		res = g_strjoin(G_DIR_SEPARATOR_S, res, custom_config_file, NULL);
@@ -2257,7 +2260,7 @@ core_start:
 		restart=FALSE;
 		goto core_start;
 	}
-	if (config_file) free(config_file);
+	if (config_file) g_free(config_file);
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	if (icon) gtk_status_icon_set_visible(icon,FALSE);

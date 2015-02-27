@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+#ifdef WIN32
+#define F_OK 00
+#endif
+
 #define NB_MSG_HIST 250
 
 #define CONFIG_FILE ".linphone-history.db"

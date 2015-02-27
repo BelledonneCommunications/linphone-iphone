@@ -202,7 +202,7 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 	}
 }
 
-void linphone_gtk_log_hide(){
+void linphone_gtk_log_hide(void){
 	if (log_window)
 		gtk_widget_hide(log_window);
 }
