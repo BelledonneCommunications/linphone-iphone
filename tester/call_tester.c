@@ -3219,6 +3219,7 @@ static void video_call_snapshot(void) {
 	LinphoneCall *callInst = NULL;
 	char *filename = create_filepath(liblinphone_tester_writable_dir_prefix, "snapshot", "jpeg");
 	int dummy = 0;
+	bool_t call_succeeded = FALSE;
 
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
@@ -3227,8 +3228,9 @@ static void video_call_snapshot(void) {
 	linphone_call_params_enable_video(marieParams, TRUE);
 	linphone_call_params_enable_video(paulineParams, TRUE);
 
-	if((CU_ASSERT_TRUE(call_with_params(marie, pauline, marieParams, paulineParams)))
-			&& (CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc)))) {
+	CU_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
+	CU_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
+	if((call_succeeded == TRUE) && (callInst != NULL)) {
 		linphone_call_take_video_snapshot(callInst, filename);
 		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
 		CU_ASSERT_EQUAL(access(filename, F_OK), 0);
