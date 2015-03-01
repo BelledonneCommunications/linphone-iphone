@@ -37,8 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WIN32
 #define chdir _chdir
-#define F_OK 00
 #include "direct.h"
+#ifndef F_OK
+#define F_OK 00 /*visual studio does not define F_OK*/
+#endif
 #endif
 
 #if defined(HAVE_NOTIFY1) || defined(HAVE_NOTIFY4)
