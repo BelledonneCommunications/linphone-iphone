@@ -515,17 +515,19 @@ static void test_complete_message_handler(const CU_pTest pTest,
 
 
 static void test_all_tests_complete_message_handler(const CU_pFailureRecord pFailure) {
+#ifdef HAVE_CU_GET_SUITE
   	char * results = CU_get_run_results_string();
   	if (liblinphone_tester_use_log_file) {
   		ms_warning("\n\n %s", results);
   	}
 	liblinphone_tester_fprintf(stdout,"\n\n %s",results);
 	ms_free(results);
+#endif
 }
 
 static void test_suite_init_failure_message_handler(const CU_pSuite pSuite) {
 	if (liblinphone_tester_use_log_file) ms_warning("Suite initialization failed for [%s].", pSuite->pName);
-    liblinphone_tester_fprintf(stdout,"Suite initialization failed for [%s].", pSuite->pName);
+	liblinphone_tester_fprintf(stdout,"Suite initialization failed for [%s].", pSuite->pName);
 }
 
 static void test_suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
@@ -533,14 +535,17 @@ static void test_suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
 	liblinphone_tester_fprintf(stdout,"Suite cleanup failed for [%s].", pSuite->pName);
 }
 
+#ifdef HAVE_CU_GET_SUITE
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
 	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s] Test [%s]", pSuite->pName,pTest->pName);
 	liblinphone_tester_fprintf(stdout,"\nSuite [%s] Test [%s]\n", pSuite->pName,pTest->pName);
 }
+
 static void test_suite_start_message_handler(const CU_pSuite pSuite) {
 	if (liblinphone_tester_use_log_file) ms_warning("Suite [%s]", pSuite->pName);
 	liblinphone_tester_fprintf(stdout,"\nSuite [%s]", pSuite->pName);
 }
+#endif
 
 int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) {
 	int i;
@@ -552,15 +557,16 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	for (i = 0; i < liblinphone_tester_nb_test_suites(); i++) {
 		run_test_suite(test_suite[i]);
 	}
-
+#ifdef HAVE_CU_GET_SUITE
 	CU_set_test_start_handler(test_start_message_handler);
+#endif	
 	CU_set_test_complete_handler(test_complete_message_handler);
 	CU_set_all_test_complete_handler(test_all_tests_complete_message_handler);
 	CU_set_suite_init_failure_handler(test_suite_init_failure_message_handler);
 	CU_set_suite_cleanup_failure_handler(test_suite_cleanup_failure_message_handler);
+#ifdef HAVE_CU_GET_SUITE
 	CU_set_suite_start_handler(test_suite_start_message_handler);
-
-
+#endif
 	if( liblinphone_tester_xml_file != NULL ){
 		CU_set_output_filename(liblinphone_tester_xml_file);
 	}
