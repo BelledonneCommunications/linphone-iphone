@@ -1285,12 +1285,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->log->status=LinphoneCallSuccess;
 			call->log->connected_date_time=time(NULL);
 			break;
-		case LinphoneCallStreamsRunning:
-			if (call->dtmfs_timer!=NULL){
-				/*cancelling DTMF sequence, if any*/
-				linphone_call_cancel_dtmfs(call);
-			}
-			break;
 		case LinphoneCallReleased:
 #ifdef ANDROID
 			ms_message("Call [%p] releases wifi/multicast lock",call);
@@ -1300,7 +1294,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			break;
 		default:
 			break;
-
+		}
+		
+		if(cstate!=LinphoneCallStreamsRunning) {
+			if (call->dtmfs_timer!=NULL){
+				/*cancelling DTMF sequence, if any*/
+				linphone_call_cancel_dtmfs(call);
+			}
 		}
 		linphone_core_notify_call_state_changed(lc,call,cstate,message);
 		linphone_reporting_call_state_updated(call);
