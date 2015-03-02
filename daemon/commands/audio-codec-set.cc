@@ -10,7 +10,7 @@ using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :
 		DaemonCommand("audio-codec-set", "audio-codec-set <payload_type_number|mime_type> <property> <value>",
-				"Set a property (number, clock_rate, recv_fmtp, send_fmtp) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.\n"
+				"Set a property (number, clock_rate, recv_fmtp, send_fmtp, bitrate (in kbps/s)) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 	addExample(new DaemonCommandExample("audio-codec-set 9 number 18",
 						"Status: Ok\n\n"
@@ -113,6 +113,9 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 				}
 				return;
 			}
+		} else if (param.compare("bitrate") == 0) {
+			linphone_core_set_payload_type_bitrate(app->getCore(), payload, atoi(value.c_str()));
+			handled=true;
 		}
 		if (handled) {
 			app->sendResponse(PayloadTypeResponse(app->getCore(), payload, parser.getPosition()));
