@@ -1647,7 +1647,7 @@ static void video_call(void) {
 static void video_call_zrtp(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionDTLS)) {
+	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionZRTP)) {
 		video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionZRTP);
 	} else
 		ms_message("Skipping video_call_zrtp");
