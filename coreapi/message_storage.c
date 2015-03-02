@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifndef WIN32
-#ifndef ANDROID
+#if !defined(ANDROID) && !defined(__QNXNTO__)
 #	include <langinfo.h>
 #	include <iconv.h>
 #	include <string.h>
@@ -592,7 +592,7 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
 }
 
 static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
-#ifdef ANDROID
+#if defined(ANDROID) || defined(__QNXNTO__)
 	return sqlite3_open(db_file, db);
 #elif defined(WIN32)
 	int ret;
