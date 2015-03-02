@@ -25,6 +25,8 @@ if(MSVC)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
+find_package(Iconv)
+
 
 set(SOURCE_FILES
 	address.c
@@ -124,6 +126,9 @@ set(LIBS
 if(SQLITE3_FOUND)
 	list(APPEND LIBS ${SQLITE3_LIBRARIES})
 endif()
+if(ICONV_FOUND)
+	list(APPEND LIBS ${ICONV_LIBRARIES})
+endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
 endif()
@@ -149,6 +154,9 @@ else()
 			)
 		endif()
 	endif()
+endif()
+if(ICONV_FOUND)
+	target_include_directories(linphone PUBLIC ${ICONV_INCLUDE_DIRS})
 endif()
 
 install(TARGETS linphone
