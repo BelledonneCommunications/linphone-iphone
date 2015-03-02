@@ -30,7 +30,9 @@
 
 #ifdef WIN32
 #define unlink _unlink
-#define F_OK 00
+#ifndef F_OK
+#define F_OK 00 /*visual studio does not define F_OK*/
+#endif
 #endif
 
 static void srtp_call(void);
