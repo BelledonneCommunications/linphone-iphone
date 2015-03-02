@@ -131,6 +131,24 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 	}
 }
 
+static void early_media_video_call_state_changed_with_inactive_audio(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
+	LinphoneCallParams *params;
+
+	video_call_state_changed(lc, call, cstate, msg);
+	switch (cstate) {
+		case LinphoneCallIncomingReceived:
+			params = linphone_core_create_default_call_parameters(lc);
+			linphone_call_params_enable_video(params, TRUE);
+			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionInactive);
+			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
+			linphone_core_accept_early_media_with_params(lc, call, params);
+			linphone_call_params_unref(params);
+			break;
+		default:
+			break;
+	}
+}
+
 bool_t wait_for_three_cores(LinphoneCore *lc1, LinphoneCore *lc2, LinphoneCore *lc3, int timeout) {
 	MSList *lcs = NULL;
 	bool_t result;
@@ -214,6 +232,10 @@ static LinphoneCallParams * configure_for_early_media_video_sending(LinphoneCore
 
 static LinphoneCallParams * configure_for_early_media_video_receiving(LinphoneCoreManager *manager) {
 	return _configure_for_video(manager, early_media_video_call_state_changed);
+}
+
+static LinphoneCallParams * configure_for_early_media_video_receiving_with_inactive_audio(LinphoneCoreManager *manager) {
+	return _configure_for_video(manager, early_media_video_call_state_changed_with_inactive_audio);
 }
 
 
@@ -336,9 +358,46 @@ static void two_incoming_early_media_video_calls_test(void) {
 	linphone_core_manager_destroy(laure);
 }
 
+static void early_media_video_with_inactive_audio(void) {
+	LinphoneCoreManager *marie;
+	LinphoneCoreManager *pauline;
+	LinphoneCallParams *marie_params;
+	LinphoneCallParams *pauline_params;
+
+	marie = linphone_core_manager_new("marie_rc");
+	pauline = linphone_core_manager_new("pauline_rc");
+	marie_params = configure_for_early_media_video_receiving_with_inactive_audio(marie);
+	pauline_params = configure_for_early_media_video_sending(pauline);
+
+	/* Early media video call from pauline to marie. */
+	CU_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
+
+	/* Wait for 2s. */
+	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
+
+	/* Check that we are in LinphoneCallOutgoingEarlyMedia state and that the ringstream is present meaning we are playing the ringback tone. */
+	CU_ASSERT_EQUAL(linphone_call_get_state(linphone_core_get_current_call(pauline->lc)), LinphoneCallOutgoingEarlyMedia);
+	CU_ASSERT_PTR_NOT_NULL(pauline->lc->ringstream);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
+
+	linphone_call_params_unref(marie_params);
+	linphone_call_params_unref(pauline_params);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t video_tests[] = {
 	{ "Early-media video during video call", early_media_video_during_video_call_test },
-	{ "Two incoming early-media video calls", two_incoming_early_media_video_calls_test }
+	{ "Two incoming early-media video calls", two_incoming_early_media_video_calls_test },
+	{ "Early-media video with inactive audio", early_media_video_with_inactive_audio }
 };
 
 test_suite_t video_test_suite = {
