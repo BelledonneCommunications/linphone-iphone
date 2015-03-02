@@ -41,16 +41,17 @@ if(INTL_INCLUDE_DIRS)
 	set(HAVE_LIBINTL_H 1)
 endif()
 
-find_library(INTL_LIBRARIES
-	NAMES intl
-	HINTS ${_INTL_ROOT_PATHS}
-	PATH_SUFFIXES bin lib
-)
+set(INTL_ARGS INTL_INCLUDE_DIRS HAVE_LIBINTL_H)
+if(NOT UNIX OR APPLE)
+	find_library(INTL_LIBRARIES
+		NAMES intl
+		HINTS ${_INTL_ROOT_PATHS}
+		PATH_SUFFIXES bin lib
+	)
+	list(APPEND INTL_ARGS INTL_LIBRARIES)
+endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Intl
-	DEFAULT_MSG
-	INTL_INCLUDE_DIRS INTL_LIBRARIES HAVE_LIBINTL_H
-)
+find_package_handle_standard_args(Intl DEFAULT_MSG ${INTL_ARGS})
 
-mark_as_advanced(INTL_INCLUDE_DIRS INTL_LIBRARIES HAVE_LIBINTL_H)
+mark_as_advanced(${INTL_ARGS})
