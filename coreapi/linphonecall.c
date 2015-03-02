@@ -2350,6 +2350,11 @@ void static start_dtls( MSMediaStreamSessions *sessions,  const SalStreamDescrip
 void static start_dtls_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
+	if( remote_desc == NULL || result_desc == NULL ){
+		ms_warning("Invalid remote or result media description, disabling DTLS");
+		return;
+	}
+
 	if (call->audiostream && (media_stream_get_state((const MediaStream *)call->audiostream) == MSStreamStarted))/*dtls must start at the end of ice*/
 			start_dtls(&call->audiostream->ms.sessions
 							,sal_media_description_find_best_stream(result_desc,SalAudio)
@@ -2379,6 +2384,12 @@ void static set_dtls_fingerprint( MSMediaStreamSessions *sessions,  const SalStr
 void static set_dtls_fingerprint_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
+
+	if( remote_desc == NULL || result_desc == NULL ){
+		ms_warning("Invalid remote or final media desc, aborting DTLS fingerprinting");
+		return;
+	}
+
 	if (call->audiostream && (media_stream_get_state((const MediaStream *)call->audiostream) == MSStreamStarted))/*dtls must start at the end of ice*/
 			set_dtls_fingerprint(&call->audiostream->ms.sessions
 							,sal_media_description_find_best_stream(result_desc,SalAudio)
