@@ -74,7 +74,9 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
+#if 0
 	belle_sip_header_t* accept_header;
+#endif
 	
 	if (op->refresher){
 		belle_sip_refresher_stop(op->refresher);
