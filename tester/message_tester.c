@@ -78,7 +78,7 @@ void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent*
 
 	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
 		stats* counters = get_stats(lc);
-		counters->number_of_LinphoneMessageExtBodyReceived++;
+		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
 		fclose(file);
 	} else { /* store content on a file*/
 		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
@@ -406,7 +406,7 @@ static void text_message_with_external_body(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static bool_t compare_files(const char *path1, const char *path2) {
+bool_t compare_files(const char *path1, const char *path2) {
 	bool_t res;
 	size_t size1;
 	size_t size2;
@@ -494,11 +494,11 @@ static void file_transfer_message(void) {
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 	}
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1);
 	CU_ASSERT_TRUE(compare_files(send_filepath, receive_filepath));
 
 	linphone_content_unref(content);
@@ -560,11 +560,11 @@ static void small_file_transfer_message(void) {
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 	}
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1);
 
 	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
@@ -624,7 +624,7 @@ static void file_transfer_message_io_error_upload(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0);
 
 	sal_set_send_error(pauline->lc->sal, 0);
 
@@ -694,7 +694,7 @@ static void file_transfer_message_io_error_download(void) {
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageNotDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0);
 
 	sal_set_recv_error(marie->lc->sal, 0);
 	linphone_core_manager_destroy(marie);
@@ -755,7 +755,7 @@ static void file_transfer_message_upload_cancelled(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0);
 
 	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
@@ -818,7 +818,7 @@ static void file_transfer_message_download_cancelled(void) {
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,0);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageNotDelivered,1);
 
 	linphone_core_manager_destroy(marie);

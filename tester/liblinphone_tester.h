@@ -241,6 +241,8 @@ typedef struct _stats {
 	int number_of_rtcp_received;
 
 	int number_of_video_windows_created;
+	
+	int number_of_LinphoneFileTransferDownloadSuccessful;
 
 }stats;
 
@@ -329,5 +331,6 @@ void simple_call_base(bool_t enable_multicast_recv_side);
 void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel);
 bool_t call_with_caller_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr, const LinphoneCallParams *params);
 bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2);
+bool_t compare_files(const char *path1, const char *path2);
 #endif /* LIBLINPHONE_TESTER_H_ */
 
