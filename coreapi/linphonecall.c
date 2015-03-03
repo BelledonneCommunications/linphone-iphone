@@ -3311,14 +3311,14 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (media_stream_get_rtcp_down_bw(vs)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (media_stream_get_rtcp_up_bw(vs)*1e-3) : 0;
 
-	ms_message("Bandwidth usage for call [%p]: audio[ rtp]=[d=%.1f,u=%.1f], video[ rtp]=[d=%.1f,u=%.1f] kbit/sec",
+	ms_message("Bandwidth usage for call [%p]: RTP  audio=[d=%.1f,u=%.1f], video=[d=%.1f,u=%.1f] kbit/sec",
 		call,
 		call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
 		call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth ,
 		call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,
 		call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth
 	);
-	ms_message("                                             [rtcp]=[d=%.1f,u=%.1f], video[rtcp]=[d=%.1f,u=%.1f] kbit/sec",
+	ms_message("                                       RTCP audio=[d=%.1f,u=%.1f], video=[d=%.1f,u=%.1f] kbit/sec",
 		call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth,
 		call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth ,
 		call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth,
