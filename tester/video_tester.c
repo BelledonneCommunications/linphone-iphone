@@ -55,7 +55,7 @@ static GtkWidget *create_video_window(LinphoneCall *call, LinphoneCallState csta
 	GtkWidget *video_window;
 	GdkDisplay *display;
 	GdkColor color;
-	MSVideoSize vsize = MS_VIDEO_SIZE_CIF;
+	MSVideoSize vsize = { MS_VIDEO_SIZE_CIF_W, MS_VIDEO_SIZE_CIF_H };
 	const char *cstate_str;
 	char *title;
 	stats* counters = get_stats(call->core);

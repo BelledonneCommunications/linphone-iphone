@@ -107,77 +107,43 @@ static gchar *custom_config_file=NULL;
 static gboolean restart=FALSE;
 static GtkWidget *config_fetching_dialog=NULL;
 
+#if _MSC_VER
+
+#define LINPHONE_OPTION(optlname, optsname, optarg, optargdata, optdesc) \
+{ \
+	optlname, \
+	optsname, \
+	0, \
+	optarg, \
+	optargdata, \
+	optdesc, \
+	NULL \
+}
+
+#else
+
+#define LINPHONE_OPTION(optlname, optsname, optarg, optargdata, optdesc) \
+{ \
+	.long_name = optlname, \
+	.short_name = optsname, \
+	.arg = optarg, \
+	.arg_data = optargdata, \
+	.description = optdesc, \
+}
+
+#endif
+
 static GOptionEntry linphone_options[]={
-	{
-		.long_name="verbose",
-		.short_name= '\0',
-		.arg=G_OPTION_ARG_NONE,
-		.arg_data= (gpointer)&verbose,
-		.description=N_("log to stdout some debug information while running.")
-	},
-	{
-	    .long_name = "logfile",
-	    .short_name = 'l',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = &linphone_logfile,
-	    .description = N_("path to a file to write logs into.")
-	},
-	{
-	    .long_name = "no-video",
-	    .short_name = '\0',
-	    .arg = G_OPTION_ARG_NONE,
-	    .arg_data = (gpointer)&no_video,
-	    .description = N_("Start linphone with video disabled.")
-	},
-	{
-		.long_name="iconified",
-		.short_name= '\0',
-		.arg=G_OPTION_ARG_NONE,
-		.arg_data= (gpointer)&iconified,
-		.description=N_("Start only in the system tray, do not show the main interface.")
-	},
-	{
-	    .long_name = "call",
-	    .short_name = 'c',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = &addr_to_call,
-	    .description = N_("address to call right now")
-	},
-	{
-	    .long_name = "auto-answer",
-	    .short_name = 'a',
-	    .arg = G_OPTION_ARG_NONE,
-	    .arg_data = (gpointer) & auto_answer,
-	    .description = N_("if set automatically answer incoming calls")
-	},
-	{
-	    .long_name = "workdir",
-	    .short_name = '\0',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = (gpointer) & workingdir,
-	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
-	},
-	{
-		.long_name = "config",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_FILENAME,
-		.arg_data = (gpointer) &custom_config_file,
-		.description = N_("Configuration file")
-	},
-	{
-		.long_name = "run-audio-assistant",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_NONE,
-		.arg_data = (gpointer) &run_audio_assistant,
-		.description = N_("Run the audio assistant")
-	},
-	{
-		.long_name = "selftest",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_NONE,
-		.arg_data = (gpointer) &selftest,
-		.description = N_("Run self test and exit 0 if succeed")
-	},
+	LINPHONE_OPTION("verbose",             '\0', G_OPTION_ARG_NONE,     (gpointer)&verbose,              N_("log to stdout some debug information while running.")),
+	LINPHONE_OPTION("logfile",             'l',  G_OPTION_ARG_STRING,   &linphone_logfile,               N_("path to a file to write logs into.")),
+	LINPHONE_OPTION("no-video",            '\0', G_OPTION_ARG_NONE,     (gpointer)&no_video,             N_("Start linphone with video disabled.")),
+	LINPHONE_OPTION("iconified",           '\0', G_OPTION_ARG_NONE,     (gpointer)&iconified,            N_("Start only in the system tray, do not show the main interface.")),
+	LINPHONE_OPTION("call",                'c',  G_OPTION_ARG_STRING,   &addr_to_call,                   N_("address to call right now")),
+	LINPHONE_OPTION("auto-answer",         'a',  G_OPTION_ARG_NONE,     (gpointer) & auto_answer,        N_("if set automatically answer incoming calls")),
+	LINPHONE_OPTION("workdir",             '\0', G_OPTION_ARG_STRING,   (gpointer) & workingdir,         N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")),
+	LINPHONE_OPTION("config",              '\0', G_OPTION_ARG_FILENAME, (gpointer) &custom_config_file,  N_("Configuration file")),
+	LINPHONE_OPTION("run-audio-assistant", '\0', G_OPTION_ARG_NONE,     (gpointer) &run_audio_assistant, N_("Run the audio assistant")),
+	LINPHONE_OPTION("selftest",            '\0', G_OPTION_ARG_NONE,     (gpointer) &selftest,            N_("Run self test and exit 0 if succeed")),
 	{0}
 };
 
