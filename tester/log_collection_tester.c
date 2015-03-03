@@ -67,7 +67,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	p = bufptr;
 	while(c != EOF) {
 		size_t curpos = p-bufptr;
-		
+
 		if (curpos > (size - 1)) {
 			size = size + 128;
 			bufptr = realloc(bufptr, size);
@@ -94,7 +94,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 static LinphoneLogCollectionState old_collection_state;
 static void collect_init()  {
 	old_collection_state = linphone_core_log_collection_enabled();
-	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
+	linphone_core_set_log_collection_path(tester_writable_dir_prefix);
 }
 
 static void collect_cleanup(LinphoneCoreManager *marie)  {
@@ -171,7 +171,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		CU_ASSERT_PTR_NOT_NULL(file);
 		if (!file) return 0;
 		// 1) expect to find folder name in filename path
-		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, liblinphone_tester_writable_dir_prefix));
+		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, tester_writable_dir_prefix));
 
 		// 2) check file contents
 		while (getline(&line, &line_size, file) != -1) {

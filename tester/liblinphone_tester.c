@@ -28,8 +28,6 @@
 #include <gtk/gtk.h>
 #endif
 
-extern int liblinphone_tester_use_log_file;
-
 #ifdef ANDROID
 
 #include <android/log.h>
@@ -132,45 +130,15 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 
 
 
-void helper(const char *name) {
-	liblinphone_tester_fprintf(stderr,"%s --help\n"
-			"\t\t\t--verbose\n"
-			"\t\t\t--silent\n"
-			"\t\t\t--list-suites\n"
-			"\t\t\t--list-tests <suite>\n"
+static const char* liblinphone_helper =
 			"\t\t\t--config <config path>\n"
 			"\t\t\t--domain <test sip domain>\n"
 			"\t\t\t--auth-domain <test auth domain>\n"
-			"\t\t\t--suite <suite name>\n"
-			"\t\t\t--test <test name>\n"
-			"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
-			"\t\t\t--log-file <output log file path>\n"
-#if HAVE_CU_CURSES
-			"\t\t\t--curses\n"
-#endif
-			"\t\t\t--xml\n"
-			"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
-			, name);
-}
-
-#define CHECK_ARG(argument, index, argc)                      \
-if(index >= argc) {                                           \
-fprintf(stderr, "Missing argument for \"%s\"\n", argument);   \
-return -1;                                                    \
-}                                                             \
+			"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n";
 
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 int main (int argc, char *argv[])
 {
-	int i;
-	int ret;
-	const char *suite_name=NULL;
-	const char *test_name=NULL;
-	const char *xml_file="CUnitAutomated-Results.xml";
-	char *xml_tmp_file=NULL;
-	int xml = 0;
-	FILE* log_file=NULL;
-
 #ifdef HAVE_GTK
 	gtk_init(&argc, &argv);
 #if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
@@ -190,83 +158,23 @@ int main (int argc, char *argv[])
 	liblinphone_tester_init();
 
 	for(i=1;i<argc;++i){
-		if (strcmp(argv[i],"--help")==0){
-			helper(argv[0]);
-			return 0;
-		} else if (strcmp(argv[i],"--verbose")==0){
-			linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-		} else if (strcmp(argv[i],"--silent")==0){
-			linphone_core_set_log_level(ORTP_FATAL);
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];
 		} else if (strcmp(argv[i],"--auth-domain")==0){
 			CHECK_ARG("--auth-domain", ++i, argc);
 			auth_domain=argv[i];
-		} else if (strcmp(argv[i],"--test")==0){
-			CHECK_ARG("--test", ++i, argc);
-			test_name=argv[i];
 		} else if (strcmp(argv[i],"--config")==0){
 			CHECK_ARG("--config", ++i, argc);
-			liblinphone_tester_file_prefix=argv[i];
+			tester_file_prefix=argv[i];
 		}else if (strcmp(argv[i],"--dns-hosts")==0){
 			CHECK_ARG("--dns-hosts", ++i, argc);
 			userhostsfile=argv[i];
-		}else if (strcmp(argv[i],"--suite")==0){
-			CHECK_ARG("--suite", ++i, argc);
-			suite_name=argv[i];
-		} else if (strcmp(argv[i],"--list-suites")==0){
-			liblinphone_tester_list_suites();
-			return 0;
-		} else if (strcmp(argv[i],"--list-tests")==0){
-			CHECK_ARG("--list-tests", ++i, argc);
-			suite_name = argv[i];
-			liblinphone_tester_list_suite_tests(suite_name);
-			return 0;
-		} else if (strcmp(argv[i], "--xml-file") == 0){
-			CHECK_ARG("--xml-file", ++i, argc);
-			xml_file = argv[i];
-			xml = 1;
-		} else if (strcmp(argv[i], "--xml") == 0){
-			xml = 1;
-		} else if (strcmp(argv[i],"--log-file")==0){
-			CHECK_ARG("--log-file", ++i, argc);
-			log_file=fopen(argv[i],"w");
-			if (!log_file) {
-				ms_fatal("Cannot open file [%s] for writting logs because [%s]",argv[i],strerror(errno));
-			} else {
-				liblinphone_tester_use_log_file=1;
-				liblinphone_tester_fprintf(stdout,"Redirecting traces to file [%s]",argv[i]);
-				linphone_core_set_log_file(log_file);
-			}
-
 		}else {
-			liblinphone_tester_fprintf(stderr, "Unknown option \"%s\"\n", argv[i]); \
-			helper(argv[0]);
-			return -1;
+			int ret = tester_parse_args(argc, argv, i, liblinphone_helper);
+			if (ret>0) i += ret;
+			else return ret;
 		}
 	}
-
-	if( xml && (suite_name || test_name) ){
-		printf("Cannot use both xml and specific test suite\n");
-		return -1;
-	}
-
-	if( xml ){
-		xml_tmp_file = ms_strdup_printf("%s.tmp", xml_file);
-		liblinphone_tester_set_xml_output(xml_tmp_file);
-	}
-	liblinphone_tester_enable_xml(xml);
-
-	ret = liblinphone_tester_run_tests(suite_name, test_name);
-	liblinphone_tester_uninit();
-
-	if ( xml ) {
-		/*create real xml file only if tester did not crash*/
-		ms_strcat_printf(xml_tmp_file, "-Results.xml");
-		rename(xml_tmp_file, xml_file);
-		ms_free(xml_tmp_file);
-	}
-	return ret;
 }
 #endif

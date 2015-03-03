@@ -22,34 +22,16 @@
 
 
 
-#include "CUnit/Basic.h"
+#include "tester_utils.h"
 #include "linphonecore.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-typedef void (*test_function_t)(void);
-typedef int (*test_suite_function_t)(const char *name);
-
-typedef struct {
-	const char *name;
-	test_function_t func;
-} test_t;
-
-typedef struct {
-	const char *name;
-	CU_InitializeFunc init_func;
-	CU_CleanupFunc cleanup_func;
-	int nb_tests;
-	test_t *tests;
-} test_suite_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const char *liblinphone_tester_file_prefix;
-extern const char *liblinphone_tester_writable_dir_prefix;
 extern test_suite_t setup_test_suite;
 extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;
@@ -241,7 +223,7 @@ typedef struct _stats {
 	int number_of_rtcp_received;
 
 	int number_of_video_windows_created;
-	
+
 	int number_of_LinphoneFileTransferDownloadSuccessful;
 	int number_of_LinphoneCoreLogCollectionUploadStateDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateNotDelivered;

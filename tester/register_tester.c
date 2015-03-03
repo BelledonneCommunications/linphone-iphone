@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
+#include "tester_utils.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -34,13 +35,13 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL);
-	
+
 	if (with_auth) {
 		LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 		vtable->auth_info_requested=auth_info_requested;
 		linphone_core_add_listener(mgr->lc,vtable);
 	}
-	
+
 	/*to allow testing with 127.0.0.1*/
 	linphone_core_set_network_reachable(mgr->lc,TRUE);
 	return mgr;
@@ -195,12 +196,12 @@ static void register_with_custom_headers(void){
 	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
 	int initial_register_ok=marie->stat.number_of_LinphoneRegistrationOk;
 	const char *value;
-	
+
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	linphone_proxy_config_set_custom_header(cfg, "ah-bah-ouais", "...mais bon.");
 	/*unfortunately it is difficult to programmatically check that sent custom headers are actually sent.
 	 * A server development would be required here.*/
-	
+
 	linphone_core_set_network_reachable(marie->lc, TRUE);
 	wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk,initial_register_ok+1);
 	value=linphone_proxy_config_get_custom_header(cfg, "Server");
@@ -336,11 +337,11 @@ static void authenticated_register_with_no_initial_credentials(){
 	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 	stats* counters;
 	char route[256];
-	
+
 	sprintf(route,"sip:%s",test_route);
-	
+
 	mgr = linphone_core_manager_new(NULL);
-	
+
 	vtable->auth_info_requested=auth_info_requested;
 	linphone_core_add_listener(mgr->lc,vtable);
 
@@ -357,9 +358,9 @@ static void authenticated_register_with_late_credentials(){
 	stats* counters;
 	LCSipTransports transport = {5070,5070,0,5071};
 	char route[256];
-	
+
 	sprintf(route,"sip:%s",test_route);
-	
+
 	mgr =  linphone_core_manager_new(NULL);
 
 	counters = get_stats(mgr->lc);
@@ -397,9 +398,9 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 	LCSipTransports transport = {5070,5070,0,5071};
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,"wrong passwd",NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	char route[256];
-	
+
 	sprintf(route,"sip:%s",test_route);
-	
+
 	sal_set_refresher_retry_after(mgr->lc->sal,500);
 	if (user_agent) {
 		linphone_core_set_user_agent(mgr->lc,user_agent,NULL);
@@ -411,7 +412,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 	/*wait for retry*/
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_auth_info_requested,4));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
-	
+
 	/*check the detailed error info */
 	if (!user_agent || strcmp(user_agent,"tester-no-403")!=0){
 		LinphoneProxyConfig *cfg=NULL;
@@ -425,7 +426,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 			CU_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),403);
 			CU_ASSERT_PTR_NULL(linphone_error_info_get_details(ei));
 		}
-		
+
 	}
 	}
 static void authenticated_register_with_wrong_credentials_with_params(const char* user_agent) {
@@ -474,7 +475,7 @@ static void network_state_change(){
 	stats *counters;
 	LinphoneCoreManager *mgr=configure_lcm();
 	LinphoneCore *lc=mgr->lc;
-	
+
 	counters = get_stats(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	linphone_core_set_network_reachable(lc,FALSE);
@@ -507,7 +508,7 @@ static void transport_change(){
 	int number_of_udp_proxy=0;
 	int total_number_of_proxies;
 	memset(&sip_tr,0,sizeof(sip_tr));
-	
+
 	mgr=configure_lcm();
 	lc=mgr->lc;
 	counters = get_stats(lc);
@@ -630,7 +631,7 @@ static void io_recv_error(){
 	stats* counters ;
 	int number_of_udp_proxy=0;
 
-	
+
 	mgr=configure_lcm();
 	lc=mgr->lc;
 	counters = get_stats(lc);
@@ -716,7 +717,7 @@ static void io_recv_error_without_active_register(){
 	mgr=configure_lcm();
 	lc=mgr->lc;
 	counters = get_stats(lc);
-	
+
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 
@@ -747,17 +748,17 @@ static void tls_certificate_failure(){
 	LinphoneCoreManager* mgr;
 	LinphoneCore *lc;
 	char rootcapath[256];
-	
+
 	mgr=linphone_core_manager_new2("pauline_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", liblinphone_tester_file_prefix); /*bad root ca*/
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", tester_file_prefix); /*bad root ca*/
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_set_network_reachable(lc,TRUE);
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1));
 	linphone_core_set_root_ca(mgr->lc,NULL); /*no root ca*/
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,2));
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", liblinphone_tester_file_prefix); /*goot root ca*/
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix); /*goot root ca*/
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
@@ -772,7 +773,7 @@ static void tls_with_non_tls_server(){
 	LinphoneAddress* addr;
 	char tmp[256];
 	LinphoneCore *lc;
-	
+
 	mgr=linphone_core_manager_new2( "marie_rc", 0);
 	lc=mgr->lc;
 	sal_set_transport_timeout(lc->sal,3000);
@@ -792,10 +793,10 @@ static void tls_alt_name_register(){
 	LinphoneCoreManager* mgr;
 	LinphoneCore *lc;
 	char rootcapath[256];
-	
+
 	mgr=linphone_core_manager_new2("pauline_alt_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", liblinphone_tester_file_prefix);
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix);
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
@@ -807,10 +808,10 @@ static void tls_wildcard_register(){
 	LinphoneCoreManager* mgr;
 	LinphoneCore *lc;
 	char rootcapath[256];
-	
+
 	mgr=linphone_core_manager_new2("pauline_wild_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", liblinphone_tester_file_prefix);
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix);
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,2));
