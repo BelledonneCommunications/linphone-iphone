@@ -29,7 +29,7 @@
 }
 
 - (NSString*)getUUID {
-    return [[NSUUID UUID] UUIDString];
+    return [[[NSUUID UUID] UUIDString] substringToIndex:8];
 }
 
 - (NSArray *)getUUIDArrayOfSize:(size_t)size {
