@@ -9,7 +9,7 @@ GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 ## We can't only depend on the presence of the .git/ directory anymore,
 ## because of gits submodule handling.
 ## We now simply issue a git log on configure.ac and if the output is empty (error or file not tracked), then we are not in git.
-GITLOG=$(shell git log -1 --pretty=format:%H $(top_srcdir)/configure.ac)
+GITLOG=`cd $(top_srcdir) && git log -1 --pretty=format:%H configure.ac`
 
 ECHO=/bin/echo
 
