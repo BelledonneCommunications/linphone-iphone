@@ -697,6 +697,7 @@
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
 		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
+		F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F0B89C2818DC973E0050B60E /* wizard_external_sip.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */; };
@@ -1781,6 +1782,7 @@
 		F0AF07131A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
 		F0AF07151A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F0AF07161A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0B026F21AA710AF00FF49F7 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		F0B4FB5C1A65550B00637027 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Resources/Images.xcassets; sourceTree = "<group>"; };
 		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_external_sip.rc; path = Resources/wizard_external_sip.rc; sourceTree = "<group>"; };
@@ -1843,6 +1845,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */,
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
 				22509042196BD902007863F6 /* libopenh264.a in Frameworks */,
@@ -2225,6 +2228,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0B026F21AA710AF00FF49F7 /* libiconv.dylib */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
