@@ -1,6 +1,6 @@
 # Linphone on iPhone
 
-[![Build Status](https://travis-ci.org/Gui13/linphone-iphone.svg?branch=kif)](https://travis-ci.org/Gui13/linphone-iphone)
+[![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=kif)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
 ## Build prerequisite
 
