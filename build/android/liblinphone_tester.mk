@@ -20,7 +20,8 @@ common_SRC_FILES := \
 	dtmf_tester.c \
 	accountmanager.c \
 	offeranswer_tester.c \
- 	multicast_call_tester.c
+ 	multicast_call_tester.c \
+	multi_call.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
