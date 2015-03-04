@@ -74,9 +74,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
-#if 0
 	belle_sip_header_t* accept_header;
-#endif
 	
 	if (op->refresher){
 		belle_sip_refresher_stop(op->refresher);
@@ -95,10 +93,8 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 		time_t curtime=time(NULL);
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
 	}
-#if 0
 	accept_header = belle_sip_header_create("Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), accept_header);
-#endif
 	belle_sip_message_set_header(BELLE_SIP_MESSAGE(req),(belle_sip_header_t*)sal_op_create_contact(op));
 	return sal_op_send_and_create_refresher(op,req,expires,register_refresher_listener);
 }
