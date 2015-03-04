@@ -78,11 +78,11 @@
     [self startChatWith:user];
     [self sendMessage:@"Hello Bro"];
     
-    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Edit") traits:UIAccessibilityTraitButton];
+    [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
     
-    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Delete message")];
+    [tester tapViewWithAccessibilityLabel:@"Delete message"];
     
-    [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Edit") traits:UIAccessibilityTraitButton];
+    [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
     
 
    
@@ -121,6 +121,8 @@
         [tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
         NSLog(@"Deleting an extra chat");
     }
+    
+    [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton]; // same as the first but it is "OK" on screen
     
     // check that the tableview is empty
     UITableView* tv = nil;
