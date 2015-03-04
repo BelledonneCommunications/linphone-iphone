@@ -51,6 +51,7 @@ set(SOURCE_FILES
 )
 
 add_executable(liblinphone_tester ${SOURCE_FILES})
+set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(liblinphone_tester PUBLIC ${CUNIT_INCLUDE_DIRS})
 target_link_libraries(liblinphone_tester linphone ${CUNIT_LIBRARIES})
 if (GTK2_FOUND)
