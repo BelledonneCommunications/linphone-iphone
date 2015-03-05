@@ -1,6 +1,6 @@
 # Linphone on iPhone
 
-[![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=kif)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
+[![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=master)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
 ## Build prerequisite
 
@@ -37,7 +37,7 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
         export PATH=$LOCAL_BIN_DIR:$PATH
 
-* Install [gas-preprosessor.pl](http://github.com/yuvi/gas-preprocessor/) (version above July 2013) into your PATH. Suppose you use `LOCAL_BIN_DIR` directory:
+* Install [gas-preprocessor.pl](http://github.com/yuvi/gas-preprocessor/) (version above July 2013) into your PATH. Suppose you use `LOCAL_BIN_DIR` directory:
 
         wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
         chmod +x gas-preprocessor.pl
