@@ -57,13 +57,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/share/cmake/Modules")
 
 include(CheckIncludeFile)
 include(CheckSymbolExists)
+include(CMakePushCheckState)
 
 if(MSVC)
 	list(APPEND CMAKE_REQUIRED_INCLUDES "${CMAKE_PREFIX_PATH}/include/MSVC")
 endif()
 
 find_package(BelleSIP REQUIRED)
-find_package(MS2 REQUIRED)
+find_package(Mediastreamer2 REQUIRED)
 find_package(XML2 REQUIRED)
 if(ENABLE_UNIT_TESTS)
 	find_package(CUnit)
@@ -119,7 +120,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
 	${BELLESIP_INCLUDE_DIRS}
-	${MS2_INCLUDE_DIRS}
+	${MEDIASTREAMER2_INCLUDE_DIRS}
 	${XML2_INCLUDE_DIRS}
 )
 if(SQLITE3_FOUND)
