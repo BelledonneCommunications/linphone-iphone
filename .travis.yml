@@ -8,6 +8,7 @@ git:
 env:
     global:
         - VERSION="8.1"
+        - BYPASS_TOOLCHECK=1
 
 install: 
     - cd submodules/build 
