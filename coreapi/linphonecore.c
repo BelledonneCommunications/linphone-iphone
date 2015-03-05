@@ -1075,7 +1075,10 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 	pt=find_payload(type==SalAudio ? lc->default_audio_codecs : lc->default_video_codecs,mime,rate,channels,fmtp);
 	if (!pt){
 		MSList **default_list=(type==SalAudio) ? &lc->default_audio_codecs :  &lc->default_video_codecs;
-		ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
+		if (type==SalAudio)
+			ms_warning("Codec %s/%i/%i read from conf is not in the default list.",mime,rate,channels);
+		else 
+			ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
 		pt=payload_type_new();
 		pt->type=(type==SalAudio) ? PAYLOAD_AUDIO_PACKETIZED :  PAYLOAD_VIDEO;
 		pt->mime_type=ortp_strdup(mime);
