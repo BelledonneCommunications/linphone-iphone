@@ -26,13 +26,6 @@ enable_opus=yes
 enable_debug=no
 
 
-# Checks
-CHECK_MSG=$(shell ../../Tools/check_tools.sh)
-
-ifneq ($(CHECK_MSG),)
-	$(error Some tools are missing.)
-endif
-
 
 TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 ifneq ($(TUNNEL_AVAILABLE),)
@@ -43,7 +36,7 @@ else
 endif
 
 
-.NOTPARALLEL all: check_options build warning
+.NOTPARALLEL all: checks build warning
 
 # check that the selected options are correct
 CHECKOPT_MSG := ""
@@ -53,12 +46,33 @@ ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 	enable_ffmpeg:=no
 endif
 
+checks: check_options check_progs
+
 ifneq ($(CHECKOPT_MSG),"")
 check_options:
 	@echo $(CHECKOPT_MSG)
 else
 check_options:
 endif
+
+# you can skip the tool check by export BYPASS_TOOLCHECK=1
+ifneq ($(BYPASS_TOOLCHECK),1)
+
+# Checks
+CHECK_MSG=$(shell ../../Tools/check_tools.sh)
+
+check_progs:
+    ifneq ($(CHECK_MSG),)
+	$(error Some tools are missing.)
+    else
+	$(info All tools are present.)
+    endif
+
+else
+check_progs:
+	$(info Skipping tool checks)
+endif
+
 
 # setup footer
 
