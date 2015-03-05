@@ -14,6 +14,8 @@ install:
     - cd submodules/build 
     - make download-sdk
     - cd ../..
+    - git submodule update --init Classes/KIF
+    - git submodule update --init --recursive submodules/linphone
     - ls -la
 
 script:
