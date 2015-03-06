@@ -32,7 +32,6 @@ endif()
 find_package(GTK2 2.18 REQUIRED gtk)
 
 set(_SOUP_ROOT_PATHS
-	${WITH_SOUP}
 	${CMAKE_INSTALL_PREFIX}
 )
 

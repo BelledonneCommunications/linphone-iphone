@@ -1,5 +1,5 @@
 ############################################################################
-# FindIntl.cmake
+# FindSqlite3.cmake
 # Copyright (C) 2014  Belledonne Communications, Grenoble France
 #
 ############################################################################
@@ -20,37 +20,36 @@
 #
 ############################################################################
 #
-# - Find the libintl include file and library
+# - Find the sqlite3 include file and library
 #
-#  INTL_FOUND - system has libintl
-#  INTL_INCLUDE_DIRS - the libintl include directory
-#  INTL_LIBRARIES - The libraries needed to use libintl
+#  SQLITE3_FOUND - system has sqlite3
+#  SQLITE3_INCLUDE_DIRS - the sqlite3 include directory
+#  SQLITE3_LIBRARIES - The libraries needed to use sqlite3
 
-set(_INTL_ROOT_PATHS
+set(_SQLITE3_ROOT_PATHS
 	${CMAKE_INSTALL_PREFIX}
 )
 
-find_path(INTL_INCLUDE_DIRS
-	NAMES libintl.h
-	HINTS _INTL_ROOT_PATHS
+find_path(SQLITE3_INCLUDE_DIRS
+	NAMES sqlite3.h
+	HINTS _SQLITE3_ROOT_PATHS
 	PATH_SUFFIXES include
 )
 
-if(INTL_INCLUDE_DIRS)
-	set(HAVE_LIBINTL_H 1)
+if(SQLITE3_INCLUDE_DIRS)
+	set(HAVE_SQLITE3_H 1)
 endif()
 
-set(INTL_ARGS INTL_INCLUDE_DIRS HAVE_LIBINTL_H)
-if(NOT UNIX OR APPLE)
-	find_library(INTL_LIBRARIES
-		NAMES intl
-		HINTS ${_INTL_ROOT_PATHS}
-		PATH_SUFFIXES bin lib
-	)
-	list(APPEND INTL_ARGS INTL_LIBRARIES)
-endif()
+find_library(SQLITE3_LIBRARIES
+	NAMES sqlite3
+	HINTS ${_SQLITE3_ROOT_PATHS}
+	PATH_SUFFIXES bin lib
+)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Intl DEFAULT_MSG ${INTL_ARGS})
+find_package_handle_standard_args(Sqlite3
+	DEFAULT_MSG
+	SQLITE3_INCLUDE_DIRS SQLITE3_LIBRARIES HAVE_SQLITE3_H
+)
 
-mark_as_advanced(${INTL_ARGS})
+mark_as_advanced(SQLITE3_INCLUDE_DIRS SQLITE3_LIBRARIES HAVE_SQLITE3_H)

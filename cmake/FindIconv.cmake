@@ -27,7 +27,6 @@
 #  ICONV_LIBRARIES - The libraries needed to use libiconv
 
 set(_ICONV_ROOT_PATHS
-	${WITH_ICONV}
 	${CMAKE_INSTALL_PREFIX}
 )
 

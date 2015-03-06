@@ -1,6 +1,6 @@
 ############################################################################
-# FindIntl.cmake
-# Copyright (C) 2014  Belledonne Communications, Grenoble France
+# FindXML2.txt
+# Copyright (C) 2015  Belledonne Communications, Grenoble France
 #
 ############################################################################
 #
@@ -20,37 +20,36 @@
 #
 ############################################################################
 #
-# - Find the libintl include file and library
+# - Find the libxml2 include file and library
 #
-#  INTL_FOUND - system has libintl
-#  INTL_INCLUDE_DIRS - the libintl include directory
-#  INTL_LIBRARIES - The libraries needed to use libintl
+#  XML2_FOUND - system has libxml2
+#  XML2_INCLUDE_DIRS - the libxml2 include directory
+#  XML2_LIBRARIES - The libraries needed to use libxml2
 
-set(_INTL_ROOT_PATHS
+set(_XML2_ROOT_PATHS
 	${CMAKE_INSTALL_PREFIX}
 )
 
-find_path(INTL_INCLUDE_DIRS
-	NAMES libintl.h
-	HINTS _INTL_ROOT_PATHS
-	PATH_SUFFIXES include
+find_path(XML2_INCLUDE_DIRS
+	NAMES libxml/xmlreader.h
+	HINTS _XML2_ROOT_PATHS
+	PATH_SUFFIXES include/libxml2
 )
 
-if(INTL_INCLUDE_DIRS)
-	set(HAVE_LIBINTL_H 1)
+if(XML2_INCLUDE_DIRS)
+	set(HAVE_LIBXML_XMLREADER_H 1)
 endif()
 
-set(INTL_ARGS INTL_INCLUDE_DIRS HAVE_LIBINTL_H)
-if(NOT UNIX OR APPLE)
-	find_library(INTL_LIBRARIES
-		NAMES intl
-		HINTS ${_INTL_ROOT_PATHS}
-		PATH_SUFFIXES bin lib
-	)
-	list(APPEND INTL_ARGS INTL_LIBRARIES)
-endif()
+find_library(XML2_LIBRARIES
+	NAMES xml2
+	HINTS ${_XML2_ROOT_PATHS}
+	PATH_SUFFIXES bin lib
+)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Intl DEFAULT_MSG ${INTL_ARGS})
+find_package_handle_standard_args(XML2
+	DEFAULT_MSG
+	XML2_INCLUDE_DIRS XML2_LIBRARIES
+)
 
-mark_as_advanced(${INTL_ARGS})
+mark_as_advanced(XML2_INCLUDE_DIRS XML2_LIBRARIES)

@@ -159,7 +159,7 @@ if(ICONV_FOUND)
 	target_include_directories(linphone PUBLIC ${ICONV_INCLUDE_DIRS})
 endif()
 
-install(TARGETS linphone
+install(TARGETS linphone EXPORT LinphoneTargets
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib

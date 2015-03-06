@@ -1,6 +1,6 @@
 ############################################################################
-# FindIntl.cmake
-# Copyright (C) 2014  Belledonne Communications, Grenoble France
+# FindCUnit.txt
+# Copyright (C) 2015  Belledonne Communications, Grenoble France
 #
 ############################################################################
 #
@@ -20,37 +20,39 @@
 #
 ############################################################################
 #
-# - Find the libintl include file and library
+# - Find the CUnit include file and library
 #
-#  INTL_FOUND - system has libintl
-#  INTL_INCLUDE_DIRS - the libintl include directory
-#  INTL_LIBRARIES - The libraries needed to use libintl
+#  CUNIT_FOUND - system has CUnit
+#  CUNIT_INCLUDE_DIRS - the CUnit include directory
+#  CUNIT_LIBRARIES - The libraries needed to use CUnit
 
-set(_INTL_ROOT_PATHS
+include(CheckIncludeFile)
+include(CheckLibraryExists)
+
+set(_CUNIT_ROOT_PATHS
 	${CMAKE_INSTALL_PREFIX}
 )
 
-find_path(INTL_INCLUDE_DIRS
-	NAMES libintl.h
-	HINTS _INTL_ROOT_PATHS
+find_path(CUNIT_INCLUDE_DIRS
+	NAMES CUnit/CUnit.h
+	HINTS _CUNIT_ROOT_PATHS
 	PATH_SUFFIXES include
 )
 
-if(INTL_INCLUDE_DIRS)
-	set(HAVE_LIBINTL_H 1)
+if(CUNIT_INCLUDE_DIRS)
+	set(HAVE_CUNIT_CUNIT_H 1)
 endif()
 
-set(INTL_ARGS INTL_INCLUDE_DIRS HAVE_LIBINTL_H)
-if(NOT UNIX OR APPLE)
-	find_library(INTL_LIBRARIES
-		NAMES intl
-		HINTS ${_INTL_ROOT_PATHS}
-		PATH_SUFFIXES bin lib
-	)
-	list(APPEND INTL_ARGS INTL_LIBRARIES)
-endif()
+find_library(CUNIT_LIBRARIES
+	NAMES cunit
+	HINTS ${_CUNIT_ROOT_PATHS}
+	PATH_SUFFIXES bin lib
+)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Intl DEFAULT_MSG ${INTL_ARGS})
+find_package_handle_standard_args(CUnit
+	DEFAULT_MSG
+	CUNIT_INCLUDE_DIRS CUNIT_LIBRARIES
+)
 
-mark_as_advanced(${INTL_ARGS})
+mark_as_advanced(CUNIT_INCLUDE_DIRS CUNIT_LIBRARIES)

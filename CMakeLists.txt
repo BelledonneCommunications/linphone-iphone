@@ -53,7 +53,6 @@ cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENAB
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/share/cmake/Modules")
 
 include(CheckIncludeFile)
 include(CheckSymbolExists)
@@ -88,10 +87,7 @@ if(ENABLE_TUNNEL)
 	endif()
 endif()
 if(ENABLE_MSG_STORAGE)
-	find_package(Sqlite3)
-	if(NOT SQLITE3_FOUND)
-		message(FATAL_ERROR "Could not find the sqlite3 library!")
-	endif()
+	find_package(Sqlite3 REQUIRED)
 endif()
 if(ENABLE_NOTIFY)
 	find_package(Notify)
@@ -200,9 +196,29 @@ if(ENABLE_UNIT_TESTS)
 endif()
 
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLinphone.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
+	VERSION ${LINPHONE_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+export(EXPORT LinphoneTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/LinphoneTargets.cmake"
+	NAMESPACE BelledonneCommunications::
+)
+configure_file(cmake/LinphoneConfig.cmake.in
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
+	@ONLY
+)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake
-	DESTINATION share/cmake/Modules
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+set(ConfigPackageLocation lib/cmake/Linphone)
+install(EXPORT LinphoneTargets
+	FILE LinphoneTargets.cmake
+	NAMESPACE BelledonneCommunications::
+	DESTINATION ${ConfigPackageLocation}
+)
+install(FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
+	DESTINATION ${ConfigPackageLocation}
 )
