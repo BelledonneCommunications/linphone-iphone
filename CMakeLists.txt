@@ -54,12 +54,12 @@ cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENAB
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CMakePushCheckState)
 
+set(MSVC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MSVC")
 if(MSVC)
-	list(APPEND CMAKE_REQUIRED_INCLUDES "${CMAKE_PREFIX_PATH}/include/MSVC")
+	list(APPEND CMAKE_REQUIRED_INCLUDES "${MSVC_INCLUDE_DIR}")
 endif()
 
 find_package(BelleSIP REQUIRED)
@@ -129,9 +129,8 @@ endif()
 if(ENABLE_ASSISTANT)
 	include_directories(${SOUP_INCLUDE_DIRS})
 endif()
-
 if(MSVC)
-	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
+	include_directories(${MSVC_INCLUDE_DIR})
 endif()
 
 add_definitions("-DIN_LINPHONE")
