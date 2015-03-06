@@ -120,6 +120,9 @@
     
     // then remove the contact
     [tester tapViewWithAccessibilityLabel:@"Edit"];
+
+	[tester scrollViewWithAccessibilityIdentifier:@"Contact numbers table" byFractionOfSizeHorizontal:0 vertical:-0.9];
+
     [tester tapViewWithAccessibilityLabel:@"Remove"];
     
     [tester waitForAbsenceOfViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
