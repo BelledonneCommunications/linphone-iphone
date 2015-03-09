@@ -25,7 +25,9 @@ if(MSVC)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
-find_package(Iconv)
+if(NOT WIN32)
+	find_package(Iconv)
+endif()
 
 
 set(SOURCE_FILES
