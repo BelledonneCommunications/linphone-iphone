@@ -240,7 +240,7 @@ static int get_max_codec_sample_rate(const MSList *codecs){
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
 		int sample_rate;
-		
+
 		if( strcasecmp("G722",pt->mime_type) == 0 ){
 			/* G722 spec says 8000 but the codec actually requires 16000 */
 			sample_rate = 16000;
@@ -283,7 +283,7 @@ static void linphone_core_assign_payload_type_numbers(LinphoneCore *lc, MSList *
 	for (elem=codecs; elem!=NULL; elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number=payload_type_get_number(pt);
-		
+
 		/*check if number is duplicated: it could be the case if the remote forced us to use a mapping with a previous offer*/
 		if (number!=-1 && !(pt->flags & PAYLOAD_TYPE_FROZEN_NUMBER)){
 			if (!is_payload_type_number_available(codecs, number, pt)){
@@ -291,7 +291,7 @@ static void linphone_core_assign_payload_type_numbers(LinphoneCore *lc, MSList *
 				number=-1; /*need to be re-assigned*/
 			}
 		}
-		
+
 		if (number==-1){
 			while(dyn_number<127){
 				if (is_payload_type_number_available(codecs, dyn_number, NULL)){
@@ -364,7 +364,7 @@ static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, SalSt
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
 		int num;
-		
+
 		if (!(pt->flags & PAYLOAD_TYPE_ENABLED))
 			continue;
 		if (hints->bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,hints->bandwidth_limit)){
@@ -376,14 +376,14 @@ static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, SalSt
 			continue;
 		}
 		pt=payload_type_clone(pt);
-		
+
 		/*look for a previously assigned number for this codec*/
 		num=find_payload_type_number(hints->previously_used, pt);
 		if (num!=-1){
 			payload_type_set_number(pt,num);
 			payload_type_set_flag(pt, PAYLOAD_TYPE_FROZEN_NUMBER);
 		}
-		
+
 		l=ms_list_append(l, pt);
 		nb++;
 		if ((hints->max_codecs > 0) && (nb >= hints->max_codecs)) break;
@@ -568,8 +568,8 @@ static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int 
 
 static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, int stream_index){
 	const char *public_ip=call->localip;
-	
-	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0') 
+
+	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0')
 		public_ip=call->media_ports[stream_index].multicast_ip;
 	return public_ip;
 }
@@ -584,7 +584,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	LinphoneAddress *addr;
 	const char *subject;
 	CodecConstraints codec_hints={0};
-	
+
 	/*multicast is only set in case of outgoing call*/
 	if (call->dir == LinphoneCallOutgoing && linphone_core_audio_multicast_enabled(lc)) {
 		md->streams[0].ttl=linphone_core_get_audio_multicast_ttl(lc);
@@ -803,7 +803,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 
 	linphone_core_get_video_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,1,min_port,max_port);
-	
+
 	if (call->dir==LinphoneCallOutgoing){
 		if ( linphone_core_audio_multicast_enabled(call->core)){
 			strncpy(call->media_ports[0].multicast_ip,
@@ -817,7 +817,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
-	
+
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1295,7 +1295,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		default:
 			break;
 		}
-		
+
 		if(cstate!=LinphoneCallStreamsRunning) {
 			if (call->dtmfs_timer!=NULL){
 				/*cancelling DTMF sequence, if any*/
@@ -1873,7 +1873,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if (call->audiostream != NULL) return;
 	if (call->sessions[0].rtp_session==NULL){
 		call->audiostream=audiostream=audio_stream_new2(linphone_call_get_bind_ip_for_stream(call,0),
-				call->media_ports[0].mcast_rtp_port ? call->media_ports[0].mcast_rtp_port : call->media_ports[0].rtp_port, 
+				call->media_ports[0].mcast_rtp_port ? call->media_ports[0].mcast_rtp_port : call->media_ports[0].rtp_port,
 				call->media_ports[0].mcast_rtcp_port ? call->media_ports[0].mcast_rtcp_port : call->media_ports[0].rtcp_port);
 		linphone_call_join_multicast_group(call, 0, &audiostream->ms);
 		rtp_session_enable_network_simulation(call->audiostream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
@@ -2430,7 +2430,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 		playfile=lc->play_file;
 		recfile=lc->rec_file;
 		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-		
+
 		if (used_pt!=-1){
 			call->current_params->audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
 			if (playcard==NULL) {
@@ -2501,7 +2501,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
 			if (is_multicast)
 				rtp_session_set_multicast_ttl(call->audiostream->ms.sessions.rtp_session,stream->ttl);
-			
+
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -3301,7 +3301,7 @@ void linphone_call_stop_recording(LinphoneCall *call){
 static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *vs){
 	bool_t as_active =  as ? (media_stream_get_state(as) == MSStreamStarted) : FALSE;
 	bool_t vs_active =  vs ? (media_stream_get_state(vs) == MSStreamStarted) : FALSE;
-	
+
 	call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth=(as_active) ? (media_stream_get_down_bw(as)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as_active) ? (media_stream_get_up_bw(as)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs_active) ? (media_stream_get_down_bw(vs)*1e-3) : 0;
@@ -3311,18 +3311,18 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (media_stream_get_rtcp_down_bw(vs)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (media_stream_get_rtcp_up_bw(vs)*1e-3) : 0;
 
-	ms_message("Bandwidth usage for call [%p]: RTP  audio=[d=%.1f,u=%.1f], video=[d=%.1f,u=%.1f] kbit/sec",
-		call,
-		call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
-		call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth ,
-		call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,
-		call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth
-	);
-	ms_message("                                       RTCP audio=[d=%.1f,u=%.1f], video=[d=%.1f,u=%.1f] kbit/sec",
-		call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth,
-		call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth ,
-		call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth,
-		call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth
+	ms_message(	"Bandwidth usage for call [%p]:\n"
+				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f] kbits/sec\n"
+				"\tRTCP audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f] kbits/sec",
+				call,
+				call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth,
+				call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth
 	);
 }
 
