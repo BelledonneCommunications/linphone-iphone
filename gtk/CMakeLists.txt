@@ -69,6 +69,9 @@ set(SOURCE_FILES
 	utils.c
 	videowindow.c
 )
+if(WIN32)
+	list(APPEND SOURCE_FILES linphone.rc)
+endif()
 
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
