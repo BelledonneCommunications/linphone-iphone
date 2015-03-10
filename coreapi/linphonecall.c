@@ -2091,9 +2091,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 }
 
 void set_mic_gain_db(AudioStream *st, float gain){
-	if (st->volsend){
-		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
-	}else ms_warning("Could not apply mic gain: gain control wasn't activated.");
+	audio_stream_set_mic_gain_db(st, gain);
 }
 
 void set_playback_gain_db(AudioStream *st, float gain){

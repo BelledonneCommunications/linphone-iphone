@@ -4771,8 +4771,12 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 }
 
 static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, bool_t val) {
-	audio_stream_set_mic_gain(st,
-		(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
+	if (val) {
+		audio_stream_set_mic_gain(st, 0);
+	} else {
+		audio_stream_set_mic_gain_db(st, lc->sound_conf.soft_mic_lev);
+	}
+	
 	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 		audio_stream_mute_rtp(st,val);
 	}

@@ -1965,15 +1965,31 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc){
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc) {
 	MSSndCard *sndcard;
-	MSSndCardManager *m=ms_snd_card_manager_get();
-	const char *card=linphone_core_get_capture_device((LinphoneCore*)lc);
-	sndcard=ms_snd_card_manager_get_card(m,card);
-	if (sndcard == NULL){
+	MSSndCardManager *m = ms_snd_card_manager_get();
+	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
+	sndcard = ms_snd_card_manager_get_card(m, card);
+	if (sndcard == NULL) {
 		ms_error("Could not get soundcard %s", card);
 		return TRUE;
 	}
+	
+	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
+	if (ms_snd_card_get_minimal_latency(sndcard) != 0) return FALSE;
+	return TRUE;
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCanceler(JNIEnv *env, jobject thiz, jlong lc) {
+	MSSndCard *sndcard;
+	MSSndCardManager *m = ms_snd_card_manager_get();
+	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
+	sndcard = ms_snd_card_manager_get_card(m, card);
+	if (sndcard == NULL) {
+		ms_error("Could not get soundcard %s", card);
+		return TRUE;
+	}
+	
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
 	return TRUE;
 }
