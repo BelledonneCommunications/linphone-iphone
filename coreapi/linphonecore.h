@@ -1890,7 +1890,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNetworkReachableCb network_reachable; /**< Callback to report IP network status (I.E up/down )*/
 	LinphoneCoreLogCollectionUploadStateChangedCb log_collection_upload_state_changed; /**< Callback to upload collected logs */
 	LinphoneCoreLogCollectionUploadProgressIndicationCb log_collection_upload_progress_indication; /**< Callback to indicate log collection upload progress */
-	void *user_data;
+	void *user_data; /**<User data associated with the above callbacks */
 } LinphoneCoreVTable;
 
 /**

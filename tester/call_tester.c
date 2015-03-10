@@ -2673,9 +2673,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		linphone_core_set_user_agent(marie->lc,user_agent,NULL);
 	}
 	if (!enable_auth_req_cb) {
-
-		((LinphoneCoreVTable*)(marie->lc->vtables->data))->auth_info_requested=NULL;
-
+		((VTableReference*)(marie->lc->vtable_refs->data))->vtable->auth_info_requested=NULL;
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
 	}
 

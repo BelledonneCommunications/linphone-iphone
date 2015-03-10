@@ -717,7 +717,7 @@ typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore
 {
-	MSList* vtables;
+	MSList* vtable_refs;
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
@@ -767,6 +767,8 @@ struct _LinphoneCore
 	char* zrtp_secrets_cache;
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
+	time_t network_last_check;
+	
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -776,13 +778,11 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
+	
 	bool_t use_preview_window;
-
-	time_t network_last_check;
-
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
-	bool_t pad[2];
+	bool_t vtables_running;
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -1120,6 +1120,18 @@ void linphone_core_wifi_lock_release(LinphoneCore *lc);
 void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
 void linphone_core_multicast_lock_release(LinphoneCore *lc);
 #endif
+
+struct _VTableReference{
+	LinphoneCoreVTable *vtable;
+	bool_t valid;
+	bool_t autorelease;
+};
+
+typedef struct _VTableReference  VTableReference;
+
+void v_table_reference_destroy(VTableReference *ref);
+
+void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
 
 #ifdef __cplusplus
 }

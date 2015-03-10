@@ -81,6 +81,7 @@ liblinphone_la_SOURCES=\
 	sipsetup.c sipsetup.h \
 	xml2lpc.c \
 	xml.c \
+	vtables.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

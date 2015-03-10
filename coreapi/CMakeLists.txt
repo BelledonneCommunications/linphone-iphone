@@ -91,6 +91,7 @@ set(SOURCE_FILES
 	xml2lpc.c
 	xml2lpc.h
 	xml.c
+	vtables.c
 )
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
