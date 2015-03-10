@@ -60,6 +60,35 @@ include(CMakePushCheckState)
 set(MSVC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MSVC")
 if(MSVC)
 	list(APPEND CMAKE_REQUIRED_INCLUDES "${MSVC_INCLUDE_DIR}")
+
+	if(ENABLE_GTK_UI)
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip")
+			message(STATUS "Installing intltool")
+			file(DOWNLOAD http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip")
+			message(STATUS "Installing GTK")
+			file(DOWNLOAD http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+	endif()
+	if(ENABLE_ASSISTANT)
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip")
+			message(STATUS "Installing libsoup")
+			file(DOWNLOAD http://www.linphone.org/files/libsoup_2.24.0-1_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+	endif()
 endif()
 
 find_package(BelleSIP REQUIRED)
