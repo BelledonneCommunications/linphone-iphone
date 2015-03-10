@@ -1816,6 +1816,22 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void video_call_limited_bandwidth(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
+	linphone_core_set_download_bandwidth(pauline->lc, 100);
+	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 #endif /*VIDEO_ENABLED*/
 
 static void _call_with_media_relay(bool_t random_ports) {
@@ -2142,7 +2158,7 @@ static void call_with_mkv_file_player(void) {
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-#ifdef DO_AUDIO_CMP	
+#ifdef DO_AUDIO_CMP
 	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
 	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
@@ -2523,7 +2539,7 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 	bool_t call_ok=FALSE;
 
 	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
-	
+
 	if (call_ok){
 
 		/*wait for ACK to be transmitted before going to reINVITE*/
@@ -2616,7 +2632,7 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 	bool_t call_ok=TRUE;
 
 	CU_ASSERT_TRUE((call_ok=call(pauline,marie)));
-	
+
 	if (call_ok){
 		linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*add PCMA*/
 
@@ -2744,9 +2760,9 @@ static void multiple_early_media(void) {
 	CU_ASSERT_PTR_NOT_NULL(pauline_call);
 	CU_ASSERT_PTR_NOT_NULL(marie1_call);
 	CU_ASSERT_PTR_NOT_NULL(marie2_call);
-	
+
 	if (pauline_call && marie1_call && marie2_call){
-	
+
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs,&dummy,1,6000);
 		CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
@@ -3294,11 +3310,11 @@ static void early_media_without_sdp_in_200_base( bool_t use_video ){
 }
 
 static void call_with_early_media_and_no_sdp_in_200_with_video(){
-	early_media_without_sdp_in_200_base(TRUE); 
+	early_media_without_sdp_in_200_base(TRUE);
 }
 
 static void call_with_early_media_and_no_sdp_in_200(){
-	early_media_without_sdp_in_200_base(FALSE); 
+	early_media_without_sdp_in_200_base(FALSE);
 }
 
 static void call_with_generic_cn(void) {
@@ -3498,6 +3514,7 @@ test_t call_tests[] = {
 	{ "DTLS SRTP video call",dtls_srtp_video_call},
 	{ "DTLS SRTP ice video call",dtls_srtp_ice_video_call},
 	{ "DTLS SRTP ice video call with relay",dtls_srtp_ice_video_call_with_relay},
+	{ "Video call with limited bandwidth", video_call_limited_bandwidth},
 #endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
