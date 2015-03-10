@@ -71,7 +71,8 @@ LOCAL_SRC_FILES := \
 	siplogin.c \
 	sipsetup.c \
 	xml2lpc.c \
-	xml.c
+	xml.c \
+	vtables.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
