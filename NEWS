@@ -1,4 +1,4 @@
-linphone-3.8.0 -- Date to be defined
+linphone-3.8.0 -- March 11th, 2015
 	Application level improvements:
 	* The video window has now controls in order to switch fullscreen mode and terminate call.
 	* The out of call video preview feature (to test camera) is moved into the settings and is no longer linked to the in-call video preview feature.
