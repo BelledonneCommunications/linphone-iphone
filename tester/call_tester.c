@@ -288,10 +288,8 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(linphone_core_get_current_call(callee_mgr->lc));
 			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
-			if (linphone_call_params_get_media_encryption(call_param) != LinphoneMediaEncryptionDTLS) {
-				/*for DTLS this test is not relevant */
-				CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee_mgr->lc));
-			}
+			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
+
 		}
 	}
 	return result;
@@ -2007,6 +2005,10 @@ static void dtls_srtp_call() {
 	call_base(LinphoneMediaEncryptionDTLS,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 
+static void dtls_srtp_call_with_media_realy() {
+	call_base(LinphoneMediaEncryptionDTLS,FALSE,TRUE,LinphonePolicyNoFirewall,FALSE);
+}
+
 static void dtls_srtp_ice_call() {
 	call_base(LinphoneMediaEncryptionDTLS,FALSE,FALSE,LinphonePolicyUseIce,FALSE);
 }
@@ -3488,6 +3490,7 @@ test_t call_tests[] = {
 	{ "SRTP call", srtp_call },
 	{ "ZRTP call",zrtp_call},
 	{ "DTLS SRTP call",dtls_srtp_call},
+	{ "DTLS SRTP call with media relay", dtls_srtp_call_with_media_realy},
 	{ "ZRTP video call",zrtp_video_call},
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
 	{ "Call with file player", call_with_file_player},

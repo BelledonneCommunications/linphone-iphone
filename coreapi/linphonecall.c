@@ -2516,6 +2516,9 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				use_ec
 				);
 			post_configure_audio_streams(call, muted && !send_ringbacktone);
+
+			media_stream_session_encryption_mandatory_enable(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+
 			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
 				int pause_time=500;
 				ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
@@ -2648,6 +2651,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 									   (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
 									   used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				}
+				media_stream_session_encryption_mandatory_enable(&call->videostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{

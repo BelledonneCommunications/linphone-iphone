@@ -157,7 +157,7 @@ static void call_failed_because_of_codecs(void) {
 }
 
 
-static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile) {
+static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t avpf2, LinphoneMediaEncryption srtp2, bool_t encryption_mandatory, const char *expected_profile) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneProxyConfig *lpc;
@@ -173,6 +173,12 @@ static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avp
 		linphone_proxy_config_enable_avpf(lpc, TRUE);
 		linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
 	}
+
+	if (encryption_mandatory) {
+		linphone_core_set_media_encryption_mandatory(marie->lc,TRUE);
+		linphone_core_set_media_encryption_mandatory(pauline->lc,TRUE);
+	}
+
 	if (linphone_core_media_encryption_supported(marie->lc, srtp1)) {
 		linphone_core_set_media_encryption(marie->lc, srtp1);
 	} else {
@@ -206,6 +212,9 @@ end:
 	linphone_core_manager_destroy(marie);
 }
 
+static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile) {
+	return profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
+}
 static void avp_to_avp_call(void) {
 	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP");
 }
@@ -273,6 +282,12 @@ static void savpf_to_savpf_call(void) {
 static void savpf_dtls_to_savpf_dtls_call(void) {
 	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, "UDP/TLS/RTP/SAVPF");
 }
+static void savpf_dtls_to_savpf_dtls_encryption_mandatory_call(void) {
+	profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionDTLS, TRUE, "UDP/TLS/RTP/SAVPF");
+}
+static void savpf_dtls_to_savpf_encryption_mandatory_call(void) {
+	/*profile_call_base(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, TRUE, "UDP/TLS/RTP/SAVPF"); not sure of result*/
+}
 
 static void savpf_dtls_to_savpf_call(void) {
 	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionSRTP, "UDP/TLS/RTP/SAVPF");
@@ -303,8 +318,11 @@ static test_t offeranswer_tests[] = {
 	{ "SAVPF to SAVP call", savpf_to_savp_call },
 	{ "SAVPF to SAVPF call", savpf_to_savpf_call },
 	{ "SAVPF/DTLS to SAVPF/DTLS call", savpf_dtls_to_savpf_dtls_call},
+	{ "SAVPF/DTLS to SAVPF/DTLS encryption mandatory call", savpf_dtls_to_savpf_dtls_encryption_mandatory_call},
 	{ "SAVPF/DTLS to SAVPF call", savpf_dtls_to_savpf_call},
+	{ "SAVPF/DTLS to SAVPF encryption mandatory call", savpf_dtls_to_savpf_encryption_mandatory_call},
 	{ "SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_call},
+
 };
 
 test_suite_t offeranswer_test_suite = {
