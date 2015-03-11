@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-17 12:28+0100\n"
+"POT-Creation-Date: 2015-03-11 16:26+0100\n"
 "PO-Revision-Date: 2015-02-17 11:28+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -89,35 +89,35 @@ msgstr "én"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nemtalálható a pixmap fájl: %s"
 
-#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "Érvénytelen sip partner !"
 
-#: ../gtk/main.c:109
+#: ../gtk/main.c:137
 msgid "log to stdout some debug information while running."
 msgstr "Futás közben némi hibakeresési információ az stdout-ra naplózása."
 
-#: ../gtk/main.c:116
+#: ../gtk/main.c:138
 msgid "path to a file to write logs into."
 msgstr "fájl elérési útja, melybe a naplók kerülnek."
 
-#: ../gtk/main.c:123
+#: ../gtk/main.c:139
 msgid "Start linphone with video disabled."
 msgstr "Linphone indítása, videó kikpacsolva. "
 
-#: ../gtk/main.c:130
+#: ../gtk/main.c:140
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Csak a tálcaikon indítása, ne mutassa a fő ablakot."
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:141
 msgid "address to call right now"
 msgstr "Cím azonnali híváshoz"
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:142
 msgid "if set automatically answer incoming calls"
 msgstr "Bekapcsolva automatikusan válaszol a bejövő hívásokra"
 
-#: ../gtk/main.c:151
+#: ../gtk/main.c:143
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -125,19 +125,19 @@ msgstr ""
 "Adjon meg egy munkakönyvtárat (ennek az installációs könyvtárnak kéne "
 "lennie, pl. C:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:158
+#: ../gtk/main.c:144
 msgid "Configuration file"
 msgstr ""
 
-#: ../gtk/main.c:165
+#: ../gtk/main.c:145
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:172
+#: ../gtk/main.c:146
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1088
+#: ../gtk/main.c:1061
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -150,66 +150,66 @@ msgstr ""
 "szeretné adni a partnerlistához?\n"
 "Ha nemmel válaszol, ez a személy átmenetileg tiltólistára kerül."
 
-#: ../gtk/main.c:1165
+#: ../gtk/main.c:1138
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1286
+#: ../gtk/main.c:1259
 msgid "Call error"
 msgstr "Hiba a hívás közben"
 
-#: ../gtk/main.c:1289 ../coreapi/linphonecore.c:3787
+#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3791
 msgid "Call ended"
 msgstr "Hívás vége"
 
-#: ../gtk/main.c:1292 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1265 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Beérkező hívás"
 
-#: ../gtk/main.c:1294 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1267 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Hívás fogadása"
 
-#: ../gtk/main.c:1296 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1269 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Elutasítás"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 msgid "Call paused"
 msgstr "Hívás várakoztatva"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>a következő által: %s</b>"
 
-#: ../gtk/main.c:1372
+#: ../gtk/main.c:1345
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s szerené elidítani a videót. Elfogadja?"
 
-#: ../gtk/main.c:1534
+#: ../gtk/main.c:1507
 msgid "Website link"
 msgstr "Internetes oldal"
 
-#: ../gtk/main.c:1583
+#: ../gtk/main.c:1556
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - internetes videó telefon"
 
-#: ../gtk/main.c:1675
+#: ../gtk/main.c:1648
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Alapértelmezett)"
 
-#: ../gtk/main.c:2007 ../coreapi/callbacks.c:1027
+#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1045
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Át vagyunk irányítva ide: %s"
 
-#: ../gtk/main.c:2017
+#: ../gtk/main.c:1990
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -217,7 +217,7 @@ msgstr ""
 "Hangkártya nincs érzékelve ezen a számítógépen.\n"
 "Nem fog tudni hang hívásokat küldeni vagy fogadni."
 
-#: ../gtk/main.c:2161
+#: ../gtk/main.c:2135
 msgid "A free SIP video-phone"
 msgstr "Egy ingyenes SIP video-telefon"
 
@@ -757,7 +757,7 @@ msgstr ""
 msgid "(Paused)"
 msgstr "(Várakoztatva)"
 
-#: ../gtk/loginframe.c:88
+#: ../gtk/loginframe.c:87
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Kérem, adja meg a bejelentkezési információt %s -hoz"
@@ -1718,60 +1718,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1508
+#: ../coreapi/linphonecore.c:1512
 msgid "Ready"
 msgstr "Kész"
 
-#: ../coreapi/linphonecore.c:2495
+#: ../coreapi/linphonecore.c:2499
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2669
+#: ../coreapi/linphonecore.c:2673
 msgid "Looking for telephone number destination..."
 msgstr "Telefonszám-cél keresése..."
 
-#: ../coreapi/linphonecore.c:2671
+#: ../coreapi/linphonecore.c:2675
 msgid "Could not resolve this number."
 msgstr "Nem sikkerült értelmezni a számot."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2957
+#: ../coreapi/linphonecore.c:2961
 msgid "Contacting"
 msgstr "Kapcsolódás"
 
-#: ../coreapi/linphonecore.c:2962
+#: ../coreapi/linphonecore.c:2966
 msgid "Could not call"
 msgstr "Nem sikerült hívni"
 
-#: ../coreapi/linphonecore.c:3112
+#: ../coreapi/linphonecore.c:3116
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Elnézést, elértük a egyidejű hívások maximális számát"
 
-#: ../coreapi/linphonecore.c:3270
+#: ../coreapi/linphonecore.c:3274
 msgid "is contacting you"
 msgstr "kapcsolatba lépett veled."
 
-#: ../coreapi/linphonecore.c:3271
+#: ../coreapi/linphonecore.c:3275
 msgid " and asked autoanswer."
 msgstr "és automatikus választ kért."
 
-#: ../coreapi/linphonecore.c:3395
+#: ../coreapi/linphonecore.c:3399
 msgid "Modifying call parameters..."
 msgstr "A hívási jellemzők módosítása..."
 
-#: ../coreapi/linphonecore.c:3743
+#: ../coreapi/linphonecore.c:3747
 msgid "Connected."
 msgstr "Kapcsolódva."
 
-#: ../coreapi/linphonecore.c:3768
+#: ../coreapi/linphonecore.c:3772
 msgid "Call aborted"
 msgstr "Hívás megszakítva"
 
-#: ../coreapi/linphonecore.c:3958
+#: ../coreapi/linphonecore.c:3962
 msgid "Could not pause the call"
 msgstr "Nem sikerült várakoztatni a hívást"
 
-#: ../coreapi/linphonecore.c:3961
+#: ../coreapi/linphonecore.c:3965
 msgid "Pausing the current call..."
 msgstr "Jelenlegi hívás várakoztatásának aktiválása..."
 
@@ -1857,113 +1857,113 @@ msgstr ""
 msgid "Could not login as %s"
 msgstr "Nem sikerült belépni ezzel: %s"
 
-#: ../coreapi/callbacks.c:404
+#: ../coreapi/callbacks.c:419
 msgid "Remote ringing."
 msgstr "Távoli csengés."
 
-#: ../coreapi/callbacks.c:425
+#: ../coreapi/callbacks.c:431
 msgid "Remote ringing..."
 msgstr "Távoli csengés..."
 
-#: ../coreapi/callbacks.c:442
+#: ../coreapi/callbacks.c:448
 msgid "Early media."
 msgstr "Korai médiák."
 
-#: ../coreapi/callbacks.c:503
+#: ../coreapi/callbacks.c:521
 #, c-format
 msgid "Call with %s is paused."
 msgstr "A hívás a következővel: %s várakoztatva"
 
-#: ../coreapi/callbacks.c:516
+#: ../coreapi/callbacks.c:534
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "%s fogadta a hívást - várakoztatva."
 
-#: ../coreapi/callbacks.c:526
+#: ../coreapi/callbacks.c:544
 msgid "Call resumed."
 msgstr "Hívás visszatért"
 
-#: ../coreapi/callbacks.c:530
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call answered by %s."
 msgstr "%s válaszolt a hívásra."
 
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:571
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 "Nem kompatibilis, ellenőrizze a kódek- vagy a biztonsági beállításokat..."
 
-#: ../coreapi/callbacks.c:558 ../coreapi/callbacks.c:870
+#: ../coreapi/callbacks.c:576 ../coreapi/callbacks.c:888
 msgid "Incompatible media parameters."
 msgstr "Nem kompatibilis médiajellemzők."
 
-#: ../coreapi/callbacks.c:588
+#: ../coreapi/callbacks.c:606
 msgid "We have been resumed."
 msgstr "Visszatértünk."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:596
+#: ../coreapi/callbacks.c:614
 msgid "We are paused by other party."
 msgstr "Megállítva a másik fél által."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:630
+#: ../coreapi/callbacks.c:648
 msgid "Call is updated by remote."
 msgstr "A hívás távolról frissítve."
 
-#: ../coreapi/callbacks.c:746
+#: ../coreapi/callbacks.c:764
 msgid "Call terminated."
 msgstr "A hívás befejezve."
 
-#: ../coreapi/callbacks.c:774
+#: ../coreapi/callbacks.c:792
 msgid "User is busy."
 msgstr "A felhasználó foglalt."
 
-#: ../coreapi/callbacks.c:775
+#: ../coreapi/callbacks.c:793
 msgid "User is temporarily unavailable."
 msgstr "A felhasználó ideiglenesen nem elérhető"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:777
+#: ../coreapi/callbacks.c:795
 msgid "User does not want to be disturbed."
 msgstr "A felhasználó nem akarja, hogy zavarják."
 
-#: ../coreapi/callbacks.c:778
+#: ../coreapi/callbacks.c:796
 msgid "Call declined."
 msgstr "Hívás elutasítva"
 
-#: ../coreapi/callbacks.c:793
+#: ../coreapi/callbacks.c:811
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:824
+#: ../coreapi/callbacks.c:842
 msgid "Redirected"
 msgstr "Átirányítva"
 
-#: ../coreapi/callbacks.c:879
+#: ../coreapi/callbacks.c:897
 msgid "Call failed."
 msgstr "Nem sikerült a hívás."
 
-#: ../coreapi/callbacks.c:957
+#: ../coreapi/callbacks.c:975
 #, c-format
 msgid "Registration on %s successful."
 msgstr "A regisztáció a %s -n sikerült."
 
-#: ../coreapi/callbacks.c:958
+#: ../coreapi/callbacks.c:976
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "A kiregisztrálás kész a következőn: %s ."
 
-#: ../coreapi/callbacks.c:976
+#: ../coreapi/callbacks.c:994
 msgid "no response timeout"
 msgstr "időtúllépés után nincs válasz"
 
-#: ../coreapi/callbacks.c:979
+#: ../coreapi/callbacks.c:997
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "A regisztáció a %s -n nem sikerült: %s"
 
-#: ../coreapi/callbacks.c:986
+#: ../coreapi/callbacks.c:1004
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1973,7 +1973,7 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr "Hitelesítési jel: %s"
 
-#: ../coreapi/linphonecall.c:3492
+#: ../coreapi/linphonecall.c:3600
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

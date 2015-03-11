@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-17 12:28+0100\n"
+"POT-Creation-Date: 2015-03-11 16:26+0100\n"
 "PO-Revision-Date: 2015-02-17 11:28+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -90,35 +90,35 @@ msgstr ""
 msgid "Couldn't find pixmap file: %s"
 msgstr "Fant ikke pixmap fli: %s"
 
-#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "Ugyldig SIP kontakt !"
 
-#: ../gtk/main.c:109
+#: ../gtk/main.c:137
 msgid "log to stdout some debug information while running."
 msgstr "skriv logg-informasjon under kjøring"
 
-#: ../gtk/main.c:116
+#: ../gtk/main.c:138
 msgid "path to a file to write logs into."
 msgstr ""
 
-#: ../gtk/main.c:123
+#: ../gtk/main.c:139
 msgid "Start linphone with video disabled."
 msgstr ""
 
-#: ../gtk/main.c:130
+#: ../gtk/main.c:140
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Start skjult i systemkurven, ikke vis programbildet."
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:141
 msgid "address to call right now"
 msgstr "address som skal ringes nå"
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:142
 msgid "if set automatically answer incoming calls"
 msgstr "besvarer innkommende samtaler automatisk om valgt"
 
-#: ../gtk/main.c:151
+#: ../gtk/main.c:143
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -126,19 +126,19 @@ msgstr ""
 "Spesifiser arbeidsmappe (bør være base for installasjonen, f.eks: c:"
 "\\Programfiler\\Linphone)"
 
-#: ../gtk/main.c:158
+#: ../gtk/main.c:144
 msgid "Configuration file"
 msgstr ""
 
-#: ../gtk/main.c:165
+#: ../gtk/main.c:145
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:172
+#: ../gtk/main.c:146
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1088
+#: ../gtk/main.c:1061
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -151,66 +151,66 @@ msgstr ""
 "din kontaktliste?\n"
 "Hvis du svarer nei vil personen bli svartelyst midlertidig."
 
-#: ../gtk/main.c:1165
+#: ../gtk/main.c:1138
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1286
+#: ../gtk/main.c:1259
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1289 ../coreapi/linphonecore.c:3787
+#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3791
 msgid "Call ended"
 msgstr "Samtale avsluttet"
 
-#: ../gtk/main.c:1292 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1265 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Innkommende samtale"
 
-#: ../gtk/main.c:1294 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1267 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Svarer"
 
-#: ../gtk/main.c:1296 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1269 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Avvis"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 msgid "Call paused"
 msgstr ""
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 #, c-format
 msgid "<b>by %s</b>"
 msgstr ""
 
-#: ../gtk/main.c:1372
+#: ../gtk/main.c:1345
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1534
+#: ../gtk/main.c:1507
 msgid "Website link"
 msgstr "Peker til nettsted"
 
-#: ../gtk/main.c:1583
+#: ../gtk/main.c:1556
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - en video Internet telefon"
 
-#: ../gtk/main.c:1675
+#: ../gtk/main.c:1648
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Standard)"
 
-#: ../gtk/main.c:2007 ../coreapi/callbacks.c:1027
+#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1045
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Vi er overført til %s"
 
-#: ../gtk/main.c:2017
+#: ../gtk/main.c:1990
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -218,7 +218,7 @@ msgstr ""
 "Klarte ikke å finne noe lydkort på denne datamaskinen.\n"
 "Du vil ikke kunne sende eller motta lydsamtaler."
 
-#: ../gtk/main.c:2161
+#: ../gtk/main.c:2135
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
@@ -746,7 +746,7 @@ msgstr ""
 msgid "(Paused)"
 msgstr ""
 
-#: ../gtk/loginframe.c:88
+#: ../gtk/loginframe.c:87
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Skriv inn påloggingsinformasjon for %s:"
@@ -1705,60 +1705,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1508
+#: ../coreapi/linphonecore.c:1512
 msgid "Ready"
 msgstr "Klar"
 
-#: ../coreapi/linphonecore.c:2495
+#: ../coreapi/linphonecore.c:2499
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2669
+#: ../coreapi/linphonecore.c:2673
 msgid "Looking for telephone number destination..."
 msgstr "Ser etter telefonnummer for destinasjonen..."
 
-#: ../coreapi/linphonecore.c:2671
+#: ../coreapi/linphonecore.c:2675
 msgid "Could not resolve this number."
 msgstr "Kan ikke tilkoble dette nummeret."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2957
+#: ../coreapi/linphonecore.c:2961
 msgid "Contacting"
 msgstr "Tilknytter"
 
-#: ../coreapi/linphonecore.c:2962
+#: ../coreapi/linphonecore.c:2966
 msgid "Could not call"
 msgstr "Kunne ikke ringe"
 
-#: ../coreapi/linphonecore.c:3112
+#: ../coreapi/linphonecore.c:3116
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Beklager, du har nådd maksimalt antall samtidige samtaler"
 
-#: ../coreapi/linphonecore.c:3270
+#: ../coreapi/linphonecore.c:3274
 msgid "is contacting you"
 msgstr "Kontakter deg."
 
-#: ../coreapi/linphonecore.c:3271
+#: ../coreapi/linphonecore.c:3275
 msgid " and asked autoanswer."
 msgstr " og ba om autosvar."
 
-#: ../coreapi/linphonecore.c:3395
+#: ../coreapi/linphonecore.c:3399
 msgid "Modifying call parameters..."
 msgstr "Endrer ringeparametre..."
 
-#: ../coreapi/linphonecore.c:3743
+#: ../coreapi/linphonecore.c:3747
 msgid "Connected."
 msgstr "Tilkoblet"
 
-#: ../coreapi/linphonecore.c:3768
+#: ../coreapi/linphonecore.c:3772
 msgid "Call aborted"
 msgstr "Samtale avbrutt"
 
-#: ../coreapi/linphonecore.c:3958
+#: ../coreapi/linphonecore.c:3962
 msgid "Could not pause the call"
 msgstr "Kunne ikke pause samtalen"
 
-#: ../coreapi/linphonecore.c:3961
+#: ../coreapi/linphonecore.c:3965
 msgid "Pausing the current call..."
 msgstr "Pauser nåværende samtale"
 
@@ -1843,112 +1843,112 @@ msgstr ""
 msgid "Could not login as %s"
 msgstr "Ikke ikke logge inn som %s"
 
-#: ../coreapi/callbacks.c:404
+#: ../coreapi/callbacks.c:419
 msgid "Remote ringing."
 msgstr "Ringer hos motparten."
 
-#: ../coreapi/callbacks.c:425
+#: ../coreapi/callbacks.c:431
 msgid "Remote ringing..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:442
+#: ../coreapi/callbacks.c:448
 msgid "Early media."
 msgstr "Tidlig media"
 
-#: ../coreapi/callbacks.c:503
+#: ../coreapi/callbacks.c:521
 #, c-format
 msgid "Call with %s is paused."
 msgstr "Samtalen med %s er pauset."
 
-#: ../coreapi/callbacks.c:516
+#: ../coreapi/callbacks.c:534
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Samtale besvart av %s - på vent."
 
-#: ../coreapi/callbacks.c:526
+#: ../coreapi/callbacks.c:544
 msgid "Call resumed."
 msgstr "Samtale gjenopptatt."
 
-#: ../coreapi/callbacks.c:530
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call answered by %s."
 msgstr "Samtale besvart av %s."
 
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:571
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:558 ../coreapi/callbacks.c:870
+#: ../coreapi/callbacks.c:576 ../coreapi/callbacks.c:888
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:588
+#: ../coreapi/callbacks.c:606
 msgid "We have been resumed."
 msgstr ""
 
 #. we are being paused
-#: ../coreapi/callbacks.c:596
+#: ../coreapi/callbacks.c:614
 msgid "We are paused by other party."
 msgstr ""
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:630
+#: ../coreapi/callbacks.c:648
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:746
+#: ../coreapi/callbacks.c:764
 msgid "Call terminated."
 msgstr "Samtale avsluttet."
 
-#: ../coreapi/callbacks.c:774
+#: ../coreapi/callbacks.c:792
 msgid "User is busy."
 msgstr "Brukeren er opptatt."
 
-#: ../coreapi/callbacks.c:775
+#: ../coreapi/callbacks.c:793
 msgid "User is temporarily unavailable."
 msgstr "Brukeren er midlertidig ikke tilgjengelig."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:777
+#: ../coreapi/callbacks.c:795
 msgid "User does not want to be disturbed."
 msgstr "Brukeren vil ikke bli forstyrret."
 
-#: ../coreapi/callbacks.c:778
+#: ../coreapi/callbacks.c:796
 msgid "Call declined."
 msgstr "Samtale avvist."
 
-#: ../coreapi/callbacks.c:793
+#: ../coreapi/callbacks.c:811
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:824
+#: ../coreapi/callbacks.c:842
 msgid "Redirected"
 msgstr "Omdirigert"
 
-#: ../coreapi/callbacks.c:879
+#: ../coreapi/callbacks.c:897
 msgid "Call failed."
 msgstr "Samtale feilet."
 
-#: ../coreapi/callbacks.c:957
+#: ../coreapi/callbacks.c:975
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrering hos %s lykkes."
 
-#: ../coreapi/callbacks.c:958
+#: ../coreapi/callbacks.c:976
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Avregistrering hos %s lykkes."
 
-#: ../coreapi/callbacks.c:976
+#: ../coreapi/callbacks.c:994
 msgid "no response timeout"
 msgstr "ingen svar innen angitt tid"
 
-#: ../coreapi/callbacks.c:979
+#: ../coreapi/callbacks.c:997
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrering hos %s mislykkes: %s"
 
-#: ../coreapi/callbacks.c:986
+#: ../coreapi/callbacks.c:1004
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1958,7 +1958,7 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3492
+#: ../coreapi/linphonecall.c:3600
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

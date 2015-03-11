@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-17 12:28+0100\n"
+"POT-Creation-Date: 2015-03-11 16:26+0100\n"
 "PO-Revision-Date: 2015-02-17 11:28+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -95,35 +95,35 @@ msgstr "Ја"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Не могу да пронађем датотеку сличице: %s"
 
-#: ../gtk/chat.c:367 ../gtk/friendlist.c:924
+#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
 msgstr "Неисправан сип контакт !"
 
-#: ../gtk/main.c:109
+#: ../gtk/main.c:137
 msgid "log to stdout some debug information while running."
 msgstr "бележи на стандардни излаз неке податке прочишћавања док ради."
 
-#: ../gtk/main.c:116
+#: ../gtk/main.c:138
 msgid "path to a file to write logs into."
 msgstr "путања до датотеке за уписивање дневника."
 
-#: ../gtk/main.c:123
+#: ../gtk/main.c:139
 msgid "Start linphone with video disabled."
 msgstr "Покреће линфон са искљученим видеом."
 
-#: ../gtk/main.c:130
+#: ../gtk/main.c:140
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Покреће се само у системској фиоци, не приказује главно сучеље."
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:141
 msgid "address to call right now"
 msgstr "адреса за позивање управо сада"
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:142
 msgid "if set automatically answer incoming calls"
 msgstr "ако је подешено сам ће се јављати на долазне позиве"
 
-#: ../gtk/main.c:151
+#: ../gtk/main.c:143
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -131,19 +131,19 @@ msgstr ""
 "Наводи радни директоријум (треба да буде основа инсталације, нпр: „c:"
 "\\Program Files\\Linphone“)"
 
-#: ../gtk/main.c:158
+#: ../gtk/main.c:144
 msgid "Configuration file"
 msgstr "Датотека подешавања"
 
-#: ../gtk/main.c:165
+#: ../gtk/main.c:145
 msgid "Run the audio assistant"
 msgstr "Покреће помоћника звука"
 
-#: ../gtk/main.c:172
+#: ../gtk/main.c:146
 msgid "Run self test and exit 0 if succeed"
 msgstr "Покреће самоиспробавање и излази 0 ако је успешно"
 
-#: ../gtk/main.c:1088
+#: ../gtk/main.c:1061
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -157,7 +157,7 @@ msgstr ""
 "Ако одговорите са не, ова особа ће привремено бити стављена на списак "
 "забрана."
 
-#: ../gtk/main.c:1165
+#: ../gtk/main.c:1138
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -166,59 +166,59 @@ msgstr ""
 "Унесите вашу лозинку за корисничко име <i>%s</i>\n"
 " на подручју <i>%s</i>:"
 
-#: ../gtk/main.c:1286
+#: ../gtk/main.c:1259
 msgid "Call error"
 msgstr "Грешка позива"
 
-#: ../gtk/main.c:1289 ../coreapi/linphonecore.c:3787
+#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3791
 msgid "Call ended"
 msgstr "Позив је завршен"
 
-#: ../gtk/main.c:1292 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1265 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Долазни позив"
 
-#: ../gtk/main.c:1294 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1267 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Јави се"
 
-#: ../gtk/main.c:1296 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1269 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Одбиј"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 msgid "Call paused"
 msgstr "Позив је заустављен"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1275
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>од %s</b>"
 
-#: ../gtk/main.c:1372
+#: ../gtk/main.c:1345
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s предлаже да започнете видео. Да ли прихватате ?"
 
-#: ../gtk/main.c:1534
+#: ../gtk/main.c:1507
 msgid "Website link"
 msgstr "Веза веб сајта"
 
-#: ../gtk/main.c:1583
+#: ../gtk/main.c:1556
 msgid "Linphone - a video internet phone"
 msgstr "Линфон — интернет телефон са снимком"
 
-#: ../gtk/main.c:1675
+#: ../gtk/main.c:1648
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (основно)"
 
-#: ../gtk/main.c:2007 ../coreapi/callbacks.c:1027
+#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1045
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Преселили смо се на %s"
 
-#: ../gtk/main.c:2017
+#: ../gtk/main.c:1990
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -226,7 +226,7 @@ msgstr ""
 "Ниједна звучна картица није откривена на овом рачунару.\n"
 "Нећете бити у могућности да шаљете или да примате звучне позиве."
 
-#: ../gtk/main.c:2161
+#: ../gtk/main.c:2135
 msgid "A free SIP video-phone"
 msgstr "Слободан СИП телефон са снимком"
 
@@ -768,7 +768,7 @@ msgstr ""
 msgid "(Paused)"
 msgstr "(Паузирано)"
 
-#: ../gtk/loginframe.c:88
+#: ../gtk/loginframe.c:87
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Унесите податке пријављивања за %s"
@@ -1748,60 +1748,60 @@ msgstr "Подешавам..."
 msgid "Please wait while fetching configuration from server..."
 msgstr "Сачекајте док довучем подешавања са сервера..."
 
-#: ../coreapi/linphonecore.c:1508
+#: ../coreapi/linphonecore.c:1512
 msgid "Ready"
 msgstr "Спреман"
 
-#: ../coreapi/linphonecore.c:2495
+#: ../coreapi/linphonecore.c:2499
 msgid "Configuring"
 msgstr "Подешавам"
 
-#: ../coreapi/linphonecore.c:2669
+#: ../coreapi/linphonecore.c:2673
 msgid "Looking for telephone number destination..."
 msgstr "Тражим одредиште телефонског броја..."
 
-#: ../coreapi/linphonecore.c:2671
+#: ../coreapi/linphonecore.c:2675
 msgid "Could not resolve this number."
 msgstr "Не могу да решим овај број."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2957
+#: ../coreapi/linphonecore.c:2961
 msgid "Contacting"
 msgstr "Ступам у везу"
 
-#: ../coreapi/linphonecore.c:2962
+#: ../coreapi/linphonecore.c:2966
 msgid "Could not call"
 msgstr "Не могу да позовем"
 
-#: ../coreapi/linphonecore.c:3112
+#: ../coreapi/linphonecore.c:3116
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Извините, достигли смо највећи број истовремених позива"
 
-#: ../coreapi/linphonecore.c:3270
+#: ../coreapi/linphonecore.c:3274
 msgid "is contacting you"
 msgstr "вам се обраћа"
 
-#: ../coreapi/linphonecore.c:3271
+#: ../coreapi/linphonecore.c:3275
 msgid " and asked autoanswer."
 msgstr " и затражени само-одговор."
 
-#: ../coreapi/linphonecore.c:3395
+#: ../coreapi/linphonecore.c:3399
 msgid "Modifying call parameters..."
 msgstr "Мењам параметре позива..."
 
-#: ../coreapi/linphonecore.c:3743
+#: ../coreapi/linphonecore.c:3747
 msgid "Connected."
 msgstr "Повезан сам."
 
-#: ../coreapi/linphonecore.c:3768
+#: ../coreapi/linphonecore.c:3772
 msgid "Call aborted"
 msgstr "Позив је прекинут"
 
-#: ../coreapi/linphonecore.c:3958
+#: ../coreapi/linphonecore.c:3962
 msgid "Could not pause the call"
 msgstr "Не могу да зауставим позив"
 
-#: ../coreapi/linphonecore.c:3961
+#: ../coreapi/linphonecore.c:3965
 msgid "Pausing the current call..."
 msgstr "Заустављам тренутни позив..."
 
@@ -1887,112 +1887,112 @@ msgstr ""
 msgid "Could not login as %s"
 msgstr "Не могу да се пријавим као %s"
 
-#: ../coreapi/callbacks.c:404
+#: ../coreapi/callbacks.c:419
 msgid "Remote ringing."
 msgstr "Удаљено звоњење."
 
-#: ../coreapi/callbacks.c:425
+#: ../coreapi/callbacks.c:431
 msgid "Remote ringing..."
 msgstr "Удаљено звоњење..."
 
-#: ../coreapi/callbacks.c:442
+#: ../coreapi/callbacks.c:448
 msgid "Early media."
 msgstr "Ранији медиј."
 
-#: ../coreapi/callbacks.c:503
+#: ../coreapi/callbacks.c:521
 #, c-format
 msgid "Call with %s is paused."
 msgstr "Позив са „%s“ је заустављен."
 
-#: ../coreapi/callbacks.c:516
+#: ../coreapi/callbacks.c:534
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Позив на који је одговорио „%s“ — на чекању."
 
-#: ../coreapi/callbacks.c:526
+#: ../coreapi/callbacks.c:544
 msgid "Call resumed."
 msgstr "Позив је настављен."
 
-#: ../coreapi/callbacks.c:530
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call answered by %s."
 msgstr "На позив је одговорио „%s“."
 
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:571
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Несагласно, проверите кодеке или безбедносна подешавања..."
 
-#: ../coreapi/callbacks.c:558 ../coreapi/callbacks.c:870
+#: ../coreapi/callbacks.c:576 ../coreapi/callbacks.c:888
 msgid "Incompatible media parameters."
 msgstr "Медијски параметри су несагласни."
 
-#: ../coreapi/callbacks.c:588
+#: ../coreapi/callbacks.c:606
 msgid "We have been resumed."
 msgstr "Наставили смо."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:596
+#: ../coreapi/callbacks.c:614
 msgid "We are paused by other party."
 msgstr "Друга страна нас је паузирала."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:630
+#: ../coreapi/callbacks.c:648
 msgid "Call is updated by remote."
 msgstr "Позив је освежен удаљеним."
 
-#: ../coreapi/callbacks.c:746
+#: ../coreapi/callbacks.c:764
 msgid "Call terminated."
 msgstr "Позив је завршен."
 
-#: ../coreapi/callbacks.c:774
+#: ../coreapi/callbacks.c:792
 msgid "User is busy."
 msgstr "Корисник је заузет."
 
-#: ../coreapi/callbacks.c:775
+#: ../coreapi/callbacks.c:793
 msgid "User is temporarily unavailable."
 msgstr "Корисник је привремено недоступан."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:777
+#: ../coreapi/callbacks.c:795
 msgid "User does not want to be disturbed."
 msgstr "Корисник не жели да буде узнемираван."
 
-#: ../coreapi/callbacks.c:778
+#: ../coreapi/callbacks.c:796
 msgid "Call declined."
 msgstr "Позив је одбијен."
 
-#: ../coreapi/callbacks.c:793
+#: ../coreapi/callbacks.c:811
 msgid "Request timeout."
 msgstr "Истекло је време захтева."
 
-#: ../coreapi/callbacks.c:824
+#: ../coreapi/callbacks.c:842
 msgid "Redirected"
 msgstr "Преусмерен"
 
-#: ../coreapi/callbacks.c:879
+#: ../coreapi/callbacks.c:897
 msgid "Call failed."
 msgstr "Позив није успео."
 
-#: ../coreapi/callbacks.c:957
+#: ../coreapi/callbacks.c:975
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Уписивање на „%s“ је успело."
 
-#: ../coreapi/callbacks.c:958
+#: ../coreapi/callbacks.c:976
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Исписивање са „%s“ је обављено."
 
-#: ../coreapi/callbacks.c:976
+#: ../coreapi/callbacks.c:994
 msgid "no response timeout"
 msgstr "нема ограничења одговора"
 
-#: ../coreapi/callbacks.c:979
+#: ../coreapi/callbacks.c:997
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Уписивање на „%s“ није успело: %s"
 
-#: ../coreapi/callbacks.c:986
+#: ../coreapi/callbacks.c:1004
 msgid "Service unavailable, retrying"
 msgstr "Услуга није доступна, поново покушавам"
 
@@ -2002,7 +2002,7 @@ msgstr "Услуга није доступна, поново покушавам"
 msgid "Authentication token is %s"
 msgstr "Симбол потврђивања идентитета је „%s“"
 
-#: ../coreapi/linphonecall.c:3492
+#: ../coreapi/linphonecall.c:3600
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
