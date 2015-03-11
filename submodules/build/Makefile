@@ -25,8 +25,9 @@ enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
-TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 
+
+TUNNEL_AVAILABLE=$(shell git submodule status ../tunnel 2>/dev/null 1>/dev/null && echo yes)
 ifneq ($(TUNNEL_AVAILABLE),)
 	enable_tunnel=yes
 	enable_gpl_third_parties=no
@@ -35,7 +36,7 @@ else
 endif
 
 
-.NOTPARALLEL all: check_options build warning
+.NOTPARALLEL all: checks build warning
 
 # check that the selected options are correct
 CHECKOPT_MSG := ""
@@ -45,12 +46,33 @@ ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
 	enable_ffmpeg:=no
 endif
 
+checks: check_options check_progs
+
 ifneq ($(CHECKOPT_MSG),"")
 check_options:
 	@echo $(CHECKOPT_MSG)
 else
 check_options:
 endif
+
+# you can skip the tool check by export BYPASS_TOOLCHECK=1
+ifneq ($(BYPASS_TOOLCHECK),1)
+
+# Checks
+CHECK_MSG=$(shell ../../Tools/check_tools.sh)
+
+check_progs:
+    ifneq ($(CHECK_MSG),)
+	$(error Some tools are missing.)
+    else
+	$(info All tools are present.)
+    endif
+
+else
+check_progs:
+	$(info Skipping tool checks)
+endif
+
 
 # setup footer
 
@@ -108,12 +130,12 @@ broadcast_%:
 	@echo "Broadcasting target '$*' to all sub-architectures"
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $* \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $* \
-	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $* 
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $*
 
 build-% clean-% veryclean-%:
 	make -f builder-iphone-simulator.mk $(LINPHONE_OPTIONS) $@ \
 	&& make -f builder-iphone-os.mk $(LINPHONE_OPTIONS) $@ \
-	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@ 
+	&& make -f builder-iphone-os.mk host=aarch64-apple-darwin $(LINPHONE_OPTIONS) $@
 
 sdk:
 	make -f builder-iphone-os.mk delivery-sdk
@@ -135,6 +157,11 @@ veryclean: broadcast_veryclean
 list-packages:
 	@make -f builder-iphone-os.mk list-packages
 
+pull-transifex:
+	cd ../../ && tx pull -af
+
+push-transifex:
+	cd ../../ && ./Tools/generate_strings_files.sh && tx push -s -t -f --no-interactive
 
 zipres:
 	@tar  -C ../.. -czf ../../ios_assets.tar.gz Resources iTunesArtwork

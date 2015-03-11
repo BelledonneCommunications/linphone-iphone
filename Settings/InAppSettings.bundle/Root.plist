@@ -19,6 +19,14 @@
 			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>clear_proxy_button</string>
+			<key>Title</key>
+			<string>Clear Account</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>

@@ -8,6 +8,8 @@
 
 #import <KIF/KIF.h>
 
+#define LOCALIZED(X) (X)
+
 @interface LinphoneTestCase : KIFTestCase
 @property BOOL invalidAccountSet;
 
@@ -16,5 +18,6 @@
 - (NSString*)accountDomain;
 
 - (NSString*)getUUID;
+- (NSArray*)getUUIDArrayOfSize:(size_t)size;
 
 @end

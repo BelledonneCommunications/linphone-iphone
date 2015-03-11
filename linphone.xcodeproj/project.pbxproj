@@ -127,7 +127,6 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
-		877ED6FD21D0CFEFA7E2A40A /* libPods-KifTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FE76362DA6217E7341ED1DF /* libPods-KifTests.a */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */; };
 		C9C8254315AE204D00D493FA /* options_add_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8253F15AE204D00D493FA /* options_add_disabled.png */; };
 		C9C8254515AE204D00D493FA /* options_transfer_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8254015AE204D00D493FA /* options_transfer_disabled.png */; };
@@ -687,6 +686,7 @@
 		F070E6381A2622EC00E17AFD /* incall_padding_right.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6321A2622EC00E17AFD /* incall_padding_right.png */; };
 		F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
 		F08BDC3D1A35E60F006210C9 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
+		F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F08F118519C09C6B007D70C2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B3318C0CF7000C4D7FE /* XCTest.framework */; };
 		F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -698,6 +698,7 @@
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
 		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
+		F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
 		F0B89C2818DC973E0050B60E /* wizard_external_sip.rc in Resources */ = {isa = PBXBuildFile; fileRef = F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */; };
@@ -774,12 +775,14 @@
 		F0C1F9211A2CA35A009402C9 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
 		F0C1F9221A2CA35C009402C9 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
 		F0C1F9231A2CA35E009402C9 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
+		F0C773921A94828900E0C486 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C773871A94822700E0C486 /* libKIF.a */; };
 		F0F952121A6AECD300254160 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F952111A6AECD300254160 /* WizardTester.m */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BC1939FE37006ABAB5 /* test_failed.png */; };
 		F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BD1939FE37006ABAB5 /* test_inprogress.png */; };
 		F84015C11939FE37006ABAB5 /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BE1939FE37006ABAB5 /* test_passed.png */; };
 		F84015C7193B4E34006ABAB5 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F84015C6193B4E34006ABAB5 /* LogsViewController.m */; };
+		F844AB141A93E3A200428306 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F844AB131A93E3A200428306 /* ContactsTester.m */; };
 		F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */; };
 /* End PBXBuildFile section */
 
@@ -818,6 +821,48 @@
 			proxyType = 1;
 			remoteGlobalIDString = F0BB8BD41936208100974404;
 			remoteInfo = LinphoneTester;
+		};
+		F0C773861A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46AA1857A0C700A5F081;
+			remoteInfo = KIF;
+		};
+		F0C773881A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB72047C1680DDAD00278DA2;
+			remoteInfo = "KIF-OCUnit";
+		};
+		F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECC1177F8C83005A041A;
+			remoteInfo = "Test Host";
+		};
+		F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46CD1857A0F300A5F081;
+			remoteInfo = "KIF Tests";
+		};
+		F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECEB177F8DB3005A041A;
+			remoteInfo = "KIF Tests-OCUnit";
+		};
+		F0C773901A94827E00E0C486 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EABD46791857A0C700A5F081;
+			remoteInfo = KIF;
 		};
 		F0F952061A6AEB1000254160 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -955,7 +1000,6 @@
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = Resources/ringback.wav; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.release.xcconfig"; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340751961506459A00B89C47 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
@@ -968,7 +1012,6 @@
 		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		57F005C615EE2D9200914747 /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
 		57F005C715EE2D9200914747 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
-		58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		631C4FAF19D2A8F2004BFE77 /* UIDigitButtonLongPlus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongPlus.h; sourceTree = "<group>"; };
 		631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongPlus.m; sourceTree = "<group>"; };
 		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
@@ -998,7 +1041,6 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsViewController.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsViewController.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -1741,6 +1783,7 @@
 		F0AF07131A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
 		F0AF07151A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F0AF07161A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F0B026F21AA710AF00FF49F7 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		F0B4FB5C1A65550B00637027 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Resources/Images.xcassets; sourceTree = "<group>"; };
 		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		F0B89C2418DC973E0050B60E /* wizard_external_sip.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_external_sip.rc; path = Resources/wizard_external_sip.rc; sourceTree = "<group>"; };
@@ -1782,6 +1825,7 @@
 		F0C1F90A1A28781F009402C9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		F0C1F90B1A28781F009402C9 /* strech-bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-bottom.png"; sourceTree = "<group>"; };
 		F0C1F90C1A28781F009402C9 /* strech-top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-top.png"; sourceTree = "<group>"; };
+		F0C7737D1A94822600E0C486 /* KIF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KIF.xcodeproj; path = Classes/KIF/KIF.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F0F952001A6AEB1000254160 /* KifTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KifTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0F952031A6AEB1000254160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0F952111A6AECD300254160 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
@@ -1790,9 +1834,10 @@
 		F84015BE1939FE37006ABAB5 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = Resources/test_passed.png; sourceTree = "<group>"; };
 		F84015C5193B4E34006ABAB5 /* LogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsViewController.h; sourceTree = "<group>"; };
 		F84015C6193B4E34006ABAB5 /* LogsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsViewController.m; sourceTree = "<group>"; };
+		F844AB121A93E3A200428306 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
+		F844AB131A93E3A200428306 /* ContactsTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTester.m; sourceTree = "<group>"; };
 		F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
 		F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
-		F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KifTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KifTests/Pods-KifTests.debug.xcconfig"; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1801,6 +1846,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */,
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
 				22509042196BD902007863F6 /* libopenh264.a in Frameworks */,
@@ -1875,6 +1921,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
 				F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */,
 				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
 				F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */,
@@ -1922,7 +1969,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				877ED6FD21D0CFEFA7E2A40A /* libPods-KifTests.a in Frameworks */,
+				F0C773921A94828900E0C486 /* libKIF.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2130,17 +2177,15 @@
 			children = (
 				633E388219FFB0F400936D1C /* README.md */,
 				080E96DDFE201D6D7F000001 /* Classes */,
-				F0F952011A6AEB1000254160 /* KifTests */,
+				F0F952011A6AEB1000254160 /* UITests */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F04892FE180C3296002FED35 /* ImageOptim.sh */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				F0BB8BD91936208100974404 /* LinphoneTester */,
-				F08F118819C09C6B007D70C2 /* LinphoneTester Tests */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				D398D3031594B0FB00FD553C /* Settings */,
-				60099578873114C41E4882F8 /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2185,6 +2230,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0B026F21AA710AF00FF49F7 /* libiconv.dylib */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
@@ -2255,17 +2301,6 @@
 				F03A9B7E18C0D9C900C4D7FE /* libcunit.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		60099578873114C41E4882F8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */,
-				2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */,
-				9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */,
-				58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
@@ -2457,7 +2492,7 @@
 				F08F118919C09C6B007D70C2 /* Supporting Files */,
 			);
 			path = "LinphoneTester Tests";
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		F08F118919C09C6B007D70C2 /* Supporting Files */ = {
 			isa = PBXGroup;
@@ -2960,6 +2995,7 @@
 		F0BB8BD91936208100974404 /* LinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
+				F08F118819C09C6B007D70C2 /* LinphoneTester Tests */,
 				F0BB8BE21936208100974404 /* AppDelegate.h */,
 				F0BB8BE31936208100974404 /* AppDelegate.m */,
 				F0BB8BEE1936208200974404 /* DetailViewController.h */,
@@ -3012,9 +3048,22 @@
 			path = Resources/launchscreen;
 			sourceTree = "<group>";
 		};
-		F0F952011A6AEB1000254160 /* KifTests */ = {
+		F0C7737E1A94822600E0C486 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				F0C773871A94822700E0C486 /* libKIF.a */,
+				F0C773891A94822700E0C486 /* libKIF-OCUnit.a */,
+				F0C7738B1A94822700E0C486 /* Test Host.app */,
+				F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */,
+				F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F0F952011A6AEB1000254160 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				F0C7737D1A94822600E0C486 /* KIF.xcodeproj */,
 				F0F952021A6AEB1000254160 /* Supporting Files */,
 				F0F952111A6AECD300254160 /* WizardTester.m */,
 				F0A1CE091A6B05A4001CA2BE /* WizardTester.h */,
@@ -3022,7 +3071,10 @@
 				F0A1CE071A6B056E001CA2BE /* ChatTester.m */,
 				F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */,
 				F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */,
+				F844AB121A93E3A200428306 /* ContactsTester.h */,
+				F844AB131A93E3A200428306 /* ContactsTester.m */,
 			);
+			name = UITests;
 			path = KifTests;
 			sourceTree = "<group>";
 		};
@@ -3099,15 +3151,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "KifTests" */;
 			buildPhases = (
-				0B22B73E22C69EAFDC887972 /* Check Pods Manifest.lock */,
 				F0F951FC1A6AEB1000254160 /* Sources */,
 				F0F951FD1A6AEB1000254160 /* Frameworks */,
 				F0F951FE1A6AEB1000254160 /* Resources */,
-				44F0A710CE6C6548D01CE14B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F0C773911A94827E00E0C486 /* PBXTargetDependency */,
 				F0F952071A6AEB1000254160 /* PBXTargetDependency */,
 			);
 			name = KifTests;
@@ -3159,6 +3210,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F0C7737E1A94822600E0C486 /* Products */;
+					ProjectRef = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+				},
+				{
 					ProductGroup = D3B90E1215C2CB5700F64F8C /* Products */;
 					ProjectRef = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 				},
@@ -3190,6 +3245,41 @@
 			fileType = archive.ar;
 			path = libNinePatch.a;
 			remoteRef = D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C773871A94822700E0C486 /* libKIF.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libKIF.a;
+			remoteRef = F0C773861A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C773891A94822700E0C486 /* libKIF-OCUnit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libKIF-OCUnit.a";
+			remoteRef = F0C773881A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738B1A94822700E0C486 /* Test Host.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Test Host.app";
+			remoteRef = F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests - XCTest.xctest";
+			remoteRef = F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests-OCUnit.octest";
+			remoteRef = F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3792,36 +3882,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0B22B73E22C69EAFDC887972 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		44F0A710CE6C6548D01CE14B /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-KifTests/Pods-KifTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3995,6 +4055,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */,
+				F844AB141A93E3A200428306 /* ContactsTester.m in Sources */,
 				F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */,
 				F0F952121A6AECD300254160 /* WizardTester.m in Sources */,
 			);
@@ -4017,6 +4078,11 @@
 			isa = PBXTargetDependency;
 			target = F0BB8BD41936208100974404 /* LinphoneTester */;
 			targetProxy = F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */;
+		};
+		F0C773911A94827E00E0C486 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KIF;
+			targetProxy = F0C773901A94827E00E0C486 /* PBXContainerItemProxy */;
 		};
 		F0F952071A6AEB1000254160 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5181,7 +5247,6 @@
 		};
 		F0F952081A6AEB1000254160 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8DB48A1936CB14E39F5981D /* Pods-KifTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5217,6 +5282,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5225,7 +5296,6 @@
 		};
 		F0F952091A6AEB1000254160 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2E4D955A02540CAA9251DB6F /* Pods-KifTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5255,6 +5325,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5264,7 +5340,6 @@
 		};
 		F0F9520A1A6AEB1000254160 /* Distribution */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9042210E58DB7DE97CE86248 /* Pods-KifTests.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5294,6 +5369,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";
@@ -5303,7 +5384,6 @@
 		};
 		F0F9520B1A6AEB1000254160 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58E408411081310A32F4B658 /* Pods-KifTests.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5333,6 +5413,12 @@
 				INFOPLIST_FILE = KifTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/linphone.app/linphone";

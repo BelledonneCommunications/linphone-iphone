@@ -38,11 +38,11 @@
     [super dealloc];
 }
 
-
 #pragma mark - ViewController Functions 
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    self.tableView.accessibilityIdentifier = @"ChatRoom list";
     [self loadData];
 }
 

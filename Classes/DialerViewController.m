@@ -22,6 +22,7 @@
 
 #import "DialerViewController.h"
 #import "IncallViewController.h"
+#import "DTAlertView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -276,6 +277,89 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
+#pragma mark - Debug Functions
+-(void)presentMailViewWithTitle:(NSString*)subject forRecipients:(NSArray*)recipients attachLogs:(BOOL)attachLogs {
+	if( [MFMailComposeViewController canSendMail] ){
+		MFMailComposeViewController* controller = [[MFMailComposeViewController alloc] init];
+		if( controller ){
+			controller.mailComposeDelegate = self;
+			[controller setSubject:subject];
+			[controller setToRecipients:recipients];
+
+			if( attachLogs ){
+				char * filepath = linphone_core_compress_log_collection([LinphoneManager getLc]);
+				if (filepath == NULL) {
+					Linphone_err(@"Cannot sent logs: file is NULL");
+					return;
+				}
+				NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+				NSString *filename = [appName stringByAppendingString:@".gz"];
+				NSString *mimeType = @"text/plain";
+
+				if ([filename hasSuffix:@".gz"]) {
+					mimeType = @"application/gzip";
+					filename = [appName stringByAppendingString:@".gz"];
+				} else {
+					Linphone_err(@"Unknown extension type: %@, cancelling email", filename);
+					return;
+				}
+				[controller setMessageBody:NSLocalizedString(@"Application logs", nil) isHTML:NO];
+				[controller addAttachmentData:[NSData dataWithContentsOfFile:[NSString stringWithUTF8String:filepath]] mimeType:mimeType fileName:filename];
+
+				ms_free(filepath);
+
+			}
+			self.modalPresentationStyle = UIModalPresentationPageSheet;
+			[self.view.window.rootViewController presentViewController:controller animated:TRUE completion:^{}];
+			[controller release];
+		}
+
+	} else {
+		UIAlertView* alert = [[UIAlertView alloc] initWithTitle:subject
+														message:NSLocalizedString(@"Error: no mail account configured", nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+											  otherButtonTitles: nil];
+		[alert show];
+		[alert release];
+	}
+}
+
+
+- (BOOL)displayDebugPopup:(NSString*)address {
+	LinphoneManager* mgr = [LinphoneManager instance];
+	NSString* debugAddress = [mgr lpConfigStringForKey:@"debug_popup_magic" withDefault:@""];
+	if( ![debugAddress isEqualToString:@""] && [address isEqualToString:debugAddress]){
+
+
+		DTAlertView* alertView = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Debug", nil)
+															message:NSLocalizedString(@"Choose an action", nil)];
+
+		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+
+		[alertView addButtonWithTitle:NSLocalizedString(@"Send logs", nil) block:^{
+			NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+			NSString* logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@"linphone-ios@linphone.org"];
+			[self presentMailViewWithTitle:appName forRecipients:@[logsAddress] attachLogs:true];
+		}];
+
+		BOOL debugEnabled   = [[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"];
+		NSString* actionLog = (debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
+		[alertView addButtonWithTitle:actionLog block:^{
+			// enable / disable
+			BOOL enableDebug = ![mgr lpConfigBoolForKey:@"debugenable_preference"];
+			[mgr lpConfigSetBool:enableDebug forKey:@"debugenable_preference"];
+			[mgr setLogsEnabled:enableDebug];
+		}];
+
+		[alertView show];
+		[alertView release];
+		return true;
+	}
+	return false;
+}
+
+
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {
@@ -339,6 +423,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     return YES;
 }
 
+#pragma mark - MFComposeMailDelegate
+
+-(void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	[controller dismissViewControllerAnimated:TRUE completion:^{}];
+	[self.navigationController setNavigationBarHidden:TRUE animated:FALSE];
+}
+
 
 #pragma mark - Action Functions
 
@@ -359,6 +450,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddressChange: (id)sender {
+	if( [self displayDebugPopup:self.addressField.text] ){
+		self.addressField.text = @"";
+	}
     if([[addressField text] length] > 0) {
         [addContactButton setEnabled:TRUE];
         [eraseButton setEnabled:TRUE];

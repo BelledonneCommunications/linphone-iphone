@@ -895,6 +895,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
     char* c_address                      = linphone_address_as_string_uri_only(remoteAddress);
     NSString* address                    = [NSString stringWithUTF8String:c_address];
+    NSString* remote_uri                 = [NSString stringWithUTF8String:c_address];
     const char* call_id                  = linphone_chat_message_get_custom_header(msg, "Call-ID");
     NSString* callID                     = [NSString stringWithUTF8String:call_id];
 
@@ -926,7 +927,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction    = NSLocalizedString(@"Show", nil);
 			notif.soundName      = @"msg.caf";
-			notif.userInfo       = @{@"from":address, @"call-id":callID};
+			notif.userInfo       = @{@"from":address, @"from_addr":remote_uri, @"call-id":callID};
 
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
@@ -1458,14 +1459,8 @@ static BOOL libStarted = FALSE;
     libmsbcg729_init(); // load g729 plugin
 #endif
 
-    /*to make sure we don't loose debug trace*/
-    if ([self lpConfigBoolForKey:@"debugenable_preference"]) {
-        linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-        ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-		/*must be done before creating linphone core to get its traces too*/
-    }
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	linphone_core_enable_log_collection([self lpConfigBoolForKey:@"debugenable_preference"]);
+	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
 
 
 	theLinphoneCore = linphone_core_new_with_config (&linphonec_vtable
@@ -1477,7 +1472,8 @@ static BOOL libStarted = FALSE;
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-
+	linphone_core_set_user_certificates_path(theLinphoneCore,[[LinphoneManager cacheDirectory] UTF8String]);
+	
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
 	 Wait for this to finish the code configuration */
 
@@ -2078,10 +2074,12 @@ static void audioRouteChangeListenerCallback (
 
 -(void)setLogsEnabled:(BOOL)enabled {
 	if (enabled) {
+		NSLog(@"Enabling debug logs");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 		linphone_core_enable_log_collection(enabled);
 	} else {
+		NSLog(@"Disabling debug logs");
 		linphone_core_enable_log_collection(enabled);
 		linphone_core_disable_logs();
 	}

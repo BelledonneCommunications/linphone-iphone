@@ -94,6 +94,7 @@
     [normalView setAlpha:1.0f];
     [editView setAlpha:0.0f];
     [tableView setEditing:TRUE animated:false];
+    tableView.accessibilityIdentifier = @"Contact Name Table";
 }
 
 

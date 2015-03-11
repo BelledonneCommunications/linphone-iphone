@@ -66,6 +66,7 @@
 [submodule "submodules/cunit"]
 	path = submodules/cunit
 	url = git://git.linphone.org/cunit.git
+	ignore = dirty
 [submodule "submodules/externals/openh264"]
 	path = submodules/externals/openh264
 	url = https://github.com/cisco/openh264
@@ -76,3 +77,7 @@
 [submodule "submodules/mswebrtc"]
 	path = submodules/mswebrtc
 	url = git://git.linphone.org/mswebrtc.git
+[submodule "Classes/KIF"]
+	path = Classes/KIF
+	url = https://github.com/kif-framework/KIF.git
+	branch = origin/v3.1.2

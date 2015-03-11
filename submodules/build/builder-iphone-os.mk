@@ -39,7 +39,9 @@ linphone_configure_controls = \
 				--disable-tutorials \
 				--disable-tools \
 				--enable-msg-storage=yes \
-				--enable-ios
+				--enable-ios \
+				--with-polarssl=$(prefix) \
+				--enable-dtls
 
 
 #path

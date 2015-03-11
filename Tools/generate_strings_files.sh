@@ -2,6 +2,8 @@
 
 root_directory=$(cd "$(dirname $0)" && pwd)/../
 
+set -e
+
 # The 2 only specific cases of the application: since we are length limited for push
 # notifications, the ID is not matching the English translation... so we must keep
 # the translations!
@@ -17,31 +19,32 @@ sed -i.bak "s/= \"IM_MSG\";/= \"$IM_MSG_EN\";/" $localizable_en
 rm $localizable_en.bak
 
 to_utf8=$(mktemp -t linphone)
-for xibfile in $(find $(find $root_directory/Classes -name Base.lproj) -name '*.xib'); do
-	stringsfile=${xibfile/.xib/.strings}
 
-	ibtool --generate-strings-file $stringsfile $xibfile
+find $root_directory/Classes -not -path "$root_directory/Classes/KIF/*" -name Base.lproj -exec find {} -name '*.xib' \; | while read -r xibfile; do
+	stringsfile="${xibfile/.xib/.strings}"
 
-    # remove if empty
-    iconv -f utf-16 -t utf-8 $stringsfile > $to_utf8
-    if [ ! -s $to_utf8 ]; then
-    	echo "$(basename $stringsfile) is empty, removing"
-    	rm $stringsfile
-    else
-		echo "$(basename $xibfile)->$(basename $stringsfile)"
+	ibtool --generate-strings-file "$stringsfile" "$xibfile"
 
-		res_name=$(basename $stringsfile | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
-		dir_name=$(echo $(dirname $stringsfile) | sed -E "s|$root_directory/||")
+	# remove if empty
+	iconv -f utf-16 -t utf-8 "$stringsfile" > "$to_utf8"
+	if [ ! -s "$to_utf8" ]; then
+		echo "$(basename "$stringsfile") is empty, removing"
+		rm "$stringsfile"
+	else
+		echo "$(basename "$xibfile")->$(basename "$stringsfile")"
+
+		res_name=$(basename "$stringsfile" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
+		dir_name=$(echo $(dirname "$stringsfile") | sed -E "s|$root_directory/||")
 		# if not registered in transifex config file, register it
 		if ! grep -q $res_name $root_directory/.tx/config; then
 			echo "not found in .tx/config, adding it"
 			echo "
 [linphone-ios.$res_name]
-file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename $stringsfile)
-source_file = $dir_name/$(basename $stringsfile)
+file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
+source_file = $dir_name/$(basename "$stringsfile")
 source_lang = en
 " >> $root_directory/.tx/config
 		fi
-    fi
+	fi
 done
 rm $to_utf8
