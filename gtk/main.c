@@ -2085,7 +2085,7 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 
 	config_file=linphone_gtk_get_config_file(NULL);
-	
+
 	workingdir= (tmp=g_getenv("LINPHONE_WORKDIR")) ? g_strdup(tmp) : NULL;
 
 #ifdef WIN32
@@ -2112,6 +2112,7 @@ int main(int argc, char *argv[]){
 		}
 #elif __APPLE__
 		setenv("LANG",lang,1);
+		setenv("LANGUAGE",lang,1);
 #else
 		setenv("LANGUAGE",lang,1);
 #endif
