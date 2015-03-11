@@ -583,6 +583,8 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		/*special case for suite Call which is now splitted into simple and multi*/
 		CU_run_suite(CU_get_suite("Single call"));
 		CU_run_suite(CU_get_suite("Multi call"));
+		CU_run_suite(CU_get_suite("DTMF"));
+		CU_run_suite(CU_get_suite("Transport"));
 	} else if (suite_name){
 			CU_pSuite suite;
 			suite=CU_get_suite(suite_name);

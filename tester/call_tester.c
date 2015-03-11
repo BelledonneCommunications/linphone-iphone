@@ -275,17 +275,23 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
 
 	if (linphone_core_get_media_encryption(caller_mgr->lc) != LinphoneMediaEncryptionNone
-		&& linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
+		|| linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
 		/*wait for encryption to be on, in case of zrtp or dtls, it can take a few seconds*/
-		if ((linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP) || (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS))
+		if (	(linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionZRTP)
+				|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS))
 			wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_caller.number_of_LinphoneCallEncryptedOn+1);
-		if ((linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP) || (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionDTLS))
+		if ((linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionZRTP)
+			|| (linphone_core_get_media_encryption(callee_mgr->lc) == LinphoneMediaEncryptionDTLS)
+			|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS) /*also take care of caller policy*/ )
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 		{
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(linphone_core_get_current_call(callee_mgr->lc));
 			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
-			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee_mgr->lc));
+			if (linphone_call_params_get_media_encryption(call_param) != LinphoneMediaEncryptionDTLS) {
+				/*for DTLS this test is not relevant */
+				CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee_mgr->lc));
+			}
 		}
 	}
 	return result;
