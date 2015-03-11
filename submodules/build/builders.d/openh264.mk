@@ -29,6 +29,13 @@ endif
 ifneq (,$(findstring aarch64-,$(host)))
 	ARCH=arm64
 endif
+ifneq (,$(findstring x86_64-,$(host)))
+	ARCH=x86_64
+endif
+
+ifeq (,$(ARCH))
+$(error Undefined arch for openh264)
+endif
 
 openh264_dir?=externals/openh264
 

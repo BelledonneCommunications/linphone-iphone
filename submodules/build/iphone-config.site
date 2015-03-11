@@ -19,7 +19,7 @@ elif test "${host_alias}" = "aarch64-apple-darwin" ; then
 	ARCH=arm64
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"
-elif test "${host_alias}" = "x86_64-apple-darwin" ; then 
+elif test "${host_alias}" = "x86_64-apple-darwin.ios" ; then 
 	ARCH=x86_64
 	PLATFORM=Simulator
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=x86_64"

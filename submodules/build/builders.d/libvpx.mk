@@ -35,6 +35,9 @@ else ifneq (,$(findstring armv7,$(host)))
 else ifneq (,$(findstring aarch64,$(host)))
 	libvpx_configure_options+= --target=arm64-darwin-gcc
 	take_binary = arm64
+else ifneq (,$(findstring x86_64,$(host)))
+	libvpx_configure_options+= --target=x86_64-iphonesimulator-gcc
+	take_binary = x86_64
 else
 	libvpx_configure_options+= --target=x86-darwin10-gcc
 	take_binary = i386
