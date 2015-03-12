@@ -655,11 +655,11 @@ static void lime_file_transfer_message(void) {
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 	}
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1);
 
 	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
