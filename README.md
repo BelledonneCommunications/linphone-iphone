@@ -59,6 +59,8 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
  This SDK can be generated in 2 flavors. First is with GPL third parties, it means liblinphone includes GPL third parties like FFMPEG or X264.
  If you choose this flavor, your final application must comply with GPL in any case. This is the default mode.
 
+ Note: We are not compiling for the 32 bits i386 simulator by default, for speed reasons. If you want to activate it, you should call make with "enable_i386=yes".
+
  To generate the liblinphone multi arch sdk in GPL mode, do:
 
         cd submodules/build && make all
