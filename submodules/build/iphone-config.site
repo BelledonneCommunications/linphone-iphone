@@ -4,18 +4,18 @@ SDK_VERSION_MAJOR=5
 SDK_VERSION=5.0
 MCPU=""
 CLANG_TARGET_SPECIFIER=miphoneos-version-min
-if test "${host_alias}" = "i386-apple-darwin" ; then 
+if test "${host_alias}" = "i386-apple-darwin.ios" ; then 
 	PLATFORM=Simulator
 	ARCH=i386
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=i386"
 	MCPU=""
 	CLANG_TARGET_SPECIFIER=mios-simulator-version-min
-elif test "${host_alias}" = "armv7-apple-darwin" ; then 
+elif test "${host_alias}" = "armv7-apple-darwin.ios" ; then 
 	ARCH=armv7
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 	MCPU="-mcpu=cortex-a8"
-elif test "${host_alias}" = "aarch64-apple-darwin" ; then 
+elif test "${host_alias}" = "aarch64-apple-darwin.ios" ; then 
 	ARCH=arm64
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=aarch64"

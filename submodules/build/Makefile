@@ -136,13 +136,13 @@ broadcast_%:
 	@echo "Broadcasting target '$*' to $(all_hosts)"
 	@for h in $(all_hosts); do \
 		echo "==== starting build for host $$h ===="; \
-		make -f builder-iphone-os.mk host=$$h $(LINPHONE_OPTIONS) $* ; \
+		make -f builder-iphone-os.mk host=$$h $(LINPHONE_OPTIONS) $* || exit 1 ; \
 	done
 
 build-% clean-% veryclean-%:
 	@for h in $(all_hosts); do \
 		echo "==== starting build of $@ for host $$h ===="; \
-		make -f builder-iphone-os.mk host=$$h $(LINPHONE_OPTIONS) $@ ; \
+		make -f builder-iphone-os.mk host=$$h $(LINPHONE_OPTIONS) $@ || exit 1 ; \
 	done
 
 sdk:
