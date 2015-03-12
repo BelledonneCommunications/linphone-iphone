@@ -190,7 +190,10 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	struct stat statbuf;
 
 	if (liblinphone_log_func != NULL) {
-		liblinphone_log_func(level, fmt, args);
+		va_list args_copy;
+		va_copy(args_copy, args);
+		liblinphone_log_func(level, fmt, args_copy);
+		va_end(args_copy);
 	}
 
 	ortp_gettimeofday(&tp, NULL);
