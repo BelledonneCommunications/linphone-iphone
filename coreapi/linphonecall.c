@@ -2368,7 +2368,7 @@ void static start_dtls_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
 	if( remote_desc == NULL || result_desc == NULL ){
-		ms_warning("Invalid remote or result media description, disabling DTLS");
+		/* this can happen in some tricky cases (early-media without SDP in the 200). In that case, simply skip DTLS code */
 		return;
 	}
 
@@ -2403,7 +2403,7 @@ void static set_dtls_fingerprint_on_all_streams(LinphoneCall *call) {
 	SalMediaDescription *result_desc = sal_call_get_final_media_description(call->op);
 
 	if( remote_desc == NULL || result_desc == NULL ){
-		ms_warning("Invalid remote or final media desc, aborting DTLS fingerprinting");
+		/* this can happen in some tricky cases (early-media without SDP in the 200). In that case, simply skip DTLS code */
 		return;
 	}
 
