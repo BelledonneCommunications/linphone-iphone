@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-host?=armv7-apple-darwin
+host?=armv7-apple-darwin.ios
 enable_i386?=no
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
@@ -222,15 +222,15 @@ include builders.d/*.mk
 ####################################################################
 
 multi-arch:
-	arm_archives=`find $(prefix) -name *.a` ;\
+	@arm_archives=`find $(prefix) -name *.a` ;\
 	mkdir -p $(prefix)/../apple-darwin; \
 	cp -rf $(prefix)/include  $(prefix)/../apple-darwin/. ; \
 	cp -rf $(prefix)/share  $(prefix)/../apple-darwin/. ; \
 	for archive in $$arm_archives ; do \
 		i386_path=`echo $$archive | sed -e "s/armv7/i386/"` ;\
 		arm64_path=`echo $$archive | sed -e "s/armv7/aarch64/"` ;\
-		x64_path=`echo $$archive | sed -e "s/armv7/x86_64/" | sed -e "s/darwin/darwin.ios/"` ;\
-		destpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/armv7-//"` ;\
+		x64_path=`echo $$archive | sed -e "s/armv7/x86_64/"` ;\
+		destpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/armv7-//" | sed -e "s/.ios//"` ;\
 		all_paths=`echo $$archive $$arm64_path`; \
 		all_archs="armv7,aarch64"; \
 		mkdir -p `dirname $$destpath` ; \
