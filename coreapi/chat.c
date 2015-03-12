@@ -1468,6 +1468,10 @@ void linphone_chat_message_download_file(LinphoneChatMessage *message) {
 	const char *url=message->external_body_url;
 	char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 
+	if (url == NULL) {
+		ms_error("Cannot download file from chat message [%p] because url is NULL",message);
+		return;
+	}
 	uri=belle_generic_uri_parse(url);
 
 	message->http_request=belle_http_request_create("GET",
