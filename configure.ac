@@ -71,7 +71,7 @@ case $target in
 		mingw_found=yes
 		AC_CHECK_TOOL(WINDRES, windres)
 	;;
-	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin|aarch64-apple-darwin|x86_64-apple-darwin.ios)
+	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin|aarch64-apple-darwin|*-apple-darwin.ios)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
 		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
