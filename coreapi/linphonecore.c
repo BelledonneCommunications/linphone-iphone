@@ -324,27 +324,31 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	}
 }
 
-static void delete_log_collection_upload_file(void) {
+static void clean_log_collection_upload_context(LinphoneCore *lc) {
 	char *filename = ms_strdup_printf("%s/%s_log.%s",
 		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
 	unlink(filename);
 	ms_free(filename);
+	if (lc && lc->log_collection_upload_information) {
+		ms_free(lc->log_collection_upload_information);
+		lc->log_collection_upload_information=NULL;
+	}
 }
 
 static void process_io_error_upload_log_collection(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("I/O Error during log collection upload to %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "I/O Error");
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(core);
 }
 
 static void process_auth_requested_upload_log_collection(void *data, belle_sip_auth_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("Error during log collection upload: auth requested to connect %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Auth requested");
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(core);
 }
 
 /**
@@ -471,7 +475,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			if (file_url != NULL) {
 				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
 			}
-			delete_log_collection_upload_file();
+			clean_log_collection_upload_context(core);
 		}
 	}
 }
@@ -610,7 +614,7 @@ char * linphone_core_compress_log_collection() {
 void linphone_core_reset_log_collection() {
 	char *filename;
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(NULL);
 	filename = ms_strdup_printf("%s/%s1.log",
 			liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
