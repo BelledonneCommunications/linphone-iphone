@@ -714,6 +714,143 @@ static void call_with_ipv6(void) {
 	ortp_exit();
 }
 
+static void file_transfer_message_rcs_to_external_body_client(void) {
+	char* to;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* message;
+	LinphoneChatMessageCbs *cbs;
+	LinphoneContent* content;
+	FILE *file_to_send = NULL;
+	size_t file_size;
+	char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", liblinphone_tester_file_prefix);
+	char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", liblinphone_tester_writable_dir_prefix);
+	
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
+	linphone_core_refresh_registers(marie->lc);
+	//TODO: remove the next two lines once linphone core will send the header automatically
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+	linphone_core_refresh_registers(pauline->lc);
+
+	file_to_send = fopen(send_filepath, "rb");
+	fseek(file_to_send, 0, SEEK_END);
+	file_size = ftell(file_to_send);
+	fseek(file_to_send, 0, SEEK_SET);
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
+
+	/* create a chatroom on pauline's side */
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+	/* create a file transfer message */
+	content = linphone_core_create_content(pauline->lc);
+	linphone_content_set_type(content,"image");
+	linphone_content_set_subtype(content,"jpeg");
+	linphone_content_set_size(content,file_size); /*total size to be transfered*/
+	linphone_content_set_name(content,"nowebcamCIF.jpg");
+	message = linphone_chat_room_create_file_transfer_message(chat_room, content);
+	linphone_chat_message_set_user_data(message, file_to_send);
+	cbs = linphone_chat_message_get_callbacks(message);
+	{
+		int dummy=0;
+		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge message stored in the server*/
+		reset_counters(&marie->stat);
+		reset_counters(&pauline->stat);
+	}
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
+	linphone_chat_room_send_chat_message(chat_room,message);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	fclose(file_to_send);
+	if (marie->stat.last_received_chat_message ) {
+		cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+	}
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
+	CU_ASSERT_TRUE(compare_files(send_filepath, receive_filepath));
+	
+	linphone_content_unref(content);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(send_filepath);
+	ms_free(receive_filepath);
+}
+
+static void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+	char *to;
+	LinphoneChatMessageCbs *cbs;
+	LinphoneChatRoom *chat_room;
+	LinphoneChatMessage *message;
+	
+	/* create a chatroom on pauline's side */
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	
+	message = linphone_chat_room_create_message(chat_room, NULL);
+	
+	cbs = linphone_chat_message_get_callbacks(message);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	
+	linphone_chat_message_set_external_body_url(message, "https://www.linphone.org:444//tmp/54ec58280ace9_c30709218df8eaba61d1.jpg");
+	linphone_chat_room_send_chat_message(chat_room, message);
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+	if (marie->stat.last_received_chat_message) {
+		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+	}
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
+
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1);
+}
+
+static void file_transfer_message_external_body_to_external_body_client(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, NULL, NULL);
+	linphone_core_refresh_registers(marie->lc);
+	linphone_core_refresh_registers(pauline->lc);
+	
+	send_file_transfer_message_using_external_body_url(marie, pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void file_transfer_message_external_body_to_rcs_client(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
+	linphone_core_refresh_registers(marie->lc);
+	//TODO: remove the next two lines once linphone core will send the header automatically
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+	linphone_core_refresh_registers(pauline->lc);
+	
+	send_file_transfer_message_using_external_body_url(marie, pauline);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
 	{ "Message forking", message_forking },
@@ -730,7 +867,10 @@ test_t flexisip_tests[] = {
 	{ "Early-media call forking", early_media_call_forking },
 	{ "Call with sips", call_with_sips },
 	{ "Call with sips not achievable", call_with_sips_not_achievable },
-	{ "Call with ipv6", call_with_ipv6 }
+	{ "Call with ipv6", call_with_ipv6 },
+	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
+	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
+	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client }
 };
 
 
