@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 error_on_quit=0
 
@@ -17,7 +17,6 @@ check_installed() {
 
 cd $(dirname $0)/..
 
-#autoconf pkg-config java ant yasm nasm wget
 for prog in autoconf automake pkg-config doxygen java nasm gettext wget yasm optipng; do
 	check_installed "$prog" "it"
 done
@@ -26,11 +25,18 @@ check_installed "ginstall" "coreutils"
 check_installed "intltoolize" "intltool"
 check_installed "convert" "imagemagick"
 
-if ! check_installed "libtoolize" "libtool"; then
-	if [ ! -z "$(which glibtoolize)" ]; then
-		echo_err "Note: it seems that you are using HomeBrew. Please do a symbolic link from " \
-				 "glibtoolize to libtoolize: 'ln -s $(which glibtoolize) /usr/local/bin/libtoolize'"
+if [ -z "$(which libtoolize)" ]; then
+	glibtoolize=$(which glibtoolize)
+	if [ ! -z "$glibtoolize" ]; then
+		echo_err "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s $glibtoolize ${glibtoolize/glibtoolize/libtoolize}'"
+	else
+		echo_err "Could not find libtoolize. Please install libtool."
 	fi
+fi
+
+# just ensure that JDK is installed - if not, it will display user a popup
+if ! java -version &>/dev/null; then
+	echo_err "Please install Java"
 fi
 
 # needed by x264

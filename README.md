@@ -23,7 +23,7 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 * Using MacPorts:
 
-        sudo port install autoconf automake pkg-config doxygen antlr3 java nasm gettext wget yasm optipng ImageMagick coreutils intltool
+        sudo port install autoconf automake pkgconfig doxygen antlr3 nasm gettext wget yasm optipng ImageMagick coreutils intltool
 
 ### System linking
 
