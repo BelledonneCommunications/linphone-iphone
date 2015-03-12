@@ -113,25 +113,25 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	if (content_type && (cipher_xml=is_cipher_xml(content_type))) {
 		/* access the zrtp cache to get keys needed to decipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
+		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
 		} else {
-			int cacheSize;
-			uint8_t *cacheString;
+			size_t cacheSize;
+			char *cacheString;
 			int retval;
 			xmlDocPtr cacheXml;
-
-			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-			cacheSize = ftell(CACHEFD);     /* Get file length */
-			rewind(CACHEFD);               /* Back to start of file */
-			cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
-			fread(cacheString, 1, cacheSize, CACHEFD);
+			
+			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString){
+				ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
+				return;
+			}
 			cacheString[cacheSize] = '\0';
 			cacheSize += 1;
 			fclose(CACHEFD);
-			cacheXml = xmlParseDoc(cacheString);
-			free(cacheString);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
 			retval = lime_decryptMultipartMessage(cacheXml, (uint8_t *)belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)), &decryptedMessage);
 			if (retval != 0) {
 				ms_warning("Unable to decrypt message, reason : %s - op [%p]", lime_error_code_to_string(retval), op);
@@ -146,8 +146,10 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 				int xmlStringLength;
 				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 				/* write it to the cache file */
-				CACHEFD = fopen(lc->zrtp_secrets_cache, "w+");
-				fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
+				CACHEFD = fopen(lc->zrtp_secrets_cache, "wb+");
+				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+					ms_warning("Fail to write cache");
+				}
 				xmlFree(xmlStringOutput);
 				fclose(CACHEFD);
 			}
@@ -258,44 +260,48 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	if ((strcmp(content_type, "xml/cipher") == 0) || ((strcmp(content_type, "application/cipher.vnd.gsma.rcs-ft-http+xml") == 0))) {
 		/* access the zrtp cache to get keys needed to cipher the message */
 		LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "r+");
+		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to encrypt message");
+			/*probably not a good idea to do this:*/
 			sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
 			op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
-			return 0;
+			return -1;
 		} else {
-			int cacheSize;
-			uint8_t *cacheString;
+			size_t cacheSize;
+			char *cacheString;
 			xmlDocPtr cacheXml;
 			int retval;
 
-			fseek(CACHEFD, 0L, SEEK_END);  /* Position to end of file */
-			cacheSize = ftell(CACHEFD);     /* Get file length */
-			rewind(CACHEFD);               /* Back to start of file */
-			cacheString = (uint8_t *)malloc(cacheSize*sizeof(uint8_t)+1); /* string must be null terminated */
-			fread(cacheString, 1, cacheSize, CACHEFD);
+			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
+			if (!cacheString){
+				ms_warning("Unable to load content of ZRTP ZID cache to encrypt message");
+				return -1;
+			}
 			cacheString[cacheSize] = '\0';
 			cacheSize += 1;
 			fclose(CACHEFD);
-			cacheXml = xmlParseDoc(cacheString);
-			free(cacheString);
+			cacheXml = xmlParseDoc((xmlChar*)cacheString);
+			ms_free(cacheString);
 			retval = lime_createMultipartMessage(cacheXml, (uint8_t *)msg, (uint8_t *)peer_uri, &multipartEncryptedMessage);
 			if (retval != 0) {
 				ms_warning("Unable to encrypt message for %s : %s - op [%p]", peer_uri, lime_error_code_to_string(retval), op);
 				xmlFreeDoc(cacheXml);
 				free(multipartEncryptedMessage);
+				/*probably not a good idea to do this:*/
 				sal_error_info_set(&op->error_info, SalReasonNotAcceptable, 488, "Unable to encrypt IM", NULL);
 				op->base.root->callbacks.text_delivery_update(op,SalTextDeliveryFailed);
-				return 0;
+				return -1;
 			} else {
 				/* dump updated cache to a string */
 				xmlChar *xmlStringOutput;
 				int xmlStringLength;
 				xmlDocDumpFormatMemoryEnc(cacheXml, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 				/* write it to the cache file */
-				CACHEFD = fopen(lc->zrtp_secrets_cache, "w+");
-				fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD);
+				CACHEFD = fopen(lc->zrtp_secrets_cache, "wb+");
+				if (fwrite(xmlStringOutput, 1, xmlStringLength, CACHEFD)<=0){
+					ms_warning("Unable to write zid cache");
+				}
 				xmlFree(xmlStringOutput);
 				fclose(CACHEFD);
 				content_length = strlen((const char *)multipartEncryptedMessage);

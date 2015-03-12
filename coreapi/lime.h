@@ -43,7 +43,7 @@ typedef struct limeURIKeys_struct {
  *
  * @return 0 on success, error code otherwise
  */
-__attribute__ ((visibility ("default"))) int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
+int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
 
 /**
  * @brief Get from cache all the senders keys associated to the given URI
@@ -55,7 +55,7 @@ __attribute__ ((visibility ("default"))) int lime_getSelfZid(xmlDocPtr cacheBuff
  *
  * @return 0 on success, error code otherwise
  */
-__attribute__ ((visibility ("default"))) int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys);
+int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys);
 
 /**
  * @brief Get the receiver key associated to the ZID given in the associatedKey parameter
@@ -65,7 +65,7 @@ __attribute__ ((visibility ("default"))) int lime_getCachedSndKeysByURI(xmlDocPt
  *
  * @return 0 on success, error code otherwise
  */
-__attribute__ ((visibility ("default"))) int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
+int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
 
 /**
  * @brief Set in cache the given key material, association is made by ZID contained in the associatedKey parameter
@@ -77,7 +77,7 @@ __attribute__ ((visibility ("default"))) int lime_getCachedRcvKeyByZid(xmlDocPtr
  * @return 0 on success, error code otherwise
  */
 
-__attribute__ ((visibility ("default"))) int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role);
+int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role);
 
 /**
  * @brief Free all allocated data in the associated keys structure
@@ -86,7 +86,7 @@ __attribute__ ((visibility ("default"))) int lime_setCachedKey(xmlDocPtr cacheBu
  * @param[in/out]	associatedKeys	The structure to be cleaned
  *
  */
-__attribute__ ((visibility ("default"))) void lime_freeKeys(limeURIKeys_t associatedKeys);
+void lime_freeKeys(limeURIKeys_t associatedKeys);
 
 /**
  * @brief Derive in place the key given in parameter and increment session index
@@ -96,7 +96,7 @@ __attribute__ ((visibility ("default"))) void lime_freeKeys(limeURIKeys_t associ
  *
  * @return 0 on success, error code otherwise
  */
-__attribute__ ((visibility ("default"))) int lime_deriveKey(limeKey_t *key);
+int lime_deriveKey(limeKey_t *key);
 
 /**
  * @brief encrypt a message with the given key
@@ -111,7 +111,7 @@ __attribute__ ((visibility ("default"))) int lime_deriveKey(limeKey_t *key);
  * @return 0 on success, error code otherwise
  * 
  */
-__attribute__ ((visibility ("default"))) int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage);
+int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage);
 
 /**
  * @brief Encrypt a file before transfering it to the server, encryption is done in several call, first one will be done with cryptoContext null, last one with length = 0
@@ -125,7 +125,7 @@ __attribute__ ((visibility ("default"))) int lime_encryptMessage(limeKey_t *key,
  * @return 0 on success, error code otherwise
  *
  */
-__attribute__ ((visibility ("default"))) int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
+int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
 
 /**
  * @brief Decrypt a file retrieved from server, decryption is done in several call, first one will be done with cryptoContext null, last one with length = 0
@@ -139,7 +139,7 @@ __attribute__ ((visibility ("default"))) int lime_encryptFile(void **cryptoConte
  * @return 0 on success, error code otherwise
  *
  */
-__attribute__ ((visibility ("default"))) int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
+int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
 
 /**
  * @brief decrypt and authentify a message with the given key
@@ -155,7 +155,7 @@ __attribute__ ((visibility ("default"))) int lime_decryptFile(void **cryptoConte
  * 
  */
 
-__attribute__ ((visibility ("default"))) int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage);
+int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage);
 
 /**
  * @brief create the encrypted multipart xml message from plain text and destination URI
@@ -168,7 +168,7 @@ __attribute__ ((visibility ("default"))) int lime_decryptMessage(limeKey_t *key,
  *
  * @return 	0 on success, error code otherwise
  */
-__attribute__ ((visibility ("default"))) int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output);
+int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output);
 
 /**
  * @brief decrypt a multipart xml message
@@ -181,7 +181,7 @@ __attribute__ ((visibility ("default"))) int lime_createMultipartMessage(xmlDocP
  * @return 	0 on success, error code otherwise
  */
 
-__attribute__ ((visibility ("default"))) int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output);
+int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output);
 
 /**
  * @brief given a readable version of error code generated by Lime functions

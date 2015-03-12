@@ -1148,7 +1148,7 @@ void printHex(char *title, uint8_t *data, uint32_t length) {
 
 static void lime_unit(void) {
 	int retval;
-	int size;
+	size_t size;
 	uint8_t *cacheBufferString;
 	xmlDocPtr cacheBufferAlice;
 	xmlDocPtr cacheBufferBob;
@@ -1167,30 +1167,22 @@ static void lime_unit(void) {
 	xmlDocPtr cacheBuffer;
 
 	/* Load Alice cache file */
-	FILE *CACHE = fopen("ZIDCacheAlice.xml", "r+");
-	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
-  	size = ftell(CACHE);     /* Get file length */
-  	rewind(CACHE);               /* Back to start of file */
-	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
-	fread(cacheBufferString, 1, size, CACHE);
+	FILE *CACHE = fopen("ZIDCacheAlice.xml", "rb+");
+	cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
 	cacheBufferAlice = xmlParseDoc(cacheBufferString);
-	free(cacheBufferString);
+	ms_free(cacheBufferString);
 	
 	/* Load Bob cache file */
-	CACHE = fopen("ZIDCacheBob.xml", "r+");
-	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
-  	size = ftell(CACHE);     /* Get file length */
-  	rewind(CACHE);               /* Back to start of file */
-	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
-	fread(cacheBufferString, 1, size, CACHE);
+	CACHE = fopen("ZIDCacheBob.xml", "rb+");
+	cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
 	cacheBufferBob = xmlParseDoc(cacheBufferString);
-	free(cacheBufferString);
+	ms_free(cacheBufferString);
 
 
 
@@ -1216,14 +1208,14 @@ static void lime_unit(void) {
 	/* dump the xml document into a string */
 	xmlDocDumpFormatMemoryEnc(cacheBufferAlice, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 	/* write it to the file */
-	CACHE = fopen("ZIDCacheAlice.xml", "w+");
+	CACHE = fopen("ZIDCacheAlice.xml", "wb+");
 	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
 	xmlFree(xmlStringOutput);
 	fclose(CACHE);
 
 	xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 	/* write it to the file */
-	CACHE = fopen("ZIDCacheBob.xml", "w+");
+	CACHE = fopen("ZIDCacheBob.xml", "wb+");
 	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
 	xmlFree(xmlStringOutput);
 	fclose(CACHE);
@@ -1233,17 +1225,13 @@ static void lime_unit(void) {
 	xmlFreeDoc(cacheBufferBob);
 
 	/* Load cache file */
-	CACHE = fopen("ZIDCache.xml", "r+");
-	fseek(CACHE, 0L, SEEK_END);  /* Position to end of file */
-  	size = ftell(CACHE);     /* Get file length */
-  	rewind(CACHE);               /* Back to start of file */
-	cacheBufferString = (uint8_t *)malloc(size*sizeof(uint8_t)+1);
-	fread(cacheBufferString, 1, size, CACHE);
+	CACHE = fopen("ZIDCache.xml", "rb+");
+	cacheBufferString = (uint8_t*) ms_load_file_content(CACHE, &size);
 	*(cacheBufferString+size) = '\0';
 	fclose(CACHE);
 	/* parse it to an xmlDoc */
 	cacheBuffer = xmlParseDoc(cacheBufferString);
-	free(cacheBufferString);
+	ms_free(cacheBufferString);
 
 	/* get data from cache : sender */
 	associatedKeys.peerURI = (uint8_t *)malloc(15);

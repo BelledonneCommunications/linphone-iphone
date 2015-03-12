@@ -65,7 +65,7 @@ liblinphone_la_SOURCES=\
 	linphonecore_utils.h \
 	localplayer.c \
 	lpc2xml.c \
-	lime.c \
+	lime.c lime.h\
 	lpconfig.c lpconfig.h \
 	lsd.c \
 	message_storage.c \
