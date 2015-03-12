@@ -29,6 +29,8 @@ static void linphone_content_destroy(LinphoneContent *content) {
 		if (content->lcp.data) belle_sip_free(content->lcp.data);
 		if (content->lcp.encoding) belle_sip_free(content->lcp.encoding);
 		if (content->lcp.name) belle_sip_free(content->lcp.name);
+		if (content->lcp.key) belle_sip_free(content->lcp.key);
+		/* note : crypto context is allocated/destroyed by the encryption function */
 	}
 }
 
@@ -38,6 +40,7 @@ static void linphone_content_clone(LinphoneContent *obj, const LinphoneContent *
 	linphone_content_set_subtype(obj, linphone_content_get_subtype(ref));
 	linphone_content_set_encoding(obj, linphone_content_get_encoding(ref));
 	linphone_content_set_name(obj, linphone_content_get_name(ref));
+	linphone_content_set_key(obj, linphone_content_get_key(ref), linphone_content_get_key_size(ref));
 	if (linphone_content_get_buffer(ref) != NULL) {
 		linphone_content_set_buffer(obj, linphone_content_get_buffer(ref), linphone_content_get_size(ref));
 	} else {
@@ -161,12 +164,36 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
 	}
 }
 
+size_t linphone_content_get_key_size(const LinphoneContent *content) {
+	return content->lcp.keyLength;
+}
+
+const char * linphone_content_get_key(const LinphoneContent *content) {
+	return content->lcp.key;
+}
+
+void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength) {
+	if (content->lcp.key != NULL) {
+		belle_sip_free(content->lcp.key);
+		content->lcp.key = NULL;
+	}
+	if (key != NULL) {
+		content->lcp.key = belle_sip_malloc(keyLength);
+		memcpy(content->lcp.key, key, keyLength);
+	}
+}
+
+/* crypto context is managed(allocated/freed) by the encryption function, so provide the address of field in the private structure */
+void ** linphone_content_get_cryptoContext_address(LinphoneContent *content) {
+	return &(content->lcp.cryptoContext);
+}
 
 
 LinphoneContent * linphone_content_new(void) {
 	LinphoneContent *content = belle_sip_object_new(LinphoneContent);
 	belle_sip_object_ref(content);
 	content->owned_fields = TRUE;
+	content->lcp.cryptoContext = NULL; /* this field is managed externally by encryption/decryption functions so be careful to initialise it to NULL */
 	return content;
 }
 

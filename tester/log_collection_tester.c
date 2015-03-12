@@ -244,12 +244,54 @@ static void collect_files_changing_size()  {
 
 	collect_cleanup(marie);
 }
+static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
+
+	stats* counters = get_stats(lc);
+	switch(state) {
+		case LinphoneCoreLogCollectionUploadStateInProgress:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateInProgress++;
+			break;
+		case LinphoneCoreLogCollectionUploadStateDelivered:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateDelivered++;
+			CU_ASSERT_TRUE(strlen(info)>0)
+			break;
+		case LinphoneCoreLogCollectionUploadStateNotDelivered:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateNotDelivered++;
+			break;
+	}
+}
+static void upload_collected_traces()  {
+	LinphoneCoreManager* marie = setup(TRUE);
+	int waiting = 100;
+	LinphoneCoreVTable *v_table = linphone_core_v_table_new();
+	v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
+	linphone_core_add_listener(marie->lc, v_table);
+
+	linphone_core_set_log_collection_max_file_size(5000);
+	linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
+	// Generate some logs
+	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+	linphone_core_compress_log_collection(marie->lc);
+	linphone_core_upload_log_collection(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
+
+	/*try 2 times*/
+	waiting=100;
+	linphone_core_reset_log_collection(marie->lc);
+	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+	linphone_core_compress_log_collection(marie->lc);
+	linphone_core_upload_log_collection(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+
+	collect_cleanup(marie);
+}
 
 test_t log_collection_tests[] = {
 	{ "No file when disabled", collect_files_disabled},
 	{ "Collect files filled when enabled", collect_files_filled},
 	{ "Logs collected into small file", collect_files_small_size},
 	{ "Logs collected when decreasing max size", collect_files_changing_size},
+	{ "Upload collected traces", upload_collected_traces}
 };
 
 test_suite_t log_collection_test_suite = {

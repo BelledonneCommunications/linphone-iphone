@@ -33,6 +33,7 @@ struct _LinphoneInfoMessage{
 	SalCustomHeader *headers;
 };
 
+
 /**
  * Destroy a LinphoneInfoMessage
 **/

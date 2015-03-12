@@ -801,6 +801,8 @@ struct _LinphoneCore
 	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
+	bool_t lime;
+	char *file_transfer_server;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
@@ -1113,6 +1115,37 @@ void set_playback_gain_db(AudioStream *st, float gain);
 
 LinphoneMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
 SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
+
+/*****************************************************************************
+ * LINPHONE CONTENT PRIVATE ACCESSORS                                        *
+ ****************************************************************************/
+/**
+ * Get the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key to encrypt/decrypt the file associated to this content.
+ */
+const char *linphone_content_get_key(const LinphoneContent *content);
+
+/**
+ * Get the size of key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key size in bytes
+ */
+size_t linphone_content_get_key_size(const LinphoneContent *content);
+/**
+ * Set the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
+ */
+void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
+
+/**
+ * Get the address of the crypto context associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The address of the pointer to the crypto context. Crypto context is managed(alloc/free)
+ *         by the encryption/decryption functions, so we give the address to store/retrieve the pointer
+ */
+void ** linphone_content_get_cryptoContext_address(LinphoneContent *content);
 
 #ifdef ANDROID
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);

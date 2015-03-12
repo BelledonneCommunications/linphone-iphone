@@ -58,6 +58,7 @@ LOCAL_SRC_FILES := \
 	linphone_tunnel_config.c \
 	localplayer.c \
 	lpc2xml.c \
+	lime.c \
 	lpconfig.c \
 	message_storage.c \
 	misc.c  \
@@ -118,7 +119,8 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
-	$(LOCAL_PATH)/../../externals/build/libxml2
+	$(LOCAL_PATH)/../../externals/build/libxml2 \
+	$(LOCAL_PATH)/../../externals/polarssl/include
 
 LOCAL_LDLIBS += -llog -ldl -lz
 

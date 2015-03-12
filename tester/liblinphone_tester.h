@@ -243,6 +243,9 @@ typedef struct _stats {
 	int number_of_video_windows_created;
 	
 	int number_of_LinphoneFileTransferDownloadSuccessful;
+	int number_of_LinphoneCoreLogCollectionUploadStateDelivered;
+	int number_of_LinphoneCoreLogCollectionUploadStateNotDelivered;
+	int number_of_LinphoneCoreLogCollectionUploadStateInProgress;
 
 }stats;
 

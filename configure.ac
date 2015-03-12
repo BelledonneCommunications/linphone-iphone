@@ -76,7 +76,7 @@ case $target in
 		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
 	;;
-	x86_64-apple-darwin|i686-apple-darwin*)
+	x86_64-apple-darwin*|i686-apple-darwin*)
 		MSPLUGINS_CFLAGS=""
 		dnl use macport installation
 		AS_IF([test -d "/opt/local/share/aclocal"], [ACLOCAL_MACOS_FLAGS="-I /opt/local/share/aclocal"])

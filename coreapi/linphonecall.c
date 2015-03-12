@@ -2752,6 +2752,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		memset(&params,0,sizeof(MSZrtpParams));
 		/*call->current_params.media_encryption will be set later when zrtp is activated*/
 		params.zid_file=lc->zrtp_secrets_cache;
+		params.uri= linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
 		setZrtpCryptoTypesParameters(&params,call->core);
 		audio_stream_enable_zrtp(call->audiostream,&params);
 #if VIDEO_ENABLED
