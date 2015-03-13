@@ -230,7 +230,7 @@ multi-arch:
 		i386_path=`echo $$archive | sed -e "s/armv7/i386/"` ;\
 		arm64_path=`echo $$archive | sed -e "s/armv7/aarch64/"` ;\
 		x64_path=`echo $$archive | sed -e "s/armv7/x86_64/"` ;\
-		destpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/armv7-//" | sed -e "s/.ios//"` ;\
+		destpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/armv7-//" | sed -e "s/\.ios//"` ;\
 		all_paths=`echo $$archive $$arm64_path`; \
 		all_archs="armv7,aarch64"; \
 		mkdir -p `dirname $$destpath` ; \
