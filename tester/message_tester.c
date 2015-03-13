@@ -158,7 +158,9 @@ void liblinphone_tester_chat_message_msg_state_changed(LinphoneChatMessage *msg,
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	stats* counters = get_stats(lc);
-	ms_message("Message [%s] [%s]",linphone_chat_message_get_text(msg), linphone_chat_message_state_to_string(state));
+	const char *text = linphone_chat_message_get_text(msg);
+	if (!text) text = "<no text>";
+	ms_message("Message [%s] [%s]",text, linphone_chat_message_state_to_string(state));
 	switch (state) {
 	case LinphoneChatMessageStateDelivered:
 		counters->number_of_LinphoneMessageDelivered++;
@@ -373,7 +375,7 @@ static void text_message_with_ack(void) {
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 		CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
-
+		ms_free(to);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 	}
@@ -417,6 +419,7 @@ static void text_message_with_external_body(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	ms_free(to);
 }
 
 bool_t compare_files(const char *path1, const char *path2) {
@@ -425,30 +428,10 @@ bool_t compare_files(const char *path1, const char *path2) {
 	size_t size2;
 	uint8_t *buf1;
 	uint8_t *buf2;
-	FILE *f1 = fopen(path1, "rb");
-	FILE *f2 = fopen(path2, "rb");
-	fseek(f1, 0, SEEK_END);
-	size1 = ftell(f1);
-	fseek(f1, 0, SEEK_SET);
-	fseek(f2, 0, SEEK_END);
-	size2 = ftell(f2);
-	fseek(f2, 0, SEEK_SET);
-	if (size1 != size2) {
-		fclose(f1);
-		fclose(f2);
-		return FALSE;
-	}
-	buf1 = ms_malloc(size1);
-	buf2 = ms_malloc(size2);
-	if (fread(buf1, size1, 1, f1)!=size1){
-		ms_error("fread() error");
-	}
-	if (fread(buf2, size2, 1, f2)!=size2){
-		ms_error("fread() error");
-	}
-	fclose(f1);
-	fclose(f2);
-	res = (memcmp(buf1, buf2, size1) == 0) ? TRUE : FALSE;
+	
+	buf1 = (uint8_t*)ms_load_path_content(path1, &size1);
+	buf2 = (uint8_t*)ms_load_path_content(path2, &size2);
+	res = buf1 && buf2 && (size1 == size2) && (memcmp(buf1, buf2, size1) == 0);
 	ms_free(buf1);
 	ms_free(buf2);
 	return res;
@@ -594,6 +577,7 @@ static void lime_file_transfer_message(void) {
 	LinphoneContent *content;
 	LinphoneChatMessage *message;
 	LinphoneChatMessageCbs *cbs;
+	char *pauline_id, *marie_id;
 
 	/* setting dummy file content to something */
 	const char* big_file_content="big file";
@@ -609,16 +593,20 @@ static void lime_file_transfer_message(void) {
 	reset_counters(&pauline->stat);
 
 	/* make sure lime is enabled */
-	linphone_core_set_lime(marie->lc, 1);
-	linphone_core_set_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, 1);
+	linphone_core_enable_lime(pauline->lc, 1);
 	
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
-	ZIDCacheMarieFD = fopen("tmpZIDCacheMarie.xml", "w");
-	ZIDCachePaulineFD = fopen("tmpZIDCachePauline.xml", "w");
-	fprintf(ZIDCacheMarieFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000078</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>", linphone_address_as_string_uri_only(pauline->identity), linphone_address_as_string_uri_only(pauline->identity));
-	fprintf(ZIDCachePaulineFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>", linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
+	ZIDCacheMarieFD = fopen("tmpZIDCacheMarie.xml", "wb");
+	ZIDCachePaulineFD = fopen("tmpZIDCachePauline.xml", "wb");
+	pauline_id = linphone_address_as_string_uri_only(pauline->identity);
+	marie_id = linphone_address_as_string_uri_only(marie->identity);
+	fprintf(ZIDCacheMarieFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>ef7692d0792a67491ae2d44e</selfZID><peer><ZID>005dbe0399643d953a2202dd</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</sndKey><rcvKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</rcvKey><sndSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>00000078</sndIndex><rcvIndex>000001cf</rcvIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>72d80ab1cad243cf45634980c1d02cfb2df81ce0dd5dfcf1ebeacfc5345a9176</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000000f</sndIndex><rcvIndex>00000000</rcvIndex></peer></cache>", pauline_id, pauline_id);
+	fprintf(ZIDCachePaulineFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>", marie_id, marie_id);
 	fclose(ZIDCacheMarieFD);
 	fclose(ZIDCachePaulineFD);
+	ms_free(marie_id);
+	ms_free(pauline_id);
 	linphone_core_set_zrtp_secrets_file(marie->lc, "tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, "tmpZIDCachePauline.xml");
 
@@ -761,6 +749,7 @@ static void file_transfer_message_io_error_download(void) {
 	/* create a chatroom on pauline's side */
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
 
 	/* create a file transfer message */
 	memset(&content,0,sizeof(content));
@@ -938,8 +927,8 @@ static void file_transfer_using_external_body_url(void) {
 	reset_counters(&pauline->stat);
 
 	/* make sure lime is disabled */
-	linphone_core_set_lime(marie->lc, 0);
-	linphone_core_set_lime(pauline->lc, 0);
+	linphone_core_enable_lime(marie->lc, FALSE);
+	linphone_core_enable_lime(pauline->lc, FALSE);
 
 	/* create a chatroom on pauline's side */
 	to = linphone_address_as_string(marie->identity);
@@ -958,10 +947,8 @@ static void file_transfer_using_external_body_url(void) {
 		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 	}
 	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
-
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1);
-
+	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageInProgress, 1));
+	ms_free(to);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1001,6 +988,7 @@ static void text_message_with_send_error(void) {
 	CU_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0);
 
 	sal_set_send_error(marie->lc->sal, 0);
+	ms_free(to);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1027,7 +1015,7 @@ static void text_message_denied(void) {
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0);
-
+	ms_free(to);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1132,7 +1120,6 @@ static void is_composing_notification(void) {
 	linphone_chat_room_send_message(chat_room, "Composing a message");
 	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
-
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1301,8 +1288,8 @@ static void lime_text_message(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	/* make sure lime is enabled */
-	linphone_core_set_lime(marie->lc, 1);
-	linphone_core_set_lime(pauline->lc, 1);
+	linphone_core_enable_lime(marie->lc, 1);
+	linphone_core_enable_lime(pauline->lc, 1);
 
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
 	ZIDCacheMarieFD = fopen("tmpZIDCacheMarie.xml", "w");

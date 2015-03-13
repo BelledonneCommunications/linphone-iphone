@@ -904,8 +904,8 @@ static void sip_config_read(LinphoneCore *lc)
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
-	tmp=lp_config_get_int(lc->config,"sip","lime",0);
-	linphone_core_set_lime(lc,tmp);
+	tmp=lp_config_get_int(lc->config,"sip","lime",FALSE);
+	linphone_core_enable_lime(lc,tmp);
 
 	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
@@ -1833,9 +1833,14 @@ bool_t linphone_core_get_guess_hostname(LinphoneCore *lc){
  * Tells to LinphoneCore to use Linphone Instant Messaging encryption
  *
  */
-void linphone_core_set_lime(LinphoneCore *lc, bool_t val){
-	lc->lime=val;
-	lp_config_set_int(lc->config,"sip","lime",val);
+void linphone_core_enable_lime(LinphoneCore *lc, bool_t val){
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sip","lime",val);
+	}
+}
+
+bool_t linphone_core_lime_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"sip", "lime", FALSE);
 }
 
 /**

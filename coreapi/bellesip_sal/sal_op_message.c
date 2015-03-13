@@ -97,6 +97,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_content_type_t* content_type;
 	belle_sip_response_t* resp;
+	int errcode=500;
 	belle_sip_header_call_id_t* call_id = belle_sip_message_get_header_by_type(req,belle_sip_header_call_id_t);
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
 	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
@@ -116,6 +117,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
 		if (CACHEFD == NULL) {
 			ms_warning("Unable to access ZRTP ZID cache to decrypt message");
+			goto error;
 		} else {
 			size_t cacheSize;
 			char *cacheString;
@@ -125,7 +127,7 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 			cacheString=ms_load_file_content(CACHEFD, &cacheSize);
 			if (!cacheString){
 				ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
-				return;
+				goto error;
 			}
 			cacheString[cacheSize] = '\0';
 			cacheSize += 1;
@@ -137,9 +139,8 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 				ms_warning("Unable to decrypt message, reason : %s - op [%p]", lime_error_code_to_string(retval), op);
 				free(decryptedMessage);
 				xmlFreeDoc(cacheXml);
-				resp = belle_sip_response_create_from_request(req,488);
-				belle_sip_server_transaction_send_response(server_transaction,resp);
-				return;
+				errcode = 488;
+				goto error;
 			} else {
 				/* dump updated cache to a string */
 				xmlChar *xmlStringOutput;
@@ -221,6 +222,10 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 		return;
 	}
+	return;
+error:
+	resp = belle_sip_response_create_from_request(req, errcode);
+	belle_sip_server_transaction_send_response(server_transaction,resp);
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {

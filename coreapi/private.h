@@ -801,7 +801,6 @@ struct _LinphoneCore
 	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
-	bool_t lime;
 	char *file_transfer_server;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;

@@ -322,7 +322,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
-			if (msg->chat_room->lc->lime == 1) {
+			if (linphone_core_lime_enabled(msg->chat_room->lc)) {
 				char keyBuffer[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
 				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
 				sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
@@ -738,7 +738,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		sal_message_send(op,identity,cr->peer,content_type, NULL, NULL);
 		ms_free(content_type);
 	} else {
-		if (cr->lc->lime == 1) { /* shall we try to encrypt messages? */
+		if (linphone_core_lime_enabled(cr->lc)) { /* shall we try to encrypt messages? */
 			linphone_chat_message_ref(msg); /* ref the message or it may be destroyed by callback if the encryption failed */
 			if ((msg->content_type != NULL) && (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0 )) { /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
 				sal_message_send(op, identity, cr->peer, "application/cipher.vnd.gsma.rcs-ft-http+xml", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
@@ -1466,12 +1466,13 @@ void linphone_chat_message_download_file(LinphoneChatMessage *message) {
 	belle_http_request_listener_t *l;
 	belle_generic_uri_t *uri;
 	const char *url=message->external_body_url;
-	char* ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+	char* ua;
 
 	if (url == NULL) {
 		ms_error("Cannot download file from chat message [%p] because url is NULL",message);
 		return;
 	}
+	ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 	uri=belle_generic_uri_parse(url);
 
 	message->http_request=belle_http_request_create("GET",
