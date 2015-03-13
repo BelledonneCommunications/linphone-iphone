@@ -235,7 +235,7 @@ int main (int argc, char *argv[])
 			userhostsfile=argv[i];
 		} else {
 			int ret = bc_tester_parse_args(argc, argv, i);
-			if (ret>1) {
+			if (ret>0) {
 				i += ret - 1;
 				continue;
 			} else if (ret<0) {
