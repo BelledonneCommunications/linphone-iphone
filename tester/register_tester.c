@@ -18,7 +18,6 @@
 
 #include <stdio.h>
 #include "CUnit/Basic.h"
-#include "tester_utils.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -751,14 +750,14 @@ static void tls_certificate_failure(){
 
 	mgr=linphone_core_manager_new2("pauline_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", tester_file_prefix); /*bad root ca*/
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", bc_tester_read_dir_prefix); /*bad root ca*/
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_set_network_reachable(lc,TRUE);
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&mgr->stat.number_of_LinphoneRegistrationFailed,1));
 	linphone_core_set_root_ca(mgr->lc,NULL); /*no root ca*/
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationFailed,2));
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix); /*goot root ca*/
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix); /*goot root ca*/
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
@@ -796,7 +795,7 @@ static void tls_alt_name_register(){
 
 	mgr=linphone_core_manager_new2("pauline_alt_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix);
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
@@ -811,7 +810,7 @@ static void tls_wildcard_register(){
 
 	mgr=linphone_core_manager_new2("pauline_wild_rc",FALSE);
 	lc=mgr->lc;
-	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", tester_file_prefix);
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,2));

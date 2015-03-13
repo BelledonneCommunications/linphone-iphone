@@ -306,7 +306,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 
 	/* Configure early media audio to play ring during early-media and send remote ring back tone. */
 	linphone_core_set_ring_during_incoming_early_media(marie->lc, TRUE);
-	ringback_path = ms_strdup_printf("%s/sounds/ringback.wav", tester_file_prefix);
+	ringback_path = ms_strdup_printf("%s/sounds/ringback.wav", bc_tester_read_dir_prefix);
 	linphone_core_set_remote_ringback_tone(marie->lc, ringback_path);
 	ms_free(ringback_path);
 

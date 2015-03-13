@@ -28,6 +28,10 @@
 #include <gtk/gtk.h>
 #endif
 
+
+static FILE * log_file = NULL;
+static OrtpLogFunc ortp_log_handler;
+
 #ifdef ANDROID
 
 #include <android/log.h>
@@ -41,7 +45,7 @@ static const char* LogDomain = "liblinphone_tester";
 
 int main(int argc, char** argv);
 
-void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
+void liblinphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	char str[4096];
 	char *current;
 	char *next;
@@ -61,17 +65,17 @@ void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	}
 }
 
-static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void liblinphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
 	int prio;
 	switch(lev){
-        case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
-        case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
-        case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
-        case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
-        case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
-        default:			prio = ANDROID_LOG_DEFAULT;	break;
+		case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+		case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+		case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
+		case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+		case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+		default:			prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	linphone_android_log_handler(prio, fmt, args);
+	liblinphone_android_log_handler(prio, fmt, args);
 }
 
 void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
@@ -119,7 +123,6 @@ JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_keepAccounts(JNIEnv *env,
 JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env, jclass c) {
 	liblinphone_tester_clear_accounts();
 }
-
 #endif /* ANDROID */
 
 #ifdef __QNX__
@@ -128,17 +131,72 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 }
 #endif /* __QNX__ */
 
+static void log_handler(int lev, const char *fmt, va_list args) {
+	ortp_set_log_file(stderr);
+	ortp_log_handler(lev, fmt, args);
+	if (log_file){
+		ortp_set_log_file(log_file);
+		ortp_log_handler(lev, fmt, args);
+	}
+}
+
+void liblinphone_tester_init(void) {
+	ortp_log_handler = ortp_get_log_handler();
+#if defined(ANDROID)
+	linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
+#elif defined(__QNX__)
+	linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
+#else
+	linphone_core_set_log_handler(ortp_logv_out);
+#endif
+
+	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
+
+	bc_tester_add_suite(&setup_test_suite);
+	bc_tester_add_suite(&register_test_suite);
+	bc_tester_add_suite(&offeranswer_test_suite);
+	bc_tester_add_suite(&call_test_suite);
+	bc_tester_add_suite(&multi_call_test_suite);
+	bc_tester_add_suite(&message_test_suite);
+	bc_tester_add_suite(&presence_test_suite);
+#ifdef UPNP
+	bc_tester_add_suite(&upnp_test_suite);
+#endif
+	bc_tester_add_suite(&stun_test_suite);
+	bc_tester_add_suite(&event_test_suite);
+	bc_tester_add_suite(&flexisip_test_suite);
+	bc_tester_add_suite(&remote_provisioning_test_suite);
+	bc_tester_add_suite(&quality_reporting_test_suite);
+	bc_tester_add_suite(&log_collection_test_suite);
+	bc_tester_add_suite(&transport_test_suite);
+	bc_tester_add_suite(&player_test_suite);
+	bc_tester_add_suite(&dtmf_test_suite);
+#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
+	bc_tester_add_suite(&video_test_suite);
+#endif
+	bc_tester_add_suite(&multicast_call_test_suite);
+}
+
+void liblinphone_tester_uninit(void) {
+	bc_tester_uninit();
+}
 
 
 static const char* liblinphone_helper =
-			"\t\t\t--config <config path>\n"
-			"\t\t\t--domain <test sip domain>\n"
-			"\t\t\t--auth-domain <test auth domain>\n"
-			"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n";
+		"\t\t\t--verbose\n"
+		"\t\t\t--silent\n"
+		"\t\t\t--log-file <output log file path>\n"
+		"\t\t\t--config <config path>\n"
+		"\t\t\t--domain <test sip domain>\n"
+		"\t\t\t--auth-domain <test auth domain>\n"
+		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n";
 
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 int main (int argc, char *argv[])
 {
+	int i;
+	int ret;
+
 #ifdef HAVE_GTK
 	gtk_init(&argc, &argv);
 #if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
@@ -147,17 +205,22 @@ int main (int argc, char *argv[])
 	gdk_threads_init();
 #endif
 
-#if defined(ANDROID)
-	linphone_core_set_log_handler(linphone_android_ortp_log_handler);
-#elif defined(__QNX__)
-	linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
-#else
-	linphone_core_set_log_file(NULL);
-#endif
-
 	liblinphone_tester_init();
 
-	for(i=1;i<argc;++i){
+	for(i = 1; i < argc; ++i) {
+		if (strcmp(argv[i], "--verbose") == 0) {
+			ortp_set_log_level_mask(ORTP_MESSAGE);
+		} else if (strcmp(argv[i], "--silent") == 0) {
+			ortp_set_log_level_mask(ORTP_FATAL);
+		} else if (strcmp(argv[i],"--log-file")==0){
+			CHECK_ARG("--log-file", ++i, argc);
+			log_file=fopen(argv[i],"w");
+			if (!log_file) {
+				ms_error("Cannot open file [%s] for writing logs because [%s]",argv[i],strerror(errno));
+				return -2;
+			} else {
+				ms_message("Redirecting traces to file [%s]",argv[i]);
+			}
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];
@@ -166,15 +229,24 @@ int main (int argc, char *argv[])
 			auth_domain=argv[i];
 		} else if (strcmp(argv[i],"--config")==0){
 			CHECK_ARG("--config", ++i, argc);
-			tester_file_prefix=argv[i];
+			bc_tester_read_dir_prefix=argv[i];
 		}else if (strcmp(argv[i],"--dns-hosts")==0){
 			CHECK_ARG("--dns-hosts", ++i, argc);
 			userhostsfile=argv[i];
-		}else {
-			int ret = tester_parse_args(argc, argv, i, liblinphone_helper);
-			if (ret>0) i += ret;
-			else return ret;
+		} else {
+			int ret = bc_tester_parse_args(argc, argv, i);
+			if (ret>1) {
+				i += ret - 1;
+				continue;
+			} else if (ret<0) {
+				bc_tester_helper(argv[0], liblinphone_helper);
+			}
+			return ret;
 		}
 	}
+
+	ret = bc_tester_start();
+	liblinphone_tester_uninit();
+	return ret;
 }
 #endif

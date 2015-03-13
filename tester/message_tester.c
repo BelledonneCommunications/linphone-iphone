@@ -68,7 +68,7 @@ void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent*
 	char receive_file[256];
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(message);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	snprintf(receive_file,sizeof(receive_file), "%s/receive_file.dump", tester_writable_dir_prefix);
+	snprintf(receive_file,sizeof(receive_file), "%s/receive_file.dump", bc_tester_writable_dir_prefix);
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
 		file = fopen(receive_file,"wb");
@@ -462,8 +462,8 @@ static void file_transfer_message(void) {
 	LinphoneContent* content;
 	FILE *file_to_send = NULL;
 	size_t file_size;
-	char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", tester_file_prefix);
-	char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", tester_writable_dir_prefix);
+	char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", bc_tester_read_dir_prefix);
+	char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", bc_tester_writable_dir_prefix);
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -611,7 +611,7 @@ static void lime_file_transfer_message(void) {
 	/* make sure lime is enabled */
 	linphone_core_set_lime(marie->lc, 1);
 	linphone_core_set_lime(pauline->lc, 1);
-	
+
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
 	ZIDCacheMarieFD = fopen("tmpZIDCacheMarie.xml", "w");
 	ZIDCachePaulineFD = fopen("tmpZIDCachePauline.xml", "w");
@@ -1174,7 +1174,7 @@ static void lime_unit(void) {
 	/* parse it to an xmlDoc */
 	cacheBufferAlice = xmlParseDoc(cacheBufferString);
 	ms_free(cacheBufferString);
-	
+
 	/* Load Bob cache file */
 	CACHE = fopen("ZIDCacheBob.xml", "rb+");
 	cacheBufferString = (uint8_t *)ms_load_file_content(CACHE, &size);
@@ -1391,8 +1391,8 @@ static void message_storage_migration() {
 	char src_db[256];
 	char tmp_db[256];
 	MSList* chatrooms;
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", tester_file_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", tester_writable_dir_prefix);
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
 
 	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
 
@@ -1431,8 +1431,8 @@ static void history_range_full_test(){
 	LinphoneChatRoom *chatroom;
 	char src_db[256];
 	char tmp_db[256];
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", tester_file_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", tester_writable_dir_prefix);
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
 
 	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
 
@@ -1473,8 +1473,8 @@ static void history_messages_count() {
 	MSList *messages;
 	char src_db[256];
 	char tmp_db[256];
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", tester_file_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", tester_writable_dir_prefix);
+	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
+	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
 
 	CU_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0);
 

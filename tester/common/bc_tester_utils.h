@@ -22,6 +22,9 @@
 
 #include "CUnit/Basic.h"
 
+extern const char *bc_tester_read_dir_prefix;
+extern const char *bc_tester_writable_dir_prefix;
+
 typedef void (*test_function_t)(void);
 typedef int (*test_suite_function_t)(const char *name);
 
@@ -42,8 +45,6 @@ typedef struct {
 extern "C" {
 #endif
 
-extern const char *tester_file_prefix;
-extern const char *tester_writable_dir_prefix;
 
 #define CHECK_ARG(argument, index, argc)                      \
 if(index >= argc) {                                           \
@@ -51,24 +52,13 @@ fprintf(stderr, "Missing argument for \"%s\"\n", argument);   \
 return -1;                                                    \
 }                                                             \
 
-int tester_parse_args(int argc, char** argv, int argid, const char * additionnal_helper);
-int tester_start();
-
-
-int tester_test_suite_index(const char *suite_name);
-void tester_list_suites();
-void tester_list_suite_tests(const char *suite_name);
-int tester_test_index(const char *suite_name, const char *test_name);
-int tester_nb_test_suites(void);
-int tester_nb_tests(const char *suite_name);
-const char * tester_test_suite_name(int suite_index);
-const char * tester_test_name(const char *suite_name, int test_index);
-int tester_run_tests(const char *suite_name, const char *test_name);
-
-void tester_add_suite(test_suite_t *suite);
-int tester_run_suite(test_suite_t *suite);
-
-void tester_uninit();
+void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args)
+					, int verbosity_info, int verbosity_error);
+void bc_tester_helper(const char *name, const char* additionnal_helper);
+int bc_tester_parse_args(int argc, char** argv, int argid);
+int bc_tester_start();
+void bc_tester_add_suite(test_suite_t *suite);
+void bc_tester_uninit();
 
 
 #ifdef __cplusplus

@@ -10,7 +10,7 @@ liblinphone_HEADERS = liblinphone_tester.h
 
 lib_LTLIBRARIES = liblinphonetester.la
 
-liblinphonetester_la_SOURCES = tester.c \
+liblinphonetester_la_SOURCES = \
 				accountmanager.c \
 				call_tester.c \
 				dtmf_tester.c \
@@ -28,16 +28,17 @@ liblinphonetester_la_SOURCES = tester.c \
 				remote_provisioning_tester.c \
 				setup_tester.c \
 				stun_tester.c \
-				tester_utils.c \
 				transport_tester.c \
+				tester.c \
 				upnp_tester.c \
-				video_tester.c
+				video_tester.c \
+				common/bc_tester_utils.c common/bc_tester_utils.h
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
-AM_CFLAGS    = $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
+AM_CFLAGS    = -DBC_CONFIG_FILE=\"config.h\" $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) -DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) $(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
 
 if BUILD_GTK_UI
 

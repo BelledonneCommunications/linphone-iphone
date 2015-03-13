@@ -1616,8 +1616,8 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 	}
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-		marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", tester_file_prefix);
-		pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", tester_file_prefix);
+		marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", bc_tester_read_dir_prefix);
+		pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", bc_tester_read_dir_prefix);
 	}
 
 	linphone_core_set_media_encryption(marie->lc,mode);
@@ -2055,12 +2055,12 @@ static void call_with_file_player(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphonePlayer *player;
 	char hellopath[256];
-	char *recordpath = create_filepath(tester_writable_dir_prefix, "record", "wav");
+	char *recordpath = create_filepath(bc_tester_writable_dir_prefix, "record", "wav");
 
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
-	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", tester_file_prefix);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", bc_tester_read_dir_prefix);
 
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
 	linphone_core_use_files(marie->lc,TRUE);
@@ -2133,12 +2133,12 @@ static void call_with_mkv_file_player(void) {
 		ms_warning("Test skipped, no mkv support.");
 		goto end;
 	}
-	recordpath = create_filepath(tester_writable_dir_prefix, "record", "wav");
+	recordpath = create_filepath(bc_tester_writable_dir_prefix, "record", "wav");
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
-	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000_mkv_ref.wav", tester_file_prefix);
-	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", tester_file_prefix);
+	snprintf(hellowav,sizeof(hellowav), "%s/sounds/hello8000_mkv_ref.wav", bc_tester_read_dir_prefix);
+	snprintf(hellomkv,sizeof(hellomkv), "%s/sounds/hello8000.mkv", bc_tester_read_dir_prefix);
 
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
 	linphone_core_use_files(marie->lc,TRUE);
@@ -2216,8 +2216,8 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
 		if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-			marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", tester_file_prefix);
-			pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", tester_file_prefix);
+			marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", bc_tester_read_dir_prefix);
+			pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", bc_tester_read_dir_prefix);
 		}
 
 		linphone_core_set_firewall_policy(marie->lc,policy);
@@ -2849,7 +2849,7 @@ static void record_call(const char *filename, bool_t enableVideo) {
 	formats = linphone_core_get_supported_file_formats(marie->lc);
 
 	for(i=0, format = formats[0]; format != NULL; i++, format = formats[i]) {
-		filepath = create_filepath(tester_writable_dir_prefix, filename, format);
+		filepath = create_filepath(bc_tester_writable_dir_prefix, filename, format);
 		remove(filepath);
 		linphone_call_params_set_record_file(marieParams, filepath);
 		CU_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
@@ -2887,7 +2887,7 @@ static void video_call_snapshot(void) {
 	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
 	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneCall *callInst = NULL;
-	char *filename = create_filepath(tester_writable_dir_prefix, "snapshot", "jpeg");
+	char *filename = create_filepath(bc_tester_writable_dir_prefix, "snapshot", "jpeg");
 	int dummy = 0;
 	bool_t call_succeeded = FALSE;
 
@@ -3331,8 +3331,8 @@ static void call_with_generic_cn(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
-	char *audio_file_with_silence=ms_strdup_printf("%s/%s",tester_file_prefix,"sounds/ahbahouaismaisbon.wav");
-	char *recorded_file=ms_strdup_printf("%s/%s",tester_writable_dir_prefix,"result.wav");
+	char *audio_file_with_silence=ms_strdup_printf("%s/%s",bc_tester_read_dir_prefix,"sounds/ahbahouaismaisbon.wav");
+	char *recorded_file=ms_strdup_printf("%s/%s",bc_tester_writable_dir_prefix,"result.wav");
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
