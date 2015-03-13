@@ -18,6 +18,12 @@
 #include <libxml/parser.h>
 #include <libxml/xmlwriter.h>
 
+#include <mediastreamer2/mscommon.h>
+
+#ifndef LINPHONE_PUBLIC
+#define LINPHONE_PUBLIC MS2_PUBLIC
+#endif
+
 /**
  * @brief Structure holding all needed material to encrypt/decrypt Messages */
 typedef struct limeKey_struct  {
@@ -43,7 +49,7 @@ typedef struct limeURIKeys_struct {
  *
  * @return 0 on success, error code otherwise
  */
-int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
+LINPHONE_PUBLIC int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
 
 /**
  * @brief Get from cache all the senders keys associated to the given URI
@@ -55,7 +61,7 @@ int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
  *
  * @return 0 on success, error code otherwise
  */
-int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys);
+LINPHONE_PUBLIC int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedKeys);
 
 /**
  * @brief Get the receiver key associated to the ZID given in the associatedKey parameter
@@ -65,7 +71,7 @@ int lime_getCachedSndKeysByURI(xmlDocPtr cacheBuffer, limeURIKeys_t *associatedK
  *
  * @return 0 on success, error code otherwise
  */
-int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
+LINPHONE_PUBLIC int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
 
 /**
  * @brief Set in cache the given key material, association is made by ZID contained in the associatedKey parameter
@@ -77,7 +83,7 @@ int lime_getCachedRcvKeyByZid(xmlDocPtr cacheBuffer, limeKey_t *associatedKey);
  * @return 0 on success, error code otherwise
  */
 
-int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role);
+LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t role);
 
 /**
  * @brief Free all allocated data in the associated keys structure
@@ -86,7 +92,7 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
  * @param[in/out]	associatedKeys	The structure to be cleaned
  *
  */
-void lime_freeKeys(limeURIKeys_t associatedKeys);
+LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t associatedKeys);
 
 /**
  * @brief Derive in place the key given in parameter and increment session index
@@ -96,7 +102,7 @@ void lime_freeKeys(limeURIKeys_t associatedKeys);
  *
  * @return 0 on success, error code otherwise
  */
-int lime_deriveKey(limeKey_t *key);
+LINPHONE_PUBLIC int lime_deriveKey(limeKey_t *key);
 
 /**
  * @brief encrypt a message with the given key
@@ -111,7 +117,7 @@ int lime_deriveKey(limeKey_t *key);
  * @return 0 on success, error code otherwise
  * 
  */
-int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage);
+LINPHONE_PUBLIC int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *encryptedMessage);
 
 /**
  * @brief Encrypt a file before transfering it to the server, encryption is done in several call, first one will be done with cryptoContext null, last one with length = 0
@@ -125,7 +131,7 @@ int lime_encryptMessage(limeKey_t *key, uint8_t *plainMessage, uint32_t messageL
  * @return 0 on success, error code otherwise
  *
  */
-int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
+LINPHONE_PUBLIC int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
 
 /**
  * @brief Decrypt a file retrieved from server, decryption is done in several call, first one will be done with cryptoContext null, last one with length = 0
@@ -139,7 +145,7 @@ int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
  * @return 0 on success, error code otherwise
  *
  */
-int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
+LINPHONE_PUBLIC int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher);
 
 /**
  * @brief decrypt and authentify a message with the given key
@@ -155,7 +161,7 @@ int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
  * 
  */
 
-int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage);
+LINPHONE_PUBLIC int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t messageLength, uint8_t selfZID[12], uint8_t *plainMessage);
 
 /**
  * @brief create the encrypted multipart xml message from plain text and destination URI
@@ -168,7 +174,7 @@ int lime_decryptMessage(limeKey_t *key, uint8_t *encryptedMessage, uint32_t mess
  *
  * @return 	0 on success, error code otherwise
  */
-int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output);
+LINPHONE_PUBLIC int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output);
 
 /**
  * @brief decrypt a multipart xml message
@@ -181,12 +187,13 @@ int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t
  * @return 	0 on success, error code otherwise
  */
 
-int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output);
+LINPHONE_PUBLIC int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output);
 
 /**
  * @brief given a readable version of error code generated by Lime functions
  * @param[in]	errorCode	The error code
  * @return a string containing the error description
  */
-char *lime_error_code_to_string(int errorCode);
+LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
+
 #endif /* LIME_H */
