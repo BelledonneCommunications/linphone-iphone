@@ -154,7 +154,7 @@ libs:
 download-sdk:
 	make -f builder-iphone-os.mk download-sdk
 
-build: broadcast_all libs
+build: broadcast_all sdk
 
 ipa: build broadcast_ipa
 
