@@ -190,10 +190,16 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	struct stat statbuf;
 
 	if (liblinphone_log_func != NULL) {
+#ifndef WIN32
 		va_list args_copy;
 		va_copy(args_copy, args);
 		liblinphone_log_func(level, fmt, args_copy);
 		va_end(args_copy);
+#else
+		/* This works on 32 bits, luckily. */
+		/* TODO: va_copy is available in Visual Studio 2013. */
+		liblinphone_log_func(level, fmt, args);
+#endif
 	}
 
 	ortp_gettimeofday(&tp, NULL);
