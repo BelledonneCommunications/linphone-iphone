@@ -63,6 +63,7 @@ set(SOURCE_FILES
 	friend.c
 	info.c
 	ldap/ldapprovider.c
+	lime.c
 	linphonecall.c
 	linphonecore.c
 	linphonecore.h
