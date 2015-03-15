@@ -3245,7 +3245,7 @@ static void call_with_paused_no_sdp_on_resume() {
 	}
 }
 
-static void early_media_without_sdp_in_200_base( bool_t use_video ){
+static void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
 	MSList* lcs = NULL;
@@ -3258,6 +3258,10 @@ static void early_media_without_sdp_in_200_base( bool_t use_video ){
 
 	lcs = ms_list_append(lcs,marie->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
+	if (use_ice){
+		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+		linphone_core_set_stun_server(marie->lc, "stun.linphone.org");
+	}
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
@@ -3318,11 +3322,15 @@ static void early_media_without_sdp_in_200_base( bool_t use_video ){
 }
 
 static void call_with_early_media_and_no_sdp_in_200_with_video(){
-	early_media_without_sdp_in_200_base(TRUE);
+	early_media_without_sdp_in_200_base(TRUE, FALSE);
 }
 
 static void call_with_early_media_and_no_sdp_in_200(){
-	early_media_without_sdp_in_200_base(FALSE);
+	early_media_without_sdp_in_200_base(FALSE, FALSE);
+}
+
+static void call_with_early_media_ice_and_no_sdp_in_200(){
+	early_media_without_sdp_in_200_base(FALSE, TRUE);
 }
 
 static void call_with_generic_cn(void) {
@@ -3551,8 +3559,9 @@ test_t call_tests[] = {
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
 	{ "Call with pause no SDP on resume", call_with_paused_no_sdp_on_resume },
-	{ "Call with early media and no SDP on 200 Ok", call_with_early_media_and_no_sdp_in_200 },
-	{ "Call with early media and no SDP on 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video },
+	{ "Call with early media and no SDP in 200 Ok", call_with_early_media_and_no_sdp_in_200 },
+	{ "Call with early media and no SDP in 200 Ok with video", call_with_early_media_and_no_sdp_in_200_with_video },
+	{ "Call with ICE and no SDP in 200 OK", call_with_early_media_ice_and_no_sdp_in_200},
 	{ "Call with custom supported tags", call_with_custom_supported_tags },
 	{ "Call log from taken from asserted id",call_log_from_taken_from_p_asserted_id},
 	{ "Incoming INVITE with invalid SDP",incoming_invite_with_invalid_sdp},

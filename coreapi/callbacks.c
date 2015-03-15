@@ -465,23 +465,24 @@ static void call_ringing(SalOp *h){
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	SalMediaDescription *md;
+	SalMediaDescription *md, *rmd;
 	bool_t update_state=TRUE;
 
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
+	rmd=sal_call_get_remote_media_description(op);
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	/* Handle remote ICE attributes if any. */
-	if (call->ice_session != NULL) {
-		linphone_call_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	if (call->ice_session != NULL && rmd) {
+		linphone_call_update_ice_from_remote_media_description(call, rmd);
 	}
 #ifdef BUILD_UPNP
-	if (call->upnp_session != NULL) {
-		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	if (call->upnp_session != NULL && rmd) {
+		linphone_core_update_upnp_from_remote_media_description(call, rmd);
 	}
 #endif //BUILD_UPNP
 
