@@ -760,7 +760,7 @@ AC_ARG_ENABLE(external-ortp,
 )
 
 if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
+	PKG_CHECK_MODULES([ORTP], [ortp >= 0.24.0])
 	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
 else
 	AC_CONFIG_SUBDIRS( oRTP )
@@ -789,7 +789,7 @@ AC_ARG_ENABLE([external-mediastreamer],
 
 AS_CASE($enable_external_mediastreamer,
 	[yes],
-	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.10.0])
+	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.11.0])
 	MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`],
 	[no],
 	[AC_CONFIG_SUBDIRS( mediastreamer2 )
@@ -860,7 +860,7 @@ fi
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"
