@@ -730,7 +730,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
 	linphone_core_refresh_registers(marie->lc);
 	//TODO: remove the next two lines once linphone core will send the header automatically
 	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
@@ -822,8 +822,8 @@ static void file_transfer_message_external_body_to_external_body_client(void) {
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
-	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, NULL, NULL);
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp");
 	linphone_core_refresh_registers(marie->lc);
 	linphone_core_refresh_registers(pauline->lc);
 
@@ -839,7 +839,7 @@ static void file_transfer_message_external_body_to_rcs_client(void) {
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, NULL, NULL);
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
 	linphone_core_refresh_registers(marie->lc);
 	//TODO: remove the next two lines once linphone core will send the header automatically
 	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
