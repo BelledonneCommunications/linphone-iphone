@@ -1105,6 +1105,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		*default_list=ms_list_append(*default_list, pt);
 	}
 	if (enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
+	else pt->flags&=~PAYLOAD_TYPE_ENABLED;
 	*ret=pt;
 	return TRUE;
 }
