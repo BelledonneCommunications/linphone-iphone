@@ -44,11 +44,12 @@ const char *bc_tester_writable_dir_prefix = ".";
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
 
-#if HAVE_CU_CURSES
+#ifdef HAVE_CU_CURSES
+#include "CUnit/CUCurses.h"
 static unsigned char curses = 0;
 #endif
 
-char* xml_file = NULL;
+char* xml_file = "CUnitAutomated-Results.xml";
 int   xml_enabled = 0;
 char * suite_name;
 char * test_name;
@@ -155,8 +156,8 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	const CU_pFailureRecord pFailureList) {
 	int i;
 	char * result = malloc(sizeof(char)*2048);//not very pretty but...
-	sprintf(result, "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
 	CU_pFailureRecord pFailure = pFailureList;
+	sprintf(result, "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
 	if (pFailure) {
 		strncat(result, " failed:", strlen(" failed:"));
 		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
@@ -197,7 +198,7 @@ static int tester_run_tests(const char *suite_name, const char *test_name) {
 		CU_automated_run_tests();
 	} else {
 
-#if !HAVE_CU_GET_SUITE
+#ifndef HAVE_CU_GET_SUITE
 		if( suite_name ){
 			tester_printf(verbosity_info, "Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'", suite_name);
 		}
@@ -227,7 +228,7 @@ static int tester_run_tests(const char *suite_name, const char *test_name) {
 		else
 #endif
 		{
-#if HAVE_CU_CURSES
+#ifdef HAVE_CU_CURSES
 			if (curses) {
 			/* Run tests using the CUnit curses interface */
 				CU_curses_run_tests();
@@ -251,7 +252,7 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 		"\t\t\t--list-tests <suite>\n"
 		"\t\t\t--suite <suite name>\n"
 		"\t\t\t--test <test name>\n"
-#if HAVE_CU_CURSES
+#ifdef HAVE_CU_CURSES
 		"\t\t\t--curses\n"
 #endif
 		"\t\t\t--xml\n"
@@ -312,7 +313,7 @@ int bc_tester_start() {
 	int ret;
 	if( xml_enabled ){
 		char * xml_tmp_file = malloc(sizeof(char) * (strlen(xml_file) + strlen(".tmp") + 1));
-		snprintf(xml_tmp_file, sizeof(xml_tmp_file), "%s.tmp", xml_file);
+		sprintf(xml_tmp_file, "%s.tmp", xml_file);
 		CU_set_output_filename(xml_tmp_file);
 		free(xml_tmp_file);
 	}
@@ -342,8 +343,8 @@ void bc_tester_uninit() {
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
-		char * xml_tmp_file = malloc(sizeof(char) * (strlen(xml_file) + strlen(".tmp") + 1));
-		snprintf(xml_tmp_file, sizeof(xml_tmp_file), "%s.tmp", xml_file);
+		char * xml_tmp_file = malloc(sizeof(char) * (strlen(xml_file) + strlen(".tmp-Results.xml") + 1));
+		sprintf(xml_tmp_file, "%s.tmp-Results.xml", xml_file);
 		rename(xml_tmp_file, xml_file);
 		free(xml_tmp_file);
 	}

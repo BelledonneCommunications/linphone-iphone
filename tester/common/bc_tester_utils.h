@@ -21,6 +21,7 @@
 #define TESTER_UTILS_H
 
 #include "CUnit/Basic.h"
+#include <stdarg.h>
 
 extern const char *bc_tester_read_dir_prefix;
 extern const char *bc_tester_writable_dir_prefix;
