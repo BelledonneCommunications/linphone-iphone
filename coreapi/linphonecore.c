@@ -1492,7 +1492,7 @@ static void misc_config_read(LinphoneCore *lc) {
 	LpConfig *config=lc->config;
 	const char *uuid;
 
-	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",30);
 	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 
 	uuid=lp_config_get_string(config,"misc","uuid",NULL);

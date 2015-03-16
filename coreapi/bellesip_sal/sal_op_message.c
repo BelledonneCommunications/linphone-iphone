@@ -220,12 +220,14 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		resp = belle_sip_response_create_from_request(req,415);
 		add_message_accept((belle_sip_message_t*)resp);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
+		sal_op_release(op);
 		return;
 	}
 	return;
 error:
 	resp = belle_sip_response_create_from_request(req, errcode);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
+	sal_op_release(op);
 }
 
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {

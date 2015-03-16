@@ -23,6 +23,7 @@ struct _Account{
 	LinphoneAddress *identity;
 	LinphoneAddress *modified_identity;
 	char *password;
+	char *instance_id;
 	int created;
 	int done;
 	int auth_requested;
@@ -49,6 +50,7 @@ Account *account_new(LinphoneAddress *identity, const char *unique_id){
 void account_destroy(Account *obj){
 	linphone_address_unref(obj->identity);
 	linphone_address_unref(obj->modified_identity);
+	ms_free(obj->instance_id);
 	ms_free(obj->password);
 	ms_free(obj);
 }
@@ -124,6 +126,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
 	lc=configure_lc_from(&vtable,liblinphone_tester_file_prefix,NULL,account);
+	account->instance_id = ms_strdup(lp_config_get_string(lc->config,"misc","uuid",NULL));
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
@@ -202,7 +205,9 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	
 	if (create_account){
 		account_create_on_server(account,cfg);
+		lp_config_set_string(lc->config, "misc", "uuid", account->instance_id);
 	}
+	sal_set_uuid(lc->sal, account->instance_id);
 	ai=linphone_auth_info_new(linphone_address_get_username(account->modified_identity),
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));
