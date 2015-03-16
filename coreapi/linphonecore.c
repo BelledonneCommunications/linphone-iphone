@@ -1093,7 +1093,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		MSList **default_list=(type==SalAudio) ? &lc->default_audio_codecs :  &lc->default_video_codecs;
 		if (type==SalAudio)
 			ms_warning("Codec %s/%i/%i read from conf is not in the default list.",mime,rate,channels);
-		else 
+		else
 			ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
 		pt=payload_type_new();
 		pt->type=(type==SalAudio) ? PAYLOAD_AUDIO_PACKETIZED :  PAYLOAD_VIDEO;
@@ -1311,7 +1311,7 @@ void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* alg
  * See linphone_core_set_adaptive_rate_algorithm().
 **/
 const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
-	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Simple");
+	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Stateful");
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
@@ -4806,7 +4806,7 @@ static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, b
 	} else {
 		audio_stream_set_mic_gain_db(st, lc->sound_conf.soft_mic_lev);
 	}
-	
+
 	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 		audio_stream_mute_rtp(st,val);
 	}
