@@ -33,7 +33,7 @@ typedef struct _Account Account;
 Account *account_new(LinphoneAddress *identity, const char *unique_id){
 	char *modified_username;
 	Account *obj=ms_new0(Account,1);
-	
+
 	/* we need to inhibit leak detector because the two LinphoneAddress will remain behond the scope of the test being run */
 	belle_sip_object_inhibit_leak_detector(TRUE);
 	obj->identity=linphone_address_clone(identity);
@@ -82,7 +82,7 @@ void account_manager_destroy(void){
 
 Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *identity){
 	MSList *it;
-	
+
 	for(it=m->accounts;it!=NULL;it=it->next){
 		Account *a=(Account*)it->data;
 		if (linphone_address_weak_equal(a->identity,identity)){
@@ -120,15 +120,15 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	char *tmp;
 	LinphoneAddress *server_addr;
 	LCSipTransports tr;
-	
+
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
-	lc=configure_lc_from(&vtable,liblinphone_tester_file_prefix,NULL,account);
+	lc=configure_lc_from(&vtable,bc_tester_read_dir_prefix,NULL,account);
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
 	linphone_core_set_sip_transports(lc,&tr);
-	
+
 	cfg=linphone_core_create_proxy_config(lc);
 	linphone_address_set_secure(tmp_identity, FALSE);
 	linphone_address_set_password(tmp_identity,account->password);
@@ -137,7 +137,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_identity(cfg,tmp);
 	ms_free(tmp);
 	linphone_address_unref(tmp_identity);
-	
+
 	server_addr=linphone_address_new(linphone_proxy_config_get_server_addr(refcfg));
 	linphone_address_set_secure(server_addr, FALSE);
 	linphone_address_set_transport(server_addr,LinphoneTransportTcp); /*use tcp for account creation, we may not have certificates configured at this stage*/
@@ -147,9 +147,9 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	ms_free(tmp);
 	linphone_address_unref(server_addr);
 	linphone_proxy_config_set_expires(cfg,3600);
-	
+
 	linphone_core_add_proxy_config(lc,cfg);
-	
+
 	if (wait_for_until(lc,NULL,&account->auth_requested,1,10000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
@@ -161,13 +161,13 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_address_unref(tmp_identity);
 	ms_free(tmp);
 	linphone_proxy_config_done(cfg);
-	
+
 	ai=linphone_auth_info_new(linphone_address_get_username(account->modified_identity),
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));
 	linphone_core_add_auth_info(lc,ai);
 	linphone_auth_info_destroy(ai);
-	
+
 	if (wait_for_until(lc,NULL,&account->created,1,3000)==FALSE){
 		ms_fatal("Account for %s is not working on server.", linphone_proxy_config_get_identity(refcfg));
 	}
@@ -187,7 +187,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	bool_t create_account=FALSE;
-	
+
 	if (!account){
 		account=account_new(id_addr,m->unique_id);
 		ms_message("No account for %s exists, going to create one.",identity);
@@ -199,7 +199,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	tmp=linphone_address_as_string(id_addr);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	ms_free(tmp);
-	
+
 	if (create_account){
 		account_create_on_server(account,cfg);
 	}
@@ -208,7 +208,7 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));
 	linphone_core_add_auth_info(lc,ai);
 	linphone_auth_info_destroy(ai);
-	
+
 	linphone_address_unref(id_addr);
 	return account->modified_identity;
 }

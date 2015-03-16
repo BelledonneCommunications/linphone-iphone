@@ -26,6 +26,8 @@ endif()
 find_package(GTK2 2.18 COMPONENTS gtk)
 
 set(SOURCE_FILES
+	common/bc_tester_utils.c
+	common/bc_tester_utils.h
 	accountmanager.c
 	call_tester.c
 	dtmf_tester.c
@@ -49,6 +51,8 @@ set(SOURCE_FILES
 	upnp_tester.c
 	video_tester.c
 )
+
+add_definitions(-DBC_CONFIG_FILE="config.h")
 
 add_executable(liblinphone_tester ${SOURCE_FILES})
 set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
