@@ -4586,7 +4586,6 @@ static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv
 	getDataMethod = env->GetMethodID(bufferClass, "getContent", "()[B");
 	
 	jsize = env->CallIntMethod(jbuffer, getSizeMethod);
-	ms_error("Fetched %i bytes", jsize);
 	jdata = env->CallObjectMethod(jbuffer, getDataMethod);
 	jcontent = reinterpret_cast<jbyteArray>(jdata);
 	content = (uint8_t*)env->GetByteArrayElements(jcontent, NULL);
