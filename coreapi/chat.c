@@ -30,6 +30,7 @@
 #include "ortp/b64.h"
 
 #include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <libxml/xmlwriter.h>
 
 #define COMPOSING_DEFAULT_IDLE_TIMEOUT 15
