@@ -85,6 +85,7 @@ static jobject handler_obj=NULL;
 
 static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content);
 static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer);
+static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer);
 
 #ifdef ANDROID
 void linphone_android_log_handler(int prio, char *str) {
@@ -3282,9 +3283,10 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
+	LinphoneBuffer *buffer = NULL;
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
-		return NULL;
+		return buffer;
 	}
 
 	jobject listener = (jobject) msg->cb_ud;
@@ -3294,8 +3296,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	jobject jbuffer = create_java_linphone_buffer(env, NULL);
 	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, offset, size, jbuffer);
 	
-	//TODO
-	LinphoneBuffer *buffer = linphone_buffer_new();
+	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
 	return buffer;
 }
 
@@ -4551,10 +4552,9 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	return jobj;
 }
 
-static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer){
+static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer) {
 	jclass bufferClass;
 	jmethodID ctor;
-	jstring jtype, jsubtype, jencoding, jname;
 	jbyteArray jdata = NULL;
 	jint jsize = 0;
 
@@ -4570,6 +4570,33 @@ static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *bu
 	jobject jobj = env->NewObject(bufferClass, ctor, jdata, jsize);
 	env->DeleteGlobalRef(bufferClass);
 	return jobj;
+}
+
+static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer) {
+	jclass bufferClass;
+	jmethodID getSizeMethod, getDataMethod;
+	LinphoneBuffer *buffer;
+	jint jsize;
+	jobject jdata;
+	jbyteArray jcontent;
+	uint8_t *content;
+
+	bufferClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneBufferImpl"));
+	getSizeMethod = env->GetMethodID(bufferClass, "getSize", "()I");
+	getDataMethod = env->GetMethodID(bufferClass, "getContent", "()[B");
+	
+	jsize = env->CallIntMethod(jbuffer, getSizeMethod);
+	ms_error("Fetched %i bytes", jsize);
+	jdata = env->CallObjectMethod(jbuffer, getDataMethod);
+	jcontent = reinterpret_cast<jbyteArray>(jdata);
+	content = (uint8_t*)env->GetByteArrayElements(jcontent, NULL);
+	
+	buffer = linphone_buffer_new_from_data(content, (size_t)jsize);
+	
+	env->ReleaseByteArrayElements(jcontent, (jbyte*)content, JNI_ABORT);
+	env->DeleteGlobalRef(bufferClass);
+	
+	return buffer;
 }
 
 /*
