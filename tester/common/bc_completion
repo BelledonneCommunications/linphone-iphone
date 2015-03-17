@@ -16,9 +16,9 @@
 
 # Created by Gautier Pelloux-Prayer on 2014/10/24.
 # This script adds auto-completion for liblinphone_tester binary for Bash and
-# zsh. To use it, just type: `source liblinphone_completion`, then use
-# `./liblinphone_tester [tab] to get auto-completions. To use it permanently,
-# source this file in your .rc file
+# Zsh. To use it, just type: `source liblinphone_completion`, then for each
+# supported exectuable (see end of file), you will get auto-completions.
+# To use it permanently, source this file in your .rc file (.bashrc or .zshrc).
 
 _liblinphone_complete() {
 	local completions command_requiring_argument prev_arg latest_arg available_tasks has_not_set_suite suite_name
@@ -102,7 +102,9 @@ _liblinphone_complete() {
 	fi
 }
 
-for tester in liblinphone_tester mediastreamer2_tester belle_sip_tester; do
+for tester in liblinphone_tester mediastreamer2_tester belle_sip_tester pcap_playback \
+				bench mediastream msaudiocmp mtudiscover videodisplay linphone lpc2xml_test \
+				lp-gen-wrappers xml2lpc_test; do
 	if [ -n "$BASH_VERSION" ]; then
 		complete -F _liblinphone_complete $tester
 	elif [ -n "$ZSH_VERSION" ]; then
