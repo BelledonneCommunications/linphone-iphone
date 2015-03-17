@@ -230,6 +230,9 @@ typedef struct _LinphoneCallTestParams {
 	bool_t sdp_simulate_error;
 } LinphoneCallTestParams;
 
+
+LinphoneCoreManager* linphone_core_manager_init(const char* rc_file);
+void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);

@@ -224,11 +224,9 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 	return manager;
 }
 
-LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
+LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
-	LinphoneProxyConfig* proxy;
 	char *rc_path = NULL;
-	int proxy_count;
 	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
@@ -253,11 +251,6 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
 	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_read_dir_prefix, rc_path, mgr);
 	linphone_core_manager_check_accounts(mgr);
-	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
-	if (check_for_proxies && rc_file) /**/
-		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
-	else
-		proxy_count=0;
 
 	manager_count++;
 
@@ -276,7 +269,22 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
 	}
+	
+	if (rc_path) ms_free(rc_path);
+	
+	return mgr;
+}
 
+void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, int check_for_proxies) {
+	LinphoneProxyConfig* proxy;
+	int proxy_count;
+	
+	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
+	if (check_for_proxies && rc_file) /**/
+		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+	else
+		proxy_count=0;
+	
 	if (proxy_count){
 #define REGISTER_TIMEOUT 20 /* seconds */
 		int success = wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,
@@ -293,12 +301,18 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
 		linphone_address_clean(mgr->identity);
 	}
-	if (rc_path) ms_free(rc_path);
-	return mgr;
 }
 
 LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
-	return linphone_core_manager_new2(rc_file, TRUE);
+	LinphoneCoreManager *manager = linphone_core_manager_init(rc_file);
+	linphone_core_manager_start(manager, rc_file, TRUE);
+	return manager;
+}
+
+LinphoneCoreManager* linphone_core_manager_new2( const char* rc_file, int check_for_proxies) {
+	LinphoneCoreManager *manager = linphone_core_manager_init(rc_file);
+	linphone_core_manager_start(manager, rc_file, check_for_proxies);
+	return manager;
 }
 
 void linphone_core_manager_stop(LinphoneCoreManager *mgr){

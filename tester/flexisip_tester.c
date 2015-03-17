@@ -725,16 +725,17 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 	char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", bc_tester_read_dir_prefix);
 	char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", bc_tester_writable_dir_prefix);
 
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+	linphone_core_manager_start(marie, "marie_rc", TRUE);
+	
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+	linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+	
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
-
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-	linphone_core_refresh_registers(marie->lc);
-	//TODO: remove the next two lines once linphone core will send the header automatically
-	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-	linphone_core_refresh_registers(pauline->lc);
 
 	file_to_send = fopen(send_filepath, "rb");
 	fseek(file_to_send, 0, SEEK_END);
@@ -766,7 +767,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 	linphone_chat_room_send_chat_message(chat_room,message);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
 	fclose(file_to_send);
 	if (marie->stat.last_received_chat_message ) {
 		cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
@@ -774,7 +775,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 	}
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageFileTransferDone,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1);
@@ -817,13 +818,18 @@ static void send_file_transfer_message_using_external_body_url(LinphoneCoreManag
 }
 
 static void file_transfer_message_external_body_to_external_body_client(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+	linphone_core_manager_start(marie, "marie_rc", TRUE);
+	
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp");
+	linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+	
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
-
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp");
+	
 	linphone_core_refresh_registers(marie->lc);
 	linphone_core_refresh_registers(pauline->lc);
 
@@ -834,16 +840,17 @@ static void file_transfer_message_external_body_to_external_body_client(void) {
 }
 
 static void file_transfer_message_external_body_to_rcs_client(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+	
+	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+	linphone_core_manager_start(marie, "marie_rc", TRUE);
+	
+	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+	linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+	
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
-
-	linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-	linphone_core_refresh_registers(marie->lc);
-	//TODO: remove the next two lines once linphone core will send the header automatically
-	linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-	linphone_core_refresh_registers(pauline->lc);
 
 	send_file_transfer_message_using_external_body_url(marie, pauline);
 
