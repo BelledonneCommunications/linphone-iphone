@@ -3241,6 +3241,7 @@ LINPHONE_PUBLIC	void linphone_core_init_default_params(LinphoneCore*lc, Linphone
 
 /**
  * True if tunnel support was compiled.
+ *  @ingroup tunnel
  */
 LINPHONE_PUBLIC	bool_t linphone_core_tunnel_available(void);
 
@@ -3252,6 +3253,9 @@ typedef struct _LinphoneTunnel LinphoneTunnel;
 
 /**
 * get tunnel instance if available
+* @ingroup tunnel
+* @param lc core object
+* @returns LinphoneTunnel or NULL if not available
 */
 LINPHONE_PUBLIC	LinphoneTunnel *linphone_core_get_tunnel(const LinphoneCore *lc);
 
