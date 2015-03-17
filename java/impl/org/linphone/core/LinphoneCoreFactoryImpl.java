@@ -154,7 +154,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public LinphoneContent createLinphoneContent(String type, String subType,
 			String data) {
-		return new LinphoneContentImpl(type,subType,data.getBytes(),null);
+		return new LinphoneContentImpl(type,subType,data == null ? null : data.getBytes(), null);
 	}
 
 	@Override

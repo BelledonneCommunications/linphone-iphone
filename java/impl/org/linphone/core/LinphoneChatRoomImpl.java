@@ -21,6 +21,7 @@ package org.linphone.core;
 import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneChatMessage.StateListener;
 
+@SuppressWarnings("deprecation")
 class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	protected final long nativePtr;
 	private native long createLinphoneChatMessage(long ptr, String message);
@@ -41,6 +42,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native long createLinphoneChatMessage2(long ptr, String message,
 			String url, int state, long timestamp, boolean isRead,
 			boolean isIncoming);
+	private native void sendChatMessage(long ptr, Object message, long messagePtr);
 
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -176,5 +178,8 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			return new LinphoneChatMessageImpl(createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getRealSize()));
 		}
 	}
-	
+	@Override
+	public void sendChatMessage(LinphoneChatMessage message) {
+		sendChatMessage(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr());
+	}
 }

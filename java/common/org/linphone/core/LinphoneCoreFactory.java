@@ -145,7 +145,7 @@ abstract public class LinphoneCoreFactory {
 	/**
 	 * Create a LinphoneContent object from byte array.
 	 */
-	abstract public LinphoneContent createLinphoneContent(String type, String subType,byte [] data, String encoding);
+	abstract public LinphoneContent createLinphoneContent(String type, String subType, byte[] data, String encoding);
 	
 	/**
 	 * Create a PresenceActivity object.
