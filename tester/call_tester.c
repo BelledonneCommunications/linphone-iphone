@@ -2089,7 +2089,7 @@ static void call_with_file_player(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphonePlayer *player;
 	char hellopath[256];
-	char *recordpath = create_filepath(bc_tester_writable_dir_prefix, "record", "wav");
+	char *recordpath = create_filepath(bc_tester_writable_dir_prefix, "record-call_with_file_player", "wav");
 
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
@@ -2167,7 +2167,7 @@ static void call_with_mkv_file_player(void) {
 		ms_warning("Test skipped, no mkv support.");
 		goto end;
 	}
-	recordpath = create_filepath(bc_tester_writable_dir_prefix, "record", "wav");
+	recordpath = create_filepath(bc_tester_writable_dir_prefix, "record-call_with_mkv_file_player", "wav");
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
