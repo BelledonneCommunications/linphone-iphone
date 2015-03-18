@@ -639,6 +639,58 @@ AC_ARG_ENABLE(g729bCN,
 	[g729bCN=false]
 )
 
+dnl Polarssl lib is requested for Lime
+AC_ARG_WITH( polarssl,
+      [  --with-polarssl      Set prefix where polarssl can be found (ex:/usr, /usr/local)[[default=PREFIX or /usr if NONE]] ],
+      [ polarssl_prefix=${withval}],[ if test "$prefix" != "NONE"; then
+					polarssl_prefix=${prefix}
+				      else
+					polarssl_prefix="/usr"
+				      fi ])
+
+found_polarssl=no
+
+if test "$polarssl_prefix" != "none" ; then
+	if test "$polarssl_prefix" != "/usr" ; then
+		POLARSSL_CFLAGS="-I${polarssl_prefix}/include"
+		POLARSSL_LIBS="-L${polarssl_prefix}/lib"
+	fi
+	POLARSSL_LIBS="$POLARSSL_LIBS -lpolarssl"
+
+	CPPFLAGS_save=$CPPFLAGS
+	LIBS_save=$LIBS
+
+	CPPFLAGS="$CPPFLAGS $POLARSSL_CFLAGS"
+	LIBS="$LIBS $POLARSSL_LIBS"
+	AC_CHECK_HEADERS(polarssl/gcm.h,
+				[found_polarssl=yes; AC_MSG_NOTICE([polarssl usable])],
+				[POLARSSL_CFLAGS=""
+					POLARSSL_LIBS=""])
+	CPPFLAGS=$CPPFLAGS_save
+	LIBS=$LIBS_save
+fi
+
+dnl check for Lime support, need polarssl version >= 1.3 (with gcm.h)
+AC_ARG_ENABLE(lime,
+	[AS_HELP_STRING([--enable-lime], [Turn on or off compilation of Instant Messaging Encryption (default=yes)])],
+	[case "${enableval}" in
+		yes)	lime=true ;;
+		no)	lime=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-lime) ;;
+	esac],
+	[lime=true]
+)
+
+if test "$lime" = "true" ; then
+	if test "x$found_polarssl" != "xyes" ; then
+		AC_MSG_ERROR("LIME requires POLARSSL in version >= 1.3")
+	else
+		AC_DEFINE(HAVE_LIME, 1, [Defined when LIME support is compiled])
+	fi
+else
+	echo "LIME compilation is disabled."
+fi
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -1001,6 +1053,7 @@ printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption"		$zrtp
 printf "* %-30s %s\n" "DTLS encryption"		$dtls
+printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib

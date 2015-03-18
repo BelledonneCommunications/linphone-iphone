@@ -7,6 +7,7 @@
 #define LIME_UNABLE_TO_DECRYPT_MESSAGE 0x1008
 #define LIME_NO_VALID_KEY_FOUND_FOR_PEER	0x1010
 #define LIME_INVALID_ENCRYPTED_MESSAGE 0x1020
+#define LIME_NOT_ENABLED 0x1100
 
 /* this define the maximum key derivation number allowed to get the caches back in sync in case of missed messages */
 #define MAX_DERIVATION_NUMBER 100
@@ -40,16 +41,6 @@ typedef struct limeURIKeys_struct {
 	uint16_t	associatedZIDNumber; /**< previous array length */
 	uint8_t 	*peerURI; /**< the sip URI associated to all the keys, must be a null terminated string */
 } limeURIKeys_t;
-
-/**
- * @brief Retrieve selfZID from cache
- *
- * @param[in]	cacheBuffer		The xmlDoc containing current cache
- * @param[out]	selfZid			The ZID found as a 24 hexa char string null terminated
- *
- * @return 0 on success, error code otherwise
- */
-LINPHONE_PUBLIC int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]);
 
 /**
  * @brief Get from cache all the senders keys associated to the given URI
@@ -93,16 +84,6 @@ LINPHONE_PUBLIC int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associat
  *
  */
 LINPHONE_PUBLIC void lime_freeKeys(limeURIKeys_t associatedKeys);
-
-/**
- * @brief Derive in place the key given in parameter and increment session index
- * Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||256)
- *
- * @param[in/out]	key		The structure containing the original key which will be overwritten, the sessionId and SessionIndex
- *
- * @return 0 on success, error code otherwise
- */
-LINPHONE_PUBLIC int lime_deriveKey(limeKey_t *key);
 
 /**
  * @brief encrypt a message with the given key
@@ -196,4 +177,10 @@ LINPHONE_PUBLIC int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t 
  */
 LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
 
+/**
+ * @brief Check if Lime was enabled at build time
+ *
+ * @return TRUE if Lime is available, FALSE if not
+ */
+LINPHONE_PUBLIC bool_t lime_is_available();
 #endif /* LIME_H */
