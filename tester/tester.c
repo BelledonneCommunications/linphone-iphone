@@ -392,6 +392,3 @@ void liblinphone_tester_add_suites() {
 #endif
 	bc_tester_add_suite(&multicast_call_test_suite);
 }
-
-void liblinphone_tester_init() {
-}
