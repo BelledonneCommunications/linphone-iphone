@@ -67,13 +67,13 @@ static NSString* const kAllTestsName = @"Run All tests";
     const char* suite = [self.detailItem UTF8String];
     if( suite == NULL ) return;
     NSString* nssuite = [NSString stringWithUTF8String:suite];
-    int count = liblinphone_tester_nb_tests(suite);
+    int count = bc_tester_nb_tests(suite);
     _tests = [[NSMutableArray alloc] initWithCapacity:count];
     
     [_tests addObject:[TestItem testWithName:kAllTestsName fromSuite:nssuite]];
     
     for (int i=0; i<count; i++) {
-        const char* test_name = liblinphone_tester_test_name(suite, i);
+        const char* test_name = bc_tester_test_name(suite, i);
         TestItem* item = [[TestItem alloc] initWithName:[NSString stringWithUTF8String:test_name] fromSuite:nssuite];
         [_tests addObject:item];
     }
@@ -173,7 +173,7 @@ static NSString* const kAllTestsName = @"Run All tests";
             TestItem *test = _tests[path.row];
             LSLog(@"Should launch test %@", test);
             
-            BOOL fail = liblinphone_tester_run_tests([test.suite UTF8String], [test.name UTF8String]);
+            BOOL fail = bc_tester_run_tests([test.suite UTF8String], [test.name UTF8String]);
             if(fail){
                 LSLog(@"Test Failed!");
                 test.state = TestStateFailed;

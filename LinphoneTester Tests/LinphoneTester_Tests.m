@@ -37,7 +37,7 @@ void LSLog(NSString* fmt, ...){
 }
 
 
-+ (NSString*)safeifyTestString:(NSString*)testString{
++ (NSString*)safetyTestString:(NSString*)testString{
     NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
     return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
 }
@@ -48,7 +48,7 @@ void LSLog(NSString* fmt, ...){
 
     static char * bundle = NULL;
     static char * documents = NULL;
-    liblinphone_tester_init();
+    bc_tester_init();
 
     NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -59,25 +59,27 @@ void LSLog(NSString* fmt, ...){
     LSLog(@"Bundle path: %@", bundlePath);
     LSLog(@"Document path: %@", documentPath);
 
-    liblinphone_tester_set_fileprefix(bundle);
-    liblinphone_tester_set_writable_dir_prefix(documents);
+
+	bc_tester_read_dir_prefix = bundle;
+	bc_tester_writable_dir_prefix = documents;
+
 	liblinphone_tester_keep_accounts(TRUE);
 
-	int count = liblinphone_tester_nb_test_suites();
+	int count = bc_tester_nb_test_suites();
 
     for (int i=0; i<count; i++) {
-        const char* suite = liblinphone_tester_test_suite_name(i);
+        const char* suite = bc_tester_suite_name(i);
 
-		int test_count = liblinphone_tester_nb_tests(suite);
+		int test_count = bc_tester_nb_tests(suite);
 		for( int k = 0; k<test_count; k++){
-			const char* test =liblinphone_tester_test_name(suite, k);
+			const char* test =bc_tester_test_name(suite, k);
 			NSString* sSuite = [NSString stringWithUTF8String:suite];
 			NSString* sTest  = [NSString stringWithUTF8String:test];
 
 			if( [[LinphoneTester_Tests skippedSuites] containsObject:sSuite] ) continue;
             // prepend "test_" so that it gets found by introspection
-            NSString* safesTest    = [self safeifyTestString:sTest];
-            NSString* safesSuite   = [self safeifyTestString:sSuite];
+            NSString* safesTest    = [self safetyTestString:sTest];
+            NSString* safesSuite   = [self safetyTestString:sSuite];
             NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
 
 			[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName block:^(LinphoneTester_Tests* myself) {
@@ -100,7 +102,7 @@ void LSLog(NSString* fmt, ...){
 - (void)testForSuite:(NSString*)suite andTest:(NSString*)test
 {
 	LSLog(@"Launching test %@ from suite %@", test, suite);
-	XCTAssertFalse(liblinphone_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
+	XCTAssertFalse(bc_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
 }
 
 - (void)dealloc {

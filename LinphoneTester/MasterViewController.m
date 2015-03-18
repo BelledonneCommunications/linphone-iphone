@@ -69,17 +69,20 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     bundlePath = [[NSBundle mainBundle] bundlePath];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     documentPath = [paths objectAtIndex:0];
-    liblinphone_tester_init();
-    liblinphone_tester_set_fileprefix([bundlePath UTF8String]);
-    liblinphone_tester_set_writable_dir_prefix( ms_strdup([documentPath UTF8String]) );
+
+	liblinphone_tester_add_suites();
+
+    bc_tester_init((void (*)(int, const char *fm, va_list))linphone_log_function, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_read_dir_prefix = [bundlePath UTF8String];
+	bc_tester_writable_dir_prefix = [documentPath UTF8String];
 
     LSLog(@"Bundle path: %@", bundlePath);
     LSLog(@"Document path: %@", documentPath);
 
-    int count = liblinphone_tester_nb_test_suites();
+    int count = bc_tester_nb_suites();
     _objects = [[NSMutableArray alloc] initWithCapacity:count];
     for (int i=0; i<count; i++) {
-        const char* suite = liblinphone_tester_test_suite_name(i);
+        const char* suite = bc_tester_suite_name(i);
         [_objects addObject:[NSString stringWithUTF8String:suite]];
     }
 
