@@ -64,7 +64,7 @@ static void tester_printf(int level, const char *fmt, ...) {
 	va_end (args);
 }
 
-static int tester_run_suite(test_suite_t *suite) {
+int bc_tester_run_suite(test_suite_t *suite) {
 	int i;
 
 	CU_pSuite pSuite = CU_add_suite(suite->name, suite->init_func, suite->cleanup_func);
@@ -78,12 +78,12 @@ static int tester_run_suite(test_suite_t *suite) {
 	return 0;
 }
 
-const char * tester_test_suite_name(int suite_index) {
+const char * bc_tester_suite_name(int suite_index) {
 	if (suite_index >= nb_test_suites) return NULL;
 	return test_suite[suite_index]->name;
 }
 
-static int tester_test_suite_index(const char *suite_name) {
+int bc_tester_suite_index(const char *suite_name) {
 	int i;
 
 	for (i = 0; i < nb_test_suites; i++) {
@@ -94,30 +94,35 @@ static int tester_test_suite_index(const char *suite_name) {
 
 	return -1;
 }
-const char * tester_test_name(const char *suite_name, int test_index) {
-	int suite_index = tester_test_suite_index(suite_name);
+
+int bc_tester_nb_suites() {
+	return nb_test_suites;
+}
+
+const char * bc_tester_test_name(const char *suite_name, int test_index) {
+	int suite_index = bc_tester_suite_index(suite_name);
 	if ((suite_index < 0) || (suite_index >= nb_test_suites)) return NULL;
 	if (test_index >= test_suite[suite_index]->nb_tests) return NULL;
 	return test_suite[suite_index]->tests[test_index].name;
 }
 
-static int tester_nb_tests(const char *suite_name) {
-	int i = tester_test_suite_index(suite_name);
+int bc_tester_nb_tests(const char *suite_name) {
+	int i = bc_tester_suite_index(suite_name);
 	if (i < 0) return 0;
 	return test_suite[i]->nb_tests;
 }
 
-static void tester_list_suites() {
+void bc_tester_list_suites() {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
-		fprintf(stdout, "%s\n", tester_test_suite_name(j));
+		fprintf(stdout, "%s\n", bc_tester_suite_name(j));
 	}
 }
 
-static void tester_list_suite_tests(const char *suite_name) {
+void bc_tester_list_tests(const char *suite_name) {
 	int j;
-	for( j = 0; j < tester_nb_tests(suite_name); j++) {
-		const char *test_name = tester_test_name(suite_name, j);
+	for( j = 0; j < bc_tester_nb_tests(suite_name); j++) {
+		const char *test_name = bc_tester_test_name(suite_name, j);
 		fprintf(stdout, "%s\n", test_name);
 	}
 }
@@ -174,7 +179,7 @@ static void test_complete_message_handler(const CU_pTest pTest,
 }
 #endif
 
-static int tester_run_tests(const char *suite_name, const char *test_name) {
+int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 	int i;
 
 	/* initialize the CUnit test registry */
@@ -182,7 +187,7 @@ static int tester_run_tests(const char *suite_name, const char *test_name) {
 		return CU_get_error();
 
 	for (i = 0; i < nb_test_suites; i++) {
-		tester_run_suite(test_suite[i]);
+		bc_tester_run_suite(test_suite[i]);
 	}
 #ifdef HAVE_CU_GET_SUITE
 	CU_set_suite_start_handler(suite_start_message_handler);
@@ -208,14 +213,14 @@ static int tester_run_tests(const char *suite_name, const char *test_name) {
 			suite=CU_get_suite(suite_name);
 			if (!suite) {
 				tester_printf(verbosity_error, "Could not find suite '%s'. Available suites are:", suite_name);
-				tester_list_suites();
+				bc_tester_list_suites();
 				return -1;
 			} else if (test_name) {
 				CU_pTest test=CU_get_test_by_name(test_name, suite);
 				if (!test) {
 					tester_printf(verbosity_error, "Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
 					// do not use suite_name here, since this method is case sensitive
-					tester_list_suite_tests(suite->pName);
+					bc_tester_list_tests(suite->pName);
 					return -2;
 				} else {
 					CU_ErrorCode err= CU_run_test(suite, test);
@@ -282,12 +287,12 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 		CHECK_ARG("--suite", ++i, argc);
 		suite_name=argv[i];
 	} else if (strcmp(argv[i],"--list-suites")==0){
-		tester_list_suites();
+		bc_tester_list_suites();
 		return 0;
 	} else if (strcmp(argv[i],"--list-tests")==0){
 		CHECK_ARG("--list-tests", ++i, argc);
 		suite_name = argv[i];
-		tester_list_suite_tests(suite_name);
+		bc_tester_list_tests(suite_name);
 		return 0;
 	} else if (strcmp(argv[i], "--xml-file") == 0){
 		CHECK_ARG("--xml-file", ++i, argc);
@@ -318,7 +323,7 @@ int bc_tester_start() {
 		free(xml_tmp_file);
 	}
 
-	ret = tester_run_tests(suite_name, test_name);
+	ret = bc_tester_run_tests(suite_name, test_name);
 
 	return ret;
 }

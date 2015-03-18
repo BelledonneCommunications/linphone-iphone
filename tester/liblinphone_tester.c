@@ -151,30 +151,7 @@ void liblinphone_tester_init(void) {
 #endif
 
 	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
-
-	bc_tester_add_suite(&setup_test_suite);
-	bc_tester_add_suite(&register_test_suite);
-	bc_tester_add_suite(&offeranswer_test_suite);
-	bc_tester_add_suite(&call_test_suite);
-	bc_tester_add_suite(&multi_call_test_suite);
-	bc_tester_add_suite(&message_test_suite);
-	bc_tester_add_suite(&presence_test_suite);
-#ifdef UPNP
-	bc_tester_add_suite(&upnp_test_suite);
-#endif
-	bc_tester_add_suite(&stun_test_suite);
-	bc_tester_add_suite(&event_test_suite);
-	bc_tester_add_suite(&flexisip_test_suite);
-	bc_tester_add_suite(&remote_provisioning_test_suite);
-	bc_tester_add_suite(&quality_reporting_test_suite);
-	bc_tester_add_suite(&log_collection_test_suite);
-	bc_tester_add_suite(&transport_test_suite);
-	bc_tester_add_suite(&player_test_suite);
-	bc_tester_add_suite(&dtmf_test_suite);
-#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
-	bc_tester_add_suite(&video_test_suite);
-#endif
-	bc_tester_add_suite(&multicast_call_test_suite);
+	liblinphone_tester_add_suites();
 }
 
 void liblinphone_tester_uninit(void) {

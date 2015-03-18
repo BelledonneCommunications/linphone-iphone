@@ -61,6 +61,15 @@ int bc_tester_start();
 void bc_tester_add_suite(test_suite_t *suite);
 void bc_tester_uninit();
 
+int bc_tester_nb_suites();
+int bc_tester_nb_tests(const char* name);
+void bc_tester_list_suites();
+void bc_tester_list_tests(const char *suite_name);
+const char * bc_tester_suite_name(int suite_index);
+const char * bc_tester_test_name(const char *suite_name, int test_index);
+int bc_tester_run_suite(test_suite_t *suite);
+int bc_tester_run_tests(const char *suite_name, const char *test_name);
+int bc_tester_suite_index(const char *suite_name);
 
 #ifdef __cplusplus
 }

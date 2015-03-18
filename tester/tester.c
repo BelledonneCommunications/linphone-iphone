@@ -269,22 +269,22 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
 	}
-	
+
 	if (rc_path) ms_free(rc_path);
-	
+
 	return mgr;
 }
 
 void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, int check_for_proxies) {
 	LinphoneProxyConfig* proxy;
 	int proxy_count;
-	
+
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	else
 		proxy_count=0;
-	
+
 	if (proxy_count){
 #define REGISTER_TIMEOUT 20 /* seconds */
 		int success = wait_for_until(mgr->lc,NULL,&mgr->stat.number_of_LinphoneRegistrationOk,
@@ -365,4 +365,33 @@ void liblinphone_tester_keep_accounts( int keep ){
 
 void liblinphone_tester_clear_accounts(void){
 	account_manager_destroy();
+}
+
+void liblinphone_tester_add_suites() {
+	bc_tester_add_suite(&setup_test_suite);
+	bc_tester_add_suite(&register_test_suite);
+	bc_tester_add_suite(&offeranswer_test_suite);
+	bc_tester_add_suite(&call_test_suite);
+	bc_tester_add_suite(&multi_call_test_suite);
+	bc_tester_add_suite(&message_test_suite);
+	bc_tester_add_suite(&presence_test_suite);
+#ifdef UPNP
+	bc_tester_add_suite(&upnp_test_suite);
+#endif
+	bc_tester_add_suite(&stun_test_suite);
+	bc_tester_add_suite(&event_test_suite);
+	bc_tester_add_suite(&flexisip_test_suite);
+	bc_tester_add_suite(&remote_provisioning_test_suite);
+	bc_tester_add_suite(&quality_reporting_test_suite);
+	bc_tester_add_suite(&log_collection_test_suite);
+	bc_tester_add_suite(&transport_test_suite);
+	bc_tester_add_suite(&player_test_suite);
+	bc_tester_add_suite(&dtmf_test_suite);
+#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
+	bc_tester_add_suite(&video_test_suite);
+#endif
+	bc_tester_add_suite(&multicast_call_test_suite);
+}
+
+void liblinphone_tester_init() {
 }

@@ -32,7 +32,9 @@ liblinphonetester_la_SOURCES = \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \
-				common/bc_tester_utils.c common/bc_tester_utils.h
+				common/bc_tester_utils.c
+liblinphonetester_ladir = $(includedir)/linphone
+liblinphonetester_la_HEADERS = common/bc_tester_utils.h
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
