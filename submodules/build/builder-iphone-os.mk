@@ -28,7 +28,6 @@ linphone_configure_controls = \
 				--with-readline=none  \
 				--enable-gtk_ui=no \
 				--enable-console_ui=no \
-				--enable-bellesip \
 				--with-gsm=$(prefix) \
 				--with-srtp=$(prefix) \
 				--with-antlr=$(prefix) \
@@ -40,7 +39,6 @@ linphone_configure_controls = \
 				--disable-tutorials \
 				--disable-tools \
 				--enable-msg-storage=yes \
-				--enable-ios \
 				--with-polarssl=$(prefix) \
 				--enable-dtls
 

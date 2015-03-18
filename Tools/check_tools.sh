@@ -36,7 +36,7 @@ fi
 
 # just ensure that JDK is installed - if not, it will display user a popup
 if ! java -version &>/dev/null; then
-	echo_err "Please install Java"
+	echo_err "Please install Java JDK (not just JRE)"
 fi
 
 # needed by x264
