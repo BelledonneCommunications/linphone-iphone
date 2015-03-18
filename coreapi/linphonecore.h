@@ -3198,6 +3198,13 @@ LINPHONE_PUBLIC int linphone_core_get_max_calls(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_max_calls(LinphoneCore *lc, int max);
 
 LINPHONE_PUBLIC	bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
+/**
+ * @ingroup initializing
+ * Check if a media encryption type is supported
+ * @param lc core
+ * @param menc LinphoneMediaEncryption
+ * @return whether a media encryption scheme is supported by the LinphoneCore engine
+**/
 
 LINPHONE_PUBLIC	bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);
 
