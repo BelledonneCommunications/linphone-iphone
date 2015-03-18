@@ -63,10 +63,7 @@ The next pieces need to be compiled manually.
 * To ensure compatibility with multiple MacOS versions it is recommended to do:
 
         export MACOSX_DEPLOYMENT_TARGET=10.6
-        export CFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
-        export OBJCFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
-        export CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
-        export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5 -Wl,-headerpad_max_install_names -Wl,-read_only_relocs -Wl,suppress"
+        export LDFLAGS="-Wl,-headerpad_max_install_names -Wl,-read_only_relocs -Wl,suppress"
 
 * (MacPorts only) Install libantlr3c (library used by belle-sip for parsing)
 

@@ -44,6 +44,7 @@ public interface LinphoneChatRoom {
 	 * Send a message to peer member of this chat room.
 	 * @param chat message
 	 */
+	@Deprecated
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
 
 	/**
@@ -144,4 +145,9 @@ public interface LinphoneChatRoom {
 	 */
 	LinphoneChatMessage createFileTransferMessage(LinphoneContent content);
 	
+	/**
+	 * 
+	 * @param message
+	 */
+	void sendChatMessage(LinphoneChatMessage message);
 }

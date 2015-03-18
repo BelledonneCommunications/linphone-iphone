@@ -27,7 +27,6 @@
 #  NOTIFY_LIBRARIES - The libraries needed to use libnotify
 
 set(_NOTIFY_ROOT_PATHS
-	${WITH_NOTIFY}
 	${CMAKE_INSTALL_PREFIX}
 )
 

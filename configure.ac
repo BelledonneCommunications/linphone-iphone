@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.7.0-linphone-daemon],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.8.0-linphone-daemon],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -30,7 +30,7 @@ AC_SUBST(LINPHONE_VERSION)
 AC_MSG_NOTICE([$PACKAGE_NAME-$PACKAGE_VERSION		A full featured audio/video sip phone.])
 AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
 
-AM_INIT_AUTOMAKE([1.9 tar-pax])
+AM_INIT_AUTOMAKE([1.9 tar-pax subdir-objects])
 AC_SUBST([LIBTOOL_DEPS])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
@@ -71,7 +71,7 @@ case $target in
 		mingw_found=yes
 		AC_CHECK_TOOL(WINDRES, windres)
 	;;
-	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
+	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin|aarch64-apple-darwin|*-apple-darwin.ios)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE=1 "
 		LIBS="$LIBS -framework CoreFoundation -framework AudioToolbox -framework CoreAudio -framework Foundation -framework QuartzCore -framework OpenGLES -framework UIKit -framework AVFoundation"
 		ios_found=yes
@@ -376,15 +376,6 @@ if test "$gtk_ui" = "true" ; then
 		echo "Libnotify support is disabled."
 	fi
 fi
-
-case "$target" in
-        #macosx 64 bits
-        x86_64-apple-darwin*)
-                LIBS="$LIBS -mmacosx-version-min=10.6"
-                CXXFLAGS="$CXXFLAGS -mmacosx-version-min=10.6"
-                CFLAGS="$CFLAGS -mmacosx-version-min=10.6"
-        ;;
-esac
 
 dnl os-specific problems not handled by existing macros.
 case "$host_os" in
@@ -769,7 +760,7 @@ AC_ARG_ENABLE(external-ortp,
 )
 
 if test "$external_ortp" = 'true'; then
-	PKG_CHECK_MODULES([ORTP], [ortp >= 0.23.0])
+	PKG_CHECK_MODULES([ORTP], [ortp >= 0.24.0])
 	ORTP_VERSION=`$PKG_CONFIG --modversion ortp`
 else
 	AC_CONFIG_SUBDIRS( oRTP )
@@ -798,7 +789,7 @@ AC_ARG_ENABLE([external-mediastreamer],
 
 AS_CASE($enable_external_mediastreamer,
 	[yes],
-	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.10.0])
+	[PKG_CHECK_MODULES([MEDIASTREAMER], [mediastreamer >= 2.11.0])
 	MS2_VERSION=`$PKG_CONFIG --modversion mediastreamer`],
 	[no],
 	[AC_CONFIG_SUBDIRS( mediastreamer2 )
@@ -869,7 +860,7 @@ fi
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
 
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.3.1])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"

@@ -27,7 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 #ifdef HAVE_GTK_OSX
 #include <gtkosxapplication.h>
@@ -36,6 +38,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef WIN32
 #define chdir _chdir
 #include "direct.h"
+#ifndef F_OK
+#define F_OK 00 /*visual studio does not define F_OK*/
+#endif
 #endif
 
 #if defined(HAVE_NOTIFY1) || defined(HAVE_NOTIFY4)
@@ -102,77 +107,43 @@ static gchar *custom_config_file=NULL;
 static gboolean restart=FALSE;
 static GtkWidget *config_fetching_dialog=NULL;
 
+#if _MSC_VER
+
+#define LINPHONE_OPTION(optlname, optsname, optarg, optargdata, optdesc) \
+{ \
+	optlname, \
+	optsname, \
+	0, \
+	optarg, \
+	optargdata, \
+	optdesc, \
+	NULL \
+}
+
+#else
+
+#define LINPHONE_OPTION(optlname, optsname, optarg, optargdata, optdesc) \
+{ \
+	.long_name = optlname, \
+	.short_name = optsname, \
+	.arg = optarg, \
+	.arg_data = optargdata, \
+	.description = optdesc, \
+}
+
+#endif
+
 static GOptionEntry linphone_options[]={
-	{
-		.long_name="verbose",
-		.short_name= '\0',
-		.arg=G_OPTION_ARG_NONE,
-		.arg_data= (gpointer)&verbose,
-		.description=N_("log to stdout some debug information while running.")
-	},
-	{
-	    .long_name = "logfile",
-	    .short_name = 'l',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = &linphone_logfile,
-	    .description = N_("path to a file to write logs into.")
-	},
-	{
-	    .long_name = "no-video",
-	    .short_name = '\0',
-	    .arg = G_OPTION_ARG_NONE,
-	    .arg_data = (gpointer)&no_video,
-	    .description = N_("Start linphone with video disabled.")
-	},
-	{
-		.long_name="iconified",
-		.short_name= '\0',
-		.arg=G_OPTION_ARG_NONE,
-		.arg_data= (gpointer)&iconified,
-		.description=N_("Start only in the system tray, do not show the main interface.")
-	},
-	{
-	    .long_name = "call",
-	    .short_name = 'c',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = &addr_to_call,
-	    .description = N_("address to call right now")
-	},
-	{
-	    .long_name = "auto-answer",
-	    .short_name = 'a',
-	    .arg = G_OPTION_ARG_NONE,
-	    .arg_data = (gpointer) & auto_answer,
-	    .description = N_("if set automatically answer incoming calls")
-	},
-	{
-	    .long_name = "workdir",
-	    .short_name = '\0',
-	    .arg = G_OPTION_ARG_STRING,
-	    .arg_data = (gpointer) & workingdir,
-	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
-	},
-	{
-		.long_name = "config",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_FILENAME,
-		.arg_data = (gpointer) &custom_config_file,
-		.description = N_("Configuration file")
-	},
-	{
-		.long_name = "run-audio-assistant",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_NONE,
-		.arg_data = (gpointer) &run_audio_assistant,
-		.description = N_("Run the audio assistant")
-	},
-	{
-		.long_name = "selftest",
-		.short_name = '\0',
-		.arg = G_OPTION_ARG_NONE,
-		.arg_data = (gpointer) &selftest,
-		.description = N_("Run self test and exit 0 if succeed")
-	},
+	LINPHONE_OPTION("verbose",             '\0', G_OPTION_ARG_NONE,     (gpointer)&verbose,              N_("log to stdout some debug information while running.")),
+	LINPHONE_OPTION("logfile",             'l',  G_OPTION_ARG_STRING,   &linphone_logfile,               N_("path to a file to write logs into.")),
+	LINPHONE_OPTION("no-video",            '\0', G_OPTION_ARG_NONE,     (gpointer)&no_video,             N_("Start linphone with video disabled.")),
+	LINPHONE_OPTION("iconified",           '\0', G_OPTION_ARG_NONE,     (gpointer)&iconified,            N_("Start only in the system tray, do not show the main interface.")),
+	LINPHONE_OPTION("call",                'c',  G_OPTION_ARG_STRING,   &addr_to_call,                   N_("address to call right now")),
+	LINPHONE_OPTION("auto-answer",         'a',  G_OPTION_ARG_NONE,     (gpointer) & auto_answer,        N_("if set automatically answer incoming calls")),
+	LINPHONE_OPTION("workdir",             '\0', G_OPTION_ARG_STRING,   (gpointer) & workingdir,         N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")),
+	LINPHONE_OPTION("config",              '\0', G_OPTION_ARG_FILENAME, (gpointer) &custom_config_file,  N_("Configuration file")),
+	LINPHONE_OPTION("run-audio-assistant", '\0', G_OPTION_ARG_NONE,     (gpointer) &run_audio_assistant, N_("Run the audio assistant")),
+	LINPHONE_OPTION("selftest",            '\0', G_OPTION_ARG_NONE,     (gpointer) &selftest,            N_("Run self test and exit 0 if succeed")),
 	{0}
 };
 
@@ -538,7 +509,7 @@ static void about_url_clicked(GtkAboutDialog *dialog, const char *url, gpointer 
 	linphone_gtk_open_browser(url);
 }
 
-void linphone_gtk_show_about(){
+void linphone_gtk_show_about(void){
 	struct stat filestat;
 	const char *license_file=PACKAGE_DATA_DIR "/linphone/COPYING";
 	GtkWidget *about;
@@ -557,7 +528,7 @@ void linphone_gtk_show_about(){
 	if (filestat.st_size>0){
 		char *license=g_malloc(filestat.st_size+1);
 		FILE *f=fopen(license_file,"r");
-		if (f && fread(license,filestat.st_size,1,f)==1){
+		if (f && fread(license,1,filestat.st_size,f)>0){
 			license[filestat.st_size]='\0';
 			gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about),license);
 		}
@@ -2114,7 +2085,7 @@ int main(int argc, char *argv[]){
 	progpath = strdup(argv[0]);
 
 	config_file=linphone_gtk_get_config_file(NULL);
-	
+
 	workingdir= (tmp=g_getenv("LINPHONE_WORKDIR")) ? g_strdup(tmp) : NULL;
 
 #ifdef WIN32
@@ -2141,6 +2112,7 @@ int main(int argc, char *argv[]){
 		}
 #elif __APPLE__
 		setenv("LANG",lang,1);
+		setenv("LANGUAGE",lang,1);
 #else
 		setenv("LANGUAGE",lang,1);
 #endif
@@ -2166,7 +2138,7 @@ int main(int argc, char *argv[]){
 		g_critical("%s", error->message);
 		return -1;
 	}
-	if (config_file) free(config_file);
+	if (config_file) g_free(config_file);
 	if (custom_config_file && !g_path_is_absolute(custom_config_file)) {
 		gchar *res = g_get_current_dir();
 		res = g_strjoin(G_DIR_SEPARATOR_S, res, custom_config_file, NULL);
@@ -2257,7 +2229,7 @@ core_start:
 		restart=FALSE;
 		goto core_start;
 	}
-	if (config_file) free(config_file);
+	if (config_file) g_free(config_file);
 #ifndef HAVE_GTK_OSX
 	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
 	if (icon) gtk_status_icon_set_visible(icon,FALSE);
@@ -2266,3 +2238,8 @@ core_start:
 	return 0;
 }
 
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	return main(__argc, __argv);
+}
+#endif

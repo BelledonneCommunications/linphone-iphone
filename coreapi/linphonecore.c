@@ -1,6 +1,7 @@
 /*
 linphone
 Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -189,7 +190,16 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	struct stat statbuf;
 
 	if (liblinphone_log_func != NULL) {
+#ifndef WIN32
+		va_list args_copy;
+		va_copy(args_copy, args);
+		liblinphone_log_func(level, fmt, args_copy);
+		va_end(args_copy);
+#else
+		/* This works on 32 bits, luckily. */
+		/* TODO: va_copy is available in Visual Studio 2013. */
 		liblinphone_log_func(level, fmt, args);
+#endif
 	}
 
 	ortp_gettimeofday(&tp, NULL);
@@ -323,27 +333,31 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	}
 }
 
-static void delete_log_collection_upload_file(void) {
+static void clean_log_collection_upload_context(LinphoneCore *lc) {
 	char *filename = ms_strdup_printf("%s/%s_log.%s",
 		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
 	unlink(filename);
 	ms_free(filename);
+	if (lc && lc->log_collection_upload_information) {
+		ms_free(lc->log_collection_upload_information);
+		lc->log_collection_upload_information=NULL;
+	}
 }
 
 static void process_io_error_upload_log_collection(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("I/O Error during log collection upload to %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "I/O Error");
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(core);
 }
 
 static void process_auth_requested_upload_log_collection(void *data, belle_sip_auth_event_t *event) {
 	LinphoneCore *core = (LinphoneCore *)data;
 	ms_error("Error during log collection upload: auth requested to connect %s", linphone_core_get_log_collection_upload_server_url(core));
 	linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateNotDelivered, "Auth requested");
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(core);
 }
 
 /**
@@ -470,7 +484,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			if (file_url != NULL) {
 				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
 			}
-			delete_log_collection_upload_file();
+			clean_log_collection_upload_context(core);
 		}
 	}
 }
@@ -609,7 +623,7 @@ char * linphone_core_compress_log_collection() {
 void linphone_core_reset_log_collection() {
 	char *filename;
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
-	delete_log_collection_upload_file();
+	clean_log_collection_upload_context(NULL);
 	filename = ms_strdup_printf("%s/%s1.log",
 			liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
@@ -890,6 +904,8 @@ static void sip_config_read(LinphoneCore *lc)
 	tmp=lp_config_get_int(lc->config,"sip","guess_hostname",1);
 	linphone_core_set_guess_hostname(lc,tmp);
 
+	tmp=lp_config_get_int(lc->config,"sip","lime",FALSE);
+	linphone_core_enable_lime(lc,tmp);
 
 	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
@@ -1075,7 +1091,10 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 	pt=find_payload(type==SalAudio ? lc->default_audio_codecs : lc->default_video_codecs,mime,rate,channels,fmtp);
 	if (!pt){
 		MSList **default_list=(type==SalAudio) ? &lc->default_audio_codecs :  &lc->default_video_codecs;
-		ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
+		if (type==SalAudio)
+			ms_warning("Codec %s/%i/%i read from conf is not in the default list.",mime,rate,channels);
+		else
+			ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
 		pt=payload_type_new();
 		pt->type=(type==SalAudio) ? PAYLOAD_AUDIO_PACKETIZED :  PAYLOAD_VIDEO;
 		pt->mime_type=ortp_strdup(mime);
@@ -1086,6 +1105,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		*default_list=ms_list_append(*default_list, pt);
 	}
 	if (enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
+	else pt->flags&=~PAYLOAD_TYPE_ENABLED;
 	*ret=pt;
 	return TRUE;
 }
@@ -1292,7 +1312,7 @@ void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char* alg
  * See linphone_core_set_adaptive_rate_algorithm().
 **/
 const char * linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc){
-	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Simple");
+	return lp_config_get_string(lc->config, "net", "adaptive_rate_algorithm", "Stateful");
 }
 
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
@@ -1473,7 +1493,7 @@ static void misc_config_read(LinphoneCore *lc) {
 	LpConfig *config=lc->config;
 	const char *uuid;
 
-	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",30);
 	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 
 	uuid=lp_config_get_string(config,"misc","uuid",NULL);
@@ -1615,7 +1635,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
-	lc->vtables=ms_list_append(lc->vtables,local_vtable);
+	_linphone_core_add_listener(lc, local_vtable, TRUE);
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
@@ -1808,6 +1828,20 @@ void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val){
 **/
 bool_t linphone_core_get_guess_hostname(LinphoneCore *lc){
 	return lc->sip_conf.guess_hostname;
+}
+
+/**
+ * Tells to LinphoneCore to use Linphone Instant Messaging encryption
+ *
+ */
+void linphone_core_enable_lime(LinphoneCore *lc, bool_t val){
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sip","lime",val);
+	}
+}
+
+bool_t linphone_core_lime_enabled(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"sip", "lime", FALSE);
 }
 
 /**
@@ -4768,8 +4802,12 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 }
 
 static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, bool_t val) {
-	audio_stream_set_mic_gain(st,
-		(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
+	if (val) {
+		audio_stream_set_mic_gain(st, 0);
+	} else {
+		audio_stream_set_mic_gain_db(st, lc->sound_conf.soft_mic_lev);
+	}
+
 	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 		audio_stream_mute_rtp(st,val);
 	}
@@ -6341,7 +6379,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
-	ms_list_free_with_data(lc->vtables,(void (*)(void *))linphone_core_v_table_destroy);
+	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
@@ -7123,144 +7161,6 @@ int linphone_payload_type_get_channels(const LinphonePayloadType *pt) {
 	return pt->channels;
 }
 
-LinphoneCoreVTable *linphone_core_v_table_new() {
-	return ms_new0(LinphoneCoreVTable,1);
-}
-
-void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data) {
-	table->user_data = data;
-}
-
-void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
-	return table->user_data;
-}
-
-void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
-	ms_free(table);
-}
-
-LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc) {
-	return lc->current_vtable;
-}
-
-#define NOTIFY_IF_EXIST(function_name) \
-	MSList* iterator; \
-	ms_message ("Linphone core [%p] notifying [%s]",lc,#function_name);\
-	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next) \
-			if ((lc->current_vtable=((LinphoneCoreVTable*)(iterator->data)))->function_name)\
-				((LinphoneCoreVTable*)(iterator->data))->function_name
-void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
-	NOTIFY_IF_EXIST(global_state_changed)(lc,gstate,message);
-}
-void linphone_core_notify_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message){
-	NOTIFY_IF_EXIST(call_state_changed)(lc,call,cstate,message);
-}
-void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token) {
-	NOTIFY_IF_EXIST(call_encryption_changed)(lc,call,on,authentication_token);
-}
-void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-	NOTIFY_IF_EXIST(registration_state_changed)(lc,cfg,cstate,message);
-}
-void linphone_core_notify_show_interface(LinphoneCore *lc){
-	NOTIFY_IF_EXIST(show)(lc);
-}
-void linphone_core_notify_display_status(LinphoneCore *lc, const char *message) {
-	NOTIFY_IF_EXIST(display_status)(lc,message);
-}
-void linphone_core_notify_display_message(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_message)(lc,message);
-}
-void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_warning)(lc,message);
-}
-void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url){
-	NOTIFY_IF_EXIST(display_url)(lc,message,url);
-}
-void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf){
-	NOTIFY_IF_EXIST(notify_presence_received)(lc,lf);
-}
-void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
-	NOTIFY_IF_EXIST(new_subscription_requested)(lc,lf,url);
-}
-void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
-	NOTIFY_IF_EXIST(auth_info_requested)(lc,realm,username,domain);
-}
-void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl){
-	NOTIFY_IF_EXIST(call_log_updated)(lc,newcl);
-}
-void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
-	NOTIFY_IF_EXIST(text_received)(lc,room,from,message);
-}
-void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message){
-	NOTIFY_IF_EXIST(message_received)(lc,room,message);
-}
-void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
-	NOTIFY_IF_EXIST(file_transfer_recv)(lc,message,content,buff,size);
-}
-void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size) {
-	NOTIFY_IF_EXIST(file_transfer_send)(lc,message,content,buff,size);
-}
-void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
-	NOTIFY_IF_EXIST(file_transfer_progress_indication)(lc,message,content,offset,total);
-}
-void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
-	NOTIFY_IF_EXIST(is_composing_received)(lc,room);
-}
-void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf) {
-	NOTIFY_IF_EXIST(dtmf_received)(lc,call,dtmf);
-}
-bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc) {
-	MSList* iterator;
-	for (iterator=lc->vtables; iterator!=NULL; iterator=iterator->next)
-		if (((LinphoneCoreVTable*)(iterator->data))->dtmf_received)
-			return TRUE;
-	return FALSE;
-}
-void linphone_core_notify_refer_received(LinphoneCore *lc, const char *refer_to) {
-	NOTIFY_IF_EXIST(refer_received)(lc,refer_to);
-}
-void linphone_core_notify_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf) {
-	NOTIFY_IF_EXIST(buddy_info_updated)(lc,lf);
-}
-void linphone_core_notify_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
-	NOTIFY_IF_EXIST(transfer_state_changed)(lc,transfered,new_call_state);
-}
-void linphone_core_notify_call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats) {
-	NOTIFY_IF_EXIST(call_stats_updated)(lc,call,stats);
-}
-void linphone_core_notify_info_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg) {
-	NOTIFY_IF_EXIST(info_received)(lc,call,msg);
-}
-void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
-	NOTIFY_IF_EXIST(configuring_status)(lc,status,message);
-}
-void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
-	NOTIFY_IF_EXIST(network_reachable)(lc,reachable);
-}
-void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
-	NOTIFY_IF_EXIST(notify_received)(lc,lev,notified_event,body);
-}
-void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
-	NOTIFY_IF_EXIST(subscription_state_changed)(lc,lev,state);
-}
-void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
-	NOTIFY_IF_EXIST(publish_state_changed)(lc,lev,state);
-}
-void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
-	NOTIFY_IF_EXIST(log_collection_upload_state_changed)(lc, state, info);
-}
-void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total) {
-	NOTIFY_IF_EXIST(log_collection_upload_progress_indication)(lc, offset, total);
-}
-void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable) {
-	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
-	lc->vtables=ms_list_append(lc->vtables,vtable);
-}
-void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {
-	ms_message("Vtable [%p] unregistered on core [%p]",lc,vtable);
-	lc->vtables=ms_list_remove(lc->vtables,(void*)vtable);
-}
-
 int linphone_core_set_audio_multicast_addr(LinphoneCore *lc, const char* ip) {
 	char* new_value;
 	if (ip && !ms_is_multicast(ip)) {
@@ -7288,7 +7188,6 @@ int linphone_core_set_video_multicast_addr(LinphoneCore *lc, const char* ip) {
 const char* linphone_core_get_audio_multicast_addr(const LinphoneCore *lc) {
 	return lc->rtp_conf.audio_multicast_addr;
 }
-
 
 const char* linphone_core_get_video_multicast_addr(const LinphoneCore *lc){
 	return lc->rtp_conf.video_multicast_addr;

@@ -22,7 +22,7 @@ void linphone_contact_search_init(LinphoneContactSearch* obj, const char* predic
 ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj);
 const char* linphone_contact_search_get_predicate(LinphoneContactSearch* obj);
 void linphone_contact_search_invoke_cb(LinphoneContactSearch* req, MSList* friends);
-LinphoneContactSearch* linphone_contact_search_ref(void* obj);
+LINPHONE_PUBLIC LinphoneContactSearch* linphone_contact_search_ref(void* obj);
 void                    linphone_contact_search_unref(void* obj);
 LinphoneContactSearch* linphone_contact_search_cast( void*obj );
 
@@ -32,10 +32,10 @@ void          linphone_contact_provider_init(LinphoneContactProvider* obj, Linph
 LinphoneCore* linphone_contact_provider_get_core(LinphoneContactProvider* obj);
 const char*   linphone_contact_provider_get_name(LinphoneContactProvider* obj);
 LinphoneContactProvider* linphone_contact_provider_ref(void* obj);
-void                     linphone_contact_provider_unref(void* obj);
-LinphoneContactProvider* linphone_contact_provider_cast( void*obj );
+LINPHONE_PUBLIC void                     linphone_contact_provider_unref(void* obj);
+LINPHONE_PUBLIC LinphoneContactProvider* linphone_contact_provider_cast( void*obj );
 
-LinphoneContactSearch* linphone_contact_provider_begin_search(LinphoneContactProvider* obj,
+LINPHONE_PUBLIC LinphoneContactSearch* linphone_contact_provider_begin_search(LinphoneContactProvider* obj,
 															  const char* predicate,
 															  ContactSearchCallback cb,
 															  void* data);

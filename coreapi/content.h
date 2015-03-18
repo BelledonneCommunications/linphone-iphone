@@ -51,6 +51,9 @@ struct _LinphoneContentPrivate{
 				When provided by callback #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferRecvCb, it states the total number of bytes of the transfered file*/
 	char *encoding; /**<The encoding of the data buffer, for example "gzip"*/
 	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
+	char *key; /**< used by RCS File transfer messages to store the key to encrypt file if needed */
+	size_t keyLength; /**< Length of key in bytes */
+	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
 };
 
 /**

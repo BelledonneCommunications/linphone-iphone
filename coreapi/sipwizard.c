@@ -255,8 +255,6 @@ SipSetup linphone_sip_wizard={
 	NULL,
 	NULL,
 	NULL,
-	NULL,
-	NULL,
 	sip_wizard_get_domains,
 	NULL,
 	NULL,

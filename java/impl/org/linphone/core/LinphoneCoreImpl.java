@@ -1045,6 +1045,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized boolean needsEchoCalibration() {
 		return needsEchoCalibration(nativePtr);
 	}
+	private native boolean needsEchoCanceler(long ptr);
+	@Override
+	public synchronized boolean needsEchoCanceler() {
+		return needsEchoCanceler(nativePtr);
+	}
 	private native void declineCall(long coreptr, long callptr, int reason);
 	@Override
 	public synchronized void declineCall(LinphoneCall aCall, Reason reason) {

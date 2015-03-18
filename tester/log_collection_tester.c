@@ -1,6 +1,6 @@
 /*
-	belle-sip - SIP (RFC3261) library.
-	Copyright (C) 2010  Belledonne Communications SARL
+	Linphone
+	Copyright (C) 2014  Belledonne Communications SARL
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	p = bufptr;
 	while(c != EOF) {
 		size_t curpos = p-bufptr;
-		
+
 		if (curpos > (size - 1)) {
 			size = size + 128;
 			bufptr = realloc(bufptr, size);
@@ -94,7 +94,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 static LinphoneLogCollectionState old_collection_state;
 static void collect_init()  {
 	old_collection_state = linphone_core_log_collection_enabled();
-	linphone_core_set_log_collection_path(liblinphone_tester_writable_dir_prefix);
+	linphone_core_set_log_collection_path(bc_tester_writable_dir_prefix);
 }
 
 static void collect_cleanup(LinphoneCoreManager *marie)  {
@@ -171,7 +171,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		CU_ASSERT_PTR_NOT_NULL(file);
 		if (!file) return 0;
 		// 1) expect to find folder name in filename path
-		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, liblinphone_tester_writable_dir_prefix));
+		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, bc_tester_writable_dir_prefix));
 
 		// 2) check file contents
 		while (getline(&line, &line_size, file) != -1) {
@@ -244,12 +244,54 @@ static void collect_files_changing_size()  {
 
 	collect_cleanup(marie);
 }
+static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
+
+	stats* counters = get_stats(lc);
+	switch(state) {
+		case LinphoneCoreLogCollectionUploadStateInProgress:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateInProgress++;
+			break;
+		case LinphoneCoreLogCollectionUploadStateDelivered:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateDelivered++;
+			CU_ASSERT_TRUE(strlen(info)>0)
+			break;
+		case LinphoneCoreLogCollectionUploadStateNotDelivered:
+			counters->number_of_LinphoneCoreLogCollectionUploadStateNotDelivered++;
+			break;
+	}
+}
+static void upload_collected_traces()  {
+	LinphoneCoreManager* marie = setup(TRUE);
+	int waiting = 100;
+	LinphoneCoreVTable *v_table = linphone_core_v_table_new();
+	v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
+	linphone_core_add_listener(marie->lc, v_table);
+
+	linphone_core_set_log_collection_max_file_size(5000);
+	linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
+	// Generate some logs
+	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+	linphone_core_compress_log_collection(marie->lc);
+	linphone_core_upload_log_collection(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
+
+	/*try 2 times*/
+	waiting=100;
+	linphone_core_reset_log_collection(marie->lc);
+	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+	linphone_core_compress_log_collection(marie->lc);
+	linphone_core_upload_log_collection(marie->lc);
+	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+
+	collect_cleanup(marie);
+}
 
 test_t log_collection_tests[] = {
 	{ "No file when disabled", collect_files_disabled},
 	{ "Collect files filled when enabled", collect_files_filled},
 	{ "Logs collected into small file", collect_files_small_size},
 	{ "Logs collected when decreasing max size", collect_files_changing_size},
+	{ "Upload collected traces", upload_collected_traces}
 };
 
 test_suite_t log_collection_test_suite = {

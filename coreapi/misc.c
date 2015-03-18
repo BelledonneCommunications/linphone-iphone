@@ -1533,7 +1533,7 @@ void linphone_core_set_tone(LinphoneCore *lc, LinphoneToneID id, const char *aud
 }
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
-	const char *config=lp_config_get_string(lc->config,"sip","srtp_crypto_suites","AES_CM_128_HMAC_SHA1_80, AES_CM_128_HMAC_SHA1_32");
+	const char *config=lp_config_get_string(lc->config,"sip","srtp_crypto_suites","AES_CM_128_HMAC_SHA1_80, AES_CM_128_HMAC_SHA1_32, AES_CM_256_HMAC_SHA1_80, AES_CM_256_HMAC_SHA1_32");
 	char *tmp=ms_strdup(config);
 	char *sep;
 	char *pos;
@@ -1581,6 +1581,41 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	return result;
 }
 
+static char * seperate_string_list(char **str) {
+	char *ret;
+
+	if (str == NULL) return NULL;
+	if (*str == NULL) return NULL;
+	if (**str == '\0') return NULL;
+
+	ret = *str;
+	for ( ; **str!='\0' && **str!=' ' && **str!=','; (*str)++);
+	if (**str == '\0') {
+		return ret;
+	} else {
+		**str = '\0';
+		do { (*str)++; } while (**str!='\0' && (**str==' ' || **str==','));
+		return ret;
+	}
+}
+
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreements(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char *config=strdup(lp_config_get_string(lc->config, "sip", "zrtp_key_agreements_suites", "MS_ZRTP_KEY_AGREEMENT_DH3K, MS_ZRTP_KEY_AGREEMENT_DH2K"));
+	char *entry;
+	MsZrtpCryptoTypesCount key_agreements_count = 0;
+
+	if (config == NULL) return 0;
+
+	while ((entry = seperate_string_list(&config))) {
+		const MSZrtpKeyAgreement agreement = ms_zrtp_key_agreement_from_string(entry);
+		if (agreement != MS_ZRTP_KEY_AGREEMENT_INVALID) {
+			ms_message("Configured zrtp key agreement: '%s'", ms_zrtp_key_agreement_to_string(agreement));
+			keyAgreements[key_agreements_count++] = agreement;
+		}
+	}
+
+	return key_agreements_count;
+}
 
 
 const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){

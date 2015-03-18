@@ -38,7 +38,7 @@ if(DOXYGEN_FOUND)
 		)
 		add_custom_target(doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
 		install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc/html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml"
-			DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/linphone-${LINPHONE_VERSION}")
+			DESTINATION "share/doc/linphone-${LINPHONE_VERSION}")
 	else()
 		message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
 	endif()

@@ -510,7 +510,7 @@ void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
 /**
  * Sets a dialing prefix to be automatically prepended when inviting a number with
  * linphone_core_invite();
- * This dialing prefix shall usually be the country code of the country where the user is living.
+ * This dialing prefix shall usually be the country code of the country where the user is living, without "+".
  *
 **/
 void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix){
@@ -917,7 +917,7 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 
 	if (icp && src[0]=='+' && (destlen>(i=strlen(icp))) ){
 		src++;
-		strcpy(dest,icp);
+		strncpy(dest, icp, destlen);
 	}
 
 	for(;(i<destlen-1) && *src!='\0';++i){
@@ -927,8 +927,18 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 	dest[i]='\0';
 }
 
+static void replace_icp(const char *src, char *dest, size_t destlen, const char *icp){
+	int i=0;
+	if (strstr(src, icp) == src){
+		dest[0]='+';
+		i++;
+	}
+	strncpy(dest+i, src+strlen(icp), destlen-i-1);
+}
+
 
 bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
+	memset(result, 0, result_len);
 	if (linphone_proxy_config_is_phone_number(proxy, username)){
 		char *flatten;
 		flatten=flatten_number(username);
@@ -936,18 +946,21 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const 
 
 		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
 			/*no prefix configured, nothing else to do*/
-			strncpy(result,flatten,result_len);
-			ms_free(flatten);
+			strncpy(result,flatten,result_len-1);
 		}else{
 			dial_plan_t dialplan;
 			lookup_dial_plan(proxy->dial_prefix,&dialplan);
 			ms_debug("Using dialplan '%s'",dialplan.country);
-			if (flatten[0]=='+' || strstr(flatten,dialplan.icp)==flatten){
+			if (flatten[0]=='+'){
 				/* the number has international prefix or +, so nothing to do*/
 				ms_debug("Prefix already present.");
-				/*eventually replace the plus*/
+				/*eventually replace the plus by the international calling prefix of the country*/
 				replace_plus(flatten,result,result_len,proxy->dial_escape_plus ? dialplan.icp : NULL);
-				ms_free(flatten);
+			}else if (strstr(flatten,dialplan.icp)==flatten){
+				if (!proxy->dial_escape_plus)
+					replace_icp(flatten, result, result_len, dialplan.icp);
+				else
+					strncpy(result, flatten, result_len-1);
 			}else{
 				int numlen;
 				int i=0;
@@ -956,7 +969,7 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const 
 				/*keep at most national number significant digits */
 				skip=numlen-dialplan.nnl;
 				if (skip<0) skip=0;
-				/*first prepend internation calling prefix or +*/
+				/*first prepend international calling prefix or +*/
 				if (proxy->dial_escape_plus){
 					strncpy(result,dialplan.icp,result_len);
 					i+=strlen(dialplan.icp);
@@ -971,12 +984,12 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const 
 				}
 				/*add user digits */
 				strncpy(result+i,flatten+skip,result_len-i-1);
-				ms_free(flatten);
 			}
 		}
+		ms_free(flatten);
 		return TRUE;
 	} else {
-		strncpy(result,username,result_len);
+		strncpy(result,username,result_len-1);
 		return FALSE;
 	}
 }

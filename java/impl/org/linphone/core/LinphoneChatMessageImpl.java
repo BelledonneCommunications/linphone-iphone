@@ -15,6 +15,9 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native boolean isOutgoing(long ptr);
 	private native void store(long ptr);
 	private native int getStorageId(long ptr);
+	private native void setFileTransferFilepath(long ptr, String path);
+	private native void downloadFile(long ptr);
+	private native void setListener(long ptr, LinphoneChatMessageListener listener);
 	private native void unref(long ptr);
 	
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
@@ -113,12 +116,6 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 		super.finalize();
 	}
 	
-	private native void startFileDownload(long ptr, StateListener listener);
-	@Override
-	public void startFileDownload(StateListener listener) {
-		startFileDownload(nativePtr, listener);
-	}
-	
 	private native Object getFileTransferInformation(long ptr);
 	@Override
 	public LinphoneContent getFileTransferInformation() {
@@ -141,5 +138,20 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	@Override
 	public void cancelFileTransfer() {
 		cancelFileTransfer(nativePtr);
+	}
+	
+	@Override
+	public void setFileTransferFilepath(String path) {
+		setFileTransferFilepath(nativePtr, path);
+	}
+	
+	@Override
+	public void downloadFile() {
+		downloadFile(nativePtr);
+	}
+	
+	@Override
+	public void setListener(LinphoneChatMessageListener listener) {
+		setListener(nativePtr, listener);
 	}
 }

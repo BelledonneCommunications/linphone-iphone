@@ -260,7 +260,7 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	guint timeout;
-	MSVideoSize vsize=MS_VIDEO_SIZE_CIF;
+	MSVideoSize vsize={MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H};
 	GdkColor color;
 	
 	addr=linphone_call_get_remote_address(call);

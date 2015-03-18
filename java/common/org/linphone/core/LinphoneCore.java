@@ -1164,6 +1164,12 @@ public interface LinphoneCore {
 	 * If the device has a builtin echo canceller or calibration value is already known, it will return false.
 	 */
 	boolean needsEchoCalibration();
+	
+	/**
+	 * Returns true if the software echo canceler needs to be turned on.
+	 * If the device has a builtin echo canceller, it will return false.
+	 */
+	boolean needsEchoCanceler();
 
 	void enableIpv6(boolean enable);
 

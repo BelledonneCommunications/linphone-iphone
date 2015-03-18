@@ -148,7 +148,7 @@ static void linphone_gtk_set_selection_to_uri_bar(GtkTreeView *treeview){
 	}
 }
 
-void linphone_gtk_add_contact(){
+void linphone_gtk_add_contact(void){
 	GtkWidget *w=linphone_gtk_create_window("contact");
 	int presence_enabled=linphone_gtk_get_ui_config_int("use_subscribe_notify",1);
 

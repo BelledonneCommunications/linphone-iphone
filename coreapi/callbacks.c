@@ -147,8 +147,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			int md_changed = media_parameters_changed(call, oldmd, new_md);
-			if ((md_changed & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED) || call->playing_ringbacktone) {
+			if ((md_changed & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)){
 				ms_message("Media descriptions are different, need to restart the streams.");
+			} else if ( call->playing_ringbacktone) {
+				ms_message("Playing ringback tone, will restart the streams.");
 			} else {
 				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
 					if (call->all_muted){
@@ -391,6 +393,19 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 	}
 }
 
+static void start_remote_ring(LinphoneCore *lc, LinphoneCall *call) {
+	if (lc->sound_conf.play_sndcard!=NULL){
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
+		if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
+		/*we release sound before playing ringback tone*/
+		if (call->audiostream)
+			audio_stream_unprepare_sound(call->audiostream);
+		if( lc->sound_conf.remote_ring ){
+			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
+		}
+	}
+}
+
 static void call_ringing(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(h);
@@ -411,16 +426,7 @@ static void call_ringing(SalOp *h){
 			return;
 		}
 		if (lc->ringstream!=NULL) return;/*already ringing !*/
-		if (lc->sound_conf.play_sndcard!=NULL){
-			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-			if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
-			/*we release sound before playing ringback tone*/
-			if (call->audiostream)
-				audio_stream_unprepare_sound(call->audiostream);
-			if( lc->sound_conf.remote_ring ){
-				lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
-			}
-		}
+		start_remote_ring(lc, call);
 		ms_message("Remote ringing...");
 		linphone_core_notify_display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
@@ -444,6 +450,10 @@ static void call_ringing(SalOp *h){
 		linphone_core_stop_ringing(lc);
 		ms_message("Doing early media...");
 		linphone_core_update_streams(lc,call,md);
+		if ((linphone_call_params_get_audio_direction(linphone_call_get_current_params(call)) == LinphoneMediaDirectionInactive) && call->audiostream) {
+			if (lc->ringstream != NULL) return; /* Already ringing! */
+			start_remote_ring(lc, call);
+		}
 	}
 }
 
@@ -455,23 +465,24 @@ static void call_ringing(SalOp *h){
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	SalMediaDescription *md;
+	SalMediaDescription *md, *rmd;
 	bool_t update_state=TRUE;
 
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
+	rmd=sal_call_get_remote_media_description(op);
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	/* Handle remote ICE attributes if any. */
-	if (call->ice_session != NULL) {
-		linphone_call_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	if (call->ice_session != NULL && rmd) {
+		linphone_call_update_ice_from_remote_media_description(call, rmd);
 	}
 #ifdef BUILD_UPNP
-	if (call->upnp_session != NULL) {
-		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	if (call->upnp_session != NULL && rmd) {
+		linphone_core_update_upnp_from_remote_media_description(call, rmd);
 	}
 #endif //BUILD_UPNP
 

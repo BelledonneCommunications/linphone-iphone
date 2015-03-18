@@ -20,7 +20,11 @@
 #
 ############################################################################
 
+if(WIN32)
+	set(GTK2_ADDITIONAL_SUFFIXES "../lib/glib-2.0/include" "../lib/gtk-2.0/include")
+endif()
 find_package(GTK2 2.18 REQUIRED gtk)
+find_package(Intl REQUIRED)
 
 set(UI_FILES
 	about.ui
@@ -44,6 +48,7 @@ set(UI_FILES
 )
 
 set(PIXMAPS stock_people.png)
+set(LICENSE ../COPYING)
 
 set(SOURCE_FILES
 	audio_assistant.c
@@ -64,6 +69,9 @@ set(SOURCE_FILES
 	utils.c
 	videowindow.c
 )
+if(WIN32)
+	list(APPEND SOURCE_FILES linphone.rc)
+endif()
 
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
@@ -73,10 +81,20 @@ if(GETTEXT_FOUND)
 	add_definitions("-DENABLE_NLS")
 endif()
 
-add_executable(linphone-gtk ${SOURCE_FILES})
-set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone)
-target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS})
+if(WIN32)
+	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
+else()
+	add_executable(linphone-gtk ${SOURCE_FILES})
+endif()
+set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone LINKER_LANGUAGE CXX)
+target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
 target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
+if(INTL_LIBRARIES)
+	target_link_libraries(linphone-gtk ${INTL_LIBRARIES})
+endif()
+if(WIN32)
+	target_link_libraries(linphone-gtk Wininet)
+endif()
 if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
@@ -92,7 +110,7 @@ install(TARGETS linphone-gtk
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install(FILES ${UI_FILES} ${PIXMAPS}
+install(FILES ${UI_FILES} ${PIXMAPS} ${LICENSE}
 	DESTINATION ${PACKAGE_DATA_DIR}/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

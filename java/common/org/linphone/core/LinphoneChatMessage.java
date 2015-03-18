@@ -4,8 +4,37 @@ import java.util.Vector;
 
 
 public interface LinphoneChatMessage {
-	interface StateListener{
+	@Deprecated
+	interface StateListener {
 		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
+	}
+	
+	interface LinphoneChatMessageListener {
+		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
+		
+		/**
+		 * This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
+		 * @param content incoming content information
+		 * @param buffer holding the received data. Empty buffer means end of file.
+		 */
+		void onLinphoneChatMessageFileTransferReceived(LinphoneChatMessage msg, LinphoneContent content, LinphoneBuffer buffer);
+		
+		/**
+		 * This function is called by the core when an outgoing file transfer is started. This function is called until size is set to 0.
+		 * @param content incoming content information
+		 * @param offset the offset in the file from where to get the data to be sent
+		 * @param size the number of bytes expected by the framework
+		 * @param bufferToFill A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
+		 */
+		void onLinphoneChatMessageFileTransferSent(LinphoneChatMessage msg, LinphoneContent content, int offset, int size, LinphoneBuffer bufferToFill);
+		
+		/**
+		 * File transfer progress indication callback prototype.
+		 * @param content incoming content information
+		 * @param offset The number of bytes sent/received since the beginning of the transfer.
+		 * @param total The total number of bytes to be sent/received.
+		 */
+		void onLinphoneChatMessageFileTransferProgressChanged(LinphoneChatMessage msg, LinphoneContent content, int offset, int total);
 	}
 	public static class State {
 		static private Vector<State> values = new Vector<State>();
@@ -33,6 +62,10 @@ public interface LinphoneChatMessage {
 		 * Message was received(and acknowledged) but cannot get file from server
 		 */
 		public final static State FileTransferError = new State(4,"FileTransferError");
+		/**
+		 * File transfer has been completed successfully.
+		 */
+		public final static State FileTransferDone = new State(5,"FileTransferDone");
 		
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -159,11 +192,6 @@ public interface LinphoneChatMessage {
 	ErrorInfo getErrorInfo();
 	
 	/**
-	 * Start the download of the file bundled in the message
-	 */
-	void startFileDownload(LinphoneChatMessage.StateListener listener);
-	
-	/**
 	 * 	Cancel an ongoing file transfer attached to this message.(upload or download).
 	 */
 	void cancelFileTransfer();
@@ -184,4 +212,19 @@ public interface LinphoneChatMessage {
 	 */
 	String getAppData();
 
+	/**
+	 * Set the path to the file to read from or write to during the file transfer.
+	 * @param path The path to the file to use for the file transfer.
+	 */
+	void setFileTransferFilepath(String path);
+	
+	/**
+	 * Start the download of the file referenced in a LinphoneChatMessage from remote server.
+	 */
+	void downloadFile();
+	
+	/**
+	 * Set the callbacks associated with the LinphoneChatMessage.
+	 */
+	void setListener(LinphoneChatMessage.LinphoneChatMessageListener listener);
 }

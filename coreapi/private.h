@@ -321,7 +321,7 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -717,7 +717,7 @@ typedef struct _LinphoneConference LinphoneConference;
 
 struct _LinphoneCore
 {
-	MSList* vtables;
+	MSList* vtable_refs;
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
@@ -767,6 +767,8 @@ struct _LinphoneCore
 	char* zrtp_secrets_cache;
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
+	time_t network_last_check;
+	
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -776,13 +778,11 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
+	
 	bool_t use_preview_window;
-
-	time_t network_last_check;
-
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
-	bool_t pad[2];
+	bool_t vtables_running;
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -801,6 +801,7 @@ struct _LinphoneCore
 	belle_tls_verify_policy_t *http_verify_policy;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
+	char *file_transfer_server;
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
@@ -973,7 +974,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
 int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char *remote_provisioning_uri);
-int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
+LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
 
 /*****************************************************************************
  * Player interface
@@ -1048,6 +1049,7 @@ static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
 bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreements(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]);
 
 /** Belle Sip-based objects need unique ids
   */
@@ -1113,12 +1115,55 @@ void set_playback_gain_db(AudioStream *st, float gain);
 LinphoneMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);
 SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
 
+/*****************************************************************************
+ * LINPHONE CONTENT PRIVATE ACCESSORS                                        *
+ ****************************************************************************/
+/**
+ * Get the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key to encrypt/decrypt the file associated to this content.
+ */
+const char *linphone_content_get_key(const LinphoneContent *content);
+
+/**
+ * Get the size of key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The key size in bytes
+ */
+size_t linphone_content_get_key_size(const LinphoneContent *content);
+/**
+ * Set the key associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @param[in] key The key to be used to encrypt/decrypt file associated to this content.
+ */
+void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength);
+
+/**
+ * Get the address of the crypto context associated with a RCS file transfer message if encrypted
+ * @param[in] content LinphoneContent object.
+ * @return The address of the pointer to the crypto context. Crypto context is managed(alloc/free)
+ *         by the encryption/decryption functions, so we give the address to store/retrieve the pointer
+ */
+void ** linphone_content_get_cryptoContext_address(LinphoneContent *content);
+
 #ifdef ANDROID
 void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
 void linphone_core_wifi_lock_release(LinphoneCore *lc);
 void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
 void linphone_core_multicast_lock_release(LinphoneCore *lc);
 #endif
+
+struct _VTableReference{
+	LinphoneCoreVTable *vtable;
+	bool_t valid;
+	bool_t autorelease;
+};
+
+typedef struct _VTableReference  VTableReference;
+
+void v_table_reference_destroy(VTableReference *ref);
+
+void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
 
 #ifdef __cplusplus
 }

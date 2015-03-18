@@ -9,7 +9,7 @@ GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 ## We can't only depend on the presence of the .git/ directory anymore,
 ## because of gits submodule handling.
 ## We now simply issue a git log on configure.ac and if the output is empty (error or file not tracked), then we are not in git.
-GITLOG=$(shell git log -1 --pretty=format:%H $(top_srcdir)/configure.ac)
+GITLOG=`cd $(top_srcdir) && git log -1 --pretty=format:%H configure.ac`
 
 ECHO=/bin/echo
 
@@ -65,6 +65,7 @@ liblinphone_la_SOURCES=\
 	linphonecore_utils.h \
 	localplayer.c \
 	lpc2xml.c \
+	lime.c lime.h\
 	lpconfig.c lpconfig.h \
 	lsd.c \
 	message_storage.c \
@@ -81,6 +82,7 @@ liblinphone_la_SOURCES=\
 	sipsetup.c sipsetup.h \
 	xml2lpc.c \
 	xml.c \
+	vtables.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP

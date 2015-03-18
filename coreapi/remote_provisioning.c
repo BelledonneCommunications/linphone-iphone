@@ -60,32 +60,9 @@ static void linphone_remote_provisioning_apply(LinphoneCore *lc, const char *xml
 									, error_msg);
 }
 
-static char *load_file_content(const char *path){
-	FILE *f=fopen(path,"rb");
-	size_t bufsize=2048;
-	size_t step=bufsize;
-	size_t pos=0;
-	size_t count;
-	char *buffer=ms_malloc(bufsize+1);
-	if (!f) {
-		ms_error("load_file_content(): could not open [%s]",path);
-		return NULL;
-	}
-	while((count=fread(buffer+pos, 1, step, f))>0){
-		pos+=count;
-		if (pos+step>=bufsize){
-			bufsize*=2;
-			buffer=ms_realloc(buffer, bufsize+1);
-		}
-	}
-	buffer[pos]='\0';
-	fclose(f);
-	return buffer;
-}
-
 int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path){
 	int status = -1;
-	char* provisioning=load_file_content(file_path);
+	char* provisioning=ms_load_path_content(file_path, NULL);
 
 	if (provisioning){
 		linphone_remote_provisioning_apply(lc, provisioning);

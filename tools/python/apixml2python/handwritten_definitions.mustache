@@ -252,6 +252,9 @@ static void pylinphone_init_ms2_plugins(void) {
 #ifdef ENABLE_OPENH264
 	libmsopenh264_init();
 #endif
+#ifdef ENABLE_WASAPI
+	libmswasapi_init();
+#endif
 }
 
 static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {

@@ -84,6 +84,8 @@ static jmethodID loghandler_id;
 static jobject handler_obj=NULL;
 
 static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content);
+static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer);
+static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer);
 
 #ifdef ANDROID
 void linphone_android_log_handler(int prio, char *str) {
@@ -1193,8 +1195,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* e
 	MSList* iterator;
 	LinphoneCore *core = (LinphoneCore*)lc;
 	//jobject listener = env->NewGlobalRef(jlistener);
-	for (iterator = core->vtables; iterator != NULL; ) {
-		LinphoneCoreVTable *vTable = (LinphoneCoreVTable*)(iterator->data);
+	for (iterator = core->vtable_refs; iterator != NULL; ) {
+		VTableReference *ref=(VTableReference*)(iterator->data);
+		LinphoneCoreVTable *vTable = ref->valid ? ref->vtable : NULL;
 		iterator = iterator->next; //Because linphone_core_remove_listener may change the list
 		if (vTable) {
 			LinphoneCoreData *data = (LinphoneCoreData*) linphone_core_v_table_get_user_data(vTable);
@@ -1965,15 +1968,31 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc){
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc) {
 	MSSndCard *sndcard;
-	MSSndCardManager *m=ms_snd_card_manager_get();
-	const char *card=linphone_core_get_capture_device((LinphoneCore*)lc);
-	sndcard=ms_snd_card_manager_get_card(m,card);
-	if (sndcard == NULL){
+	MSSndCardManager *m = ms_snd_card_manager_get();
+	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
+	sndcard = ms_snd_card_manager_get_card(m, card);
+	if (sndcard == NULL) {
 		ms_error("Could not get soundcard %s", card);
 		return TRUE;
 	}
+	
+	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
+	if (ms_snd_card_get_minimal_latency(sndcard) != 0) return FALSE;
+	return TRUE;
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCanceler(JNIEnv *env, jobject thiz, jlong lc) {
+	MSSndCard *sndcard;
+	MSSndCardManager *m = ms_snd_card_manager_get();
+	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
+	sndcard = ms_snd_card_manager_get_card(m, card);
+	if (sndcard == NULL) {
+		ms_error("Could not get soundcard %s", card);
+		return TRUE;
+	}
+	
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
 	return TRUE;
 }
@@ -3046,6 +3065,8 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferM
 	return (jlong) message;
 }
 
+
+
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_cancelFileTransfer(JNIEnv* env, jobject  thiz, jlong ptr) {
 	linphone_chat_message_cancel_file_transfer((LinphoneChatMessage *)ptr);
 }
@@ -3193,6 +3214,105 @@ extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getStorageId(JNIE
 	return (jint) linphone_chat_message_get_storage_id((LinphoneChatMessage*)ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setFileTransferFilepath(JNIEnv*  env
+																		 ,jobject  thiz
+																		 ,jlong ptr, jstring jpath) {
+	const char* path = env->GetStringUTFChars(jpath, NULL);
+	linphone_chat_message_set_file_transfer_filepath((LinphoneChatMessage*)ptr, path);
+	env->ReleaseStringUTFChars(jpath, path);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
+																		 ,jobject  thiz
+																		 ,jlong ptr) {
+	linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
+}
+
+static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	jobject listener = (jobject) msg->cb_ud;
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
+	jobject jmessage = getChatMessage(env, msg);
+
+	jclass chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
+	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass, "fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
+	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(chatMessageStateClass, chatMessageStateFromIntId, (jint)state));
+
+	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
+		env->DeleteGlobalRef(listener);
+	}
+}
+
+static void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	jobject listener = (jobject) msg->cb_ud;
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferProgressChanged", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;II)V");
+	jobject jmessage = getChatMessage(env, msg);
+	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, offset, total);
+}
+
+static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* content, const LinphoneBuffer *buffer) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	jobject listener = (jobject) msg->cb_ud;
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
+	jobject jmessage = getChatMessage(env, msg);
+	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, buffer ? create_java_linphone_buffer(env, buffer) : NULL);
+}
+
+static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	LinphoneBuffer *buffer = NULL;
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return buffer;
+	}
+
+	jobject listener = (jobject) msg->cb_ud;
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
+	jobject jmessage = getChatMessage(env, msg);
+	jobject jbuffer = create_java_linphone_buffer(env, NULL);
+	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, offset, size, jbuffer);
+	
+	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
+	return buffer;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
+	jobject listener = env->NewGlobalRef(jlistener);
+	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
+	LinphoneChatMessageCbs *cbs;
+	
+	message->cb_ud = listener;
+	cbs = linphone_chat_message_get_callbacks(message);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+	linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_recv);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
@@ -3275,11 +3395,15 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*
 	linphone_chat_room_send_message2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr, chat_room_impl_callback, (void*)listener);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_startFileDownload(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
-	jobject listener = env->NewGlobalRef(jlistener);
-	LinphoneChatMessage * message = (LinphoneChatMessage *)ptr;
-	message->cb_ud = listener;
-	linphone_chat_message_start_file_download(message, chat_room_impl_callback, NULL);
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong chatroom_ptr
+																		,jobject message
+																		,jlong messagePtr) {
+	message = env->NewGlobalRef(message);
+	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
+	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
+	linphone_chat_room_send_chat_message((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
@@ -4426,6 +4550,52 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding, jsize);
 	env->DeleteGlobalRef(contentClass);
 	return jobj;
+}
+
+static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer) {
+	jclass bufferClass;
+	jmethodID ctor;
+	jbyteArray jdata = NULL;
+	jint jsize = 0;
+
+	bufferClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneBufferImpl"));
+	ctor = env->GetMethodID(bufferClass,"<init>", "([BI)V");
+	jsize = buffer ? (jint) buffer->size : 0;
+
+	if (buffer && buffer->content) {
+		jdata = env->NewByteArray(buffer->size);
+		env->SetByteArrayRegion(jdata, 0, buffer->size, (jbyte*)buffer->content);
+	}
+
+	jobject jobj = env->NewObject(bufferClass, ctor, jdata, jsize);
+	env->DeleteGlobalRef(bufferClass);
+	return jobj;
+}
+
+static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer) {
+	jclass bufferClass;
+	jmethodID getSizeMethod, getDataMethod;
+	LinphoneBuffer *buffer;
+	jint jsize;
+	jobject jdata;
+	jbyteArray jcontent;
+	uint8_t *content;
+
+	bufferClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneBufferImpl"));
+	getSizeMethod = env->GetMethodID(bufferClass, "getSize", "()I");
+	getDataMethod = env->GetMethodID(bufferClass, "getContent", "()[B");
+	
+	jsize = env->CallIntMethod(jbuffer, getSizeMethod);
+	jdata = env->CallObjectMethod(jbuffer, getDataMethod);
+	jcontent = reinterpret_cast<jbyteArray>(jdata);
+	content = (uint8_t*)env->GetByteArrayElements(jcontent, NULL);
+	
+	buffer = linphone_buffer_new_from_data(content, (size_t)jsize);
+	
+	env->ReleaseByteArrayElements(jcontent, (jbyte*)content, JNI_ABORT);
+	env->DeleteGlobalRef(bufferClass);
+	
+	return buffer;
 }
 
 /*

@@ -25,6 +25,10 @@ if(MSVC)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
+if(NOT WIN32)
+	find_package(Iconv)
+endif()
+
 
 set(SOURCE_FILES
 	address.c
@@ -59,6 +63,7 @@ set(SOURCE_FILES
 	friend.c
 	info.c
 	ldap/ldapprovider.c
+	lime.c
 	linphonecall.c
 	linphonecore.c
 	linphonecore.h
@@ -87,6 +92,7 @@ set(SOURCE_FILES
 	xml2lpc.c
 	xml2lpc.h
 	xml.c
+	vtables.c
 )
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
@@ -118,11 +124,14 @@ set(LIBS
 	${LIBGCC}
 	${LIBMINGWEX}
 	${BELLESIP_LIBRARIES}
-	${MS2_LIBRARIES}
+	${MEDIASTREAMER2_LIBRARIES}
 	${XML2_LIBRARIES}
 )
 if(SQLITE3_FOUND)
 	list(APPEND LIBS ${SQLITE3_LIBRARIES})
+endif()
+if(ICONV_FOUND)
+	list(APPEND LIBS ${ICONV_LIBRARIES})
 endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
@@ -150,8 +159,11 @@ else()
 		endif()
 	endif()
 endif()
+if(ICONV_FOUND)
+	target_include_directories(linphone PUBLIC ${ICONV_INCLUDE_DIRS})
+endif()
 
-install(TARGETS linphone
+install(TARGETS linphone EXPORT LinphoneTargets
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib

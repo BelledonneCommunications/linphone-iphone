@@ -499,7 +499,7 @@ static void display_peer_name_in_label(GtkWidget *label, const LinphoneAddress *
 		uri_label=g_markup_printf_escaped("<span size=\"large\"><i>%s</i></span>\n",id);
 	gtk_label_set_markup(GTK_LABEL(label),uri_label);
 	g_free(uri_label);
-	g_free(id);
+	ms_free(id);
 }
 
 void linphone_gtk_in_call_view_set_calling(LinphoneCall *call){

@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+#if defined(WIN32) && !defined(F_OK)
+#define F_OK 00 /*visual studio does not define F_OK*/
+#endif
+
 #define NB_MSG_HIST 250
 
 #define CONFIG_FILE ".linphone-history.db"

@@ -20,12 +20,12 @@
 #
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.0)
 project(LINPHONE C CXX)
 
 
 set(LINPHONE_MAJOR_VERSION "3")
-set(LINPHONE_MINOR_VERSION "7")
+set(LINPHONE_MINOR_VERSION "8")
 set(LINPHONE_MICRO_VERSION "0")
 set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
 set(LINPHONE_SO_VERSION "6")
@@ -53,17 +53,46 @@ cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENAB
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/share/cmake/Modules")
 
-include(CheckIncludeFile)
 include(CheckSymbolExists)
+include(CMakePushCheckState)
 
+set(MSVC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MSVC")
 if(MSVC)
-	list(APPEND CMAKE_REQUIRED_INCLUDES "${CMAKE_PREFIX_PATH}/include/MSVC")
+	list(APPEND CMAKE_REQUIRED_INCLUDES "${MSVC_INCLUDE_DIR}")
+
+	if(ENABLE_GTK_UI)
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip")
+			message(STATUS "Installing intltool")
+			file(DOWNLOAD http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/intltool_0.40.4-1_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/intltool_win32.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip")
+			message(STATUS "Installing GTK")
+			file(DOWNLOAD http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+	endif()
+	if(ENABLE_ASSISTANT)
+		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip")
+			message(STATUS "Installing libsoup")
+			file(DOWNLOAD http://www.linphone.org/files/libsoup_2.24.0-1_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip" SHOW_PROGRESS)
+			execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip"
+				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+			)
+		endif()
+	endif()
 endif()
 
 find_package(BelleSIP REQUIRED)
-find_package(MS2 REQUIRED)
+find_package(Mediastreamer2 REQUIRED)
 find_package(XML2 REQUIRED)
 if(ENABLE_UNIT_TESTS)
 	find_package(CUnit)
@@ -87,10 +116,7 @@ if(ENABLE_TUNNEL)
 	endif()
 endif()
 if(ENABLE_MSG_STORAGE)
-	find_package(Sqlite3)
-	if(NOT SQLITE3_FOUND)
-		message(FATAL_ERROR "Could not find the sqlite3 library!")
-	endif()
+	find_package(Sqlite3 REQUIRED)
 endif()
 if(ENABLE_NOTIFY)
 	find_package(Notify)
@@ -119,7 +145,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
 	${BELLESIP_INCLUDE_DIRS}
-	${MS2_INCLUDE_DIRS}
+	${MEDIASTREAMER2_INCLUDE_DIRS}
 	${XML2_INCLUDE_DIRS}
 )
 if(SQLITE3_FOUND)
@@ -132,9 +158,8 @@ endif()
 if(ENABLE_ASSISTANT)
 	include_directories(${SOUP_INCLUDE_DIRS})
 endif()
-
 if(MSVC)
-	include_directories(${CMAKE_PREFIX_PATH}/include/MSVC)
+	include_directories(${MSVC_INCLUDE_DIR})
 endif()
 
 add_definitions("-DIN_LINPHONE")
@@ -166,6 +191,9 @@ else()
 	set(LINPHONE_DATA_DIR "${CMAKE_INSTALL_PREFIX}")
 endif()
 set(LINPHONE_PLUGINS_DIR "${LINPHONE_DATA_DIR}/lib/liblinphone/plugins")
+if(WIN32)
+	set(LINPHONE_CONFIG_DIR "Linphone")
+endif()
 set(PACKAGE_LOCALE_DIR "${LINPHONE_DATA_DIR}/share/locale")
 set(PACKAGE_DATA_DIR "${LINPHONE_DATA_DIR}/share")
 set(PACKAGE_SOUND_DIR "${LINPHONE_DATA_DIR}/share/sounds/linphone")
@@ -196,9 +224,29 @@ if(ENABLE_UNIT_TESTS)
 endif()
 
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLinphone.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
+	VERSION ${LINPHONE_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+export(EXPORT LinphoneTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/LinphoneTargets.cmake"
+	NAMESPACE BelledonneCommunications::
+)
+configure_file(cmake/LinphoneConfig.cmake.in
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
+	@ONLY
+)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/FindLinphone.cmake
-	DESTINATION share/cmake/Modules
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+set(ConfigPackageLocation lib/cmake/Linphone)
+install(EXPORT LinphoneTargets
+	FILE LinphoneTargets.cmake
+	NAMESPACE BelledonneCommunications::
+	DESTINATION ${ConfigPackageLocation}
+)
+install(FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
+	DESTINATION ${ConfigPackageLocation}
 )

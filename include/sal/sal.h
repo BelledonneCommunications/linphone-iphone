@@ -698,9 +698,9 @@ int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
  * @param h the Sal instance
  * @param handling_method Could be SalOpSDPNormal, SalOpSDPSimulateError, SalOpSDPSimulateRemoval (\ref SalOpSDPHandling)
  */
-void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) ;
+LINPHONE_PUBLIC void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) ;
 /* Second version: for a specific call*/
-void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
+LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
@@ -710,7 +710,7 @@ int sal_unregister(SalOp *h);
 
 /*Messaging */
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
-int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri);
 int sal_message_reply(SalOp *op, SalReason reason);
 
 /*presence Subscribe/notify*/
@@ -812,7 +812,7 @@ LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
 unsigned int sal_get_random(void);
-char *sal_get_random_token(int size);
+LINPHONE_PUBLIC char *sal_get_random_token(int size);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
 belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
 void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer);
@@ -821,7 +821,7 @@ int sal_body_has_type(const SalBody *body, const char *type, const char *subtype
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
 
-belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
+LINPHONE_PUBLIC belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal);
 char* sal_op_get_public_uri(SalOp *sal);
 
 unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data);

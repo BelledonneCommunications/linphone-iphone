@@ -71,7 +71,7 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 }
 
 static void playing_test(void) {
-	char *filename = ms_strdup_printf("%s/sounds/hello_opus_h264.mkv", liblinphone_tester_file_prefix);
+	char *filename = ms_strdup_printf("%s/sounds/hello_opus_h264.mkv", bc_tester_read_dir_prefix);
 	const char *audio_mime = "opus";
 	const char *video_mime = "h264";
 	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);

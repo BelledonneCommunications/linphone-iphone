@@ -27,15 +27,15 @@ LinphoneLDAPContactSearch* linphone_ldap_contact_search_create(LinphoneLDAPConta
 															   ContactSearchCallback cb,
 															   void* cb_data);
 
-unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj);
-LinphoneLDAPContactSearch* linphone_ldap_contact_search_cast( void* obj );
+LINPHONE_PUBLIC unsigned int linphone_ldap_contact_search_result_count(LinphoneLDAPContactSearch* obj);
+LINPHONE_PUBLIC LinphoneLDAPContactSearch* linphone_ldap_contact_search_cast( void* obj );
 
 
 /* LinphoneLDAPContactProvider */
 
-LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config);
-unsigned int                 linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);
-LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj );
+LINPHONE_PUBLIC LinphoneLDAPContactProvider* linphone_ldap_contact_provider_create(LinphoneCore* lc, const LinphoneDictionary* config);
+LINPHONE_PUBLIC unsigned int                 linphone_ldap_contact_provider_get_max_result(const LinphoneLDAPContactProvider* obj);
+LINPHONE_PUBLIC LinphoneLDAPContactProvider* linphone_ldap_contact_provider_ref( void* obj );
 void                         linphone_ldap_contact_provider_unref( void* obj );
 LinphoneLDAPContactProvider* linphone_ldap_contact_provider_cast( void* obj );
-int                          linphone_ldap_contact_provider_available();
+LINPHONE_PUBLIC int                          linphone_ldap_contact_provider_available();
