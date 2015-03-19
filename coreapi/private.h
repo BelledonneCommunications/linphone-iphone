@@ -583,6 +583,7 @@ typedef struct sip_config
 	bool_t auto_net_state_mon;
 	bool_t tcp_tls_keepalive;
 	bool_t vfu_with_info; /*use to enable vfu request using sip info*/
+	bool_t save_auth_info; // if true, auth infos will be write in the config file when they are added to the list
 } sip_config_t;
 
 typedef struct rtp_config
