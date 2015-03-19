@@ -7,7 +7,7 @@ git:
 
 env:
     global:
-        - VERSION="8.2"
+        - VERSION="8.1"
         - BYPASS_TOOLCHECK=1
 
 install: 
@@ -19,4 +19,4 @@ install:
     - ls -la
 
 script:
-    - xcodebuild -scheme linphone -project linphone.xcodeproj -sdk iphonesimulator8.2 -destination 'platform=iOS Simulator,name=iPhone 6,OS=8.2' test
+    - xcodebuild -scheme linphone -project linphone.xcodeproj -sdk iphonesimulator${VERSION} -destination "platform=iOS Simulator,name=iPhone 6,OS=${VERSION}" test
