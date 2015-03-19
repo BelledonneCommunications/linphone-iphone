@@ -1,6 +1,7 @@
 LOCAL_PATH := $(call my-dir)/../../tester
 
 common_SRC_FILES := \
+	../../belle-sip/tester/common/bc_tester_utils.c \
 	call_tester.c \
 	liblinphone_tester.c \
 	message_tester.c \
@@ -21,14 +22,15 @@ common_SRC_FILES := \
 	accountmanager.c \
 	offeranswer_tester.c \
  	multicast_call_tester.c \
-	multi_call.c
+	multi_call.c \
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
         $(LOCAL_PATH)/../include \
         $(LOCAL_PATH)/../coreapi \
         $(LOCAL_PATH)/../oRTP/include \
-        $(LOCAL_PATH)/../mediastreamer2/include
+        $(LOCAL_PATH)/../mediastreamer2/include \
+	$(LOCAL_PATH)/../../belle-sip/tester/common \
 
 
 include $(CLEAR_VARS)
@@ -37,7 +39,7 @@ LOCAL_MODULE := liblinphone_tester
 LOCAL_MODULE_FILENAME := liblinphone_tester-$(TARGET_ARCH_ABI)
 LOCAL_SRC_FILES += $(common_SRC_FILES)
 LOCAL_C_INCLUDES = $(common_C_INCLUDES)
-LOCAL_CFLAGS = -DIN_LINPHONE
+LOCAL_CFLAGS = -DIN_LINPHONE -DBC_CONFIG_FILE=\"config.h\"
 LOCAL_LDLIBS := -llog -lz
 
 ifeq ($(BUILD_MATROSKA), 1)
