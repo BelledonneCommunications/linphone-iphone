@@ -432,7 +432,8 @@ static void call_ringing(SalOp *h){
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
 		/*accept early media */
-		if (call->audiostream && audio_stream_started(call->audiostream)){
+		if ((call->audiostream && audio_stream_started(call->audiostream))
+			|| (call->videostream && video_stream_started(call->videostream))) {
 			/*streams already started */
 			try_early_media_forking(call,md);
 			#ifdef VIDEO_ENABLED
