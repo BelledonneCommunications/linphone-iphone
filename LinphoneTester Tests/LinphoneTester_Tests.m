@@ -48,7 +48,8 @@ void LSLog(NSString* fmt, ...){
 
     static char * bundle = NULL;
     static char * documents = NULL;
-    bc_tester_init();
+    bc_tester_init((void (*)(int, const char *fm, va_list))linphone_log_function, ORTP_MESSAGE, ORTP_ERROR);
+	liblinphone_tester_add_suites();
 
     NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -65,7 +66,7 @@ void LSLog(NSString* fmt, ...){
 
 	liblinphone_tester_keep_accounts(TRUE);
 
-	int count = bc_tester_nb_test_suites();
+	int count = bc_tester_nb_suites();
 
     for (int i=0; i<count; i++) {
         const char* suite = bc_tester_suite_name(i);
