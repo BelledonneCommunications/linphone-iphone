@@ -353,7 +353,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			info->domain ? info->domain : "");
 	}
 	ms_list_free(l);
-	write_auth_infos(lc);
+	if(lc->sip_conf.save_auth_info) write_auth_infos(lc);
 }
 
 
@@ -373,7 +373,7 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 	if (r){
 		lc->auth_info=ms_list_remove(lc->auth_info,r);
 		linphone_auth_info_destroy(r);
-		write_auth_infos(lc);
+		if(lc->sip_conf.save_auth_info) write_auth_infos(lc);
 	}
 }
 
