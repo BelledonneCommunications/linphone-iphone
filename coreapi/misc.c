@@ -1599,14 +1599,15 @@ static char * seperate_string_list(char **str) {
 	}
 }
 
-MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreements(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]){
-	char *config=strdup(lp_config_get_string(lc->config, "sip", "zrtp_key_agreements_suites", "MS_ZRTP_KEY_AGREEMENT_DH3K, MS_ZRTP_KEY_AGREEMENT_DH2K"));
-	char *entry;
-	MsZrtpCryptoTypesCount key_agreements_count = 0;
-
-	if (config == NULL) return 0;
-
-	while ((entry = seperate_string_list(&config))) {
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char * zrtpConfig = (char*)lp_config_get_string(lc->config, "sip", "zrtp_key_agreements_suites", NULL);
+	if (zrtpConfig == NULL)
+        return 0;
+    
+    MsZrtpCryptoTypesCount key_agreements_count = 0;
+    char * entry, * origPtr = strdup(zrtpConfig);
+    zrtpConfig = origPtr;
+    while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpKeyAgreement agreement = ms_zrtp_key_agreement_from_string(entry);
 		if (agreement != MS_ZRTP_KEY_AGREEMENT_INVALID) {
 			ms_message("Configured zrtp key agreement: '%s'", ms_zrtp_key_agreement_to_string(agreement));
@@ -1614,9 +1615,89 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreements(LinphoneCore *lc, M
 		}
 	}
 
+    free(origPtr);
 	return key_agreements_count;
 }
 
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_cipher_suites(LinphoneCore *lc, MSZrtpCipher ciphers[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char * zrtpConfig = (char*)lp_config_get_string(lc->config, "sip", "zrtp_cipher_suites", NULL);
+	if (zrtpConfig == NULL)
+        return 0;
+    
+    MsZrtpCryptoTypesCount cipher_count = 0;
+    char * entry, * origPtr = strdup(zrtpConfig);
+    zrtpConfig = origPtr;
+	while ((entry = seperate_string_list(&zrtpConfig))) {
+		const MSZrtpCipher cipher = ms_zrtp_cipher_from_string(entry);
+		if (cipher != MS_ZRTP_CIPHER_INVALID) {
+			ms_message("Configured zrtp cipher: '%s'", ms_zrtp_cipher_to_string(cipher));
+			ciphers[cipher_count++] = cipher;
+		}
+	}
+
+    free(origPtr);
+	return cipher_count;
+}
+
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_hash_suites(LinphoneCore *lc, MSZrtpHash hashes[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char * zrtpConfig = (char*)lp_config_get_string(lc->config, "sip", "zrtp_hash_suites", NULL);
+    if (zrtpConfig == NULL)
+        return 0;
+
+	MsZrtpCryptoTypesCount hash_count = 0;
+    char * entry, * origPtr = strdup(zrtpConfig);
+    zrtpConfig = origPtr;
+	while ((entry = seperate_string_list(&zrtpConfig))) {
+		const MSZrtpHash hash = ms_zrtp_hash_from_string(entry);
+		if (hash != MS_ZRTP_HASH_INVALID) {
+			ms_message("Configured zrtp hash: '%s'", ms_zrtp_hash_to_string(hash));
+			hashes[hash_count++] = hash;
+		}
+	}
+
+    free(origPtr);
+	return hash_count;
+}
+
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZrtpAuthTag authTags[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char * zrtpConfig = (char*)lp_config_get_string(lc->config, "sip", "zrtp_auth_suites", NULL);
+    if (zrtpConfig == NULL)
+        return 0;
+
+	MsZrtpCryptoTypesCount auth_tag_count = 0;
+    char * entry, * origPtr = strdup(zrtpConfig);
+    zrtpConfig = origPtr;
+	while ((entry = seperate_string_list(&zrtpConfig))) {
+		const MSZrtpAuthTag authTag = ms_zrtp_auth_tag_from_string(entry);
+		if (authTag != MS_ZRTP_AUTHTAG_INVALID) {
+			ms_message("Configured zrtp auth tag: '%s'", ms_zrtp_auth_tag_to_string(authTag));
+			authTags[auth_tag_count++] = authTag;
+		}
+	}
+
+    free(origPtr);
+	return auth_tag_count;
+}
+
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrtpSasType sasTypes[MS_MAX_ZRTP_CRYPTO_TYPES]){
+	char * zrtpConfig = (char*)lp_config_get_string(lc->config, "sip", "zrtp_sas_suites", NULL);
+    if (zrtpConfig == NULL)
+        return 0;
+
+	MsZrtpCryptoTypesCount sas_count = 0;
+    char * entry, * origPtr = strdup(zrtpConfig);
+    zrtpConfig = origPtr;
+	while ((entry = seperate_string_list(&zrtpConfig))) {
+		const MSZrtpSasType type = ms_zrtp_sas_type_from_string(entry);
+		if (type != MS_ZRTP_SAS_INVALID) {
+			ms_message("Configured zrtp SAS type: '%s'", ms_zrtp_sas_type_to_string(type));
+			sasTypes[sas_count++] = type;
+		}
+	}
+
+    free(origPtr);
+	return sas_count;
+}
 
 const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	static const char *mkv="mkv";

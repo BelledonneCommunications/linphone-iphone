@@ -2718,7 +2718,12 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 		}
 	}
 
-	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreements(lc, params->keyAgreements);
+    // linphone_core_get_srtp_crypto_suites is used to determine sensible defaults; here each can be overridden
+	params->ciphersCount = linphone_core_get_zrtp_cipher_suites(lc, params->ciphers);
+	params->hashesCount = linphone_core_get_zrtp_hash_suites(lc, params->hashes);
+	params->authTagsCount = linphone_core_get_zrtp_auth_suites(lc, params->authTags);
+	params->sasTypesCount = linphone_core_get_zrtp_sas_suites(lc, params->sasTypes);
+	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreement_suites(lc, params->keyAgreements);
 }
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
