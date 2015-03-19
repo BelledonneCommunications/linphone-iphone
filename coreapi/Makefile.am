@@ -203,11 +203,11 @@ make_gitversion_h:
 				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
 				exit 1; \
 			fi ; \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			$(ECHO) -e "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"\n" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		elif test "$(GITREVISION)" != "" ; then \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			$(ECHO) -e "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"\n" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		else \
-			$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			$(ECHO) "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		fi ; \
 		if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
 			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \
