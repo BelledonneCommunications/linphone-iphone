@@ -106,7 +106,7 @@ LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
                  enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
 
 armv7_host=armv7-apple-darwin.ios
-arm64_host=aarch64-apple-darwin.ios
+aarch64_host=aarch64-apple-darwin.ios
 i386_host=i386-apple-darwin.ios
 x86_64_host=x86_64-apple-darwin.ios
 
@@ -121,8 +121,8 @@ all_hosts=$(addsuffix -apple-darwin.ios,$(active_arch))
 armv7-%:
 	make -f builder-iphone-os.mk host=$(armv7_host) $(LINPHONE_OPTIONS) $*
 
-arm64-%:
-	make -f builder-iphone-os.mk host=$(arm64_host) $(LINPHONE_OPTIONS) $*
+aarch64-%:
+	make -f builder-iphone-os.mk host=$(aarch64_host) $(LINPHONE_OPTIONS) $*
 
 i386-%:
 	make -f builder-iphone-os.mk host=$(i386_host) $(LINPHONE_OPTIONS) $*
@@ -131,7 +131,7 @@ x86_64-%:
 	make -f builder-iphone-os.mk host=$(x86_64_host) $(LINPHONE_OPTIONS) $*
 
 
-# sends the target after 'broadcast_' to all sub-architectures 
+# sends the target after 'broadcast_' to all sub-architectures
 broadcast_%:
 	@echo "Broadcasting target '$*' to $(all_hosts)"
 	@for h in $(all_hosts); do \
