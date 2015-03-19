@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 #include "private.h"
 #include "quality_reporting.h"
+#include "lime.h"
 
 #include <math.h>
 #include <sys/types.h>
@@ -1841,7 +1842,7 @@ void linphone_core_enable_lime(LinphoneCore *lc, bool_t val){
 }
 
 bool_t linphone_core_lime_enabled(const LinphoneCore *lc){
-	return lp_config_get_int(lc->config,"sip", "lime", FALSE);
+	return (lp_config_get_int(lc->config,"sip", "lime", FALSE) && lime_is_available());
 }
 
 /**

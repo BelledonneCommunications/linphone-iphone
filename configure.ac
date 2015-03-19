@@ -609,6 +609,7 @@ AC_ARG_ENABLE(alsa,
 	[alsa=true]
 )
 
+dnl this options are just for passing to mediastreamer2 subproject
 AC_ARG_ENABLE(zrtp,
 	[AS_HELP_STRING([--enable-zrtp], [Turn on zrtp support])],
 	[case "${enableval}" in
@@ -619,6 +620,7 @@ AC_ARG_ENABLE(zrtp,
 	[zrtp=false]
 )
 
+dnl this options are just for passing to mediastreamer2 subproject
 AC_ARG_ENABLE(dtls,
 	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
 	[case "${enableval}" in
@@ -639,6 +641,60 @@ AC_ARG_ENABLE(g729bCN,
 	[g729bCN=false]
 )
 
+dnl Polarssl lib is requested for Lime
+AC_ARG_WITH( polarssl,
+      [  --with-polarssl      Set prefix where polarssl can be found (ex:/usr, /usr/local)[[default=PREFIX or /usr if NONE]] ],
+      [ polarssl_prefix=${withval}],[ if test "$prefix" != "NONE"; then
+					polarssl_prefix=${prefix}
+				      else
+					polarssl_prefix="/usr"
+				      fi ])
+
+found_polarssl=no
+
+if test "$polarssl_prefix" != "none" ; then
+	if test "$polarssl_prefix" != "/usr" ; then
+		POLARSSL_CFLAGS="-I${polarssl_prefix}/include"
+		POLARSSL_LIBS="-L${polarssl_prefix}/lib"
+	fi
+	POLARSSL_LIBS="$POLARSSL_LIBS -lpolarssl"
+
+	CPPFLAGS_save=$CPPFLAGS
+	LIBS_save=$LIBS
+
+	CPPFLAGS="$CPPFLAGS $POLARSSL_CFLAGS"
+	LIBS="$LIBS $POLARSSL_LIBS"
+	AC_CHECK_HEADERS(polarssl/gcm.h,
+				[found_polarssl=yes; AC_MSG_NOTICE([polarssl usable])],
+				[POLARSSL_CFLAGS=""
+					POLARSSL_LIBS=""])
+	CPPFLAGS=$CPPFLAGS_save
+	LIBS=$LIBS_save
+fi
+
+dnl check for Lime support, need polarssl version >= 1.3 (with gcm.h)
+AC_ARG_ENABLE(lime,
+	[AS_HELP_STRING([--enable-lime], [Turn on or off compilation of Instant Messaging Encryption (default=auto)])],
+	[case "${enableval}" in
+		yes)	lime=true ;;
+		no)	lime=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-lime) ;;
+	esac],
+	[lime=auto]
+)
+
+if test "$lime" != "false" ; then
+	if test "x$found_polarssl" != "xyes" ; then
+		if test "$lime" = "true" ; then
+			AC_MSG_ERROR("LIME requires POLARSSL in version >= 1.3")
+		fi
+		lime=false
+	else
+		AC_DEFINE(HAVE_LIME, 1, [Defined when LIME support is compiled])
+		lime=true
+	fi
+fi
+
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
 
@@ -648,8 +704,6 @@ AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
 dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
-AM_CONDITIONAL(BUILD_ZRTP, test x$zrtp = xtrue)
-AM_CONDITIONAL(BUILD_DTLS, test x$dtls = xtrue)
 
 dnl check getenv
 AH_TEMPLATE([HAVE_GETENV])
@@ -1000,8 +1054,7 @@ printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
-printf "* %-30s %s\n" "zRTP encryption"		$zrtp
-printf "* %-30s %s\n" "DTLS encryption"		$dtls
+printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib

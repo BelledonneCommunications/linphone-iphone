@@ -1,4 +1,10 @@
 #include "lime.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_LIME
+
 #include "linphonecore.h"
 #include "ortp/b64.h"
 #include "polarssl/gcm.h"
@@ -11,6 +17,14 @@
 #else /* for Polarssl version 1.2 */
 #include "polarssl/sha2.h"
 #endif
+
+/**
+ * @brief check at runtime if LIME is available
+ *
+ * @return TRUE when Lime was fully compiled, FALSE when it wasn't
+ */
+bool_t lime_is_available() { return TRUE; }
+
 /**
  * @brief	convert an hexa char [0-9a-fA-F] into the corresponding unsigned integer value
  * Any invalid char will be converted to zero without any warning
@@ -89,7 +103,15 @@ void lime_int8ToStr(uint8_t *outputString, uint8_t *inputBytes, uint16_t inputBy
 
 
 
-int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
+/**
+ * @brief Retrieve selfZID from cache
+ *
+ * @param[in]	cacheBuffer		The xmlDoc containing current cache
+ * @param[out]	selfZid			The ZID found as a 24 hexa char string null terminated
+ *
+ * @return 0 on success, error code otherwise
+ */
+static int lime_getSelfZid(xmlDocPtr cacheBuffer, uint8_t selfZid[25]) {
 	xmlNodePtr cur;
 	xmlChar *selfZidHex;
 
@@ -379,7 +401,15 @@ int lime_setCachedKey(xmlDocPtr cacheBuffer, limeKey_t *associatedKey, uint8_t r
 	return 0;
 }
 
-int lime_deriveKey(limeKey_t *key) {
+/**
+ * @brief Derive in place the key given in parameter and increment session index
+ * Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||256)
+ *
+ * @param[in/out]	key		The structure containing the original key which will be overwritten, the sessionId and SessionIndex
+ *
+ * @return 0 on success, error code otherwise
+ */
+static int lime_deriveKey(limeKey_t *key) {
 	uint8_t inputData[55];
 	uint8_t derivedKey[32];
 
@@ -779,6 +809,18 @@ int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_
 	return 0;
 }
 
+
+#else /* HAVE_LIME */
+
+bool_t lime_is_available() { return FALSE; }
+int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) { return LIME_NOT_ENABLED;}
+int lime_decryptMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t **output) { return LIME_NOT_ENABLED;}
+int lime_createMultipartMessage(xmlDocPtr cacheBuffer, uint8_t *message, uint8_t *peerURI, uint8_t **output) { return LIME_NOT_ENABLED;}
+int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {return LIME_NOT_ENABLED;}
+
+
+#endif /* HAVE_LIME */
+
 char *lime_error_code_to_string(int errorCode) {
 	switch (errorCode) {
 		case LIME_INVALID_CACHE: return "Invalid ZRTP cache";
@@ -787,6 +829,7 @@ char *lime_error_code_to_string(int errorCode) {
 		case LIME_UNABLE_TO_DECRYPT_MESSAGE: return "Unable to decrypt message";
 		case LIME_NO_VALID_KEY_FOUND_FOR_PEER: return "No valid key found";
 		case LIME_INVALID_ENCRYPTED_MESSAGE: return "Invalid encrypted message";
+		case LIME_NOT_ENABLED: return "Lime not enabled at build";
 	}
 	return "Unknow error";
 

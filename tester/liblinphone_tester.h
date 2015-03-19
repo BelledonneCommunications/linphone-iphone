@@ -22,7 +22,7 @@
 
 
 
-#include "common/bc_tester_utils.h"
+#include "bc_tester_utils.h"
 #include "linphonecore.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
