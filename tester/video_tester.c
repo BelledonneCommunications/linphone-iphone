@@ -450,6 +450,9 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 		CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth == 0);
 		CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth == 0);
 		CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth == 0);
+		CU_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth == 0);
+		CU_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
+		CU_ASSERT_TRUE(linphone_call_get_video_stats(marie2_call)->download_bandwidth > 0);
 
 		linphone_call_params_set_audio_direction(marie1_params, LinphoneMediaDirectionSendRecv);
 		linphone_core_accept_call_with_params(marie1->lc, linphone_core_get_current_call(marie1->lc), marie1_params);
