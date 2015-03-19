@@ -680,7 +680,7 @@ AC_ARG_ENABLE(lime,
 		no)	lime=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-lime) ;;
 	esac],
-	[lime=auto]
+	[lime=false]
 )
 
 if test "$lime" != "false" ; then

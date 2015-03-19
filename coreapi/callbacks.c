@@ -433,7 +433,10 @@ static void call_ringing(SalOp *h){
 	}else{
 		/*accept early media */
 		if ((call->audiostream && audio_stream_started(call->audiostream))
-			|| (call->videostream && video_stream_started(call->videostream))) {
+#ifdef VIDEO_ENABLED
+			|| (call->videostream && video_stream_started(call->videostream))
+#endif
+			) {
 			/*streams already started */
 			try_early_media_forking(call,md);
 			#ifdef VIDEO_ENABLED
