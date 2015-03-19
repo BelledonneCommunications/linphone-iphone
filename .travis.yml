@@ -19,8 +19,4 @@ install:
     - ls -la
 
 script:
-    - xcodebuild -scheme linphone \
-		-project linphone.xcodeproj \
-		-sdk iphonesimulator8.2 \
-		-destination 'platform=iOS Simulator,name=iPhone 6,OS=8.2' \
-		test
+    - xcodebuild -scheme linphone -project linphone.xcodeproj -sdk iphonesimulator8.2 -destination 'platform=iOS Simulator,name=iPhone 6,OS=8.2' test
