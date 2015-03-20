@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-11 16:26+0100\n"
+"POT-Creation-Date: 2015-03-20 17:05+0100\n"
 "PO-Revision-Date: 2015-02-17 14:38+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Call error"
 msgstr "Erreur lors de l'appel"
 
-#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3791
+#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3827
 msgid "Call ended"
 msgstr "Appel terminé."
 
@@ -214,7 +214,7 @@ msgstr "Linphone - un téléphone video pour l'internet"
 msgid "%s (Default)"
 msgstr "%s (par défaut)"
 
-#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1045
+#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1050
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Transfert vers %s"
@@ -227,9 +227,14 @@ msgstr ""
 "Aucune carte son n'a été détectée sur cet ordinateur.\n"
 "Vous ne pourrez pas effectuer d'appels audio."
 
-#: ../gtk/main.c:2135
+#: ../gtk/main.c:2138
 msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
+
+#: ../gtk/main.c:2243
+#, c-format
+msgid "Hello\n"
+msgstr "Bonjour\n"
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"
@@ -870,7 +875,7 @@ msgstr "Démarrons Linphone maintenant"
 msgid "Audio Assistant"
 msgstr "Assistant audio"
 
-#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:31
+#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:32
 msgid "Audio assistant"
 msgstr "Assistant audio"
 
@@ -947,104 +952,104 @@ msgid "Default"
 msgstr "Par défaut"
 
 #: ../gtk/main.ui.h:22
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../gtk/main.ui.h:23
 msgid "_Options"
 msgstr "_Options"
 
-#: ../gtk/main.ui.h:23
+#: ../gtk/main.ui.h:24
 msgid "Set configuration URI"
 msgstr "URI de configuration"
 
-#: ../gtk/main.ui.h:24
+#: ../gtk/main.ui.h:25
 msgid "Always start video"
 msgstr "Toujours démarrer la vidéo"
 
-#: ../gtk/main.ui.h:25
+#: ../gtk/main.ui.h:26
 msgid "Enable self-view"
 msgstr "Se voir"
 
-#: ../gtk/main.ui.h:26
+#: ../gtk/main.ui.h:27
 msgid "_Help"
 msgstr "_Aide"
 
-#: ../gtk/main.ui.h:27
+#: ../gtk/main.ui.h:28
 msgid "Show debug window"
 msgstr "Fenêtre de débogage"
 
-#: ../gtk/main.ui.h:28
+#: ../gtk/main.ui.h:29
 msgid "_Homepage"
 msgstr "_Site web"
 
-#: ../gtk/main.ui.h:29
+#: ../gtk/main.ui.h:30
 msgid "Check _Updates"
 msgstr "_Mises à jour"
 
-#: ../gtk/main.ui.h:30
+#: ../gtk/main.ui.h:31
 msgid "Account assistant"
 msgstr "Assistant de compte"
 
-#: ../gtk/main.ui.h:32
+#: ../gtk/main.ui.h:33
 msgid "SIP address or phone number:"
 msgstr "Adresse SIP ou numéro"
 
-#: ../gtk/main.ui.h:33
+#: ../gtk/main.ui.h:34
 msgid "Initiate a new call"
 msgstr "Démarrer un nouvel appel"
 
-#: ../gtk/main.ui.h:34
+#: ../gtk/main.ui.h:35
 msgid "Contacts"
 msgstr "Contacts"
 
-#: ../gtk/main.ui.h:35
+#: ../gtk/main.ui.h:36
 msgid "Search"
 msgstr "Rechercher"
 
-#: ../gtk/main.ui.h:36
+#: ../gtk/main.ui.h:37
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>Ajouter un contact depuis l'annuaire</b>"
 
-#: ../gtk/main.ui.h:37
+#: ../gtk/main.ui.h:38
 msgid "Add contact"
 msgstr "Ajouter un contact."
 
-#: ../gtk/main.ui.h:38
+#: ../gtk/main.ui.h:39
 msgid "Recent calls"
 msgstr "Appels récents"
 
-#: ../gtk/main.ui.h:39
+#: ../gtk/main.ui.h:40
 msgid "My current identity:"
 msgstr "Mon identité sip:"
 
-#: ../gtk/main.ui.h:40 ../gtk/tunnel_config.ui.h:7
+#: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:8
+#: ../gtk/main.ui.h:42 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
 msgstr "Mot de passe"
 
-#: ../gtk/main.ui.h:42
+#: ../gtk/main.ui.h:43
 msgid "Internet connection:"
 msgstr "Connexion internet:"
 
-#: ../gtk/main.ui.h:43
+#: ../gtk/main.ui.h:44
 msgid "Automatically log me in"
 msgstr "Me connecter automatiquement"
 
-#: ../gtk/main.ui.h:44 ../gtk/password.ui.h:3
+#: ../gtk/main.ui.h:45 ../gtk/password.ui.h:3
 msgid "UserID"
 msgstr "ID utilisateur"
 
-#: ../gtk/main.ui.h:45
+#: ../gtk/main.ui.h:46
 msgid "Login information"
 msgstr "Information de login"
 
-#: ../gtk/main.ui.h:46
+#: ../gtk/main.ui.h:47
 msgid "<b>Welcome!</b>"
 msgstr "<b>Bienvenue !</b>"
-
-#: ../gtk/main.ui.h:47
-msgid "Delete"
-msgstr "Supprimer"
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
@@ -1754,60 +1759,60 @@ msgstr ""
 "Veuillez patenter un instant pendant le chargement de la configuration "
 "distante..."
 
-#: ../coreapi/linphonecore.c:1512
+#: ../coreapi/linphonecore.c:1534
 msgid "Ready"
 msgstr "Prêt."
 
-#: ../coreapi/linphonecore.c:2499
+#: ../coreapi/linphonecore.c:2535
 msgid "Configuring"
 msgstr "Configuration en cours"
 
-#: ../coreapi/linphonecore.c:2673
+#: ../coreapi/linphonecore.c:2709
 msgid "Looking for telephone number destination..."
 msgstr "Recherche de la destination du numéro de téléphone..."
 
-#: ../coreapi/linphonecore.c:2675
+#: ../coreapi/linphonecore.c:2711
 msgid "Could not resolve this number."
 msgstr "La destination n'a pu être trouvée."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2961
+#: ../coreapi/linphonecore.c:2997
 msgid "Contacting"
 msgstr "Appel de"
 
-#: ../coreapi/linphonecore.c:2966
+#: ../coreapi/linphonecore.c:3002
 msgid "Could not call"
 msgstr "Echec de l'appel"
 
-#: ../coreapi/linphonecore.c:3116
+#: ../coreapi/linphonecore.c:3152
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Désolé, le nombre maximum d'appels simultanés est atteint."
 
-#: ../coreapi/linphonecore.c:3274
+#: ../coreapi/linphonecore.c:3310
 msgid "is contacting you"
 msgstr "vous appelle"
 
-#: ../coreapi/linphonecore.c:3275
+#: ../coreapi/linphonecore.c:3311
 msgid " and asked autoanswer."
 msgstr "et sollicite un décrochage automatique."
 
-#: ../coreapi/linphonecore.c:3399
+#: ../coreapi/linphonecore.c:3435
 msgid "Modifying call parameters..."
 msgstr "Modifications des paramètres d'appels..."
 
-#: ../coreapi/linphonecore.c:3747
+#: ../coreapi/linphonecore.c:3783
 msgid "Connected."
 msgstr "En ligne."
 
-#: ../coreapi/linphonecore.c:3772
+#: ../coreapi/linphonecore.c:3808
 msgid "Call aborted"
 msgstr "Appel abandonné"
 
-#: ../coreapi/linphonecore.c:3962
+#: ../coreapi/linphonecore.c:3998
 msgid "Could not pause the call"
 msgstr "La mise en attente a échoué"
 
-#: ../coreapi/linphonecore.c:3965
+#: ../coreapi/linphonecore.c:4001
 msgid "Pausing the current call..."
 msgstr "Mise en attente de l'appel..."
 
@@ -1888,7 +1893,7 @@ msgstr ""
 "Elle doit être de la forme sip:username@domain, comme par example sip:"
 "alice@example.net"
 
-#: ../coreapi/proxy.c:1403
+#: ../coreapi/proxy.c:1416
 #, c-format
 msgid "Could not login as %s"
 msgstr "Echec de la connexion en tant que %s"
@@ -1901,104 +1906,104 @@ msgstr "Sonnerie distante."
 msgid "Remote ringing..."
 msgstr "Sonnerie distante..."
 
-#: ../coreapi/callbacks.c:448
+#: ../coreapi/callbacks.c:452
 msgid "Early media."
 msgstr "Prise d'appel anticipée."
 
-#: ../coreapi/callbacks.c:521
+#: ../coreapi/callbacks.c:526
 #, c-format
 msgid "Call with %s is paused."
 msgstr "%s est maintenant en attente."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:539
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Appel répondu par %s - en attente"
 
-#: ../coreapi/callbacks.c:544
+#: ../coreapi/callbacks.c:549
 msgid "Call resumed."
 msgstr "Appel repris."
 
-#: ../coreapi/callbacks.c:548
+#: ../coreapi/callbacks.c:553
 #, c-format
 msgid "Call answered by %s."
 msgstr "Appel répondu par %s."
 
-#: ../coreapi/callbacks.c:571
+#: ../coreapi/callbacks.c:576
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Incompatible, vérfiez les codecs ou les paramètres de sécurité..."
 
-#: ../coreapi/callbacks.c:576 ../coreapi/callbacks.c:888
+#: ../coreapi/callbacks.c:581 ../coreapi/callbacks.c:893
 msgid "Incompatible media parameters."
 msgstr "Paramètres media incompatibles."
 
-#: ../coreapi/callbacks.c:606
+#: ../coreapi/callbacks.c:611
 msgid "We have been resumed."
 msgstr "Appel repris."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:614
+#: ../coreapi/callbacks.c:619
 msgid "We are paused by other party."
 msgstr "L'appel a été mis en attente."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:648
+#: ../coreapi/callbacks.c:653
 msgid "Call is updated by remote."
 msgstr "L'appel est modifié par la partie distante."
 
-#: ../coreapi/callbacks.c:764
+#: ../coreapi/callbacks.c:769
 msgid "Call terminated."
 msgstr "Appel terminé."
 
-#: ../coreapi/callbacks.c:792
+#: ../coreapi/callbacks.c:797
 msgid "User is busy."
 msgstr "Occupé..."
 
-#: ../coreapi/callbacks.c:793
+#: ../coreapi/callbacks.c:798
 msgid "User is temporarily unavailable."
 msgstr "L'usager est temporairement indisponible."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:795
+#: ../coreapi/callbacks.c:800
 msgid "User does not want to be disturbed."
 msgstr "L'usager ne souhaite pas être dérangé"
 
-#: ../coreapi/callbacks.c:796
+#: ../coreapi/callbacks.c:801
 msgid "Call declined."
 msgstr "Appel décliné."
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:816
 msgid "Request timeout."
 msgstr "Délai d'attente de la requête dépassé."
 
-#: ../coreapi/callbacks.c:842
+#: ../coreapi/callbacks.c:847
 msgid "Redirected"
 msgstr "Redirection"
 
-#: ../coreapi/callbacks.c:897
+#: ../coreapi/callbacks.c:902
 msgid "Call failed."
 msgstr "L'appel a échoué."
 
-#: ../coreapi/callbacks.c:975
+#: ../coreapi/callbacks.c:980
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Enregistrement sur %s effectué."
 
-#: ../coreapi/callbacks.c:976
+#: ../coreapi/callbacks.c:981
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Désenregistrement sur %s effectué."
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:999
 msgid "no response timeout"
 msgstr "Pas de réponse"
 
-#: ../coreapi/callbacks.c:997
+#: ../coreapi/callbacks.c:1002
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Echec de l'enregistrement sur %s: %s"
 
-#: ../coreapi/callbacks.c:1004
+#: ../coreapi/callbacks.c:1009
 msgid "Service unavailable, retrying"
 msgstr "Service indisponible, nouvelle tentative"
 
@@ -2008,7 +2013,7 @@ msgstr "Service indisponible, nouvelle tentative"
 msgid "Authentication token is %s"
 msgstr "Le jeton d'authentification est %s"
 
-#: ../coreapi/linphonecall.c:3600
+#: ../coreapi/linphonecall.c:3601
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-11 16:26+0100\n"
+"POT-Creation-Date: 2015-03-20 17:05+0100\n"
 "PO-Revision-Date: 2015-02-17 11:28+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -167,7 +167,7 @@ msgstr ""
 msgid "Call error"
 msgstr "Chyba hovoru"
 
-#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3791
+#: ../gtk/main.c:1262 ../coreapi/linphonecore.c:3827
 msgid "Call ended"
 msgstr "Hovor ukončen"
 
@@ -210,7 +210,7 @@ msgstr "Lipnhone – internetový videofon"
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1045
+#: ../gtk/main.c:1980 ../coreapi/callbacks.c:1050
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
@@ -223,9 +223,14 @@ msgstr ""
 "Na tomto počítači nebyla objevena žádná zvuková karta.\n"
 "Nebudete moci vytáčet a přijímat a zvukové hovory."
 
-#: ../gtk/main.c:2135
+#: ../gtk/main.c:2138
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
+
+#: ../gtk/main.c:2243
+#, c-format
+msgid "Hello\n"
+msgstr ""
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"
@@ -859,7 +864,7 @@ msgstr ""
 msgid "Audio Assistant"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:31
+#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:32
 msgid "Audio assistant"
 msgstr ""
 
@@ -936,104 +941,104 @@ msgid "Default"
 msgstr "Výchozí"
 
 #: ../gtk/main.ui.h:22
+msgid "Delete"
+msgstr "Smazat"
+
+#: ../gtk/main.ui.h:23
 msgid "_Options"
 msgstr "V_olby"
 
-#: ../gtk/main.ui.h:23
+#: ../gtk/main.ui.h:24
 msgid "Set configuration URI"
 msgstr ""
 
-#: ../gtk/main.ui.h:24
+#: ../gtk/main.ui.h:25
 msgid "Always start video"
 msgstr "Vždy spustit obraz"
 
-#: ../gtk/main.ui.h:25
+#: ../gtk/main.ui.h:26
 msgid "Enable self-view"
 msgstr "Zobrazovat sám sebe"
 
-#: ../gtk/main.ui.h:26
+#: ../gtk/main.ui.h:27
 msgid "_Help"
 msgstr "Nápo_věda"
 
-#: ../gtk/main.ui.h:27
+#: ../gtk/main.ui.h:28
 msgid "Show debug window"
 msgstr "Zobrazit ladicí okno"
 
-#: ../gtk/main.ui.h:28
+#: ../gtk/main.ui.h:29
 msgid "_Homepage"
 msgstr "_Domovská stránka"
 
-#: ../gtk/main.ui.h:29
+#: ../gtk/main.ui.h:30
 msgid "Check _Updates"
 msgstr "Vyhledat akt_ualizace"
 
-#: ../gtk/main.ui.h:30
+#: ../gtk/main.ui.h:31
 msgid "Account assistant"
 msgstr "Průvodce účtem"
 
-#: ../gtk/main.ui.h:32
+#: ../gtk/main.ui.h:33
 msgid "SIP address or phone number:"
 msgstr "SIP adresa nebo telefonní číslo:"
 
-#: ../gtk/main.ui.h:33
+#: ../gtk/main.ui.h:34
 msgid "Initiate a new call"
 msgstr "Zahájit nový hovor"
 
-#: ../gtk/main.ui.h:34
+#: ../gtk/main.ui.h:35
 msgid "Contacts"
 msgstr "Kontakty"
 
-#: ../gtk/main.ui.h:35
+#: ../gtk/main.ui.h:36
 msgid "Search"
 msgstr "Hledat"
 
-#: ../gtk/main.ui.h:36
+#: ../gtk/main.ui.h:37
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>Přidat kontakty z adresáře</b>"
 
-#: ../gtk/main.ui.h:37
+#: ../gtk/main.ui.h:38
 msgid "Add contact"
 msgstr "Přidat kontakt"
 
-#: ../gtk/main.ui.h:38
+#: ../gtk/main.ui.h:39
 msgid "Recent calls"
 msgstr "Nedávné hovory"
 
-#: ../gtk/main.ui.h:39
+#: ../gtk/main.ui.h:40
 msgid "My current identity:"
 msgstr "Moje současná totožnost:"
 
-#: ../gtk/main.ui.h:40 ../gtk/tunnel_config.ui.h:7
+#: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
 msgstr "Uživatelské jméno"
 
-#: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:8
+#: ../gtk/main.ui.h:42 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
 msgstr "Heslo"
 
-#: ../gtk/main.ui.h:42
+#: ../gtk/main.ui.h:43
 msgid "Internet connection:"
 msgstr "Připojení k Internetu:"
 
-#: ../gtk/main.ui.h:43
+#: ../gtk/main.ui.h:44
 msgid "Automatically log me in"
 msgstr "Přihlašovat mě automaticky"
 
-#: ../gtk/main.ui.h:44 ../gtk/password.ui.h:3
+#: ../gtk/main.ui.h:45 ../gtk/password.ui.h:3
 msgid "UserID"
 msgstr "Identifikátor uživatele"
 
-#: ../gtk/main.ui.h:45
+#: ../gtk/main.ui.h:46
 msgid "Login information"
 msgstr "Informace o přihlášení"
 
-#: ../gtk/main.ui.h:46
+#: ../gtk/main.ui.h:47
 msgid "<b>Welcome!</b>"
 msgstr ""
-
-#: ../gtk/main.ui.h:47
-msgid "Delete"
-msgstr "Smazat"
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
@@ -1721,60 +1726,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1512
+#: ../coreapi/linphonecore.c:1534
 msgid "Ready"
 msgstr "Připraven."
 
-#: ../coreapi/linphonecore.c:2499
+#: ../coreapi/linphonecore.c:2535
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2673
+#: ../coreapi/linphonecore.c:2709
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: ../coreapi/linphonecore.c:2675
+#: ../coreapi/linphonecore.c:2711
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2961
+#: ../coreapi/linphonecore.c:2997
 msgid "Contacting"
 msgstr "Navazuje se spojení"
 
-#: ../coreapi/linphonecore.c:2966
+#: ../coreapi/linphonecore.c:3002
 msgid "Could not call"
 msgstr "Nelze volat"
 
-#: ../coreapi/linphonecore.c:3116
+#: ../coreapi/linphonecore.c:3152
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Je nám líto, ale byl dosažen maximální počet současných hovorů."
 
-#: ../coreapi/linphonecore.c:3274
+#: ../coreapi/linphonecore.c:3310
 msgid "is contacting you"
 msgstr "vás volá"
 
-#: ../coreapi/linphonecore.c:3275
+#: ../coreapi/linphonecore.c:3311
 msgid " and asked autoanswer."
 msgstr " a požaduje automatickou zvednutí."
 
-#: ../coreapi/linphonecore.c:3399
+#: ../coreapi/linphonecore.c:3435
 msgid "Modifying call parameters..."
 msgstr "Upravují se parametry hovoru…"
 
-#: ../coreapi/linphonecore.c:3747
+#: ../coreapi/linphonecore.c:3783
 msgid "Connected."
 msgstr "Připojeno."
 
-#: ../coreapi/linphonecore.c:3772
+#: ../coreapi/linphonecore.c:3808
 msgid "Call aborted"
 msgstr "Hovor přerušen"
 
-#: ../coreapi/linphonecore.c:3962
+#: ../coreapi/linphonecore.c:3998
 msgid "Could not pause the call"
 msgstr "Hovor nebylo možné odložit"
 
-#: ../coreapi/linphonecore.c:3965
+#: ../coreapi/linphonecore.c:4001
 msgid "Pausing the current call..."
 msgstr "Současný hovor se odkládá…"
 
@@ -1854,7 +1859,7 @@ msgstr ""
 "SIP identita, kterou jste zadali, není platná.\n"
 "Měla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1403
+#: ../coreapi/proxy.c:1416
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nelze se přihlásit jako %s"
@@ -1867,104 +1872,104 @@ msgstr "Vyzvání na druhé straně."
 msgid "Remote ringing..."
 msgstr "Vyzvání na druhé straně…"
 
-#: ../coreapi/callbacks.c:448
+#: ../coreapi/callbacks.c:452
 msgid "Early media."
 msgstr "Časná média."
 
-#: ../coreapi/callbacks.c:521
+#: ../coreapi/callbacks.c:526
 #, c-format
 msgid "Call with %s is paused."
 msgstr "Hovor s %s je odložen."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:539
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Hovor přijat kým: %s – odložen."
 
-#: ../coreapi/callbacks.c:544
+#: ../coreapi/callbacks.c:549
 msgid "Call resumed."
 msgstr "Hovor obnoven."
 
-#: ../coreapi/callbacks.c:548
+#: ../coreapi/callbacks.c:553
 #, c-format
 msgid "Call answered by %s."
 msgstr "Hovor přijat kým: %s."
 
-#: ../coreapi/callbacks.c:571
+#: ../coreapi/callbacks.c:576
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Není slučitelné. Zkontrolujte nastavení kodeků a zabezpečení…"
 
-#: ../coreapi/callbacks.c:576 ../coreapi/callbacks.c:888
+#: ../coreapi/callbacks.c:581 ../coreapi/callbacks.c:893
 msgid "Incompatible media parameters."
 msgstr "Neslučitelné parametry médií."
 
-#: ../coreapi/callbacks.c:606
+#: ../coreapi/callbacks.c:611
 msgid "We have been resumed."
 msgstr "Byli jsme obnoveni."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:614
+#: ../coreapi/callbacks.c:619
 msgid "We are paused by other party."
 msgstr "Byli jsme odloženi protistranou."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:648
+#: ../coreapi/callbacks.c:653
 msgid "Call is updated by remote."
 msgstr "Hovor byl aktualizován protistranou."
 
-#: ../coreapi/callbacks.c:764
+#: ../coreapi/callbacks.c:769
 msgid "Call terminated."
 msgstr "Hovor ukončen."
 
-#: ../coreapi/callbacks.c:792
+#: ../coreapi/callbacks.c:797
 msgid "User is busy."
 msgstr "Uživatel je zaneprázdněn."
 
-#: ../coreapi/callbacks.c:793
+#: ../coreapi/callbacks.c:798
 msgid "User is temporarily unavailable."
 msgstr "Uživatel je dočasně nedostupný."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:795
+#: ../coreapi/callbacks.c:800
 msgid "User does not want to be disturbed."
 msgstr "Uživatel si nepřeje být rušen."
 
-#: ../coreapi/callbacks.c:796
+#: ../coreapi/callbacks.c:801
 msgid "Call declined."
 msgstr "Volání odmítnuto."
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:816
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:842
+#: ../coreapi/callbacks.c:847
 msgid "Redirected"
 msgstr "Přesměrováno"
 
-#: ../coreapi/callbacks.c:897
+#: ../coreapi/callbacks.c:902
 msgid "Call failed."
 msgstr "Volání se nezdařilo."
 
-#: ../coreapi/callbacks.c:975
+#: ../coreapi/callbacks.c:980
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: ../coreapi/callbacks.c:976
+#: ../coreapi/callbacks.c:981
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Odregistrování z %s hotovo."
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:999
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/callbacks.c:997
+#: ../coreapi/callbacks.c:1002
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/callbacks.c:1004
+#: ../coreapi/callbacks.c:1009
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1974,7 +1979,7 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr "Klíč k ověření totožnosti je %s"
 
-#: ../coreapi/linphonecall.c:3600
+#: ../coreapi/linphonecall.c:3601
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

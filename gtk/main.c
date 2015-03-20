@@ -2238,6 +2238,10 @@ core_start:
 	if (icon) gtk_status_icon_set_visible(icon,FALSE);
 #endif
 	free(progpath);
+	/*output a translated "hello" string to the terminal, which allows the builder to check that translations are working.*/
+	if (selftest){
+		printf(_("Hello\n"));
+	}
 	return 0;
 }
 
