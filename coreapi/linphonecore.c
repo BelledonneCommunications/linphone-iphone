@@ -1569,7 +1569,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	const char *aac_fmtp162248, *aac_fmtp3244;
 	bool_t opus_enabled=TRUE;
 	/*default enabled audio codecs, in order of preference*/
-#ifdef __arm__
+#if defined(__arm__) || defined(_M_ARM)
 	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
 	if (ms_get_cpu_count()==1) opus_enabled=FALSE;
 #endif
