@@ -125,6 +125,7 @@
     <ClCompile Include="..\..\coreapi\event.c" />
     <ClCompile Include="..\..\coreapi\friend.c" />
     <ClCompile Include="..\..\coreapi\info.c" />
+    <ClCompile Include="..\..\coreapi\lime.c" />
     <ClCompile Include="..\..\coreapi\linphonecall.c" />
     <ClCompile Include="..\..\coreapi\linphonecore.c" />
     <ClCompile Include="..\..\coreapi\linphone_tunnel_config.c" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\..\coreapi\sal.c" />
     <ClCompile Include="..\..\coreapi\siplogin.c" />
     <ClCompile Include="..\..\coreapi\sipsetup.c" />
+    <ClCompile Include="..\..\coreapi\vtables.c" />
     <ClCompile Include="..\..\coreapi\xml.c" />
     <ClCompile Include="..\..\coreapi\xml2lpc.c" />
   </ItemGroup>
