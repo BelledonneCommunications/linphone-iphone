@@ -337,7 +337,14 @@ AC_ARG_ENABLE(gtk_ui,
 if test "$gtk_ui" = "true" ; then
 	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.18.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
-		PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration >= 2.0.1])
+		PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration >= 2.0.1], [found_gtkmac=true], [found_gtkmac=false])
+		if test "$found_gtkmac" != "true" ; then
+			dnl for newest macports, the name changed.
+			PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration-gtk2 >= 2.0.1], [found_gtkmac=true], [found_gtkmac=false])
+		fi
+		if test "$found_gtkmac" != "true" ; then
+			AC_MSG_ERROR([gtk-mac-integration not found. Please install gtk-osx-application package.])
+		fi
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
 	fi
 else

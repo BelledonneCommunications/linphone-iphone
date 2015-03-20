@@ -2101,8 +2101,11 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
-
-	if ((lang=linphone_gtk_get_lang(config_file))!=NULL && lang[0]!='\0'){
+	lang=linphone_gtk_get_lang(config_file);
+	if (lang == NULL || lang[0]=='\0'){
+		lang = getenv("LANG");
+	}
+	if (lang && lang[0]!='\0'){
 #ifdef WIN32
 		char tmp[128];
 		snprintf(tmp,sizeof(tmp),"LANG=%s",lang);

@@ -13,29 +13,26 @@
 
 ##### Multiple MacOS version support
 
-In order to enable generation of bundle for multiple MacOS version and 32 bit processors, it is recommended to:
+In order to enable generation of bundle for older MacOS version, it is recommended to:
 
-1. Edit `/opt/local/etc/macports/macports.conf` to add the following line:
+ Edit `/opt/local/etc/macports/macports.conf` to add the following line:
 
- > macosx_deployment_target 10.6
+ > macosx_deployment_target 10.7
 
-2. Edit `/opt/local/etc/macports/variants.conf` to add the following line:
-
- > +universal
 
 
 ##### Linphone library (liblinphone)
 
         sudo port install automake autoconf libtool pkgconfig intltool wget cunit \
-        antlr3 speex libvpx readline sqlite3 libsoup openldap libupnp \
+        antlr3 speex libvpx readline sqlite3 openldap libupnp \
         ffmpeg-devel -gpl2
 
 ##### Linphone UI (GTK version)
 
 Install `GTK`. It is recommended to use the `quartz` backend for better integration.
 
-        sudo port install gtk2 +quartz +no_x11
-        sudo port install gtk-osx-application -python27
+        sudo port install gtk2 +quartz +no_x11 libsoup
+        sudo port install gtk-osx-application +no_python
         sudo port install hicolor-icon-theme
 
 #### Using HomeBrew
@@ -160,28 +157,15 @@ Then run, inside Linphone source tree configure as told before but with `--enabl
 The resulting bundle is located in Linphone build directory, together with a zipped version.
 
 * For a better appearance, you can install `gtk-quartz-engine` (a GTK theme) that makes GTK application more similar to other Mac applications (but not perfect).
-
+	sudo port install gnome-common
         git clone https://github.com/jralls/gtk-quartz-engine.git
         cd gtk-quartz-engine
-        autoreconf -i
+        ./autogen.sh
         ./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make
         sudo make install
 
 Generate a new bundle to have it included.
 
-### libiconv hack
-
-The `Makefile.am` rules used to generate the bundle fetch a `libiconv.2.dylib` from a Linphone download page.
-This library adds some additional symbols so that dependencies requiring the `iconv` from `/usr/lib` and the ones requiring from the bundle are both satisfied.
-In case this library needs to generated, here are the commands:
-
-        wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
-        cd libiconv-1.14
-        patch -p1 < ../linphone/build/MacOS/libiconv-MacOS.patch
-        ./configure --prefix=/opt/local --disable-static 'CFLAGS=-arch i386 -arch x86_64 -mmacosx-version-min=10.5' 'LDFLAGS=-arch i386 -arch x86_64 -mmacosx-version-min=10.5'  CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5" && make
-        make install DESTDIR=/tmp
-
-The resulted library can be found in `/tmp/opt/local/lib`.
 
 
 
