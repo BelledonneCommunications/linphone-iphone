@@ -171,6 +171,10 @@ void linphone_core_set_log_file(FILE *file) {
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
+	linphone_core_set_log_level_mask(loglevel);
+}
+
+void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
 	ortp_set_log_level_mask(loglevel);
 	if (loglevel == 0) {
 		sal_disable_logs();

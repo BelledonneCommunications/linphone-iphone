@@ -1166,7 +1166,7 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_custom_header(LinphoneProx
 /**
  * Set the value of a custom header sent to the server in REGISTERs request.
  * @param cfg the proxy config object
- * @param header_name the header name 
+ * @param header_name the header name
  * @param header_value the header's value
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value);
@@ -2072,6 +2072,12 @@ LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
  * @param file A pointer to the FILE structure of the file to write to.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
+
+/**
+ * @deprecated Use #linphone_core_set_log_level_mask instead, which is exactly the
+ * same function..
+**/
+LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 /**
  * Define the log level.
  *
@@ -2082,7 +2088,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
  *
  * @param loglevel A bitmask of the log levels to set.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_set_log_level_mask(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
