@@ -115,7 +115,7 @@ int bc_tester_nb_tests(const char *suite_name) {
 void bc_tester_list_suites() {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
-		fprintf(stdout, "%s\n", bc_tester_suite_name(j));
+		tester_printf(verbosity_info, "%s\n", bc_tester_suite_name(j));
 	}
 }
 
@@ -123,7 +123,7 @@ void bc_tester_list_tests(const char *suite_name) {
 	int j;
 	for( j = 0; j < bc_tester_nb_tests(suite_name); j++) {
 		const char *test_name = bc_tester_test_name(suite_name, j);
-		fprintf(stdout, "%s\n", test_name);
+		tester_printf(verbosity_info, "%s\n", test_name);
 	}
 }
 
@@ -252,7 +252,7 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 
 
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
-	fprintf(stdout,"%s --help\n"
+	tester_printf(verbosity_info,"%s --help\n"
 		"\t\t\t--list-suites\n"
 		"\t\t\t--list-tests <suite>\n"
 		"\t\t\t--suite <suite name>\n"
@@ -277,7 +277,6 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list a
 int bc_tester_parse_args(int argc, char **argv, int argid)
 {
 	int i = argid;
-
 	if (strcmp(argv[i],"--help")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--test")==0){
@@ -301,12 +300,12 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	} else if (strcmp(argv[i], "--xml") == 0){
 		xml_enabled = 1;
 	}else {
-		fprintf(stderr, "Unknown option \"%s\"\n", argv[i]);
+		tester_printf(verbosity_error, "Unknown option \"%s\"\n", argv[i]);
 		return -1;
 	}
 
 	if( xml_enabled && (suite_name || test_name) ){
-		fprintf(stderr, "Cannot use both XML and specific test suite\n");
+		tester_printf(verbosity_error, "Cannot use both XML and specific test suite\n");
 		return -1;
 	}
 

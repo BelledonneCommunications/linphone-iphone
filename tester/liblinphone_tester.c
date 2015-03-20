@@ -132,8 +132,13 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 #endif /* __QNX__ */
 
 static void log_handler(int lev, const char *fmt, va_list args) {
+#ifdef ANDROID
+	/* IMPORTANT: needed by liblinphone tester to retrieve suite list...*/
+	cunit_android_trace_handler(lev == ORTP_ERROR, fmt, args);
+#else
 	ortp_set_log_file(stderr);
 	ortp_log_handler(lev, fmt, args);
+#endif
 	if (log_file){
 		ortp_set_log_file(log_file);
 		ortp_log_handler(lev, fmt, args);
@@ -141,7 +146,6 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 }
 
 void liblinphone_tester_init(void) {
-	ortp_log_handler = ortp_get_log_handler();
 #if defined(ANDROID)
 	linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
 #elif defined(__QNX__)
@@ -149,6 +153,7 @@ void liblinphone_tester_init(void) {
 #else
 	linphone_core_set_log_handler(ortp_logv_out);
 #endif
+	ortp_log_handler = ortp_get_log_handler();
 
 	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
