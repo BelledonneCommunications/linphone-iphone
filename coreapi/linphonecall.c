@@ -1296,6 +1296,11 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			linphone_core_multicast_lock_release(call->core);
 #endif
 			break;
+		case LinphoneCallStreamsRunning:
+			if (call->prevstate == LinphoneCallUpdating || call->prevstate == LinphoneCallUpdatedByRemote) {
+				linphone_core_notify_display_status(lc,_("Call parameters were successfully modified."));
+			}
+			break;
 		default:
 			break;
 		}
