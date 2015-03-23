@@ -92,7 +92,6 @@ static gint main_window_y=0;
 #endif
 static gboolean verbose=0;
 static gboolean quit_done=FALSE;
-static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
 static int start_option = START_LINPHONE;
 static gboolean no_video=FALSE;
@@ -139,7 +138,6 @@ static GOptionEntry linphone_options[]={
 	LINPHONE_OPTION("no-video",            '\0', G_OPTION_ARG_NONE,     (gpointer)&no_video,             N_("Start linphone with video disabled.")),
 	LINPHONE_OPTION("iconified",           '\0', G_OPTION_ARG_NONE,     (gpointer)&iconified,            N_("Start only in the system tray, do not show the main interface.")),
 	LINPHONE_OPTION("call",                'c',  G_OPTION_ARG_STRING,   &addr_to_call,                   N_("address to call right now")),
-	LINPHONE_OPTION("auto-answer",         'a',  G_OPTION_ARG_NONE,     (gpointer) & auto_answer,        N_("if set automatically answer incoming calls")),
 	LINPHONE_OPTION("workdir",             '\0', G_OPTION_ARG_STRING,   (gpointer) & workingdir,         N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")),
 	LINPHONE_OPTION("config",              '\0', G_OPTION_ARG_FILENAME, (gpointer) &custom_config_file,  N_("Configuration file")),
 	LINPHONE_OPTION("run-audio-assistant", '\0', G_OPTION_ARG_NONE,     (gpointer) &run_audio_assistant, N_("Run the audio assistant")),
@@ -1375,7 +1373,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 			linphone_gtk_create_in_call_view(call);
 			linphone_gtk_in_call_view_set_incoming(call);
 			linphone_gtk_status_icon_set_blinking(TRUE);
-			if (auto_answer)  {
+			if (linphone_gtk_get_ui_config_int("auto_answer", 0))  {
 				linphone_call_ref(call);
 				g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer ,call);
 			}

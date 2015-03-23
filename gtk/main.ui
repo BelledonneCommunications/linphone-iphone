@@ -1141,6 +1141,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="resize_mode">immediate</property>
+                                <property name="image">add_image</property>
                                 <property name="xalign">1</property>
                                 <signal name="clicked" handler="linphone_gtk_add_button_clicked" swapped="no"/>
                               </object>
@@ -1333,7 +1334,6 @@
                                             <property name="label" translatable="yes">Add contact</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
-                                            <property name="image">add_image</property>
                                             <signal name="clicked" handler="linphone_gtk_add_contact" swapped="no"/>
                                           </object>
                                           <packing>

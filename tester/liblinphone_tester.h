@@ -202,6 +202,7 @@ typedef struct _stats {
 	char * dtmf_list_received;
 	int dtmf_count;
 
+	int number_of_LinphoneCallStatsUpdated;
 	int number_of_rtcp_sent;
 	int number_of_rtcp_received;
 

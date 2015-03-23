@@ -1582,6 +1582,8 @@ void linphone_gtk_show_parameters(void){
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"adaptive_rate_control")),
 	                         linphone_core_adaptive_rate_control_enabled(lc));
 
+	/* CALL PARAMS CONFIG */
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer")), linphone_gtk_get_ui_config_int("auto_answer", 0));
 
 	/* UI CONFIG */
 	linphone_gtk_fill_langs(pb);
@@ -1769,4 +1771,9 @@ void linphone_gtk_dscp_edit_response(GtkWidget *dialog, guint response_id){
 		break;
 	}
 	gtk_widget_destroy(dialog);
+}
+
+void linphone_gtk_enable_auto_answer(GtkToggleButton *checkbox, gpointer user_data) {
+	gboolean auto_answer_enabled = gtk_toggle_button_get_active(checkbox);
+	linphone_gtk_set_ui_config_int("auto_answer", auto_answer_enabled ? 1 : 0);
 }

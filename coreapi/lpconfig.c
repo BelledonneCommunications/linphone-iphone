@@ -696,18 +696,12 @@ const char* lp_config_get_default_string(const LpConfig *lpconfig, const char *s
 
 static char *_lp_config_dirname(char *path) {
 #ifdef _MSC_VER
-#ifdef WINAPI_FAMILY_PHONE_APP
 	char drive[_MAX_DRIVE];
 	char dir[_MAX_DIR];
 	char fname[_MAX_FNAME];
 	char ext[_MAX_EXT];
 	_splitpath(path, drive, dir, fname, ext);
 	return ms_strdup_printf("%s%s", drive, dir);
-#else
-	char *dir = ms_strdup(path);
-	PathRemoveFileSpec(dir);
-	return dir;
-#endif
 #else
 	char *tmp = ms_strdup(path);
 	char *dir = ms_strdup(dirname(tmp));
@@ -735,9 +729,14 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 }
 
 int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length) {
-	char *dir = _lp_config_dirname(lpconfig->filename);
-	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-	FILE *file = fopen(filepath, "r");
+	char *dir;
+	char *filepath;
+	FILE *file;
+
+	if (lpconfig->filename == NULL) return -1;
+	dir = _lp_config_dirname(lpconfig->filename);
+	filepath = ms_strdup_printf("%s/%s", dir, filename);
+	file = fopen(filepath, "r");
 	if(file != NULL) {
 		if(fread(data, 1, max_length, file)<=0) {
 			ms_error("%s could not be loaded. %s", filepath, strerror(errno));

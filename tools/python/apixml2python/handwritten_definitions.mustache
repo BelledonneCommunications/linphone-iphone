@@ -106,7 +106,7 @@ static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_
 static void pylinphone_init_logging(void) {
 	linphone_core_serialize_logs();
 	linphone_core_set_log_handler(pylinphone_module_log_handler);
-	linphone_core_set_log_level(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+	linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 }
 
 
