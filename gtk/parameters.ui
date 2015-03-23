@@ -729,6 +729,9 @@
                                 <property name="bottom_attach">7</property>
                               </packing>
                             </child>
+                            <child>
+                              <placeholder/>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -2418,6 +2421,30 @@
                   <placeholder/>
                 </child>
                 <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="auto_answer">
                     <property name="label" translatable="yes">Automatically answer when a call is received</property>
                     <property name="visible">True</property>
@@ -2651,7 +2678,6 @@
                               <object class="GtkLabel" id="ldap_server">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -2663,7 +2689,6 @@
                               <object class="GtkLabel" id="ldap_auth_method">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -2677,7 +2702,6 @@
                               <object class="GtkLabel" id="ldap_username">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">label</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
