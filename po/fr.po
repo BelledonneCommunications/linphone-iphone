@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-23 16:57+0100\n"
+"POT-Creation-Date: 2015-03-23 19:30+0100\n"
 "PO-Revision-Date: 2015-03-23 16:00+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -226,6 +226,11 @@ msgstr ""
 #: ../gtk/main.c:2136
 msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
+
+#: ../gtk/main.c:2241
+#, c-format
+msgid "Hello\n"
+msgstr ""
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"

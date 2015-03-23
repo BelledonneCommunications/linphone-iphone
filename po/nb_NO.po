@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-23 16:57+0100\n"
+"POT-Creation-Date: 2015-03-23 19:30+0100\n"
 "PO-Revision-Date: 2015-03-23 15:58+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Norwegian Bokmål (Norway) (http://www.transifex.com/projects/"
@@ -216,6 +216,11 @@ msgstr ""
 #: ../gtk/main.c:2136
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
+
+#: ../gtk/main.c:2241
+#, c-format
+msgid "Hello\n"
+msgstr ""
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"
