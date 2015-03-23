@@ -259,6 +259,26 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	linphone_core_set_ringback(mgr->lc, NULL);
 #endif
 
+#ifdef VIDEO_ENABLED
+	{
+		MSWebCam *cam;
+
+#ifdef _MSC_VER
+		extern __declspec(dllimport) MSWebCamDesc mire_desc;
+#else
+		extern MSWebCamDesc mire_desc;
+#endif
+
+		cam = ms_web_cam_manager_get_cam(ms_web_cam_manager_get(), "Mire: Mire (synthetic moving picture)");
+
+		if (cam == NULL) {
+			cam=ms_web_cam_new(&mire_desc);
+			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),cam);
+		}
+	}
+#endif
+
+
 	if( manager_count >= 2){
 		char hellopath[512];
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_writable_dir_prefix,mgr->lc);

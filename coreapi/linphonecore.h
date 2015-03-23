@@ -513,6 +513,7 @@ typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
 #define LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE (1 << 0) /**< received_rtcp field of LinphoneCallStats object has been updated */
 #define LINPHONE_CALL_STATS_SENT_RTCP_UPDATE (1 << 1) /**< sent_rtcp field of LinphoneCallStats object has been updated */
+#define LINPHONE_CALL_STATS_PERIODICAL_UPDATE (1 << 2) /**< Every seconds LinphoneCallStats object has been updated */
 
 
 /**
@@ -529,7 +530,7 @@ typedef struct _LinphoneCallStats LinphoneCallStats;
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
+ * it passes for instantiating the LinphoneCore object (see linphone_core_new() ).
  *
  * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
 **/
