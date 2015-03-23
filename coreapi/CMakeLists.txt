@@ -139,7 +139,7 @@ endif()
 if(ENABLE_ASSISTANT)
 	list(APPEND LIBS ${SOUP_LIBRARIES})
 endif()
-if(WIN32)
+if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	list(APPEND LIBS shlwapi)
 endif()
 
