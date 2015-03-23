@@ -58,6 +58,7 @@ blacklisted_functions = [
 	'linphone_core_set_log_file',	# There is no use to wrap this function
 	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
 	'linphone_core_set_log_level',	# There is no use to wrap this function
+	'linphone_core_set_log_level_mask',	# There is no use to wrap this function
 	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
