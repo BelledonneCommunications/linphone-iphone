@@ -160,22 +160,23 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	const CU_pSuite pSuite,
 	const CU_pFailureRecord pFailureList) {
 	int i;
-	char * result = malloc(sizeof(char)*2048);//not very pretty but...
+	char result[2048];
+	char buffer[2048];
 	CU_pFailureRecord pFailure = pFailureList;
-	sprintf(result, "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
+	snprintf(result, 2048, "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
 	if (pFailure) {
 		strncat(result, " failed:", strlen(" failed:"));
 		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
-			sprintf(result, "%s\n    %d. %s:%u  - %s", result, i,
+			snprintf(buffer, 2048, "\n    %d. %s:%u  - %s", i,
 				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
 				pFailure->uiLineNumber,
 				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+			strncat(result, buffer, strlen(buffer));
 		}
 	} else {
 		strncat(result, " passed", strlen(" passed"));
 	}
 	tester_printf(verbosity_info,"%s\n", result);
-	free(result);
 }
 #endif
 
@@ -316,8 +317,9 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 int bc_tester_start() {
 	int ret;
 	if( xml_enabled ){
-		char * xml_tmp_file = malloc(sizeof(char) * (strlen(xml_file) + strlen(".tmp") + 1));
-		sprintf(xml_tmp_file, "%s.tmp", xml_file);
+		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
+		char * xml_tmp_file = malloc(sizeof(char) * size);
+		snprintf(xml_tmp_file, size, "%s.tmp", xml_file);
 		CU_set_output_filename(xml_tmp_file);
 		free(xml_tmp_file);
 	}
@@ -341,14 +343,16 @@ void bc_tester_uninit() {
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
-		tester_printf(verbosity_info,""); /*add missing final newline*/
 	}
 	CU_cleanup_registry();
+	/*add missing final newline*/
+	tester_printf(verbosity_info,"\n");
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
-		char * xml_tmp_file = malloc(sizeof(char) * (strlen(xml_file) + strlen(".tmp-Results.xml") + 1));
-		sprintf(xml_tmp_file, "%s.tmp-Results.xml", xml_file);
+		size_t size = strlen(xml_file) + strlen(".tmp-Results.xml") + 1;
+		char * xml_tmp_file = malloc(sizeof(char) * size);
+		snprintf(xml_tmp_file, size, "%s.tmp-Results.xml", xml_file);
 		rename(xml_tmp_file, xml_file);
 		free(xml_tmp_file);
 	}

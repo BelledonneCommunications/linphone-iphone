@@ -136,8 +136,8 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 	/* IMPORTANT: needed by liblinphone tester to retrieve suite list...*/
 	cunit_android_trace_handler(lev == ORTP_ERROR, fmt, args);
 #else
-	ortp_set_log_file(stderr);
-	ortp_log_handler(lev, fmt, args);
+	/* Otherwise, we must use stdio to avoid log formatting (for autocompletion etc.) */
+	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, args);
 #endif
 	if (log_file){
 		ortp_set_log_file(log_file);
