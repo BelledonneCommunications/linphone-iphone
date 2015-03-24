@@ -30,7 +30,6 @@
 
 
 static FILE * log_file = NULL;
-static OrtpLogFunc ortp_log_handler;
 
 #ifdef ANDROID
 
@@ -132,28 +131,35 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 #endif /* __QNX__ */
 
 static void log_handler(int lev, const char *fmt, va_list args) {
+#ifdef WIN32
+	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, args);
+	fprintf(lev == ORTP_ERROR ? stderr : stdout, "\n");
+#else
+	va_list cap;
+	va_copy(cap,args);
 #ifdef ANDROID
 	/* IMPORTANT: needed by liblinphone tester to retrieve suite list...*/
-	cunit_android_trace_handler(lev == ORTP_ERROR, fmt, args);
+	cunit_android_trace_handler(lev == ORTP_ERROR, fmt, cap);
 #else
 	/* Otherwise, we must use stdio to avoid log formatting (for autocompletion etc.) */
-	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, args);
+	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, cap);
+	fprintf(lev == ORTP_ERROR ? stderr : stdout, "\n");
+#endif
+	va_end(cap);
 #endif
 	if (log_file){
-		ortp_set_log_file(log_file);
-		ortp_log_handler(lev, fmt, args);
+		ortp_logv_out(lev, fmt, args);
 	}
 }
 
 void liblinphone_tester_init(void) {
+	if (! log_file) {
 #if defined(ANDROID)
-	linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
+		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
 #elif defined(__QNX__)
-	linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
-#else
-	linphone_core_set_log_handler(ortp_logv_out);
+		linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
 #endif
-	ortp_log_handler = ortp_get_log_handler();
+	}
 
 	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
@@ -202,6 +208,7 @@ int main (int argc, char *argv[])
 				return -2;
 			} else {
 				ms_message("Redirecting traces to file [%s]",argv[i]);
+				ortp_set_log_file(log_file);
 			}
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);

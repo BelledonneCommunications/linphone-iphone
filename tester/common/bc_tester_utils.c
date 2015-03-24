@@ -115,7 +115,7 @@ int bc_tester_nb_tests(const char *suite_name) {
 void bc_tester_list_suites() {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
-		tester_printf(verbosity_info, "%s\n", bc_tester_suite_name(j));
+		tester_printf(verbosity_info, "%s", bc_tester_suite_name(j));
 	}
 }
 
@@ -123,7 +123,7 @@ void bc_tester_list_tests(const char *suite_name) {
 	int j;
 	for( j = 0; j < bc_tester_nb_tests(suite_name); j++) {
 		const char *test_name = bc_tester_test_name(suite_name, j);
-		tester_printf(verbosity_info, "%s\n", test_name);
+		tester_printf(verbosity_info, "%s", test_name);
 	}
 }
 
@@ -136,19 +136,19 @@ static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 }
 
 static void suite_init_failure_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_error,"Suite initialization failed for [%s].", pSuite->pName);
+	tester_printf(verbosity_error,"Suite initialization failed for [%s]", pSuite->pName);
 }
 
 static void suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_error,"Suite cleanup failed for [%s].", pSuite->pName);
+	tester_printf(verbosity_error,"Suite cleanup failed for [%s]", pSuite->pName);
 }
 
 #ifdef HAVE_CU_GET_SUITE
 static void suite_start_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_info,"Suite [%s] started\n", pSuite->pName);
+	tester_printf(verbosity_info,"Suite [%s] started", pSuite->pName);
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
-	tester_printf(verbosity_info,"Suite [%s] ended\n", pSuite->pName);
+	tester_printf(verbosity_info,"Suite [%s] ended", pSuite->pName);
 }
 
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
@@ -163,11 +163,11 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	char result[2048];
 	char buffer[2048];
 	CU_pFailureRecord pFailure = pFailureList;
-	snprintf(result, 2048, "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
+	snprintf(result, sizeof(result), "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
 	if (pFailure) {
 		strncat(result, " failed:", strlen(" failed:"));
 		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
-			snprintf(buffer, 2048, "\n    %d. %s:%u  - %s", i,
+			snprintf(buffer, sizeof(buffer), "\n    %d. %s:%u  - %s", i,
 				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
 				pFailure->uiLineNumber,
 				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
@@ -346,7 +346,7 @@ void bc_tester_uninit() {
 	}
 	CU_cleanup_registry();
 	/*add missing final newline*/
-	tester_printf(verbosity_info,"\n");
+	tester_printf(verbosity_info,"");
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
