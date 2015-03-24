@@ -273,7 +273,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 
 		if (cam == NULL) {
 			cam=ms_web_cam_new(&mire_desc);
-			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),cam);
+			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(), cam);
 		}
 	}
 #endif
