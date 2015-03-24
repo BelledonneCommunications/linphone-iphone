@@ -283,6 +283,8 @@ struct _LinphoneCall{
 	bool_t record_active;
 
 	bool_t paused_by_app;
+
+	MSWebCam *cam; /*webcam use for this call*/
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -1170,7 +1172,10 @@ typedef struct _VTableReference  VTableReference;
 void v_table_reference_destroy(VTableReference *ref);
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
-
+#ifdef VIDEO_ENABLED
+MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
+MSWebCam *get_nowebcam_device();
+#endif
 #ifdef __cplusplus
 }
 #endif

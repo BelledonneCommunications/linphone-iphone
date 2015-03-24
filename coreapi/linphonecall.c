@@ -43,7 +43,7 @@ static const char EC_STATE_STORE[] = ".linphone.ecstate";
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
 
 #ifdef VIDEO_ENABLED
-static MSWebCam *get_nowebcam_device(){
+MSWebCam *get_nowebcam_device(){
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
 }
 #endif
@@ -819,7 +819,9 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
-
+#ifdef VIDEO_ENABLED
+	call->cam = call->core->video_conf.device;
+#endif
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -1660,16 +1662,17 @@ LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
 **/
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #ifdef VIDEO_ENABLED
+	call->camera_enabled=enable;
 	if ((call->state==LinphoneCallStreamsRunning || call->state==LinphoneCallOutgoingEarlyMedia || call->state==LinphoneCallIncomingEarlyMedia)
 		&& call->videostream!=NULL ){
-		LinphoneCore *lc=call->core;
-		MSWebCam *nowebcam=get_nowebcam_device();
-		if (call->camera_enabled!=enable && lc->video_conf.device!=nowebcam){
-			video_stream_change_camera(call->videostream,
-						 enable ? lc->video_conf.device : nowebcam);
+		if (video_stream_get_camera(call->videostream) != linphone_call_get_video_device(call)) {
+			ms_message("Swithching video cam from [%s] to %s on call [%p]"	,ms_web_cam_get_name(video_stream_get_camera(call->videostream))
+																			,ms_web_cam_get_name(linphone_call_get_video_device(call))
+																			,call);
+			video_stream_change_camera(call->videostream,linphone_call_get_video_device(call));
 		}
 	}
-	call->camera_enabled=enable;
+
 #endif
 }
 
@@ -2579,9 +2582,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 
 		if (used_pt!=-1){
 			VideoStreamDir dir=VideoStreamSendRecv;
-			MSWebCam *cam=lc->video_conf.device;
 			bool_t is_inactive=FALSE;
-
+			MSWebCam *cam;
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
 
@@ -2609,10 +2611,6 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				else
 					dir=VideoStreamSendOnly;
 			} else if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-				if (local_st_desc->dir==SalStreamSendOnly){
-					/* localdesc stream dir to SendOnly is when we want to put on hold, so use nowebcam in this case*/
-					cam=get_nowebcam_device();
-				}
 				dir=VideoStreamSendOnly;
 			}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
 				dir=VideoStreamRecvOnly;
@@ -2628,8 +2626,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				/*either inactive or incompatible with local capabilities*/
 				is_inactive=TRUE;
 			}
-			if (call->camera_enabled==FALSE || all_inputs_muted){
+			if (all_inputs_muted){
 				cam=get_nowebcam_device();
+			} else {
+				cam = linphone_call_get_video_device(call);
 			}
 			if (!is_inactive){
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
@@ -3882,3 +3882,11 @@ void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long 
 	}
 #endif
 }
+#ifdef VIDEO_ENABLED
+MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
+	if (call->camera_enabled==FALSE)
+		return get_nowebcam_device();
+	else
+		return call->cam;
+}
+#endif
