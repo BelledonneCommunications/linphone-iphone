@@ -105,7 +105,7 @@
        optional, as usual. Bundler will find all translations of that
        library/program under the indicated directory and copy them.-->
   <translations name="linphone">
-    ${prefix}/share/locale
+    ${prefix:linphone}/share/locale
   </translations>
 <translations name="gdk-pixbuf">
     ${prefix}/share/locale
