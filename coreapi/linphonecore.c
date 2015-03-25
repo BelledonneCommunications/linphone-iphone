@@ -1650,10 +1650,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	ms_init();
 
 	linphone_core_register_default_codecs(lc);
-	/* create a mediastreamer2 event queue and set it as global */
+	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
-	lc->msevq=ms_event_queue_new();
-	ms_set_global_event_queue(lc->msevq);
+	lc->msevq=ms_factory_get_event_queue(ms_factory_get_fallback());
 
 	lc->sal=sal_init();
 
@@ -6326,7 +6325,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 #endif
 
-	ms_event_queue_destroy(lc->msevq);
 	lc->msevq=NULL;
 	/* save all config */
 	ui_config_uninit(lc);

@@ -261,7 +261,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),callee_params);
 	}else if (build_callee_params){
 		LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
-		ms_error("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
+		ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
 		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),default_params);
 		linphone_call_params_destroy(default_params);
 	}else{
@@ -3728,7 +3728,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(bool_t
 		CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
 
 		check_media_direction(marie,linphone_core_get_current_call(marie->lc),lcs,LinphoneMediaDirectionInactive,LinphoneMediaDirectionInactive);
-		check_media_direction(pauline,linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionInactive,LinphoneMediaDirectionInactive);
+		check_media_direction(pauline,linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionInactive, LinphoneMediaDirectionInactive);
 
 		if (no_sdp) {
 			linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
