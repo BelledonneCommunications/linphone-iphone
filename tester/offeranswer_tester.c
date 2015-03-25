@@ -197,10 +197,14 @@ static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t
 	CU_ASSERT_TRUE(call(marie, pauline));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
-	params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
-	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
-	params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+	if (linphone_core_get_current_call(marie->lc)) {
+		params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
+		CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+	}
+	if (linphone_core_get_current_call(pauline->lc)) {
+		params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
+		CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+	}
 
 	linphone_core_terminate_all_calls(marie->lc);
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
