@@ -42,14 +42,16 @@ static void stop(int signum){
  * Call state notification callback
  */
 static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+	LinphoneCallParams * call_params;
 	switch(cstate){
 		case LinphoneCallIncomingReceived:
 			printf("Incoming call arrive  !\n");
 			/* accept the incoming call*/
-			LinphoneCallParams * call_params = linphone_core_create_default_call_parameters(lc);
+			call_params = linphone_core_create_default_call_parameters(lc);
 			linphone_call_params_set_audio_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_core_accept_call_with_params(lc,call,call_params);
+			linphone_call_params_destroy(call_params);
 
 		break;
 		case LinphoneCallOutgoingEarlyMedia:
@@ -84,11 +86,11 @@ int main(int argc, char *argv[]){
 	LinphoneCore *lc;
 	LinphoneVideoPolicy policy;
 	int i;
-	policy.automatically_accept=TRUE;
 	LinphoneAddress *addr=NULL;
 	LCSipTransports tp;
 	char * tmp = NULL;
 
+	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
