@@ -90,6 +90,11 @@ void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCall
 	} else if (lstats->updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
 		counters->number_of_rtcp_sent++;
 	}
+	counters->audio_download_bandwidth = linphone_call_get_audio_stats(call)->download_bandwidth;
+	counters->audio_upload_bandwidth = linphone_call_get_audio_stats(call)->upload_bandwidth;
+	counters->video_download_bandwidth = linphone_call_get_video_stats(call)->download_bandwidth;
+	counters->video_upload_bandwidth = linphone_call_get_video_stats(call)->upload_bandwidth;
+
 }
 
 void linphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token) {
@@ -2856,7 +2861,7 @@ static void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, 
 		linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_cb,mgr->lc);
 		linphone_call_send_vfu_request(call);
 
-		wait_for_list(lcs,&dummy,1,2000);
+		wait_for_list(lcs,&dummy,1,2000); /*on some device, it may take 3 to 4s to get audio from mic*/
 
 		switch (video_dir) {
 		case LinphoneMediaDirectionInactive:
@@ -2879,13 +2884,13 @@ static void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, 
 				CU_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
 			case LinphoneMediaDirectionSendOnly:
 				CU_ASSERT_TRUE(linphone_call_get_video_stats(call)->download_bandwidth<5);
-				if (audio_dir == LinphoneMediaDirectionSendOnly) CU_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth>70);
+				if (audio_dir == LinphoneMediaDirectionSendOnly) CU_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_upload_bandwidth,70,4000));
 				break;
 			case LinphoneMediaDirectionRecvOnly:
 				CU_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
 			case LinphoneMediaDirectionSendRecv:
-				CU_ASSERT_TRUE(linphone_call_get_audio_stats(call)->download_bandwidth>70);
-				if (audio_dir == LinphoneMediaDirectionSendRecv) CU_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth>70);
+				CU_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_download_bandwidth,70,4000));
+				if (audio_dir == LinphoneMediaDirectionSendRecv) CU_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_upload_bandwidth,70,4000));
 				break;
 			}
 	}

@@ -212,6 +212,10 @@ typedef struct _stats {
 	int number_of_LinphoneCoreLogCollectionUploadStateDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateNotDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateInProgress;
+	int audio_download_bandwidth;
+	int audio_upload_bandwidth;
+	int video_download_bandwidth;
+	int video_upload_bandwidth;
 
 }stats;
 
