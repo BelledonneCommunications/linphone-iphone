@@ -138,8 +138,13 @@ int main(int argc, char *argv[]){
 	linphone_core_set_play_file(lc,PACKAGE_DATA_DIR "/sounds/linphone/hello16000.wav");
 	linphone_core_set_use_files(lc,TRUE);
 
-	ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),ms_web_cam_new(&mire_desc));
-	linphone_core_set_video_device(lc,"Mire: Mire (synthetic moving picture)");
+	{
+		MSWebCamDesc *desc = ms_mire_webcam_desc_get();
+		if (desc){
+			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),ms_web_cam_new(desc));
+			linphone_core_set_video_device(lc,"Mire: Mire (synthetic moving picture)");
+		}
+	}
 
 	if (!addr) {
 		addr = linphone_address_new("sip:bot@localhost:5060");

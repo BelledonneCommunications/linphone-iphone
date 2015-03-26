@@ -45,7 +45,8 @@ lp_gen_wrappers_LDADD= \
 auto_answer_SOURCES=auto_answer.c
 auto_answer_CFLAGS=$(COMMON_CFLAGS)
 auto_answer_LDADD=\
-	$(top_builddir)/coreapi/liblinphone.la
+	$(top_builddir)/coreapi/liblinphone.la \
+	$(MEDIASTREAMER_LIBS)
 
 endif
 
