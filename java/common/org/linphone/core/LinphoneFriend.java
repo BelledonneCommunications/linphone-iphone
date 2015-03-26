@@ -133,4 +133,16 @@ public interface LinphoneFriend {
 	 * Return the native pointer for this object
 	 */
 	long getNativePtr();
+
+	/**
+	 * Set the reference key of a friend.
+	 * @param key The reference key to use for the friend.
+	 **/
+	void setRefKey(String key);
+
+	/**
+	 * Get the reference key of a friend.
+	 * @return The reference key of the friend.
+	 **/
+	String getRefKey();
 }
