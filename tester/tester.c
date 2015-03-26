@@ -289,6 +289,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
 	}
+	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_writable_dir_prefix);
 
 	if (rc_path) ms_free(rc_path);
 

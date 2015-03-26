@@ -1330,11 +1330,7 @@ handle_configfile_migration()
 	char *old_cfg_gui;
 	char *old_cfg_cli;
 	char *new_cfg;
-#if !defined(_WIN32_WCE)
 	const char *home = getenv("HOME");
-#else
-	const char *home = ".";
-#endif /*_WIN32_WCE*/
 	new_cfg = ms_strdup_printf("%s/.linphonerc", home);
 
 	/*
