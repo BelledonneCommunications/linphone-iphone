@@ -129,7 +129,9 @@ The libvpx build isn't able to produce dual architecture files. To workaround th
 If you want to generate a portable bundle, then install `gtk-mac-bundler`:
 
         git clone https://github.com/jralls/gtk-mac-bundler.git
-        cd gtk-mac-bundler && make install
+        cd gtk-mac-bundler
+	git checkout 6e2ed855aaeae43c29436c342ae83568573b5636
+	make install
         export PATH=$PATH:~/.local/bin
         # make this dummy charset.alias file for the bundler to be happy:
         sudo touch /opt/local/lib/charset.alias
