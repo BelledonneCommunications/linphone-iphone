@@ -59,8 +59,8 @@ The next pieces need to be compiled manually.
 
 * To ensure compatibility with multiple MacOS versions it is recommended to do:
 
-        export MACOSX_DEPLOYMENT_TARGET=10.6
-        export LDFLAGS="-Wl,-headerpad_max_install_names -Wl,-read_only_relocs -Wl,suppress"
+        export MACOSX_DEPLOYMENT_TARGET=10.7
+        export LDFLAGS="-Wl,-headerpad_max_install_names"
 
 * (MacPorts only) Install libantlr3c (library used by belle-sip for parsing)
 
@@ -133,6 +133,9 @@ If you want to generate a portable bundle, then install `gtk-mac-bundler`:
         export PATH=$PATH:~/.local/bin
         # make this dummy charset.alias file for the bundler to be happy:
         sudo touch /opt/local/lib/charset.alias
+	# set writing right for owner on the libssl and libcrypto libraries in order gtk-mac-bundler
+	# be able to rewrite their rpath
+	sudo chmod u+w /opt/local/lib/libssl.1.0.0.dylib /opt/local/lib/libcrypto.1.0.0.dylib
 
 The bundler file in `build/MacOS/linphone.bundle` expects some plugins to be installed in `/opt/local/lib/mediastreamer/plugins`.
 If you don't need plugins, remove or comment out this line from the bundler file:
