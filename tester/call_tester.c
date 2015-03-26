@@ -2042,6 +2042,18 @@ static void srtp_call() {
 static void zrtp_call() {
 	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
+
+static void zrtp_sas_call() {
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_b256_rc", "pauline_zrtp_b256_rc");
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_b256_rc", "pauline_rc");
+}
+
+static void zrtp_cipher_call() {
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_srtpsuite_aes256_rc", "pauline_zrtp_srtpsuite_aes256_rc");
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_aes256_rc", "pauline_zrtp_aes256_rc");
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_aes256_rc", "pauline_rc");
+}
+
 static void zrtp_video_call() {
 	call_base(LinphoneMediaEncryptionZRTP,TRUE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
@@ -2230,9 +2242,9 @@ end:
 
 }
 
-void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(marie_rc);
+	LinphoneCoreManager* pauline = linphone_core_manager_new(pauline_rc);
 	if (enable_relay) {
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 		linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
@@ -2279,10 +2291,10 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 					&&
 					linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc))) {
 					/*check SAS*/
-								CU_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
-												,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
-								liblinphone_tester_check_rtcp(pauline,marie);
-								break;
+					CU_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
+								,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));
+					liblinphone_tester_check_rtcp(pauline,marie);
+					break;
 				}
 				linphone_core_iterate(marie->lc);
 				linphone_core_iterate(pauline->lc);
@@ -2327,6 +2339,11 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel) {
+	call_base_with_configfile(mode, enable_video, enable_relay, policy, enable_tunnel, "marie_rc", "pauline_rc");
+}
+
 #ifdef VIDEO_ENABLED
 static void srtp_video_ice_call(void) {
 	call_base(LinphoneMediaEncryptionSRTP,TRUE,FALSE,LinphonePolicyUseIce,FALSE);
@@ -3806,6 +3823,8 @@ test_t call_tests[] = {
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
 	{ "SRTP call", srtp_call },
 	{ "ZRTP call",zrtp_call},
+	{ "ZRTP SAS call",zrtp_sas_call},
+	{ "ZRTP Cipher call",zrtp_cipher_call},
 	{ "DTLS SRTP call",dtls_srtp_call},
 	{ "DTLS SRTP call with media relay", dtls_srtp_call_with_media_realy},
 	{ "ZRTP video call",zrtp_video_call},
