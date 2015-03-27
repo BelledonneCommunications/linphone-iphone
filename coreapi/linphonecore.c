@@ -3118,6 +3118,7 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 			sal_address_destroy(new_contact);
 		}
 	}
+	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 
 /**

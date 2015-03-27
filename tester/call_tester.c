@@ -1301,7 +1301,51 @@ bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCore
 	CU_ASSERT_EQUAL(linphone_call_get_state(call_2),LinphoneCallPausedByRemote);
 	return linphone_call_get_state(call_1) == LinphoneCallPaused && linphone_call_get_state(call_2)==LinphoneCallPausedByRemote;
 }
+#if 0
+void concurrent_paused_resumed_base() {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* call_pauline,call_marie;
+	const rtp_stats_t * stats;
 
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	call_pauline = linphone_core_get_current_call(pauline->lc);
+	call_marie = linphone_core_get_current_call(marie->lc);
+
+	linphone_core_pause_call(pauline->lc,call_pauline);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+
+	linphone_core_pause_call(marie->lc,call_marie);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+
+	/*stay in pause a little while in order to generate traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	linphone_core_resume_call(pauline->lc,call_pauline);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+
+	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
+	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+	CU_ASSERT_EQUAL(stats->cum_packet_loss, 0);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+#endif
 static void call_paused_resumed_from_callee(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -3003,9 +3047,7 @@ static void accept_call_in_send_only(void)  {
 }
 
 static void accept_call_in_send_only_with_ice(void)  {
-#if 0
 	accept_call_in_send_base(TRUE);
-#endif
 }
 
 void two_accepted_call_in_send_only() {

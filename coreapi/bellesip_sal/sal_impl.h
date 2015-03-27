@@ -107,6 +107,7 @@ struct SalOp{
 	bool_t has_auth_pending;
 	SalOpSDPHandling sdp_handling;
 	int auth_requests; /*number of auth requested for this op*/
+	bool_t cnx_ip_to_0000_if_sendonly_enabled; /*for */
 };
 
 

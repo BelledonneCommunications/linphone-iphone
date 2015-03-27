@@ -48,6 +48,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 			printf("Incoming call arrive  !\n");
 			/* accept the incoming call*/
 			call_params = linphone_core_create_default_call_parameters(lc);
+			linphone_call_params_enable_video(call_params,TRUE);
 			linphone_call_params_set_audio_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_core_accept_call_with_params(lc,call,call_params);
@@ -78,7 +79,7 @@ static void helper() {
 	printf("auto_answer --help\n"
 			"\t\t\t--listening-uri <uri> uri to listen on, default [sip:localhost:5060]\n"
 			"\t\t\t--verbose\n");
-	return ;
+	exit(0);
 }
 
 int main(int argc, char *argv[]){
@@ -128,7 +129,6 @@ int main(int argc, char *argv[]){
 	 Instanciate a LinphoneCore object given the LinphoneCoreVTable
 	*/
 	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
-
 	linphone_core_enable_video_capture(lc,TRUE);
 	linphone_core_enable_video_display(lc,FALSE);
 	linphone_core_set_video_policy(lc,&policy);
@@ -162,7 +162,8 @@ int main(int argc, char *argv[]){
 		break;
 	}
 	linphone_core_set_sip_transports(lc,&tp);
-
+	linphone_core_set_audio_port_range(lc,1024,65000);
+	linphone_core_set_preferred_framerate(lc,5);
 	linphone_core_set_primary_contact(lc,tmp=linphone_address_as_string(addr));
 	ms_free(tmp);
 

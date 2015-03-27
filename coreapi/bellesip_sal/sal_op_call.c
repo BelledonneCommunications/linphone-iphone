@@ -36,7 +36,14 @@ static void call_set_error(SalOp* op,belle_sip_response_t* response){
 	sal_op_set_error_info_from_response(op,response);
 	op->base.root->callbacks.call_failure(op);
 }
-
+static void set_addr_to_0000(char value[]) {
+	if (ms_is_ipv6(value)) {
+		strcpy(value,"::0");
+	} else {
+		strcpy(value,"0.0.0.0");
+	}
+	return;
+}
 static void sdp_process(SalOp *h){
 	ms_message("Doing SDP offer/answer process of type %s",h->sdp_offering ? "outgoing" : "incoming");
 	if (h->result){
@@ -56,6 +63,15 @@ static void sdp_process(SalOp *h){
 			belle_sip_object_unref(h->sdp_answer);
 		}
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
+		/*for backward compatibility purpose*/
+		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
+			set_addr_to_0000(h->result->addr);
+			for(i=0;i<h->result->nb_streams;++i){
+				if (h->result->streams[i].dir == SalStreamSendOnly)
+						set_addr_to_0000(h->result->streams[i].rtp_addr);
+						set_addr_to_0000(h->result->streams[i].rtcp_addr);
+			}
+		}
 		h->sdp_answer=(belle_sdp_session_description_t *)belle_sip_object_ref(media_description_to_sdp(h->result));
 		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
 		 It should contains media parameters constraint from the remote offer, not our response*/

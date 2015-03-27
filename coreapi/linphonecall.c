@@ -1016,6 +1016,8 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->core=lc;
 	linphone_call_incoming_select_ip_version(call);
 
+	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0));
+
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
 		if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
