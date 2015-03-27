@@ -12,9 +12,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-26 22:02+0100\n"
-"PO-Revision-Date: 2015-03-23 15:58+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-03-27 10:18+0100\n"
+"PO-Revision-Date: 2015-03-27 08:43+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ru/)\n"
 "Language: ru\n"
@@ -97,10 +98,6 @@ msgstr "Мне"
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Невозможно найти графический файл: %s"
-
-#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
-msgid "Invalid sip contact !"
-msgstr "Неверный sip контакт!"
 
 #: ../gtk/main.c:136
 msgid "log to stdout some debug information while running."
@@ -259,6 +256,10 @@ msgstr "Чат"
 #, c-format
 msgid "Search in %s directory"
 msgstr "Поиск в директории %s"
+
+#: ../gtk/friendlist.c:924
+msgid "Invalid sip contact !"
+msgstr "Неверный sip контакт!"
 
 #: ../gtk/friendlist.c:976
 #, c-format
@@ -1499,11 +1500,11 @@ msgstr "Кодеки"
 
 #: ../gtk/parameters.ui.h:76
 msgid "Automatically answer when a call is received"
-msgstr ""
+msgstr "Автоматический ответ при получении звонка"
 
 #: ../gtk/parameters.ui.h:77
 msgid "Call parameters"
-msgstr ""
+msgstr "Параметры звонка"
 
 #: ../gtk/parameters.ui.h:78
 msgid "<b>Language</b>"
@@ -2021,7 +2022,7 @@ msgstr "Маркер проверки подлинности: %s"
 
 #: ../coreapi/linphonecall.c:1303
 msgid "Call parameters were successfully modified."
-msgstr ""
+msgstr "Параметры звонка были успешно изменены."
 
 #: ../coreapi/linphonecall.c:3657
 #, c-format

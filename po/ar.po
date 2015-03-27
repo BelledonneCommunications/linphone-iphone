@@ -9,9 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-26 22:02+0100\n"
-"PO-Revision-Date: 2015-03-23 15:58+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-03-27 10:18+0100\n"
+"PO-Revision-Date: 2015-03-27 08:43+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/ar/)\n"
 "Language: ar\n"
@@ -100,10 +101,6 @@ msgstr "أنا"
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "أيقونة غير موجودة : %s"
-
-#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
-msgid "Invalid sip contact !"
-msgstr "جهة اتصال sip غير صالحة !"
 
 #: ../gtk/main.c:136
 msgid "log to stdout some debug information while running."
@@ -258,6 +255,10 @@ msgstr "محادثة"
 #, c-format
 msgid "Search in %s directory"
 msgstr "ابحث في دليل %s"
+
+#: ../gtk/friendlist.c:924
+msgid "Invalid sip contact !"
+msgstr "جهة اتصال sip غير صالحة !"
 
 #: ../gtk/friendlist.c:976
 #, c-format

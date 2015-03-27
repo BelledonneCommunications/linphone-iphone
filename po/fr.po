@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-26 22:02+0100\n"
-"PO-Revision-Date: 2015-03-23 16:00+0000\n"
+"POT-Creation-Date: 2015-03-27 10:18+0100\n"
+"PO-Revision-Date: 2015-03-27 08:53+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/"
@@ -95,10 +95,6 @@ msgstr "Moi"
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Icone non trouvée: %s"
-
-#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
-msgid "Invalid sip contact !"
-msgstr "Contact sip invalide !"
 
 #: ../gtk/main.c:136
 msgid "log to stdout some debug information while running."
@@ -230,7 +226,7 @@ msgstr "Un visiophone libre"
 #: ../gtk/main.c:2241
 #, c-format
 msgid "Hello\n"
-msgstr ""
+msgstr "Bonjour\n"
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"
@@ -256,6 +252,10 @@ msgstr "Chat"
 #, c-format
 msgid "Search in %s directory"
 msgstr "Rechercher dans l'annuaire de %s"
+
+#: ../gtk/friendlist.c:924
+msgid "Invalid sip contact !"
+msgstr "Contact sip invalide !"
 
 #: ../gtk/friendlist.c:976
 #, c-format
@@ -1257,7 +1257,7 @@ msgstr "Envoyer les digits en tant que SIP INFO"
 
 #: ../gtk/parameters.ui.h:17
 msgid "Allow IPv6"
-msgstr "Autoriser l'IPv6"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:18
 msgid "<b>Transport</b>"

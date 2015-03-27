@@ -8,9 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-26 22:02+0100\n"
-"PO-Revision-Date: 2015-03-23 15:58+0000\n"
-"Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
+"POT-Creation-Date: 2015-03-27 10:18+0100\n"
+"PO-Revision-Date: 2015-03-27 08:43+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/linphone-gtk/"
 "language/nl/)\n"
 "Language: nl\n"
@@ -90,10 +91,6 @@ msgstr "Ik"
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Het pixmap-bestand %s kon niet worden gevonden"
-
-#: ../gtk/chat.c:374 ../gtk/friendlist.c:924
-msgid "Invalid sip contact !"
-msgstr "Ongeldig SIP-contactpersoon"
 
 #: ../gtk/main.c:136
 msgid "log to stdout some debug information while running."
@@ -253,6 +250,10 @@ msgstr "Chatten"
 #, c-format
 msgid "Search in %s directory"
 msgstr "Zoeken in de map %s"
+
+#: ../gtk/friendlist.c:924
+msgid "Invalid sip contact !"
+msgstr "Ongeldig SIP-contactpersoon"
 
 #: ../gtk/friendlist.c:976
 #, c-format
@@ -1162,7 +1163,7 @@ msgstr "Contactparameters (optioneel):"
 
 #: ../gtk/sip_account.ui.h:9
 msgid "AVPF regular RTCP interval (sec):"
-msgstr ""
+msgstr "AVPF regulier RTCP-tussenpose (sec):"
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Route (optional):"
@@ -1182,11 +1183,11 @@ msgstr "Aanwezigheidsinformatie publiceren"
 
 #: ../gtk/sip_account.ui.h:14
 msgid "Enable AVPF"
-msgstr ""
+msgstr "AVPF inschakelen"
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
-msgstr ""
+msgstr "Een SIP-account instellen"
 
 #: ../gtk/parameters.ui.h:1
 msgid "anonymous"
@@ -1194,39 +1195,39 @@ msgstr "anoniem"
 
 #: ../gtk/parameters.ui.h:2
 msgid "GSSAPI"
-msgstr ""
+msgstr "GSSAPI"
 
 #: ../gtk/parameters.ui.h:3
 msgid "SASL"
-msgstr ""
+msgstr "SASL"
 
 #: ../gtk/parameters.ui.h:4
 msgid "default soundcard"
-msgstr ""
+msgstr "standaard geluidskaart"
 
 #: ../gtk/parameters.ui.h:5
 msgid "a sound card"
-msgstr ""
+msgstr "een geluidskaart"
 
 #: ../gtk/parameters.ui.h:6
 msgid "default camera"
-msgstr ""
+msgstr "standaard camera"
 
 #: ../gtk/parameters.ui.h:7
 msgid "CIF"
-msgstr ""
+msgstr "CIF"
 
 #: ../gtk/parameters.ui.h:8
 msgid "Audio codecs"
-msgstr ""
+msgstr "Audio-codecs"
 
 #: ../gtk/parameters.ui.h:9
 msgid "Video codecs"
-msgstr ""
+msgstr "Video-codecs"
 
 #: ../gtk/parameters.ui.h:10
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
 msgid "SIP (UDP)"
@@ -1242,15 +1243,15 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:14
 msgid "Settings"
-msgstr ""
+msgstr "Instellingen"
 
 #: ../gtk/parameters.ui.h:15
 msgid "Set Maximum Transmission Unit:"
-msgstr ""
+msgstr "Maximale Transmissie-unit instellen:"
 
 #: ../gtk/parameters.ui.h:16
 msgid "Send DTMFs as SIP info"
-msgstr ""
+msgstr "DTMF's als SIP-informatie versturen"
 
 #: ../gtk/parameters.ui.h:17
 msgid "Allow IPv6"
@@ -1258,59 +1259,59 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:18
 msgid "<b>Transport</b>"
-msgstr ""
+msgstr "<b>Overdracht</b>"
 
 #: ../gtk/parameters.ui.h:19
 msgid "SIP/UDP port"
-msgstr ""
+msgstr "SIP/UDP-poort"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Random"
-msgstr ""
+msgstr "Willekeurig"
 
 #: ../gtk/parameters.ui.h:22
 msgid "SIP/TCP port"
-msgstr ""
+msgstr "SIP/TCP-poort"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Audio RTP/UDP:"
-msgstr ""
+msgstr "AUDIO RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Fixed"
-msgstr ""
+msgstr "Vastgezet"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Video RTP/UDP:"
-msgstr ""
+msgstr "Video RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Media encryption type"
-msgstr ""
+msgstr "Mediaversleutelingstype"
 
 #: ../gtk/parameters.ui.h:27
 msgid "Media encryption is mandatory"
-msgstr ""
+msgstr "Mediaversleuteling is vereist"
 
 #: ../gtk/parameters.ui.h:28
 msgid "Tunnel"
-msgstr ""
+msgstr "Tunnel"
 
 #: ../gtk/parameters.ui.h:29
 msgid "DSCP fields"
-msgstr ""
+msgstr "DSCP-velden"
 
 #: ../gtk/parameters.ui.h:30
 msgid "<b>Network protocol and ports</b>"
-msgstr ""
+msgstr "<b>Netwerkprotocol en -poorten</b>"
 
 #: ../gtk/parameters.ui.h:31
 msgid "Direct connection to the Internet"
-msgstr ""
+msgstr "Directe verbinding met het internet"
 
 #: ../gtk/parameters.ui.h:32
 msgid "Behind NAT / Firewall (specify gateway IP )"
-msgstr ""
+msgstr "Achter een NAT / Firewall (specificeer de gateway IP)"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Behind NAT / Firewall (use STUN to resolve)"
@@ -1326,71 +1327,71 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:36
 msgid "Public IP address:"
-msgstr ""
+msgstr "Openbaar IP-adres:"
 
 #: ../gtk/parameters.ui.h:37
 msgid "Stun server:"
-msgstr ""
+msgstr "Stun-server"
 
 #: ../gtk/parameters.ui.h:38
 msgid "<b>NAT and Firewall</b>"
-msgstr ""
+msgstr "<b>NAT en Firewall</b>"
 
 #: ../gtk/parameters.ui.h:39
 msgid "Network settings"
-msgstr ""
+msgstr "Netwerkinstellingen"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Ring sound:"
-msgstr ""
+msgstr "Belgeluid:"
 
 #: ../gtk/parameters.ui.h:41
 msgid "ALSA special device (optional):"
-msgstr ""
+msgstr "ALSA speciaal apparaat (optioneel)"
 
 #: ../gtk/parameters.ui.h:42
 msgid "Capture device:"
-msgstr ""
+msgstr "Opnameapparaat:"
 
 #: ../gtk/parameters.ui.h:43
 msgid "Ring device:"
-msgstr ""
+msgstr "Belapparaat:"
 
 #: ../gtk/parameters.ui.h:44
 msgid "Playback device:"
-msgstr ""
+msgstr "Afspeelapparaat:"
 
 #: ../gtk/parameters.ui.h:45
 msgid "Enable echo cancellation"
-msgstr ""
+msgstr "Echo-onderdrukking inschakelen"
 
 #: ../gtk/parameters.ui.h:46
 msgid "<b>Audio</b>"
-msgstr ""
+msgstr "<b>Audio</b>"
 
 #: ../gtk/parameters.ui.h:47
 msgid "Video input device:"
-msgstr ""
+msgstr "Videoingang-apparaat:"
 
 #: ../gtk/parameters.ui.h:48
 msgid "Prefered video resolution:"
-msgstr ""
+msgstr "Voorkeursvideoresolutie:"
 
 #: ../gtk/parameters.ui.h:49
 msgid "Video output method:"
-msgstr ""
+msgstr "Videouitgangsmethode:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "Show camera preview"
-msgstr ""
+msgstr "Cameravoorbeeld weergeven"
 
 #: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
-msgstr ""
+msgstr "<b>Video</b>"
 
 #: ../gtk/parameters.ui.h:52
 msgid "Multimedia settings"
-msgstr ""
+msgstr "Multimedia-instellingen"
 
 #: ../gtk/parameters.ui.h:53
 msgid "This section defines your SIP address when not using a SIP account"
@@ -1398,11 +1399,11 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:54
 msgid "Your display name (eg: John Doe):"
-msgstr ""
+msgstr "Uw weergavenaam (bijv.: Jan Noniem):"
 
 #: ../gtk/parameters.ui.h:55
 msgid "Your username:"
-msgstr ""
+msgstr "Uw gebruikersnaam:"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Your resulting SIP address:"
@@ -1410,15 +1411,15 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:57
 msgid "<b>Default identity</b>"
-msgstr ""
+msgstr "<b>Standaardidentiteit</b>"
 
 #: ../gtk/parameters.ui.h:58
 msgid "Wizard"
-msgstr ""
+msgstr "Instelhulp"
 
 #: ../gtk/parameters.ui.h:59
 msgid "Add"
-msgstr ""
+msgstr "Toevoegen"
 
 #: ../gtk/parameters.ui.h:60
 msgid "Edit"
@@ -2042,3 +2043,6 @@ msgstr ""
 #, c-format
 msgid "Cannot play %s."
 msgstr ""
+
+#~ msgid "Use IPv6 instead of IPv4"
+#~ msgstr "IPv6 in plaats van IPv4 gebruiken"
