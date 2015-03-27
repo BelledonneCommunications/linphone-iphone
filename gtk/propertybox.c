@@ -1583,7 +1583,7 @@ void linphone_gtk_show_parameters(void){
 	                         linphone_core_adaptive_rate_control_enabled(lc));
 
 	/* CALL PARAMS CONFIG */
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer")), linphone_gtk_get_ui_config_int("auto_answer", 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_checkbox")), linphone_gtk_get_ui_config_int("auto_answer", 0));
 
 	/* UI CONFIG */
 	linphone_gtk_fill_langs(pb);
