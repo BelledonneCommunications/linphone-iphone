@@ -168,10 +168,10 @@ filelist: zip
 
 pull-transifex:
 	tx pull -af
-	$(MAKE) -C po update-po
 
 push-transifex:
-	tx push -s -t -f --no-interactive
+	$(MAKE) -C po update-po
+	tx push -s -f --no-interactive
 
 
 ### WINDOWS
