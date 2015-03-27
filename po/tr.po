@@ -1,21 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # faradundamarti <faradundamarti@yandex.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-23 16:57+0100\n"
+"POT-Creation-Date: 2015-03-26 22:02+0100\n"
 "PO-Revision-Date: 2015-03-23 15:58+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
-"Language-Team: Turkish (http://www.transifex.com/projects/p/linphone-gtk/language/tr/)\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/linphone-gtk/"
+"language/tr/)\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
@@ -114,8 +115,8 @@ msgstr ""
 
 #: ../gtk/main.c:141
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
 msgstr ""
 
 #: ../gtk/main.c:142
@@ -134,7 +135,8 @@ msgstr ""
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"Would you allow him to see your presence status or add him to your contact "
+"list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
@@ -149,7 +151,7 @@ msgstr ""
 msgid "Call error"
 msgstr "Çağrı yanlış"
 
-#: ../gtk/main.c:1260 ../coreapi/linphonecore.c:3826
+#: ../gtk/main.c:1260 ../coreapi/linphonecore.c:3825
 msgid "Call ended"
 msgstr "Çağrı sonlandırıldı"
 
@@ -192,7 +194,7 @@ msgstr "Linphone - görüntülü internet telefonu"
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk/main.c:1978 ../coreapi/callbacks.c:1048
+#: ../gtk/main.c:1978 ../coreapi/callbacks.c:1057
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
@@ -205,6 +207,11 @@ msgstr ""
 
 #: ../gtk/main.c:2136
 msgid "A free SIP video-phone"
+msgstr ""
+
+#: ../gtk/main.c:2241
+#, c-format
+msgid "Hello\n"
 msgstr ""
 
 #: ../gtk/friendlist.c:505
@@ -272,7 +279,7 @@ msgstr "Değişkenler"
 msgid "Enabled"
 msgstr "Etkin"
 
-#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:17
+#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:20
 msgid "Disabled"
 msgstr "Devre dışı"
 
@@ -355,7 +362,8 @@ msgstr "Sırpça"
 #: ../gtk/propertybox.c:1156
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr "Yeni dil seçiminizin etkili olabilmesi için linfonu yeniden başlatmalısınız."
+msgstr ""
+"Yeni dil seçiminizin etkili olabilmesi için linfonu yeniden başlatmalısınız."
 
 #: ../gtk/propertybox.c:1236
 msgid "None"
@@ -415,7 +423,9 @@ msgstr[1] ""
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr "Hoşgeldiniz!\nBu yardımcı,çağrılarınız için bir SIP hesabı kullanmanıza yardım edecek."
+msgstr ""
+"Hoşgeldiniz!\n"
+"Bu yardımcı,çağrılarınız için bir SIP hesabı kullanmanıza yardım edecek."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
@@ -437,7 +447,7 @@ msgstr ""
 msgid "Enter your linphone.org username"
 msgstr "linphone.org kullanıcı adınızı girin"
 
-#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:84 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "Kullanıcı adı:"
 
@@ -493,7 +503,9 @@ msgstr "linphone güncellemeleri hakkında beni bilgilendir"
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
-msgstr "Hata,hesap geçersiz,kullanıcı adı kullanılıyor veya sunucuya erişilemiyor.\nLütfen geri dönün ve tekrar deneyin."
+msgstr ""
+"Hata,hesap geçersiz,kullanıcı adı kullanılıyor veya sunucuya erişilemiyor.\n"
+"Lütfen geri dönün ve tekrar deneyin."
 
 #: ../gtk/setupwizard.c:405
 msgid "Thank you. Your account is now configured and ready for use."
@@ -501,7 +513,8 @@ msgstr "Teşekkürler. Hesabınız yapılandırıldı ve kullanıma hazır."
 
 #: ../gtk/setupwizard.c:413
 msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
+"Please validate your account by clicking on the link we just sent you by "
+"email.\n"
 "Then come back here and press Next button."
 msgstr ""
 
@@ -775,7 +788,9 @@ msgstr "Ses kontrol sistemi başlatılamıyor"
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr "Hoşgeldiniz!\nBu yardımcı,Linphone'un ses ayarlarını yapılandırmanıza yardım edecek"
+msgstr ""
+"Hoşgeldiniz!\n"
+"Bu yardımcı,Linphone'un ses ayarlarını yapılandırmanıza yardım edecek"
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
@@ -1027,7 +1042,19 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1174,306 +1201,306 @@ msgid "C"
 msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
+msgid "SIP (UDP)"
+msgstr "SIP (UDP)"
+
+#: ../gtk/parameters.ui.h:12
+msgid "SIP (TCP)"
+msgstr "SIP (TCP)"
+
+#: ../gtk/parameters.ui.h:13
+msgid "SIP (TLS)"
+msgstr "SIP (TLS)"
+
+#: ../gtk/parameters.ui.h:14
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ../gtk/parameters.ui.h:12
+#: ../gtk/parameters.ui.h:15
 msgid "Set Maximum Transmission Unit:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:13
+#: ../gtk/parameters.ui.h:16
 msgid "Send DTMFs as SIP info"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:14
-msgid "Use IPv6 instead of IPv4"
+#: ../gtk/parameters.ui.h:17
+msgid "Allow IPv6"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:15
+#: ../gtk/parameters.ui.h:18
 msgid "<b>Transport</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:16
+#: ../gtk/parameters.ui.h:19
 msgid "SIP/UDP port"
 msgstr "SIP/UDP bağlantı noktası"
 
-#: ../gtk/parameters.ui.h:18
+#: ../gtk/parameters.ui.h:21
 msgid "Random"
 msgstr "Rastgele"
 
-#: ../gtk/parameters.ui.h:19
+#: ../gtk/parameters.ui.h:22
 msgid "SIP/TCP port"
 msgstr "SIP/TCP bağlantı noktası"
 
-#: ../gtk/parameters.ui.h:20
+#: ../gtk/parameters.ui.h:23
 msgid "Audio RTP/UDP:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:21
+#: ../gtk/parameters.ui.h:24
 msgid "Fixed"
 msgstr "Sabitlenmiş"
 
-#: ../gtk/parameters.ui.h:22
+#: ../gtk/parameters.ui.h:25
 msgid "Video RTP/UDP:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:23
+#: ../gtk/parameters.ui.h:26
 msgid "Media encryption type"
 msgstr "Ortam şifreleme türü"
 
-#: ../gtk/parameters.ui.h:24
+#: ../gtk/parameters.ui.h:27
 msgid "Media encryption is mandatory"
 msgstr "Ortam şifrelemesi zorunludur"
 
-#: ../gtk/parameters.ui.h:25
+#: ../gtk/parameters.ui.h:28
 msgid "Tunnel"
 msgstr "Tünel"
 
-#: ../gtk/parameters.ui.h:26
+#: ../gtk/parameters.ui.h:29
 msgid "DSCP fields"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:27
+#: ../gtk/parameters.ui.h:30
 msgid "<b>Network protocol and ports</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:28
+#: ../gtk/parameters.ui.h:31
 msgid "Direct connection to the Internet"
 msgstr "İnternete doğrudan bağlantı"
 
-#: ../gtk/parameters.ui.h:29
+#: ../gtk/parameters.ui.h:32
 msgid "Behind NAT / Firewall (specify gateway IP )"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:30
+#: ../gtk/parameters.ui.h:33
 msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:31
+#: ../gtk/parameters.ui.h:34
 msgid "Behind NAT / Firewall (use ICE)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:32
+#: ../gtk/parameters.ui.h:35
 msgid "Behind NAT / Firewall (use uPnP)"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:33
+#: ../gtk/parameters.ui.h:36
 msgid "Public IP address:"
 msgstr "Ortak İP adresi:"
 
-#: ../gtk/parameters.ui.h:34
+#: ../gtk/parameters.ui.h:37
 msgid "Stun server:"
 msgstr "Stun sunucusu:"
 
-#: ../gtk/parameters.ui.h:35
+#: ../gtk/parameters.ui.h:38
 msgid "<b>NAT and Firewall</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:36
+#: ../gtk/parameters.ui.h:39
 msgid "Network settings"
 msgstr "Ağ ayarları"
 
-#: ../gtk/parameters.ui.h:37
+#: ../gtk/parameters.ui.h:40
 msgid "Ring sound:"
 msgstr "Zil sesi:"
 
-#: ../gtk/parameters.ui.h:38
+#: ../gtk/parameters.ui.h:41
 msgid "ALSA special device (optional):"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:39
+#: ../gtk/parameters.ui.h:42
 msgid "Capture device:"
 msgstr "Görüntü yakalama aygıtı"
 
-#: ../gtk/parameters.ui.h:40
+#: ../gtk/parameters.ui.h:43
 msgid "Ring device:"
 msgstr "Ses çalma aygıtı:"
 
-#: ../gtk/parameters.ui.h:41
+#: ../gtk/parameters.ui.h:44
 msgid "Playback device:"
 msgstr "Oynatma aygıtı:"
 
-#: ../gtk/parameters.ui.h:42
+#: ../gtk/parameters.ui.h:45
 msgid "Enable echo cancellation"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:43
+#: ../gtk/parameters.ui.h:46
 msgid "<b>Audio</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:44
+#: ../gtk/parameters.ui.h:47
 msgid "Video input device:"
 msgstr "Görüntü aygıtı:"
 
-#: ../gtk/parameters.ui.h:45
+#: ../gtk/parameters.ui.h:48
 msgid "Prefered video resolution:"
 msgstr "Tercih edilen görüntü çözünürlüğü:"
 
-#: ../gtk/parameters.ui.h:46
+#: ../gtk/parameters.ui.h:49
 msgid "Video output method:"
 msgstr "Görüntü çıkış yöntemi:"
 
-#: ../gtk/parameters.ui.h:47
+#: ../gtk/parameters.ui.h:50
 msgid "Show camera preview"
 msgstr "Kamera önizlemesi göster"
 
-#: ../gtk/parameters.ui.h:48
+#: ../gtk/parameters.ui.h:51
 msgid "<b>Video</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:49
+#: ../gtk/parameters.ui.h:52
 msgid "Multimedia settings"
 msgstr "Çokluortam ayarları"
 
-#: ../gtk/parameters.ui.h:50
+#: ../gtk/parameters.ui.h:53
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:51
+#: ../gtk/parameters.ui.h:54
 msgid "Your display name (eg: John Doe):"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:52
+#: ../gtk/parameters.ui.h:55
 msgid "Your username:"
 msgstr "Kullanıcı adınız:"
 
-#: ../gtk/parameters.ui.h:53
+#: ../gtk/parameters.ui.h:56
 msgid "Your resulting SIP address:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:54
+#: ../gtk/parameters.ui.h:57
 msgid "<b>Default identity</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:55
+#: ../gtk/parameters.ui.h:58
 msgid "Wizard"
 msgstr "Yardımcı"
 
-#: ../gtk/parameters.ui.h:56
+#: ../gtk/parameters.ui.h:59
 msgid "Add"
 msgstr "Ekle"
 
-#: ../gtk/parameters.ui.h:57
+#: ../gtk/parameters.ui.h:60
 msgid "Edit"
 msgstr "Düzenle"
 
-#: ../gtk/parameters.ui.h:58
+#: ../gtk/parameters.ui.h:61
 msgid "Remove"
 msgstr "Kaldır"
 
-#: ../gtk/parameters.ui.h:59
+#: ../gtk/parameters.ui.h:62
 msgid "<b>Proxy accounts</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:60
+#: ../gtk/parameters.ui.h:63
 msgid "Erase all passwords"
 msgstr "Bütün parolaları sil"
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:64
 msgid "<b>Privacy</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:62
+#: ../gtk/parameters.ui.h:65
 msgid "Manage SIP Accounts"
 msgstr "SİP Hesaplarını Yönet"
 
-#: ../gtk/parameters.ui.h:63 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "Etkinleştirme"
 
-#: ../gtk/parameters.ui.h:64 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:67 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "Devre dışı"
 
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:68
 msgid "<b>Codecs</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:66
+#: ../gtk/parameters.ui.h:69
 msgid "0 stands for \"unlimited\""
 msgstr ""
 
-#: ../gtk/parameters.ui.h:67
+#: ../gtk/parameters.ui.h:70
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "Gönderim hız sınırı Kbit/saniye:"
 
-#: ../gtk/parameters.ui.h:68
+#: ../gtk/parameters.ui.h:71
 msgid "Download speed limit in Kbit/sec:"
 msgstr "İndirme hız sınırı Kbit/saniye:"
 
-#: ../gtk/parameters.ui.h:69
+#: ../gtk/parameters.ui.h:72
 msgid "Enable adaptive rate control"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:70
+#: ../gtk/parameters.ui.h:73
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:71
+#: ../gtk/parameters.ui.h:74
 msgid "<b>Bandwidth control</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:72
+#: ../gtk/parameters.ui.h:75
 msgid "Codecs"
 msgstr "Çözücüler"
 
-#: ../gtk/parameters.ui.h:73
+#: ../gtk/parameters.ui.h:76
 msgid "Automatically answer when a call is received"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:74
+#: ../gtk/parameters.ui.h:77
 msgid "Call parameters"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:75
+#: ../gtk/parameters.ui.h:78
 msgid "<b>Language</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:76
+#: ../gtk/parameters.ui.h:79
 msgid "Show advanced settings"
 msgstr "Gelişmiş ayarları göster"
 
-#: ../gtk/parameters.ui.h:77
+#: ../gtk/parameters.ui.h:80
 msgid "<b>Level</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:78
+#: ../gtk/parameters.ui.h:81
 msgid "User interface"
 msgstr "Kullanıcı arayüzü"
 
-#: ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:2
+#: ../gtk/parameters.ui.h:82 ../gtk/ldap.ui.h:2
 msgid "Server address:"
 msgstr "Sunucu adresi:"
 
-#: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:3
+#: ../gtk/parameters.ui.h:83 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
 msgstr "Kimlik doğrulama yöntemi:"
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:85
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:83
+#: ../gtk/parameters.ui.h:86
 msgid "LDAP"
 msgstr "LDAP"
 
-#: ../gtk/parameters.ui.h:84
+#: ../gtk/parameters.ui.h:87
 msgid "Done"
 msgstr "Tamam"
-
-#: ../gtk/parameters.ui.h:85
-msgid "SIP (UDP)"
-msgstr "SIP (UDP)"
-
-#: ../gtk/parameters.ui.h:86
-msgid "SIP (TCP)"
-msgstr "SIP (TCP)"
-
-#: ../gtk/parameters.ui.h:87
-msgid "SIP (TLS)"
-msgstr "SIP (TLS)"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
@@ -1678,8 +1705,11 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1694,56 +1724,56 @@ msgstr ""
 msgid "Ready"
 msgstr "Hazır"
 
-#: ../coreapi/linphonecore.c:2535
+#: ../coreapi/linphonecore.c:2534
 msgid "Configuring"
 msgstr "Yapılandırılıyor"
 
-#: ../coreapi/linphonecore.c:2709
+#: ../coreapi/linphonecore.c:2708
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2711
+#: ../coreapi/linphonecore.c:2710
 msgid "Could not resolve this number."
 msgstr ""
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2997
+#: ../coreapi/linphonecore.c:2996
 msgid "Contacting"
 msgstr "Bağlanıyor"
 
-#: ../coreapi/linphonecore.c:3002
+#: ../coreapi/linphonecore.c:3001
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3152
+#: ../coreapi/linphonecore.c:3151
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3310
+#: ../coreapi/linphonecore.c:3309
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3311
+#: ../coreapi/linphonecore.c:3310
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3435
+#: ../coreapi/linphonecore.c:3434
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3782
+#: ../coreapi/linphonecore.c:3781
 msgid "Connected."
 msgstr "Bağlandı."
 
-#: ../coreapi/linphonecore.c:3807
+#: ../coreapi/linphonecore.c:3806
 msgid "Call aborted"
 msgstr "Çağrı iptal edildi"
 
-#: ../coreapi/linphonecore.c:3997
+#: ../coreapi/linphonecore.c:3996
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:4000
+#: ../coreapi/linphonecore.c:3999
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1824,112 +1854,112 @@ msgstr ""
 msgid "Could not login as %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:419
+#: ../coreapi/callbacks.c:428
 msgid "Remote ringing."
 msgstr ""
 
-#: ../coreapi/callbacks.c:431
+#: ../coreapi/callbacks.c:440
 msgid "Remote ringing..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:452
+#: ../coreapi/callbacks.c:461
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/callbacks.c:524
+#: ../coreapi/callbacks.c:533
 #, c-format
 msgid "Call with %s is paused."
 msgstr ""
 
-#: ../coreapi/callbacks.c:537
+#: ../coreapi/callbacks.c:546
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:547
+#: ../coreapi/callbacks.c:556
 msgid "Call resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:551
+#: ../coreapi/callbacks.c:560
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:574
+#: ../coreapi/callbacks.c:583
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:579 ../coreapi/callbacks.c:891
+#: ../coreapi/callbacks.c:588 ../coreapi/callbacks.c:900
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:609
+#: ../coreapi/callbacks.c:618
 msgid "We have been resumed."
 msgstr ""
 
 #. we are being paused
-#: ../coreapi/callbacks.c:617
+#: ../coreapi/callbacks.c:626
 msgid "We are paused by other party."
 msgstr ""
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:651
+#: ../coreapi/callbacks.c:660
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:767
+#: ../coreapi/callbacks.c:776
 msgid "Call terminated."
 msgstr "Çağrı sonlandırıldı"
 
-#: ../coreapi/callbacks.c:795
+#: ../coreapi/callbacks.c:804
 msgid "User is busy."
 msgstr "Kullanıcı meşgul"
 
-#: ../coreapi/callbacks.c:796
+#: ../coreapi/callbacks.c:805
 msgid "User is temporarily unavailable."
 msgstr ""
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:798
+#: ../coreapi/callbacks.c:807
 msgid "User does not want to be disturbed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:799
+#: ../coreapi/callbacks.c:808
 msgid "Call declined."
 msgstr "Çağrı reddedildi."
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:823
 msgid "Request timeout."
 msgstr "İstek zamanaşımına uğradı."
 
-#: ../coreapi/callbacks.c:845
+#: ../coreapi/callbacks.c:854
 msgid "Redirected"
 msgstr "Yeniden yönlendirildi"
 
-#: ../coreapi/callbacks.c:900
+#: ../coreapi/callbacks.c:909
 msgid "Call failed."
 msgstr "Arama başarısız"
 
-#: ../coreapi/callbacks.c:978
+#: ../coreapi/callbacks.c:987
 #, c-format
 msgid "Registration on %s successful."
 msgstr ""
 
-#: ../coreapi/callbacks.c:979
+#: ../coreapi/callbacks.c:988
 #, c-format
 msgid "Unregistration on %s done."
 msgstr ""
 
-#: ../coreapi/callbacks.c:997
+#: ../coreapi/callbacks.c:1006
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1000
+#: ../coreapi/callbacks.c:1009
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1007
+#: ../coreapi/callbacks.c:1016
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1939,11 +1969,11 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:1301
+#: ../coreapi/linphonecall.c:1303
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3645
+#: ../coreapi/linphonecall.c:3657
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

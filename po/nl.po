@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-23 19:30+0100\n"
+"POT-Creation-Date: 2015-03-26 22:02+0100\n"
 "PO-Revision-Date: 2015-03-23 15:58+0000\n"
 "Last-Translator: Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/linphone-gtk/"
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Call error"
 msgstr "Oproepfout"
 
-#: ../gtk/main.c:1260 ../coreapi/linphonecore.c:3826
+#: ../gtk/main.c:1260 ../coreapi/linphonecore.c:3825
 msgid "Call ended"
 msgstr "Oproep beëindigd"
 
@@ -207,7 +207,7 @@ msgstr "Linphone - een video-internettelefoon"
 msgid "%s (Default)"
 msgstr "%s (Standaard)"
 
-#: ../gtk/main.c:1978 ../coreapi/callbacks.c:1048
+#: ../gtk/main.c:1978 ../coreapi/callbacks.c:1057
 #, c-format
 msgid "We are transferred to %s"
 msgstr "We zijn overgeschakeld naar %s"
@@ -294,7 +294,7 @@ msgstr "Argumenten"
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
-#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:17
+#: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:20
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
@@ -465,7 +465,7 @@ msgstr "Ik wil een externe URI-configuratie opgeven"
 msgid "Enter your linphone.org username"
 msgstr "Vul uw linphone.org-gebruikersnaam in"
 
-#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:84 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "Gebruikersnaam:"
 
@@ -1229,305 +1229,305 @@ msgid "C"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:11
-msgid "Settings"
+msgid "SIP (UDP)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:12
-msgid "Set Maximum Transmission Unit:"
+msgid "SIP (TCP)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:13
-msgid "Send DTMFs as SIP info"
+msgid "SIP (TLS)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:14
-msgid "Use IPv6 instead of IPv4"
+msgid "Settings"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:15
-msgid "<b>Transport</b>"
+msgid "Set Maximum Transmission Unit:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:16
-msgid "SIP/UDP port"
+msgid "Send DTMFs as SIP info"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:17
+msgid "Allow IPv6"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:18
-msgid "Random"
+msgid "<b>Transport</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:19
-msgid "SIP/TCP port"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:20
-msgid "Audio RTP/UDP:"
+msgid "SIP/UDP port"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:21
-msgid "Fixed"
+msgid "Random"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:22
-msgid "Video RTP/UDP:"
+msgid "SIP/TCP port"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:23
-msgid "Media encryption type"
+msgid "Audio RTP/UDP:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:24
-msgid "Media encryption is mandatory"
+msgid "Fixed"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:25
-msgid "Tunnel"
+msgid "Video RTP/UDP:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:26
-msgid "DSCP fields"
+msgid "Media encryption type"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:27
-msgid "<b>Network protocol and ports</b>"
+msgid "Media encryption is mandatory"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:28
-msgid "Direct connection to the Internet"
+msgid "Tunnel"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:29
-msgid "Behind NAT / Firewall (specify gateway IP )"
+msgid "DSCP fields"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:30
-msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgid "<b>Network protocol and ports</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:31
-msgid "Behind NAT / Firewall (use ICE)"
+msgid "Direct connection to the Internet"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:32
-msgid "Behind NAT / Firewall (use uPnP)"
+msgid "Behind NAT / Firewall (specify gateway IP )"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:33
-msgid "Public IP address:"
+msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:34
-msgid "Stun server:"
+msgid "Behind NAT / Firewall (use ICE)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:35
-msgid "<b>NAT and Firewall</b>"
+msgid "Behind NAT / Firewall (use uPnP)"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:36
-msgid "Network settings"
+msgid "Public IP address:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:37
-msgid "Ring sound:"
+msgid "Stun server:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:38
-msgid "ALSA special device (optional):"
+msgid "<b>NAT and Firewall</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:39
-msgid "Capture device:"
+msgid "Network settings"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:40
-msgid "Ring device:"
+msgid "Ring sound:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:41
-msgid "Playback device:"
+msgid "ALSA special device (optional):"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:42
-msgid "Enable echo cancellation"
+msgid "Capture device:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:43
-msgid "<b>Audio</b>"
+msgid "Ring device:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:44
-msgid "Video input device:"
+msgid "Playback device:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:45
-msgid "Prefered video resolution:"
+msgid "Enable echo cancellation"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:46
-msgid "Video output method:"
+msgid "<b>Audio</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:47
-msgid "Show camera preview"
+msgid "Video input device:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:48
-msgid "<b>Video</b>"
+msgid "Prefered video resolution:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:49
-msgid "Multimedia settings"
+msgid "Video output method:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:50
-msgid "This section defines your SIP address when not using a SIP account"
+msgid "Show camera preview"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:51
-msgid "Your display name (eg: John Doe):"
+msgid "<b>Video</b>"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:52
-msgid "Your username:"
+msgid "Multimedia settings"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:53
-msgid "Your resulting SIP address:"
+msgid "This section defines your SIP address when not using a SIP account"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:54
-msgid "<b>Default identity</b>"
+msgid "Your display name (eg: John Doe):"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:55
-msgid "Wizard"
+msgid "Your username:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:56
-msgid "Add"
+msgid "Your resulting SIP address:"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:57
-msgid "Edit"
-msgstr "Bewerken"
+msgid "<b>Default identity</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:58
-msgid "Remove"
-msgstr "Verwijderen"
+msgid "Wizard"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:59
-msgid "<b>Proxy accounts</b>"
+msgid "Add"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:60
+msgid "Edit"
+msgstr "Bewerken"
+
+#: ../gtk/parameters.ui.h:61
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: ../gtk/parameters.ui.h:62
+msgid "<b>Proxy accounts</b>"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:63
 msgid "Erase all passwords"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:64
 msgid "<b>Privacy</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:62
+#: ../gtk/parameters.ui.h:65
 msgid "Manage SIP Accounts"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:63 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "Aan"
 
-#: ../gtk/parameters.ui.h:64 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:67 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "Uit"
 
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:68
 msgid "<b>Codecs</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:66
+#: ../gtk/parameters.ui.h:69
 msgid "0 stands for \"unlimited\""
 msgstr ""
 
-#: ../gtk/parameters.ui.h:67
+#: ../gtk/parameters.ui.h:70
 msgid "Upload speed limit in Kbit/sec:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:68
+#: ../gtk/parameters.ui.h:71
 msgid "Download speed limit in Kbit/sec:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:69
+#: ../gtk/parameters.ui.h:72
 msgid "Enable adaptive rate control"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:70
+#: ../gtk/parameters.ui.h:73
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:71
+#: ../gtk/parameters.ui.h:74
 msgid "<b>Bandwidth control</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:72
+#: ../gtk/parameters.ui.h:75
 msgid "Codecs"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:73
+#: ../gtk/parameters.ui.h:76
 msgid "Automatically answer when a call is received"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:74
+#: ../gtk/parameters.ui.h:77
 msgid "Call parameters"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:75
+#: ../gtk/parameters.ui.h:78
 msgid "<b>Language</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:76
+#: ../gtk/parameters.ui.h:79
 msgid "Show advanced settings"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:77
+#: ../gtk/parameters.ui.h:80
 msgid "<b>Level</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:78
+#: ../gtk/parameters.ui.h:81
 msgid "User interface"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:2
+#: ../gtk/parameters.ui.h:82 ../gtk/ldap.ui.h:2
 msgid "Server address:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:3
+#: ../gtk/parameters.ui.h:83 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:82
+#: ../gtk/parameters.ui.h:85
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:83
+#: ../gtk/parameters.ui.h:86
 msgid "LDAP"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:84
-msgid "Done"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:85
-msgid "SIP (UDP)"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:86
-msgid "SIP (TCP)"
-msgstr ""
-
 #: ../gtk/parameters.ui.h:87
-msgid "SIP (TLS)"
+msgid "Done"
 msgstr ""
 
 #: ../gtk/buddylookup.ui.h:1
@@ -1752,56 +1752,56 @@ msgstr ""
 msgid "Ready"
 msgstr "Gereed."
 
-#: ../coreapi/linphonecore.c:2535
+#: ../coreapi/linphonecore.c:2534
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2709
+#: ../coreapi/linphonecore.c:2708
 msgid "Looking for telephone number destination..."
 msgstr "Zoekt de lokatie van het telefoonnummer..."
 
-#: ../coreapi/linphonecore.c:2711
+#: ../coreapi/linphonecore.c:2710
 msgid "Could not resolve this number."
 msgstr "Kon dit nummer niet vinden."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2997
+#: ../coreapi/linphonecore.c:2996
 msgid "Contacting"
 msgstr "Verbinden"
 
-#: ../coreapi/linphonecore.c:3002
+#: ../coreapi/linphonecore.c:3001
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3152
+#: ../coreapi/linphonecore.c:3151
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3310
+#: ../coreapi/linphonecore.c:3309
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3311
+#: ../coreapi/linphonecore.c:3310
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3435
+#: ../coreapi/linphonecore.c:3434
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3782
+#: ../coreapi/linphonecore.c:3781
 msgid "Connected."
 msgstr "Verbonden."
 
-#: ../coreapi/linphonecore.c:3807
+#: ../coreapi/linphonecore.c:3806
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3997
+#: ../coreapi/linphonecore.c:3996
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:4000
+#: ../coreapi/linphonecore.c:3999
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1882,112 +1882,112 @@ msgstr ""
 msgid "Could not login as %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:419
+#: ../coreapi/callbacks.c:428
 msgid "Remote ringing."
 msgstr ""
 
-#: ../coreapi/callbacks.c:431
+#: ../coreapi/callbacks.c:440
 msgid "Remote ringing..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:452
+#: ../coreapi/callbacks.c:461
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/callbacks.c:524
+#: ../coreapi/callbacks.c:533
 #, c-format
 msgid "Call with %s is paused."
 msgstr ""
 
-#: ../coreapi/callbacks.c:537
+#: ../coreapi/callbacks.c:546
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:547
+#: ../coreapi/callbacks.c:556
 msgid "Call resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:551
+#: ../coreapi/callbacks.c:560
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:574
+#: ../coreapi/callbacks.c:583
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:579 ../coreapi/callbacks.c:891
+#: ../coreapi/callbacks.c:588 ../coreapi/callbacks.c:900
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:609
+#: ../coreapi/callbacks.c:618
 msgid "We have been resumed."
 msgstr ""
 
 #. we are being paused
-#: ../coreapi/callbacks.c:617
+#: ../coreapi/callbacks.c:626
 msgid "We are paused by other party."
 msgstr ""
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:651
+#: ../coreapi/callbacks.c:660
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:767
+#: ../coreapi/callbacks.c:776
 msgid "Call terminated."
 msgstr "Oproep beeindigd."
 
-#: ../coreapi/callbacks.c:795
+#: ../coreapi/callbacks.c:804
 msgid "User is busy."
 msgstr "Gebruiker is bezet."
 
-#: ../coreapi/callbacks.c:796
+#: ../coreapi/callbacks.c:805
 msgid "User is temporarily unavailable."
 msgstr "Gebruiker is tijdelijk niet beschikbaar."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:798
+#: ../coreapi/callbacks.c:807
 msgid "User does not want to be disturbed."
 msgstr "De gebruiker wenst niet gestoord te worden."
 
-#: ../coreapi/callbacks.c:799
+#: ../coreapi/callbacks.c:808
 msgid "Call declined."
 msgstr "Oproep geweigerd."
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:823
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:845
+#: ../coreapi/callbacks.c:854
 msgid "Redirected"
 msgstr ""
 
-#: ../coreapi/callbacks.c:900
+#: ../coreapi/callbacks.c:909
 msgid "Call failed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:978
+#: ../coreapi/callbacks.c:987
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registratie op %s gelukt."
 
-#: ../coreapi/callbacks.c:979
+#: ../coreapi/callbacks.c:988
 #, c-format
 msgid "Unregistration on %s done."
 msgstr ""
 
-#: ../coreapi/callbacks.c:997
+#: ../coreapi/callbacks.c:1006
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1000
+#: ../coreapi/callbacks.c:1009
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1007
+#: ../coreapi/callbacks.c:1016
 msgid "Service unavailable, retrying"
 msgstr ""
 
@@ -1997,11 +1997,11 @@ msgstr ""
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:1301
+#: ../coreapi/linphonecall.c:1303
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3645
+#: ../coreapi/linphonecall.c:3657
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
