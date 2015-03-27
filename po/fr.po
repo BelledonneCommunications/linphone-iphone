@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-27 10:18+0100\n"
-"PO-Revision-Date: 2015-03-27 08:53+0000\n"
+"PO-Revision-Date: 2015-03-27 09:53+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/"
@@ -1257,7 +1257,7 @@ msgstr "Envoyer les digits en tant que SIP INFO"
 
 #: ../gtk/parameters.ui.h:17
 msgid "Allow IPv6"
-msgstr ""
+msgstr "Utiliser IPv6"
 
 #: ../gtk/parameters.ui.h:18
 msgid "<b>Transport</b>"
@@ -2067,6 +2067,3 @@ msgstr "Appel sortant"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Impossibde de jouer %s."
-
-#~ msgid "Use IPv6 instead of IPv4"
-#~ msgstr "Utiliser l'IPv6 au lieu d'IPv4"
