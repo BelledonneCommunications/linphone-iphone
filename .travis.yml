@@ -19,4 +19,4 @@ install:
     - ls -la
 
 script:
-    - xcodebuild -scheme linphone -project linphone.xcodeproj -destination "platform=iOS Simulator,name=iPhone Retina (4-inch),OS=${VERSION}" test
+    - xcodebuild -scheme linphone -project linphone.xcodeproj -destination "platform=iOS Simulator,name=iPhone 5,OS=${VERSION}" test
