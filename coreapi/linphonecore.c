@@ -1169,14 +1169,18 @@ static void codecs_config_read(LinphoneCore *lc)
 			audio_codecs=codec_append_if_new(audio_codecs, pt);
 		}
 	}
-	audio_codecs=add_missing_codecs(lc->default_audio_codecs,audio_codecs);
+	if( lp_config_get_int(lc->config, "misc", "add_missing_audio_codecs", 1) == 1 ){
+		audio_codecs=add_missing_codecs(lc->default_audio_codecs,audio_codecs);
+	}
 
 	for (i=0;get_codec(lc,SalVideo,i,&pt);i++){
 		if (pt){
 			video_codecs=codec_append_if_new(video_codecs, pt);
 		}
 	}
-	video_codecs=add_missing_codecs(lc->default_video_codecs,video_codecs);
+	if( lp_config_get_int(lc->config, "misc", "add_missing_video_codecs", 1) == 1 ){
+		video_codecs=add_missing_codecs(lc->default_video_codecs,video_codecs);
+	}
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
 	linphone_core_update_allocated_audio_bandwidth(lc);
