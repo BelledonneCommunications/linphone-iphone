@@ -257,8 +257,6 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	char *remote,*title;
 	GtkWidget *video_window;
 	const LinphoneAddress *addr;
-	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
-	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	guint timeout;
 	MSVideoSize vsize={MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H};
 	GdkColor color;
@@ -270,9 +268,6 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	ms_free(remote);
 	gtk_window_set_title(GTK_WINDOW(video_window),title);
 	g_free(title);
-	if (pbuf){
-		gtk_window_set_icon(GTK_WINDOW(video_window),pbuf);
-	}
 	gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
 	gdk_color_parse("black",&color);
 	gtk_widget_modify_bg(video_window,GTK_STATE_NORMAL,&color);
