@@ -63,7 +63,8 @@ void LSLog(NSString* fmt, ...){
 
 	bc_tester_read_dir_prefix = bundle;
 	bc_tester_writable_dir_prefix = documents;
-
+	linphone_core_set_log_collection_path(bc_tester_writable_dir_prefix);
+	
 	liblinphone_tester_keep_accounts(TRUE);
 
 	int count = bc_tester_nb_suites();

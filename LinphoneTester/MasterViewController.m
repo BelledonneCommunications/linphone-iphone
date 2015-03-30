@@ -70,11 +70,13 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     documentPath = [paths objectAtIndex:0];
 
+
+	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_log_function, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
 
-    bc_tester_init((void (*)(int, const char *fm, va_list))linphone_log_function, ORTP_MESSAGE, ORTP_ERROR);
 	bc_tester_read_dir_prefix = [bundlePath UTF8String];
 	bc_tester_writable_dir_prefix = [documentPath UTF8String];
+	linphone_core_set_log_collection_path(bc_tester_writable_dir_prefix);
 
     LSLog(@"Bundle path: %@", bundlePath);
     LSLog(@"Document path: %@", documentPath);
