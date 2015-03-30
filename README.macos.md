@@ -18,7 +18,7 @@ In order to enable generation of bundle for older MacOS version, it is recommend
  Edit `/opt/local/etc/macports/macports.conf` to add the following line:
 
  > macosx_deployment_target 10.7
-
+ > buildfromsource always
 
 
 ##### Linphone library (liblinphone)
