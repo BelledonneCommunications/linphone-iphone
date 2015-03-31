@@ -1761,12 +1761,21 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 {
 	LinphoneAddress *ctt;
 
+	if( lc->sip_conf.contact != NULL && strcmp(lc->sip_conf.contact, contact) == 0){
+		/* changing for the same contact: no need to do anything */
+		return 0;
+	}
+
 	if ((ctt=linphone_address_new(contact))==0) {
 		ms_error("Bad contact url: %s",contact);
 		return -1;
 	}
+
 	if (lc->sip_conf.contact!=NULL) ms_free(lc->sip_conf.contact);
 	lc->sip_conf.contact=ms_strdup(contact);
+	lp_config_set_string(lc->config, "sip", "contact", lc->sip_conf.contact);
+
+	/* clean the guessed contact, we have to regenerate it */
 	if (lc->sip_conf.guessed_contact!=NULL){
 		ms_free(lc->sip_conf.guessed_contact);
 		lc->sip_conf.guessed_contact=NULL;
