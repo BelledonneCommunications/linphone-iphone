@@ -4174,6 +4174,9 @@ int linphone_core_get_inc_timeout(LinphoneCore *lc){
 **/
 void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds){
 	lc->sip_conf.in_call_timeout=seconds;
+	if( linphone_core_ready(lc)){
+		lp_config_set_int(lc->config, "sip", "in_call_timeout", seconds);
+	}
 }
 
 /**
