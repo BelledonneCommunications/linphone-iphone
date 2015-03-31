@@ -555,7 +555,7 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc){
 	 * TODO: use IPv6 resolution if linphone_core_ipv6_enabled()==TRUE and use V4Mapped addresses for ICE gathering.
 	 */
 	const char *server=lc->net_conf.stun_server;
-	if (lc->sal && server){
+	if (lc->sal && server && !lc->net_conf.stun_res){
 		char host[NI_MAXHOST];
 		int port=3478;
 		linphone_parse_host_port(server,host,sizeof(host),&port);
