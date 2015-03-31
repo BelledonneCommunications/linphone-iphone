@@ -250,6 +250,31 @@ jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
 	return jobj;
 }
 
+jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend, jobject core){
+	jobject jobj=0;
+
+	if (lfriend!=NULL){
+		jclass friendClass = (jclass)env->FindClass("org/linphone/core/LinphoneFriendImpl");
+		jmethodID friendCtrId = env->GetMethodID(friendClass,"<init>", "(J)V");
+
+		void *up=linphone_friend_get_user_data(lfriend);
+
+		if (up==NULL){
+			jobj=env->NewObject(friendClass,friendCtrId,(jlong)lfriend);
+			linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
+			linphone_friend_ref(lfriend);
+		}else{
+			jobj=env->NewLocalRef((jobject)up);
+			if (jobj == NULL){
+				jobj=env->NewObject(friendClass,friendCtrId,(jlong)lfriend);
+				linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+		env->DeleteLocalRef(friendClass);
+	}
+	return jobj;
+}
+
 jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
 	if (lev==NULL) return NULL;
 	jobject jev=(jobject)linphone_event_get_user_data(lev);
@@ -1810,6 +1835,25 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 																			) {
 	linphone_core_add_friend((LinphoneCore*)lc,(LinphoneFriend*)aFriend);
 }
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* friends = linphone_core_get_friend_list((LinphoneCore*)lc);
+	int friendsSize = ms_list_size(friends);
+	jclass cls = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));
+	jobjectArray jFriends = env->NewObjectArray(friendsSize,cls,NULL);
+
+	for (int i = 0; i < friendsSize; i++) {
+		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
+		jobject jfriend =  getFriend(env,lfriend,thiz);
+		if(jfriend != NULL){
+			env->SetObjectArrayElement(jFriends, i, jfriend);
+		}
+	}
+
+	env->DeleteGlobalRef(cls);
+	return jFriends;
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -2838,9 +2882,11 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNI
 	if (jFriendUri) {
 		const char* friendUri = env->GetStringUTFChars(jFriendUri, NULL);
 		lResult= linphone_friend_new_with_address(friendUri);
+		linphone_friend_set_user_data(lResult,env->NewWeakGlobalRef(thiz));
 		env->ReleaseStringUTFChars(jFriendUri, friendUri);
 	} else {
 		lResult = linphone_friend_new();
+		linphone_friend_set_user_data(lResult,env->NewWeakGlobalRef(thiz));
 	}
 	return (jlong)lResult;
 }
@@ -2907,6 +2953,14 @@ extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getRefKey(JNIEnv*  
     return key ? env->NewStringUTF(key) : NULL;
 }
 
+
+extern "C" void  Java_org_linphone_core_LinphoneFriendImpl_finalize(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriend *friend=(LinphoneFriend*)ptr;
+	linphone_friend_set_user_data(friend,NULL);
+	linphone_friend_unref(friend);
+}
 
 /*
  * Class:     org_linphone_core_LinphoneFriendImpl

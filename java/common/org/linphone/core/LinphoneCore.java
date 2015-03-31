@@ -890,6 +890,12 @@ public interface LinphoneCore {
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 
 	/**
+	 * Get list of LinphoneFriend
+	 * @return LinphoneFriend list
+	 */
+	LinphoneFriend[] getFriendList();
+
+	/**
 	 * @brief Set my presence status
 	 * @param minutes_away how long in away
 	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved

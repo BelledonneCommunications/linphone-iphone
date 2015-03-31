@@ -553,6 +553,8 @@ BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);
 
 
 struct _LinphoneFriend{
+	belle_sip_object_t base;
+	void *user_data;
 	LinphoneAddress *uri;
 	SalOp *insub;
 	SalOp *outsub;
@@ -561,13 +563,14 @@ struct _LinphoneFriend{
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;
-	void *up;
 	bool_t subscribe;
 	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
 };
+
+BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
 
 
 typedef struct sip_config
@@ -1081,7 +1084,8 @@ BELLE_SIP_TYPE_ID(LinphoneChatRoom),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
-BELLE_SIP_TYPE_ID(LinphoneProxyConfig)
+BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
+BELLE_SIP_TYPE_ID(LinphoneFriend)
 BELLE_SIP_DECLARE_TYPES_END
 
 

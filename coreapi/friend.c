@@ -128,7 +128,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 }
 
 LinphoneFriend * linphone_friend_new(){
-	LinphoneFriend *obj=ms_new0(LinphoneFriend,1);
+	LinphoneFriend *obj=belle_sip_object_new(LinphoneFriend);
 	obj->pol=LinphoneSPAccept;
 	obj->presence=NULL;
 	obj->subscribe=TRUE;
@@ -150,11 +150,11 @@ LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 }
 
 void linphone_friend_set_user_data(LinphoneFriend *lf, void *data){
-	lf->up=data;
+	lf->user_data=data;
 }
 
 void* linphone_friend_get_user_data(const LinphoneFriend *lf){
-	return lf->up;
+	return lf->user_data;
 }
 
 bool_t linphone_friend_in_list(const LinphoneFriend *lf){
@@ -266,7 +266,7 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	}
 }
 
-void linphone_friend_destroy(LinphoneFriend *lf){
+static void _linphone_friend_destroy(LinphoneFriend *lf){
 	if (lf->insub) {
 		sal_op_release(lf->insub);
 		lf->insub=NULL;
@@ -278,7 +278,6 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
-	ms_free(lf);
 }
 
 const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
@@ -481,7 +480,7 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 		if (tmp) ms_free(tmp);
 		return ;
 	}
-	lc->friends=ms_list_append(lc->friends,lf);
+	lc->friends=ms_list_append(lc->friends,linphone_friend_ref(lf));
 	lf->lc=lc;
 	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
 	else lf->commit=TRUE;
@@ -685,3 +684,25 @@ LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr){
 	return fr->lc;
 }
 
+LinphoneFriend *linphone_friend_ref(LinphoneFriend *lf) {
+	belle_sip_object_ref(lf);
+	return lf;
+}
+
+void linphone_friend_unref(LinphoneFriend *lf) {
+	belle_sip_object_unref(lf);
+}
+
+/* DEPRECATED */
+void linphone_friend_destroy(LinphoneFriend *lf) {
+	linphone_friend_unref(lf);
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriend, belle_sip_object_t,
+	(belle_sip_object_destroy_t) _linphone_friend_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);

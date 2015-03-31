@@ -135,8 +135,9 @@ LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_address(const char *add
 #define linphone_friend_new_with_addr linphone_friend_new_with_address
 
 /**
- * Destructor
- * @param lf #LinphoneFriend object
+ * Destroy a LinphoneFriend.
+ * @param lf LinphoneFriend object
+ * @deprecated Use linphone_friend_unref() instead.
  */
 LINPHONE_PUBLIC void linphone_friend_destroy(LinphoneFriend *lf);
 
@@ -393,6 +394,18 @@ LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 
+/**
+ * Acquire a reference to the linphone friend.
+ * @param[in] lf LinphoneFriend object
+ * @return The same LinphoneFriend object
+**/
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_ref(LinphoneFriend *lf);
+
+/**
+ * Release a reference to the linphone friend.
+ * @param[in] lf LinohoneFriend object
+**/
+LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
 
 /**
  * Returns the LinphoneCore object managing this friend, if any.

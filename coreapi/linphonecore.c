@@ -1253,6 +1253,7 @@ static void ui_config_read(LinphoneCore *lc)
 	int i;
 	for (i=0;(lf=linphone_friend_new_from_config_file(lc,i))!=NULL;i++){
 		linphone_core_add_friend(lc,lf);
+		linphone_friend_unref(lf);
 	}
 	call_logs_read_from_config_file(lc);
 }

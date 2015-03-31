@@ -92,6 +92,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreviewWindowId(long nativePtr, Object wid);
 	private native void setDeviceRotation(long nativePtr, int rotation);
 	private native void addFriend(long nativePtr,long friend);
+	private native LinphoneFriend[] getFriendList(long nativePtr);
 	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
 	private native int getPresenceInfo(long nativePtr);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
@@ -433,8 +434,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void addFriend(LinphoneFriend lf) throws LinphoneCoreException {
 		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
-
 	}
+
+	public synchronized LinphoneFriend[] getFriendList() {
+		return getFriendList(nativePtr);
+	}
+
 	@SuppressWarnings("deprecation")
 	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {
 		setPresenceInfo(nativePtr,minutes_away,alternative_contact,status.mValue);
