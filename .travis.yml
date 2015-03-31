@@ -1,6 +1,7 @@
 language: objective-c
 xcode_project: linphone.xcodeproj
 xcode_scheme: linphone
+xcode_sdk: iphonesimulator8.1
 
 git:
   submodules: false
@@ -16,7 +17,3 @@ install:
     - cd ../..
     - git submodule update --init Classes/KIF
     - git submodule update --init --recursive submodules/linphone
-    - ls -la
-
-script:
-    - xcodebuild -scheme linphone -project linphone.xcodeproj -sdk iphonesimulator${VERSION} -destination "platform=iOS Simulator,name=iPhone 6,OS=${VERSION}" test
