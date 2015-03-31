@@ -777,6 +777,7 @@
 		F0C1F9231A2CA35E009402C9 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
 		F0C773921A94828900E0C486 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C773871A94822700E0C486 /* libKIF.a */; };
 		F0F952121A6AECD300254160 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F952111A6AECD300254160 /* WizardTester.m */; };
+		F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BC1939FE37006ABAB5 /* test_failed.png */; };
 		F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BD1939FE37006ABAB5 /* test_inprogress.png */; };
@@ -1829,6 +1830,7 @@
 		F0F952001A6AEB1000254160 /* KifTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KifTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0F952031A6AEB1000254160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0F952111A6AECD300254160 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
+		F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
 		F84015BC1939FE37006ABAB5 /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_failed.png; path = Resources/test_failed.png; sourceTree = "<group>"; };
 		F84015BD1939FE37006ABAB5 /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = Resources/test_inprogress.png; sourceTree = "<group>"; };
 		F84015BE1939FE37006ABAB5 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = Resources/test_passed.png; sourceTree = "<group>"; };
@@ -1970,6 +1972,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0C773921A94828900E0C486 /* libKIF.a in Frameworks */,
+				F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2230,6 +2233,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */,
 				F0B026F21AA710AF00FF49F7 /* libiconv.dylib */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
