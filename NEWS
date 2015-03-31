@@ -1,3 +1,9 @@
+linphone-3.8.1 -- March 31th, 2015
+	Application level improvements:
+	* Auto-answer ability
+	* Improvement of UI appearance on Mac OSX
+	* Bug fixes
+
 linphone-3.8.0 -- March 11th, 2015
 	Application level improvements:
 	* The video window has now controls in order to switch fullscreen mode and terminate call.
