@@ -11,7 +11,7 @@ env:
         - VERSION="8.1"
         - BYPASS_TOOLCHECK=1
         - KIF_SCREENSHOTS=Screens
-    	- secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
+        - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
 
 install: 
     - cd submodules/build 
@@ -23,4 +23,4 @@ install:
     - export KIF_SCREENSHOTS=`pwd`/Screens
 
 after_script:
-	- ./Tools/imgur_upload.sh 
+    - ./Tools/imgur_upload.sh 
