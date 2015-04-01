@@ -38,7 +38,7 @@ over the internet. It has a gtk+ and console interface.
 Summary:       Development libraries for linphone
 Group:         Development/Libraries
 Requires:      %{name} = %{version}-%{release}
-Requires:      ortp-devel = @ORTP_VERSION@
+Requires:      ortp-devel = 1:@ORTP_VERSION@
 Requires:      mediastreamer-devel = @MS2_VERSION@
 Requires:      glib2-devel
 

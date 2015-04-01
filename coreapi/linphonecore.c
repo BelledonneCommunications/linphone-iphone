@@ -2239,7 +2239,7 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 	Sal *sal=lc->sal;
 	const char *anyaddr;
 	LCSipTransports *tr=&lc->sip_conf.transports;
-
+	const char* listening_address;
 	/*first of all invalidate all current registrations so that we can register again with new transports*/
 	__linphone_core_invalidate_registers(lc);
 
@@ -2249,24 +2249,27 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 		anyaddr="0.0.0.0";
 
 	sal_unlisten_ports(sal);
+
+	listening_address = lp_config_get_string(lc->config,"sip","bind_address",anyaddr);
+
 	if (lc->tunnel && linphone_tunnel_sip_enabled(lc->tunnel) && linphone_tunnel_get_activated(lc->tunnel)){
 		if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,TRUE)!=0){
 			transport_error(lc,"udp+tunnel",tr->udp_port);
 		}
 	}else{
 		if (tr->udp_port!=0){
-			if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,FALSE)!=0){
+			if (sal_listen_port(sal,listening_address,tr->udp_port,SalTransportUDP,FALSE)!=0){
 				transport_error(lc,"udp",tr->udp_port);
 			}
 		}
 		if (tr->tcp_port!=0){
-			if (sal_listen_port (sal,anyaddr,tr->tcp_port,SalTransportTCP,FALSE)!=0){
+			if (sal_listen_port (sal,listening_address,tr->tcp_port,SalTransportTCP,FALSE)!=0){
 				transport_error(lc,"tcp",tr->tcp_port);
 			}
 		}
 		if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
 			if (tr->tls_port!=0){
-				if (sal_listen_port (sal,anyaddr,tr->tls_port,SalTransportTLS,FALSE)!=0){
+				if (sal_listen_port (sal,listening_address,tr->tls_port,SalTransportTLS,FALSE)!=0){
 					transport_error(lc,"tls",tr->tls_port);
 				}
 			}
@@ -2327,7 +2330,7 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 /**
  * Retrieves the port configuration used for each transport (udp, tcp, tls).
  * A zero value port for a given transport means the transport
- * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be choosen randomly by the system.
+ * is not used. A value of LC_SIP_TRANSPORT_RANDOM (-1) means the port is to be chosen randomly by the system.
  * @ingroup network_parameters
 **/
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){

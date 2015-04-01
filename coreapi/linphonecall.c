@@ -555,7 +555,7 @@ static void transfer_already_assigned_payload_types(SalMediaDescription *old, Sa
 }
 
 static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int stream_index){
-	const char *bind_ip=call->af==AF_INET6 ? "::0" : "0.0.0.0";
+	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",call->af==AF_INET6 ? "::0" : "0.0.0.0"); ;
 
 	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
@@ -611,7 +611,8 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->nb_streams=(call->biggestdesc ? call->biggestdesc->nb_streams : 1);
 
 	strncpy(md->addr,call->localip,sizeof(md->addr));
-	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
+	if (linphone_address_get_username(addr)) /*might be null in case of identity without userinfo*/
+		strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
 	if (subject) strncpy(md->name,subject,sizeof(md->name));
 
 	if (call->params->down_bw)
