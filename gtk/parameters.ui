@@ -348,7 +348,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox65">
+                              <object class="GtkHBox" id="sip_udp_port_box">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
@@ -404,7 +404,6 @@
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
                               </packing>
                             </child>
                             <child>
@@ -419,7 +418,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox66">
+                              <object class="GtkHBox" id="sip_tcp_port_box">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
@@ -493,7 +492,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox6">
+                              <object class="GtkHBox" id="audio_rtp_port_box">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
@@ -572,7 +571,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox17">
+                              <object class="GtkHBox" id="video_rtp_port_box">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
@@ -703,7 +702,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="label13">
+                              <object class="GtkLabel" id="dscp_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">DSCP fields</property>
@@ -728,9 +727,6 @@
                                 <property name="top_attach">6</property>
                                 <property name="bottom_attach">7</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -1467,7 +1463,7 @@
                 <property name="can_focus">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
-                  <object class="GtkFrame" id="frame11">
+                  <object class="GtkFrame" id="default_identity_frame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1592,7 +1588,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame12">
+                  <object class="GtkFrame" id="proxy_accounts_frame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1848,7 +1844,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame13">
+                  <object class="GtkFrame" id="privacy_frame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
