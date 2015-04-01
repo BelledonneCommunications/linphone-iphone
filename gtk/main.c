@@ -1384,8 +1384,9 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 			linphone_gtk_in_call_view_set_incoming(call);
 			linphone_gtk_status_icon_set_blinking(TRUE);
 			if (linphone_gtk_get_ui_config_int("auto_answer", 0))  {
+				int delay = linphone_gtk_get_ui_config_int("auto_answer_delay", 2000);
 				linphone_call_ref(call);
-				g_timeout_add(2000,(GSourceFunc)linphone_gtk_auto_answer ,call);
+				g_timeout_add(delay, (GSourceFunc)linphone_gtk_auto_answer, call);
 			}
 		break;
 		case LinphoneCallResuming:
