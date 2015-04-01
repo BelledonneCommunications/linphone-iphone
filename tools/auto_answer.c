@@ -45,7 +45,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 	LinphoneCallParams * call_params;
 	switch(cstate){
 		case LinphoneCallIncomingReceived:
-			printf("Incoming call arrive  !\n");
+			ms_message("Incoming call arrive  !\n");
 			/* accept the incoming call*/
 			call_params = linphone_core_create_default_call_parameters(lc);
 			linphone_call_params_enable_video(call_params,TRUE);
@@ -55,23 +55,8 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 			linphone_call_params_destroy(call_params);
 
 		break;
-		case LinphoneCallOutgoingEarlyMedia:
-			printf("Receiving some early media\n");
-		break;
-		case LinphoneCallConnected:
-			printf("We are connected !\n");
-		break;
-		case LinphoneCallStreamsRunning:
-			printf("Media streams established !\n");
-		break;
-		case LinphoneCallEnd:
-			printf("Call is terminated.\n");
-		break;
-		case LinphoneCallError:
-			printf("Call failure !");
-		break;
 		default:
-			printf("Unhandled notification %i\n",cstate);
+			break;
 	}
 }
 extern MSWebCamDesc mire_desc;
@@ -90,7 +75,7 @@ int main(int argc, char *argv[]){
 	LinphoneAddress *addr=NULL;
 	LCSipTransports tp;
 	char * tmp = NULL;
-
+	LpConfig * lp_config = lp_config_new(NULL);
 	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
 	for(i = 1; i < argc; ++i) {
@@ -102,33 +87,30 @@ int main(int argc, char *argv[]){
 				printf("Error, bad sip uri");
 				helper();
 			}
-			switch(linphone_address_get_transport(addr)) {
+/*			switch(linphone_address_get_transport(addr)) {
 			case LinphoneTransportUdp:
 			case LinphoneTransportTcp:
 				break;
 			default:
-				printf("Error, bad sip uri [%s] transport, should be udp | tcp",argv[i]);
+				ms_error("Error, bad sip uri [%s] transport, should be udp | tcp",argv[i]);
 				helper();
 				break;
-			}
+			}*/
 		} else {
 			helper();
 		}
 	}
 
+	if (!addr) {
+		addr = linphone_address_new("sip:bot@0.0.0.0:5060");
+	}
 
-	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
-	/*
-	 Fill the LinphoneCoreVTable with application callbacks.
-	 All are optional. Here we only use the call_state_changed callbacks
-	 in order to get notifications about the progress of the call.
-	 */
+	lp_config_set_string(lp_config,"sip","bind_address",linphone_address_get_domain(addr));
+	lp_config_set_string(lp_config,"rtp","bind_address",linphone_address_get_domain(addr));
+
 	vtable.call_state_changed=call_state_changed;
 
-	/*
-	 Instanciate a LinphoneCore object given the LinphoneCoreVTable
-	*/
-	lc=linphone_core_new(&vtable,NULL,NULL,NULL);
+	lc=linphone_core_new_with_config(&vtable,lp_config,NULL);
 	linphone_core_enable_video_capture(lc,TRUE);
 	linphone_core_enable_video_display(lc,FALSE);
 	linphone_core_set_video_policy(lc,&policy);
@@ -146,21 +128,13 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	if (!addr) {
-		addr = linphone_address_new("sip:bot@localhost:5060");
-	}
+
 
 	memset(&tp,0,sizeof(LCSipTransports));
-	switch(linphone_address_get_transport(addr)) {
-	case LinphoneTransportUdp:
-		tp.udp_port = linphone_address_get_port(addr);
-		break;
-	case LinphoneTransportTcp:
-		tp.tcp_port = linphone_address_get_port(addr);
-		break;
-	default:
-		break;
-	}
+
+	tp.udp_port = linphone_address_get_port(addr);
+	tp.tcp_port = linphone_address_get_port(addr);
+
 	linphone_core_set_sip_transports(lc,&tp);
 	linphone_core_set_audio_port_range(lc,1024,65000);
 	linphone_core_set_preferred_framerate(lc,5);
@@ -173,9 +147,9 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 	}
 
-	printf("Shutting down...\n");
+	ms_message("Shutting down...\n");
 	linphone_core_destroy(lc);
-	printf("Exited\n");
+	ms_message("Exited\n");
 	return 0;
 }
 
