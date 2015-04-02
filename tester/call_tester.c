@@ -1537,6 +1537,29 @@ static void call_with_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_video_added_2(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
+	/*in this variant marie is already in automatically accept*/
+	LinphoneVideoPolicy  marie_policy;
+	marie_policy.automatically_accept=TRUE;
+	linphone_core_set_video_policy(marie->lc,&marie_policy);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, FALSE);
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	CU_ASSERT_TRUE(add_video(marie,pauline));
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_video_added_random_ports(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -3885,6 +3908,7 @@ test_t call_tests[] = {
 	{ "SRTP ice video call", srtp_video_ice_call },
 	{ "ZRTP ice video call", zrtp_video_ice_call },
 	{ "Call with video added", call_with_video_added },
+	{ "Call with video added 2", call_with_video_added_2 },
 	{ "Call with video added (random ports)", call_with_video_added_random_ports },
 	{ "Call with several video switches", call_with_several_video_switches },
 	{ "SRTP call with several video switches", srtp_call_with_several_video_switches },

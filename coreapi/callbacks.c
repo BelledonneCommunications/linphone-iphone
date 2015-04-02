@@ -147,7 +147,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			int md_changed = media_parameters_changed(call, oldmd, new_md);
-			if ((md_changed & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)){
+			if ((md_changed & (SAL_MEDIA_DESCRIPTION_CODEC_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED))){
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else if ( call->playing_ringbacktone) {
 				ms_message("Playing ringback tone, will restart the streams.");
