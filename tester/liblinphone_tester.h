@@ -283,6 +283,7 @@ bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
 				,const LinphoneCallTestParams *callee_test_params);
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
+bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);

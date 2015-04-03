@@ -1043,11 +1043,9 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
 	if (callee_with_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
 	}
 	if (caller_with_ice){
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
 	}
 
 	if (random_ports){
@@ -1093,10 +1091,8 @@ static void call_with_ice_no_sdp(void){
 	linphone_core_enable_sdp_200_ack(pauline->lc,TRUE);
 
 	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
 
 	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
 
 	call(pauline,marie);
 
@@ -1390,10 +1386,8 @@ static void audio_call_with_ice_no_matching_audio_codecs(void) {
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMU", 8000, 1), FALSE); /* Disable PCMU */
 	linphone_core_enable_payload_type(marie->lc, linphone_core_find_payload_type(marie->lc, "PCMA", 8000, 1), TRUE); /* Enable PCMA */
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
-	linphone_core_set_stun_server(marie->lc, "stun.linphone.org");
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
-	linphone_core_set_stun_server(pauline->lc, "stun.linphone.org");
-
+	
 	out_call = linphone_core_invite_address(marie->lc, pauline->identity);
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingInit, 1));
@@ -1417,7 +1411,7 @@ static LinphoneCall* setup_video(LinphoneCoreManager* caller,LinphoneCoreManager
 	if (!linphone_core_get_current_call(callee->lc) || linphone_call_get_state(linphone_core_get_current_call(callee->lc)) != LinphoneCallStreamsRunning
 			|| !linphone_core_get_current_call(caller->lc) || linphone_call_get_state(linphone_core_get_current_call(caller->lc)) != LinphoneCallStreamsRunning ) {
 		ms_warning("bad state for adding video");
-		return FALSE;
+		return NULL;
 	}
 
 	caller_policy.automatically_accept=TRUE;
@@ -1437,7 +1431,7 @@ static LinphoneCall* setup_video(LinphoneCoreManager* caller,LinphoneCoreManager
 	return call_obj;
 }
 
-static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee) {
+bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee) {
 	stats initial_caller_stat=caller->stat;
 	stats initial_callee_stat=callee->stat;
 	LinphoneCall *call_obj;
@@ -1856,12 +1850,8 @@ static void call_with_ice_video_added(void) {
 	linphone_core_set_video_policy(marie->lc,&vpol);
 
 	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
-
 
 	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
-
 
 	if (1){
 		linphone_core_set_audio_port(marie->lc,-1);
@@ -2343,10 +2333,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		}
 
 		linphone_core_set_firewall_policy(marie->lc,policy);
-		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
 		linphone_core_set_firewall_policy(pauline->lc,policy);
-		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
-
 
 		CU_ASSERT_TRUE(call(pauline,marie));
 		if (linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP
@@ -3041,7 +3028,6 @@ static void accept_call_in_send_base(bool_t caller_has_ice) {
 
 	pauline = linphone_core_manager_new("pauline_rc");
 	if (caller_has_ice) {
-		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 	}
 	marie = linphone_core_manager_new("marie_rc");
@@ -3567,7 +3553,6 @@ static void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ic
 	lcs = ms_list_append(lcs,pauline->lc);
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
-		linphone_core_set_stun_server(marie->lc, "stun.linphone.org");
 	}
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session

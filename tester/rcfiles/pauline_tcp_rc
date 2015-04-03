@@ -45,3 +45,7 @@ device=StaticImage: Static picture
 
 [sound]
 echocancellation=0 #to not overload cpu in case of VG
+
+[net]
+stun_server=stun.linphone.org
+
