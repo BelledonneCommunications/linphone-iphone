@@ -102,8 +102,12 @@ warning:
 endif
 
 LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
-                 enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
-                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg) enable_tunnel=$(enable_tunnel)
+                 enable_zrtp=$(enable_zrtp) \
+                 enable_opus=$(enable_opus) \
+                 enable_debug=$(enable_debug) \
+                 enable_ffmpeg=$(enable_ffmpeg) \
+                 enable_tunnel=$(enable_tunnel) \
+                 enable_i386=$(enable_i386)
 
 armv7_host=armv7-apple-darwin.ios
 aarch64_host=aarch64-apple-darwin.ios
