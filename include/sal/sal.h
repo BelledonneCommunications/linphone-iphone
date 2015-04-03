@@ -827,6 +827,10 @@ char* sal_op_get_public_uri(SalOp *sal);
 unsigned long sal_begin_background_task(const char *name, void (*max_time_reached)(void *), void *data);
 void sal_end_background_task(unsigned long id);
 
+/*Some old equipment may not only rely on attribute sendonly/recvonly/sendrecv/inative*/
+void sal_op_cnx_ip_to_0000_if_sendonly_enable(SalOp *sal,bool_t yesno);
+bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *sal);
+
 #endif
 
 

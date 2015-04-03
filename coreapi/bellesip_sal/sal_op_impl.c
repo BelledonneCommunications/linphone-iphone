@@ -803,3 +803,9 @@ void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling)  {
 	if (handling != SalOpSDPNormal) ms_message("Enabling special SDP handling for SalOp[%p]!", h);
 	h->sdp_handling = handling;
 }
+void sal_op_cnx_ip_to_0000_if_sendonly_enable(SalOp *op,bool_t yesno) {
+	op->cnx_ip_to_0000_if_sendonly_enabled = yesno;
+}
+bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *op) {
+	return op->cnx_ip_to_0000_if_sendonly_enabled;
+}

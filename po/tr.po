@@ -3,8 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Klara Cihlarova <koty@seznam.cz>, 2005
-# Petr Pisar <petr.pisar@atlas.cz>, 2006-2011,2013
+# faradundamarti <faradundamarti@yandex.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
@@ -12,118 +11,116 @@ msgstr ""
 "POT-Creation-Date: 2015-03-27 14:40+0100\n"
 "PO-Revision-Date: 2015-03-27 13:40+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/linphone-gtk/language/cs/)\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/linphone-gtk/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: cs\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
 #, c-format
 msgid "Call %s"
-msgstr "Volat komu: %s"
+msgstr ""
 
 #: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
 #, c-format
 msgid "Send text to %s"
-msgstr "Poslat text komu: %s"
+msgstr ""
 
 #: ../gtk/calllogs.c:232
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "<b>Nedávné hovory (%i)</b>"
+msgstr ""
 
 #: ../gtk/calllogs.c:314
 msgid "n/a"
-msgstr "–"
+msgstr ""
 
 #: ../gtk/calllogs.c:317
 msgid "Aborted"
-msgstr "Přerušen"
+msgstr "İptal edildi"
 
 #: ../gtk/calllogs.c:320
 msgid "Missed"
-msgstr "Zmeškán"
+msgstr "Yanıtsız"
 
 #: ../gtk/calllogs.c:323
 msgid "Declined"
-msgstr "Odmítnut"
+msgstr "Reddedildi"
 
 #: ../gtk/calllogs.c:329
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] "%i minuta"
-msgstr[1] "%i minuty"
-msgstr[2] "%i minut"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/calllogs.c:332
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] "%i sekunda"
-msgstr[1] "%i sekundy"
-msgstr[2] "%i sekund"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/calllogs.c:337
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr "<small><i>%s</i>\t<i>Kvalita: %s</i></small>\n%s\t%s\t"
+msgstr ""
 
 #: ../gtk/calllogs.c:341
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
-msgstr "<big><b>%s</b></big>\t%s"
+msgstr ""
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
-msgstr "Konference"
+msgstr "Grup görüşme"
 
 #: ../gtk/conference.c:46
 msgid "Me"
-msgstr "Já"
+msgstr ""
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr "Nelze najít soubor s obrázkem: %s"
+msgstr ""
 
 #: ../gtk/main.c:136
 msgid "log to stdout some debug information while running."
-msgstr "Za běhu vypisuje některé ladicí informace na standardní výstup."
+msgstr ""
 
 #: ../gtk/main.c:137
 msgid "path to a file to write logs into."
-msgstr "Soubor, kam zapisovat protokol."
+msgstr ""
 
 #: ../gtk/main.c:138
 msgid "Start linphone with video disabled."
-msgstr "Spustí linphone se zakázaným obrazem."
+msgstr "Linphonu görüntü olmadan başlat"
 
 #: ../gtk/main.c:139
 msgid "Start only in the system tray, do not show the main interface."
-msgstr "Spustí se pouze do systémové oblasti, nezobrazí hlavní okno."
+msgstr ""
 
 #: ../gtk/main.c:140
 msgid "address to call right now"
-msgstr "Zavolá právě teď na tuto adresu"
+msgstr ""
 
 #: ../gtk/main.c:141
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
-msgstr "Zadejte pracovní adresář (měl by být základní instalační adresář, například c:\\Program Files\\Linphone)"
+msgstr ""
 
 #: ../gtk/main.c:142
 msgid "Configuration file"
-msgstr ""
+msgstr "Yapılandırma dosyası"
 
 #: ../gtk/main.c:143
 msgid "Run the audio assistant"
-msgstr ""
+msgstr "Ses yardımcısını çalıştır"
 
 #: ../gtk/main.c:144
 msgid "Run self test and exit 0 if succeed"
@@ -135,7 +132,7 @@ msgid ""
 "%s would like to add you to his contact list.\n"
 "Would you allow him to see your presence status or add him to your contact list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s si vás chce přidat do svého adresáře.\nDovolíte mu, aby viděl váš stav přítomnosti, nebo si ho také chcete přidat do svého adresáře?\nOdpovíte-li ne, tato osobo bude dočasně blokována."
+msgstr ""
 
 #: ../gtk/main.c:1136
 #, c-format
@@ -146,65 +143,65 @@ msgstr ""
 
 #: ../gtk/main.c:1257
 msgid "Call error"
-msgstr "Chyba hovoru"
+msgstr "Çağrı yanlış"
 
 #: ../gtk/main.c:1260 ../coreapi/linphonecore.c:3826
 msgid "Call ended"
-msgstr "Hovor ukončen"
+msgstr "Çağrı sonlandırıldı"
 
 #: ../gtk/main.c:1263 ../coreapi/call_log.c:221
 msgid "Incoming call"
-msgstr "Příchozí hovor"
+msgstr "Gelen çağrı"
 
 #: ../gtk/main.c:1265 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
-msgstr "Odpovědět"
+msgstr "Yanıt"
 
 #: ../gtk/main.c:1267 ../gtk/main.ui.h:6
 msgid "Decline"
-msgstr "Odmítnout"
+msgstr "Reddet"
 
 #: ../gtk/main.c:1273
 msgid "Call paused"
-msgstr "Hovor odložen"
+msgstr "Çağrı duraklatıldı"
 
 #: ../gtk/main.c:1273
 #, c-format
 msgid "<b>by %s</b>"
-msgstr "<b>kým: %s</b>"
+msgstr ""
 
 #: ../gtk/main.c:1343
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
-msgstr "%s navrhuje začít videohovor. Přijímáte?"
+msgstr ""
 
 #: ../gtk/main.c:1505
 msgid "Website link"
-msgstr "Odkaz na webovou stránku"
+msgstr "İnternet "
 
 #: ../gtk/main.c:1554
 msgid "Linphone - a video internet phone"
-msgstr "Lipnhone – internetový videofon"
+msgstr "Linphone - görüntülü internet telefonu"
 
 #: ../gtk/main.c:1646
 #, c-format
 msgid "%s (Default)"
-msgstr "%s (Výchozí)"
+msgstr ""
 
 #: ../gtk/main.c:1978 ../coreapi/callbacks.c:1057
 #, c-format
 msgid "We are transferred to %s"
-msgstr "Byly jsme přepojeni na %s"
+msgstr ""
 
 #: ../gtk/main.c:1988
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr "Na tomto počítači nebyla objevena žádná zvuková karta.\nNebudete moci vytáčet a přijímat a zvukové hovory."
+msgstr ""
 
 #: ../gtk/main.c:2136
 msgid "A free SIP video-phone"
-msgstr "Volný SIP videofon"
+msgstr ""
 
 #: ../gtk/main.c:2241
 #, c-format
@@ -213,60 +210,60 @@ msgstr ""
 
 #: ../gtk/friendlist.c:505
 msgid "Add to addressbook"
-msgstr "Přidat do adresáře"
+msgstr "Adres defterine ekle"
 
 #: ../gtk/friendlist.c:691
 msgid "Presence status"
-msgstr "Stav"
+msgstr ""
 
 #: ../gtk/friendlist.c:709 ../gtk/propertybox.c:552 ../gtk/contact.ui.h:1
 msgid "Name"
-msgstr "Jméno"
+msgstr "Ad"
 
 #: ../gtk/friendlist.c:721
 msgid "Call"
-msgstr "Zavolat"
+msgstr "Çağrı"
 
 #: ../gtk/friendlist.c:726
 msgid "Chat"
-msgstr "Diskuze"
+msgstr "Söyleşi"
 
 #: ../gtk/friendlist.c:756
 #, c-format
 msgid "Search in %s directory"
-msgstr "Hledat v adresáři %s"
+msgstr ""
 
 #: ../gtk/friendlist.c:924
 msgid "Invalid sip contact !"
-msgstr "Neplatný sipový kontakt!"
+msgstr "Geçersiz sip bağlantısı !"
 
 #: ../gtk/friendlist.c:976
 #, c-format
 msgid "Edit contact '%s'"
-msgstr "Upravit kontakt „%s“"
+msgstr ""
 
 #: ../gtk/friendlist.c:977
 #, c-format
 msgid "Delete contact '%s'"
-msgstr "Odstranit kontakt „%s“"
+msgstr ""
 
 #: ../gtk/friendlist.c:978
 #, c-format
 msgid "Delete chat history of '%s'"
-msgstr "Odstranit historii diskuze u kontaktu „%s“"
+msgstr ""
 
 #: ../gtk/friendlist.c:1029
 #, c-format
 msgid "Add new contact from %s directory"
-msgstr "Přidat nový kontakt z adresáře %s"
+msgstr ""
 
 #: ../gtk/propertybox.c:558
 msgid "Rate (Hz)"
-msgstr "Kmitočet (Hz)"
+msgstr ""
 
 #: ../gtk/propertybox.c:564
 msgid "Status"
-msgstr "Stav"
+msgstr "Durum"
 
 #: ../gtk/propertybox.c:570
 msgid "IP Bitrate (kbit/s)"
@@ -274,108 +271,108 @@ msgstr ""
 
 #: ../gtk/propertybox.c:577
 msgid "Parameters"
-msgstr "Parametry"
+msgstr "Değişkenler"
 
 #: ../gtk/propertybox.c:620 ../gtk/propertybox.c:763
 msgid "Enabled"
-msgstr "Povoleno"
+msgstr "Etkin"
 
 #: ../gtk/propertybox.c:622 ../gtk/propertybox.c:763 ../gtk/parameters.ui.h:17
 msgid "Disabled"
-msgstr "Zakázáno"
+msgstr "Devre dışı"
 
 #: ../gtk/propertybox.c:809
 msgid "Account"
-msgstr "Účet"
+msgstr "Hesap"
 
 #: ../gtk/propertybox.c:1072
 msgid "English"
-msgstr "angličtina"
+msgstr "İngilizce"
 
 #: ../gtk/propertybox.c:1073
 msgid "French"
-msgstr "francouzština"
+msgstr "Fransızca"
 
 #: ../gtk/propertybox.c:1074
 msgid "Swedish"
-msgstr "švédština"
+msgstr "İsveççe"
 
 #: ../gtk/propertybox.c:1075
 msgid "Italian"
-msgstr "italština"
+msgstr "İtalyanca"
 
 #: ../gtk/propertybox.c:1076
 msgid "Spanish"
-msgstr "španělština"
+msgstr "İspanyolca"
 
 #: ../gtk/propertybox.c:1077
 msgid "Brazilian Portugese"
-msgstr "brazilská portugalština"
+msgstr "Brezilya Portekizcesi"
 
 #: ../gtk/propertybox.c:1078
 msgid "Polish"
-msgstr "polština"
+msgstr "Lehçe"
 
 #: ../gtk/propertybox.c:1079
 msgid "German"
-msgstr "němčina"
+msgstr "Almanca"
 
 #: ../gtk/propertybox.c:1080
 msgid "Russian"
-msgstr "ruština"
+msgstr "Rusca"
 
 #: ../gtk/propertybox.c:1081
 msgid "Japanese"
-msgstr "japonština"
+msgstr "Japonca"
 
 #: ../gtk/propertybox.c:1082
 msgid "Dutch"
-msgstr "dánština"
+msgstr "Flemenkçe"
 
 #: ../gtk/propertybox.c:1083
 msgid "Hungarian"
-msgstr "maďarština"
+msgstr "Macarca"
 
 #: ../gtk/propertybox.c:1084
 msgid "Czech"
-msgstr "čeština"
+msgstr "Çekce"
 
 #: ../gtk/propertybox.c:1085
 msgid "Chinese"
-msgstr "čínština"
+msgstr "Çince"
 
 #: ../gtk/propertybox.c:1086
 msgid "Traditional Chinese"
-msgstr "tradiční čínština"
+msgstr "Geleneksel Çince"
 
 #: ../gtk/propertybox.c:1087
 msgid "Norwegian"
-msgstr "norština"
+msgstr "Norveççe"
 
 #: ../gtk/propertybox.c:1088
 msgid "Hebrew"
-msgstr "hebrejština"
+msgstr "İbranice"
 
 #: ../gtk/propertybox.c:1089
 msgid "Serbian"
-msgstr "srbština"
+msgstr "Sırpça"
 
 #: ../gtk/propertybox.c:1156
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr "Aby se projevil výběr nového jazyka, je nutné znovu spustit linphone."
+msgstr "Yeni dil seçiminizin etkili olabilmesi için linfonu yeniden başlatmalısınız."
 
 #: ../gtk/propertybox.c:1236
 msgid "None"
-msgstr "Žádné"
+msgstr "Hiçbiri"
 
 #: ../gtk/propertybox.c:1240
 msgid "SRTP"
-msgstr "SRTP"
+msgstr "SRTP (Güvenli Gerçek Zamanlı Aktarım Protokolü)"
 
 #: ../gtk/propertybox.c:1246
 msgid "DTLS"
-msgstr ""
+msgstr "DTLS"
 
 #: ../gtk/propertybox.c:1253
 msgid "ZRTP"
@@ -386,57 +383,56 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "Na %s je dostupná novější verze.\nPřejete si otevřít prohlížeč, abyste si ji mohli stáhnout?"
+msgstr ""
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
-msgstr "Máte spuštěnou poslední verzi."
+msgstr "En son sürümü çalıştırıyorsunuz"
 
 #: ../gtk/buddylookup.c:85
 msgid "Firstname, Lastname"
-msgstr "První jméno, Poslední jméno"
+msgstr ""
 
 #: ../gtk/buddylookup.c:160
 msgid "Error communicating with server."
-msgstr "Chyba komunikace se serverem."
+msgstr "Sunucuya bağlanma hatası"
 
 #: ../gtk/buddylookup.c:164
 msgid "Connecting..."
-msgstr "Připojuje se…"
+msgstr "Bağlanıyor..."
 
 #: ../gtk/buddylookup.c:168
 msgid "Connected"
-msgstr "Připojeno"
+msgstr "Bağlandı"
 
 #: ../gtk/buddylookup.c:172
 msgid "Receiving data..."
-msgstr "Přijímají se data…"
+msgstr "Veri alınıyor..."
 
 #: ../gtk/buddylookup.c:180
 #, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] "Nalezen %i kontakt"
-msgstr[1] "Nalezeny %i kontakty"
-msgstr[2] "Nalezeno %i kontaktů"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../gtk/setupwizard.c:34
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr ""
+msgstr "Hoşgeldiniz!\nBu yardımcı,çağrılarınız için bir SIP hesabı kullanmanıza yardım edecek."
 
 #: ../gtk/setupwizard.c:43
 msgid "Create an account on linphone.org"
-msgstr "Vytvořit účet na linphone.org"
+msgstr "linphone.org'da bir hesap oluştur"
 
 #: ../gtk/setupwizard.c:44
 msgid "I have already a linphone.org account and I just want to use it"
-msgstr "Účet na linphone.org již mám a chci jej použít"
+msgstr ""
 
 #: ../gtk/setupwizard.c:45
 msgid "I have already a sip account and I just want to use it"
-msgstr "SIP účet již mám a chci jej použít"
+msgstr ""
 
 #: ../gtk/setupwizard.c:46
 msgid "I want to specify a remote configuration URI"
@@ -444,180 +440,180 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:89
 msgid "Enter your linphone.org username"
-msgstr "Zadejte uživatelské jméno na linphone.org"
+msgstr "linphone.org kullanıcı adınızı girin"
 
 #: ../gtk/setupwizard.c:102 ../gtk/parameters.ui.h:81 ../gtk/ldap.ui.h:4
 msgid "Username:"
-msgstr "Uživatelské jméno:"
+msgstr "Kullanıcı adı:"
 
 #: ../gtk/setupwizard.c:104 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
 msgid "Password:"
-msgstr "Heslo:"
+msgstr "Parola:"
 
 #: ../gtk/setupwizard.c:124
 msgid "Enter your account informations"
-msgstr "Zadejte údaje o vašem účtu"
+msgstr "Hesap bilgilerinizi girin"
 
 #: ../gtk/setupwizard.c:140
 msgid "Username*"
-msgstr "Uživatelské jméno*"
+msgstr "Kallanıcı adı*"
 
 #: ../gtk/setupwizard.c:141
 msgid "Password*"
-msgstr "Heslo*"
+msgstr "Parola*"
 
 #: ../gtk/setupwizard.c:144
 msgid "Domain*"
-msgstr "Doména*"
+msgstr "Alan adı*"
 
 #: ../gtk/setupwizard.c:145
 msgid "Proxy"
-msgstr "Proxy"
+msgstr "Vekil sunucu"
 
 #: ../gtk/setupwizard.c:317
 msgid "(*) Required fields"
-msgstr "(*) Povinné položky"
+msgstr "(*) Zorunlu alanlar"
 
 #: ../gtk/setupwizard.c:318
 msgid "Username: (*)"
-msgstr "Uživatelské jméno: (*)"
+msgstr "Kullanıcı adı: (*)"
 
 #: ../gtk/setupwizard.c:320
 msgid "Password: (*)"
-msgstr "Heslo: (*)"
+msgstr "Parola: (*)"
 
 #: ../gtk/setupwizard.c:322
 msgid "Email: (*)"
-msgstr "E-mail: (*)"
+msgstr "E-posta: (*)"
 
 #: ../gtk/setupwizard.c:324
 msgid "Confirm your password: (*)"
-msgstr "Potvrďte heslo: (*)"
+msgstr "Parolanızı onaylayın: (*)"
 
 #: ../gtk/setupwizard.c:338
 msgid "Keep me informed with linphone updates"
-msgstr ""
+msgstr "linphone güncellemeleri hakkında beni bilgilendir"
 
 #: ../gtk/setupwizard.c:394
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
-msgstr "Došlo k chybě (účet nebyl ověřen, uživatelské jméno již existuje nebo server není dostupný).\nProsím, vraťte se a zkoste to znovu."
+msgstr "Hata,hesap geçersiz,kullanıcı adı kullanılıyor veya sunucuya erişilemiyor.\nLütfen geri dönün ve tekrar deneyin."
 
 #: ../gtk/setupwizard.c:405
 msgid "Thank you. Your account is now configured and ready for use."
-msgstr "Děkujeme vám. Váš účet je nyní nastaven a připraven k použití."
+msgstr "Teşekkürler. Hesabınız yapılandırıldı ve kullanıma hazır."
 
 #: ../gtk/setupwizard.c:413
 msgid ""
 "Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
-msgstr "Prosím, ověřte svůj účet tak, že kliknete na odkaz, který jsme vám právě zaslali e-mailem.\nPak se sem vraťte a stiskněte tlačítko Další."
+msgstr ""
 
 #: ../gtk/setupwizard.c:602
 msgid "SIP account configuration assistant"
-msgstr ""
+msgstr "SİP hesabı yapılandırma yardımcısı"
 
 #: ../gtk/setupwizard.c:620
 msgid "Welcome to the account setup assistant"
-msgstr "Vítejte v průvodci nastavení účtu"
+msgstr "Hesap açma yardımcısına hoşgeldiniz"
 
 #: ../gtk/setupwizard.c:625
 msgid "Account setup assistant"
-msgstr "Průvodce nastavením účtu"
+msgstr "Hesap açma yardımcısı"
 
 #: ../gtk/setupwizard.c:631
 msgid "Configure your account (step 1/1)"
-msgstr "Nastavit účet (krok 1/1)"
+msgstr "Hesabınızı yapılandırın (adım 1/1)"
 
 #: ../gtk/setupwizard.c:636
 msgid "Enter your sip username (step 1/1)"
-msgstr "Zadejte vaše sipové uživatelské jméno (krok 1/1)"
+msgstr "sip kullanıcı adınızı girin (adım 1/1)"
 
 #: ../gtk/setupwizard.c:640
 msgid "Enter account information (step 1/2)"
-msgstr "Zadejte údaje o účtu (krok 1/2)"
+msgstr "Hesap bilgilerini girin (adım 1/2)"
 
 #: ../gtk/setupwizard.c:649
 msgid "Validation (step 2/2)"
-msgstr "Ověření (krok 2/2)"
+msgstr "Doğrulama (adım 2/2)"
 
 #: ../gtk/setupwizard.c:654
 msgid "Error"
-msgstr "Chyba"
+msgstr "Hata"
 
 #: ../gtk/setupwizard.c:658 ../gtk/audio_assistant.c:534
 msgid "Terminating"
-msgstr "Ukončuje se"
+msgstr "Sonlandırma"
 
 #: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
 #, c-format
 msgid "Call #%i"
-msgstr "Hovor č. %i"
+msgstr ""
 
 #: ../gtk/incall_view.c:155
 #, c-format
 msgid "Transfer to call #%i with %s"
-msgstr "Přepojit hovor č. %i s %s"
+msgstr ""
 
 #: ../gtk/incall_view.c:211 ../gtk/incall_view.c:214
 msgid "Not used"
-msgstr "Nepoužito"
+msgstr "Kullanılmıyor"
 
 #: ../gtk/incall_view.c:221
 msgid "ICE not activated"
-msgstr "ICE není zapnuto"
+msgstr "ICE etkin değil"
 
 #: ../gtk/incall_view.c:223
 msgid "ICE failed"
-msgstr "ICE selhalo"
+msgstr "ICE başarısız"
 
 #: ../gtk/incall_view.c:225
 msgid "ICE in progress"
-msgstr "Probíhá ICE"
+msgstr ""
 
 #: ../gtk/incall_view.c:227
 msgid "Going through one or more NATs"
-msgstr "Prochází se jedním nebo více NATy"
+msgstr ""
 
 #: ../gtk/incall_view.c:229
 msgid "Direct"
-msgstr "Přímé"
+msgstr ""
 
 #: ../gtk/incall_view.c:231
 msgid "Through a relay server"
-msgstr "Skrze relay server"
+msgstr ""
 
 #: ../gtk/incall_view.c:239
 msgid "uPnP not activated"
-msgstr "UPnP není zapnuto"
+msgstr "Evrensel Tak-Çalıştır etkin değil"
 
 #: ../gtk/incall_view.c:241
 msgid "uPnP in progress"
-msgstr "Probíhá UPnP"
+msgstr "Evrensel Tak-Çalıştır ilerliyor"
 
 #: ../gtk/incall_view.c:243
 msgid "uPnp not available"
-msgstr "UPnP není nedostupné"
+msgstr "Evrensel Tak-Çalıştır kullanılamaz"
 
 #: ../gtk/incall_view.c:245
 msgid "uPnP is running"
-msgstr "UPnP běží"
+msgstr "Evrensel Tak-Çalıştır çalışıyor"
 
 #: ../gtk/incall_view.c:247
 msgid "uPnP failed"
-msgstr "UPnP selhalo"
+msgstr "Evrensel Tak-Çalıştır başarısız"
 
 #: ../gtk/incall_view.c:257 ../gtk/incall_view.c:258
 msgid "Direct or through server"
-msgstr "Přímé nebo skrze server"
+msgstr ""
 
 #: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr "příchozí: %f\nodchozí: %f (kb/s)"
+msgstr ""
 
 #: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
@@ -627,51 +623,51 @@ msgstr ""
 #: ../gtk/incall_view.c:304
 #, c-format
 msgid "%.3f seconds"
-msgstr "%.3f sekund"
+msgstr ""
 
 #: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:235
 msgid "Hang up"
-msgstr "Zavěsit"
+msgstr ""
 
 #: ../gtk/incall_view.c:511
 msgid "<b>Calling...</b>"
-msgstr "<b>Volá se…</b>"
+msgstr ""
 
 #: ../gtk/incall_view.c:514 ../gtk/incall_view.c:733
 msgid "00::00::00"
-msgstr "00:00:00"
+msgstr "00::00::00"
 
 #: ../gtk/incall_view.c:525
 msgid "<b>Incoming call</b>"
-msgstr "<b>Příchozí hovor</b>"
+msgstr ""
 
 #: ../gtk/incall_view.c:562
 msgid "good"
-msgstr "dobrá"
+msgstr "iyi"
 
 #: ../gtk/incall_view.c:564
 msgid "average"
-msgstr "průměrná"
+msgstr "orta"
 
 #: ../gtk/incall_view.c:566
 msgid "poor"
-msgstr "slabá"
+msgstr "kötü"
 
 #: ../gtk/incall_view.c:568
 msgid "very poor"
-msgstr "velmi slabá"
+msgstr "çok kötü"
 
 #: ../gtk/incall_view.c:570
 msgid "too bad"
-msgstr "příliš špatná"
+msgstr ""
 
 #: ../gtk/incall_view.c:571 ../gtk/incall_view.c:587
 msgid "unavailable"
-msgstr "nedostupná"
+msgstr "kullanılamaz"
 
 #: ../gtk/incall_view.c:679
 msgid "Secured by SRTP"
-msgstr "Zabezpečeno pomocí SRTP"
+msgstr ""
 
 #: ../gtk/incall_view.c:685
 msgid "Secured by DTLS"
@@ -680,67 +676,67 @@ msgstr ""
 #: ../gtk/incall_view.c:691
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr "Zabezpečeno pomocí ZRTP – [ověřovací klíč: %s]"
+msgstr ""
 
 #: ../gtk/incall_view.c:697
 msgid "Set unverified"
-msgstr "Nastavit na neověřeno"
+msgstr ""
 
 #: ../gtk/incall_view.c:697 ../gtk/main.ui.h:4
 msgid "Set verified"
-msgstr "Nastavit na ověřeno"
+msgstr ""
 
 #: ../gtk/incall_view.c:728
 msgid "In conference"
-msgstr "Probíhá konference"
+msgstr ""
 
 #: ../gtk/incall_view.c:728
 msgid "<b>In call</b>"
-msgstr "<b>Probíhá hovor</b>"
+msgstr ""
 
 #: ../gtk/incall_view.c:764
 msgid "<b>Paused call</b>"
-msgstr "<b>Odložený hovor</b>"
+msgstr ""
 
 #: ../gtk/incall_view.c:800
 msgid "<b>Call ended.</b>"
-msgstr "<b>Hovor skončil.</b>"
+msgstr ""
 
 #: ../gtk/incall_view.c:831
 msgid "Transfer in progress"
-msgstr "Probíhá přepojení"
+msgstr ""
 
 #: ../gtk/incall_view.c:834
 msgid "Transfer done."
-msgstr "Přepojení dokončeno."
+msgstr ""
 
 #: ../gtk/incall_view.c:837
 msgid "Transfer failed."
-msgstr "Přepojení selhalo."
+msgstr ""
 
 #: ../gtk/incall_view.c:881
 msgid "Resume"
-msgstr "Obnovit"
+msgstr "Devam et"
 
 #: ../gtk/incall_view.c:888 ../gtk/main.ui.h:9
 msgid "Pause"
-msgstr "Odložit"
+msgstr "Duraklat"
 
 #: ../gtk/incall_view.c:954
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr "<small><i>Nahrává se do\n%s %s</i></small>"
+msgstr ""
 
 #: ../gtk/incall_view.c:954
 msgid "(Paused)"
-msgstr "(Odloženo)"
+msgstr "(Duraklatıldı)"
 
 #: ../gtk/loginframe.c:87
 #, c-format
 msgid "Please enter login information for %s"
-msgstr "Prosím, zadejte své přihlašovací jméno pro %s:"
+msgstr ""
 
 #: ../gtk/config-fetching.c:57
 #, c-format
@@ -754,19 +750,19 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:98
 msgid "No voice detected"
-msgstr ""
+msgstr "Ses olmadığı algılandı"
 
 #: ../gtk/audio_assistant.c:99
 msgid "Too low"
-msgstr ""
+msgstr "Çok düşük"
 
 #: ../gtk/audio_assistant.c:100
 msgid "Good"
-msgstr ""
+msgstr "İyi"
 
 #: ../gtk/audio_assistant.c:101
 msgid "Too loud"
-msgstr ""
+msgstr "Çok yüksek"
 
 #: ../gtk/audio_assistant.c:183
 msgid "Did you hear three beeps ?"
@@ -774,21 +770,21 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
 msgid "Sound preferences not found "
-msgstr ""
+msgstr "Ses tercihleri bulunamadı"
 
 #: ../gtk/audio_assistant.c:306
 msgid "Cannot launch system sound control "
-msgstr ""
+msgstr "Ses kontrol sistemi başlatılamıyor"
 
 #: ../gtk/audio_assistant.c:318
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr ""
+msgstr "Hoşgeldiniz!\nBu yardımcı,Linphone'un ses ayarlarını yapılandırmanıza yardım edecek"
 
 #: ../gtk/audio_assistant.c:328
 msgid "Capture device"
-msgstr ""
+msgstr "Görüntü yakalama aygıtı"
 
 #: ../gtk/audio_assistant.c:329
 msgid "Recorded volume"
@@ -796,15 +792,15 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:333
 msgid "No voice"
-msgstr ""
+msgstr "Ses yok"
 
 #: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
 msgid "System sound preferences"
-msgstr ""
+msgstr "Sistem ses tercihleri"
 
 #: ../gtk/audio_assistant.c:369
 msgid "Playback device"
-msgstr ""
+msgstr "Oynatma aygıtı"
 
 #: ../gtk/audio_assistant.c:370
 msgid "Play three beeps"
@@ -812,7 +808,7 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:403
 msgid "Press the record button and say some words"
-msgstr ""
+msgstr "Kayıt tuşuna bas ve bazı kelimeler söyle"
 
 #: ../gtk/audio_assistant.c:404
 msgid "Listen to your record voice"
@@ -832,11 +828,11 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:503
 msgid "Audio Assistant"
-msgstr ""
+msgstr "Ses Yardımcısı"
 
 #: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:32
 msgid "Audio assistant"
-msgstr ""
+msgstr "Ses yardımcısı"
 
 #: ../gtk/audio_assistant.c:518
 msgid "Mic Gain calibration"
@@ -852,51 +848,51 @@ msgstr ""
 
 #: ../gtk/main.ui.h:1
 msgid "<b>Callee name</b>"
-msgstr "<b>Jméno volaného</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:2
 msgid "Send"
-msgstr "Odeslat"
+msgstr "Gönder"
 
 #: ../gtk/main.ui.h:3
 msgid "End conference"
-msgstr "Ukončit konferenci"
+msgstr ""
 
 #: ../gtk/main.ui.h:7
 msgid "Record this call to an audio file"
-msgstr "Nahrát tento hovor do zvukového souboru"
+msgstr ""
 
 #: ../gtk/main.ui.h:8
 msgid "Video"
-msgstr "Obraz"
+msgstr ""
 
 #: ../gtk/main.ui.h:10
 msgid "Mute"
-msgstr "Ztišit"
+msgstr "Sessiz"
 
 #: ../gtk/main.ui.h:11
 msgid "Transfer"
-msgstr "Přepojit"
+msgstr ""
 
 #: ../gtk/main.ui.h:14
 msgid "In call"
-msgstr "Telefonuje se"
+msgstr ""
 
 #: ../gtk/main.ui.h:15
 msgid "Duration"
-msgstr "Délka"
+msgstr "Süre"
 
 #: ../gtk/main.ui.h:16
 msgid "Call quality rating"
-msgstr "Hodnocení kvality hovoru"
+msgstr ""
 
 #: ../gtk/main.ui.h:17
 msgid "All users"
-msgstr "všech uživatelích"
+msgstr "Tüm kullanıcılar"
 
 #: ../gtk/main.ui.h:18
 msgid "Online users"
-msgstr "připojených uživatelích"
+msgstr "Çevrimiçi kullanıcılar"
 
 #: ../gtk/main.ui.h:19
 msgid "ADSL"
@@ -904,19 +900,19 @@ msgstr "ADSL"
 
 #: ../gtk/main.ui.h:20
 msgid "Fiber Channel"
-msgstr "Fiber Channel"
+msgstr ""
 
 #: ../gtk/main.ui.h:21
 msgid "Default"
-msgstr "Výchozí"
+msgstr "Öntanımlı"
 
 #: ../gtk/main.ui.h:22
 msgid "Delete"
-msgstr "Smazat"
+msgstr "Sil"
 
 #: ../gtk/main.ui.h:23
 msgid "_Options"
-msgstr "V_olby"
+msgstr "_Seçenekler"
 
 #: ../gtk/main.ui.h:24
 msgid "Set configuration URI"
@@ -924,87 +920,87 @@ msgstr ""
 
 #: ../gtk/main.ui.h:25
 msgid "Always start video"
-msgstr "Vždy spustit obraz"
+msgstr ""
 
 #: ../gtk/main.ui.h:26
 msgid "Enable self-view"
-msgstr "Zobrazovat sám sebe"
+msgstr ""
 
 #: ../gtk/main.ui.h:27
 msgid "_Help"
-msgstr "Nápo_věda"
+msgstr "_Yardım"
 
 #: ../gtk/main.ui.h:28
 msgid "Show debug window"
-msgstr "Zobrazit ladicí okno"
+msgstr "Hata düzeltme penceresini göster"
 
 #: ../gtk/main.ui.h:29
 msgid "_Homepage"
-msgstr "_Domovská stránka"
+msgstr "_Anasayfa"
 
 #: ../gtk/main.ui.h:30
 msgid "Check _Updates"
-msgstr "Vyhledat akt_ualizace"
+msgstr "Güncellemeleri _Denetle"
 
 #: ../gtk/main.ui.h:31
 msgid "Account assistant"
-msgstr "Průvodce účtem"
+msgstr "Hesap yardımcısı"
 
 #: ../gtk/main.ui.h:33
 msgid "SIP address or phone number:"
-msgstr "SIP adresa nebo telefonní číslo:"
+msgstr "SİP adresi veya telefon numarası:"
 
 #: ../gtk/main.ui.h:34
 msgid "Initiate a new call"
-msgstr "Zahájit nový hovor"
+msgstr "Yeni bir arama başlat"
 
 #: ../gtk/main.ui.h:35
 msgid "Contacts"
-msgstr "Kontakty"
+msgstr ""
 
 #: ../gtk/main.ui.h:36
 msgid "Search"
-msgstr "Hledat"
+msgstr "Arama"
 
 #: ../gtk/main.ui.h:37
 msgid "<b>Add contacts from directory</b>"
-msgstr "<b>Přidat kontakty z adresáře</b>"
+msgstr ""
 
 #: ../gtk/main.ui.h:38
 msgid "Add contact"
-msgstr "Přidat kontakt"
+msgstr "Bağlantı ekle"
 
 #: ../gtk/main.ui.h:39
 msgid "Recent calls"
-msgstr "Nedávné hovory"
+msgstr "Son çağrılar"
 
 #: ../gtk/main.ui.h:40
 msgid "My current identity:"
-msgstr "Moje současná totožnost:"
+msgstr ""
 
 #: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
-msgstr "Uživatelské jméno"
+msgstr "Kallanıcı adı"
 
 #: ../gtk/main.ui.h:42 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
-msgstr "Heslo"
+msgstr "Parola"
 
 #: ../gtk/main.ui.h:43
 msgid "Internet connection:"
-msgstr "Připojení k Internetu:"
+msgstr "İnternet bağlantısı:"
 
 #: ../gtk/main.ui.h:44
 msgid "Automatically log me in"
-msgstr "Přihlašovat mě automaticky"
+msgstr ""
 
 #: ../gtk/main.ui.h:45 ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr "Identifikátor uživatele"
+msgstr "Kullanıcı kimliği"
 
 #: ../gtk/main.ui.h:46
 msgid "Login information"
-msgstr "Informace o přihlášení"
+msgstr ""
 
 #: ../gtk/main.ui.h:47
 msgid "<b>Welcome!</b>"
@@ -1012,7 +1008,7 @@ msgstr ""
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
-msgstr ""
+msgstr "Linphone Hakkında"
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications, 2010\n"
@@ -1020,7 +1016,7 @@ msgstr ""
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "Internetový videofon používající standardní protokol SIP (RFC 3261)."
+msgstr ""
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -1036,63 +1032,63 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
-msgstr "SIP adresa"
+msgstr "SİP Adresi"
 
 #: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
-msgstr "U tohoto kontaktu zobrazovat stav přítomnosti"
+msgstr ""
 
 #: ../gtk/contact.ui.h:4
 msgid "Allow this contact to see my presence status"
-msgstr "Dovolit tomuto kontaktu, aby viděl můj stav přítomnosti"
+msgstr ""
 
 #: ../gtk/contact.ui.h:5
 msgid "<b>Contact information</b>"
-msgstr "<b>Informace o kontaktu</b>"
+msgstr ""
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
-msgstr "Ladicí okno Linphonu"
+msgstr "Linphone hata giderme penceresi"
 
 #: ../gtk/log.ui.h:2
 msgid "Scroll to end"
-msgstr "Přejít na konec"
+msgstr "Sonuna kadar ilerleyin"
 
 #: ../gtk/password.ui.h:1
 msgid "Linphone - Authentication required"
-msgstr "Linphone – Ověření totožnosti vyžadováno"
+msgstr "Linphone - Kimlik doğrulaması gerekli"
 
 #: ../gtk/password.ui.h:2
 msgid "Please enter the domain password"
-msgstr "Prosím, zadejte heslo pro doménu"
+msgstr "Lütfen alan adı parolası girin"
 
 #: ../gtk/call_logs.ui.h:1
 msgid "Call history"
-msgstr "Historie volání"
+msgstr "Çağrı geçmişi"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Clear all"
-msgstr "Vše smazat"
+msgstr "Hepsini temizle"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Call back"
-msgstr "Zavolat zpátky"
+msgstr "Geri arama"
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Linphone - Configure a SIP account"
-msgstr "Linphone – Nastav SIP účet"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:2
 msgid "Your SIP identity:"
-msgstr "Vaše SIP totožnost:"
+msgstr "SİP kimliğiniz:"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<username>@<domain>"
-msgstr "Vypadá jako sip:<uživatel>@<doména>"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:4
 msgid "sip:"
@@ -1100,15 +1096,15 @@ msgstr "sip:"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "SIP Proxy address:"
-msgstr "Adresa SIP proxy:"
+msgstr "SİP Vekil sunucu adresi:"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Looks like sip:<proxy hostname>"
-msgstr "Vypadá jako sip:<název proxy>"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:7
 msgid "Registration duration (sec):"
-msgstr "Registrační období (s):"
+msgstr "Kayıt süresi (saniye)"
 
 #: ../gtk/sip_account.ui.h:8
 msgid "Contact params (optional):"
@@ -1120,7 +1116,7 @@ msgstr ""
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Route (optional):"
-msgstr "Směrování (volitelné):"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:11
 msgid "Transport"
@@ -1128,11 +1124,11 @@ msgstr ""
 
 #: ../gtk/sip_account.ui.h:12
 msgid "Register"
-msgstr "Zaregistrovat se"
+msgstr "Kayıt"
 
 #: ../gtk/sip_account.ui.h:13
 msgid "Publish presence information"
-msgstr "Zveřejnit stav přítomnosti"
+msgstr ""
 
 #: ../gtk/sip_account.ui.h:14
 msgid "Enable AVPF"
@@ -1140,11 +1136,11 @@ msgstr ""
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
-msgstr "Nastavit SIP účet"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:1
 msgid "anonymous"
-msgstr ""
+msgstr "kimliği belirsiz"
 
 #: ../gtk/parameters.ui.h:2
 msgid "GSSAPI"
@@ -1156,15 +1152,15 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:4
 msgid "default soundcard"
-msgstr "implicitní zvuková karta"
+msgstr "öntanımlı ses kartı"
 
 #: ../gtk/parameters.ui.h:5
 msgid "a sound card"
-msgstr "zvuková karta"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:6
 msgid "default camera"
-msgstr "implicitní kamera"
+msgstr "öntanımlı kamera"
 
 #: ../gtk/parameters.ui.h:7
 msgid "CIF"
@@ -1172,11 +1168,11 @@ msgstr "CIF"
 
 #: ../gtk/parameters.ui.h:8
 msgid "Audio codecs"
-msgstr "Kodeky zvuku"
+msgstr "Ses kodekleri"
 
 #: ../gtk/parameters.ui.h:9
 msgid "Video codecs"
-msgstr "Kodeky obrazu"
+msgstr "Görüntü kodekleri"
 
 #: ../gtk/parameters.ui.h:10
 msgid "C"
@@ -1184,15 +1180,15 @@ msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
 msgid "Settings"
-msgstr "Nastavení"
+msgstr "Ayarlar"
 
 #: ../gtk/parameters.ui.h:12
 msgid "Set Maximum Transmission Unit:"
-msgstr "Nastavit MTU (největší přenositelná zpráva):"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:13
 msgid "Send DTMFs as SIP info"
-msgstr "Odesílat tóny DTMF jako SIP INFO zprávy"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:14
 msgid "Allow IPv6"
@@ -1200,55 +1196,55 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:15
 msgid "<b>Transport</b>"
-msgstr "<b>Přenos</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:16
 msgid "SIP/UDP port"
-msgstr ""
+msgstr "SIP/UDP bağlantı noktası"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Random"
-msgstr ""
+msgstr "Rastgele"
 
 #: ../gtk/parameters.ui.h:19
 msgid "SIP/TCP port"
-msgstr ""
+msgstr "SIP/TCP bağlantı noktası"
 
 #: ../gtk/parameters.ui.h:20
 msgid "Audio RTP/UDP:"
-msgstr "Zvukový RTP/UDP:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:21
 msgid "Fixed"
-msgstr "Stálý"
+msgstr "Sabitlenmiş"
 
 #: ../gtk/parameters.ui.h:22
 msgid "Video RTP/UDP:"
-msgstr "Obrazový RTP/UDP:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:23
 msgid "Media encryption type"
-msgstr "Druh šifrování médií"
+msgstr "Ortam şifreleme türü"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Media encryption is mandatory"
-msgstr "Šifrování médií je povinné"
+msgstr "Ortam şifrelemesi zorunludur"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Tunnel"
-msgstr "Tunel"
+msgstr "Tünel"
 
 #: ../gtk/parameters.ui.h:26
 msgid "DSCP fields"
-msgstr "Položky DSCP"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:27
 msgid "<b>Network protocol and ports</b>"
-msgstr "<b>Síťové protokoly a porty</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:28
 msgid "Direct connection to the Internet"
-msgstr "Přímé připojení do Internetu"
+msgstr "İnternete doğrudan bağlantı"
 
 #: ../gtk/parameters.ui.h:29
 msgid "Behind NAT / Firewall (specify gateway IP )"
@@ -1256,131 +1252,131 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:30
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Za NAT/firewallem (adresu určí STUN)"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:31
 msgid "Behind NAT / Firewall (use ICE)"
-msgstr "Za NAT/firewallem (adresu určí ICE)"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:32
 msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "Za NAT/firewallem (adresu určí UPnP)"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:33
 msgid "Public IP address:"
-msgstr "Veřejná IP adresa:"
+msgstr "Ortak İP adresi:"
 
 #: ../gtk/parameters.ui.h:34
 msgid "Stun server:"
-msgstr "STUN server:"
+msgstr "Stun sunucusu:"
 
 #: ../gtk/parameters.ui.h:35
 msgid "<b>NAT and Firewall</b>"
-msgstr "<b>NAT a firewall</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:36
 msgid "Network settings"
-msgstr "Nastavení sítě"
+msgstr "Ağ ayarları"
 
 #: ../gtk/parameters.ui.h:37
 msgid "Ring sound:"
-msgstr "Vyzvánění:"
+msgstr "Zil sesi:"
 
 #: ../gtk/parameters.ui.h:38
 msgid "ALSA special device (optional):"
-msgstr "Zvláštní ALSA zařízení (volitelné):"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:39
 msgid "Capture device:"
-msgstr "Zařízení pro nahrávání:"
+msgstr "Görüntü yakalama aygıtı"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Ring device:"
-msgstr "Zařízení pro vyzvánění:"
+msgstr "Ses çalma aygıtı:"
 
 #: ../gtk/parameters.ui.h:41
 msgid "Playback device:"
-msgstr "Zařízení pro přehrávání:"
+msgstr "Oynatma aygıtı:"
 
 #: ../gtk/parameters.ui.h:42
 msgid "Enable echo cancellation"
-msgstr "Zapnout potlačení ozvěny"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:43
 msgid "<b>Audio</b>"
-msgstr "<b>Zvuk</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:44
 msgid "Video input device:"
-msgstr "Vstupní zařízení obrazu:"
+msgstr "Görüntü aygıtı:"
 
 #: ../gtk/parameters.ui.h:45
 msgid "Prefered video resolution:"
-msgstr "Upřednostňované rozlišení obrazu:"
+msgstr "Tercih edilen görüntü çözünürlüğü:"
 
 #: ../gtk/parameters.ui.h:46
 msgid "Video output method:"
-msgstr ""
+msgstr "Görüntü çıkış yöntemi:"
 
 #: ../gtk/parameters.ui.h:47
 msgid "Show camera preview"
-msgstr ""
+msgstr "Kamera önizlemesi göster"
 
 #: ../gtk/parameters.ui.h:48
 msgid "<b>Video</b>"
-msgstr "<b>Obraz</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:49
 msgid "Multimedia settings"
-msgstr "Nastavení multimédií"
+msgstr "Çokluortam ayarları"
 
 #: ../gtk/parameters.ui.h:50
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr "Tento oddíl určuje vaši SIP adresu, když se nepoužívá žádný účet"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:51
 msgid "Your display name (eg: John Doe):"
-msgstr "Vaše zobrazované jméno (např. Jan Novák):"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:52
 msgid "Your username:"
-msgstr "Vaše uživatelské jméno:"
+msgstr "Kullanıcı adınız:"
 
 #: ../gtk/parameters.ui.h:53
 msgid "Your resulting SIP address:"
-msgstr "Vaše výsledná SIP adresa:"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:54
 msgid "<b>Default identity</b>"
-msgstr "<b>Implicitní totožnost</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:55
 msgid "Wizard"
-msgstr "Průvodce"
+msgstr "Yardımcı"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Add"
-msgstr "Přidat"
+msgstr "Ekle"
 
 #: ../gtk/parameters.ui.h:57
 msgid "Edit"
-msgstr "Upravit"
+msgstr "Düzenle"
 
 #: ../gtk/parameters.ui.h:58
 msgid "Remove"
-msgstr "Odstranit"
+msgstr "Kaldır"
 
 #: ../gtk/parameters.ui.h:59
 msgid "<b>Proxy accounts</b>"
-msgstr "<b>Proxy účty</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:60
 msgid "Erase all passwords"
-msgstr "Vymazat všechna hesla"
+msgstr "Bütün parolaları sil"
 
 #: ../gtk/parameters.ui.h:61
 msgid "<b>Privacy</b>"
-msgstr "<b>Soukromí</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:62
 msgid "Automatically answer when a call is received"
@@ -1392,73 +1388,73 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:64
 msgid "Manage SIP Accounts"
-msgstr "Nastavení SIP účtů"
+msgstr "SİP Hesaplarını Yönet"
 
 #: ../gtk/parameters.ui.h:65 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
-msgstr "Povolit"
+msgstr "Etkinleştirme"
 
 #: ../gtk/parameters.ui.h:66 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
-msgstr "Zakázat"
+msgstr "Devre dışı"
 
 #: ../gtk/parameters.ui.h:67
 msgid "<b>Codecs</b>"
-msgstr "<b>Kodeky</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:68
 msgid "0 stands for \"unlimited\""
-msgstr "0 znamená „neomezeno“"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:69
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Omezení odchozí rychlosti (kb/s):"
+msgstr "Gönderim hız sınırı Kbit/saniye:"
 
 #: ../gtk/parameters.ui.h:70
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Omezení příchozí rychlosti (kb/s):"
+msgstr "İndirme hız sınırı Kbit/saniye:"
 
 #: ../gtk/parameters.ui.h:71
 msgid "Enable adaptive rate control"
-msgstr "Zapnout přizpůsobující se řízení rychlosti"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:72
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr "<i>Přizpůsobující se řízení rychlosti je technika dynamického odhadu dostupného pásma během hovoru.</i>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:73
 msgid "<b>Bandwidth control</b>"
-msgstr "<b>Využití šířky pásma</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:74
 msgid "Codecs"
-msgstr "Kodeky"
+msgstr "Çözücüler"
 
 #: ../gtk/parameters.ui.h:75
 msgid "<b>Language</b>"
-msgstr "<b>Jazyk</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:76
 msgid "Show advanced settings"
-msgstr "Zobrazit podrobnější nastavení"
+msgstr "Gelişmiş ayarları göster"
 
 #: ../gtk/parameters.ui.h:77
 msgid "<b>Level</b>"
-msgstr "<b>Úroveň</b>"
+msgstr ""
 
 #: ../gtk/parameters.ui.h:78
 msgid "User interface"
-msgstr "Uživatelské rozhraní"
+msgstr "Kullanıcı arayüzü"
 
 #: ../gtk/parameters.ui.h:79 ../gtk/ldap.ui.h:2
 msgid "Server address:"
-msgstr ""
+msgstr "Sunucu adresi:"
 
 #: ../gtk/parameters.ui.h:80 ../gtk/ldap.ui.h:3
 msgid "Authentication method:"
-msgstr ""
+msgstr "Kimlik doğrulama yöntemi:"
 
 #: ../gtk/parameters.ui.h:82
 msgid "<b>LDAP Account setup</b>"
@@ -1466,11 +1462,11 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:83
 msgid "LDAP"
-msgstr ""
+msgstr "LDAP"
 
 #: ../gtk/parameters.ui.h:84
 msgid "Done"
-msgstr "Hotovo"
+msgstr "Tamam"
 
 #: ../gtk/parameters.ui.h:85
 msgid "SIP (UDP)"
@@ -1486,15 +1482,15 @@ msgstr "SIP (TLS)"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
-msgstr "Hledat kontakty v adresáři"
+msgstr ""
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
-msgstr "Přidat na svůj seznam"
+msgstr "Listeme ekle"
 
 #: ../gtk/buddylookup.ui.h:3
 msgid "<b>Search somebody</b>"
-msgstr "<b>Hledat někoho</b>"
+msgstr ""
 
 #: ../gtk/waiting.ui.h:1
 msgid "Linphone"
@@ -1502,67 +1498,67 @@ msgstr "Linphone"
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
-msgstr "Prosím, čekejte"
+msgstr "Lütfen bekleyin"
 
 #: ../gtk/dscp_settings.ui.h:1
 msgid "DSCP settings"
-msgstr ""
+msgstr "DSCP ayarları"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
-msgstr "SIP"
+msgstr "SİP"
 
 #: ../gtk/dscp_settings.ui.h:3
 msgid "Audio RTP stream"
-msgstr "RTP proud zvuku"
+msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:4
 msgid "Video RTP stream"
-msgstr "RTP proud obrazu"
+msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
-msgstr "<b>Nastavit hodnoty DSCP (šestnáctkově)</b>"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:1
 msgid "Call statistics"
-msgstr "Statistické údaje o hovoru"
+msgstr "Çağrı istatistikleri"
 
 #: ../gtk/call_statistics.ui.h:2
 msgid "Audio codec"
-msgstr "Kodek zvuku"
+msgstr "Ses çözücü"
 
 #: ../gtk/call_statistics.ui.h:3
 msgid "Video codec"
-msgstr "Kodek obrazu"
+msgstr "Görüntü çözücü"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
-msgstr "Přenosová rychlost zvuku na úrovni IP"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:5
 msgid "Audio Media connectivity"
-msgstr "Zvukové spojení"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:6
 msgid "Video IP bandwidth usage"
-msgstr "Přenosová rychlost obrazu na úrovni IP"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:7
 msgid "Video Media connectivity"
-msgstr "Obrazové spojení"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:8
 msgid "Round trip time"
-msgstr "Odezva"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:9
 msgid "Video resolution received"
-msgstr ""
+msgstr "Alınan görüntü çözünürlüğü"
 
 #: ../gtk/call_statistics.ui.h:10
 msgid "Video resolution sent"
-msgstr ""
+msgstr "Giden görüntü çözünürlüğü"
 
 #: ../gtk/call_statistics.ui.h:11
 msgid "RTP profile"
@@ -1570,39 +1566,39 @@ msgstr ""
 
 #: ../gtk/call_statistics.ui.h:12
 msgid "<b>Call statistics and information</b>"
-msgstr "<b>Statistické a ostatní údaje o hovoru</b>"
+msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:1
 msgid "Configure VoIP tunnel"
-msgstr "Nastavit VoIP tunel"
+msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:2
 msgid "Host"
-msgstr "Stroj"
+msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:3
 msgid "Port"
-msgstr "Port"
+msgstr "Bağlantı noktası"
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
-msgstr "<b>Nastavit tunel</b>"
+msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
-msgstr "<b>Nastavit HTTP proxy (volitelné)</b>"
+msgstr ""
 
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
-msgstr ""
+msgstr "LDAP Ayarları"
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
-msgstr ""
+msgstr "TLS Bağlantısı Kullan"
 
 #: ../gtk/ldap.ui.h:7
 msgid "Not yet available"
-msgstr ""
+msgstr "Henüz kullanılabilir değil"
 
 #: ../gtk/ldap.ui.h:8
 msgid "<b>Connection</b>"
@@ -1618,7 +1614,7 @@ msgstr ""
 
 #: ../gtk/ldap.ui.h:11
 msgid "Realm"
-msgstr ""
+msgstr "Ülke"
 
 #: ../gtk/ldap.ui.h:12
 msgid "<b>SASL</b>"
@@ -1693,7 +1689,7 @@ msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
-msgstr ""
+msgstr "Yapılandırılıyor..."
 
 #: ../gtk/provisioning-fetch.ui.h:2
 msgid "Please wait while fetching configuration from server..."
@@ -1701,242 +1697,242 @@ msgstr ""
 
 #: ../coreapi/linphonecore.c:1534
 msgid "Ready"
-msgstr "Připraven."
+msgstr "Hazır"
 
 #: ../coreapi/linphonecore.c:2534
 msgid "Configuring"
-msgstr ""
+msgstr "Yapılandırılıyor"
 
 #: ../coreapi/linphonecore.c:2708
 msgid "Looking for telephone number destination..."
-msgstr "Vyhledává se umístění čísla…"
+msgstr ""
 
 #: ../coreapi/linphonecore.c:2710
 msgid "Could not resolve this number."
-msgstr "Toto číslo nelze vyhledat."
+msgstr ""
 
 #. must be known at that time
 #: ../coreapi/linphonecore.c:2996
 msgid "Contacting"
-msgstr "Navazuje se spojení"
+msgstr "Bağlanıyor"
 
 #: ../coreapi/linphonecore.c:3001
 msgid "Could not call"
-msgstr "Nelze volat"
+msgstr ""
 
 #: ../coreapi/linphonecore.c:3152
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
-msgstr "Je nám líto, ale byl dosažen maximální počet současných hovorů."
+msgstr ""
 
 #: ../coreapi/linphonecore.c:3310
 msgid "is contacting you"
-msgstr "vás volá"
+msgstr ""
 
 #: ../coreapi/linphonecore.c:3311
 msgid " and asked autoanswer."
-msgstr " a požaduje automatickou zvednutí."
+msgstr ""
 
 #: ../coreapi/linphonecore.c:3435
 msgid "Modifying call parameters..."
-msgstr "Upravují se parametry hovoru…"
+msgstr ""
 
 #: ../coreapi/linphonecore.c:3782
 msgid "Connected."
-msgstr "Připojeno."
+msgstr "Bağlandı."
 
 #: ../coreapi/linphonecore.c:3807
 msgid "Call aborted"
-msgstr "Hovor přerušen"
+msgstr "Çağrı iptal edildi"
 
 #: ../coreapi/linphonecore.c:3997
 msgid "Could not pause the call"
-msgstr "Hovor nebylo možné odložit"
+msgstr ""
 
 #: ../coreapi/linphonecore.c:4000
 msgid "Pausing the current call..."
-msgstr "Současný hovor se odkládá…"
+msgstr ""
 
 #: ../coreapi/misc.c:433
 msgid "Stun lookup in progress..."
-msgstr "Hledá se adresa pomocí STUN…"
+msgstr ""
 
 #: ../coreapi/misc.c:614
 msgid "ICE local candidates gathering in progress..."
-msgstr "Shromažďují se místní kandidáti ICE…"
+msgstr ""
 
 #: ../coreapi/friend.c:33
 msgid "Online"
-msgstr "Připojen"
+msgstr "Çevrimiçi"
 
 #: ../coreapi/friend.c:36
 msgid "Busy"
-msgstr "Zaneprázdněn"
+msgstr "Meşgul"
 
 #: ../coreapi/friend.c:39
 msgid "Be right back"
-msgstr "Za chvíli se vrátím"
+msgstr ""
 
 #: ../coreapi/friend.c:42
 msgid "Away"
-msgstr "Pryč"
+msgstr "Uzakta"
 
 #: ../coreapi/friend.c:45
 msgid "On the phone"
-msgstr "U telefonu"
+msgstr "Telefondayım"
 
 #: ../coreapi/friend.c:48
 msgid "Out to lunch"
-msgstr "Na obědě"
+msgstr "Yemekteyim"
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
-msgstr "Nerušit"
+msgstr ""
 
 #: ../coreapi/friend.c:54
 msgid "Moved"
-msgstr "Přestěhoval jsem se"
+msgstr "Taşındı"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
-msgstr "Používám jinou službu přenosu zpráv"
+msgstr ""
 
 #: ../coreapi/friend.c:60
 msgid "Offline"
-msgstr "Odpojen"
+msgstr "Çevrimdışı"
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
-msgstr "Čekám"
+msgstr "Bekliyor"
 
 #: ../coreapi/friend.c:66
 msgid "Vacation"
-msgstr ""
+msgstr "Tatil"
 
 #: ../coreapi/friend.c:68
 msgid "Unknown status"
-msgstr ""
+msgstr "Bilinmeyen durum"
 
 #: ../coreapi/proxy.c:328
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr "Adresa SIP proxy, kterou jste zadali, není platná. Musí začínat na „sip:“ a pak musí následovat jméno stroje."
+msgstr ""
 
 #: ../coreapi/proxy.c:334
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr "SIP identita, kterou jste zadali, není platná.\nMěla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
+msgstr ""
 
 #: ../coreapi/proxy.c:1416
 #, c-format
 msgid "Could not login as %s"
-msgstr "Nelze se přihlásit jako %s"
+msgstr ""
 
 #: ../coreapi/callbacks.c:428
 msgid "Remote ringing."
-msgstr "Vyzvání na druhé straně."
+msgstr ""
 
 #: ../coreapi/callbacks.c:440
 msgid "Remote ringing..."
-msgstr "Vyzvání na druhé straně…"
+msgstr ""
 
 #: ../coreapi/callbacks.c:461
 msgid "Early media."
-msgstr "Časná média."
+msgstr ""
 
 #: ../coreapi/callbacks.c:533
 #, c-format
 msgid "Call with %s is paused."
-msgstr "Hovor s %s je odložen."
+msgstr ""
 
 #: ../coreapi/callbacks.c:546
 #, c-format
 msgid "Call answered by %s - on hold."
-msgstr "Hovor přijat kým: %s – odložen."
+msgstr ""
 
 #: ../coreapi/callbacks.c:556
 msgid "Call resumed."
-msgstr "Hovor obnoven."
+msgstr ""
 
 #: ../coreapi/callbacks.c:560
 #, c-format
 msgid "Call answered by %s."
-msgstr "Hovor přijat kým: %s."
+msgstr ""
 
 #: ../coreapi/callbacks.c:583
 msgid "Incompatible, check codecs or security settings..."
-msgstr "Není slučitelné. Zkontrolujte nastavení kodeků a zabezpečení…"
+msgstr ""
 
 #: ../coreapi/callbacks.c:588 ../coreapi/callbacks.c:900
 msgid "Incompatible media parameters."
-msgstr "Neslučitelné parametry médií."
+msgstr ""
 
 #: ../coreapi/callbacks.c:618
 msgid "We have been resumed."
-msgstr "Byli jsme obnoveni."
+msgstr ""
 
 #. we are being paused
 #: ../coreapi/callbacks.c:626
 msgid "We are paused by other party."
-msgstr "Byli jsme odloženi protistranou."
+msgstr ""
 
 #. reINVITE and in-dialogs UPDATE go here
 #: ../coreapi/callbacks.c:660
 msgid "Call is updated by remote."
-msgstr "Hovor byl aktualizován protistranou."
+msgstr ""
 
 #: ../coreapi/callbacks.c:776
 msgid "Call terminated."
-msgstr "Hovor ukončen."
+msgstr "Çağrı sonlandırıldı"
 
 #: ../coreapi/callbacks.c:804
 msgid "User is busy."
-msgstr "Uživatel je zaneprázdněn."
+msgstr "Kullanıcı meşgul"
 
 #: ../coreapi/callbacks.c:805
 msgid "User is temporarily unavailable."
-msgstr "Uživatel je dočasně nedostupný."
+msgstr ""
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
 #: ../coreapi/callbacks.c:807
 msgid "User does not want to be disturbed."
-msgstr "Uživatel si nepřeje být rušen."
+msgstr ""
 
 #: ../coreapi/callbacks.c:808
 msgid "Call declined."
-msgstr "Volání odmítnuto."
+msgstr "Çağrı reddedildi."
 
 #: ../coreapi/callbacks.c:823
 msgid "Request timeout."
-msgstr ""
+msgstr "İstek zamanaşımına uğradı."
 
 #: ../coreapi/callbacks.c:854
 msgid "Redirected"
-msgstr "Přesměrováno"
+msgstr "Yeniden yönlendirildi"
 
 #: ../coreapi/callbacks.c:909
 msgid "Call failed."
-msgstr "Volání se nezdařilo."
+msgstr "Arama başarısız"
 
 #: ../coreapi/callbacks.c:987
 #, c-format
 msgid "Registration on %s successful."
-msgstr "Registrace na %s byla úspěšná."
+msgstr ""
 
 #: ../coreapi/callbacks.c:988
 #, c-format
 msgid "Unregistration on %s done."
-msgstr "Odregistrování z %s hotovo."
+msgstr ""
 
 #: ../coreapi/callbacks.c:1006
 msgid "no response timeout"
-msgstr "odpověď nedorazila včas"
+msgstr ""
 
 #: ../coreapi/callbacks.c:1009
 #, c-format
 msgid "Registration on %s failed: %s"
-msgstr "Registrace na %s selhala: %s"
+msgstr ""
 
 #: ../coreapi/callbacks.c:1016
 msgid "Service unavailable, retrying"
@@ -1946,7 +1942,7 @@ msgstr ""
 #: ../coreapi/linphonecall.c:180
 #, c-format
 msgid "Authentication token is %s"
-msgstr "Klíč k ověření totožnosti je %s"
+msgstr ""
 
 #: ../coreapi/linphonecall.c:1305
 msgid "Call parameters were successfully modified."
@@ -1956,21 +1952,20 @@ msgstr ""
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "Máte %i zmeškaný hovor."
-msgstr[1] "Máte %i zmeškané hovory."
-msgstr[2] "Máte %i zmeškaných hovorů."
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../coreapi/call_log.c:209
 msgid "aborted"
-msgstr ""
+msgstr "iptal edildi"
 
 #: ../coreapi/call_log.c:212
 msgid "completed"
-msgstr ""
+msgstr "tamamlandı"
 
 #: ../coreapi/call_log.c:215
 msgid "missed"
-msgstr ""
+msgstr "Yanıtsız"
 
 #: ../coreapi/call_log.c:218
 msgid "unknown"

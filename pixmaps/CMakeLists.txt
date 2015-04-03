@@ -42,7 +42,6 @@ set(PIXMAPS
 	hold_on.png
 	linphone-banner.png
 	linphone.icns
-	linphone.png
 	mic_active.png
 	mic_muted.png
 	notok.png
@@ -60,5 +59,10 @@ set(PIXMAPS
 
 install(FILES ${PIXMAPS}
 	DESTINATION ${PACKAGE_DATA_DIR}/pixmaps/linphone
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
+
+install(FILES linphone.png
+	DESTINATION ${PACKAGE_DATA_DIR}/icons/hicolor/48x48/apps
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

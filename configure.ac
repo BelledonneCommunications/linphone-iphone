@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.8.0-linphone-daemon],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.8.1],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -337,7 +337,14 @@ AC_ARG_ENABLE(gtk_ui,
 if test "$gtk_ui" = "true" ; then
 	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.18.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
-		PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration >= 2.0.1])
+		PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration >= 2.0.1], [found_gtkmac=true], [found_gtkmac=false])
+		if test "$found_gtkmac" != "true" ; then
+			dnl for newest macports, the name changed.
+			PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration-gtk2 >= 2.0.1], [found_gtkmac=true], [found_gtkmac=false])
+		fi
+		if test "$found_gtkmac" != "true" ; then
+			AC_MSG_ERROR([gtk-mac-integration not found. Please install gtk-osx-application package.])
+		fi
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
 	fi
 else
@@ -1008,7 +1015,20 @@ dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
 
-AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,false)
+AC_ARG_ENABLE(doxygen,
+	[AS_HELP_STRING([--disable-documentation], [Disable documentation generation using doxygen (default=no)])],
+	[case "${enableval}" in
+		yes)	documentation_enabled=yes;;
+		no)		documentation_enabled=no;;
+		*)		AC_MSG_ERROR("Bad value for --disable-documentation");;
+	esac],
+	[documentation_enabled=yes]
+)
+if test "$documentation_enabled" = "yes" ; then
+	AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,false)
+else
+	DOXYGEN=false
+fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
 

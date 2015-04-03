@@ -167,10 +167,10 @@ filelist: zip
 
 pull-transifex:
 	tx pull -af
-	$(MAKE) -C po update-po
 
 push-transifex:
-	tx push -s -t -f --no-interactive
+	$(MAKE) -C po update-po
+	tx push -s -f --no-interactive
 
 
 ### WINDOWS
@@ -214,7 +214,7 @@ BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 #a path prefix where additional libs can be cherry-picked by the bundler.
 LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=/usr/local
 
-bundle:
+Linphone.app:
 	rm -rf $(INSTALLDIR)
 	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
@@ -228,8 +228,16 @@ bundle:
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
 	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
+	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
+
+bundle: Linphone.app
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+
+signed-bundle: Linphone.app
+	codesign --deep -s $(BUNDLE_SIGNING_ID) $(BUNDLEDIR)
+	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+	
 
 ###
 ### CLEAN

@@ -259,6 +259,23 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	linphone_core_set_ringback(mgr->lc, NULL);
 #endif
 
+#ifdef VIDEO_ENABLED
+	{
+		MSWebCam *cam;
+
+		cam = ms_web_cam_manager_get_cam(ms_web_cam_manager_get(), "Mire: Mire (synthetic moving picture)");
+
+		if (cam == NULL) {
+			MSWebCamDesc *desc = ms_mire_webcam_desc_get();
+			if (desc){
+				cam=ms_web_cam_new(desc);
+				ms_web_cam_manager_add_cam(ms_web_cam_manager_get(), cam);
+			}
+		}
+	}
+#endif
+
+
 	if( manager_count >= 2){
 		char hellopath[512];
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_writable_dir_prefix,mgr->lc);
@@ -269,6 +286,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
 	}
+	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_writable_dir_prefix);
 
 	if (rc_path) ms_free(rc_path);
 

@@ -143,11 +143,29 @@ static FILE* gzuncompress(const char* filepath) {
 }
 #endif
 
+static time_t get_current_time() {
+	struct timeval tp;
+	struct tm *lt;
+#ifndef WIN32
+	struct tm tmbuf;
+#endif
+	time_t tt;
+	ortp_gettimeofday(&tp,NULL);
+	tt = (time_t)tp.tv_sec;
+
+#ifdef WIN32
+	lt = localtime(&tt);
+#else
+	lt = localtime_r(&tt,&tmbuf);
+#endif
+	return mktime(lt);
+}
+
 static time_t check_file(LinphoneCoreManager* mgr)  {
 
-	time_t last_log = ms_time(NULL);
+	time_t cur_time = get_current_time();
 	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
-	time_t  time_curr = -1;
+	time_t  log_time = -1;
 	uint32_t timediff = 0;
 	FILE *file = NULL;
 
@@ -159,7 +177,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		size_t line_size = 256;
 #ifndef WIN32
 		struct tm tm_curr = {0};
-		time_t time_prev = -1;
+		time_t time_prev = 0;
 #endif
 
 #if HAVE_ZLIB
@@ -182,10 +200,13 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
 				memcpy(date, line, 23);
+				/*reset tm_curr to reset milliseconds and below fields*/
+				memset(&tm_curr, 0, sizeof(struct tm));
 				if (strptime(date, "%Y-%m-%d %H:%M:%S", &tm_curr) != NULL) {
-					time_curr = mktime(&tm_curr);
-					CU_ASSERT_TRUE(time_curr >= time_prev);
-					time_prev = time_curr;
+					tm_curr.tm_isdst = -1; // LOL
+					log_time = mktime(&tm_curr);
+					CU_ASSERT_TRUE(log_time >= time_prev);
+					time_prev = log_time;
 				}
 			}
 #endif
@@ -196,19 +217,27 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		ms_free(filepath);
 
 
-		timediff = labs((long int)time_curr - (long int)last_log);
+		timediff = labs((long int)log_time - (long int)cur_time);
 		(void)timediff;
 #ifndef WIN32
 		CU_ASSERT_TRUE( timediff <= 1 );
 		if( !(timediff <= 1) ){
-			ms_error("time_curr: %ld, last_log: %ld timediff: %u", (long int)time_curr, (long int)last_log, timediff );
+			char buffers[2][128] = {{0}};
+			strftime(buffers[0], sizeof(buffers[0]), "%Y-%m-%d %H:%M:%S", localtime(&log_time));
+			strftime(buffers[1], sizeof(buffers[1]), "%Y-%m-%d %H:%M:%S", localtime(&cur_time));
+
+			ms_error("log_time: %ld (%s), cur_time: %ld (%s) timediff: %u"
+				, (long int)log_time, buffers[0]
+				, (long int)cur_time, buffers[1]
+				, timediff
+			);
 		}
 #else
 		ms_warning("strptime() not available for this platform, test is incomplete.");
 #endif
 	}
 	// return latest time in file
-	return time_curr;
+	return log_time;
 }
 
 static void collect_files_disabled()  {

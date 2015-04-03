@@ -450,7 +450,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
  * unregister without moving the register_enable flag
  */
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
-	if (obj->state == LinphoneRegistrationOk) {
+	if (obj->op && obj->state == LinphoneRegistrationOk) {
 		sal_unregister(obj->op);
 	}
 }

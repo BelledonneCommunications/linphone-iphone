@@ -38,7 +38,7 @@ over the internet. It has a gtk+ and console interface.
 Summary:       Development libraries for linphone
 Group:         Development/Libraries
 Requires:      %{name} = %{version}-%{release}
-Requires:      ortp-devel = @ORTP_VERSION@
+Requires:      ortp-devel = 1:@ORTP_VERSION@
 Requires:      mediastreamer-devel = @MS2_VERSION@
 Requires:      glib2-devel
 
@@ -60,7 +60,6 @@ Libraries and headers required to develop software with linphone.
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-install -p -m 0644 pixmaps/linphone.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %find_lang %{name}
 desktop-file-install \
   --delete-original \
@@ -88,7 +87,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/audio-assistant.desktop
 %{_datadir}/pixmaps/linphone
 %{_datadir}/linphone
-%{_datadir}/pixmaps/linphone.png
+%{_datadir}/icons/*
 %{_datadir}/sounds/linphone
 %{_datadir}/appdata/linphone.appdata.xml
 

@@ -36,6 +36,8 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native void done(long nativePtr);
 	private native void  delete(long ptr);
 	private native Object getCore(long ptr);
+	private native void setRefKey(long nativePtr, String key);
+	private native String getRefKey(long nativePtr);
 	
 	boolean ownPtr = false;
 	protected LinphoneFriendImpl()  {
@@ -102,5 +104,15 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		Object core=getCore(nativePtr);
 		if (core!=null) return core;
 		else return this;
+	}
+
+	public void setRefKey(String key){
+		synchronized(getSyncObject()){
+			setRefKey(nativePtr,key);
+		}
+	}
+
+	public String getRefKey(){
+		return getRefKey(nativePtr);
 	}
 }

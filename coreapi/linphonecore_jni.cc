@@ -2892,6 +2892,21 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  en
 	}
 	return NULL;
 }
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setRefKey(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jkey) {
+	const char* key = env->GetStringUTFChars(jkey, NULL);
+	linphone_friend_set_ref_key((LinphoneFriend*)ptr,key);
+	env->ReleaseStringUTFChars(jkey, key);
+}
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getRefKey(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	const char * key = linphone_friend_get_ref_key((LinphoneFriend *)ptr);
+    return key ? env->NewStringUTF(key) : NULL;
+}
+
 
 /*
  * Class:     org_linphone_core_LinphoneFriendImpl

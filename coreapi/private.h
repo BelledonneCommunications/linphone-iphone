@@ -110,6 +110,8 @@ struct _LinphoneCallParams{
 	LinphonePrivacyMask privacy;
 	LinphoneMediaDirection audio_dir;
 	LinphoneMediaDirection video_dir;
+	bool_t video_declined; /*use to keep  traces of declined video to avoid to re-offer video in case of automatic RE-INVITE*/
+	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice)*/
 
 };
 
@@ -281,6 +283,8 @@ struct _LinphoneCall{
 	bool_t record_active;
 
 	bool_t paused_by_app;
+
+	MSWebCam *cam; /*webcam use for this call*/
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -438,6 +442,9 @@ void linphone_core_stop_waiting(LinphoneCore *lc);
 int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const LinphoneAddress* destination/* = NULL if to be taken from the call log */);
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call);
+/*
+ * param automatic_offering aims is to take into account previous answer for video in case of automatic re-invite.
+ *  Purpose is to avoid to re-ask video previously declined */
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState next_state, const char *state_info);
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
@@ -1050,7 +1057,11 @@ static MS2_INLINE bool_t payload_type_enabled(const PayloadType *pt) {
 bool_t is_payload_type_number_available(const MSList *l, int number, const PayloadType *ignore);
 
 const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc);
-MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreements(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore *lc, MSZrtpKeyAgreement keyAgreements[MS_MAX_ZRTP_CRYPTO_TYPES]);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_cipher_suites(LinphoneCore *lc, MSZrtpCipher ciphers[MS_MAX_ZRTP_CRYPTO_TYPES]);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_hash_suites(LinphoneCore *lc, MSZrtpHash hashes[MS_MAX_ZRTP_CRYPTO_TYPES]);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZrtpAuthTag authTags[MS_MAX_ZRTP_CRYPTO_TYPES]);
+MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrtpSasType sasTypes[MS_MAX_ZRTP_CRYPTO_TYPES]);
 
 /** Belle Sip-based objects need unique ids
   */
@@ -1165,7 +1176,10 @@ typedef struct _VTableReference  VTableReference;
 void v_table_reference_destroy(VTableReference *ref);
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
-
+#ifdef VIDEO_ENABLED
+MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
+MSWebCam *get_nowebcam_device();
+#endif
 #ifdef __cplusplus
 }
 #endif

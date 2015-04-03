@@ -1,30 +1,37 @@
 [sip]
-sip_port=5092
-sip_tcp_port=5092
-sip_tls_port=5093
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
 register_only_when_network_is_up=0
+composing_idle_timeout=1
+zrtp_sas_suites=MS_ZRTP_SAS_B256
 
 [auth_info_0]
-username=laure
-userid=laure
+username=pauline
+userid=pauline
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 
 [proxy_0]
-reg_proxy=sip.example.org
-reg_identity=sip:laure@sip.example.org
+reg_proxy=sip2.linphone.org;transport=tls
+reg_route=sip2.linphone.org;transport=tls
+reg_identity=sip:pauline@sip.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
 
+#[friend_0]
+#url="Mariette" <sip:marie@sip.example.org>
+#pol=accept
+#subscribe=0
 
 [rtp]
-audio_rtp_port=9010-9390
-video_rtp_port=9410-9910
+audio_rtp_port=18070-28000
+video_rtp_port=39072-49000
 
 [video]
 display=0

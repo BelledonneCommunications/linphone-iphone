@@ -513,6 +513,7 @@ typedef enum _LinphoneUpnpState LinphoneUpnpState;
 
 #define LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE (1 << 0) /**< received_rtcp field of LinphoneCallStats object has been updated */
 #define LINPHONE_CALL_STATS_SENT_RTCP_UPDATE (1 << 1) /**< sent_rtcp field of LinphoneCallStats object has been updated */
+#define LINPHONE_CALL_STATS_PERIODICAL_UPDATE (1 << 2) /**< Every seconds LinphoneCallStats object has been updated */
 
 
 /**
@@ -529,7 +530,7 @@ typedef struct _LinphoneCallStats LinphoneCallStats;
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
+ * it passes for instantiating the LinphoneCore object (see linphone_core_new() ).
  *
  * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
 **/
@@ -1166,7 +1167,7 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_custom_header(LinphoneProx
 /**
  * Set the value of a custom header sent to the server in REGISTERs request.
  * @param cfg the proxy config object
- * @param header_name the header name 
+ * @param header_name the header name
  * @param header_value the header's value
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value);
@@ -2072,6 +2073,12 @@ LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
  * @param file A pointer to the FILE structure of the file to write to.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
+
+/**
+ * @deprecated Use #linphone_core_set_log_level_mask instead, which is exactly the
+ * same function..
+**/
+LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 /**
  * Define the log level.
  *
@@ -2082,7 +2089,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
  *
  * @param loglevel A bitmask of the log levels to set.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_set_log_level_mask(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);

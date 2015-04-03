@@ -164,7 +164,7 @@ endif
 AM_CPPFLAGS=\
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
 		$(ORTP_CFLAGS) \
-		$(MEDIASTREAMER_CFLAGS) 
+		$(MEDIASTREAMER_CFLAGS)
 
 COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
@@ -200,14 +200,14 @@ make_gitversion_h:
 	if test -n "$(GITLOG)" ; then  \
 		if test "$(GITDESCRIBE)" != "" ; then \
 			if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
-				echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
+				$(ECHO) "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
 				exit 1; \
 			fi ; \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			printf "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"\n" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		elif test "$(GITREVISION)" != "" ; then \
-			$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			printf "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"\n" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		else \
-			$(ECHO) -n "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
+			printf "" > $(builddir)/$(GITVERSION_FILE_TMP) ; \
 		fi ; \
 		if ! test -f $(builddir)/$(GITVERSION_FILE) ; then \
 			cp -f $(builddir)/$(GITVERSION_FILE_TMP) $(builddir)/$(GITVERSION_FILE) ; \

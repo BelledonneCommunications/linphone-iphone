@@ -7,6 +7,6 @@ Comment[fr]=Assistant audio de Linphone.
 Comment[ru]=Помощник аудио Linphone
 Type=Application
 Exec=linphone --run-audio-assistant
-Icon=@prefix@/share/pixmaps/linphone/linphone.png
+Icon=linphone
 Terminal=false
 Categories=Network;Telephony;

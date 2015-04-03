@@ -4,7 +4,7 @@ GenericName=Web-phone
 Comment=Linphone is a web-phone
 Type=Application
 Exec=linphone
-Icon=@prefix@/share/pixmaps/linphone/linphone.png
+Icon=linphone
 Terminal=false
 Categories=Network;Telephony;
 

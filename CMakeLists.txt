@@ -26,7 +26,7 @@ project(LINPHONE C CXX)
 
 set(LINPHONE_MAJOR_VERSION "3")
 set(LINPHONE_MINOR_VERSION "8")
-set(LINPHONE_MICRO_VERSION "0")
+set(LINPHONE_MICRO_VERSION "1")
 set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
 set(LINPHONE_SO_VERSION "6")
 
@@ -94,6 +94,7 @@ endif()
 find_package(BelleSIP REQUIRED)
 find_package(Mediastreamer2 REQUIRED)
 find_package(XML2 REQUIRED)
+find_package(Zlib)
 if(ENABLE_UNIT_TESTS)
 	find_package(CUnit)
 	if(CUNIT_FOUND)
@@ -148,6 +149,10 @@ include_directories(
 	${MEDIASTREAMER2_INCLUDE_DIRS}
 	${XML2_INCLUDE_DIRS}
 )
+if(ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	set(HAVE_ZLIB 1)
+endif()
 if(SQLITE3_FOUND)
 	include_directories(${SQLITE3_INCLUDE_DIRS})
 	add_definitions("-DMSG_STORAGE_ENABLED")
