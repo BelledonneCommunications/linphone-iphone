@@ -227,7 +227,8 @@ struct _LinphoneCall{
 	LinphoneAddress *me; /*Either from or to based on call dir*/
 	SalOp *op;
 	SalOp *ping_op;
-	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
+	char sig_localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local sig ipaddress for this call */
+	char media_localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local media ipaddress for this call */
 	LinphoneCallState state;
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/

@@ -555,19 +555,19 @@ static void transfer_already_assigned_payload_types(SalMediaDescription *old, Sa
 }
 
 static const char *linphone_call_get_bind_ip_for_stream(LinphoneCall *call, int stream_index){
-	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",call->af==AF_INET6 ? "::0" : "0.0.0.0"); ;
+	const char *bind_ip = lp_config_get_string(call->core->config,"rtp","bind_address",call->af==AF_INET6 ? "::0" : "0.0.0.0");
 
 	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0'){
 		if (call->dir==LinphoneCallOutgoing){
 			/*as multicast sender, we must decide a local interface to use to send multicast, and bind to it*/
-			bind_ip=call->localip;
+			bind_ip=call->media_localip;
 		}
 	}
 	return bind_ip;
 }
 
 static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, int stream_index){
-	const char *public_ip=call->localip;
+	const char *public_ip=call->media_localip;
 
 	if (stream_index<2 && call->media_ports[stream_index].multicast_ip[0]!='\0')
 		public_ip=call->media_ports[stream_index].multicast_ip;
@@ -610,7 +610,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->nb_streams=(call->biggestdesc ? call->biggestdesc->nb_streams : 1);
 
-	strncpy(md->addr,call->localip,sizeof(md->addr));
+	strncpy(md->addr,call->media_localip,sizeof(md->addr));
 	if (linphone_address_get_username(addr)) /*might be null in case of identity without userinfo*/
 		strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
 	if (subject) strncpy(md->name,subject,sizeof(md->name));
@@ -906,18 +906,30 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 	}
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
 		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
-		strncpy(call->localip,ip,LINPHONE_IPADDR_SIZE);
+		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
+		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
 #ifdef BUILD_UPNP
 	else if (call->core->upnp != NULL && linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(call->core->upnp) == LinphoneUpnpStateOk) {
 		ip = linphone_upnp_context_get_external_ipaddress(call->core->upnp);
-		strncpy(call->localip,ip,LINPHONE_IPADDR_SIZE);
+		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
+		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
 #endif //BUILD_UPNP
-	linphone_core_get_local_ip(call->core, af, dest, call->localip);
+	/*first nominal use case*/
+	linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
+	strncpy(call->sig_localip,call->media_localip,LINPHONE_IPADDR_SIZE);
+
+	/*next, sometime, override from config*/
+	if ((ip=lp_config_get_string(call->core->config,"rtp","bind_address",NULL)))
+		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
+	if ((ip=lp_config_get_string(call->core->config,"sip","bind_address",NULL)))
+		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
+
+	return;
 }
 
 static void linphone_call_destroy(LinphoneCall *obj);
@@ -3739,7 +3751,7 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
 	LinphoneAddress *ctt=NULL;
 	LinphoneAddress *ret=NULL;
-	const char *localip=call->localip;
+	//const char *localip=call->localip;
 
 	/* first use user's supplied ip address if asked*/
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
@@ -3762,9 +3774,9 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		ctt=linphone_core_get_primary_contact_parsed(lc);
 		if (ctt!=NULL){
 			/*otherwise use supplied localip*/
-			linphone_address_set_domain(ctt,localip);
-			linphone_address_set_port(ctt,linphone_core_get_sip_port(lc));
-			ms_message("Contact has been fixed using local ip"/* to %s",ret*/);
+			linphone_address_set_domain(ctt,NULL/*localip*/);
+			linphone_address_set_port(ctt,-1/*linphone_core_get_sip_port(lc)*/);
+			ms_message("Contact has not been fixed stack will do"/* to %s",ret*/);
 			ret=ctt;
 		}
 	}
