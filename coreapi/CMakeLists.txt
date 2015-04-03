@@ -166,7 +166,12 @@ if(WIN32 AND "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	set_target_properties(linphone PROPERTIES PREFIX "lib")
 endif()
 if(ICONV_FOUND)
-	target_include_directories(linphone PUBLIC ${ICONV_INCLUDE_DIRS})
+	if(APPLE)
+		# Prevent conflict between the system iconv.h header and the one from macports.
+		target_compile_options(linphone PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+	else()
+		target_include_directories(linphone PRIVATE ${ICONV_INCLUDE_DIRS})
+	endif()
 endif()
 
 install(TARGETS linphone EXPORT LinphoneTargets
