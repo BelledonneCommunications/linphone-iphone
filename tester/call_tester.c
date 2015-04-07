@@ -2571,14 +2571,17 @@ static void early_media_call_with_update_base(bool_t media_change){
 
 	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,1000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
-	/* send a 183 to initiate the early media */
-	linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
-	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
-	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
-
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,5000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,5000));
+	
 	pauline_call = linphone_core_get_current_call(pauline->lc);
+	if (!pauline_call) goto end;
+	/* send a 183 to initiate the early media */
+	linphone_core_accept_early_media(pauline->lc, pauline_call);
+	CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000) );
+	CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,5000) );
+
+	
 	pauline_params = linphone_call_params_copy(linphone_call_get_current_params(pauline_call));
 
 	if (media_change) {
@@ -2614,9 +2617,9 @@ static void early_media_call_with_update_base(bool_t media_change){
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 
+end:
 
 	ms_list_free(lcs);
-
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
