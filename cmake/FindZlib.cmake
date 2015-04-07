@@ -40,11 +40,19 @@ if(ZLIB_INCLUDE_DIRS)
 	set(HAVE_ZLIB_H 1)
 endif()
 
-find_library(ZLIB_LIBRARIES
-	NAMES z zlib zlibd
-	HINTS ${_ZLIB_ROOT_PATHS}
-	PATH_SUFFIXES bin lib
-)
+if(ENABLE_STATIC)
+	find_library(ZLIB_LIBRARIES
+		NAMES zstatic zlibstatic zlibstaticd
+		HINTS ${_ZLIB_ROOT_PATHS}
+		PATH_SUFFIXES bin lib
+	)
+else()
+	find_library(ZLIB_LIBRARIES
+		NAMES z zlib zlibd
+		HINTS ${_ZLIB_ROOT_PATHS}
+		PATH_SUFFIXES bin lib
+	)
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Zlib
