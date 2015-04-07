@@ -720,6 +720,7 @@ static char *_lp_config_dirname(char *path) {
 }
 
 void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
+	if (lpconfig->filename == NULL) return;
 	if(strlen(data) > 0) {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
