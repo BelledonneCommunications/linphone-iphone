@@ -4625,23 +4625,53 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 }
 
 void linphone_core_reload_sound_devices(LinphoneCore *lc){
-	const char *ringer,*playback,*capture;
-	ringer=linphone_core_get_ringer_device(lc);
-	playback=linphone_core_get_playback_device(lc);
-	capture=linphone_core_get_capture_device(lc);
+	const char *ringer;
+	const char *playback;
+	const char *capture;
+	char *ringer_copy = NULL;
+	char *playback_copy = NULL;
+	char *capture_copy = NULL;
+
+	ringer = linphone_core_get_ringer_device(lc);
+	if (ringer != NULL) {
+		ringer_copy = ms_strdup(ringer);
+	}
+	playback = linphone_core_get_playback_device(lc);
+	if (playback != NULL) {
+		playback_copy = ms_strdup(playback);
+	}
+	capture = linphone_core_get_capture_device(lc);
+	if (capture != NULL) {
+		capture_copy = ms_strdup(capture);
+	}
 	ms_snd_card_manager_reload(ms_snd_card_manager_get());
 	build_sound_devices_table(lc);
-	linphone_core_set_ringer_device(lc,ringer);
-	linphone_core_set_playback_device(lc,playback);
-	linphone_core_set_capture_device(lc,capture);
+	if (ringer_copy != NULL) {
+		linphone_core_set_ringer_device(lc, ringer_copy);
+		ms_free(ringer_copy);
+	}
+	if (playback_copy != NULL) {
+		linphone_core_set_playback_device(lc, playback_copy);
+		ms_free(playback_copy);
+	}
+	if (capture_copy != NULL) {
+		linphone_core_set_capture_device(lc, capture_copy);
+		ms_free(capture_copy);
+	}
 }
 
 void linphone_core_reload_video_devices(LinphoneCore *lc){
-	const char *devid;
-	devid=linphone_core_get_video_device(lc);
+	char *devid_copy = NULL;
+	const char *devid = linphone_core_get_video_device(lc);
+	if (devid != NULL) {
+		devid_copy = ms_strdup(devid);
+	}
 	ms_web_cam_manager_reload(ms_web_cam_manager_get());
 	build_video_devices_table(lc);
-	linphone_core_set_video_device(lc,devid);
+	if (devid_copy != NULL) {
+		linphone_core_set_video_device(lc, devid_copy);
+		ms_free(devid_copy);
+	}
 }
 
 char linphone_core_get_sound_source(LinphoneCore *lc)

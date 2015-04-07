@@ -244,6 +244,28 @@ static void chat_root_test(void) {
 	linphone_core_destroy(lc);
 }
 
+static void devices_reload_test(void) {
+	char *devid1;
+	char *devid2;
+	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
+
+	devid1 = ms_strdup(linphone_core_get_capture_device(mgr->lc));
+	linphone_core_reload_sound_devices(mgr->lc);
+	devid2 = ms_strdup(linphone_core_get_capture_device(mgr->lc));
+	CU_ASSERT_STRING_EQUAL(devid1, devid2);
+	ms_free(devid1);
+	ms_free(devid2);
+
+	devid1 = ms_strdup(linphone_core_get_video_device(mgr->lc));
+	linphone_core_reload_video_devices(mgr->lc);
+	devid2 = ms_strdup(linphone_core_get_video_device(mgr->lc));
+	CU_ASSERT_STRING_EQUAL(devid1, devid2);
+	ms_free(devid1);
+	ms_free(devid2);
+
+	linphone_core_manager_destroy(mgr);
+}
+
 test_t setup_tests[] = {
 	{ "Version check", linphone_version_test },
 	{ "Linphone Address", linphone_address_test },
@@ -256,7 +278,8 @@ test_t setup_tests[] = {
 	{ "LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value },
 	{ "LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value },
 	{ "LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value },
-	{ "Chat room", chat_root_test }
+	{ "Chat room", chat_root_test },
+	{ "Devices reload", devices_reload_test }
 };
 
 test_suite_t setup_test_suite = {
