@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if(MSVC)
+if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	find_library(LIBGCC NAMES gcc)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
@@ -121,8 +121,6 @@ add_definitions(
 )
 
 set(LIBS
-	${LIBGCC}
-	${LIBMINGWEX}
 	${BELLESIP_LIBRARIES}
 	${MEDIASTREAMER2_LIBRARIES}
 	${XML2_LIBRARIES}
@@ -141,6 +139,9 @@ if(ENABLE_TUNNEL)
 endif()
 if(ENABLE_ASSISTANT)
 	list(APPEND LIBS ${SOUP_LIBRARIES})
+endif()
+if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})
 endif()
 if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	list(APPEND LIBS shlwapi)
