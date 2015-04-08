@@ -220,7 +220,7 @@ static const char *linphone_gtk_get_factory_config_file(){
 				basename ++;
 				*basename = '\0';
 				snprintf(_factory_config_file, sizeof(_factory_config_file),
-								 "%s/../share/Linphone/%s", progdir, FACTORY_CONFIG_FILE);
+								 "%s/../share/linphone/%s", progdir, FACTORY_CONFIG_FILE);
 			} else {
 				free(progdir);
 				return NULL;
