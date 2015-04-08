@@ -698,6 +698,8 @@
 		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
 		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
+		F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */; };
+		F0A54B0D1AD56F4600C22733 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */; };
 		F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F0B4FB5D1A65550B00637027 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0B4FB5C1A65550B00637027 /* Images.xcassets */; };
 		F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B89C2118DC89E30050B60E /* MediaPlayer.framework */; };
@@ -1923,6 +1925,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
+				F0A54B0D1AD56F4600C22733 /* libstdc++.dylib in Frameworks */,
 				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
 				F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */,
 				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
@@ -4544,7 +4548,6 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
@@ -4628,7 +4631,6 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
@@ -4711,7 +4713,6 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
@@ -4795,7 +4796,6 @@
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
@@ -4832,7 +4832,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "";
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "2AC0DC11-4546-47B6-8B8A-453CCA80903C";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
