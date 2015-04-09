@@ -41,6 +41,9 @@ const char *bc_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cach
 const char *bc_tester_writable_dir_prefix = ".";
 #endif
 
+int bc_printf_verbosity_info;
+int bc_printf_verbosity_error;
+
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
 

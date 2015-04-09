@@ -26,8 +26,8 @@
 extern const char *bc_tester_read_dir_prefix;
 extern const char *bc_tester_writable_dir_prefix;
 
-int bc_printf_verbosity_info;
-int bc_printf_verbosity_error;
+extern int bc_printf_verbosity_info;
+extern int bc_printf_verbosity_error;
 
 typedef void (*test_function_t)(void);
 typedef int (*test_suite_function_t)(const char *name);
