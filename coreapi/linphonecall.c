@@ -574,7 +574,11 @@ static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, in
 	return public_ip;
 }
 
-void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
+void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call) {
+	linphone_call_make_local_media_description_with_params(lc, call, call->params);
+}
+
+void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params) {
 	MSList *l;
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
@@ -596,9 +600,9 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		md->streams[1].multicast_role = SalMulticastSender;
 	}
 
-	subject=linphone_call_params_get_session_name(call->params);
+	subject=linphone_call_params_get_session_name(params);
 
-	linphone_core_adapt_to_network(lc,call->ping_time,call->params);
+	linphone_core_adapt_to_network(lc,call->ping_time,params);
 
 	if (call->dest_proxy)
 		me=linphone_proxy_config_get_identity(call->dest_proxy);
@@ -615,8 +619,8 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
 	if (subject) strncpy(md->name,subject,sizeof(md->name));
 
-	if (call->params->down_bw)
-		md->bandwidth=call->params->down_bw;
+	if (params->down_bw)
+		md->bandwidth=params->down_bw;
 	else md->bandwidth=linphone_core_get_download_bandwidth(lc);
 
 	/*set audio capabilities */
@@ -625,14 +629,14 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	strncpy(md->streams[0].name,"Audio",sizeof(md->streams[0].name)-1);
 	md->streams[0].rtp_port=call->media_ports[0].rtp_port;
 	md->streams[0].rtcp_port=call->media_ports[0].rtcp_port;
-	md->streams[0].proto=get_proto_from_call_params(call->params);
-	md->streams[0].dir=get_audio_dir_from_call_params(call->params);
+	md->streams[0].proto=get_proto_from_call_params(params);
+	md->streams[0].dir=get_audio_dir_from_call_params(params);
 	md->streams[0].type=SalAudio;
-	if (call->params->down_ptime)
-		md->streams[0].ptime=call->params->down_ptime;
+	if (params->down_ptime)
+		md->streams[0].ptime=params->down_ptime;
 	else
 		md->streams[0].ptime=linphone_core_get_download_ptime(lc);
-	codec_hints.bandwidth_limit=call->params->audio_bw;
+	codec_hints.bandwidth_limit=params->audio_bw;
 	codec_hints.max_codecs=-1;
 	codec_hints.previously_used=old_md ? old_md->streams[0].already_assigned_payloads : NULL;
 	l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
@@ -648,14 +652,14 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		ms_warning("Cannot get audio local ssrc for call [%p]",call);
 	nb_active_streams++;
 
-	if (call->params->has_video && (!call->params->internal_call_update || !call->current_params->video_declined)){
+	if (params->has_video && (!params->internal_call_update || !call->current_params->video_declined)){
 		strncpy(md->streams[1].rtp_addr,linphone_call_get_public_ip_for_stream(call,1),sizeof(md->streams[1].rtp_addr));
 		strncpy(md->streams[1].rtcp_addr,linphone_call_get_public_ip_for_stream(call,1),sizeof(md->streams[1].rtcp_addr));
 		strncpy(md->streams[1].name,"Video",sizeof(md->streams[1].name)-1);
 		md->streams[1].rtp_port=call->media_ports[1].rtp_port;
 		md->streams[1].rtcp_port=call->media_ports[1].rtcp_port;
 		md->streams[1].proto=md->streams[0].proto;
-		md->streams[1].dir=get_video_dir_from_call_params(call->params);
+		md->streams[1].dir=get_video_dir_from_call_params(params);
 		md->streams[1].type=SalVideo;
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;

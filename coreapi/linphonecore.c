@@ -3987,27 +3987,34 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 {
 	const char *subject=NULL;
+	LinphoneCallParams *params;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
-	linphone_call_make_local_media_description(lc,call);
+	if (sal_media_description_has_dir(call->resultdesc, SalStreamSendRecv)) {
+		subject = "Call on hold";
+	} else if (sal_media_description_has_dir(call->resultdesc, SalStreamRecvOnly)) {
+		subject = "Call on hold for me too";
+	} else {
+		ms_error("No reason to pause this call, it is already paused or inactive.");
+		return -1;
+	}
+	params = linphone_call_params_copy(call->params);
+	linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
+	if (lp_config_get_int(lc->config, "sip", "inactive_video_on_pause", 0)) {
+		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionInactive);
+	} else {
+		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendOnly);
+	}
+	linphone_call_make_local_media_description_with_params(lc, call, params);
+	linphone_call_params_unref(params);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
 #endif //BUILD_UPNP
-	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
-		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
-		subject="Call on hold";
-	}else if (sal_media_description_has_dir(call->resultdesc,SalStreamRecvOnly)){
-		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
-		subject="Call on hold for me too";
-	}else{
-		ms_error("No reason to pause this call, it is already paused or inactive.");
-		return -1;
-	}
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	if (sal_call_update(call->op,subject,FALSE) != 0){
 		linphone_core_notify_display_warning(lc,_("Could not pause the call"));

@@ -620,12 +620,17 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	LinphoneCallParams *params;
 	/*when we are paused, increment session id, because sdp is changed (a=recvonly appears)*/
 	linphone_call_increment_local_media_description(call);
 	/* we are being paused */
 	linphone_core_notify_display_status(lc,_("We are paused by other party."));
-	_linphone_core_accept_call_update(lc,call,NULL,LinphoneCallPausedByRemote,"Call paused by remote");
-
+	params = linphone_call_params_copy(call->params);
+	if (lp_config_get_int(lc->config, "sip", "inactive_video_on_pause", 0)) {
+		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionInactive);
+	}
+	_linphone_core_accept_call_update(lc,call,params,LinphoneCallPausedByRemote,"Call paused by remote");
+	linphone_call_params_unref(params);
 }
 
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t is_update){
