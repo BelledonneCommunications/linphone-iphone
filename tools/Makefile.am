@@ -19,7 +19,7 @@ EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
 if BUILD_TOOLS
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers auto_answer
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -42,9 +42,9 @@ lp_gen_wrappers_SOURCES=genwrappers.cc \
 lp_gen_wrappers_LDADD= \
 		$(LIBXML2_LIBS)
 
-auto_answer_SOURCES=auto_answer.c
-auto_answer_CFLAGS=$(COMMON_CFLAGS)
-auto_answer_LDADD=\
+lp_autoanswer_SOURCES=auto_answer.c
+lp_autoanswer_CFLAGS=$(COMMON_CFLAGS)
+lp_autoanswer_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la \
 	$(MEDIASTREAMER_LIBS)
 
