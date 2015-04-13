@@ -103,9 +103,6 @@ The next pieces need to be compiled manually.
         make CCFLAGS="$CFLAGS -c -O2 -DNeedFunctionPrototypes=1"
         sudo make install INSTALL_ROOT=/opt/local GSM_INSTALL_INC=/opt/local/include
 
-* (Optional) libvpx-1.2 has a bug on MacOS resulting in ugly video. It is recommended to upgrade it manually to 1.3 from source.
-The libvpx build isn't able to produce dual architecture files. To workaround this, configure libvpx twice and use lipo to create a dual architecture `libvpx.a`.
-
 * (Optional, proprietary extension only) Compile and install the tunnel library
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, do:
