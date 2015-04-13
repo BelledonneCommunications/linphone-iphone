@@ -960,14 +960,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		removeFriend(nativePtr, lf.getNativePtr());
 	}
 
-	private native long getFriendByAddress(long ptr, String sipUri);
+	private native LinphoneFriend getFriendByAddress(long ptr, String sipUri);
 	@Override
 	public synchronized LinphoneFriend findFriendByAddress(String sipUri) {
-		long ptr = getFriendByAddress(nativePtr, sipUri);
-		if (ptr == 0) {
-			return null;
-		}
-		return new LinphoneFriendImpl(ptr);
+		return getFriendByAddress(nativePtr, sipUri);
 	}
 
 	public synchronized void setAudioPort(int port) {

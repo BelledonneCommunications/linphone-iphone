@@ -6333,7 +6333,7 @@ void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
 	if (lc->friends){
-		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_destroy);
+		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_unref);
 		ms_list_free(lc->friends);
 		lc->friends=NULL;
 	}

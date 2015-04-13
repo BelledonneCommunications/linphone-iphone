@@ -46,12 +46,15 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		nativePtr = newLinphoneFriend(friendUri);
 	}
 
+	/*reserved for JNI */
 	protected LinphoneFriendImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
-
 	}
 	protected void finalize() throws Throwable {
-		finalize(nativePtr);
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
 	}
 	public void setAddress(LinphoneAddress anAddress) {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
