@@ -1860,7 +1860,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		if (incoming_offer){
 			remote=sal_call_get_remote_media_description(call->op);
-			has_video=call->params->has_video && linphone_core_media_description_contains_video_stream(remote);
+			has_video=linphone_core_video_enabled(call->core) && linphone_core_media_description_contains_video_stream(remote);
 		}else has_video=call->params->has_video;
 
 		_linphone_call_prepare_ice_for_stream(call,0,TRUE);
