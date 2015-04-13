@@ -249,3 +249,7 @@ discovery:
 	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
           $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+
+.PHONY: Linphone.app
+
+
