@@ -858,6 +858,43 @@ static void file_transfer_message_external_body_to_rcs_client(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void dos_module_trigger(void) {
+	char *to;
+	LinphoneChatRoom *chat_room;
+	int i = 0;
+	int number_of_messge_to_send = 100;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	
+	to = linphone_address_as_string(marie->identity);
+	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	
+	do {
+		char msg[128];
+		sprintf(msg, "Flood message number %i", i);
+		linphone_chat_room_send_message(chat_room, msg);
+		ms_usleep(100000);
+		i++;
+	} while (i < number_of_messge_to_send);
+	// At this point we should be banned for a minute
+	
+	ms_usleep(90000000); // Wait 90 seconds to ensure we are not banned anymore
+	CU_ASSERT_TRUE(marie->stat.number_of_LinphoneMessageReceived < number_of_messge_to_send);
+	
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	
+	linphone_chat_room_send_message(chat_room, "This one should pass through");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived, 1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(to);
+}
+
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
 	{ "Message forking", message_forking },
@@ -877,7 +914,8 @@ test_t flexisip_tests[] = {
 	{ "Call with ipv6", call_with_ipv6 },
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
-	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client }
+	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client },
+	{ "DoS module trigger by sending a lot of chat messages", dos_module_trigger }
 };
 
 
