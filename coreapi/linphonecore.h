@@ -183,7 +183,7 @@ typedef enum _LinphoneReason LinphoneReason;
  * Converts a LinphoneReason enum to a string.
  * @ingroup misc
 **/
-const char *linphone_reason_to_string(LinphoneReason err);
+LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
  * Object representing full details about a signaling error or status.
@@ -1623,7 +1623,7 @@ typedef enum _LinphoneGlobalState{
 	LinphoneGlobalConfiguring
 }LinphoneGlobalState;
 
-const char *linphone_global_state_to_string(LinphoneGlobalState gs);
+LINPHONE_PUBLIC const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 
 /**
  * LinphoneCoreLogCollectionUploadState is used to notify if log collection upload have been succesfully delivered or not.
@@ -2770,10 +2770,10 @@ LINPHONE_PUBLIC void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable);
 **/
 LINPHONE_PUBLIC bool_t linphone_core_mic_enabled(LinphoneCore *lc);
 
-bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
-bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
-void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
 
 
 /*******************************************************************************
@@ -3129,7 +3129,7 @@ LINPHONE_PUBLIC	int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	const MSList *linphone_core_get_calls(LinphoneCore *lc);
 
-LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
 /**
  * force registration refresh to be initiated upon next iterate
  * @ingroup proxies

@@ -25,9 +25,7 @@
  ****************************************************************************/
 #include <string.h>
 #ifndef _WIN32_WCE
-#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 #include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
@@ -48,16 +46,18 @@
 #endif /*_WIN32_WCE*/
 #else
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netdb.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
-
-#if defined(_WIN32_WCE)
 
 #if !defined(PATH_MAX)
 #define PATH_MAX 256
 #endif /*PATH_MAX*/
+
+#if defined(_WIN32_WCE)
 
 #if !defined(strdup)
 #define strdup _strdup
@@ -661,6 +661,12 @@ main (int argc, char *argv[]) {
 	exit(EXIT_SUCCESS); /* should never reach here */
 }
 
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	return main(__argc, __argv);
+}
+#endif
+
 /*
  * Initialize linphonec
  */
@@ -1214,15 +1220,21 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("-c", argv[arg_num], 2) == 0)
 		{
 			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
+#ifdef _MSC_VER
+			if (strcmp(argv[arg_num], "NUL") != 0) {
+#endif
 #if !defined(_WIN32_WCE)
-			if (access(argv[arg_num],F_OK)!=0 )
-			{
-				fprintf (stderr,
-					"Cannot open config file %s.\n",
-					 argv[arg_num]);
-				exit(EXIT_FAILURE);
-			}
+				if (access(argv[arg_num], F_OK) != 0)
+				{
+					fprintf(stderr,
+						"Cannot open config file %s.\n",
+						argv[arg_num]);
+					exit(EXIT_FAILURE);
+				}
 #endif /*_WIN32_WCE*/
+#ifdef _MSC_VER
+			}
+#endif
 			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
 		}
 		else if (strncmp ("-b", argv[arg_num], 2) == 0)

@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #ifndef _WIN32_WCE
 #include <errno.h>
-#include <unistd.h>
 #endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
@@ -38,6 +37,7 @@
 
 #ifndef WIN32
 #include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 #define AUDIO 0
