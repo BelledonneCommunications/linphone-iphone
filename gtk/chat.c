@@ -294,6 +294,8 @@ void linphone_gtk_compose_text(void) {
 	LinphoneChatRoom *cr=g_object_get_data(G_OBJECT(w),"cr");
 	if (cr) {
 		linphone_chat_room_compose(cr);
+		linphone_chat_room_mark_as_read(cr);
+		linphone_gtk_friend_list_update_chat_picture();
 	}
 }
 
@@ -422,7 +424,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_send_text,NULL);
-	
+
 	g_signal_connect_swapped(G_OBJECT(entry),"activate",(GCallback)linphone_gtk_send_text,NULL);
 	g_signal_connect_swapped(G_OBJECT(entry),"changed",(GCallback)linphone_gtk_compose_text,NULL);
 	g_signal_connect(G_OBJECT(notebook),"switch_page",(GCallback)linphone_gtk_notebook_tab_select,NULL);
