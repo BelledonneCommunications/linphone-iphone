@@ -532,6 +532,23 @@ static void fmtp_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_t
 	}
 }
 
+static void bitrate_edited(GtkCellRendererText *renderer, gchar *path, gchar *new_text, gpointer userdata){
+	GtkListStore *store=(GtkListStore*)userdata;
+	GtkTreeIter iter;
+	float newbitrate=0;
+	
+	if (!new_text) return;
+	
+	if (sscanf(new_text, "%f", &newbitrate)!=1) return;
+
+	if (gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(store),&iter,path)){
+		PayloadType *pt;
+		gtk_list_store_set(store,&iter,CODEC_BITRATE,newbitrate,-1);
+		gtk_tree_model_get(GTK_TREE_MODEL(store),&iter,CODEC_PRIVDATA,&pt,-1);
+		linphone_core_set_payload_type_bitrate(linphone_gtk_get_core(), pt, (int)newbitrate);
+	}
+}
+
 static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
@@ -571,7 +588,9 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
                                                    renderer,
                                                    "text", CODEC_BITRATE,
 						"foreground",CODEC_COLOR,
+						"editable",TRUE,
                                                    NULL);
+	g_signal_connect(G_OBJECT(renderer),"edited",G_CALLBACK(bitrate_edited),store);
 	gtk_tree_view_append_column (listview, column);
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("Parameters"),
