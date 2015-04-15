@@ -205,4 +205,6 @@ install(FILES ${HEADER_FILES}
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-add_subdirectory(help)
+if(ENABLE_DOC)
+	add_subdirectory(help)
+endif()
