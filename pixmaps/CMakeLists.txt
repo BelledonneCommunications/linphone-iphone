@@ -42,6 +42,7 @@ set(PIXMAPS
 	hold_on.png
 	linphone-banner.png
 	linphone.icns
+	linphone.png
 	mic_active.png
 	mic_muted.png
 	notok.png
