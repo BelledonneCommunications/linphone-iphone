@@ -81,3 +81,4 @@
 	path = Classes/KIF
 	url = https://github.com/kif-framework/KIF.git
 	branch = origin/v3.1.2
+	ignore = dirty
