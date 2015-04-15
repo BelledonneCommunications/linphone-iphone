@@ -279,7 +279,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	CFTypeRef values[] = { [value copy], [LinphoneManager instance].contactSipField };
 	CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
 	if (entry) {
-		index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+		index = (int)ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
 		ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
 	} else {
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
@@ -300,7 +300,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
 		lMap = ABMultiValueCreateMutableCopy(lcMap);
 		CFRelease(lcMap);
-		index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+		index = (int)ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
 		lDict = ABMultiValueCopyValueAtIndex(lMap,index);
 		if(!CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
 			/*too bad probably a gtalk number, storing uri*/

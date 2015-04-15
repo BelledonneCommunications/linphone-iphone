@@ -54,12 +54,12 @@
 
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
-	Linphone_log(@"%@", NSStringFromSelector(_cmd));
+	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[[LinphoneManager instance] enterBackgroundMode];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
 	
@@ -82,7 +82,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
 
     if( startedInBackground ){
         startedInBackground = FALSE;
@@ -232,7 +232,7 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
@@ -311,7 +311,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    Linphone_log(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
+    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
 
 	[self processRemoteNotification:userInfo];
 }
@@ -331,7 +331,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    Linphone_log(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
+    LOGI(@"%@ - state = %ld", NSStringFromSelector(_cmd), (long)application.applicationState);
 
     [self fixRing];
 
@@ -370,7 +370,7 @@
 // this method is implemented for iOS7. It is invoked when receiving a push notification for a call and it has "content-available" in the aps section.
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    Linphone_log(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
+    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
     LinphoneManager* lm = [LinphoneManager instance];
 
     // save the completion handler for later execution.
@@ -394,23 +394,23 @@
 #pragma mark - PushNotification Functions
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    Linphone_log(@"%@ : %@", NSStringFromSelector(_cmd), deviceToken);
+    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), deviceToken);
     [[LinphoneManager instance] setPushNotificationToken:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    Linphone_log(@"%@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
+    LOGI(@"%@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
     [[LinphoneManager instance] setPushNotificationToken:nil];
 }
 
 #pragma mark - User notifications
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
     if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
 
         LinphoneCore* lc = [LinphoneManager getLc];
@@ -441,7 +441,7 @@
 }
 
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
-    Linphone_log(@"%@", NSStringFromSelector(_cmd));
+    LOGI(@"%@", NSStringFromSelector(_cmd));
     completionHandler();
 }
 

@@ -178,12 +178,12 @@
 
     // if we start in portrait, the landscape view must get the opposite height and width
     if( portrait || [[UIDevice currentDevice].systemVersion floatValue] < 8 ){
-        Linphone_log(@"landscape get opposite: %@", NSStringFromCGSize(oppositeFrame.size));
+        LOGI(@"landscape get opposite: %@", NSStringFromCGSize(oppositeFrame.size));
         [landscapeView setFrame:oppositeFrame];
     } else {
         // if we start in landscape, the landscape view has to get the current size,
         // whereas the portrait has to get the opposite
-        Linphone_log(@"landscape get frame: %@ and portrait gets opposite: %@", NSStringFromCGSize(frame.size), NSStringFromCGSize(oppositeFrame.size));
+        LOGI(@"landscape get frame: %@ and portrait gets opposite: %@", NSStringFromCGSize(frame.size), NSStringFromCGSize(oppositeFrame.size));
         [landscapeView setFrame:frame];
         [portraitView setFrame:oppositeFrame];
     }

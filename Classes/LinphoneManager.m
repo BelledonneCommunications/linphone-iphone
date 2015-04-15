@@ -276,7 +276,7 @@ struct codec_name_pref_table codec_pref_table[]={
         self.messagePlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil] autorelease];
 
         sounds.vibrate = kSystemSoundID_Vibrate;
-        
+
         logs = [[NSMutableArray alloc] init];
 		database = NULL;
 		speakerEnabled = FALSE;
@@ -466,7 +466,7 @@ exit_dbmigration:
 	if( configDb == nil ) return;
 
 	if( lp_config_get_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 0) ){
-		Linphone_log(@"UserPrefs migration already performed, skip");
+		LOGI(@"UserPrefs migration already performed, skip");
 		return;
 	}
 
@@ -477,11 +477,11 @@ exit_dbmigration:
 							   @"start_at_boot_preference"  :@YES};
 	BOOL shouldSync        = FALSE;
 
-	Linphone_log(@"%lu user prefs", (unsigned long)[defaults_keys count]);
+	LOGI(@"%lu user prefs", (unsigned long)[defaults_keys count]);
 
 	for( NSString* userpref in values ){
 		if( [defaults_keys containsObject:userpref] ){
-			Linphone_log(@"Migrating %@ from user preferences: %d", userpref, [[defaults objectForKey:userpref] boolValue]);
+			LOGI(@"Migrating %@ from user preferences: %d", userpref, [[defaults objectForKey:userpref] boolValue]);
 			lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[defaults objectForKey:userpref] boolValue]);
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:userpref];
 			shouldSync = TRUE;
@@ -492,7 +492,7 @@ exit_dbmigration:
 	}
 
 	if( shouldSync ){
-		Linphone_log(@"Synchronizing...");
+		LOGI(@"Synchronizing...");
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	// don't get back here in the future
@@ -985,7 +985,7 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 + (void)kickOffNetworkConnection {
     static BOOL in_progress = FALSE;
     if( in_progress ){
-        Linphone_warn(@"Connection kickoff already in progress");
+        LOGW(@"Connection kickoff already in progress");
         return;
     }
     in_progress = TRUE;
@@ -1003,7 +1003,7 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
         time_t loop_time;
 
         if( res == FALSE ){
-            Linphone_log(@"Could not open write stream, backing off");
+            LOGI(@"Could not open write stream, backing off");
             CFRelease(writeStream);
             in_progress = FALSE;
             return;
@@ -1027,10 +1027,10 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
             CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
         } else if( !timeout_reached ){
             CFErrorRef error = CFWriteStreamCopyError(writeStream);
-            Linphone_dbg(@"CFStreamError: %@", error);
+            LOGD(@"CFStreamError: %@", error);
             CFRelease(error);
         } else if( timeout_reached ){
-            Linphone_log(@"CFStream timeout reached");
+            LOGI(@"CFStream timeout reached");
         }
 		CFWriteStreamClose (writeStream);
 		CFRelease(writeStream);
@@ -1196,7 +1196,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register schedule reachability cb: %s", SCErrorString(SCError())];
 		return;
 	}
-	
+
 	// this check is to know network connectivity right now without waiting for a change. Don'nt remove it unless you have good reason. Jehan
 	SCNetworkReachabilityFlags flags;
 	if (SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
@@ -1313,7 +1313,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 			const char* addr = linphone_proxy_config_get_addr(proxy);
 			// we want to enable AVPF for the proxies
 			if( addr && strstr(addr, "sip.linphone.org") != 0 ){
-				Linphone_log(@"Migrating proxy config to use AVPF");
+				LOGI(@"Migrating proxy config to use AVPF");
 				linphone_proxy_config_enable_avpf(proxy, TRUE);
 			}
 			proxies = proxies->next;
@@ -1328,7 +1328,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 			const char* addr = linphone_proxy_config_get_addr(proxy);
 			// we want to enable quality reporting for the proxies that are on linphone.org
 			if( addr && strstr(addr, "sip.linphone.org") != 0 ){
-				Linphone_log(@"Migrating proxy config to send quality report");
+				LOGI(@"Migrating proxy config to send quality report");
 				linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
 				linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
 				linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
@@ -1473,7 +1473,7 @@ static BOOL libStarted = FALSE;
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	linphone_core_set_user_certificates_path(theLinphoneCore,[[LinphoneManager cacheDirectory] UTF8String]);
-	
+
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded (or skipped).
 	 Wait for this to finish the code configuration */
 
@@ -1560,7 +1560,7 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
    //first, make sure this callid is not already involved in a call
     MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
     if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
-        Linphone_warn(@"Call id [%@] already handled",callid);
+        LOGW(@"Call id [%@] already handled",callid);
         return;
     };
     if ([pushCallIDs count] > 10 /*max number of pending notif*/)
@@ -1588,7 +1588,7 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 - (void)playMessageSound {
     BOOL success = [self.messagePlayer play];
     if( !success ){
-        Linphone_err(@"Could not play the message sound");
+        LOGE(@"Could not play the message sound");
     }
     AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 }
@@ -1929,7 +1929,7 @@ static void audioRouteChangeListenerCallback (
 	if (call) {
 		// The LinphoneCallAppData object should be set on call creation with callback
 		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
-		// We are NOT responsible for creating the AppData. 
+		// We are NOT responsible for creating the AppData.
 		LinphoneCallAppData* data=(LinphoneCallAppData*)linphone_call_get_user_pointer(call);
 		if (data==nil)
 			[LinphoneLogger log:LinphoneLoggerError format:@"New call instanciated but app data was not set. Expect it to crash."];
