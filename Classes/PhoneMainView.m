@@ -75,7 +75,7 @@ static RootViewManager* rootViewManagerInstance = nil;
         UIInterfaceOrientation nextViewOrientation = newMainView.interfaceOrientation;
         UIInterfaceOrientation previousOrientation = currentViewController.interfaceOrientation;
 
-        Linphone_log(@"Changing rootViewController: %@ -> %@", currentViewController.name, newMainView.name);
+        LOGI(@"Changing rootViewController: %@ -> %@", currentViewController.name, newMainView.name);
         currentViewController = newMainView;
         LinphoneAppDelegate* delegate = (LinphoneAppDelegate*)[UIApplication sharedApplication].delegate;
 

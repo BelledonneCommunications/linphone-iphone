@@ -253,22 +253,22 @@
     [LinphoneLogger logv:level format:argstart args:args]; \
     va_end(args);
 
-void Linphone_log(NSString* format, ...){
+void LOGI(NSString* format, ...){
     LOGV(LinphoneLoggerLog, format);
 }
 
-void Linphone_dbg(NSString* format, ...){
+void LOGD(NSString* format, ...){
     LOGV(LinphoneLoggerDebug, format);
 }
 
-void Linphone_warn(NSString* format, ...){
+void LOGW(NSString* format, ...){
     LOGV(LinphoneLoggerWarning, format);
 }
 
-void Linphone_err(NSString* format, ...){
+void LOGE(NSString* format, ...){
     LOGV(LinphoneLoggerError, format);
 }
 
-void Linphone_fatal(NSString* format, ...){
+void LOGF(NSString* format, ...){
     LOGV(LinphoneLoggerFatal, format);
 }

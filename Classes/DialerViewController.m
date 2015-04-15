@@ -289,7 +289,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			if( attachLogs ){
 				char * filepath = linphone_core_compress_log_collection([LinphoneManager getLc]);
 				if (filepath == NULL) {
-					Linphone_err(@"Cannot sent logs: file is NULL");
+					LOGE(@"Cannot sent logs: file is NULL");
 					return;
 				}
 				NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
@@ -300,7 +300,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					mimeType = @"application/gzip";
 					filename = [appName stringByAppendingString:@".gz"];
 				} else {
-					Linphone_err(@"Unknown extension type: %@, cancelling email", filename);
+					LOGE(@"Unknown extension type: %@, cancelling email", filename);
 					return;
 				}
 				[controller setMessageBody:NSLocalizedString(@"Application logs", nil) isHTML:NO];

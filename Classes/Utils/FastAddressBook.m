@@ -165,7 +165,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 	if( addressBook != nil ){
 		NSError* err = nil;
 		if( !ABAddressBookSave(addressBook, (CFErrorRef*)err) ){
-			Linphone_warn(@"Couldn't save Address Book");
+			LOGW(@"Couldn't save Address Book");
 		}
 	}
 }

@@ -62,12 +62,11 @@ typedef enum _LinphoneLoggerSeverity {
 
 @end
 
-void Linphone_log(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void Linphone_dbg(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void Linphone_warn(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void Linphone_err(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void Linphone_fatal(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-
+void LOGI(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
+void LOGD(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
+void LOGW(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
+void LOGE(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
+void LOGF(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
 
 
 #endif
