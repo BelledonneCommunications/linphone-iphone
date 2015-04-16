@@ -7,6 +7,7 @@
 //
 
 #import "InAppProductsCell.h"
+#import "LinphoneManager.h"
 
 @implementation InAppProductsCell
 
@@ -14,6 +15,7 @@
 	_isMaximized = isMaximized;
 
 	//show the BUY button only when not maximized
+//	_buyButton.hidden = !isMaximized;
 
 	self.frame = CGRectMake(self.frame.origin.x,
 							self.frame.origin.y,
@@ -21,7 +23,7 @@
 							[InAppProductsCell getHeight:isMaximized]);
 }
 
-- (id)initWithIdentifier:(NSString*)identifier {
+- (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
 		NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"InAppProductsCell"
 															  owner:self
@@ -29,6 +31,7 @@
 		if ([arrayOfViews count] >= 1) {
 			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
 		}
+		_isMaximized = maximized;
 	}
 	return self;
 }
@@ -42,11 +45,11 @@
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"%@ (%@): %@", _ptitle.text, _pprice.text, _pdescription.text];
+	return [NSString stringWithFormat:@"%@ (%@): %@ (%@)", _ptitle.text, _pprice.text, _pdescription.text, _isMaximized ? @"maximized":@"minimized"];
 }
 
 + (CGFloat)getHeight:(BOOL)maximized {
-	return maximized ? 120 : 44;
+	return maximized ? 40 : 40;
 }
 
 @end

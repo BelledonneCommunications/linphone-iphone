@@ -8,19 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UITransparentTVCell.h"
 
-
-@interface InAppProductsCell : UITransparentTVCell {
-
+@interface InAppProductsCell : UITableViewCell {
 }
 @property (retain, nonatomic) IBOutlet UILabel *ptitle;
 @property (retain, nonatomic) IBOutlet UILabel *pdescription;
 @property (retain, nonatomic) IBOutlet UILabel *pprice;
 @property (retain, nonatomic) IBOutlet UISwitch *ppurchased;
 @property (nonatomic) BOOL isMaximized;
+@property (retain, nonatomic) NSString *productID;
 
-- (id)initWithIdentifier:(NSString*)identifier;
+- (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized;
 
 + (CGFloat)getHeight:(BOOL)maximized;
 

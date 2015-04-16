@@ -30,5 +30,5 @@ extern NSString *const kInAppProductsReady;
 
 - (void)loadProducts;
 - (BOOL)isPurchased:(SKProduct*)product;
-
+- (void)purchaseWithID:(NSString*)productId;
 @end

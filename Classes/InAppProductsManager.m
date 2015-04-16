@@ -80,4 +80,8 @@ NSString *const kInAppProductsReady = @"InAppProductsReady";
 	return false;
 }
 
+- (void)purchaseWithID:(NSString *)productId {
+	
+}
+
 @end
