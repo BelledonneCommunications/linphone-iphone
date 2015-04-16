@@ -2233,13 +2233,57 @@ static void call_with_declined_srtp(void) {
 
 		CU_ASSERT_TRUE(call(pauline,marie));
 
-		/*just to sleep*/
 		linphone_core_terminate_all_calls(marie->lc);
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	} else {
 		ms_warning ("not tested because srtp not available");
 	}
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_srtp_paused_and_resumed(void) {
+	/*
+	 * This test was made to evidence a bug due to internal usage of current_params while not yet filled by linphone_call_get_current_params().
+	 * As a result it must not use the call() function because it calls linphone_call_get_current_params().
+	 */
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	const LinphoneCallParams *params;
+	LinphoneCall *pauline_call;
+	
+	if (!linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionSRTP)) goto end;
+	linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
+
+	linphone_core_invite_address(pauline->lc, marie->identity);
+
+	if (!BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1))) goto end;
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	linphone_core_accept_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	
+	if (!BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1))) goto end;
+	
+	linphone_core_pause_call(pauline->lc, pauline_call);
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+	
+	linphone_core_resume_call(pauline->lc, pauline_call);
+	if (!BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2))) goto end;
+	
+	/*assert that after pause and resume, SRTP is still being used*/
+	params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
+	CU_ASSERT_TRUE(linphone_call_params_get_media_encryption(params) == LinphoneMediaEncryptionSRTP);
+	params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
+	CU_ASSERT_TRUE(linphone_call_params_get_media_encryption(params) == LinphoneMediaEncryptionSRTP);
+	
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -4002,6 +4046,7 @@ test_t call_tests[] = {
 	{ "DTLS SRTP call with media relay", dtls_srtp_call_with_media_realy},
 	{ "ZRTP video call",zrtp_video_call},
 	{ "SRTP call with declined srtp", call_with_declined_srtp },
+	{ "SRTP call paused and resumed", call_srtp_paused_and_resumed },
 	{ "Call with file player", call_with_file_player},
 	{ "Call with mkv file player", call_with_mkv_file_player},
 	{ "Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs },

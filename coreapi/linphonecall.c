@@ -1195,21 +1195,8 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 void linphone_call_fix_call_parameters(LinphoneCall *call){
 	if (sal_call_is_offerer(call->op)) {
 		/*get remote params*/
-		const LinphoneCallParams* lcp = linphone_call_get_remote_params(call);
-		call->current_params->video_declined = call->params->has_video && !lcp->has_video;
-	}
-	switch(call->params->media_encryption) {
-		case LinphoneMediaEncryptionZRTP:
-		case LinphoneMediaEncryptionDTLS:
-		case LinphoneMediaEncryptionNone:
-			/* do nothing */
-			break;
-		case LinphoneMediaEncryptionSRTP:
-			call->params->media_encryption=call->current_params->media_encryption;
-			break;
-		default:
-			ms_fatal("Unknown media encryption type on call [%p]", call);
-			break;
+		const LinphoneCallParams* rcp = linphone_call_get_remote_params(call);
+		call->current_params->video_declined = call->params->has_video && !rcp->has_video;
 	}
 }
 
@@ -1447,20 +1434,24 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	}
 #endif
 
-	if (linphone_call_all_streams_encrypted(call)) {
-		if (linphone_call_get_authentication_token(call)) {
-			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
-		} else {
-			/* TODO : check this or presence of dtls_fingerprint in the call? */
-			if (call->params->media_encryption == LinphoneMediaEncryptionDTLS) {
-				call->current_params->media_encryption=LinphoneMediaEncryptionDTLS;
-			} else {
-				call->current_params->media_encryption=LinphoneMediaEncryptionSRTP;
+	/* REVISITED
+	 * Previous code was buggy.
+	 * Relying on the mediastream's state to know the current encryption is unreliable.
+	 * For ZRTP it is though necessary.
+	 * But for all others the current_params->media_encryption state should reflect what is agreed by the offer/answer 
+	 * mechanism.
+	 * Typically there can be inactive streams for which the media layer has no idea of whether they are encrypted or not.
+	 */
+	if (call->params->media_encryption == LinphoneMediaEncryptionZRTP){
+		if (linphone_call_all_streams_encrypted(call)) {
+			if (linphone_call_get_authentication_token(call)) {
+				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
 			}
 		}
-	} else {
-		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+	}else{
+		call->current_params->media_encryption = call->params->media_encryption;
 	}
+
 	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
@@ -2806,9 +2797,6 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
 		}
 #endif
-	}else if (call->params->media_encryption==LinphoneMediaEncryptionSRTP){
-		call->current_params->media_encryption=linphone_call_all_streams_encrypted(call) ?
-		LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
 	}
 
 	set_dtls_fingerprint_on_all_streams(call);
