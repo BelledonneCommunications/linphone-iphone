@@ -20,8 +20,15 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+extern NSString *const kInAppProductsReady;
+
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
-	NSArray *inAppProducts;
+
 }
+
+@property (readonly) NSArray *inAppProducts;
+
+- (void)loadProducts;
+- (BOOL)isPurchased:(SKProduct*)product;
 
 @end

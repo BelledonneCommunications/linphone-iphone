@@ -112,6 +112,11 @@
 		57F005CA15EE2D9200914747 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C715EE2D9200914747 /* linphonerc-factory~ipad */; };
 		631C4FB119D2A8F2004BFE77 /* UIDigitButtonLongPlus.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */; };
 		631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
+		6359DE7F1ADEB54200EA15C0 /* InAppProductsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6359DE7D1ADEB54200EA15C0 /* InAppProductsViewController.m */; };
+		6359DE801ADEB54200EA15C0 /* InAppProductsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6359DE7E1ADEB54200EA15C0 /* InAppProductsViewController.xib */; };
+		6359DE841ADEB64100EA15C0 /* InAppProductsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6359DE821ADEB64100EA15C0 /* InAppProductsCell.m */; };
+		6359DE851ADEB64100EA15C0 /* InAppProductsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6359DE831ADEB64100EA15C0 /* InAppProductsCell.xib */; };
+		6359DE8B1ADF9EB900EA15C0 /* InAppProductsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6359DE8A1ADF9EB900EA15C0 /* InAppProductsTableViewController.m */; };
 		636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutViewController.xib */; };
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
@@ -123,7 +128,6 @@
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63E59A3A1ADE6A0100646FB3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E59A391ADE6A0100646FB3 /* StoreKit.framework */; };
-		63E59A3C1ADE6E5C00646FB3 /* in_app_products.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63E59A3B1ADE6E5C00646FB3 /* in_app_products.plist */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
@@ -1023,6 +1027,14 @@
 		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
 		631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongVoiceMail.m; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		6359DE7C1ADEB54200EA15C0 /* InAppProductsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsViewController.h; sourceTree = "<group>"; };
+		6359DE7D1ADEB54200EA15C0 /* InAppProductsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsViewController.m; sourceTree = "<group>"; };
+		6359DE7E1ADEB54200EA15C0 /* InAppProductsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InAppProductsViewController.xib; sourceTree = "<group>"; };
+		6359DE811ADEB64100EA15C0 /* InAppProductsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsCell.h; sourceTree = "<group>"; };
+		6359DE821ADEB64100EA15C0 /* InAppProductsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsCell.m; sourceTree = "<group>"; };
+		6359DE831ADEB64100EA15C0 /* InAppProductsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InAppProductsCell.xib; sourceTree = "<group>"; };
+		6359DE891ADF9EB900EA15C0 /* InAppProductsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsTableViewController.h; sourceTree = "<group>"; };
+		6359DE8A1ADF9EB900EA15C0 /* InAppProductsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsTableViewController.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutViewController.xib; sourceTree = "<group>"; };
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsViewController.xib; sourceTree = "<group>"; };
 		636316D81A1DECC90009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PhoneMainView.xib; sourceTree = "<group>"; };
@@ -1040,7 +1052,6 @@
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63E59A391ADE6A0100646FB3 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		63E59A3B1ADE6E5C00646FB3 /* in_app_products.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = in_app_products.plist; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EF7FDC1A24B5810017A416 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutViewController.strings; sourceTree = "<group>"; };
@@ -2043,8 +2054,16 @@
 				22405EFD1601C19000B92522 /* ImageViewController.h */,
 				22405EFE1601C19100B92522 /* ImageViewController.m */,
 				D37EE11016035793003608A6 /* ImageViewController.xib */,
+				6359DE811ADEB64100EA15C0 /* InAppProductsCell.h */,
+				6359DE821ADEB64100EA15C0 /* InAppProductsCell.m */,
+				6359DE831ADEB64100EA15C0 /* InAppProductsCell.xib */,
 				63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */,
 				63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */,
+				6359DE891ADF9EB900EA15C0 /* InAppProductsTableViewController.h */,
+				6359DE8A1ADF9EB900EA15C0 /* InAppProductsTableViewController.m */,
+				6359DE7C1ADEB54200EA15C0 /* InAppProductsViewController.h */,
+				6359DE7D1ADEB54200EA15C0 /* InAppProductsViewController.m */,
+				6359DE7E1ADEB54200EA15C0 /* InAppProductsViewController.xib */,
 				D31AAF5C159B3919002C6B02 /* InCallTableViewController.h */,
 				D31AAF5D159B3919002C6B02 /* InCallTableViewController.m */,
 				D3F83EE91582021700336684 /* InCallViewController.h */,
@@ -2240,7 +2259,6 @@
 				F0B89C2518DC973E0050B60E /* wizard_linphone_create.rc */,
 				F0B89C2618DC973E0050B60E /* wizard_linphone_existing.rc */,
 				F0B89C2718DC973E0050B60E /* wizard_remote.rc */,
-				63E59A3B1ADE6E5C00646FB3 /* in_app_products.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -3331,6 +3349,7 @@
 				D38327F71580FE3A00FA0D23 /* settings_default.png in Resources */,
 				D38327F81580FE3A00FA0D23 /* settings_selected.png in Resources */,
 				D38327F91580FE3A00FA0D23 /* chat_default.png in Resources */,
+				6359DE801ADEB54200EA15C0 /* InAppProductsViewController.xib in Resources */,
 				D38327FA1580FE3A00FA0D23 /* chat_selected.png in Resources */,
 				D3832800158100E400FA0D23 /* contacts_over.png in Resources */,
 				D3832801158100E400FA0D23 /* history_over.png in Resources */,
@@ -3367,8 +3386,8 @@
 				D3F83F581582223B00336684 /* numpad_five_default.png in Resources */,
 				D3F83F5A1582223B00336684 /* numpad_five_over.png in Resources */,
 				D3F83F5C1582223B00336684 /* numpad_six_default.png in Resources */,
+				6359DE851ADEB64100EA15C0 /* InAppProductsCell.xib in Resources */,
 				636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */,
-				63E59A3C1ADE6E5C00646FB3 /* in_app_products.plist in Resources */,
 				D3F83F5E1582223B00336684 /* numpad_six_over.png in Resources */,
 				D3F83F601582223B00336684 /* numpad_seven_default.png in Resources */,
 				D3F83F621582223B00336684 /* numpad_seven_over.png in Resources */,
@@ -4039,10 +4058,13 @@
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
+				6359DE8B1ADF9EB900EA15C0 /* InAppProductsTableViewController.m in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				6359DE7F1ADEB54200EA15C0 /* InAppProductsViewController.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerViewController.m in Sources */,
+				6359DE841ADEB64100EA15C0 /* InAppProductsCell.m in Sources */,
 				22405F001601C19200B92522 /* ImageViewController.m in Sources */,
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,

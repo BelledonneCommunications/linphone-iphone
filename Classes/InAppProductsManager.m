@@ -20,14 +20,16 @@
 #import "InAppProductsManager.h"
 #import "Utils.h"
 
+NSString *const kInAppProductsReady = @"InAppProductsReady";
+
 @implementation InAppProductsManager {
 	bool ready;
 }
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
-		[self loadProducts];
 		ready = false;
+		[self loadProducts];
 	}
 	return self;
 }
@@ -36,31 +38,46 @@
 	if (! [SKPaymentQueue canMakePayments]) {
 		return;
 	}
-	
-	NSURL *url = [[NSBundle mainBundle] URLForResource:@"in_app_products"
-										 withExtension:@"plist"];
-
-	inAppProducts = [NSArray arrayWithContentsOfURL:url];
+	//TODO: move this list elsewhere
+	NSArray * list = [[NSArray alloc] initWithArray:@[@"test.tunnel"]];
 
 	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
-										  initWithProductIdentifiers:[NSSet setWithArray:inAppProducts]];
+										  initWithProductIdentifiers:[NSSet setWithArray:list]];
 	productsRequest.delegate = self;
 	[productsRequest start];
 }
 
 - (void)productsRequest:(SKProductsRequest *)request
 	 didReceiveResponse:(SKProductsResponse *)response {
-	inAppProducts = response.products;
-	LOGI(@"Found %lu products purchasable", inAppProducts.count);
+	_inAppProducts = [response.products retain];
+	LOGI(@"Found %lu products purchasable", (unsigned long)_inAppProducts.count);
 
 	for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
 		LOGE(@"Product Identifier with invalid ID %@", invalidIdentifier);
 	}
 	ready = true;
+
+	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+						  _inAppProducts, @"products",
+						  nil];
+
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		[[NSNotificationCenter defaultCenter] postNotificationName:kInAppProductsReady object:self userInfo:dict];
+	});
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
 
+}
+
+- (BOOL)isPurchased:(SKProduct*)product {
+	for (SKProduct *prod in _inAppProducts) {
+		if (prod == product) {
+			LOGE(@"Is %@ bought? assuming NO", product.localizedTitle);
+			return false; //todo
+		}
+	}
+	return false;
 }
 
 @end

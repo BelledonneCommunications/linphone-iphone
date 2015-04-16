@@ -22,6 +22,7 @@
 #import "PhoneMainView.h"
 #import "UILinphone.h"
 #import "UACellBackgroundView.h"
+#import "InAppProductsViewController.h"
 
 #import "DCRoundSwitch.h"
 
@@ -466,6 +467,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(appSettingChanged:) 
                                                  name:kIASKAppSettingChanged
                                                object:nil];
+	
 }
 
 
@@ -603,7 +605,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
-    
+
     [hiddenKeys addObject:@"playback_gain_preference"];
     [hiddenKeys addObject:@"microphone_gain_preference"];
     
@@ -770,6 +772,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		[self emailAttachment:[NSData dataWithContentsOfFile:[NSString stringWithUTF8String:filepath]] mimeType:mimeType name:filename];
 		ms_free(filepath);
+	} else if([key isEqual:@"in_app_products_button"]) {
+		[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription] push:TRUE];
 	}
 }
 
