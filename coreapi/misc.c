@@ -716,8 +716,21 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
-void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
-{
+void linphone_call_stop_ice_for_inactive_streams(SalMediaDescription *desc, IceSession *session) {
+	int i;
+
+	if (session == NULL) return;
+	if (ice_session_state(session) == IS_Completed) return;
+
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		IceCheckList *cl = ice_session_check_list(session, i);
+		if (!sal_stream_description_active(&desc->streams[i]) && cl) {
+			ice_session_remove_check_list(session, cl);
+		}
+	}
+}
+
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session) {
 	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
