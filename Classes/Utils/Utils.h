@@ -38,8 +38,7 @@ typedef enum _LinphoneLoggerSeverity {
 @interface LinphoneLogger : NSObject {
 
 }
-+ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,...;
-+ (void)logc:(LinphoneLoggerSeverity) severity format:(const char *)format,...;
++ (void)log:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString *)format,...;
 
 @end
 
@@ -62,7 +61,7 @@ typedef enum _LinphoneLoggerSeverity {
 
 @end
 
-#define LOGV(level, ...) [LinphoneLogger log:level format:__VA_ARGS__]
+#define LOGV(level, ...) [LinphoneLogger log:level file:__FILE__ line:__LINE__ format:__VA_ARGS__]
 #define LOGI(...) LOGV(LinphoneLoggerLog, __VA_ARGS__)
 #define LOGD(...) LOGV(LinphoneLoggerDebug, __VA_ARGS__)
 #define LOGW(...) LOGV(LinphoneLoggerWarning, __VA_ARGS__)

@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "UIContactDetailsHeader.h"
 #import "Utils.h"
@@ -78,9 +78,9 @@
     [normalView release];
     [editView release];
     [tableView release];
-    
+
     [propertyList release];
-    
+
     [super dealloc];
 }
 
@@ -119,10 +119,10 @@
 
 - (void)update {
     if(contact == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update contact details header: null contact"];
+        LOGW(@"Cannot update contact details header: null contact");
         return;
     }
-    
+
     // Avatar image
     {
         UIImage *image = [FastAddressBook getContactImage:contact thumbnail:false];
@@ -131,12 +131,12 @@
         }
         [avatarImage setImage:image];
     }
-    
+
     // Contact label
     {
         [addressLabel setText:[FastAddressBook getContactDisplayName:contact]];
     }
-    
+
     [tableView reloadData];
 }
 
@@ -154,7 +154,7 @@
     if(!editing) {
         [LinphoneUtils findAndResignFirstResponder:[self tableView]];
         [self update];
-    } 
+    }
     if(animated) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
@@ -164,7 +164,7 @@
         [normalView setAlpha:0.0f];
     } else {
         [editView setAlpha:0.0f];
-        [normalView setAlpha:1.0f]; 
+        [normalView setAlpha:1.0f];
     }
     if(animated) {
         [UIView commitAnimations];
@@ -203,7 +203,7 @@
 - (UITableViewCell *)tableView:(UITableView *)atableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *kCellId = @"ContactDetailsHeaderCell";
     UIEditableTableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
-    if (cell == nil) {  
+    if (cell == nil) {
         cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
         [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
         [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -236,7 +236,7 @@
         }
     }
     [cell.detailTextField setDelegate:self];
-    
+
     return cell;
 }
 
@@ -257,16 +257,16 @@
             }
             if(controller != nil) {
                 controller.sourceType = type;
-                
+
                 // Displays a control that allows the user to choose picture or
                 // movie capture, if both are available:
                 controller.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
-                
+
                 // Hides the controls for moving & scaling pictures, or for
                 // trimming movies. To instead show the controls, use YES.
                 controller.allowsEditing = NO;
                 controller.imagePickerDelegate = self;
-                
+
                 if([LinphoneManager runningOnIpad]) {
                     [controller.popoverController presentPopoverFromRect:[avatarImage frame] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
                 }
@@ -287,7 +287,7 @@
             [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) block:^(){
                 NSError* error = NULL;
                 if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
-                    [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];
+                    LOGI(@"Can't remove entry: %@", [error localizedDescription]);
                 }
                 [self update];
             }];
@@ -316,7 +316,7 @@
 	FastAddressBook* fab = [LinphoneManager instance].fastAddressBook;
     NSError* error = NULL;
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];
+        LOGI(@"Can't remove entry: %@", [error localizedDescription]);
     }
     NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
     CFDataRef cfdata = CFDataCreate(NULL,[dataRef bytes], [dataRef length]);
@@ -324,13 +324,13 @@
 	[fab saveAddressBook];
 
 	if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)error)) {
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+		LOGI(@"Can't add entry: %@", [error localizedDescription]);
 	} else {
 		[fab saveAddressBook];
 	}
 
     CFRelease(cfdata);
-    
+
     [self update];
 }
 
@@ -345,7 +345,7 @@
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];    
+    [textField resignFirstResponder];
     return YES;
 }
 
@@ -358,10 +358,10 @@
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
-    UIView *view = [textField superview]; 
+    UIView *view = [textField superview];
     // Find TableViewCell
     while(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
-    
+
     if(view != nil) {
         UIEditableTableViewCell *cell = (UIEditableTableViewCell*)view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -370,10 +370,10 @@
         NSError* error = NULL;
         ABRecordSetValue(contact, property, [textField text], (CFErrorRef*)&error);
         if (error != NULL) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [error localizedDescription]];
-        } 
+            LOGE(@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [error localizedDescription]);
+        }
     } else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Not valid UIEditableTableViewCell"];
+        LOGW(@"Not valid UIEditableTableViewCell");
     }
     if(contactDetailsDelegate != nil) {
 		//add a mini delay to have the text updated BEFORE notifying the selector

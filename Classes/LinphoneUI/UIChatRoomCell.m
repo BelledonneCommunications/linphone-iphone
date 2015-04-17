@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */  
+ */
 
 #import "UIChatRoomCell.h"
 #import "UILinphone.h"
@@ -68,7 +68,7 @@ static UIFont *CELL_FONT = nil;
 
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
-        
+
         // shift message box, otherwise it will collide with the bubble
         CGRect messageCoords = [messageText frame];
         messageCoords.origin.x   += 2;
@@ -93,16 +93,16 @@ static UIFont *CELL_FONT = nil;
     [downloadButton release];
     [imageTapGestureRecognizer release];
     [resendTapGestureRecognizer release];
-    
+
     [super dealloc];
 }
 
-#pragma mark - 
+#pragma mark -
 
 - (void)setChatMessage:(LinphoneChatMessage *)message {
     self->chat = message;
 	[self update];
-	
+
 }
 
 + (NSString*)decodeTextMessage:(const char*)text {
@@ -119,7 +119,7 @@ static UIFont *CELL_FONT = nil;
 
 - (void)update {
     if(chat == nil) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
+        LOGW(@"Cannot update chat room cell: null chat");
         return;
     }
     const char*      url = linphone_chat_message_get_external_body_url(chat);
@@ -155,9 +155,9 @@ static UIFont *CELL_FONT = nil;
                 }
             });
         } failureBlock:^(NSError *error) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Can't read image"];
+            LOGE(@"Can't read image");
         }];
-        
+
         [messageImageView setHidden:FALSE];
         [downloadButton setHidden:TRUE];
     } else {
@@ -182,10 +182,10 @@ static UIFont *CELL_FONT = nil;
 
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
-        
+
         [downloadButton setHidden:TRUE];
     }
-    
+
     // Date
     NSDate* message_date = [NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(chat)];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -220,13 +220,13 @@ static UIFont *CELL_FONT = nil;
         [dateLabel setAttributedText:resend_text];
         [resend_text release];
 	}
-    
+
     if( outgoing){
         [messageText setAccessibilityLabel:@"Outgoing message"];
     } else {
         [messageText setAccessibilityLabel:@"Incoming message"];
     }
-    
+
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -241,7 +241,7 @@ static UIFont *CELL_FONT = nil;
     if(editing) {
         [deleteButton setAlpha:1.0f];
     } else {
-        [deleteButton setAlpha:0.0f];    
+        [deleteButton setAlpha:0.0f];
     }
     if(animated) {
         [UIView commitAnimations];
@@ -330,7 +330,7 @@ static UIFont *CELL_FONT = nil;
 
 - (IBAction)onDeleteClick:(id)event {
     if(chat != NULL) {
-        UIView *view = [self superview]; 
+        UIView *view = [self superview];
         // Find TableViewCell
         while(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
         if(view != nil) {

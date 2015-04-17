@@ -24,34 +24,30 @@
 @implementation LinphoneLogger
 
 
-+ (void)logv:(LinphoneLoggerSeverity)severity format:(NSString*)format args:(va_list)args{
++ (void)logv:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString*)format args:(va_list)args{
     NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
-	[self logc:severity format:[str UTF8String]];
+	OrtpLogLevel ortp_severity;
+	int filesize = 20;
+	if (severity <= LinphoneLoggerDebug) {
+		ortp_severity = ORTP_DEBUG;
+	} else if(severity <= LinphoneLoggerLog) {
+		ortp_severity = ORTP_MESSAGE;
+	} else if(severity <= LinphoneLoggerWarning) {
+		ortp_severity = ORTP_WARNING;
+	} else if(severity <= LinphoneLoggerError) {
+		ortp_severity = ORTP_ERROR;
+	} else {
+		ortp_severity = ORTP_FATAL;
+	}
+    ortp_log(ortp_severity, "%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
     [str release];
 }
 
-+ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,... {
++ (void)log:(LinphoneLoggerSeverity) severity file:(const char*)file line:(int)line format:(NSString *)format,... {
     va_list args;
 	va_start (args, format);
-    [LinphoneLogger logv:severity format:format args:args];
+	[LinphoneLogger logv:severity file:file line:line format:format args:args];
     va_end (args);
-}
-
-+ (void)logc:(LinphoneLoggerSeverity) severity format:(const char *)format,... {
-    va_list args;
-	va_start (args, format);
-    if(severity <= LinphoneLoggerDebug) {
-        ortp_logv(ORTP_DEBUG, format, args);
-    } else if(severity <= LinphoneLoggerLog) {
-        ortp_logv(ORTP_MESSAGE, format, args);
-    } else if(severity <= LinphoneLoggerWarning) {
-        ortp_logv(ORTP_WARNING, format, args);
-    } else if(severity <= LinphoneLoggerError) {
-        ortp_logv(ORTP_ERROR, format, args);
-    } else if(severity <= LinphoneLoggerFatal) {
-        ortp_logv(ORTP_FATAL, format, args);
-    }
-	va_end (args);
 }
 
 @end

@@ -28,12 +28,12 @@
 - (UIColor *)lumColor:(float)mult {
     float hsbH, hsbS, hsbB;
     float rgbaR, rgbaG, rgbaB, rgbaA;
-    
+
     // Get RGB
     CGColorRef cgColor = [self CGColor];
     CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
     if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
+        LOGW(@"Can't convert not RGB color");
         return self;
     } else {
         const CGFloat *colors = CGColorGetComponents(cgColor);
@@ -42,26 +42,26 @@
         rgbaB = colors[2];
         rgbaA = CGColorGetAlpha(cgColor);
     }
-    
+
     RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
-    
+
     hsbB = MIN(MAX(hsbB * mult, 0.0), 1.0);
-    
+
     HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
-    
+
     return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
 - (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am {
     float hsbH, hsbS, hsbB;
     float rgbaR, rgbaG, rgbaB, rgbaA;
-    
-    
+
+
     // Get RGB
     CGColorRef cgColor = [self CGColor];
     CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
     if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
+        LOGW(@"Can't convert not RGB color");
         return self;
     } else {
         const CGFloat *colors = CGColorGetComponents(cgColor);
@@ -70,16 +70,16 @@
         rgbaB = colors[2];
         rgbaA = CGColorGetAlpha(cgColor);
     }
-    
+
     RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
-    
+
     hsbH = MIN(MAX(hsbH + hm, 0.0), 1.0);
     hsbS = MIN(MAX(hsbS + sm, 0.0), 1.0);
     hsbB = MIN(MAX(hsbB + bm, 0.0), 1.0);
     rgbaA = MIN(MAX(rgbaA + am, 0.0), 1.0);
-    
+
     HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
-    
+
     return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
@@ -114,12 +114,12 @@
                                                  kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Little);
     CGColorSpaceRelease(colorSpace);
     if (!context) return nil;
-    
+
     CGRect rect = (CGRect){CGPointZero,{CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}};
     CGContextDrawImage(context, rect, imageRef);
     CGImageRef decompressedImageRef = CGBitmapContextCreateImage(context);
     CGContextRelease(context);
-    
+
     UIImage *decompressedImage = [[UIImage alloc] initWithCGImage:decompressedImageRef scale:image.scale orientation:image.imageOrientation];
     CGImageRelease(decompressedImageRef);
     return [decompressedImage autorelease];

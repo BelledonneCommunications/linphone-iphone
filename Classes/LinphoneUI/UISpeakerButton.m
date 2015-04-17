@@ -44,7 +44,7 @@ static void audioRouteChangeListenerCallback (
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
     OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
     if (lStatus) {
-        [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
+        LOGE(@"cannot register route change handler [%ld]",lStatus);
     }
 }
 
@@ -75,7 +75,7 @@ static void audioRouteChangeListenerCallback (
 - (void)dealloc {
     OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
 	if (lStatus) {
-		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
+		LOGE(@"cannot un register route change handler [%ld]", lStatus);
 	}
 	[super dealloc];
 }

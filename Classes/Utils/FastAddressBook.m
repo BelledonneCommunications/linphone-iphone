@@ -77,7 +77,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         }
 
 		if (retImage != nil && retImage.size.width != retImage.size.height) {
-			[LinphoneLogger log:LinphoneLoggerLog format:@"Image is not square : cropping it."];
+			LOGI(@"Image is not square : cropping it.");
 			return [self squareImageCrop:retImage];
 		}
     }
@@ -107,7 +107,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (NSString*)normalizeSipURI:(NSString*)address {
-    // replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace 
+    // replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace
     address = [[address componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@" "];
     NSString *normalizedSipAddress = nil;
 	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [address UTF8String]);
@@ -185,7 +185,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
             [self loadData];
         });
        } else {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Create AddressBook: Fail(%@)", [error localizedDescription]];
+        LOGE(@"Create AddressBook: Fail(%@)", [error localizedDescription]);
     }
 }
 

@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */       
+ */
 
 #import "InCallTableViewController.h"
 #import "UICallCell.h"
@@ -60,7 +60,7 @@ enum TableSection {
 		[self initInCallTableViewController];
 	}
     return self;
-}	
+}
 
 - (void)dealloc {
     [super dealloc];
@@ -71,9 +71,9 @@ enum TableSection {
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     updateTime = [NSTimer scheduledTimerWithTimeInterval:1
-                                                  target:self 
-                                                selector:@selector(update) 
-                                                userInfo:nil 
+                                                  target:self
+                                                selector:@selector(update)
+                                                userInfo:nil
                                                  repeats:YES];
 }
 
@@ -97,7 +97,7 @@ enum TableSection {
 + (int)callCount:(LinphoneCore*) lc {
     int count = 0;
     const MSList* calls = linphone_core_get_calls(lc);
-    
+
     while (calls != 0) {
         if (![InCallTableViewController isInConference:((LinphoneCall*)calls->data)]) {
             count++;
@@ -109,7 +109,7 @@ enum TableSection {
 
 + (LinphoneCall*)retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf{
     const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
-    
+
     while (calls != 0) {
         if ([InCallTableViewController isInConference:(LinphoneCall*)calls->data] == conf) {
             if (index == 0)
@@ -118,9 +118,9 @@ enum TableSection {
         }
         calls = calls->next;
     }
-    
+
     if (calls == 0) {
-        [LinphoneLogger logc:LinphoneLoggerError format:"Cannot find call with index %d (in conf: %d)", index, conf];
+        LOGE(@"Cannot find call with index %d (in conf: %d)", index, conf);
         return nil;
     } else {
         return (LinphoneCall*)calls->data;
@@ -128,7 +128,7 @@ enum TableSection {
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 - (void)removeCallData:(LinphoneCall*) call {
     // Remove data associated with the call
@@ -174,7 +174,7 @@ enum TableSection {
         for (int row = 0; row < [tableView numberOfRowsInSection:section]; row++) {
             NSIndexPath* cellPath = [NSIndexPath indexPathForRow:row inSection:section];
             UICallCell* cell = (UICallCell*) [tableView cellForRowAtIndexPath:cellPath];
-            [cell update];        
+            [cell update];
         }
     }
 }
@@ -216,14 +216,14 @@ enum TableSection {
     if (cell == nil) {
         cell = [[[UICallCell alloc] initWithIdentifier:kCellId] autorelease];
     }
-    
+
     bool inConference = indexPath.section == ConferenceSection;
-    
+
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* currentCall = linphone_core_get_current_call(lc);
     LinphoneCall* call = [InCallTableViewController retrieveCallAtIndex:indexPath.row inConference:inConference];
     [cell setData:[self addCallData:call]];
-    
+
     // Update cell
     if ([indexPath section] == CallSection && [indexPath row] == 0 && linphone_core_get_conference_size(lc) == 0) {
         [cell setFirstCell:true];
@@ -233,20 +233,20 @@ enum TableSection {
     [cell setCurrentCall:(currentCall == call)];
     [cell setConferenceCell:inConference];
     [cell update];
-    
+
     /*if (linphone_core_get_calls_nb(lc) > 1 || linphone_core_get_conference_size(lc) > 0) {
         tableView.scrollEnabled = true;
     } else {
         tableView.scrollEnabled = false;
     }*/
     return cell;
-} 
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     int count = 0;
-    
+
     LinphoneCore* lc = [LinphoneManager getLc];
-    
+
     if(section == CallSection) {
         count = [InCallTableViewController callCount:lc];
     } else {
@@ -273,7 +273,7 @@ enum TableSection {
 
 #pragma mark - UITableViewDelegate Functions
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {    
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if(section == CallSection) {
         return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
     } else if(section == ConferenceSection) {
@@ -291,11 +291,11 @@ enum TableSection {
     return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {    
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     LinphoneCore* lc = [LinphoneManager getLc];
     if(section == CallSection) {
         return 0.000001f; // Hack UITableView = 0
@@ -307,7 +307,7 @@ enum TableSection {
     return 0.000001f; // Hack UITableView = 0
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section { 
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     LinphoneCore* lc = [LinphoneManager getLc];
     if(section == CallSection) {
         return 0.000001f; // Hack UITableView = 0
