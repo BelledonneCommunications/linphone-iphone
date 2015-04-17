@@ -1006,9 +1006,10 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 	}
 	if ((sal_media_description_has_dtls(md) == TRUE) && (media_stream_dtls_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionDTLS;
-	}
-	if ((sal_media_description_has_srtp(md) == TRUE) && (ms_srtp_supported() == TRUE)) {
+	}else if ((sal_media_description_has_srtp(md) == TRUE) && (ms_srtp_supported() == TRUE)) {
 		call->params->media_encryption = LinphoneMediaEncryptionSRTP;
+	}else if (call->params->media_encryption != LinphoneMediaEncryptionZRTP){
+		call->params->media_encryption = LinphoneMediaEncryptionNone;
 	}
 
 	/* set both local audio & video multicast ip address if any*/
