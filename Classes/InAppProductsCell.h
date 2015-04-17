@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <StoreKit/StoreKit.h>
 
 @interface InAppProductsCell : UITableViewCell {
 }
@@ -21,5 +21,7 @@
 - (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized;
 
 + (CGFloat)getHeight:(BOOL)maximized;
+
+- (void)fillFromProduct:(SKProduct*)prod;
 
 @end

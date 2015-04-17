@@ -23,6 +23,17 @@
 							[InAppProductsCell getHeight:isMaximized]);
 }
 
+- (void)fillFromProduct:(SKProduct *)prod {
+	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+	[formatter setLocale:prod.priceLocale];
+	[formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+	NSString * formattedPrice = [formatter stringFromNumber:prod.price];
+
+	[_ptitle setText: [prod localizedTitle]];
+	[_pdescription setText: [prod localizedDescription]];
+	[_pprice setText: formattedPrice];
+	[_ppurchased setOn: [[[LinphoneManager instance] iapManager] isPurchased:prod]];
+}
 - (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
 		NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"InAppProductsCell"

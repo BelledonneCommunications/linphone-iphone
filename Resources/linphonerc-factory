@@ -54,4 +54,5 @@ display_filter_auto_rotate=0
 [app]
 #contact_display_username_only=1
 #contact_filter_on_default_domain=1
-inapp_receipt_validation_url=https://linphone.org/inapp/veriyReceipt
+inapp_receipt_validation_url = https://linphone.org/inapp/veriyReceipt
+inapp_products_list = test.auto_renew_7days, test.non_renew, test.one_time, test.auto_renew_1month_withfree

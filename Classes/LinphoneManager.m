@@ -271,8 +271,6 @@ struct codec_name_pref_table codec_pref_table[]={
 			LOGE(@"cannot register route change handler [%ld]",lStatus);
 		}
 
-		_iapManager = [[InAppProductsManager alloc] init];
-
         NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
         self.messagePlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil] autorelease];
 
@@ -300,6 +298,7 @@ struct codec_name_pref_table codec_pref_table[]={
 			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
 #endif
 		}
+		_iapManager = [[InAppProductsManager alloc] init];
 
 		[self migrateFromUserPrefs];
 	}

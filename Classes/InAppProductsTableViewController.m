@@ -13,13 +13,13 @@
 #import "DTAlertView.h"
 
 @implementation InAppProductsTableViewController {
-	InAppProductsManager *iapm;
 	NSInteger currentExpanded;
+	InAppProductsManager *iapm;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	iapm = [[LinphoneManager instance] iapManager];
 	currentExpanded = -1;
+	iapm = [[LinphoneManager instance] iapManager];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onIAPPurchaseNotification:)
@@ -35,6 +35,7 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:kLinphoneIAPurchaseNotification
 												  object:nil];
+
 }
 
 - (void)onIAPPurchaseNotification:(NSNotification*)notif {
@@ -62,14 +63,8 @@
 		cell = [[[InAppProductsCell alloc] initWithIdentifier:kCellId maximized:(currentExpanded == indexPath.row)] autorelease];
 	}
 	SKProduct *prod = [[[[LinphoneManager instance] iapManager] productsAvailable] objectAtIndex:indexPath.row];
-	[cell.ptitle setText: [prod localizedTitle]];
-	[cell.pdescription setText: [prod localizedDescription]];
-	[cell.pprice setText: [NSString stringWithFormat:@"%@", [prod price]]];
-	[cell.ppurchased setOn: [iapm isPurchased:prod]];
+	[cell fillFromProduct:prod];
 	cell.isMaximized = (currentExpanded == indexPath.row);
-	cell.productID = prod.productIdentifier;
-	
-	LOGI(@"One more: %@", cell);
 	return cell;
 }
 

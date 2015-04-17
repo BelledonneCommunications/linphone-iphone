@@ -52,5 +52,5 @@ stun=stun.linphone.org
 display_filter_auto_rotate=0
 
 [app]
-inapp_receipt_validation_url=https://linphone.org/inapp/veriyReceipt
-
+inapp_receipt_validation_url = https://linphone.org/inapp/veriyReceipt
+inapp_products_list = test.auto_renew_7days, test.non_renew, test.one_time, test.auto_renew_1month_withfree

@@ -24,12 +24,10 @@
 NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
 
 @implementation InAppProductsManager {
-	bool ready;
 }
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
-		ready = false;
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 		[self loadProducts];
 	}
@@ -40,8 +38,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	if (! [SKPaymentQueue canMakePayments]) {
 		return;
 	}
-	//TODO: move this list elsewhere
-	NSArray * list = [[[NSArray alloc] initWithArray:@[@"test.auto_renew_7days", @"test.non_renew", @"test.one_time", @"test.auto_renew_1month_withfree"]] autorelease];
+	NSArray * list = [[[[LinphoneManager instance] lpConfigStringForKey:@"inapp_products_list"] stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
+
 	_productsIDPurchased = [[NSMutableArray alloc] initWithCapacity:0];
 
 	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
