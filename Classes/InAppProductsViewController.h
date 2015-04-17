@@ -14,5 +14,6 @@
 }
 
 @property (nonatomic, retain) IBOutlet InAppProductsTableViewController* tableController;
+- (IBAction)onRestoreClicked:(UIButton *)sender;
 
 @end

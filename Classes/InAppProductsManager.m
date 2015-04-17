@@ -20,7 +20,7 @@
 #import "InAppProductsManager.h"
 #import "Utils.h"
 
-NSString *const kInAppProductsReady = @"InAppProductsReady";
+NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
 
 @implementation InAppProductsManager {
 	bool ready;
@@ -39,7 +39,7 @@ NSString *const kInAppProductsReady = @"InAppProductsReady";
 		return;
 	}
 	//TODO: move this list elsewhere
-	NSArray * list = [[NSArray alloc] initWithArray:@[@"test.tunnel"]];
+	NSArray * list = [[[NSArray alloc] initWithArray:@[@"test.tunnel"]] autorelease];
 
 	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
 										  initWithProductIdentifiers:[NSSet setWithArray:list]];
@@ -49,39 +49,108 @@ NSString *const kInAppProductsReady = @"InAppProductsReady";
 
 - (void)productsRequest:(SKProductsRequest *)request
 	 didReceiveResponse:(SKProductsResponse *)response {
-	_inAppProducts = [response.products retain];
-	LOGI(@"Found %lu products purchasable", (unsigned long)_inAppProducts.count);
+	_productsAvailable= [[NSMutableArray arrayWithArray: response.products] retain];
 
-	for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
-		LOGE(@"Product Identifier with invalid ID %@", invalidIdentifier);
+	LOGI(@"Found %lu products available", (unsigned long)_productsAvailable.count);
+	
+	if (response.invalidProductIdentifiers.count > 0) {
+		for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
+			LOGW(@"Found product Identifier with invalid ID '%@'", invalidIdentifier);
+		}
+		[self postNotificationforStatus:IAPAvailableFailed];
+	} else {
+		[self postNotificationforStatus:IAPAvailableSucceeded];
 	}
-	ready = true;
-
-	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-						  _inAppProducts, @"products",
-						  nil];
-
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[[NSNotificationCenter defaultCenter] postNotificationName:kInAppProductsReady object:self userInfo:dict];
-	});
-}
-
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
-
 }
 
 - (BOOL)isPurchased:(SKProduct*)product {
-	for (SKProduct *prod in _inAppProducts) {
+	for (SKProduct *prod in _productsPurchased) {
 		if (prod == product) {
-			LOGE(@"Is %@ bought? assuming NO", product.localizedTitle);
-			return false; //todo
+			bool isBought = true;
+			LOGE(@"%@ is %s bought.", product.localizedTitle, isBought?"":"NOT");
+			return isBought;
 		}
 	}
 	return false;
 }
 
 - (void)purchaseWithID:(NSString *)productId {
-	
+	for (SKProduct *product in _productsAvailable) {
+		if ([product.productIdentifier compare:productId options:NSLiteralSearch] == NSOrderedSame) {
+			SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+			[[SKPaymentQueue defaultQueue] addPayment:payment];
+			return;
+		}
+	}
+	[self postNotificationforStatus:IAPPurchaseFailed];
+}
+
+-(void)restore {
+	_productsRestored = [[NSMutableArray alloc] initWithCapacity:0];
+	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
+	for(SKPaymentTransaction * transaction in transactions) {
+		switch (transaction.transactionState) {
+			case SKPaymentTransactionStatePurchasing:
+				break;
+			case SKPaymentTransactionStatePurchased:
+			case SKPaymentTransactionStateRestored:
+				[_productsPurchased addObject:transaction];
+				[self completeTransaction:transaction forStatus:IAPPurchaseSucceeded];
+				break;
+			default:
+				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed.",transaction.payment.productIdentifier];
+				[self completeTransaction:transaction forStatus:IAPPurchaseFailed];
+				break;
+		}
+	}
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray *)transactions {
+	for(SKPaymentTransaction * transaction in transactions) {
+		NSLog(@"%@ was removed from the payment queue.", transaction.payment.productIdentifier);
+	}
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
+	if (error.code != SKErrorPaymentCancelled) {
+		_errlast = [error localizedDescription];
+		[self postNotificationforStatus:IAPRestoreFailed];
+	}
+}
+
+- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
+{
+	LOGI(@"All restorable transactions have been processed by the payment queue.");
+//	for (SKPayment *payment in queue) {
+//	[queue transactions]
+//		[_productsRestored addObject:payment.productIdentifier];
+//	}
+
+	for (SKPaymentTransaction *transaction in queue.transactions) {
+		NSString *productID = transaction.payment.productIdentifier;
+		[_productsRestored addObject:productID];
+		NSLog (@"product id is %@" , productID);
+	}
+}
+
+-(void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
+	_status = status;
+	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneIAPurchaseNotification object:self];
+	LOGI(@"Triggering notification for status %@", status);
+}
+
+-(void)completeTransaction:(SKPaymentTransaction *)transaction forStatus:(IAPPurchaseNotificationStatus)status {
+	if (transaction.error.code != SKErrorPaymentCancelled) {
+		[self postNotificationforStatus:status];
+	} else {
+		_status = status;
+	}
+
+	// Remove the transaction from the queue for purchased and restored statuses
+	[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
 @end

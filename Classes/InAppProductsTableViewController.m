@@ -20,7 +20,25 @@
 - (void)viewWillAppear:(BOOL)animated {
 	iapm = [[LinphoneManager instance] iapManager];
 	currentExpanded = -1;
-	[iapm loadProducts];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(onIAPPurchaseNotification:)
+												 name:kLinphoneIAPurchaseNotification
+											   object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:kLinphoneIAPurchaseNotification
+												  object:nil];
+}
+
+- (void)onIAPPurchaseNotification:(NSNotification*)notif {
+	if ([[iapm status]  isEqual: IAPAvailableSucceeded]) {
+		[[self tableView] reloadData];
+	}
 }
 
 #pragma mark - Table view data source
@@ -30,7 +48,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [iapm inAppProducts].count;
+	return [iapm productsAvailable].count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -39,7 +57,7 @@
 	if (cell == nil) {
 		cell = [[[InAppProductsCell alloc] initWithIdentifier:kCellId maximized:(currentExpanded == indexPath.row)] autorelease];
 	}
-	SKProduct *prod = [[[[LinphoneManager instance] iapManager] inAppProducts] objectAtIndex:indexPath.row];
+	SKProduct *prod = [[[[LinphoneManager instance] iapManager] productsAvailable] objectAtIndex:indexPath.row];
 	[cell.ptitle setText: [prod localizedTitle]];
 	[cell.pdescription setText: [prod localizedDescription]];
 	[cell.pprice setText: [NSString stringWithFormat:@"%@", [prod price]]];
@@ -75,6 +93,7 @@
 		[alert release];
 	} else {
 		//try to purchase item, and if successfull change the switch
+		LOGI(@"Trying to purchase %@", cell.productID);
 		[[[LinphoneManager instance] iapManager] purchaseWithID: cell.productID];
 	}
 }

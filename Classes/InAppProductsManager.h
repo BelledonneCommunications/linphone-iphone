@@ -20,15 +20,28 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-extern NSString *const kInAppProductsReady;
+extern NSString *const kLinphoneIAPurchaseNotification;
 
-@interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
+@interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
-}
+#define IAPAvailableSucceeded	@"IAPAvailableSucceeded"
+#define IAPAvailableFailed		@"IAPAvailableFailed"
+#define IAPPurchaseFailed		@"IAPPurchaseFailed"
+#define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded"
+#define IAPRestoreFailed		@"IAPRestoreFailed"
+#define IAPRestoreSucceeded		@"IAPRestoreSucceeded"
+typedef NSString*               IAPPurchaseNotificationStatus;
 
-@property (readonly) NSArray *inAppProducts;
+@property (nonatomic, retain) IAPPurchaseNotificationStatus status;
+@property (nonatomic, copy) NSString *errlast;
+
+@property (nonatomic, strong) NSMutableArray *productsAvailable;
+@property (nonatomic, strong) NSMutableArray *productsPurchased;
+@property (nonatomic, strong) NSMutableArray *productsRestored;
 
 - (void)loadProducts;
 - (BOOL)isPurchased:(SKProduct*)product;
 - (void)purchaseWithID:(NSString*)productId;
+- (void)restore;
+
 @end

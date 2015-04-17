@@ -67,4 +67,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return compositeDescription;
 }
 
+- (IBAction)onRestoreClicked:(UIButton *)sender {
+	[[[LinphoneManager instance] iapManager] restore];
+}
 @end

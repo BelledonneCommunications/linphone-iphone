@@ -271,7 +271,8 @@ struct codec_name_pref_table codec_pref_table[]={
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
 		}
 
-
+		_iapManager = [[InAppProductsManager alloc] init];
+		
         NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
         self.messagePlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil] autorelease];
 
@@ -1282,8 +1283,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 	[_contactSipField release];
 	_contactSipField = [[self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"] retain];
-
-	_iapManager = [[InAppProductsManager alloc] init];
 
 	fastAddressBook = [[FastAddressBook alloc] init];
 

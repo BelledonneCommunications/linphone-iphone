@@ -292,6 +292,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					LOGE(@"Cannot sent logs: file is NULL");
 					return;
 				}
+
 				NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
 				NSString *filename = [appName stringByAppendingString:@".gz"];
 				NSString *mimeType = @"text/plain";
