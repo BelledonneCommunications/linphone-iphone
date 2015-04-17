@@ -39,7 +39,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		return;
 	}
 	//TODO: move this list elsewhere
-	NSArray * list = [[[NSArray alloc] initWithArray:@[@"test.tunnel"]] autorelease];
+	NSArray * list = [[[NSArray alloc] initWithArray:@[@"test.auto_renew_7days", @"test.non_renew", @"test.one_time", @"test.auto_renew_1month_withfree"]] autorelease];
 
 	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
 										  initWithProductIdentifiers:[NSSet setWithArray:list]];
@@ -86,6 +86,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 }
 
 -(void)restore {
+	LOGI(@"Restoring user purchases...");
+	if (! [SKPaymentQueue canMakePayments]) { LOGF(@"Not allowed to do in app purchase!!!"); }
 	_productsRestored = [[NSMutableArray alloc] initWithCapacity:0];
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
