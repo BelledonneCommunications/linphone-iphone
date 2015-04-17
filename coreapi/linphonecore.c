@@ -3795,7 +3795,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 
 	linphone_call_update_remote_session_id_and_ver(call);
-	linphone_call_stop_ice_for_inactive_streams(call->localdesc, call->ice_session);
+	linphone_call_stop_ice_for_inactive_streams(call);
 	sal_call_accept(call->op);
 	linphone_core_notify_display_status(lc,_("Connected."));
 	lc->current_call=call;
