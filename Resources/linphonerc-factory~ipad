@@ -51,4 +51,6 @@ stun=stun.linphone.org
 [video]
 display_filter_auto_rotate=0
 
+[app]
+inapp_receipt_validation_url=https://linphone.org/inapp/veriyReceipt
 

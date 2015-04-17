@@ -25,6 +25,8 @@
 											 selector:@selector(onIAPPurchaseNotification:)
 												 name:kLinphoneIAPurchaseNotification
 											   object:nil];
+
+	[[self tableView] reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -36,7 +38,9 @@
 }
 
 - (void)onIAPPurchaseNotification:(NSNotification*)notif {
-	if ([[iapm status]  isEqual: IAPAvailableSucceeded]) {
+	if ([[iapm status]  isEqual: IAPAvailableSucceeded]
+		|| [[iapm status] isEqualToString: IAPRestoreSucceeded]
+		|| [[iapm status] isEqualToString: IAPPurchaseSucceeded]) {
 		[[self tableView] reloadData];
 	}
 }

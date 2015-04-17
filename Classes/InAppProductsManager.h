@@ -30,14 +30,16 @@ extern NSString *const kLinphoneIAPurchaseNotification;
 #define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded"
 #define IAPRestoreFailed		@"IAPRestoreFailed"
 #define IAPRestoreSucceeded		@"IAPRestoreSucceeded"
+#define IAPReceiptFailed		@"IAPReceiptFailed"
+#define IAPReceiptSucceeded		@"IAPReceiptSucceeded"
+
 typedef NSString*               IAPPurchaseNotificationStatus;
 
 @property (nonatomic, retain) IAPPurchaseNotificationStatus status;
 @property (nonatomic, copy) NSString *errlast;
 
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
-@property (nonatomic, strong) NSMutableArray *productsPurchased;
-@property (nonatomic, strong) NSMutableArray *productsRestored;
+@property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
 - (void)loadProducts;
 - (BOOL)isPurchased:(SKProduct*)product;

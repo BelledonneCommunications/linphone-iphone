@@ -19,6 +19,7 @@
 
 #import "InAppProductsManager.h"
 #import "Utils.h"
+#import "LinphoneManager.h"
 
 NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
 
@@ -29,6 +30,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
 		ready = false;
+		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 		[self loadProducts];
 	}
 	return self;
@@ -40,6 +42,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	}
 	//TODO: move this list elsewhere
 	NSArray * list = [[[NSArray alloc] initWithArray:@[@"test.auto_renew_7days", @"test.non_renew", @"test.one_time", @"test.auto_renew_1month_withfree"]] autorelease];
+	_productsIDPurchased = [[NSMutableArray alloc] initWithCapacity:0];
 
 	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
 										  initWithProductIdentifiers:[NSSet setWithArray:list]];
@@ -49,7 +52,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 - (void)productsRequest:(SKProductsRequest *)request
 	 didReceiveResponse:(SKProductsResponse *)response {
-	_productsAvailable= [[NSMutableArray arrayWithArray: response.products] retain];
+	_productsAvailable = [[NSMutableArray arrayWithArray: response.products] retain];
 
 	LOGI(@"Found %lu products available", (unsigned long)_productsAvailable.count);
 	
@@ -64,8 +67,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 }
 
 - (BOOL)isPurchased:(SKProduct*)product {
-	for (SKProduct *prod in _productsPurchased) {
-		if (prod == product) {
+	for (NSString *prod in _productsIDPurchased) {
+		if ([prod isEqual: product.productIdentifier]) {
 			bool isBought = true;
 			LOGE(@"%@ is %s bought.", product.localizedTitle, isBought?"":"NOT");
 			return isBought;
@@ -87,9 +90,53 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 -(void)restore {
 	LOGI(@"Restoring user purchases...");
-	if (! [SKPaymentQueue canMakePayments]) { LOGF(@"Not allowed to do in app purchase!!!"); }
-	_productsRestored = [[NSMutableArray alloc] initWithCapacity:0];
+	if (! [SKPaymentQueue canMakePayments]) {
+		LOGF(@"Not allowed to do in app purchase!!!");
+	}
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+- (void)checkReceipt: (SKPaymentTransaction*)transaction {
+	NSData *receiptData = nil;
+	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+	// Test whether the receipt is present at the above URL
+	if(![[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
+		 receiptData = [NSData dataWithContentsOfURL:receiptURL];
+	} else {
+		LOGI(@"Could not find any receipt in application, using the transaction one!");
+		receiptData = transaction.transactionReceipt;
+	}
+
+	// We must validate the receipt on our server
+	NSURL *storeURL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"inapp_receipt_validation_url"]];
+	NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:storeURL];
+	[storeRequest setHTTPMethod:@"POST"];
+	[storeRequest setHTTPBody:receiptData];
+
+	NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+	[NSURLConnection sendAsynchronousRequest:storeRequest
+					 queue:queue
+						   completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+							   if (data == nil) {
+								   LOGE(@"Server replied nothing, aborting now.");
+							   } else if (connectionError) {
+								   LOGE(@"Could not verify the receipt, aborting now: (%d) %@.", connectionError.code, connectionError);
+							   } else {
+								   NSError *jsonError;
+								   NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+								   if (jsonError == nil) {
+									   // Hourray, we can finally unlock purchase stuff in app!
+									   LOGI(@"In apps purchased are %@", jsonResponse);
+									   LOGE(@"To do: [_productsIDPurchased addObject:transaction.payment.productIdentifier];");
+									   [self postNotificationforStatus:IAPReceiptSucceeded];
+									   return;
+								   } else {
+									   LOGE(@"Impossible to parse receipt JSON response, aborting now because of %@: %@.", jsonError, [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+								   }
+							   }
+							   // Something failed when checking the receipt
+							   [self postNotificationforStatus:IAPReceiptFailed];
+						   }];
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
@@ -99,9 +146,24 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 				break;
 			case SKPaymentTransactionStatePurchased:
 			case SKPaymentTransactionStateRestored:
-				[_productsPurchased addObject:transaction];
+				[self checkReceipt: transaction];
 				[self completeTransaction:transaction forStatus:IAPPurchaseSucceeded];
 				break;
+
+//			case SKPaymentTransactionStatePurchasing:
+//				break;
+//			case SKPaymentTransactionStateDeferred:
+//				[self transactionDeferred:transaction];
+//				break;
+//			case SKPaymentTransactionStatePurchased:
+//				[self completeTransaction:transaction];
+//				break;
+//			case SKPaymentTransactionStateRestored:
+//				[self restoreTransaction:transaction];
+//				break;
+//			case SKPaymentTransactionStateFailed:
+//				[self failedTransaction:transaction];
+//				break;
 			default:
 				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed.",transaction.payment.productIdentifier];
 				[self completeTransaction:transaction forStatus:IAPPurchaseFailed];
@@ -112,7 +174,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 - (void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray *)transactions {
 	for(SKPaymentTransaction * transaction in transactions) {
-		NSLog(@"%@ was removed from the payment queue.", transaction.payment.productIdentifier);
+		LOGI(@"%@ was removed from the payment queue.", transaction.payment.productIdentifier);
 	}
 }
 
@@ -123,19 +185,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	}
 }
 
-- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
-{
+- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
 	LOGI(@"All restorable transactions have been processed by the payment queue.");
-//	for (SKPayment *payment in queue) {
-//	[queue transactions]
-//		[_productsRestored addObject:payment.productIdentifier];
-//	}
-
-	for (SKPaymentTransaction *transaction in queue.transactions) {
-		NSString *productID = transaction.payment.productIdentifier;
-		[_productsRestored addObject:productID];
-		NSLog (@"product id is %@" , productID);
-	}
 }
 
 -(void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
