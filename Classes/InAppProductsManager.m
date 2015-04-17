@@ -64,11 +64,11 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	}
 }
 
-- (BOOL)isPurchased:(SKProduct*)product {
+- (BOOL)isPurchasedWithID:(NSString *)productID {
 	for (NSString *prod in _productsIDPurchased) {
-		if ([prod isEqual: product.productIdentifier]) {
+		if ([prod isEqual: productID]) {
 			bool isBought = true;
-			LOGE(@"%@ is %s bought.", product.localizedTitle, isBought?"":"NOT");
+			LOGE(@"%@ is %s bought.", prod, isBought?"":"NOT");
 			return isBought;
 		}
 	}

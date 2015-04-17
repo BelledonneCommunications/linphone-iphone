@@ -1,3 +1,4 @@
+
 /* WizardViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
@@ -160,6 +161,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:kLinphoneIAPurchaseNotification
+											   object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -177,7 +182,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:kLinphoneIAPurchaseNotification
+												  object:nil];
 }
 
 - (void)viewDidLoad {
@@ -722,6 +729,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     [remoteInput show];
     [remoteInput release];
+}
+
+- (void)inAppPurchaseNotification: (NSNotification*)notification {
+	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"inapp_paid_account_id" forSection:@"wizard"]]) {
+		nextView = createAccountView;
+		[self loadWizardConfig:@"wizard_linphone_create.rc"];
+	}
+}
+
+- (IBAction)onPurchaseAccountClick:(id)sender {
+	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+	//if has already purchased, continue
+	if (false) {
+		nextView = createAccountView;
+		[self loadWizardConfig:@"wizard_linphone_create.rc"];
+	} else {
+		[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"inapp_paid_account_id" forSection:@"wizard"]];
+	}
 }
 
 - (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {

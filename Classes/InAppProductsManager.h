@@ -42,7 +42,7 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
 - (void)loadProducts;
-- (BOOL)isPurchased:(SKProduct*)product;
+- (BOOL)isPurchasedWithID:(NSString*)productId;
 - (void)purchaseWithID:(NSString*)productId;
 - (void)restore;
 

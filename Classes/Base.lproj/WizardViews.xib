@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WizardViewController">
@@ -27,18 +27,18 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="21" userLabel="welcomeView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="setup_welcome_logo.png" id="19" userLabel="iconImage">
-                    <rect key="frame" x="60" y="80" width="201" height="129"/>
+                    <rect key="frame" x="60" y="80" width="201" height="200"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Linphone setup assistant icon">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
                 </imageView>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="127" userLabel="title">
-                    <rect key="frame" x="31" y="230" width="258" height="40"/>
+                    <rect key="frame" x="31" y="331" width="258" height="58"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -48,7 +48,7 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="This assistant will help you to use a SIP account for your calls." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="22" userLabel="label">
-                    <rect key="frame" x="40" y="290" width="240" height="44"/>
+                    <rect key="frame" x="40" y="441" width="240" height="67"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -58,18 +58,18 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="33" userLabel="choiceView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="setup_welcome_logo.png" id="128" userLabel="choiceViewLogoImage">
-                    <rect key="frame" x="59" y="72" width="201" height="129"/>
+                    <rect key="frame" x="59" y="72" width="201" height="198"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Linphone setup assistant icon">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
                 </imageView>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="126" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -79,7 +79,7 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="36" userLabel="createAccountButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="34" y="153" width="255" height="50"/>
+                    <rect key="frame" x="34" y="220" width="255" height="72"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Create linphone.org account">
                         <bool key="isElement" value="YES"/>
@@ -97,7 +97,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="38" userLabel="connectAccountButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="34" y="211" width="255" height="50"/>
+                    <rect key="frame" x="34" y="304" width="255" height="72"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in linphone.org account">
                         <bool key="isElement" value="YES"/>
@@ -115,7 +115,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="39" userLabel="externalAccountButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="33" y="269" width="255" height="50"/>
+                    <rect key="frame" x="33" y="387" width="255" height="72"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in SIP account">
                         <bool key="isElement" value="YES"/>
@@ -133,7 +133,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Kbn-dL-C5h" userLabel="remoteProvisioningButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="34" y="327" width="255" height="50"/>
+                    <rect key="frame" x="34" y="471" width="255" height="72"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Remote provisioning">
                         <bool key="isElement" value="YES"/>
@@ -147,6 +147,7 @@
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
+                        <action selector="onPurchaseAccountClick:" destination="-1" eventType="touchUpInside" id="dQ7-Ig-hvt"/>
                         <action selector="onRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="7oT-2f-Rrb"/>
                     </connections>
                 </button>
@@ -154,11 +155,11 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="44" userLabel="createAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="117" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -168,21 +169,21 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="200" contentMode="left" text="Enter your username and password with your email address." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="73" userLabel="label">
-                    <rect key="frame" x="39" y="80" width="240" height="44"/>
+                    <rect key="frame" x="39" y="115" width="240" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="404" contentMode="left" text="Invalid character:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="uHm-NE-GLV" userLabel="invalid_char_error">
-                    <rect key="frame" x="40" y="118" width="240" height="14"/>
+                    <rect key="frame" x="40" y="170" width="240" height="20"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="74" userLabel="usernameField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="140" width="255" height="31"/>
+                    <rect key="frame" x="32" y="201" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -192,7 +193,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="75" userLabel="passwordField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="185" width="255" height="31"/>
+                    <rect key="frame" x="32" y="266" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -202,7 +203,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="76" userLabel="password2Field" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="230" width="255" height="31"/>
+                    <rect key="frame" x="32" y="331" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Password again"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -212,7 +213,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="103" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Email" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="79" userLabel="emailField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="275" width="255" height="31"/>
+                    <rect key="frame" x="32" y="396" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Email"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -222,7 +223,7 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="77" userLabel="registerButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="33" y="330" width="255" height="50"/>
+                    <rect key="frame" x="33" y="481" width="255" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Register"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -241,11 +242,11 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="52" userLabel="connectAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="122" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -255,14 +256,14 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="200" contentMode="left" text="Enter your username and password of your linphone.org account." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="67" userLabel="label">
-                    <rect key="frame" x="40" y="80" width="240" height="44"/>
+                    <rect key="frame" x="40" y="115" width="240" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="66" userLabel="passwordField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="185" width="255" height="31"/>
+                    <rect key="frame" x="32" y="266" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -272,7 +273,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="68" userLabel="usernameField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="140" width="255" height="31"/>
+                    <rect key="frame" x="32" y="201" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -282,7 +283,7 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="64" userLabel="signInButton">
-                    <rect key="frame" x="32" y="330" width="255" height="50"/>
+                    <rect key="frame" x="32" y="481" width="255" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -301,11 +302,11 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="56" userLabel="externalAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="123" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -315,14 +316,14 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="200" contentMode="left" text="Enter your username and password with your SIP domain." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="58" userLabel="label">
-                    <rect key="frame" x="40" y="82" width="240" height="44"/>
+                    <rect key="frame" x="40" y="118" width="240" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="59" userLabel="usernameField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="140" width="255" height="31"/>
+                    <rect key="frame" x="33" y="201" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -332,7 +333,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="60" userLabel="passwordField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="185" width="255" height="31"/>
+                    <rect key="frame" x="33" y="266" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -342,7 +343,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Domain" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="61" userLabel="domainField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="230" width="255" height="31"/>
+                    <rect key="frame" x="33" y="331" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Domain"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -352,7 +353,7 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="62" userLabel="signInButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="34" y="330" width="255" height="50"/>
+                    <rect key="frame" x="34" y="481" width="255" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -368,7 +369,7 @@
                     </connections>
                 </button>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="Nrv-SM-lMf">
-                    <rect key="frame" x="40" y="273" width="240" height="29"/>
+                    <rect key="frame" x="40" y="403" width="240" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <segments>
                         <segment title="UDP"/>
@@ -381,11 +382,11 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="xVK-hL-6pe" userLabel="provisionedAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Provisioned account" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="YKJ-nv-RUT" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -395,14 +396,14 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="200" contentMode="left" text="Enter your username and password" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="pU9-SC-9uY" userLabel="label">
-                    <rect key="frame" x="40" y="82" width="240" height="44"/>
+                    <rect key="frame" x="40" y="118" width="240" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="104" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="MyR-eX-QTa" userLabel="usernameField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="140" width="255" height="31"/>
+                    <rect key="frame" x="33" y="201" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Username"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -412,7 +413,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" tag="105" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="ClH-fT-a8N" userLabel="passwordField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="185" width="255" height="31"/>
+                    <rect key="frame" x="33" y="266" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -422,7 +423,7 @@
                     </connections>
                 </textField>
                 <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="106" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Domain" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="wRB-Sh-K8J" userLabel="domainField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="33" y="230" width="255" height="31"/>
+                    <rect key="frame" x="33" y="331" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Domain">
                         <bool key="isElement" value="YES"/>
@@ -434,7 +435,7 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="dGS-GB-Sgb" userLabel="signInButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="34" y="330" width="255" height="50"/>
+                    <rect key="frame" x="34" y="481" width="255" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Sign in"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -450,7 +451,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="These parameters were retrieved from a remote provisioning profile." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="7" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="RHE-hi-dfB" userLabel="remoteParamsLabel">
-                    <rect key="frame" x="34" y="269.0000019583353" width="254" height="53"/>
+                    <rect key="frame" x="34" y="414" width="254" height="82"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -460,11 +461,11 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
         </view>
         <view contentMode="scaleToFill" id="101" userLabel="validateAccountView">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="394"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Account setup assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="124" userLabel="title">
-                    <rect key="frame" x="31" y="34" width="258" height="40"/>
+                    <rect key="frame" x="31" y="34" width="258" height="59"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
@@ -474,14 +475,14 @@
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="200" contentMode="left" text="Your account is created. Please check your mails in order to validate your account." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="105" userLabel="label">
-                    <rect key="frame" x="40" y="80" width="240" height="44"/>
+                    <rect key="frame" x="40" y="115" width="240" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField hidden="YES" opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="106" userLabel="passwordField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="185" width="255" height="31"/>
+                    <rect key="frame" x="32" y="266" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration">
                         <bool key="isElement" value="NO"/>
@@ -493,7 +494,7 @@
                     </connections>
                 </textField>
                 <textField hidden="YES" opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" adjustsFontSizeToFit="NO" minimumFontSize="10" background="field_background.png" id="104" userLabel="usernameField" customClass="UILinphoneTextField">
-                    <rect key="frame" x="32" y="140" width="255" height="31"/>
+                    <rect key="frame" x="32" y="201" width="255" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration">
                         <bool key="isElement" value="NO"/>
@@ -505,7 +506,7 @@
                     </connections>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="103" userLabel="checkValidationButton" customClass="UILinphoneButton">
-                    <rect key="frame" x="32" y="330" width="255" height="50"/>
+                    <rect key="frame" x="32" y="481" width="255" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Check validation"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -530,4 +531,9 @@
         <image name="field_background.png" width="542" height="88"/>
         <image name="setup_welcome_logo.png" width="179" height="161"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

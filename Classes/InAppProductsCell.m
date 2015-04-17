@@ -32,7 +32,7 @@
 	[_ptitle setText: [prod localizedTitle]];
 	[_pdescription setText: [prod localizedDescription]];
 	[_pprice setText: formattedPrice];
-	[_ppurchased setOn: [[[LinphoneManager instance] iapManager] isPurchased:prod]];
+	[_ppurchased setOn: [[[LinphoneManager instance] iapManager] isPurchasedWithID:prod.productIdentifier]];
 }
 - (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {

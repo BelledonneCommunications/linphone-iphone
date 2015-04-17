@@ -47,6 +47,7 @@ transport=tls
 sharing_server=https://www.linphone.org:444/upload.php
 ice=1
 stun=stun.linphone.org
+inapp_paid_account_id = test.auto_renew_7days
 
 [video]
 display_filter_auto_rotate=0

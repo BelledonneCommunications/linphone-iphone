@@ -75,6 +75,7 @@
 - (IBAction)onExternalAccountClick:(id)sender;
 - (IBAction)onCheckValidationClick:(id)sender;
 - (IBAction)onRemoteProvisioningClick:(id)sender;
+- (IBAction)onPurchaseAccountClick:(id)sender;
 
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;
