@@ -38,7 +38,7 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string></string>
+			<string>Other</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -162,7 +162,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string></string>
+			<string>File sharing</string>
 		</dict>
 		<dict>
 			<key>AutocapitalizationType</key>
@@ -174,7 +174,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Sharing server</string>
+			<string>Server URL</string>
 			<key>Key</key>
 			<string>sharing_server_preference</string>
 			<key>IASKTextAlignment</key>

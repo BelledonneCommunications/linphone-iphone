@@ -1,56 +1,26 @@
-/* Codecs */
 "Codecs" = "Codecs";
-
-/* AMR */
-"AMR" = "AMR";
-
-/* Speex 16Khz */
 "Speex 16Khz" = "Speex 16Khz";
-
-/* Speex 8Khz */
 "Speex 8Khz" = "Speex 8Khz";
-
-/* Silk 24Khz */
+"Opus 48kHz" = "Opus 48kHz";
 "Silk 24Khz" = "Silk 24Khz";
-
-/* Silk 16Khz */
 "Silk 16Khz" = "Silk 16Khz";
-
-/* G722 */
+"AAC-ELD 16kHz" = "AAC-ELD 16kHz";
+"AAC-ELD 22kHz" = "AAC-ELD 22kHz";
+"AAC-ELD 32kHz" = "AAC-ELD 32kHz";
+"AAC-ELD 44kHz" = "AAC-ELD 44kHz";
+"AAC-ELD 48kHz" = "AAC-ELD 48kHz";
+"AMR" = "AMR";
 "G722" = "G722";
-
-/* G729 */
 "G729" = "G729";
-
-/* GSM */
 "GSM" = "GSM";
-
-/* ILBC */
 "ILBC" = "ILBC";
-
-/* PCMU */
 "PCMU" = "PCMU";
-
-/* PCMA */
 "PCMA" = "PCMA";
-
-/* Advanced */
 "Advanced" = "Advanced";
-
-/* Playback gain */
 "Playback gain" = "Playback gain";
-
-/* Microphone gain */
 "Microphone gain" = "Microphone gain";
-
-/* Adaptive rate control */
 "Adaptive rate control" = "Adaptive rate control";
-
-/* Network bitrate limit */
-"Network bitrate limit" = "Network bitrate limit";
-
-/* Voice processing */
-"Enable Voice Processing"="Enable Voice Processing";
-
-/* Bass Boost / equalizer */
-"Enable Bass Boost"="Enable Bass Boost";
+"Adaptive rate algorithm" = "Adaptive rate algorithm";
+"Codec bitrate limit" = "Codec bitrate limit";
+"Enable Voice Processing" = "Enable Voice Processing";
+"Enable Bass Boost" = "Enable Bass Boost";

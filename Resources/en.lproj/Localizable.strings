@@ -44,6 +44,9 @@
 "Answer" = "Answer";
 
 /* No comment provided by engineer. */
+"Application logs" = "Application logs";
+
+/* No comment provided by engineer. */
 "Are you sure to want to clear your proxy setup?" = "Are you sure to want to clear your proxy setup?";
 
 /* No comment provided by engineer. */
@@ -92,6 +95,9 @@
 "Check issue" = "Check issue";
 
 /* No comment provided by engineer. */
+"Choose an action" = "Choose an action";
+
+/* No comment provided by engineer. */
 "Choose the image size" = "Choose the image size";
 
 /* No comment provided by engineer. */
@@ -113,10 +119,16 @@
 "Continue video" = "Continue video";
 
 /* No comment provided by engineer. */
+"Debug" = "Debug";
+
+/* No comment provided by engineer. */
 "Decline" = "Decline";
 
 /* ICE has established a direct connection to the remote host */
 "Direct connection" = "Direct connection";
+
+/* No comment provided by engineer. */
+"Disable logs" = "Disable logs";
 
 /* No comment provided by engineer. */
 "Disabled, build from sources to enable" = "Disabled, build from sources to enable";
@@ -136,6 +148,9 @@
 /* No comment provided by engineer. */
 "Email addresses" = "Email addresses";
 
+/* No comment provided by engineer. */
+"Enable logs" = "Enable logs";
+
 /* Enter an address */
 "Enter an address" = "Enter an address";
 
@@ -150,6 +165,9 @@
 
 /* No comment provided by engineer. */
 "Error" = "Error";
+
+/* No comment provided by engineer. */
+"Error: no mail account configured" = "Error: no mail account configured";
 
 /* ICE processing has failed */
 "Failed" = "Failed";
@@ -339,6 +357,9 @@
 
 /* No comment provided by engineer. */
 "Select picture source" = "Select picture source";
+
+/* No comment provided by engineer. */
+"Send logs" = "Send logs";
 
 /* No comment provided by engineer. */
 "Settings" = "Settings";

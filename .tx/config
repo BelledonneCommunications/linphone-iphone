@@ -4,7 +4,34 @@ minimum_perc = 1
 
 [linphone-ios.localizablestrings]
 file_filter = Resources/<lang>.lproj/Localizable.strings
-source_file = Resources/en.lproj/Localizable.strings
+source_lang = en
+
+[linphone-ios.inappsettingsadvancedstrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Advanced.strings
+source_lang = en
+
+[linphone-ios.inappsettingsaudiostrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Audio.strings
+source_lang = en
+
+[linphone-ios.inappsettingscallstrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Call.strings
+source_lang = en
+
+[linphone-ios.inappsettingsnetworkstrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Network.strings
+source_lang = en
+
+[linphone-ios.inappsettingsrootstrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Root.strings
+source_lang = en
+
+[linphone-ios.inappsettingstunnelstrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Tunnel.strings
+source_lang = en
+
+[linphone-ios.inappsettingsvideostrings]
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Video.strings
 source_lang = en
 
 [linphone-ios.aboutviewcontrollerstrings]

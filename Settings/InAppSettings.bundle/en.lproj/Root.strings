@@ -1,65 +1,26 @@
-/* SIP account */
 "SIP account" = "SIP account";
-
-/* Wizard */
-"Wizard" = "Run assistant";
-
-/* User name */
-"User name" = "User name";
-
-/* User ID */
-"User ID" = "User ID";
-
-/* Password */
-"Password" = "Password";
-
-/* Domain */
-"Domain" = "Domain";
-
-/* Proxy */
-"Proxy" = "Proxy";
-
-/* Outbound proxy */
-"Outbound proxy" = "Outbound proxy";
-
-/* Settings */
-"Settings" = "Settings";
-
-/* Enable video */
-"Enable video" = "Enable video";
-
-/* Audio */
-"Audio" = "Audio";
-
-/* Video */
-"Video" = "Video";
-
-/* Call */
-"Call" = "Call";
-
-/* Network */
-"Network" = "Network";
-
-/* Advanced */
-"Advanced" = "Advanced";
-
-/*  */
-"" = "";
-
-/* About */
-"About" = "About";
-
-/* Quit */
-"Quit" = "Quit";
-
-/* Release */
-"Release" = "Release";
-
-/* Clear cache */
-"Clear cache" = "Clear cache";
-
-/* More options */
-"More options" = "More options";
-
-/* Clear Account */
+"Wizard" = "Wizard";
 "Clear Account" = "Clear Account";
+"User name" = "User name";
+"User ID" = "User ID";
+"Password" = "Password";
+"Domain" = "Domain";
+"Proxy" = "Proxy";
+"Transport" = "Transport";
+"Outbound proxy" = "Outbound proxy";
+"AVPF" = "AVPF";
+"More options" = "More options";
+"Settings" = "Settings";
+"Enable video" = "Enable video";
+"Audio" = "Audio";
+"Video" = "Video";
+"Call" = "Call";
+"Network" = "Network";
+"Tunnel" = "Tunnel";
+"Advanced" = "Advanced";
+"Development debug actions" = "Development debug actions";
+"About" = "About";
+"Quit" = "Quit";
+"Exit" = "Exit";
+"Clear cache" = "Clear cache";
+"Battery alert" = "Battery alert";
