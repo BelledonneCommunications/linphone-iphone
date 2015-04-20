@@ -183,6 +183,12 @@ static void early_media_with_multicast_base(bool_t video) {
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
 		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
 
+		linphone_core_update_call(	pauline->lc
+									, linphone_core_get_current_call(pauline->lc)
+									, linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+
+		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 2,1000));
+
 		end_call(marie,pauline);
 	}
 	ms_free(lcs);

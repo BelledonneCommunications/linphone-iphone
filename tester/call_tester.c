@@ -3911,12 +3911,13 @@ static void unsucessfull_call_with_transport_change_after_released(void) {
 }
 #ifdef VIDEO_ENABLED
 
-static void video_call_with_re_invite_inactive_followed_by_re_invite_base(bool_t no_sdp) {
+static void video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryption mode, bool_t no_sdp) {
 	int begin;
 	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
+	const LinphoneCallParams *current_params;
 	MSList *lcs=NULL;
 
 	belle_sip_object_enable_leak_detector(TRUE);
@@ -3931,7 +3932,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(bool_t
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie->lc);
 
-	video_call_base_2(marie,pauline,TRUE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+	video_call_base_2(marie,pauline,TRUE,mode,TRUE,TRUE);
 
 	if (linphone_core_get_current_call(marie->lc)) {
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
@@ -3970,6 +3971,12 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(bool_t
 		check_media_direction(marie,linphone_core_get_current_call(marie->lc),lcs,LinphoneMediaDirectionSendRecv,LinphoneMediaDirectionSendRecv);
 		check_media_direction(pauline,linphone_core_get_current_call(pauline->lc),lcs,LinphoneMediaDirectionSendRecv,LinphoneMediaDirectionSendRecv);
 
+		/*assert that after pause and resume, SRTP is still being used*/
+		current_params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
+		CU_ASSERT_TRUE(linphone_call_params_get_media_encryption(current_params) == mode);
+		current_params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
+		CU_ASSERT_TRUE(linphone_call_params_get_media_encryption(current_params) == mode);
+
 	}
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
@@ -3983,11 +3990,23 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(bool_t
 }
 
 static void video_call_with_re_invite_inactive_followed_by_re_invite() {
-	video_call_with_re_invite_inactive_followed_by_re_invite_base(FALSE);
+	video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionNone,FALSE);
 }
 
 static void video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp() {
-	video_call_with_re_invite_inactive_followed_by_re_invite_base(TRUE);
+	video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionNone, TRUE);
+}
+static void srtp_video_call_with_re_invite_inactive_followed_by_re_invite() {
+	if (ms_srtp_supported())
+		video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionSRTP,FALSE);
+	else
+		ms_message("srtp_video_call_with_re_invite_inactive_followed_by_re_invite skipped, missing srtp support");
+}
+static void srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp() {
+	if (ms_srtp_supported())
+		video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionSRTP, TRUE);
+	else
+		ms_message("srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp skipped, missing srtp support");
 }
 static void video_call_ice_params() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -4078,7 +4097,9 @@ test_t call_tests[] = {
 	{ "2 Video call accepted in send only", two_accepted_call_in_send_only},
 	{ "Video call with re-invite(inactive) followed by re-invite", video_call_with_re_invite_inactive_followed_by_re_invite},
 	{ "Video call with re-invite(inactive) followed by re-invite(no sdp)", video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp},
-#endif
+	{ "SRTP Video call with re-invite(inactive) followed by re-invite", srtp_video_call_with_re_invite_inactive_followed_by_re_invite},
+	{ "SRTP Video call with re-invite(inactive) followed by re-invite(no sdp)", srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp},
+	#endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
 	{ "ZRTP ice call with relay", zrtp_ice_call_with_relay},
