@@ -20,7 +20,12 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
+#import <XMLRPCConnectionDelegate.h>
+
 extern NSString *const kLinphoneIAPurchaseNotification;
+
+@interface InAppProductsXMLRPCDelegate : NSObject <XMLRPCConnectionDelegate>
+@end
 
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
@@ -35,6 +40,9 @@ extern NSString *const kLinphoneIAPurchaseNotification;
 
 typedef NSString*               IAPPurchaseNotificationStatus;
 
+// needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
+@property (nonatomic, retain) InAppProductsXMLRPCDelegate *xmlrpc;
+
 @property (nonatomic, retain) IAPPurchaseNotificationStatus status;
 @property (nonatomic, copy) NSString *errlast;
 
@@ -45,5 +53,8 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 - (BOOL)isPurchasedWithID:(NSString*)productId;
 - (void)purchaseWithID:(NSString*)productId;
 - (void)restore;
+- (void)retrievePurchases;
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response;
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error;
 
 @end

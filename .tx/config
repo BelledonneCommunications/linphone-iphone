@@ -4,7 +4,10 @@ minimum_perc = 1
 
 [linphone-ios.localizablestrings]
 file_filter = Resources/<lang>.lproj/Localizable.strings
-source_file = Resources/en.lproj/Localizable.strings
+source_lang = en
+
+[linphone-ios.localizablestrings]
+file_filter = Resources/InAppSettings.bundle/<lang>.lproj/Root.strings
 source_lang = en
 
 [linphone-ios.aboutviewcontrollerstrings]

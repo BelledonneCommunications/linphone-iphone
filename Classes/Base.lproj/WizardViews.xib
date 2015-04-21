@@ -148,7 +148,6 @@
                     </state>
                     <connections>
                         <action selector="onPurchaseAccountClick:" destination="-1" eventType="touchUpInside" id="dQ7-Ig-hvt"/>
-                        <action selector="onRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="7oT-2f-Rrb"/>
                     </connections>
                 </button>
             </subviews>

@@ -733,20 +733,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)inAppPurchaseNotification: (NSNotification*)notification {
 	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
-	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"inapp_paid_account_id" forSection:@"wizard"]]) {
-		nextView = createAccountView;
-		[self loadWizardConfig:@"wizard_linphone_create.rc"];
+	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+		[self onPurchaseAccountClick:self];
 	}
 }
 
 - (IBAction)onPurchaseAccountClick:(id)sender {
 	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
 	//if has already purchased, continue
-	if (false) {
-		nextView = createAccountView;
-		[self loadWizardConfig:@"wizard_linphone_create.rc"];
+	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+		NSString *username  = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+		NSString *password  = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+		NSString *domain    = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
+		NSString *transport = [self.transportChooser titleForSegmentAtIndex:self.transportChooser.selectedSegmentIndex];
+
+		[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
 	} else {
-		[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"inapp_paid_account_id" forSection:@"wizard"]];
+		[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]];
 	}
 }
 

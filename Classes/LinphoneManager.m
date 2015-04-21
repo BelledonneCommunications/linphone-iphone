@@ -1370,6 +1370,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 		}
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
+	// Retrieve InApp purchases
+	[_iapManager retrievePurchases];
 
 	LOGW(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
@@ -2256,6 +2258,8 @@ static void audioRouteChangeListenerCallback (
 
 	}
 }
+
+#pragma InApp Purchase
 
 
 @end

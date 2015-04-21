@@ -92,7 +92,6 @@
 		[alert release];
 	} else {
 		//try to purchase item, and if successfull change the switch
-		LOGI(@"Trying to purchase %@", cell.productID);
 		[[[LinphoneManager instance] iapManager] purchaseWithID: cell.productID];
 	}
 }

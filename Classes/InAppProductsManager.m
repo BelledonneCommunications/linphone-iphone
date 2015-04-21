@@ -18,27 +18,64 @@
  */
 
 #import "InAppProductsManager.h"
+
+#import <XMLRPCConnection.h>
+#import <XMLRPCConnectionManager.h>
+#import <XMLRPCResponse.h>
+#import <XMLRPCRequest.h>
+
 #import "Utils.h"
 #import "LinphoneManager.h"
 
 NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
+
+
+@implementation InAppProductsXMLRPCDelegate {
+	InAppProductsManager *iapm;
+}
+
+#pragma mark - XMLRPCConnectionDelegate Functions
+
+- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
+	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didReceiveResponse:response];
+}
+
+- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
+	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didFailWithError:error];
+}
+
+- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+	return FALSE;
+}
+
+- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+
+}
+
+- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	
+}
+
+@end
 
 @implementation InAppProductsManager {
 }
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
+		_xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 		[self loadProducts];
 	}
 	return self;
 }
 
+#define INAPP_AVAIL() ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) && ([SKPaymentQueue canMakePayments])
+
 - (void)loadProducts {
-	if (! [SKPaymentQueue canMakePayments]) {
-		return;
-	}
-	NSArray * list = [[[[LinphoneManager instance] lpConfigStringForKey:@"inapp_products_list"] stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
+	if (!INAPP_AVAIL()) return;
+
+	NSArray * list = [[[[LinphoneManager instance] lpConfigStringForKey:@"products_list" forSection:@"in_app_purchase"] stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
 
 	_productsIDPurchased = [[NSMutableArray alloc] initWithCapacity:0];
 
@@ -75,9 +112,10 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	return false;
 }
 
-- (void)purchaseWithID:(NSString *)productId {
+- (void)purchaseWithID:(NSString *)productID {
+	LOGI(@"Trying to purchase %@", productID);
 	for (SKProduct *product in _productsAvailable) {
-		if ([product.productIdentifier compare:productId options:NSLiteralSearch] == NSOrderedSame) {
+		if ([product.productIdentifier compare:productID options:NSLiteralSearch] == NSOrderedSame) {
 			SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
 			[[SKPaymentQueue defaultQueue] addPayment:payment];
 			return;
@@ -88,10 +126,21 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 -(void)restore {
 	LOGI(@"Restoring user purchases...");
-	if (! [SKPaymentQueue canMakePayments]) {
-		LOGF(@"Not allowed to do in app purchase!!!");
-	}
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+static SKRequest* req = nil;
+
+- (void)requestDidFinish:(SKRequest *)request {
+	if (req == request) {
+		LOGI(@"Got receipt");
+		[self checkReceipt:nil];
+	}
+}
+
+- (void)request:(SKRequest *)skrequest didFailWithError:(NSError *)error {
+	LOGE(@"Did not get receipt: %@", error);
+	[self setStatus:IAPReceiptFailed];
 }
 
 - (void)checkReceipt: (SKPaymentTransaction*)transaction {
@@ -99,42 +148,27 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 	// Test whether the receipt is present at the above URL
 	if(![[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
-		 receiptData = [NSData dataWithContentsOfURL:receiptURL];
+		receiptData = [NSData dataWithContentsOfURL:receiptURL];
+		LOGI(@"Found appstore receipt containing: %@", receiptData);
+	} else if (req == nil) {
+		// We are probably in sandbox environment, trying to retrieve it...
+		req = [[SKReceiptRefreshRequest alloc] init];
+		LOGI(@"Receipt not found yet, trying to retrieve it...");
+		req.delegate = self;
+		[req start];
 	} else {
-		LOGI(@"Could not find any receipt in application, using the transaction one!");
-		receiptData = transaction.transactionReceipt;
+		LOGF(@"No receipt found");
 	}
 
 	// We must validate the receipt on our server
-	NSURL *storeURL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"inapp_receipt_validation_url"]];
-	NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:storeURL];
-	[storeRequest setHTTPMethod:@"POST"];
-	[storeRequest setHTTPBody:receiptData];
+	NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url" forSection:@"in_app_purchase"]];
 
-	NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-	[NSURLConnection sendAsynchronousRequest:storeRequest
-					 queue:queue
-						   completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-							   if (data == nil) {
-								   LOGE(@"Server replied nothing, aborting now.");
-							   } else if (connectionError) {
-								   LOGE(@"Could not verify the receipt, aborting now: (%d) %@.", connectionError.code, connectionError);
-							   } else {
-								   NSError *jsonError;
-								   NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-								   if (jsonError == nil) {
-									   // Hourray, we can finally unlock purchase stuff in app!
-									   LOGI(@"In apps purchased are %@", jsonResponse);
-									   LOGE(@"To do: [_productsIDPurchased addObject:transaction.payment.productIdentifier];");
-									   [self postNotificationforStatus:IAPReceiptSucceeded];
-									   return;
-								   } else {
-									   LOGE(@"Impossible to parse receipt JSON response, aborting now because of %@: %@.", jsonError, [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
-								   }
-							   }
-							   // Something failed when checking the receipt
-							   [self postNotificationforStatus:IAPReceiptFailed];
-						   }];
+	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
+	[request setMethod: @"in_app_receipt_validation" withParameters:[NSArray arrayWithObjects:@"ios", receiptData, nil]];
+	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
+	[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
+
+	[request release];
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
@@ -147,23 +181,12 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 				[self checkReceipt: transaction];
 				[self completeTransaction:transaction forStatus:IAPPurchaseSucceeded];
 				break;
-
-//			case SKPaymentTransactionStatePurchasing:
-//				break;
-//			case SKPaymentTransactionStateDeferred:
-//				[self transactionDeferred:transaction];
-//				break;
-//			case SKPaymentTransactionStatePurchased:
-//				[self completeTransaction:transaction];
-//				break;
-//			case SKPaymentTransactionStateRestored:
-//				[self restoreTransaction:transaction];
-//				break;
-//			case SKPaymentTransactionStateFailed:
-//				[self failedTransaction:transaction];
-//				break;
-			default:
+			case SKPaymentTransactionStateDeferred:
+				//waiting for parent approval
+				break;
+			case SKPaymentTransactionStateFailed:
 				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed.",transaction.payment.productIdentifier];
+				LOGE(@"%@", _errlast);
 				[self completeTransaction:transaction forStatus:IAPPurchaseFailed];
 				break;
 		}
@@ -204,4 +227,57 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
+- (void)retrievePurchases {
+	[self checkReceipt:nil];
+}
+
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
+	LOGI(@"XMLRPC %@: %@", [request method], [response body]);
+	//	[waitView setHidden:true];
+	if ([response isFault]) {
+		LOGE(@"Communication issue (%@)", [response faultString]);
+		//		NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
+		//		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
+		//															message:errorString
+		//														   delegate:nil
+		//												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+		//												  otherButtonTitles:nil,nil];
+		//		[errorView show];
+		//		[errorView release];
+	} else if([response object] != nil) {
+		//Don't handle if not object: HTTP/Communication Error
+		if([[request method] isEqualToString:@"check_account"]) {
+			if([response object] == [NSNumber numberWithInt:0]) {
+				//				UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue",nil)
+				//																	message:NSLocalizedString(@"Username already exists", nil)
+				//																   delegate:nil
+				//														  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+				//														  otherButtonTitles:nil,nil];
+				//				[errorView show];
+				//				[errorView release];
+				[self.productsIDPurchased addObject:@"test.one_time"];
+				[self postNotificationforStatus:IAPReceiptSucceeded];
+				return;
+			}
+		}
+	}
+	[self postNotificationforStatus:IAPReceiptFailed];
+}
+
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
+	LOGE(@"Communication issue (%@)", [error localizedDescription]);
+	[self.productsIDPurchased addObject:@"test.one_time"];
+	//	NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
+	//	UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
+	//														message:errorString
+	//													   delegate:nil
+	//											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+	//											  otherButtonTitles:nil,nil];
+	//	[errorView show];
+	//	[errorView release];
+	//	[waitView setHidden:true];
+
+	[self postNotificationforStatus:IAPReceiptFailed];
+}
 @end
+

@@ -47,7 +47,6 @@ transport=tls
 sharing_server=https://www.linphone.org:444/upload.php
 ice=1
 stun=stun.linphone.org
-inapp_paid_account_id = test.auto_renew_7days
 
 [video]
 display_filter_auto_rotate=0
@@ -55,5 +54,9 @@ display_filter_auto_rotate=0
 [app]
 #contact_display_username_only=1
 #contact_filter_on_default_domain=1
-inapp_receipt_validation_url = https://linphone.org/inapp/veriyReceipt
-inapp_products_list = test.auto_renew_7days, test.non_renew, test.one_time, test.auto_renew_1month_withfree
+
+[in_app_purchase]
+enabled = 1
+paid_account_id = test.auto_renew_7days
+receipt_validation_url = https://www.linphone.org/inapp.php
+products_list = test.auto_renew_7days, test.non_renew, test.one_time, test.auto_renew_1month_withfree
