@@ -668,8 +668,8 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 		md->streams[1].payloads=l;
 		if (call->videostream && call->videostream->ms.sessions.rtp_session) {
 			char* me = linphone_address_as_string_uri_only(call->me);
-			md->streams[0].rtp_ssrc=rtp_session_get_send_ssrc(call->videostream->ms.sessions.rtp_session);
-			strncpy(md->streams[0].rtcp_cname,me,sizeof(md->streams[0].rtcp_cname));
+			md->streams[1].rtp_ssrc=rtp_session_get_send_ssrc(call->videostream->ms.sessions.rtp_session);
+			strncpy(md->streams[1].rtcp_cname,me,sizeof(md->streams[1].rtcp_cname));
 			ms_free(me);
 		}
 		else
