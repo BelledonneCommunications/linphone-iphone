@@ -30,7 +30,8 @@ set(LINPHONE_MICRO_VERSION "1")
 set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
 set(LINPHONE_SO_VERSION "6")
 
-set(LINPHONE_ALL_LANGS "cs de es fr he hu it ja nb_NO nl pl pt_BR ru sr sv zh_CN zh_TW")
+file(GLOB LINPHONE_PO_FILES RELATIVE "po" "po/*.po")
+string(REPLACE ".po" "" LINPHONE_ALL_LANGS "${LINPHONE_PO_FILES}")
 
 
 include(CMakeDependentOption)
