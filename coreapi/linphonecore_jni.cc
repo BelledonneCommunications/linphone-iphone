@@ -3863,6 +3863,17 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_getReal
 	return jvalue;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneProxyConfigImpl_isPhoneNumber(JNIEnv *env, jobject thiz, jlong ptr, jstring jusername) {
+	if(jusername){
+		const char *username=env->GetStringUTFChars(jusername, NULL);
+		bool_t res = linphone_proxy_config_is_phone_number((LinphoneProxyConfig *)ptr, username);
+		env->ReleaseStringUTFChars(jusername,username);
+		return (jboolean) res;
+	} else {
+		return JNI_FALSE;
+	}
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (jint)linphone_call_get_duration((LinphoneCall *) ptr);
 }

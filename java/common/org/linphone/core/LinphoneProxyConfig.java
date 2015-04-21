@@ -307,6 +307,13 @@ public interface LinphoneProxyConfig {
 	void setUserData(Object obj);
 
 	/**
+	 * Detect if the given input is a phone number or not.
+	 * @param username string to parse.
+	 * @return TRUE if input is a phone number, FALSE otherwise.
+	 **/
+	boolean isPhoneNumber(String username);
+
+	/**
 	 * Returns user data from a proxy config. return null if any
 	 * @return an Object.
 	 */
