@@ -3563,10 +3563,11 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * When receiving a #LinphoneCallUpdatedByRemote state notification, prevent LinphoneCore from performing an automatic answer.
  *
  * When receiving a #LinphoneCallUpdatedByRemote state notification (ie an incoming reINVITE), the default behaviour of
- * LinphoneCore is to automatically answer the reINIVTE with call parameters unchanged.
+ * LinphoneCore is defined by the "defer_update_default" option of the "sip" section of the config. If this option is 0 (the default)
+ * then the LinphoneCore automatically answers the reINIVTE with call parameters unchanged.
  * However when for example when the remote party updated the call to propose a video stream, it can be useful
  * to prompt the user before answering. This can be achieved by calling linphone_core_defer_call_update() during
- * the call state notifiacation, to deactivate the automatic answer that would just confirm the audio but reject the video.
+ * the call state notification, to deactivate the automatic answer that would just confirm the audio but reject the video.
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
  *

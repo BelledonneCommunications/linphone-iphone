@@ -663,7 +663,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 	if ( call->state == LinphoneCallStreamsRunning) {
 		/*reINVITE and in-dialogs UPDATE go here*/
 		linphone_core_notify_display_status(lc,_("Call is updated by remote."));
-		call->defer_update=FALSE;
+		call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
 		linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 		if (call->defer_update==FALSE){
 			linphone_core_accept_call_update(lc,call,NULL);
@@ -676,7 +676,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		/* Case where no SDP is present and we were paused by remote.
 		 * We send back an ACK with our SDP and expect the remote to send its own.
 		 * No state change here until an answer is received. */
-		call->defer_update=FALSE;
+		call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
 		if (call->defer_update==FALSE){
 			_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
 		}
