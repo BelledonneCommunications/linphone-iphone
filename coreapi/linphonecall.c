@@ -1414,6 +1414,11 @@ LinphoneCall * linphone_call_ref(LinphoneCall *obj){
 void linphone_call_unref(LinphoneCall *obj){
 	belle_sip_object_unref(obj);
 }
+static unsigned int linphone_call_get_n_active_streams(const LinphoneCall *call) {
+	SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
+	if (!md) return 0;
+	return sal_media_description_nb_active_streams_of_type(md, SalAudio) + sal_media_description_nb_active_streams_of_type(md, SalVideo);
+}
 
 /**
  * Returns current parameters associated to the call.
@@ -1437,20 +1442,32 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 
 	/* REVISITED
 	 * Previous code was buggy.
-	 * Relying on the mediastream's state to know the current encryption is unreliable.
-	 * For ZRTP it is though necessary.
-	 * But for all others the current_params->media_encryption state should reflect what is agreed by the offer/answer 
-	 * mechanism.
+	 * Relying on the mediastream's state (added by jehan: only) to know the current encryption is unreliable.
+	 * For (added by jehan: both DTLS and) ZRTP it is though necessary.
+	 * But for all others the current_params->media_encryption state should reflect (added by jehan: both) what is agreed by the offer/answer
+	 * mechanism  (added by jehan: and encryption status from media which is much stronger than only result of offer/answer )
 	 * Typically there can be inactive streams for which the media layer has no idea of whether they are encrypted or not.
 	 */
-	if (call->params->media_encryption == LinphoneMediaEncryptionZRTP){
-		if (linphone_call_all_streams_encrypted(call)) {
-			if (linphone_call_get_authentication_token(call)) {
-				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
-			}
+
+	switch (call->params->media_encryption) {
+	case LinphoneMediaEncryptionZRTP:
+		if (linphone_call_all_streams_encrypted(call) && linphone_call_get_authentication_token(call)) {
+			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+		} else {
+			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 		}
-	}else{
-		call->current_params->media_encryption = call->params->media_encryption;
+		break;
+	case LinphoneMediaEncryptionDTLS:
+	case LinphoneMediaEncryptionSRTP:
+		if (linphone_call_get_n_active_streams(call)==0 || linphone_call_all_streams_encrypted(call)) {
+			call->current_params->media_encryption = call->params->media_encryption;
+		} else {
+			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+		}
+		break;
+	case LinphoneMediaEncryptionNone:
+		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+		break;
 	}
 
 	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call);
