@@ -17,10 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <glib.h>
-#include <gtk/gtk.h>
 #include "status_icon.h"
 #include "linphone.h"
+
+#ifdef HAVE_GTK_OSX
+#include <gtkosxapplication.h>
+#endif
 
 struct _LinphoneStatusIconParams {
 	char *title;
@@ -147,6 +149,7 @@ LinphoneStatusIcon *linphone_status_icon_get(void) {
 
 
 /* GtkStatusIcon implementation */
+#ifndef HAVE_GTK_OSX
 static void _linphone_status_icon_impl_gtk_on_click_cb(LinphoneStatusIcon *si) {
 	_linphone_status_icon_notify_click(si);
 }
@@ -197,13 +200,6 @@ static gboolean _linphone_status_icon_impl_gtk_do_icon_blink_cb(GtkStatusIcon *g
 
 static void _linphone_status_icon_impl_enable_blinking(LinphoneStatusIcon *si, gboolean val) {
 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
-#ifdef HAVE_GTK_OSX
-	static gint attention_id;
-	GtkosxApplication *theMacApp=gtkosx_application_get();
-	if (val)
-		attention_id=gtkosx_application_attention_request(theMacApp,CRITICAL_REQUEST);
-	else gtkosx_application_cancel_attention_request(theMacApp,attention_id);
-#else
 	guint tout;
 	tout=(unsigned)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(icon),"timeout"));
 	if (val && tout==0){
@@ -215,15 +211,10 @@ static void _linphone_status_icon_impl_enable_blinking(LinphoneStatusIcon *si, g
 		g_object_set_data(G_OBJECT(icon),"timeout",NULL);
 		gtk_status_icon_set_from_pixbuf(icon,normal_icon);
 	}
-#endif
 }
 
 static gboolean _linphone_status_icon_impl_is_supported(void) {
-#ifndef HAVE_GTK_OSX
 	return 1;
-#else
-	return 0;
-#endif
 }
 
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
@@ -234,8 +225,42 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
 	.enable_blinking = _linphone_status_icon_impl_enable_blinking,
 	.is_supported = _linphone_status_icon_impl_is_supported
 };
+#endif
+
+
+/* GtkosxApplication implementation */
+#ifdef HAVE_GTK_OSX
+static void _linphone_status_icon_impl_gtkosx_app_enable_blinking(StatusIcon *si, gboolean val) {
+	GtkosxApplication *theMacApp=gtkosx_application_get();
+	gint *attention_id = (gint *)&si->data;
+	if (val && *attention_id == 0) {
+		*attention_id=gtkosx_application_attention_request(theMacApp,CRITICAL_REQUEST);
+	} else if(!val && *attention_id != 0) {
+		gtkosx_application_cancel_attention_request(theMacApp, *attention_id);
+		*attention_id = 0;
+	}
+}
+
+static gboolean _linphone_satus_icon_impl_gtkosx_app_is_supported(void) {
+	return 1;
+}
+
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc = {
+	.impl_name = "gtkosx_application",
+	.init = NULL,
+	.uninit = NULL,
+	.start = NULL,
+	.enable_blinking = _linphone_status_icon_impl_gtkosx_app_enable_blinking,
+	.is_supported = _linphone_satus_icon_impl_gtkosx_app_is_supported
+};
+#endif
+
 
 static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[] = {
+#ifndef HAVE_GTK_OSX
 	&_linphone_status_icon_impl_gtk_desc,
+#else
+	&_linphone_status_icon_impl_gtkosx_app_desc,
+#endif
 	NULL
 };
