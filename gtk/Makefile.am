@@ -55,6 +55,7 @@ linphone_SOURCES=	\
 			config-fetching.c \
 			audio_assistant.c \
 			videowindow.c \
+			status_icon.c \
 			linphone.h
 if BUILD_WIZARD
 linphone_SOURCES+=	\
