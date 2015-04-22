@@ -64,6 +64,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
 		_xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
+		_status = IAPNotReadyYet;
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 		[self loadProducts];
 	}
@@ -79,8 +80,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 	_productsIDPurchased = [[NSMutableArray alloc] initWithCapacity:0];
 
-	SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
-										  initWithProductIdentifiers:[NSSet setWithArray:list]];
+	SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:list]];
 	productsRequest.delegate = self;
 	[productsRequest start];
 }
@@ -121,6 +121,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 			return;
 		}
 	}
+	LOGE(@"Impossible to find product with ID %@...", productID);
 	[self postNotificationforStatus:IAPPurchaseFailed];
 }
 
@@ -129,17 +130,24 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
-static SKRequest* req = nil;
-
 - (void)requestDidFinish:(SKRequest *)request {
-	if (req == request) {
-		LOGI(@"Got receipt");
-		[self checkReceipt:nil];
+	if([request isKindOfClass:[SKReceiptRefreshRequest class]]) {
+		NSURL *receiptUrl = [[NSBundle mainBundle] appStoreReceiptURL];
+		if ([[NSFileManager defaultManager] fileExistsAtPath:[receiptUrl path]]) {
+			LOGI(@"App Receipt exists");
+			[self checkReceipt:nil];
+		} else {
+			LOGE(@"Receipt request done but there is no receipt");
+
+			// This can happen if the user cancels the login screen for the store.
+			// If we get here it means there is no receipt and an attempt to get it failed because the user cancelled the login.
+			//[self trackFailedAttempt];
+		}
 	}
 }
 
 - (void)request:(SKRequest *)skrequest didFailWithError:(NSError *)error {
-	LOGE(@"Did not get receipt: %@", error);
+	LOGE(@"Did not get receipt: %@", error.localizedDescription);
 	[self setStatus:IAPReceiptFailed];
 }
 
@@ -147,27 +155,32 @@ static SKRequest* req = nil;
 	NSData *receiptData = nil;
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 	// Test whether the receipt is present at the above URL
-	if(![[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
+	if([[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
 		receiptData = [NSData dataWithContentsOfURL:receiptURL];
 		LOGI(@"Found appstore receipt containing: %@", receiptData);
-	} else if (req == nil) {
+	} else {
 		// We are probably in sandbox environment, trying to retrieve it...
-		req = [[SKReceiptRefreshRequest alloc] init];
+		SKRequest* req = [[SKReceiptRefreshRequest alloc] init];
 		LOGI(@"Receipt not found yet, trying to retrieve it...");
 		req.delegate = self;
 		[req start];
-	} else {
-		LOGF(@"No receipt found");
+		return;
 	}
 
 	// We must validate the receipt on our server
 	NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url" forSection:@"in_app_purchase"]];
 
 	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
-	[request setMethod: @"in_app_receipt_validation" withParameters:[NSArray arrayWithObjects:@"ios", receiptData, nil]];
+	[request setMethod: @"create_account_from_in_app_purchase" withParameters:[NSArray arrayWithObjects:
+																			   @"toto@test.linphone.org",
+																			   @"toto",
+																			   receiptData,
+																			   @"",
+																			   @"apple",
+																			   nil]];
 	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
 	[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
-
+	LOGE(@"XMLRPC query %@: %@", [request method], [request body]);
 	[request release];
 }
 
@@ -185,7 +198,7 @@ static SKRequest* req = nil;
 				//waiting for parent approval
 				break;
 			case SKPaymentTransactionStateFailed:
-				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed.",transaction.payment.productIdentifier];
+				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed: %@.",transaction.payment.productIdentifier,transaction.error.localizedDescription];
 				LOGE(@"%@", _errlast);
 				[self completeTransaction:transaction forStatus:IAPPurchaseFailed];
 				break;
@@ -228,11 +241,11 @@ static SKRequest* req = nil;
 }
 
 - (void)retrievePurchases {
-	[self checkReceipt:nil];
+	LOGE(@"todo");//[self checkReceipt:nil];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-	LOGI(@"XMLRPC %@: %@", [request method], [response body]);
+	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
 	//	[waitView setHidden:true];
 	if ([response isFault]) {
 		LOGE(@"Communication issue (%@)", [response faultString]);
@@ -254,8 +267,7 @@ static SKRequest* req = nil;
 				//														  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 				//														  otherButtonTitles:nil,nil];
 				//				[errorView show];
-				//				[errorView release];
-				[self.productsIDPurchased addObject:@"test.one_time"];
+				//				[errorView release];!
 				[self postNotificationforStatus:IAPReceiptSucceeded];
 				return;
 			}
@@ -266,7 +278,6 @@ static SKRequest* req = nil;
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
 	LOGE(@"Communication issue (%@)", [error localizedDescription]);
-	[self.productsIDPurchased addObject:@"test.one_time"];
 	//	NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
 	//	UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
 	//														message:errorString

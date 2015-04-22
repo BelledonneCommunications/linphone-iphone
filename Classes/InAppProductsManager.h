@@ -29,6 +29,8 @@ extern NSString *const kLinphoneIAPurchaseNotification;
 
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
+// startup status, manager is not ready yet.
+#define IAPNotReadyYet			@"IAPNotReadyYet"
 #define IAPAvailableSucceeded	@"IAPAvailableSucceeded"
 #define IAPAvailableFailed		@"IAPAvailableFailed"
 #define IAPPurchaseFailed		@"IAPPurchaseFailed"

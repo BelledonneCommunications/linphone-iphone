@@ -419,8 +419,7 @@ static RootViewManager* rootViewManagerInstance = nil;
             // Change to default view
             const MSList *list = linphone_core_get_proxy_config_list(core);
             if(list != NULL || ([lm lpConfigBoolForKey:@"hide_wizard_preference"]  == true) || lm.isTesting) {
-                [self changeCurrentView: [InAppProductsViewController compositeViewDescription]];
-
+                [self changeCurrentView: [DialerViewController compositeViewDescription]];
             } else {
                 WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
                 if(controller != nil) {
