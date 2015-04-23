@@ -24,6 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
+
+static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
+static const _LinphoneStatusIconDesc *_linphone_status_icon_selected_desc = NULL;
+static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[];
+
+
 struct _LinphoneStatusIconParams {
 	char *title;
 	GtkWidget *menu;
@@ -72,23 +79,91 @@ typedef void (*LinphoneStatusIconDescInitFunc)(LinphoneStatusIcon *obj);
 typedef void (*LinphoneStatusIconDescUninitFunc)(LinphoneStatusIcon *obj);
 typedef void (*LinphoneStatusIconDescStartFunc)(LinphoneStatusIcon *obj);
 typedef void (*LinphoneStatusIconDescEnableBlinkingFunc)(LinphoneStatusIcon *obj, gboolean enable);
-typedef gboolean (*LinphoneStatusIconDescIsSupported)(void);
+typedef void (*LinphoneStatusIconDescIsSupportedResultCb)(const _LinphoneStatusIconDesc *obj, gboolean result, void *user_data);
+typedef gboolean (*LinphoneStatusIconDescIsSupportedFunc)(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean *result,
+	LinphoneStatusIconDescIsSupportedResultCb cb,
+	void *user_data
+);
+typedef void (*LinphoneStatusIconDescFindResultCb)(const _LinphoneStatusIconDesc *desc, void *user_data);
 
-typedef struct {
+struct __LinphoneStatusIconDesc {
 	const char *impl_name;
 	LinphoneStatusIconDescInitFunc init;
 	LinphoneStatusIconDescUninitFunc uninit;
 	LinphoneStatusIconDescStartFunc start;
 	LinphoneStatusIconDescEnableBlinkingFunc enable_blinking;
-	LinphoneStatusIconDescIsSupported is_supported;
-} _LinphoneStatusIconDesc;
+	LinphoneStatusIconDescIsSupportedFunc is_supported;
+};
 
-static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[];
+static gboolean _linphone_status_icon_desc_is_supported(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean *result,
+	LinphoneStatusIconDescIsSupportedResultCb cb,
+	void *user_data) {
+	
+	return desc->is_supported(desc, result, cb, user_data);
+}
 
-static const _LinphoneStatusIconDesc *_status_icon_find_instance(void) {
+typedef struct {
 	int i;
-	for(i=0; _linphone_status_icon_impls[i] && !_linphone_status_icon_impls[i]->is_supported(); i++);
-	return _linphone_status_icon_impls[i];
+	LinphoneStatusIconDescFindResultCb cb;
+	void *user_data;
+} _LinphoneStatusIconDescSearchCtx;
+
+static void _linphone_status_icon_desc_is_supprted_result_cb(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean result,
+	_LinphoneStatusIconDescSearchCtx *ctx) {
+	
+	if(!result) {
+		ctx->i++;
+		for(; _linphone_status_icon_impls[ctx->i]; ctx->i++) {
+			if(_linphone_status_icon_desc_is_supported(
+				_linphone_status_icon_impls[ctx->i],
+				&result,
+				(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supprted_result_cb,
+				ctx)) {
+			
+				if(result) break;
+			} else return;
+		}
+	}
+	if(ctx->cb) ctx->cb(_linphone_status_icon_impls[ctx->i], ctx->user_data);
+	g_free(ctx);
+}
+
+static gboolean _linphone_status_icon_find_first_available_impl(
+	const _LinphoneStatusIconDesc **desc,
+	LinphoneStatusIconDescFindResultCb cb,
+	void *user_data) {
+	
+	gboolean result;
+	_LinphoneStatusIconDescSearchCtx *ctx = g_new0(_LinphoneStatusIconDescSearchCtx, 1);
+	ctx->cb = cb;
+	ctx->user_data = user_data;
+	
+	for(ctx->i=0; _linphone_status_icon_impls[ctx->i]; ctx->i++) {
+		if(_linphone_status_icon_desc_is_supported(
+			_linphone_status_icon_impls[ctx->i],
+			&result,
+			(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supprted_result_cb,
+			ctx)) {
+			
+			if(result) {
+				*desc = _linphone_status_icon_impls[ctx->i];
+				goto sync_return;
+			}
+		} else {
+			return 0;
+		}
+	}
+	*desc = NULL;
+	
+sync_return:
+	g_free(ctx);
+	return 1;
 }
 
 
@@ -130,19 +205,32 @@ static void _linphone_status_icon_notify_click(LinphoneStatusIcon *obj) {
 }
 
 
-static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
+void _linphone_status_icon_init_cb(const _LinphoneStatusIconDesc *desc, void *user_data) {
+	void **ctx = (void **)user_data;
+	LinphoneStatusIconReadyCb cb = (LinphoneStatusIconReadyCb)ctx[0];
+	_linphone_status_icon_selected_desc = desc;
+	if(cb) cb(ctx[1]);
+	g_free(ctx);
+}
 
-static void _linphone_status_icon_free_singleton(void) {
-	_linphone_status_icon_free(_linphone_status_icon_instance);
+gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *user_data) {
+	const _LinphoneStatusIconDesc *desc;
+	void **ctx = g_new(void *, 2);
+	if(_linphone_status_icon_find_first_available_impl(&desc, _linphone_status_icon_init_cb, ctx)) {
+		_linphone_status_icon_selected_desc = desc;
+		g_free(ctx);
+		return 1;
+	} else return 0;
+}
+
+void linphone_status_icon_uninit(void) {
+	if(_linphone_status_icon_instance) _linphone_status_icon_free(_linphone_status_icon_instance);
 }
 
 LinphoneStatusIcon *linphone_status_icon_get(void) {
 	if(_linphone_status_icon_instance == NULL) {
-		const _LinphoneStatusIconDesc *desc = _status_icon_find_instance();
-		if(desc) {
-			_linphone_status_icon_instance = _linphone_status_icon_new(desc);
-			atexit(_linphone_status_icon_free_singleton);
-		}
+		if(_linphone_status_icon_selected_desc)
+			_linphone_status_icon_instance = _linphone_status_icon_new(_linphone_status_icon_selected_desc);
 	}
 	return _linphone_status_icon_instance;
 }
@@ -213,7 +301,13 @@ static void _linphone_status_icon_impl_enable_blinking(LinphoneStatusIcon *si, g
 	}
 }
 
-static gboolean _linphone_status_icon_impl_is_supported(void) {
+static gboolean _linphone_status_icon_impl_is_supported(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean *result,
+	LinphoneStatusIconDescIsSupportedResultCb cb,
+	void *user_data) {
+	
+	*result = 1;
 	return 1;
 }
 
@@ -241,7 +335,13 @@ static void _linphone_status_icon_impl_gtkosx_app_enable_blinking(StatusIcon *si
 	}
 }
 
-static gboolean _linphone_satus_icon_impl_gtkosx_app_is_supported(void) {
+static gboolean _linphone_satus_icon_impl_gtkosx_app_is_supported(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean *result,
+	LinphoneStatusIconDescIsSupportedResultCb cb,
+	void *user_data) {
+	
+	*result = 1;
 	return 1;
 }
 

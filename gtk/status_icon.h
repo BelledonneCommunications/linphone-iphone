@@ -35,8 +35,12 @@ void linphone_status_icon_params_set_menu(LinphoneStatusIconParams *obj, GtkWidg
 void linphone_status_icon_params_set_on_click_cb(LinphoneStatusIconParams* obj, LinphoneStatusIconOnClickCallback cb, void *user_data);
 
 
+typedef void (*LinphoneStatusIconReadyCb)(void *user_data);
+
 typedef struct _LinphoneStatusIcon LinphoneStatusIcon;
 
+gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void* user_data);
+void linphone_status_icon_uninit(void);
 LinphoneStatusIcon *linphone_status_icon_get(void);
 const char *linphone_status_icon_get_implementation_name(const LinphoneStatusIcon *obj);
 void linphone_status_icon_start(LinphoneStatusIcon *obj, LinphoneStatusIconParams *params);

@@ -1549,16 +1549,18 @@ static void handle_icon_click(LinphoneStatusIcon *si, void *user_data) {
 }
 
 static void linphone_gtk_init_status_icon(void) {
-	LinphoneStatusIcon *icon = linphone_status_icon_get();
-	if(icon) {
-		GtkWidget *menu = create_icon_menu();
-		LinphoneStatusIconParams *params = linphone_status_icon_params_new();
-		linphone_status_icon_params_set_menu(params, menu);
-		linphone_status_icon_params_set_title(params, _("Linphone - a video internet phone"));
-		linphone_status_icon_params_set_on_click_cb(params, handle_icon_click, NULL);
-		linphone_status_icon_start(icon, params);
-		g_object_unref(G_OBJECT(menu));
-		linphone_status_icon_params_unref(params);
+	if(linphone_status_icon_init(NULL, NULL)) {
+		LinphoneStatusIcon *icon = linphone_status_icon_get();
+		if(icon) {
+			GtkWidget *menu = create_icon_menu();
+			LinphoneStatusIconParams *params = linphone_status_icon_params_new();
+			linphone_status_icon_params_set_menu(params, menu);
+			linphone_status_icon_params_set_title(params, _("Linphone - a video internet phone"));
+			linphone_status_icon_params_set_on_click_cb(params, handle_icon_click, NULL);
+			linphone_status_icon_start(icon, params);
+			g_object_unref(G_OBJECT(menu));
+			linphone_status_icon_params_unref(params);
+		}
 	}
 }
 
@@ -1973,6 +1975,7 @@ static void linphone_gtk_quit(void){
 #ifdef HAVE_NOTIFY
 		notify_uninit();
 #endif
+		linphone_status_icon_uninit();
 		gtk_widget_destroy(the_ui);
 		the_ui=NULL;
 		gdk_threads_leave();
