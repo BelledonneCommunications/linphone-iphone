@@ -3267,23 +3267,27 @@ float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallSta
 	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
 }
 
+rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats, LinphoneCall *call) {
+	rtp_stats_t rtp_stats;
+	memset(&rtp_stats, 0, sizeof(rtp_stats));
+
+	if (stats && call) {
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL)
+			audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
+	#ifdef VIDEO_ENABLED
+		else if (call->videostream != NULL)
+			video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
+	#endif
+	}
+	return rtp_stats;
+}
+
 /**
  * Gets the cumulative number of late packets
  * @return The cumulative number of late packets
 **/
 uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
-	rtp_stats_t rtp_stats;
-
-	if (!stats || !call)
-		return 0;
-	memset(&rtp_stats, 0, sizeof(rtp_stats));
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL)
-		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
-#ifdef VIDEO_ENABLED
-	else if (call->videostream != NULL)
-		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
-#endif
-	return rtp_stats.outoftime;
+	return linphone_call_stats_get_rtp_stats(stats, call).outoftime;
 }
 
 /**
