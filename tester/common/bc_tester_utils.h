@@ -22,6 +22,7 @@
 
 #include "CUnit/Basic.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 extern const char *bc_tester_read_dir_prefix;
 extern const char *bc_tester_writable_dir_prefix;
