@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bc_tester_utils.h"
 
-#include <stdarg.h>
 #include <stdlib.h>
+
 #include "CUnit/Automated.h"
 
 #if WINAPI_FAMILY_PHONE_APP
