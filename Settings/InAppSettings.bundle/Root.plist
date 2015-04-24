@@ -14,7 +14,7 @@
 			<key>Key</key>
 			<string>wizard_button</string>
 			<key>Title</key>
-			<string>Wizard</string>
+			<string>Run assistant</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
