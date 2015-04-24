@@ -157,7 +157,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	// Test whether the receipt is present at the above URL
 	if([[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
 		receiptData = [NSData dataWithContentsOfURL:receiptURL];
-		LOGI(@"Found appstore receipt containing: %@", receiptData);
+		LOGI(@"Found appstore receipt");
 	} else {
 		// We are probably in sandbox environment, trying to retrieve it...
 		SKRequest* req = [[SKReceiptRefreshRequest alloc] init];
@@ -171,10 +171,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url" forSection:@"in_app_purchase"]];
 
 	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
-	[request setMethod: @"create_account_from_in_app_purchase" withParameters:[NSArray arrayWithObjects:
-																			   @"toto@test.linphone.org",
-																			   @"toto",
-																			   receiptData,
+	[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
+																			   [receiptData base64EncodedStringWithOptions:0],
 																			   @"",
 																			   @"apple",
 																			   nil]];
@@ -259,15 +257,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		//		[errorView release];
 	} else if([response object] != nil) {
 		//Don't handle if not object: HTTP/Communication Error
-		if([[request method] isEqualToString:@"check_account"]) {
-			if([response object] == [NSNumber numberWithInt:0]) {
-				//				UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue",nil)
-				//																	message:NSLocalizedString(@"Username already exists", nil)
-				//																   delegate:nil
-				//														  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-				//														  otherButtonTitles:nil,nil];
-				//				[errorView show];
-				//				[errorView release];!
+		if([[request method] isEqualToString:@"get_expiration_date"]) {
+			if([response object] == [NSNumber numberWithInt:1]) {
 				[self postNotificationforStatus:IAPReceiptSucceeded];
 				return;
 			}
