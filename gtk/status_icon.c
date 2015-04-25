@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+#include "status_notifier.h"
+
 typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
 
 static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
@@ -216,6 +218,8 @@ void _linphone_status_icon_init_cb(const _LinphoneStatusIconDesc *desc, void *us
 gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *user_data) {
 	const _LinphoneStatusIconDesc *desc;
 	void **ctx = g_new(void *, 2);
+	ctx[0] = ready_cb;
+	ctx[1] = user_data;
 	if(_linphone_status_icon_find_first_available_impl(&desc, _linphone_status_icon_init_cb, ctx)) {
 		_linphone_status_icon_selected_desc = desc;
 		g_free(ctx);
@@ -335,7 +339,7 @@ static void _linphone_status_icon_impl_gtkosx_app_enable_blinking(StatusIcon *si
 	}
 }
 
-static gboolean _linphone_satus_icon_impl_gtkosx_app_is_supported(
+static gboolean _linphone_status_icon_impl_gtkosx_app_is_supported(
 	const _LinphoneStatusIconDesc *desc,
 	gboolean *result,
 	LinphoneStatusIconDescIsSupportedResultCb cb,
@@ -356,7 +360,122 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc 
 #endif
 
 
+/* Implementation based on the StatusNotifier Freedesktop standard */
+typedef struct {
+	int x;
+	int y;
+} _LinphoneStatusIconPosition;
+
+static void _linphone_status_icon_impl_sn_init(LinphoneStatusIcon *si) {
+	si->data = bc_status_notifier_new();
+}
+
+static void _linphone_status_icon_impl_sn_uninit(LinphoneStatusIcon *si) {
+	bc_status_notifier_unref((BcStatusNotifier *)si->data);
+}
+
+static void _linphone_status_icon_impl_sn_activated_cb(BcStatusNotifier *sn, int x, int y, void *user_data) {
+	LinphoneStatusIcon *si = (LinphoneStatusIcon *)user_data;
+	_linphone_status_icon_notify_click(si);
+}
+
+static void _linphone_status_icon_impr_sn_get_position(GtkMenu *menu, int *x, int *y, gboolean *push_in, gpointer data) {
+	_LinphoneStatusIconPosition *pos = (_LinphoneStatusIconPosition *)data;
+	*x = pos->x;
+	*y = pos->y;
+	*push_in = TRUE;
+}
+
+static void _linphone_status_icon_impl_sn_menu_called_cb(BcStatusNotifier *sn, int x, int y, void *user_data) {
+	LinphoneStatusIcon *si = (LinphoneStatusIcon *)user_data;
+	GtkWidget *menu = si->params->menu;
+	_LinphoneStatusIconPosition pos = {x, y};
+	gtk_menu_popup(
+		GTK_MENU(menu),
+		NULL,
+		NULL,
+		_linphone_status_icon_impr_sn_get_position,
+		&pos,
+		0,
+		gtk_get_current_event_time()
+	);
+}
+
+static void _linphone_status_icon_impl_sn_start(LinphoneStatusIcon *si) {
+	BcStatusNotifier *sn = (BcStatusNotifier *)si->data;
+	BcStatusNotifierParams *params;
+	BcStatusNotifierToolTip *tooltip = bc_status_notifier_tool_tip_new("linphone", "Linphone", NULL);
+	BcStatusNotifierSignalsVTable vtable = {NULL};
+	
+	vtable.activate_called_cb = _linphone_status_icon_impl_sn_activated_cb;
+	vtable.context_menu_called_cb = _linphone_status_icon_impl_sn_menu_called_cb;
+	
+	params = bc_status_notifier_params_new();
+	bc_status_notifier_params_set_dbus_prefix(params, "org.kde");
+	bc_status_notifier_params_set_category(params, BcStatusNotifierCategoryCommunications);
+	bc_status_notifier_params_set_id(params, "linphone");
+	bc_status_notifier_params_set_title(params, "Linphone");
+	bc_status_notifier_params_set_icon_name(params, "linphone");
+	bc_status_notifier_params_set_tool_tip(params, tooltip);
+	bc_status_notifier_params_set_vtable(params, &vtable, si);
+	
+	bc_status_notifier_start(sn, params, NULL, NULL);
+	
+	bc_status_notifier_tool_tip_unref(tooltip);
+	bc_status_notifier_params_unref(params);
+}
+
+static void _linphone_status_icon_impl_sn_enable_blinking(LinphoneStatusIcon *si, gboolean val) {
+	BcStatusNotifier *sn = (BcStatusNotifier *)si->data; 
+	if(val) {
+		bc_status_notifier_update_status(sn, BcStatusNotifierStatusNeedsAttention);
+	} else {
+		bc_status_notifier_update_status(sn, BcStatusNotifierStatusPassive);
+	}
+}
+
+static void _linphone_status_icon_impl_is_supported_cb(const char *prefix, gboolean result, void **data) {
+	_LinphoneStatusIconDesc *desc = (_LinphoneStatusIconDesc *)data[0];
+	LinphoneStatusIconDescIsSupportedResultCb cb = (LinphoneStatusIconDescIsSupportedResultCb)data[1];
+	if(cb) cb(desc, result, data[2]);
+	g_free(data);
+	g_free(desc);
+}
+
+static gboolean _linphone_status_icon_impl_sn_is_supported(
+	const _LinphoneStatusIconDesc *desc,
+	gboolean *result,
+	LinphoneStatusIconDescIsSupportedResultCb cb,
+	void *user_data) {
+	
+	_LinphoneStatusIconDesc *desc2 = g_new(_LinphoneStatusIconDesc, 1);
+	void **data = g_new(void *, 3);
+	
+	*desc2 = *desc;
+	data[0] = desc2;
+	data[1] = cb;
+	data[2] = user_data;
+	bc_status_notifier_is_supported(
+		"org.kde",
+		(BcStatusNotifierSupportDetectionCb)_linphone_status_icon_impl_is_supported_cb,
+		data
+	);
+	return 0;
+}
+
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier = {
+	.impl_name = "status_notifier",
+	.init = _linphone_status_icon_impl_sn_init,
+	.uninit = _linphone_status_icon_impl_sn_uninit,
+	.start = _linphone_status_icon_impl_sn_start,
+	.enable_blinking = _linphone_status_icon_impl_sn_enable_blinking,
+	.is_supported = _linphone_status_icon_impl_sn_is_supported
+};
+
+
+/* List of implementations */
 static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[] = {
+	&_linphone_status_icon_impl_status_notifier,
 #ifndef HAVE_GTK_OSX
 	&_linphone_status_icon_impl_gtk_desc,
 #else
