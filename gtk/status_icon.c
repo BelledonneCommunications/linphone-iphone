@@ -35,6 +35,7 @@ static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[];
 
 struct _LinphoneStatusIconParams {
 	char *title;
+	char *desc;
 	GtkWidget *menu;
 	LinphoneStatusIconOnClickCallback on_click_cb;
 	void *user_data;
@@ -63,6 +64,12 @@ void linphone_status_icon_params_set_title(LinphoneStatusIconParams *obj, const 
 	if(obj->title) g_free(obj->title);
 	if(title) obj->title = g_strdup(title);
 	else obj->title = NULL;
+}
+
+void linphone_status_icon_params_set_description(LinphoneStatusIconParams *obj, const char *desc) {
+	if(obj->desc) g_free(obj->desc);
+	if(desc) obj->desc = g_strdup(desc);
+	else obj->desc = NULL;
 }
 
 void linphone_status_icon_params_set_menu(LinphoneStatusIconParams *obj, GtkWidget *menu) {
@@ -273,7 +280,9 @@ static void _linphone_status_icon_impl_gtk_init(LinphoneStatusIcon *si) {
 static void _linphone_status_icon_impl_gtk_start(LinphoneStatusIcon *si) {
 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
 #if GTK_CHECK_VERSION(2,20,2)
-	gtk_status_icon_set_name(icon, si->params->title);
+	char *name = g_strdup_printf("%s - %s", si->params->title, si->params->desc);
+	gtk_status_icon_set_name(icon, name);
+	g_free(name);
 #endif
 	gtk_status_icon_set_visible(icon,TRUE);
 }
@@ -404,7 +413,7 @@ static void _linphone_status_icon_impl_sn_menu_called_cb(BcStatusNotifier *sn, i
 static void _linphone_status_icon_impl_sn_start(LinphoneStatusIcon *si) {
 	BcStatusNotifier *sn = (BcStatusNotifier *)si->data;
 	BcStatusNotifierParams *params;
-	BcStatusNotifierToolTip *tooltip = bc_status_notifier_tool_tip_new("linphone", "Linphone", NULL);
+	BcStatusNotifierToolTip *tooltip = bc_status_notifier_tool_tip_new("linphone", si->params->title, si->params->desc);
 	BcStatusNotifierSignalsVTable vtable = {NULL};
 	
 	vtable.activate_called_cb = _linphone_status_icon_impl_sn_activated_cb;
@@ -414,7 +423,7 @@ static void _linphone_status_icon_impl_sn_start(LinphoneStatusIcon *si) {
 	bc_status_notifier_params_set_dbus_prefix(params, "org.kde");
 	bc_status_notifier_params_set_category(params, BcStatusNotifierCategoryCommunications);
 	bc_status_notifier_params_set_id(params, "linphone");
-	bc_status_notifier_params_set_title(params, "Linphone");
+	bc_status_notifier_params_set_title(params, si->params->title);
 	bc_status_notifier_params_set_icon_name(params, "linphone");
 	bc_status_notifier_params_set_tool_tip(params, tooltip);
 	bc_status_notifier_params_set_vtable(params, &vtable, si);

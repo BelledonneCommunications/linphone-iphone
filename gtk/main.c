@@ -1560,7 +1560,8 @@ static void linphone_gtk_init_status_icon(void) {
 	GtkWidget *menu = create_icon_menu();
 	LinphoneStatusIconParams *params = linphone_status_icon_params_new();
 	linphone_status_icon_params_set_menu(params, menu);
-	linphone_status_icon_params_set_title(params, _("Linphone - a video internet phone"));
+	linphone_status_icon_params_set_title(params, _("Linphone"));
+	linphone_status_icon_params_set_description(params, _("A video internet phone"));
 	linphone_status_icon_params_set_on_click_cb(params, handle_icon_click, NULL);
 	g_object_unref(G_OBJECT(menu));
 	

@@ -31,6 +31,7 @@ LinphoneStatusIconParams *linphone_status_icon_params_ref(LinphoneStatusIconPara
 void linphone_status_icon_params_unref(LinphoneStatusIconParams *obj);
 
 void linphone_status_icon_params_set_title(LinphoneStatusIconParams *obj, const char *title);
+void linphone_status_icon_params_set_description(LinphoneStatusIconParams *obj, const char *desc);
 void linphone_status_icon_params_set_menu(LinphoneStatusIconParams *obj, GtkWidget *menu);
 void linphone_status_icon_params_set_on_click_cb(LinphoneStatusIconParams* obj, LinphoneStatusIconOnClickCallback cb, void *user_data);
 
