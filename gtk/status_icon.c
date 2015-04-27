@@ -337,7 +337,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
 
 /* GtkosxApplication implementation */
 #ifdef HAVE_GTK_OSX
-static void _linphone_status_icon_impl_gtkosx_app_enable_blinking(StatusIcon *si, gboolean val) {
+static void _linphone_status_icon_impl_gtkosx_app_enable_blinking(LinphoneStatusIcon *si, gboolean val) {
 	GtkosxApplication *theMacApp=gtkosx_application_get();
 	gint *attention_id = (gint *)&si->data;
 	if (val && *attention_id == 0) {
@@ -364,7 +364,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc 
 	.uninit = NULL,
 	.start = NULL,
 	.enable_blinking = _linphone_status_icon_impl_gtkosx_app_enable_blinking,
-	.is_supported = _linphone_satus_icon_impl_gtkosx_app_is_supported
+	.is_supported = _linphone_status_icon_impl_gtkosx_app_is_supported
 };
 #endif
 

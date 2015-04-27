@@ -1530,11 +1530,14 @@ static GtkWidget *create_icon_menu(){
 	return menu;
 }
 
+#ifndef HAVE_GTK_OSX
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data){
        gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y);
 }
+#endif
 
 static void handle_icon_click(LinphoneStatusIcon *si, void *user_data) {
+#ifndef HAVE_GTK_OSX
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (!gtk_window_is_active((GtkWindow*)mw)) {
 		if(!gtk_widget_is_drawable(mw)){
@@ -1546,6 +1549,7 @@ static void handle_icon_click(LinphoneStatusIcon *si, void *user_data) {
 		linphone_gtk_save_main_window_position((GtkWindow*)mw, NULL, NULL);
 		gtk_widget_hide(mw);
 	}
+#endif
 }
 
 static void linphone_gtk_status_icon_initialised_cb(LinphoneStatusIconParams *params) {
