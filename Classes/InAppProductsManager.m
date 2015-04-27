@@ -27,6 +27,9 @@
 #import "Utils.h"
 #import "LinphoneManager.h"
 
+#import "PhoneMainView.h"
+#import "InAppProductsViewController.h"
+
 NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
 
 
@@ -254,22 +257,25 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	//	[waitView setHidden:true];
 	if ([response isFault]) {
 		LOGE(@"Communication issue (%@)", [response faultString]);
-		//		NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
-		//		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
-		//															message:errorString
-		//														   delegate:nil
-		//												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-		//												  otherButtonTitles:nil,nil];
-		//		[errorView show];
-		//		[errorView release];
+		NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
+		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
+															message:errorString
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:nil,nil];
+		[errorView show];
+		[errorView release];
 	} else if([response object] != nil) {
 		//Don't handle if not object: HTTP/Communication Error
 		if([[request method] isEqualToString:@"get_expiration_date"]) {
-			if([response object] == [NSNumber numberWithInt:1]) {
+			if(false && [response object] == [NSNumber numberWithInt:1]) {
 				LOGE(@"Todo: parse the response");
 //				[_productsIDPurchased addObject:@"test.auto_renew_7days"];
 				[self postNotificationforStatus:IAPReceiptSucceeded];
 				return;
+			} else {
+				LOGI(@"Account has expired");
+				[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
 			}
 		}
 	}
@@ -279,15 +285,15 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
 	LOGE(@"Communication issue (%@)", [error localizedDescription]);
-	//	NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
-	//	UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
-	//														message:errorString
-	//													   delegate:nil
-	//											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-	//											  otherButtonTitles:nil,nil];
-	//	[errorView show];
-	//	[errorView release];
-	//	[waitView setHidden:true];
+	NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
+	UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
+														message:errorString
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+											  otherButtonTitles:nil,nil];
+	[errorView show];
+	[errorView release];
+	[waitView setHidden:true];
 	latestReceiptMD5 = nil;
 	[self postNotificationforStatus:IAPReceiptFailed];
 }
