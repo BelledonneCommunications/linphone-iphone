@@ -17,6 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+/**
+ * BcStatusNotifier is an implementation of the StatusNotiferItem standard defined by freedesktop.org.
+ * It is a new way to manage status icons on GNU/Linux systems by using D-Bus. It is implemented by
+ * Unity desktop environmemt and it is the only way to create status icons on KDE 5.
+ * Visit http://freedesktop.org/wiki/Specifications/StatusNotifierItem/ for more information.
+ */
+
 #ifndef STATUS_NOTIFIER_H
 #define STATUS_NOTIFIER_H
 
