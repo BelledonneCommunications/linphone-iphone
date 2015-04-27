@@ -55,6 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <locale.h>
 #endif
 
+#include "status_icon.h"
 
 
 const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
@@ -1496,15 +1497,6 @@ void linphone_gtk_link_to_website(GtkWidget *item){
 	linphone_gtk_open_browser(home);
 }
 
-#ifndef HAVE_GTK_OSX
-
-static GtkStatusIcon *icon=NULL;
-
-static void icon_popup_menu(GtkStatusIcon *status_icon, guint button, guint activate_time, gpointer user_data){
-	GtkWidget *menu=(GtkWidget*)g_object_get_data(G_OBJECT(status_icon),"menu");
-	gtk_menu_popup(GTK_MENU(menu),NULL,NULL,gtk_status_icon_position_menu,status_icon,button,activate_time);
-}
-
 static GtkWidget *create_icon_menu(){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
@@ -1538,11 +1530,14 @@ static GtkWidget *create_icon_menu(){
 	return menu;
 }
 
+#ifndef HAVE_GTK_OSX
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data){
        gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y);
 }
+#endif
 
-static void handle_icon_click() {
+static void handle_icon_click(LinphoneStatusIcon *si, void *user_data) {
+#ifndef HAVE_GTK_OSX
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (!gtk_window_is_active((GtkWindow*)mw)) {
 		if(!gtk_widget_is_drawable(mw)){
@@ -1554,67 +1549,43 @@ static void handle_icon_click() {
 		linphone_gtk_save_main_window_position((GtkWindow*)mw, NULL, NULL);
 		gtk_widget_hide(mw);
 	}
-}
-
-static void linphone_gtk_init_status_icon(){
-	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
-	const char *call_icon_path=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
-	GdkPixbuf *pbuf=create_pixbuf(icon_path);
-	GtkWidget *menu=create_icon_menu();
-	const char *title;
-	title=linphone_gtk_get_ui_config("title",_("Linphone - a video internet phone"));
-	icon=gtk_status_icon_new_from_pixbuf(pbuf);
-#if GTK_CHECK_VERSION(2,20,2)
-	gtk_status_icon_set_name(icon,title);
 #endif
-	g_signal_connect_swapped(G_OBJECT(icon),"activate",(GCallback)handle_icon_click,NULL);
-	g_signal_connect(G_OBJECT(icon),"popup-menu",(GCallback)icon_popup_menu,NULL);
-	gtk_status_icon_set_tooltip(icon,title);
-	gtk_status_icon_set_visible(icon,TRUE);
-	g_object_set_data(G_OBJECT(icon),"menu",menu);
-	g_object_weak_ref(G_OBJECT(icon),(GWeakNotify)gtk_widget_destroy,menu);
-	g_object_set_data(G_OBJECT(icon),"icon",pbuf);
-	g_object_weak_ref(G_OBJECT(icon),(GWeakNotify)g_object_unref,pbuf);
-	pbuf=create_pixbuf(call_icon_path);
-	g_object_set_data(G_OBJECT(icon),"call_icon",pbuf);
 }
 
-static gboolean do_icon_blink(GtkStatusIcon *gi){
-	GdkPixbuf *call_icon=g_object_get_data(G_OBJECT(gi),"call_icon");
-	GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(gi),"icon");
-	GdkPixbuf *cur_icon=gtk_status_icon_get_pixbuf(gi);
-	if (cur_icon==call_icon){
-		gtk_status_icon_set_from_pixbuf(gi,normal_icon);
-	}else{
-		gtk_status_icon_set_from_pixbuf(gi,call_icon);
+static void linphone_gtk_status_icon_initialised_cb(LinphoneStatusIconParams *params) {
+	LinphoneStatusIcon *icon = linphone_status_icon_get();
+	if(icon) {
+		linphone_status_icon_start(icon, params);
 	}
-	return TRUE;
+	linphone_status_icon_params_unref(params);
 }
 
-#endif
-
-void linphone_gtk_status_icon_set_blinking(gboolean val){
-#ifdef HAVE_GTK_OSX
-	static gint attention_id;
-	GtkosxApplication *theMacApp=gtkosx_application_get();
-	if (val)
-		attention_id=gtkosx_application_attention_request(theMacApp,CRITICAL_REQUEST);
-	else gtkosx_application_cancel_attention_request(theMacApp,attention_id);
-#else
-	if (icon!=NULL){
-		guint tout;
-		tout=(unsigned)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(icon),"timeout"));
-		if (val && tout==0){
-			tout=g_timeout_add(500,(GSourceFunc)do_icon_blink,icon);
-			g_object_set_data(G_OBJECT(icon),"timeout",GINT_TO_POINTER(tout));
-		}else if (!val && tout!=0){
-			GdkPixbuf *normal_icon=g_object_get_data(G_OBJECT(icon),"icon");
-			g_source_remove(tout);
-			g_object_set_data(G_OBJECT(icon),"timeout",NULL);
-			gtk_status_icon_set_from_pixbuf(icon,normal_icon);
+static void linphone_gtk_init_status_icon(void) {
+	GtkWidget *menu = create_icon_menu();
+	LinphoneStatusIconParams *params = linphone_status_icon_params_new();
+	linphone_status_icon_params_set_menu(params, menu);
+	linphone_status_icon_params_set_title(params, _("Linphone"));
+	linphone_status_icon_params_set_description(params, _("A video internet phone"));
+	linphone_status_icon_params_set_on_click_cb(params, handle_icon_click, NULL);
+	g_object_unref(G_OBJECT(menu));
+	
+	if(linphone_status_icon_init(
+		(LinphoneStatusIconReadyCb)linphone_gtk_status_icon_initialised_cb,
+		params)) {
+		
+		LinphoneStatusIcon *icon = linphone_status_icon_get();
+		if(icon) {
+			linphone_status_icon_start(icon, params);
 		}
+		linphone_status_icon_params_unref(params);
 	}
-#endif
+}
+
+void linphone_gtk_status_icon_set_blinking(gboolean val) {
+	LinphoneStatusIcon *icon = linphone_status_icon_get();
+	if(icon) {
+		linphone_status_icon_enable_blinking(icon, val);
+	}
 }
 
 void linphone_gtk_options_activate(GtkWidget *item){
@@ -2018,13 +1989,10 @@ static void linphone_gtk_quit(void){
 		quit_done=TRUE;
 		linphone_gtk_quit_core();
 		linphone_gtk_uninit_instance();
-#ifndef HAVE_GTK_OSX
-		g_object_unref(icon);
-		icon=NULL;
-#endif
 #ifdef HAVE_NOTIFY
 		notify_uninit();
 #endif
+		linphone_status_icon_uninit();
 		gtk_widget_destroy(the_ui);
 		the_ui=NULL;
 		gdk_threads_leave();
@@ -2242,10 +2210,6 @@ core_start:
 		goto core_start;
 	}
 	if (config_file) g_free(config_file);
-#ifndef HAVE_GTK_OSX
-	/*workaround a bug on win32 that makes status icon still present in the systray even after program exit.*/
-	if (icon) gtk_status_icon_set_visible(icon,FALSE);
-#endif
 	free(progpath);
 	/*output a translated "hello" string to the terminal, which allows the builder to check that translations are working.*/
 	if (selftest){

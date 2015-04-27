@@ -64,6 +64,8 @@ set(SOURCE_FILES
 	main.c
 	propertybox.c
 	singleinstance.c
+	status_icon.c
+	status_notifier.c
 	support.c
 	update.c
 	utils.c
