@@ -45,6 +45,11 @@ etc/gtk-2.0/gtk.immodules
 etc/gtk-2.0/im-multipress.conf
 etc/pango
 etc/pango/pango.modules
+share/locale/ar/LC_MESSAGES/atk10.mo
+share/locale/ar/LC_MESSAGES/gdk-pixbuf.mo
+share/locale/ar/LC_MESSAGES/glib20.mo
+share/locale/ar/LC_MESSAGES/gtk20-properties.mo
+share/locale/ar/LC_MESSAGES/gtk20.mo
 share/locale/cs
 share/locale/cs/LC_MESSAGES
 share/locale/cs/LC_MESSAGES/atk10.mo
@@ -171,6 +176,12 @@ share/locale/sv/LC_MESSAGES/gettext-runtime.mo
 share/locale/sv/LC_MESSAGES/glib20.mo
 share/locale/sv/LC_MESSAGES/gtk20-properties.mo
 share/locale/sv/LC_MESSAGES/gtk20.mo
+share/locale/tr/LC_MESSAGES/atk10.mo
+share/locale/tr/LC_MESSAGES/gdk-pixbuf.mo
+share/locale/tr/LC_MESSAGES/gettext-runtime.mo
+share/locale/tr/LC_MESSAGES/glib20.mo
+share/locale/tr/LC_MESSAGES/gtk20-properties.mo
+share/locale/tr/LC_MESSAGES/gtk20.mo
 share/locale/zh_CN
 share/locale/zh_CN/LC_MESSAGES
 share/locale/zh_CN/LC_MESSAGES/atk10.mo
