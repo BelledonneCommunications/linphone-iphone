@@ -1,28 +1,6 @@
-[net]
-mtu=1300
-activate_edge_workarounds=0
-edge_ping_time=200
-edge_bw=10
 
 [sip]
-guess_hostname=1
-inc_timeout=45
-use_info=0
-register_only_when_network_is_up=1
-auto_net_state_mon=0
-keepalive_period=30000
-ping_with_options=0
 sip_random_port=0
-rtcp_xr_enabled=1
-rtcp_xr_rcvr_rtt_mode=all
-rtcp_xr_rcvr_rtt_max_size=10000
-rtcp_xr_stat_summary_enabled=1
-rtcp_xr_voip_metrics_enabled=1
-
-[rtp]
-audio_jitt_comp=60
-video_jitt_comp=60
-nortp_timeout=30
 
 [sound]
 ringer_dev_id=AQ: Audio Queue Device
@@ -31,24 +9,11 @@ dtmf_player_amp=0.007
 eq_location=mic
 eq_gains=50:2:50 100:2:50
 
-[misc]
-history_max_size=30
-max_calls=3
 
-[wizard]
-service_url=https://www.linphone.org/wizard.php
-domain=sip.linphone.org
-proxy=sip.linphone.org:5223
-password_length=6
-username_length=4
-expires=1314000
-push_notification=1
-transport=tls
-sharing_server=https://www.linphone.org:444/upload.php
-ice=1
-stun=stun.linphone.org
 
 [video]
 display_filter_auto_rotate=0
 
-
+[app]
+#contact_display_username_only=1
+#contact_filter_on_default_domain=1

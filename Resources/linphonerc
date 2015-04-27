@@ -1,3 +1,9 @@
+[net]
+mtu=1300
+activate_edge_workarounds=0
+edge_ping_time=10
+edge_bw=10
+
 [sip]
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 keepalive_period=30000
@@ -5,10 +11,25 @@ default_proxy=0
 sip_port=-1
 sip_tcp_port=-1
 use_ipv6=0
+inc_timeout=45
+use_info=0
+guess_hostname=1
+register_only_when_network_is_up=1
+auto_net_state_mon=0
+keepalive_period=30000
+ping_with_options=0
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 
 [rtp]
 audio_rtp_port=7076
 video_rtp_port=9078
+audio_jitt_comp=60
+video_jitt_comp=60
+nortp_timeout=30
 
 [video]
 display=1
@@ -30,6 +51,7 @@ capture_dev_id=AU: Audio Unit Receiver
 eq_active=0
 
 [app]
+preview_preference=0
 animations_preference=1
 edge_opt_preference=0
 use_system_contacts=0
@@ -41,3 +63,21 @@ enable_log_collect=0
 
 [default_values]
 reg_expires=600
+
+[wizard]
+service_url=https://www.linphone.org/wizard.php
+domain=sip.linphone.org
+proxy=sip.linphone.org:5223
+password_length=6
+username_length=4
+expires=1314000
+push_notification=1
+transport=tls
+sharing_server=https://www.linphone.org:444/upload.php
+ice=1
+stun=stun.linphone.org
+
+
+[misc]
+history_max_size=30
+max_calls=3
