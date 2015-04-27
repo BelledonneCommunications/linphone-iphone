@@ -1387,7 +1387,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 static BOOL libStarted = FALSE;
 
-- (void)startLibLinphone {
+- (void)startLinphoneCore {
 
 	if ( libStarted ) {
 		[LinphoneLogger logc:LinphoneLoggerError format:"Liblinphone is already initialized!"];
@@ -1402,6 +1402,7 @@ static BOOL libStarted = FALSE;
 
 	// create linphone core
 	[self createLinphoneCore];
+
 	linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
 	// init audio session (just getting the instance will init)
@@ -1491,7 +1492,7 @@ static BOOL libStarted = FALSE;
 													repeats:YES];
 }
 
-- (void)destroyLibLinphone {
+- (void)destroyLinphoneCore {
 	[mIterateTimer invalidate];
 	//just in case
 	[self removeCTCallCenterCb];
@@ -1518,7 +1519,7 @@ static BOOL libStarted = FALSE;
 }
 
 - (void) resetLinphoneCore {
-	[self destroyLibLinphone];
+	[self destroyLinphoneCore];
 	[self createLinphoneCore];
 
 	// reset network state to trigger a new network connectivity assessment

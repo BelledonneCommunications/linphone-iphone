@@ -212,7 +212,7 @@
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-    [[LinphoneManager instance]	startLibLinphone];
+    [[LinphoneManager instance]	startLinphoneCore];
     // initialize UI
     [self.window makeKeyAndVisible];
     [RootViewManager setupWithPortrait:(PhoneMainView*)self.window.rootViewController];
@@ -513,8 +513,8 @@
                                                  name:kLinphoneConfiguringStateUpdate
                                                object:nil];
     linphone_core_set_provisioning_uri([LinphoneManager getLc] , [configURL UTF8String]);
-    [[LinphoneManager instance] destroyLibLinphone];
-    [[LinphoneManager instance] startLibLinphone];
+    [[LinphoneManager instance] destroyLinphoneCore];
+    [[LinphoneManager instance] startLinphoneCore];
 
 }
 

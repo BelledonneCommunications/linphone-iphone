@@ -701,7 +701,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([key isEqual:@"release_button"]) {
         [UIApplication sharedApplication].keyWindow.rootViewController = nil;
         [[UIApplication sharedApplication].keyWindow setRootViewController:nil];
-        [[LinphoneManager instance]	destroyLibLinphone];
+        [[LinphoneManager instance]	destroyLinphoneCore];
         [LinphoneManager instanceRelease];
     } else  if([key isEqual:@"clear_cache_button"]) {
         [[PhoneMainView instance].mainViewController clearCache:[NSArray arrayWithObject:[[PhoneMainView  instance] currentView]]];
