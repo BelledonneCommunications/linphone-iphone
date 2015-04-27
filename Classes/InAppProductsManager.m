@@ -152,13 +152,11 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 }
 
 - (void)checkReceipt: (SKPaymentTransaction*)transaction {
-	NSData *receiptData = nil;
+	NSString *receiptBase64 = nil;
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+
 	// Test whether the receipt is present at the above URL
-	if([[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
-		receiptData = [NSData dataWithContentsOfURL:receiptURL];
-		LOGI(@"Found appstore receipt");
-	} else {
+	if(![[NSFileManager defaultManager] fileExistsAtPath:[receiptURL path]]) {
 		// We are probably in sandbox environment, trying to retrieve it...
 		SKRequest* req = [[SKReceiptRefreshRequest alloc] init];
 		LOGI(@"Receipt not found yet, trying to retrieve it...");
@@ -167,19 +165,28 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		return;
 	}
 
-	// We must validate the receipt on our server
-	NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url" forSection:@"in_app_purchase"]];
+	LOGI(@"Found appstore receipt");
+	receiptBase64 = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedStringWithOptions:0];
+	//only check the receipt if it has changed
+	if (latestReceiptMD5 == nil || ! [latestReceiptMD5 isEqualToString:[receiptBase64 md5]]) {
+		// We must validate the receipt on our server
+		NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url" forSection:@"in_app_purchase"]];
 
-	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
-	[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
-																			   [receiptData base64EncodedStringWithOptions:0],
-																			   @"",
-																			   @"apple",
-																			   nil]];
-	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-	[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
-	LOGE(@"XMLRPC query %@: %@", [request method], [request body]);
-	[request release];
+		XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
+		[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
+																   receiptBase64,
+																   @"",
+																   @"apple",
+																   nil]];
+		latestReceiptMD5 = [[receiptBase64 md5] retain];
+
+		XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
+		[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
+		LOGI(@"XMLRPC query %@: %@", [request method], [request body]);
+		[request release];
+	} else {
+		LOGW(@"Skipping receipt check, it has already been done!");
+	}
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
@@ -239,7 +246,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 }
 
 - (void)retrievePurchases {
-	LOGE(@"todo");//[self checkReceipt:nil];
+	[self checkReceipt:nil];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
@@ -259,11 +266,14 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		//Don't handle if not object: HTTP/Communication Error
 		if([[request method] isEqualToString:@"get_expiration_date"]) {
 			if([response object] == [NSNumber numberWithInt:1]) {
+				LOGE(@"Todo: parse the response");
+//				[_productsIDPurchased addObject:@"test.auto_renew_7days"];
 				[self postNotificationforStatus:IAPReceiptSucceeded];
 				return;
 			}
 		}
 	}
+	latestReceiptMD5 = nil;
 	[self postNotificationforStatus:IAPReceiptFailed];
 }
 
@@ -278,7 +288,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	//	[errorView show];
 	//	[errorView release];
 	//	[waitView setHidden:true];
-
+	latestReceiptMD5 = nil;
 	[self postNotificationforStatus:IAPReceiptFailed];
 }
 @end

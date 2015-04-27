@@ -1370,7 +1370,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		}
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
-	// Retrieve InApp purchases
+	// Query our in-app server when core is ready in order to retrieve InApp purchases
 	[_iapManager retrievePurchases];
 
 	LOGW(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);

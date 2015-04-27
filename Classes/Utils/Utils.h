@@ -69,3 +69,9 @@ typedef enum _LinphoneLoggerSeverity {
 #define LOGF(...) LOGV(LinphoneLoggerFatal, __VA_ARGS__)
 
 #endif
+
+@interface NSString(md5)
+
+- (NSString *)md5;
+
+@end

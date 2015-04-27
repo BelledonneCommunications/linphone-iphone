@@ -25,9 +25,12 @@
 extern NSString *const kLinphoneIAPurchaseNotification;
 
 @interface InAppProductsXMLRPCDelegate : NSObject <XMLRPCConnectionDelegate>
+
 @end
 
-@interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
+@interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
+	NSString *latestReceiptMD5;
+}
 
 // startup status, manager is not ready yet.
 #define IAPNotReadyYet			@"IAPNotReadyYet"

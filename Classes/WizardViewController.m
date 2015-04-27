@@ -114,6 +114,8 @@ typedef enum _ViewElement {
     [provisionedPassword release];
     [provisionedDomain release];
     [_transportChooser release];
+    [_purchaseButton release];
+    [_registerButton release];
     [super dealloc];
 }
 
@@ -203,6 +205,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils adjustFontSize:validateAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:provisionedAccountView mult:2.22f];
     }
+
+	BOOL mustPurchaseNewAccount = ([[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"] != nil);
+	_registerButton.hidden = mustPurchaseNewAccount;
+	_purchaseButton.hidden = !mustPurchaseNewAccount;
 }
 
 
@@ -731,29 +737,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [remoteInput release];
 }
 
-- (void)inAppPurchaseNotification: (NSNotification*)notification {
-	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
-	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
-		[self onPurchaseAccountClick:self];
-	}
-}
-
-- (IBAction)onPurchaseAccountClick:(id)sender {
-	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
-	//if has already purchased, continue
-	if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
-		NSString *username  = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
-		NSString *password  = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
-		NSString *domain    = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
-		NSString *transport = [self.transportChooser titleForSegmentAtIndex:self.transportChooser.selectedSegmentIndex];
-
-		[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
-	} else {
-		[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]];
-	}
-}
-
-- (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+- (BOOL) verificationWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
 		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
@@ -771,7 +755,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  otherButtonTitles:nil,nil];
 		[errorView show];
 		[errorView release];
-	} else {
+		return FALSE;
+	}
+	return TRUE;
+}
+- (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+	if ([self verificationWithUsername:username password:password domain:domain withTransport:transport]) {
 		[waitView setHidden:false];
 		if ([LinphoneManager instance].connectivity == none) {
 			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"No connectivity", nil)
@@ -811,49 +800,91 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
 }
 
+- (BOOL)verificationRegisterWithUsername:(NSString*)username password:(NSString*)password password2:(NSString*)password2 email:(NSString*)email  {
+	NSMutableString *errors = [NSMutableString string];
+	NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
+	NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
+
+	if ([username length] < username_length) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
+	}
+
+	if ([password length] < password_length) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), password_length]];
+	}
+
+	if (![password2 isEqualToString:password]) {
+		[errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
+	}
+
+	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
+	if(![emailTest evaluateWithObject:email]) {
+		[errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
+	}
+
+	if([errors length]) {
+		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+															message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:nil,nil];
+		[errorView show];
+		[errorView release];
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 - (IBAction)onRegisterClick:(id)sender {
     UITextField* username_tf = [WizardViewController findTextField:ViewElement_Username  view:contentView];
     NSString *username = username_tf.text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
     NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
-    NSMutableString *errors = [NSMutableString string];
 
-    NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
-    NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
-
-    if ([username length] < username_length) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
-    }
-
-    if ([password length] < password_length) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), password_length]];
-    }
-
-    if (![password2 isEqualToString:password]) {
-        [errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
-    }
-
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
-    if(![emailTest evaluateWithObject:email]) {
-        [errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
-    }
-
-    if([errors length]) {
-        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
-                                                        message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-                                              otherButtonTitles:nil,nil];
-        [errorView show];
-        [errorView release];
-
-    } else {
+	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
         username = [username lowercaseString];
         [username_tf setText:username];
         NSString *identity = [self identityFromUsername:username];
         [self checkUserExist:identity];
     }
+}
+
+- (void)inAppPurchaseNotification: (NSNotification*)notification {
+	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+	BOOL wasWaitingForInApp = (currentView == createAccountView) && ![waitView isHidden];
+	[waitView setHidden:true];
+
+	//now that the purchase is made, let's create the account.
+	if (wasWaitingForInApp) {
+		if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+			[waitView setHidden:true];
+			[self onPurchaseAccountClick:self];
+		}
+	}
+}
+
+- (IBAction)onPurchaseAccountClick:(id)sender {
+	UITextField* username_tf = [WizardViewController findTextField:ViewElement_Username  view:contentView];
+	NSString *username = username_tf.text;
+	NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+	NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
+	NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
+
+	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
+		InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+		//if has already purchased, continue
+		if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+			username = [username lowercaseString];
+			[username_tf setText:username];
+			NSString *identity = [self identityFromUsername:username];
+			[self checkUserExist:identity];
+		} else {
+			[waitView setHidden:false];
+			[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]];
+		}
+	}
 }
 
 - (IBAction)onProvisionedLoginClick:(id)sender {
