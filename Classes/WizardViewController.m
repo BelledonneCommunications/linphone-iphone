@@ -611,7 +611,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString* fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
     linphone_core_set_provisioning_uri([LinphoneManager getLc], [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     [[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
+
+	// For some reason, video preview hangs for 15seconds when resetting linphone core from here...
+	// to avoid it, we disable it before and reenable it after core restart.
+	BOOL hasPreview = linphone_core_video_preview_enabled([LinphoneManager getLc]);
+	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
     [[LinphoneManager instance] resetLinphoneCore];
+	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
 }
 
 #pragma mark - UITextFieldDelegate Functions
