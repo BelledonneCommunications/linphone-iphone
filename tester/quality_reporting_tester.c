@@ -70,6 +70,8 @@ void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const L
 	CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
 
 	if (report->remote_metrics.rtcp_sr_count&&ms!=NULL&&ms->rc!=NULL){
+		/* Hack: reset rtcp_sr_count to 0 because in case of interval reports, we need one RTCP SR by interval */
+		report->remote_metrics.rtcp_sr_count=0;
 		CU_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
 	}
 }
