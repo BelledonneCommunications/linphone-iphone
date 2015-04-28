@@ -19,9 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "status_notifier.h"
 #include <gio/gio.h>
-#include <unistd.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#include <process.h>
+#define getpid() _getpid()
+typedef int lppid_t;
+#else
+#include <unistd.h>
+typedef pid_t lppid_t;
+#endif
 
 static const gchar *_bc_status_notifier_category_to_string[] = {
 	"ApplicationStatus",
@@ -503,7 +510,7 @@ static void _bc_status_notifier_name_lost(GDBusConnection *conn, const gchar *na
 
 void bc_status_notifier_start(BcStatusNotifier* obj, BcStatusNotifierParams* params, const BcStatusNotifierStateVTable *vtable, void *user_data) {
 	if(obj->state == BcStatusNotifierStateStopped) {
-		pid_t pid = getpid();
+		lppid_t pid = getpid();
 		char *dbus_name = g_strdup_printf("%s.%s-%d-%d", params->prefix, ITEM_NAME, pid, params->item_id);
 		
 		if(obj->params) bc_status_notifier_params_unref(obj->params);
