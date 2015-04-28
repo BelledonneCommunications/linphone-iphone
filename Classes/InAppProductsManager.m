@@ -130,6 +130,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 -(void)restore {
 	LOGI(@"Restoring user purchases...");
+	//force new query of the server
+	latestReceiptMD5 = nil;
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
@@ -177,6 +179,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 		XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
 		[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
+																   @"ios account email",
 																   receiptBase64,
 																   @"",
 																   @"apple",
@@ -268,7 +271,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	} else if([response object] != nil) {
 		//Don't handle if not object: HTTP/Communication Error
 		if([[request method] isEqualToString:@"get_expiration_date"]) {
-			if(false && [response object] == [NSNumber numberWithInt:1]) {
+			if([response object] > [NSNumber numberWithInt:1]) {
 				LOGE(@"Todo: parse the response");
 //				[_productsIDPurchased addObject:@"test.auto_renew_7days"];
 				[self postNotificationforStatus:IAPReceiptSucceeded];
@@ -293,7 +296,6 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 											  otherButtonTitles:nil,nil];
 	[errorView show];
 	[errorView release];
-	[waitView setHidden:true];
 	latestReceiptMD5 = nil;
 	[self postNotificationforStatus:IAPReceiptFailed];
 }

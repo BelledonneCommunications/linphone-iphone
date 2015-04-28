@@ -54,12 +54,15 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
-- (void)loadProducts;
+
 - (BOOL)isPurchasedWithID:(NSString*)productId;
 - (void)purchaseWithID:(NSString*)productId;
+// restore user purchases. Must be a user action ONLY.
 - (void)restore;
 - (void)retrievePurchases;
+// internal API only due to methods conflict
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response;
+// internal API only due to methods conflict
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error;
 
 @end
