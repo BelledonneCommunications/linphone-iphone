@@ -673,7 +673,6 @@
 		F0022B0A1A370915009B51FD /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = F0022B081A370915009B51FD /* messages.db */; };
 		F01A77EB18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
-		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
@@ -3737,7 +3736,6 @@
 				2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
 				2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
 				2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
-				F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */,
 				D37EE10D16035793003608A6 /* ImageViewController.xib in Resources */,
 				D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
