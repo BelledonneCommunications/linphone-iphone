@@ -1313,7 +1313,8 @@ static void linphone_gtk_global_state_changed(LinphoneCore *lc, LinphoneGlobalSt
 	}
 }
 
-static void on_call_updated_response(GtkWidget *dialog, gint responseid, LinphoneCall *call){
+static void on_call_updated_response(GtkWidget *dialog, gint responseid, gpointer user_data){
+	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(dialog), "call");
 	if (linphone_call_get_state(call)==LinphoneCallUpdatedByRemote){
 		LinphoneCore *lc=linphone_call_get_core(call);
 		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
@@ -1321,13 +1322,12 @@ static void on_call_updated_response(GtkWidget *dialog, gint responseid, Linphon
 		linphone_core_accept_call_update(lc,call,params);
 		linphone_call_params_destroy(params);
 	}
-	linphone_call_unref(call);
 	g_source_remove_by_user_data(dialog);
 	gtk_widget_destroy(dialog);
 }
 
 static void on_call_updated_timeout(GtkWidget *dialog){
-	gtk_widget_destroy(dialog);
+	on_call_updated_response(dialog, GTK_RESPONSE_NO, NULL);
 }
 
 static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
@@ -1339,7 +1339,7 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 	gboolean video_used=linphone_call_params_video_enabled(current_params);
 	g_message("Video used=%i, video requested=%i, automatically_accept=%i",
 	          video_used,video_requested,pol->automatically_accept);
-	if (video_used==FALSE && video_requested && !pol->automatically_accept){
+	if (!video_used && video_requested && !pol->automatically_accept){
 		linphone_core_defer_call_update(lc,call);
 		{
 			const LinphoneAddress *addr=linphone_call_get_remote_address(call);
@@ -1352,8 +1352,9 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 			                                         GTK_MESSAGE_WARNING,
 			                                         GTK_BUTTONS_YES_NO,
 			                                         _("%s proposed to start video. Do you accept ?"),dname);
-			g_signal_connect(G_OBJECT(dialog),"response",(GCallback)on_call_updated_response,linphone_call_ref(call));
-			g_timeout_add(20000,(GSourceFunc)on_call_updated_timeout,dialog);
+			g_object_set_data_full(G_OBJECT(dialog), "call", linphone_call_ref(call), (GDestroyNotify)linphone_call_unref);
+            g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(on_call_updated_response), NULL);
+         	g_timeout_add(20000,(GSourceFunc)on_call_updated_timeout,dialog);
 			gtk_widget_show(dialog);
 		}
 	}
