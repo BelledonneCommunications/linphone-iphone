@@ -121,7 +121,7 @@ char * bc_tester_res(const char *name);
 #define BC_ASSERT_DOUBLE_NOT_EQUAL(actual, expected, granularity) CU_assertImplementation(((fabs((double)(actual) - (expected)) > fabs((double)(granularity)))), __LINE__, ("CU_ASSERT_DOUBLE_NOT_EQUAL(" #actual ","  #expected "," #granularity ")"), __FILE__, "", CU_FALSE)
 #define BC_ASSERT_DOUBLE_NOT_EQUAL_FATAL(actual, expected, granularity) CU_assertImplementation(((fabs((double)(actual) - (expected)) > fabs((double)(granularity)))), __LINE__, ("CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" #actual ","  #expected "," #granularity ")"), __FILE__, "", CU_TRUE)
 #define BC_ASSERT_GREATER(actual, expected) CU_assertImplementation(((actual) >= (expected)), __LINE__, ("CU_ASSERT_GREATER(" #actual "," #expected ")"), __FILE__, "", CU_FALSE)
-#define BC_ASSERT_LOWER(actual, expected) CU_assertImplementation((actual) <= (expected)), __LINE__, ("CU_ASSERT_LOWER(" #actual "," #expected ")"), __FILE__, "", CU_FALSE)
+#define BC_ASSERT_LOWER(actual, expected) CU_assertImplementation(((actual) <= (expected)), __LINE__, ("CU_ASSERT_LOWER(" #actual "," #expected ")"), __FILE__, "", CU_FALSE)
 
 /*Add some custom defines with logs in case of fail*/
 #define BC_ASSERT_EQUAL_INT(actual, expected) { \
