@@ -2,6 +2,7 @@ linphone-3.8.2 -- Aril 30th, 2015
 	* fix audio bug with opus codec
 	* fix ICE corner case not properly handled and resulting bad final ice status
 	* update SO version to 7 (it should have been done in 3.8.0)
+	* add support of the StatusNotifier standard to display a status icon on KDE5
 
 linphone-3.8.1 -- March 31th, 2015
 	Application level improvements:
