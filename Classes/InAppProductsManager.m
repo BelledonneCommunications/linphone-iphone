@@ -19,8 +19,6 @@
 
 #import "InAppProductsManager.h"
 
-NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotification";
-
 // In app purchase are not supported by the Simulator
 #import <XMLRPCConnection.h>
 #import <XMLRPCConnectionManager.h>
@@ -70,6 +68,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 #if !TARGET_IPHONE_SIMULATOR
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
+		LOGE(@"Todo: //waiting for parent approval");
+		LOGE(@"Todo: if cancel date, no purchase");
 		_xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
 		_status = IAPNotReadyYet;
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
@@ -79,6 +79,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 }
 
 #define INAPP_AVAIL() ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) && ([SKPaymentQueue canMakePayments])
+
+#pragma mark ProductListLoading
 
 - (void)loadProducts {
 	if (!INAPP_AVAIL()) return;
@@ -102,12 +104,14 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
 			LOGW(@"Found product Identifier with invalid ID '%@'", invalidIdentifier);
 		}
-		[self postNotificationforStatus:IAPAvailableFailed];
+		NSDictionary* dict = @{@"invalid_product_ids": response.invalidProductIdentifiers};
+		[self postNotificationforStatus:IAPAvailableFailed withDict:dict];
 	} else {
-		[self postNotificationforStatus:IAPAvailableSucceeded];
+		[self postNotificationforStatus:IAPAvailableSucceeded withDict:nil];
 	}
 }
 
+#pragma mark Other
 - (BOOL)isPurchasedWithID:(NSString *)productID {
 	for (NSString *prod in _productsIDPurchased) {
 		if ([prod isEqual: productID]) {
@@ -134,17 +138,20 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	if (prod) {
 		accountCreationSipURI = [sipURI retain];
 		accountCreationPassword = [password retain];
+		NSDictionary* dict = @{@"product_id": productID};
+		[self postNotificationforStatus:IAPPurchaseTrying withDict:dict];
 		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:prod];
 		[[SKPaymentQueue defaultQueue] addPayment:payment];
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 	} else {
-		[self postNotificationforStatus:IAPPurchaseFailed];
+		NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Product not available"};
+		[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
 	}
 }
 
 -(void)restore {
 	LOGI(@"Restoring user purchases...");
-	//force new query of the server
+	//force new query of our server
 	latestReceiptMD5 = nil;
 	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
@@ -154,13 +161,11 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		NSURL *receiptUrl = [[NSBundle mainBundle] appStoreReceiptURL];
 		if ([[NSFileManager defaultManager] fileExistsAtPath:[receiptUrl path]]) {
 			LOGI(@"App Receipt exists");
-			[self checkReceipt:nil];
+			[self validateReceipt:nil isPurchase:FALSE];
 		} else {
-			LOGE(@"Receipt request done but there is no receipt");
-
 			// This can happen if the user cancels the login screen for the store.
 			// If we get here it means there is no receipt and an attempt to get it failed because the user cancelled the login.
-			//[self trackFailedAttempt];
+			LOGF(@"Receipt request done but there is no receipt");
 		}
 	}
 }
@@ -170,7 +175,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	[self setStatus:IAPReceiptFailed];
 }
 
-- (void)checkReceipt: (SKPaymentTransaction*)transaction {
+- (void)validateReceipt: (SKPaymentTransaction*)transaction isPurchase:(BOOL)isPurchase {
 	NSString *receiptBase64 = nil;
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 
@@ -197,7 +202,7 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 		if (transaction == nil) {
 			LOGE(@"Todo!");
 			return;
-		} else if ([transaction.payment.productIdentifier isEqualToString:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+		} else if (isPurchase && [transaction.payment.productIdentifier isEqualToString:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
 			[request setMethod: @"create_account_from_in_app_purchase" withParameters:[NSArray arrayWithObjects:
 																	   	@"",
 																		accountCreationSipURI,
@@ -206,6 +211,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 																	   	@"",
 																	    @"apple",
 																	    nil]];
+			accountCreationSipURI = nil;
+			accountCreationPassword = nil;
 		} else {
 			LOGE(@"Hum, not handling product with ID %@", transaction.payment.productIdentifier);
 			return;
@@ -228,18 +235,22 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 			case SKPaymentTransactionStatePurchasing:
 				break;
 			case SKPaymentTransactionStatePurchased:
-			case SKPaymentTransactionStateRestored:
-				[self checkReceipt: transaction];
-				[self completeTransaction:transaction forStatus:IAPPurchaseSucceeded];
+			case SKPaymentTransactionStateRestored: {
+				[self validateReceipt: transaction isPurchase:(transaction.transactionState == SKPaymentTransactionStatePurchased)];
+				[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 				break;
+			}
 			case SKPaymentTransactionStateDeferred:
 				//waiting for parent approval
 				break;
-			case SKPaymentTransactionStateFailed:
-				_errlast = [NSString stringWithFormat:@"Purchase of %@ failed: %@.",transaction.payment.productIdentifier,transaction.error.localizedDescription];
-				LOGE(@"%@", _errlast);
-				[self completeTransaction:transaction forStatus:IAPPurchaseFailed];
+			case SKPaymentTransactionStateFailed: {
+				NSString* errlast = [NSString stringWithFormat:@"Purchase of %@ failed: %@.",transaction.payment.productIdentifier,transaction.error.localizedDescription];
+				LOGE(@"SKPaymentTransactionStateFailed: %@", errlast);
+				NSDictionary* dict = @{@"product_id": transaction.payment.productIdentifier, @"error_msg": errlast};
+				[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
+				[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 				break;
+			}
 		}
 	}
 }
@@ -252,8 +263,8 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
 	if (error.code != SKErrorPaymentCancelled) {
-		_errlast = [error localizedDescription];
-		[self postNotificationforStatus:IAPRestoreFailed];
+		NSDictionary* dict = @{@"error_msg": [error localizedDescription]};
+		[self postNotificationforStatus:IAPRestoreFailed withDict:dict];
 	}
 }
 
@@ -261,33 +272,49 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	LOGI(@"All restorable transactions have been processed by the payment queue.");
 }
 
--(void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
+-(void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status withDict:(NSDictionary*)dict {
 	_status = status;
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneIAPurchaseNotification object:self];
+	[[NSNotificationCenter defaultCenter] postNotificationName:status object:self userInfo:dict];
 	LOGI(@"Triggering notification for status %@", status);
 }
 
--(void)completeTransaction:(SKPaymentTransaction *)transaction forStatus:(IAPPurchaseNotificationStatus)status {
-	if (transaction.error.code != SKErrorPaymentCancelled) {
-		[self postNotificationforStatus:status];
-	} else {
-		_status = status;
-	}
-
-	// Remove the transaction from the queue for purchased and restored statuses
-	[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-}
-
 - (void)retrievePurchases {
-	[self checkReceipt:nil];
+	[self validateReceipt:nil isPurchase:FALSE];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
-	//	[waitView setHidden:true];
-	if ([response isFault]) {
+
+	// validation succeeded
+	if(! [response isFault] && [response object] != nil) {
+		if([[request method] isEqualToString:@"get_expiration_date"]) {
+			if([response object] > [NSNumber numberWithInt:1]) {
+				LOGE(@"Todo: parse the response");
+			} else {
+				LOGI(@"Account has expired");
+				[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
+			}
+			[self postNotificationforStatus:IAPReceiptSucceeded withDict:nil];
+		} else 	if([[request method] isEqualToString:@"create_account_from_in_app_purchase"]) {
+			double timeinterval = [[response object] doubleValue];
+			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+			if (timeinterval != -2) {
+				NSDate *date = [NSDate dateWithTimeIntervalSince1970:timeinterval];
+				NSDictionary* dict = @{@"product_id": productID, @"expires_date": date};
+				[self postNotificationforStatus:IAPPurchaseSucceeded withDict:dict];
+			} else {
+				NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Unknown error"};
+				[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
+			}
+		}
+	} else {
+		NSString *errorString = NSLocalizedString(@"Unknown error", nil);
+		if ([response isFault]) {
+			errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
+		} else if([response object] == nil) {
+			errorString = NSLocalizedString(@"Invalid server response", nil);
+		}
 		LOGE(@"Communication issue (%@)", [response faultString]);
-		NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
 		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
 															message:errorString
 														   delegate:nil
@@ -295,22 +322,11 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 												  otherButtonTitles:nil,nil];
 		[errorView show];
 		[errorView release];
-	} else if([response object] != nil) {
-		if([[request method] isEqualToString:@"get_expiration_date"]) {
-			if([response object] > [NSNumber numberWithInt:1]) {
-				LOGE(@"Todo: parse the response");
-				[self postNotificationforStatus:IAPReceiptSucceeded];
-				return;
-			} else {
-				LOGI(@"Account has expired");
-				[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
-			}
-		} else 	if([[request method] isEqualToString:@"create_account_from_in_app_purchase"]) {
-			LOGI(@"Account created?");
-		}
+
+		latestReceiptMD5 = nil;
+		NSDictionary* dict = @{@"error_msg": errorString};
+		[self postNotificationforStatus:IAPReceiptFailed withDict:dict];
 	}
-	latestReceiptMD5 = nil;
-	[self postNotificationforStatus:IAPReceiptFailed];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
@@ -324,17 +340,18 @@ NSString *const kLinphoneIAPurchaseNotification = @"LinphoneIAProductsNotificati
 	[errorView show];
 	[errorView release];
 	latestReceiptMD5 = nil;
-	[self postNotificationforStatus:IAPReceiptFailed];
+	NSDictionary* dict = @{@"error_msg": errorString};
+	[self postNotificationforStatus:IAPReceiptFailed withDict:dict];
 }
 #else
-		 - (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password { LOGE(@"Not supported"); }
-		 - (void)purchaseWithID:(NSString *)productId { LOGE(@"Not supported"); }
-		 - (void)restore { LOGE(@"Not supported"); }
-		 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error { LOGE(@"Not supported"); }
-		 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response { LOGE(@"Not supported"); }
-		 - (BOOL)isPurchasedWithID:(NSString *)productId { LOGE(@"Not supported"); return FALSE; }
-		 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions { LOGE(@"Not supported"); }
-		 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response { LOGE(@"Not supported"); }
-		 - (void)retrievePurchases { LOGE(@"Not supported"); }
+- (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password { LOGE(@"Not supported"); }
+- (void)purchaseWithID:(NSString *)productId { LOGE(@"Not supported"); }
+- (void)restore { LOGE(@"Not supported"); }
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error { LOGE(@"Not supported"); }
+- (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response { LOGE(@"Not supported"); }
+- (BOOL)isPurchasedWithID:(NSString *)productId { LOGE(@"Not supported"); return FALSE; }
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions { LOGE(@"Not supported"); }
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response { LOGE(@"Not supported"); }
+- (void)retrievePurchases { LOGE(@"Not supported"); }
 #endif
 @end

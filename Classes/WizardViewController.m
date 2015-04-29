@@ -165,7 +165,15 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(inAppPurchaseNotification:)
-												 name:kLinphoneIAPurchaseNotification
+												 name:IAPPurchaseSucceeded
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:IAPPurchaseTrying
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:IAPPurchaseFailed
 											   object:nil];
 }
 
@@ -185,7 +193,13 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:kLinphoneIAPurchaseNotification
+													name:IAPPurchaseFailed
+												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseTrying
+												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseSucceeded
 												  object:nil];
 }
 
@@ -858,14 +872,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)inAppPurchaseNotification: (NSNotification*)notification {
-	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
-	BOOL wasWaitingForInApp = (currentView == createAccountView) && ![waitView isHidden];
-	[waitView setHidden:true];
-
-	//now that the purchase is made, let's create the account.
-	if (wasWaitingForInApp) {
-		if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+	BOOL wasWaitingForInApp = (currentView == createAccountView);
+	NSString *paidAccountID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+	if (wasWaitingForInApp
+		&& [paidAccountID isEqualToString:[notification.userInfo objectForKey:@"product_id"]]) {
+		if ([notification.name isEqual:IAPPurchaseTrying]) {
+			[waitView setHidden:false];
+		} else if ([notification.name isEqual:IAPPurchaseFailed]) {
 			[waitView setHidden:true];
+		} else if ([notification.name isEqual:IAPPurchaseSucceeded]) {
+			[waitView setHidden:true];
+			//now that the purchase is made, let's create the account.
 			[self onPurchaseAccountClick:self];
 		}
 	}
@@ -887,8 +904,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			NSString *identity = [self identityFromUsername:username];
 			[self checkUserExist:identity];
 		} else {
-			[waitView setHidden:false];
 			[iapm purchaseAccount:username withPassword:password];
+			// inAppPurchaseNotification will take care of bringing us to the next view now
 		}
 	}
 }

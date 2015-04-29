@@ -23,9 +23,16 @@
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onIAPPurchaseNotification:)
-												 name:kLinphoneIAPurchaseNotification
+												 name:IAPAvailableSucceeded
 											   object:nil];
-
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(onIAPPurchaseNotification:)
+												 name:IAPRestoreSucceeded
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(onIAPPurchaseNotification:)
+												 name:IAPPurchaseSucceeded
+											   object:nil];
 	[[self tableView] reloadData];
 }
 
@@ -33,17 +40,18 @@
 	[super viewWillDisappear:animated];
 
 	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:kLinphoneIAPurchaseNotification
+													name:IAPAvailableSucceeded
 												  object:nil];
-
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPRestoreSucceeded
+												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseSucceeded
+												  object:nil];
 }
 
 - (void)onIAPPurchaseNotification:(NSNotification*)notif {
-	if ([[iapm status]  isEqual: IAPAvailableSucceeded]
-		|| [[iapm status] isEqualToString: IAPRestoreSucceeded]
-		|| [[iapm status] isEqualToString: IAPPurchaseSucceeded]) {
-		[[self tableView] reloadData];
-	}
+	[[self tableView] reloadData];
 }
 
 #pragma mark - Table view data source
@@ -92,7 +100,7 @@
 		[alert release];
 	} else {
 		//try to purchase item, and if successfull change the switch
-		[[[LinphoneManager instance] iapManager] purchaseWithID: cell.productID];
+//		[[[LinphoneManager instance] iapManager] purchaseWithID: cell.productID];
 	}
 }
 

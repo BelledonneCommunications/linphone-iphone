@@ -22,35 +22,38 @@
 #import <StoreKit/StoreKit.h>
 #import <XMLRPCConnectionDelegate.h>
 
-extern NSString *const kLinphoneIAPurchaseNotification;
-
 @interface InAppProductsXMLRPCDelegate : NSObject <XMLRPCConnectionDelegate>
 
 @end
+
+#define IAPNotReadyYet			@"IAPNotReadyYet" // startup status, manager is not ready yet
+#define IAPAvailableSucceeded	@"IAPAvailableSucceeded" //no data
+#define IAPAvailableFailed		@"IAPAvailableFailed" //data: invalid_product_ids
+#define IAPPurchaseTrying		@"IAPPurchaseTrying" //data: product_id
+#define IAPPurchaseFailed		@"IAPPurchaseFailed" //data: product_id, error_msg
+#define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded" //data: product_id, expires_date
+#define IAPRestoreFailed		@"IAPRestoreFailed" //data: error_msg
+#define IAPRestoreSucceeded		@"IAPRestoreSucceeded" //no data
+#define IAPReceiptFailed		@"IAPReceiptFailed" //data: error_msg
+#define IAPReceiptSucceeded		@"IAPReceiptSucceeded" //no data
+typedef NSString*               IAPPurchaseNotificationStatus;
+
+// InAppProductsManager take care of any in app purchase accessible within Linphone
+// In order to use it, you must configure your linphonerc configuration correctly, such as:
+//[in_app_purchase]
+//enabled=1
+//paid_account_id=test.autorenew_7days
+//receipt_validation_url=https://www.linphone.org/inapp.php
+//products_list=test.autorenew_7days
+// Note: in Sandbox mode (test), autorenewal expire time is speed up (see http://stackoverflow.com/questions/8815271/what-expiry-date-should-i-see-for-in-app-purchase-in-the-application-sandbox) so that 7 days renewal is only 3 minutes!
 
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
 	NSString *latestReceiptMD5;
 }
 
-// startup status, manager is not ready yet.
-#define IAPNotReadyYet			@"IAPNotReadyYet"
-#define IAPAvailableSucceeded	@"IAPAvailableSucceeded"
-#define IAPAvailableFailed		@"IAPAvailableFailed"
-#define IAPPurchaseFailed		@"IAPPurchaseFailed"
-#define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded"
-#define IAPRestoreFailed		@"IAPRestoreFailed"
-#define IAPRestoreSucceeded		@"IAPRestoreSucceeded"
-#define IAPReceiptFailed		@"IAPReceiptFailed"
-#define IAPReceiptSucceeded		@"IAPReceiptSucceeded"
-
-typedef NSString*               IAPPurchaseNotificationStatus;
-
 // needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
 @property (nonatomic, retain) InAppProductsXMLRPCDelegate *xmlrpc;
-
 @property (nonatomic, retain) IAPPurchaseNotificationStatus status;
-@property (nonatomic, copy) NSString *errlast;
-
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
