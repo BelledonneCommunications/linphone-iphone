@@ -347,9 +347,13 @@ if test "$gtk_ui" = "true" ; then
 		fi
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
 	fi
+
+	PKG_CHECK_MODULES(LIBGLIB, [glib-2.0 >= 2.26.0], [build_status_notifier=yes], [build_status_notifier=no])
 else
 	echo "GTK interface compilation is disabled."
 fi
+
+AM_CONDITIONAL([BUILD_STATUS_NOTIFIER], [test "$build_status_notifier" = "yes"])
 
 AC_ARG_ENABLE(notify,
 	[AS_HELP_STRING([--enable-notify=[yes/no]], [Enable libnotify support (default=yes)])],

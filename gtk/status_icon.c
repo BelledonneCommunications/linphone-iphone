@@ -24,13 +24,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+#define STATUS_NOTIFIER_IS_USABLE GLIB_CHECK_VERSION(2, 26, 0)
+
 #include "status_notifier.h"
 
 typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
 
 static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
 static const _LinphoneStatusIconDesc *_linphone_status_icon_selected_desc = NULL;
-static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[3];
+static GSList *_linphone_status_icon_impls = NULL;
+#if STATUS_NOTIFIER_IS_USABLE
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier;
+#endif
+#ifdef HAVE_GTK_OSX
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc;
+#else
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc;
+#endif
 
 
 struct _LinphoneStatusIconParams {
@@ -116,30 +126,30 @@ static gboolean _linphone_status_icon_desc_is_supported(
 }
 
 typedef struct {
-	int i;
+	GSList *i;
 	LinphoneStatusIconDescFindResultCb cb;
 	void *user_data;
 } _LinphoneStatusIconDescSearchCtx;
 
-static void _linphone_status_icon_desc_is_supprted_result_cb(
+static void _linphone_status_icon_desc_is_supported_result_cb(
 	const _LinphoneStatusIconDesc *desc,
 	gboolean result,
 	_LinphoneStatusIconDescSearchCtx *ctx) {
 	
 	if(!result) {
-		ctx->i++;
-		for(; _linphone_status_icon_impls[ctx->i]; ctx->i++) {
+		;
+		for(; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 			if(_linphone_status_icon_desc_is_supported(
-				_linphone_status_icon_impls[ctx->i],
+				(const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0),
 				&result,
-				(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supprted_result_cb,
+				(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supported_result_cb,
 				ctx)) {
 			
 				if(result) break;
 			} else return;
 		}
 	}
-	if(ctx->cb) ctx->cb(_linphone_status_icon_impls[ctx->i], ctx->user_data);
+	if(ctx->cb) ctx->cb((const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0), ctx->user_data);
 	g_free(ctx);
 }
 
@@ -153,15 +163,15 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 	ctx->cb = cb;
 	ctx->user_data = user_data;
 	
-	for(ctx->i=0; _linphone_status_icon_impls[ctx->i]; ctx->i++) {
+	for(ctx->i=_linphone_status_icon_impls; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 		if(_linphone_status_icon_desc_is_supported(
-			_linphone_status_icon_impls[ctx->i],
+			(const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0),
 			&result,
-			(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supprted_result_cb,
+			(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supported_result_cb,
 			ctx)) {
 			
 			if(result) {
-				*desc = _linphone_status_icon_impls[ctx->i];
+				*desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
 				goto sync_return;
 			}
 		} else {
@@ -222,9 +232,24 @@ void _linphone_status_icon_init_cb(const _LinphoneStatusIconDesc *desc, void *us
 	g_free(ctx);
 }
 
+void _linphone_status_icon_create_implementations_list(void) {
+#if STATUS_NOTIFIER_IS_USABLE
+	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_status_notifier);
+#endif
+#if HAVE_GTK_OSX
+	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtkosx_app_desc);
+#else
+	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtk_desc);
+#endif
+}
+
 gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *user_data) {
 	const _LinphoneStatusIconDesc *desc;
-	void **ctx = g_new(void *, 2);
+	void **ctx;
+	
+	_linphone_status_icon_create_implementations_list();
+	
+	ctx = g_new(void *, 2);
 	ctx[0] = ready_cb;
 	ctx[1] = user_data;
 	if(_linphone_status_icon_find_first_available_impl(&desc, _linphone_status_icon_init_cb, ctx)) {
@@ -236,6 +261,7 @@ gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *use
 
 void linphone_status_icon_uninit(void) {
 	if(_linphone_status_icon_instance) _linphone_status_icon_free(_linphone_status_icon_instance);
+	if(_linphone_status_icon_impls) g_slist_free(_linphone_status_icon_impls);
 }
 
 LinphoneStatusIcon *linphone_status_icon_get(void) {
@@ -370,6 +396,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc 
 
 
 /* Implementation based on the StatusNotifier Freedesktop standard */
+#if STATUS_NOTIFIER_IS_USABLE
 typedef struct {
 	int x;
 	int y;
@@ -480,15 +507,4 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier 
 	.enable_blinking = _linphone_status_icon_impl_sn_enable_blinking,
 	.is_supported = _linphone_status_icon_impl_sn_is_supported
 };
-
-
-/* List of implementations */
-static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[3] = {
-	&_linphone_status_icon_impl_status_notifier,
-#ifndef HAVE_GTK_OSX
-	&_linphone_status_icon_impl_gtk_desc,
-#else
-	&_linphone_status_icon_impl_gtkosx_app_desc,
 #endif
-	NULL
-};
