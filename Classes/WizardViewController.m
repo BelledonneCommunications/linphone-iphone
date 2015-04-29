@@ -882,7 +882,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[self checkUserExist:identity];
 		} else {
 			[waitView setHidden:false];
-			[iapm purchaseWithID: [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]];
+			[iapm purchaseAccount:username withPassword:password];
 		}
 	}
 }

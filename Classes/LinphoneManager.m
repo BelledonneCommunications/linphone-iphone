@@ -1222,7 +1222,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		return [number intValue];
 	} else {
 		CTTelephonyNetworkInfo* info = [[CTTelephonyNetworkInfo alloc] init];
-		NSString* currentRadio = info.currentRadioAccessTechnology;
+		NSString* currentRadio = [info.currentRadioAccessTechnology autorelease];
 		if( [currentRadio isEqualToString:CTRadioAccessTechnologyEdge]){
 			return network_2g;
 		} else if ([currentRadio isEqualToString:CTRadioAccessTechnologyLTE]){
@@ -1936,7 +1936,8 @@ static void audioRouteChangeListenerCallback (
 		if (data==nil)
 			LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
 		/* will be used later to notify user if video was not activated because of the linphone core*/
-		data->videoRequested = linphone_call_params_video_enabled(lcallParams);
+		else
+			data->videoRequested = linphone_call_params_video_enabled(lcallParams);
 	}
 	linphone_call_params_destroy(lcallParams);
 }

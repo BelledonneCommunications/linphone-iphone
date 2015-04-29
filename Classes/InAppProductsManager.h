@@ -17,9 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
-
 #import <XMLRPCConnectionDelegate.h>
 
 extern NSString *const kLinphoneIAPurchaseNotification;
@@ -56,8 +56,9 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 
 
 - (BOOL)isPurchasedWithID:(NSString*)productId;
-- (void)purchaseWithID:(NSString*)productId;
-// restore user purchases. Must be a user action ONLY.
+- (void)purchaseAccount:(NSString*)sipURI withPassword:(NSString*)password;
+
+// restore user purchases. Must be at first launch or a user action ONLY.
 - (void)restore;
 - (void)retrievePurchases;
 // internal API only due to methods conflict

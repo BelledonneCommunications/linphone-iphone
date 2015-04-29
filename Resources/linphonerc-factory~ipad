@@ -53,6 +53,6 @@ display_filter_auto_rotate=0
 
 [in_app_purchase]
 enabled=1
-paid_account_id=test.auto_renew_7days
+paid_account_id=test.auto_renew_1month_withfree
 receipt_validation_url=https://www.linphone.org/inapp.php
-products_list=test.auto_renew_7days,test.non_renew,test.one_time,test.auto_renew_1month_withfree
+products_list=test.auto_renew_1month_withfree
