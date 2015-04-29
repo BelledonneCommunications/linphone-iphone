@@ -300,6 +300,7 @@
 			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
 			if (timeinterval != -2) {
 				NSDate *date = [NSDate dateWithTimeIntervalSince1970:timeinterval];
+				[_productsIDPurchased addObject:productID];
 				NSDictionary* dict = @{@"product_id": productID, @"expires_date": date};
 				[self postNotificationforStatus:IAPPurchaseSucceeded withDict:dict];
 			} else {
