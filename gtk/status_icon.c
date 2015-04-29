@@ -193,6 +193,7 @@ static LinphoneStatusIcon *_linphone_status_icon_new(const _LinphoneStatusIconDe
 
 static void _linphone_status_icon_free(LinphoneStatusIcon *obj) {
 	if(obj->desc->uninit) obj->desc->uninit(obj->data);
+	if(obj->params) linphone_status_icon_params_unref(obj->params);
 	g_free(obj);
 }
 
@@ -235,12 +236,12 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc;
 
 void _linphone_status_icon_create_implementations_list(void) {
 #if STATUS_NOTIFIER_IS_USABLE
-	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_status_notifier);
+	_linphone_status_icon_impls = g_slist_append(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_status_notifier);
 #endif
 #if HAVE_GTK_OSX
-	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtkosx_app_desc);
+	_linphone_status_icon_impls = g_slist_append(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtkosx_app_desc);
 #else
-	_linphone_status_icon_impls = g_slist_prepend(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtk_desc);
+	_linphone_status_icon_impls = g_slist_append(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_gtk_desc);
 #endif
 }
 
