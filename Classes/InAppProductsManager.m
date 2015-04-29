@@ -131,21 +131,29 @@
 	}
 	return nil;
 }
-
-- (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password {
-	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+- (BOOL)purchaseWitID:(NSString *)productID {
 	SKProduct *prod = [self productIDAvailable:productID];
 	if (prod) {
-		accountCreationSipURI = [sipURI retain];
-		accountCreationPassword = [password retain];
 		NSDictionary* dict = @{@"product_id": productID};
 		[self postNotificationforStatus:IAPPurchaseTrying withDict:dict];
 		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:prod];
 		[[SKPaymentQueue defaultQueue] addPayment:payment];
 		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+		return TRUE;
 	} else {
 		NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Product not available"};
 		[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
+		return FALSE;
+	}
+}
+
+- (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password {
+	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+	accountCreationSipURI = [sipURI retain];
+	accountCreationPassword = [password retain];
+	if ([self purchaseWitID:productID]) {
+		accountCreationPassword = nil;
+		accountCreationSipURI = nil;
 	}
 }
 
@@ -161,7 +169,7 @@
 		NSURL *receiptUrl = [[NSBundle mainBundle] appStoreReceiptURL];
 		if ([[NSFileManager defaultManager] fileExistsAtPath:[receiptUrl path]]) {
 			LOGI(@"App Receipt exists");
-			[self validateReceipt:nil isPurchase:FALSE];
+			[self validateReceipt:nil];
 		} else {
 			// This can happen if the user cancels the login screen for the store.
 			// If we get here it means there is no receipt and an attempt to get it failed because the user cancelled the login.
@@ -175,7 +183,7 @@
 	[self setStatus:IAPReceiptFailed];
 }
 
-- (void)validateReceipt: (SKPaymentTransaction*)transaction isPurchase:(BOOL)isPurchase {
+- (void)validateReceipt: (SKPaymentTransaction*)transaction {
 	NSString *receiptBase64 = nil;
 	NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 
@@ -200,19 +208,34 @@
 
 		// Happen when restoring user purchases at application start or if user click the "restore" button
 		if (transaction == nil) {
-			LOGE(@"Todo!");
-			return;
-		} else if (isPurchase && [transaction.payment.productIdentifier isEqualToString:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
-			[request setMethod: @"create_account_from_in_app_purchase" withParameters:[NSArray arrayWithObjects:
-																	   	@"",
-																		accountCreationSipURI,
-																		accountCreationPassword,
-																	   	receiptBase64,
-																	   	@"",
-																	    @"apple",
-																	    nil]];
-			accountCreationSipURI = nil;
-			accountCreationPassword = nil;
+			[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
+																	   @"",
+																	   receiptBase64,
+																	   @"",
+																	   @"apple",
+																	   nil]];
+		} else if ([transaction.payment.productIdentifier isEqualToString:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+			//buying for the first time: need to create the account
+			if ([transaction.transactionIdentifier isEqualToString:transaction.originalTransaction.transactionIdentifier]) {
+				[request setMethod: @"create_account_from_in_app_purchase" withParameters:[NSArray arrayWithObjects:
+																						   @"",
+																						   accountCreationSipURI,
+																						   accountCreationPassword,
+																						   receiptBase64,
+																						   @"",
+																						   @"apple",
+																						   nil]];
+				accountCreationSipURI = nil;
+				accountCreationPassword = nil;
+				//simply renewing
+			} else {
+				[request setMethod: @"get_expiration_date" withParameters:[NSArray arrayWithObjects:
+																		   @"",
+																		   receiptBase64,
+																		   @"",
+																		   @"apple",
+																		   nil]];
+			}
 		} else {
 			LOGE(@"Hum, not handling product with ID %@", transaction.payment.productIdentifier);
 			return;
@@ -236,7 +259,7 @@
 				break;
 			case SKPaymentTransactionStatePurchased:
 			case SKPaymentTransactionStateRestored: {
-				[self validateReceipt: transaction isPurchase:(transaction.transactionState == SKPaymentTransactionStatePurchased)];
+				[self validateReceipt: transaction];
 				[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 				break;
 			}
@@ -279,7 +302,7 @@
 }
 
 - (void)retrievePurchases {
-	[self validateReceipt:nil isPurchase:FALSE];
+	[self validateReceipt:nil];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
@@ -288,13 +311,18 @@
 	// validation succeeded
 	if(! [response isFault] && [response object] != nil) {
 		if([[request method] isEqualToString:@"get_expiration_date"]) {
-			if([response object] > [NSNumber numberWithInt:1]) {
-				LOGE(@"Todo: parse the response");
-			} else {
+			double expirationTime = [[response object] doubleValue];
+			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+			NSDate * date = nil;
+			if(expirationTime < 1) {
 				LOGI(@"Account has expired");
 				[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
+				date = [NSDate dateWithTimeIntervalSince1970:0];
+			} else {
+				date = [NSDate dateWithTimeIntervalSince1970:expirationTime];
 			}
-			[self postNotificationforStatus:IAPReceiptSucceeded withDict:nil];
+			NSDictionary* dict = @{@"product_id": productID, @"expires_date": date};
+			[self postNotificationforStatus:IAPReceiptSucceeded withDict:dict];
 		} else 	if([[request method] isEqualToString:@"create_account_from_in_app_purchase"]) {
 			double timeinterval = [[response object] doubleValue];
 			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];

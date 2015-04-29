@@ -60,6 +60,7 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 
 - (BOOL)isPurchasedWithID:(NSString*)productId;
 - (void)purchaseAccount:(NSString*)sipURI withPassword:(NSString*)password;
+- (BOOL)purchaseWitID:(NSString *)productID;
 
 // restore user purchases. Must be at first launch or a user action ONLY.
 - (void)restore;

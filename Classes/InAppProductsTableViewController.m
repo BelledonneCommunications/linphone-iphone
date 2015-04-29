@@ -100,7 +100,7 @@
 		[alert release];
 	} else {
 		//try to purchase item, and if successfull change the switch
-//		[[[LinphoneManager instance] iapManager] purchaseWithID: cell.productID];
+		[[[LinphoneManager instance] iapManager] purchaseWitID: cell.productID];
 	}
 }
 
