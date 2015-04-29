@@ -343,7 +343,7 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 		linphone_gtk_visibility_set(shown,window_name,w,TRUE);
 	if (icon_path) {
 		GdkPixbuf *pbuf=create_pixbuf(icon_path);
-		if(pbuf != NULL) {
+		if(pbuf) {
 			GList *pbuf_list = NULL;
 			GdkPixbuf *pbuf_16=gdk_pixbuf_scale_simple(pbuf, 16, 16, GDK_INTERP_BILINEAR);
 			GdkPixbuf *pbuf_32=gdk_pixbuf_scale_simple(pbuf, 32, 32, GDK_INTERP_BILINEAR);
@@ -352,10 +352,7 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 			pbuf_list = g_list_append(pbuf_list, pbuf_32);
 			gtk_window_set_icon_list(GTK_WINDOW(w), pbuf_list);
 			gtk_window_set_default_icon_list(pbuf_list);
-			g_object_unref(G_OBJECT(pbuf_16));
-			g_object_unref(G_OBJECT(pbuf_32));
-			g_object_unref(G_OBJECT(pbuf));
-			g_list_free(pbuf_list);
+			g_list_free_full(pbuf_list, g_object_unref);
 		}
 	}
 }
@@ -546,7 +543,10 @@ void linphone_gtk_show_about(void){
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about),LIBLINPHONE_GIT_VERSION);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("title","Linphone"));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about),linphone_gtk_get_ui_config("home","http://www.linphone.org"));
-	if (logo)	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about),logo);
+	if (logo) {
+		gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), logo);
+		g_object_unref(logo);
+	}
 	tmp=linphone_gtk_get_ui_config("artists",defcfg);
 	if (tmp!=defcfg){
 		const char *tmp2[2];
@@ -1735,7 +1735,7 @@ static void linphone_gtk_configure_main_window(){
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);
-		if(pbuf != NULL) {
+		if(pbuf) {
 			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"directory_search_button_icon")),pbuf);
 			g_object_unref(G_OBJECT(pbuf));
 		}
@@ -1760,6 +1760,7 @@ static void linphone_gtk_configure_main_window(){
 		if (pbuf) {
 			GtkButton *button=GTK_BUTTON(linphone_gtk_get_widget(w,"keypad"));
 			gtk_button_set_image(button,gtk_image_new_from_pixbuf (pbuf));
+			g_object_unref(pbuf);
 		}
 	}
 	if (linphone_gtk_can_manage_accounts()) {
@@ -2169,7 +2170,10 @@ int main(int argc, char *argv[]){
 	}
 	g_set_application_name(app_name);
 	pbuf=create_pixbuf(icon_path);
-	if (pbuf!=NULL) gtk_window_set_default_icon(pbuf);
+	if (pbuf) {
+		gtk_window_set_default_icon(pbuf);
+		g_object_unref(pbuf);
+	}
 
 #ifdef HAVE_GTK_OSX
 	GtkosxApplication *theMacApp = gtkosx_application_get();
