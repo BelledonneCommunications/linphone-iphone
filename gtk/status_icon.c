@@ -33,14 +33,6 @@ typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
 static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
 static const _LinphoneStatusIconDesc *_linphone_status_icon_selected_desc = NULL;
 static GSList *_linphone_status_icon_impls = NULL;
-#if STATUS_NOTIFIER_IS_USABLE
-static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier;
-#endif
-#ifdef HAVE_GTK_OSX
-static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc;
-#else
-static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc;
-#endif
 
 
 struct _LinphoneStatusIconParams {
@@ -231,6 +223,15 @@ void _linphone_status_icon_init_cb(const _LinphoneStatusIconDesc *desc, void *us
 	if(cb) cb(ctx[1]);
 	g_free(ctx);
 }
+
+#if STATUS_NOTIFIER_IS_USABLE
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier;
+#endif
+#ifdef HAVE_GTK_OSX
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc;
+#else
+static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc;
+#endif
 
 void _linphone_status_icon_create_implementations_list(void) {
 #if STATUS_NOTIFIER_IS_USABLE
