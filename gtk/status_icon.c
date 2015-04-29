@@ -30,7 +30,7 @@ typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
 
 static LinphoneStatusIcon *_linphone_status_icon_instance = NULL;
 static const _LinphoneStatusIconDesc *_linphone_status_icon_selected_desc = NULL;
-static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[];
+static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[3];
 
 
 struct _LinphoneStatusIconParams {
@@ -483,7 +483,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier 
 
 
 /* List of implementations */
-static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[] = {
+static const _LinphoneStatusIconDesc *_linphone_status_icon_impls[3] = {
 	&_linphone_status_icon_impl_status_notifier,
 #ifndef HAVE_GTK_OSX
 	&_linphone_status_icon_impl_gtk_desc,
