@@ -1413,8 +1413,11 @@ void linphone_call_unref(LinphoneCall *obj){
 	belle_sip_object_unref(obj);
 }
 static unsigned int linphone_call_get_n_active_streams(const LinphoneCall *call) {
-	SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-	if (!md) return 0;
+	SalMediaDescription *md=NULL;
+	if (call->op)
+		md = sal_call_get_remote_media_description(call->op);
+	if (!md)
+		return 0;
 	return sal_media_description_nb_active_streams_of_type(md, SalAudio) + sal_media_description_nb_active_streams_of_type(md, SalVideo);
 }
 

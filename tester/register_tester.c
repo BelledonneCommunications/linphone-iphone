@@ -461,6 +461,7 @@ static LinphoneCoreManager* configure_lcm(void) {
 	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_rc");
 	stats *counters=&mgr->stat;
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(mgr->lc))));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
 	return mgr;
 }
 
