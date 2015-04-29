@@ -159,7 +159,7 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 		}
 #ifdef VIDEO_ENABLED
 		if (with_video_and_ice){
-			CU_ASSERT_TRUE(add_video(pauline, marie));
+			CU_ASSERT_TRUE(add_video(pauline, marie, TRUE));
 		}
 #endif
 		end_call(pauline,marie);

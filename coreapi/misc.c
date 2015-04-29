@@ -732,6 +732,8 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call) {
 			clear_ice_check_list(call, cl);
 		}
 	}
+
+	linphone_core_update_ice_state_in_call_stats(call);
 }
 
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session) {

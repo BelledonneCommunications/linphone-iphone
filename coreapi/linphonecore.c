@@ -3593,6 +3593,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 	linphone_call_make_local_media_description(lc,call);
 
 	linphone_call_update_remote_session_id_and_ver(call);
+	linphone_call_stop_ice_for_inactive_streams(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);

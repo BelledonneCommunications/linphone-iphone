@@ -526,6 +526,7 @@ static void call_accepted(SalOp *op){
 
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
+		linphone_core_update_ice_state_in_call_stats(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
 			sal_media_description_has_dir(md,SalStreamInactive)){
 			{
