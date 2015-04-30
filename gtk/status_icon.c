@@ -24,7 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#define STATUS_NOTIFIER_IS_USABLE GLIB_CHECK_VERSION(2, 26, 0)
+#if !defined(WIN32) && !defined(__APPLE__) && GLIB_CHECK_VERSION(2, 26, 0)
+#define STATUS_NOTIFIER_IS_USABLE 1
+#endif
 
 #include "status_notifier.h"
 
@@ -225,7 +227,7 @@ void _linphone_status_icon_init_cb(const _LinphoneStatusIconDesc *desc, void *us
 	g_free(ctx);
 }
 
-#if STATUS_NOTIFIER_IS_USABLE
+#ifdef STATUS_NOTIFIER_IS_USABLE
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier;
 #endif
 #ifdef HAVE_GTK_OSX
@@ -235,7 +237,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc;
 #endif
 
 void _linphone_status_icon_create_implementations_list(void) {
-#if STATUS_NOTIFIER_IS_USABLE
+#ifdef STATUS_NOTIFIER_IS_USABLE
 	_linphone_status_icon_impls = g_slist_append(_linphone_status_icon_impls, (void *)&_linphone_status_icon_impl_status_notifier);
 #endif
 #if HAVE_GTK_OSX
@@ -398,7 +400,7 @@ static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtkosx_app_desc 
 
 
 /* Implementation based on the StatusNotifier Freedesktop standard */
-#if STATUS_NOTIFIER_IS_USABLE
+#ifdef STATUS_NOTIFIER_IS_USABLE
 typedef struct {
 	int x;
 	int y;
