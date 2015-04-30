@@ -30,26 +30,30 @@ typedef int lppid_t;
 typedef pid_t lppid_t;
 #endif
 
-static const gchar *_bc_status_notifier_category_to_string[] = {
-	"ApplicationStatus",
-	"Communications",
-	"SystemServices",
-	"Hardware"
-};
-
 const gchar *bc_status_notifier_category_to_string(BcStatusNotifierCategory c) {
-	return _bc_status_notifier_category_to_string[c];
+	switch(c){
+		case BcStatusNotifierCategoryApplicationStatus:
+			return "ApplicationStatus";
+		case BcStatusNotifierCategoryCommunications:
+			return "Communications";
+		case BcStatusNotifierCategorySystemService:
+			return "SystemServices";
+		case BcStatusNotifierCategoryHardware:
+			return "Hardware";
+	}
+	return "bad category";
 }
 
-
-static const gchar *_bc_status_notifier_status_to_string[] = {
-	"Passive",
-	"Active"
-	"NeedsAttention"
-};
-
 const gchar *bc_status_notifier_status_to_string(BcStatusNotifierStatus s) {
-	return _bc_status_notifier_status_to_string[s];
+	switch(s){
+		case BcStatusNotifierStatusPassive:
+			return "Passive";
+		case BcStatusNotifierStatusActive:
+			return "Active";
+		case BcStatusNotifierStatusNeedsAttention:
+			return "NeedsAttention";
+	}
+	return "badstatus";
 };
 
 
