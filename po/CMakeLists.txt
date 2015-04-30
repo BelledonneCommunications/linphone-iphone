@@ -21,7 +21,7 @@
 ############################################################################
 
 if(GETTEXT_FOUND)
-	foreach(language ${LINPHONE_ALL_LANGS})
+	foreach(language ${LINPHONE_ALL_LANGS_LIST})
 		GETTEXT_PROCESS_PO_FILES(${language} ALL PO_FILES ${language}.po)
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${language}.gmo
 			DESTINATION ${PACKAGE_LOCALE_DIR}/${language}/LC_MESSAGES
