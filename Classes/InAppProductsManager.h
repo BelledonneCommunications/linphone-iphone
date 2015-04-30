@@ -57,6 +57,7 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
+@property (readonly) BOOL enabled;
 
 - (BOOL)isPurchasedWithID:(NSString*)productId;
 - (void)purchaseAccount:(NSString*)sipURI withPassword:(NSString*)password;

@@ -238,7 +238,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	BOOL mustPurchaseNewAccount = ([[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"] != nil);
+	BOOL mustPurchaseNewAccount = ([[[LinphoneManager instance] iapManager] enabled] &&
+								   [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"] != nil);
 	_registerButton.hidden = mustPurchaseNewAccount;
 	_purchaseButton.hidden = !mustPurchaseNewAccount;
 }

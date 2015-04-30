@@ -681,6 +681,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"avpf_preference"];
     }
 
+	if (![[[LinphoneManager instance] iapManager] enabled]) {
+		[hiddenKeys addObject:@"in_app_products_button"];
+	}
+
     return hiddenKeys;
 }
 

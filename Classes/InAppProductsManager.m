@@ -31,60 +31,97 @@
 #import "PhoneMainView.h"
 #import "InAppProductsViewController.h"
 
-
-
-@implementation InAppProductsXMLRPCDelegate {
-	InAppProductsManager *iapm;
-}
-
-#pragma mark - XMLRPCConnectionDelegate Functions
-
-- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didReceiveResponse:response];
-}
-
-- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didFailWithError:error];
-}
-
-- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-	return FALSE;
-}
-
-- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-
-}
-
-- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	
-}
-@end
-
 @implementation InAppProductsManager {
 	NSString *accountCreationSipURI;
 	NSString *accountCreationPassword;
 }
 
 #if !TARGET_IPHONE_SIMULATOR
+
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
-		LOGE(@"Todo: //waiting for parent approval");
-		LOGE(@"Todo: if cancel date, no purchase");
-		_xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
-		_status = IAPNotReadyYet;
-		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-		[self loadProducts];
+		_enabled = (([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) && ([SKPaymentQueue canMakePayments]) && ([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" forSection:@"in_app_purchase"]));
+
+		if (_enabled) {
+			LOGE(@"Todo: //waiting for parent approval");
+			LOGE(@"Todo: if cancel date, no purchase");
+			_xmlrpc = [[InAppProductsXMLRPCDelegate alloc] init];
+			_status = IAPNotReadyYet;
+			[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+			[self loadProducts];
+		}
 	}
 	return self;
 }
 
-#define INAPP_AVAIL() ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) && ([SKPaymentQueue canMakePayments])
+#pragma mark Public API
+
+- (BOOL)isPurchasedWithID:(NSString *)productID {
+	if (!_enabled) return FALSE;
+
+	for (NSString *prod in _productsIDPurchased) {
+		if ([prod isEqual: productID]) {
+			bool isBought = true;
+			LOGE(@"%@ is %s bought.", prod, isBought?"":"NOT");
+			return isBought;
+		}
+	}
+	return false;
+}
+
+- (SKProduct*) productIDAvailable:(NSString*)productID {
+	if (!_enabled) return nil;
+	for (SKProduct *product in _productsAvailable) {
+		if ([product.productIdentifier compare:productID options:NSLiteralSearch] == NSOrderedSame) {
+			return product;
+		}
+	}
+	return nil;
+}
+- (BOOL)purchaseWitID:(NSString *)productID {
+	if (!_enabled) return FALSE;
+	SKProduct *prod = [self productIDAvailable:productID];
+	if (prod) {
+		NSDictionary* dict = @{@"product_id": productID};
+		[self postNotificationforStatus:IAPPurchaseTrying withDict:dict];
+		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:prod];
+		[[SKPaymentQueue defaultQueue] addPayment:payment];
+		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+		return TRUE;
+	} else {
+		NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Product not available"};
+		[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
+		return FALSE;
+	}
+}
+
+- (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password {
+	if (!_enabled) return;
+	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+	accountCreationSipURI = [sipURI retain];
+	accountCreationPassword = [password retain];
+	if ([self purchaseWitID:productID]) {
+		accountCreationPassword = nil;
+		accountCreationSipURI = nil;
+	}
+}
+
+-(void)restore {
+	if (!_enabled) return;
+	LOGI(@"Restoring user purchases...");
+	//force new query of our server
+	latestReceiptMD5 = nil;
+	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+- (void)retrievePurchases {
+	if (!_enabled) return;
+	[self validateReceipt:nil];
+}
 
 #pragma mark ProductListLoading
 
 - (void)loadProducts {
-	if (!INAPP_AVAIL()) return;
-
 	NSArray * list = [[[[LinphoneManager instance] lpConfigStringForKey:@"products_list" forSection:@"in_app_purchase"] stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
 
 	_productsIDPurchased = [[NSMutableArray alloc] initWithCapacity:0];
@@ -99,7 +136,7 @@
 	_productsAvailable = [[NSMutableArray arrayWithArray: response.products] retain];
 
 	LOGI(@"Found %lu products available", (unsigned long)_productsAvailable.count);
-	
+
 	if (response.invalidProductIdentifiers.count > 0) {
 		for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
 			LOGW(@"Found product Identifier with invalid ID '%@'", invalidIdentifier);
@@ -120,57 +157,7 @@
 }
 
 #pragma mark Other
-- (BOOL)isPurchasedWithID:(NSString *)productID {
-	for (NSString *prod in _productsIDPurchased) {
-		if ([prod isEqual: productID]) {
-			bool isBought = true;
-			LOGE(@"%@ is %s bought.", prod, isBought?"":"NOT");
-			return isBought;
-		}
-	}
-	return false;
-}
 
-- (SKProduct*) productIDAvailable:(NSString*)productID {
-	for (SKProduct *product in _productsAvailable) {
-		if ([product.productIdentifier compare:productID options:NSLiteralSearch] == NSOrderedSame) {
-			return product;
-		}
-	}
-	return nil;
-}
-- (BOOL)purchaseWitID:(NSString *)productID {
-	SKProduct *prod = [self productIDAvailable:productID];
-	if (prod) {
-		NSDictionary* dict = @{@"product_id": productID};
-		[self postNotificationforStatus:IAPPurchaseTrying withDict:dict];
-		SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:prod];
-		[[SKPaymentQueue defaultQueue] addPayment:payment];
-		[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-		return TRUE;
-	} else {
-		NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Product not available"};
-		[self postNotificationforStatus:IAPPurchaseFailed withDict:dict];
-		return FALSE;
-	}
-}
-
-- (void)purchaseAccount:(NSString *)sipURI withPassword:(NSString *)password {
-	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
-	accountCreationSipURI = [sipURI retain];
-	accountCreationPassword = [password retain];
-	if ([self purchaseWitID:productID]) {
-		accountCreationPassword = nil;
-		accountCreationSipURI = nil;
-	}
-}
-
--(void)restore {
-	LOGI(@"Restoring user purchases...");
-	//force new query of our server
-	latestReceiptMD5 = nil;
-	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-}
 
 - (void)requestDidFinish:(SKRequest *)request {
 	if([request isKindOfClass:[SKReceiptRefreshRequest class]]) {
@@ -304,11 +291,8 @@
 	LOGI(@"Triggering notification for status %@", status);
 }
 
-- (void)retrievePurchases {
-	[self validateReceipt:nil];
-}
-
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
+	if (!_enabled) return;
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
 	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
 
@@ -374,6 +358,8 @@
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
+	if (!_enabled) return;
+
 	LOGE(@"Communication issue (%@)", [error localizedDescription]);
 	NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
 	UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
@@ -397,5 +383,33 @@
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions { LOGE(@"Not supported"); }
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response { LOGE(@"Not supported"); }
 - (void)retrievePurchases { LOGE(@"Not supported"); }
+- (BOOL)purchaseWitID:(NSString *)productID { return FALSE; }
 #endif
+@end
+
+@implementation InAppProductsXMLRPCDelegate {
+	InAppProductsManager *iapm;
+}
+
+#pragma mark - XMLRPCConnectionDelegate Functions
+
+- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
+	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didReceiveResponse:response];
+}
+
+- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
+	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didFailWithError:error];
+}
+
+- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+	return FALSE;
+}
+
+- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+
+}
+
+- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+
+}
 @end

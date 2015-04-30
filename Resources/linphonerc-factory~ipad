@@ -19,7 +19,4 @@ display_filter_auto_rotate=0
 #contact_filter_on_default_domain=1
 
 [in_app_purchase]
-enabled=1
-paid_account_id=test.autorenew_7days
-receipt_validation_url=https://www.linphone.org/inapp.php
-products_list=test.autorenew_7days
+enabled=0
