@@ -6,6 +6,10 @@ xcode_sdk: iphonesimulator8.1
 git:
   submodules: false
 
+branches:
+  only:
+    - master
+
 env:
     global:
         - VERSION="8.1"
