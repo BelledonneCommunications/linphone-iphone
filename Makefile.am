@@ -210,6 +210,7 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 MACAPPNAME=Linphone.app
 MACAPPZIP=$(PACKAGE)-$(GITVERSION).app.zip
 MACAPPDMG=$(PACKAGE)-$(GITVERSION).dmg
+MACAPPPKG=$(PACKAGE)-$(GITVERSION).pkg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 #a path prefix where additional libs can be cherry-picked by the bundler.
@@ -232,13 +233,16 @@ Linphone.app:
 	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
 	rm -f ${BUNDLEDIR}/Contents/Resources/lib/libopenh264*
 
-bundle: Linphone.app
+bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
-signed-bundle: Linphone.app
+signed-bundle: $(MACAPPNAME)
 	codesign --deep -s $(BUNDLE_SIGNING_ID) $(BUNDLEDIR)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+
+pkg: $(MACAPPNAME)
+	pkgbuild --install-location /Applications --component $(MACAPPNAME) $(MACAPPPKG)
 	
 
 ###
@@ -249,8 +253,8 @@ clean-local:
 discovery:
 	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
-          $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
 
-.PHONY: Linphone.app
+.PHONY: $(MACAPPNAME)
 
 
