@@ -416,8 +416,6 @@ void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
 void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,LinphoneProxyConfig *obj, int index);
 
-bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
-
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
 
@@ -781,7 +779,7 @@ struct _LinphoneCore
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
-	
+
 	bool_t use_files;
 	bool_t apply_nat_settings;
 	bool_t initial_subscribes_sent;
@@ -791,7 +789,7 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t network_reachable;
 	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
-	
+
 	bool_t use_preview_window;
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
