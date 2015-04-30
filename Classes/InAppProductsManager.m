@@ -251,7 +251,7 @@
 		LOGI(@"XMLRPC query %@: %@", [request method], [request body]);
 		[request release];
 	} else {
-		LOGW(@"Skipping receipt check, it has already been done!");
+		LOGW(@"Not checking receipt since it has already been done!");
 	}
 }
 
