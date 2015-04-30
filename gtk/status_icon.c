@@ -353,12 +353,12 @@ static gboolean _linphone_status_icon_impl_is_supported(
 }
 
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
-	.impl_name = "gtk_status_icon",
-	.init = _linphone_status_icon_impl_gtk_init,
-	.uninit = NULL,
-	.start = _linphone_status_icon_impl_gtk_start,
-	.enable_blinking = _linphone_status_icon_impl_enable_blinking,
-	.is_supported = _linphone_status_icon_impl_is_supported
+	"gtk_status_icon",
+	_linphone_status_icon_impl_gtk_init,
+	NULL,
+	_linphone_status_icon_impl_gtk_start,
+	_linphone_status_icon_impl_enable_blinking,
+	_linphone_status_icon_impl_is_supported
 };
 #endif
 
