@@ -20,38 +20,6 @@
 - (void)viewWillAppear:(BOOL)animated {
 	currentExpanded = -1;
 	iapm = [[LinphoneManager instance] iapManager];
-
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onIAPPurchaseNotification:)
-												 name:IAPAvailableSucceeded
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onIAPPurchaseNotification:)
-												 name:IAPRestoreSucceeded
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onIAPPurchaseNotification:)
-												 name:IAPPurchaseSucceeded
-											   object:nil];
-	[[self tableView] reloadData];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:IAPAvailableSucceeded
-												  object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:IAPRestoreSucceeded
-												  object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:IAPPurchaseSucceeded
-												  object:nil];
-}
-
-- (void)onIAPPurchaseNotification:(NSNotification*)notif {
-	[[self tableView] reloadData];
 }
 
 #pragma mark - Table view data source

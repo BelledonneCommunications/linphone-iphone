@@ -23,6 +23,7 @@
 
 	[_tableController release];
 
+    [_waitView release];
 	[super dealloc];
 }
 
@@ -34,18 +35,27 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(textReceivedEvent:)
-//												 name:kLinphoneTextReceived
-//											   object:nil];
+	for (NSString* notification in [NSArray arrayWithObjects:IAPAvailableSucceeded, IAPRestoreSucceeded, IAPPurchaseSucceeded, IAPReceiptSucceeded, IAPPurchaseTrying, nil]) {
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(onIAPPurchaseNotification:)
+													 name:notification
+												   object:nil];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
+	for (NSString* notification in [NSArray arrayWithObjects:IAPAvailableSucceeded, IAPRestoreSucceeded, IAPPurchaseSucceeded, IAPReceiptSucceeded, IAPPurchaseTrying, nil]) {
+		[[NSNotificationCenter defaultCenter] removeObserver:self
+														name:notification
+													  object:nil];
+	}
+}
 
-//	[[NSNotificationCenter defaultCenter] removeObserver:self
-//													name:kLinphoneTextReceived
-//												  object:nil];
+- (void)onIAPPurchaseNotification:(NSNotification*)notif {
+	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+	[[_tableController tableView] reloadData];
+	[_waitView setHidden:([[iapm productsAvailable] count] != 0 && ![notif.name isEqualToString:IAPPurchaseTrying])];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

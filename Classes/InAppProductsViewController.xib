@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="tableController" destination="FRQ-Fw-iZ8" id="HVZ-37-Tau"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="waitView" destination="4pA-a2-gQ7" id="4f0-jJ-Wv4"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -19,7 +20,7 @@
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="10" id="fwu-cz-Gse" userLabel="productsTable">
                     <rect key="frame" x="0.0" y="38" width="320" height="422"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                     <connections>
                         <outlet property="dataSource" destination="FRQ-Fw-iZ8" id="uQQ-fT-hHp"/>
                         <outlet property="delegate" destination="FRQ-Fw-iZ8" id="2Dx-aQ-XVB"/>
@@ -35,6 +36,17 @@
                         <action selector="onRestoreClicked:" destination="-1" eventType="touchUpInside" id="ZYY-WP-1of"/>
                     </connections>
                 </button>
+                <view hidden="YES" alpha="0.49999999999999961" contentMode="scaleToFill" id="4pA-a2-gQ7" userLabel="waitView">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" id="K5m-Dx-cXk" userLabel="spinner">
+                            <rect key="frame" x="142" y="211" width="37" height="37"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                        </activityIndicatorView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

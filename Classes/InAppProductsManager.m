@@ -104,11 +104,19 @@
 		for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
 			LOGW(@"Found product Identifier with invalid ID '%@'", invalidIdentifier);
 		}
-		NSDictionary* dict = @{@"invalid_product_ids": response.invalidProductIdentifiers};
+		NSDictionary* dict = @{@"error_msg": NSLocalizedString(@"Invalid products identifier", nil)};
 		[self postNotificationforStatus:IAPAvailableFailed withDict:dict];
 	} else {
 		[self postNotificationforStatus:IAPAvailableSucceeded withDict:nil];
 	}
+}
+
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+	LOGE(@"Impossible to retrieve list of products: %@", [error localizedFailureReason]);
+	NSDictionary* dict = @{@"error_msg": error ? [error localizedDescription] : NSLocalizedString(@"Product not available", commit)};
+	[self postNotificationforStatus:IAPAvailableFailed withDict:dict];
+	//well, let's retry...
+	[self loadProducts];
 }
 
 #pragma mark Other
@@ -176,11 +184,6 @@
 			LOGF(@"Receipt request done but there is no receipt");
 		}
 	}
-}
-
-- (void)request:(SKRequest *)skrequest didFailWithError:(NSError *)error {
-	LOGE(@"Did not get receipt: %@", error.localizedDescription);
-	[self setStatus:IAPReceiptFailed];
 }
 
 - (void)validateReceipt: (SKPaymentTransaction*)transaction {
@@ -307,29 +310,41 @@
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
+	NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
 
 	// validation succeeded
 	if(! [response isFault] && [response object] != nil) {
 		if([[request method] isEqualToString:@"get_expiration_date"]) {
-			double expirationTime = [[response object] doubleValue];
-			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
-			NSDate * date = nil;
-			if(expirationTime < 1) {
+			//first remove it from list
+			[_productsIDPurchased removeObject:productID];
+
+			double expirationTime = [[response object] doubleValue] / 1000;
+			NSDate * expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTime];
+			NSDate *now = [[NSDate alloc] init];
+			if (([expirationDate earlierDate:now] == expirationDate) || (expirationTime < 1)) {
 				LOGI(@"Account has expired");
 				[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
-				date = [NSDate dateWithTimeIntervalSince1970:0];
+				expirationDate = [NSDate dateWithTimeIntervalSince1970:0];
 			} else {
-				date = [NSDate dateWithTimeIntervalSince1970:expirationTime];
+				[_productsIDPurchased addObject:productID];
 			}
-			NSDictionary* dict = @{@"product_id": productID, @"expires_date": date};
+			NSDictionary* dict = @{@"product_id": productID, @"expires_date": expirationDate};
 			[self postNotificationforStatus:IAPReceiptSucceeded withDict:dict];
 		} else 	if([[request method] isEqualToString:@"create_account_from_in_app_purchase"]) {
-			double timeinterval = [[response object] doubleValue];
-			NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+			[_productsIDPurchased removeObject:productID];
+
+			double timeinterval = [[response object] doubleValue] / 1000;
 			if (timeinterval != -2) {
-				NSDate *date = [NSDate dateWithTimeIntervalSince1970:timeinterval];
-				[_productsIDPurchased addObject:productID];
-				NSDictionary* dict = @{@"product_id": productID, @"expires_date": date};
+				NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:timeinterval];
+				NSDate *now = [[NSDate alloc] init];
+				if ([expirationDate earlierDate:now] == expirationDate) {
+					LOGI(@"Account has expired");
+					[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription]];
+					expirationDate = [NSDate dateWithTimeIntervalSince1970:0];
+				} else {
+					[_productsIDPurchased addObject:productID];
+				}
+				NSDictionary* dict = @{@"product_id": productID, @"expires_date": expirationDate};
 				[self postNotificationforStatus:IAPPurchaseSucceeded withDict:dict];
 			} else {
 				NSDictionary* dict = @{@"product_id": productID, @"error_msg": @"Unknown error"};

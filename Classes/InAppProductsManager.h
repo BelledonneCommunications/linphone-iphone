@@ -28,7 +28,7 @@
 
 #define IAPNotReadyYet			@"IAPNotReadyYet" // startup status, manager is not ready yet
 #define IAPAvailableSucceeded	@"IAPAvailableSucceeded" //no data
-#define IAPAvailableFailed		@"IAPAvailableFailed" //data: invalid_product_ids
+#define IAPAvailableFailed		@"IAPAvailableFailed" //data: error_msg
 #define IAPPurchaseTrying		@"IAPPurchaseTrying" //data: product_id
 #define IAPPurchaseFailed		@"IAPPurchaseFailed" //data: product_id, error_msg
 #define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded" //data: product_id, expires_date

@@ -14,6 +14,7 @@
 }
 
 @property (nonatomic, retain) IBOutlet InAppProductsTableViewController* tableController;
+@property (retain, nonatomic) IBOutlet UIView *waitView;
 - (IBAction)onRestoreClicked:(UIButton *)sender;
 
 @end
