@@ -10,10 +10,13 @@
                 <outlet property="choiceView" destination="33" id="40"/>
                 <outlet property="choiceViewLogoImageView" destination="128" id="136"/>
                 <outlet property="connectAccountButton" destination="38" id="134"/>
+                <outlet property="connectAccountUsername" destination="68" id="9qb-9c-Y0k"/>
                 <outlet property="connectAccountView" destination="52" id="71"/>
                 <outlet property="createAccountButton" destination="36" id="135"/>
+                <outlet property="createAccountUsername" destination="74" id="ptL-W1-8vl"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
                 <outlet property="externalAccountButton" destination="39" id="133"/>
+                <outlet property="externalAccountUsername" destination="59" id="2bn-uT-cSf"/>
                 <outlet property="externalAccountView" destination="56" id="72"/>
                 <outlet property="provisionedAccountView" destination="xVK-hL-6pe" id="jZM-mc-m1Q"/>
                 <outlet property="provisionedDomain" destination="wRB-Sh-K8J" id="Ieb-x8-yL4"/>
@@ -455,7 +458,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="These parameters were retrieved from a remote provisioning profile." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="7" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="RHE-hi-dfB" userLabel="remoteParamsLabel">
-                    <rect key="frame" x="34" y="414.00000272146076" width="254" height="82"/>
+                    <rect key="frame" x="34" y="414" width="254" height="82"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>

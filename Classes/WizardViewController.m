@@ -113,6 +113,9 @@ typedef enum _ViewElement {
     [provisionedPassword release];
     [provisionedDomain release];
     [_transportChooser release];
+    [_createAccountUsername release];
+    [_connectAccountUsername release];
+    [_externalAccountUsername release];
     [super dealloc];
 }
 
@@ -196,6 +199,18 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils adjustFontSize:validateAccountView mult:2.22f];
         [LinphoneUtils adjustFontSize:provisionedAccountView mult:2.22f];
     }
+
+	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigStringForKey:@"use_phone_number"];
+	for (UILinphoneTextField* text in [NSArray arrayWithObjects:provisionedUsername, _createAccountUsername,
+									   _connectAccountUsername, _externalAccountUsername, nil]) {
+		if (usePhoneNumber) {
+			text.keyboardType = UIKeyboardTypePhonePad;
+			text.placeholder = NSLocalizedString(@"Phone number", nil);
+		} else {
+			text.keyboardType = UIKeyboardTypeDefault;
+			text.placeholder = NSLocalizedString(@"Username", nil);
+		}
+	}
 }
 
 
@@ -633,32 +648,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    // only validate the username when creating a new account
-    if( (textField.tag == ViewElement_Username) && (currentView == createAccountView) ){
-        NSRegularExpression *regex = [NSRegularExpression
-                                      regularExpressionWithPattern:@"^[a-z0-9-_\\.]*$"
-                                      options:NSRegularExpressionCaseInsensitive
-                                      error:nil];
-        NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, [string length])];
-        if ([matches count] == 0) {
-            UILabel* error = [WizardViewController findLabel:ViewElement_Username_Error view:contentView];
+	// only validate the username when creating a new account
+	if( (textField.tag == ViewElement_Username) && (currentView == createAccountView) ){
+		BOOL isValidUsername = YES;
+		BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigStringForKey:@"use_phone_number"];
+		if (usePhoneNumber) {
+			isValidUsername = linphone_proxy_config_is_phone_number(NULL, [string UTF8String]);
+		} else {
+			NSRegularExpression *regex = [NSRegularExpression
+										  regularExpressionWithPattern:@"^[a-z0-9-_\\.]*$"
+										  options:NSRegularExpressionCaseInsensitive
+										  error:nil];
 
-            // show error with fade animation
-            [error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in username: %@", nil), string]];
-            error.alpha = 0;
-            error.hidden = NO;
-            [UIView animateWithDuration:0.3 animations:^{
-                error.alpha = 1;
-            }];
+			NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, [string length])];
+			isValidUsername = ([matches count] != 0);
+		}
 
-            // hide again in 2s
-            [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(hideError:) userInfo:nil repeats:NO];
+		if (!isValidUsername) {
+			UILabel* error = [WizardViewController findLabel:ViewElement_Username_Error view:contentView];
 
+			// show error with fade animation
+			[error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in %@: %@", nil),
+							usePhoneNumber ? NSLocalizedString(@"phone number",nil) : NSLocalizedString(@"username", nil), string]];
+			error.alpha = 0;
+			error.hidden = NO;
+			[UIView animateWithDuration:0.3 animations:^{
+				error.alpha = 1;
+			}];
 
-            return NO;
-        }
-    }
-    return YES;
+			// hide again in 2s
+			[NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(hideError:) userInfo:nil repeats:NO];
+			return NO;
+		}
+	}
+	return YES;
 }
 - (void)hideError:(NSTimer*)timer {
     UILabel* error_label =[WizardViewController findLabel:ViewElement_Username_Error view:contentView];

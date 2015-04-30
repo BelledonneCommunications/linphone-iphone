@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
+#import "UILinphoneTextField.h"
 
 @interface WizardViewController : TPMultiLayoutViewController
 <UITextFieldDelegate,
@@ -53,6 +54,10 @@
 @property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
 @property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
 @property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
+
+@property (retain, nonatomic) IBOutlet UILinphoneTextField *createAccountUsername;
+@property (retain, nonatomic) IBOutlet UILinphoneTextField *connectAccountUsername;
+@property (retain, nonatomic) IBOutlet UILinphoneTextField *externalAccountUsername;
 
 @property (retain, nonatomic) IBOutlet UITextField *provisionedUsername;
 @property (retain, nonatomic) IBOutlet UITextField *provisionedPassword;
