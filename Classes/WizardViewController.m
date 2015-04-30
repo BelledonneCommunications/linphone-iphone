@@ -200,7 +200,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils adjustFontSize:provisionedAccountView mult:2.22f];
     }
 
-	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigStringForKey:@"use_phone_number"];
+	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number"];
 	for (UILinphoneTextField* text in [NSArray arrayWithObjects:provisionedUsername, _createAccountUsername,
 									   _connectAccountUsername, _externalAccountUsername, nil]) {
 		if (usePhoneNumber) {
@@ -651,7 +651,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// only validate the username when creating a new account
 	if( (textField.tag == ViewElement_Username) && (currentView == createAccountView) ){
 		BOOL isValidUsername = YES;
-		BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigStringForKey:@"use_phone_number"];
+		BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number"];
 		if (usePhoneNumber) {
 			isValidUsername = linphone_proxy_config_is_phone_number(NULL, [string UTF8String]);
 		} else {
