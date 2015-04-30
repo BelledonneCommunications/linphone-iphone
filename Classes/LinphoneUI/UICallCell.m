@@ -44,7 +44,7 @@
 
 - (void)update {
     if(call == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        LOGW(@"Cannot update call cell: null call or data");
         return;
     }
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
@@ -377,7 +377,7 @@
 
 - (void)update {
     if(data == nil || data->call == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        LOGW(@"Cannot update call cell: null call or data");
         return;
     }
     LinphoneCall *call = data->call;
@@ -442,7 +442,7 @@
 
 - (void)updateStats {
     if(data == nil || data->call == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        LOGW(@"Cannot update call cell: null call or data");
         return;
     }
     LinphoneCall *call = data->call;
@@ -500,7 +500,7 @@
 
 - (void)updateDetailsView {
     if(data == nil || data->call == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        LOGW(@"Cannot update call cell: null call or data");
         return;
     }
     if(data->view == UICallCellOtherView_Avatar && avatarView.isHidden) {

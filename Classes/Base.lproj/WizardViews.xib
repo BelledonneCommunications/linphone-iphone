@@ -22,6 +22,8 @@
                 <outlet property="provisionedDomain" destination="wRB-Sh-K8J" id="Ieb-x8-yL4"/>
                 <outlet property="provisionedPassword" destination="ClH-fT-a8N" id="h61-p1-4qG"/>
                 <outlet property="provisionedUsername" destination="MyR-eX-QTa" id="gmr-FI-hpH"/>
+                <outlet property="purchaseButton" destination="uIp-br-8Kv" id="Ov2-V4-LLx"/>
+                <outlet property="registerButton" destination="77" id="A9h-Es-kxv"/>
                 <outlet property="remoteProvisioningButton" destination="Kbn-dL-C5h" id="PPk-DJ-nEb"/>
                 <outlet property="transportChooser" destination="Nrv-SM-lMf" id="7iR-aG-eQf"/>
                 <outlet property="validateAccountView" destination="101" id="112"/>
@@ -151,7 +153,7 @@
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
-                        <action selector="onRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="7oT-2f-Rrb"/>
+                        <action selector="onRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="Ruh-fu-0Vu"/>
                     </connections>
                 </button>
             </subviews>
@@ -240,6 +242,22 @@
                     </state>
                     <connections>
                         <action selector="onRegisterClick:" destination="-1" eventType="touchUpInside" id="113"/>
+                    </connections>
+                </button>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="uIp-br-8Kv" userLabel="purchaseButton" customClass="UILinphoneButton">
+                    <rect key="frame" x="33" y="481" width="255" height="73"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Purchase"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                    <state key="normal" title="Purchase" backgroundImage="button_background_default.png">
+                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="highlighted" backgroundImage="button_background_over.png">
+                        <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="onPurchaseAccountClick:" destination="-1" eventType="touchUpInside" id="BR1-hP-14E"/>
                     </connections>
                 </button>
             </subviews>

@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */   
+ */
 
 
 #import "Utils.h"
@@ -24,44 +24,30 @@
 @implementation LinphoneLogger
 
 
-+ (void)logv:(LinphoneLoggerSeverity)severity format:(NSString*)format args:(va_list)args{
-    NSString *str = [[NSString alloc] initWithFormat: format arguments:args];
-    if(severity <= LinphoneLoggerDebug) {
-        ms_debug("%s", [str UTF8String]);
-    } else  if(severity <= LinphoneLoggerLog) {
-        ms_message("%s", [str UTF8String]);
-    } else if(severity <= LinphoneLoggerWarning) {
-        ms_warning("%s", [str UTF8String]);
-    } else if(severity <= LinphoneLoggerError) {
-        ms_error("%s", [str UTF8String]);
-    } else if(severity <= LinphoneLoggerFatal) {
-        ms_fatal("%s", [str UTF8String]);
-    }
++ (void)logv:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString*)format args:(va_list)args{
+    NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
+	OrtpLogLevel ortp_severity;
+	int filesize = 20;
+	if (severity <= LinphoneLoggerDebug) {
+		ortp_severity = ORTP_DEBUG;
+	} else if(severity <= LinphoneLoggerLog) {
+		ortp_severity = ORTP_MESSAGE;
+	} else if(severity <= LinphoneLoggerWarning) {
+		ortp_severity = ORTP_WARNING;
+	} else if(severity <= LinphoneLoggerError) {
+		ortp_severity = ORTP_ERROR;
+	} else {
+		ortp_severity = ORTP_FATAL;
+	}
+    ortp_log(ortp_severity, "%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
     [str release];
 }
 
-+ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,... {
++ (void)log:(LinphoneLoggerSeverity) severity file:(const char*)file line:(int)line format:(NSString *)format,... {
     va_list args;
 	va_start (args, format);
-    [LinphoneLogger logv:severity format:format args:args];
+	[LinphoneLogger logv:severity file:file line:line format:format args:args];
     va_end (args);
-}
-
-+ (void)logc:(LinphoneLoggerSeverity) severity format:(const char *)format,... {
-    va_list args;
-	va_start (args, format);
-    if(severity <= LinphoneLoggerDebug) {
-        ortp_logv(ORTP_DEBUG, format, args);
-    } else if(severity <= LinphoneLoggerLog) {
-        ortp_logv(ORTP_MESSAGE, format, args);
-    } else if(severity <= LinphoneLoggerWarning) {
-        ortp_logv(ORTP_WARNING, format, args);
-    } else if(severity <= LinphoneLoggerError) {
-        ortp_logv(ORTP_ERROR, format, args);
-    } else if(severity <= LinphoneLoggerFatal) {
-        ortp_logv(ORTP_FATAL, format, args);
-    }
-	va_end (args);
 }
 
 @end
@@ -104,15 +90,15 @@
     // Set selected+over title: IB lack !
     [button setTitle:[button titleForState:UIControlStateSelected]
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
+
     // Set selected+over titleColor: IB lack !
     [button setTitleColor:[button titleColorForState:UIControlStateHighlighted]
                       forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
+
     // Set selected+disabled title: IB lack !
     [button setTitle:[button titleForState:UIControlStateSelected]
                  forState:(UIControlStateDisabled | UIControlStateSelected)];
-    
+
     // Set selected+disabled titleColor: IB lack !
     [button setTitleColor:[button titleColorForState:UIControlStateDisabled]
                       forState:(UIControlStateDisabled | UIControlStateSelected)];
@@ -122,15 +108,15 @@
     // Set selected+over title: IB lack !
     [button setTitle:[button titleForState:UIControlStateSelected]
             forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
+
     // Set selected+over titleColor: IB lack !
     [button setTitleColor:[button titleColorForState:UIControlStateSelected]
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
+
     // Set selected+disabled title: IB lack !
     [button setTitle:[button titleForState:UIControlStateSelected]
             forState:(UIControlStateDisabled | UIControlStateSelected)];
-    
+
     // Set selected+disabled titleColor: IB lack !
     [button setTitleColor:[button titleColorForState:UIControlStateDisabled]
                  forState:(UIControlStateDisabled | UIControlStateSelected)];
@@ -144,7 +130,7 @@
     [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"title-disabled-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateSelected | UIControlStateHighlighted] key:@"title-selected-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateSelected | UIControlStateDisabled] key:@"title-selected-disabled"];
-    
+
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateNormal] key:@"title-color-normal"];
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateHighlighted] key:@"title-color-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateDisabled] key:@"title-color-disabled"];
@@ -152,11 +138,11 @@
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"title-color-disabled-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateSelected | UIControlStateHighlighted] key:@"title-color-selected-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateSelected | UIControlStateDisabled] key:@"title-color-selected-disabled"];
-    
+
 	[LinphoneUtils addDictEntry:attributes item:NSStringFromUIEdgeInsets([button titleEdgeInsets]) key:@"title-edge"];
 	[LinphoneUtils addDictEntry:attributes item:NSStringFromUIEdgeInsets([button contentEdgeInsets]) key:@"content-edge"];
 	[LinphoneUtils addDictEntry:attributes item:NSStringFromUIEdgeInsets([button imageEdgeInsets]) key:@"image-edge"];
-	
+
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
@@ -164,7 +150,7 @@
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
-    
+
     [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
     [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
     [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
@@ -182,7 +168,7 @@
     [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
     [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
     [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
-    
+
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-normal"] forState:UIControlStateNormal];
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-highlighted"] forState:UIControlStateHighlighted];
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-disabled"] forState:UIControlStateDisabled];
@@ -190,7 +176,7 @@
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
     [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
-    
+
 	[button setTitleEdgeInsets:UIEdgeInsetsFromString([LinphoneUtils getDictEntry:attributes key:@"title-edge"])];
 	[button setContentEdgeInsets:UIEdgeInsetsFromString([LinphoneUtils getDictEntry:attributes key:@"content-edge"])];
 	[button setImageEdgeInsets:UIEdgeInsetsFromString([LinphoneUtils getDictEntry:attributes key:@"image-edge"])];
@@ -202,7 +188,7 @@
     [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
     [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
     [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
-    
+
     [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
     [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
     [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
@@ -241,34 +227,26 @@
 	if (floatSize < 1023)
 		return([NSString stringWithFormat:@"%1.1f MB",floatSize]);
 	floatSize = floatSize / 1024;
-    
+
 	return([NSString stringWithFormat:@"%1.1f GB",floatSize]);
 }
 
 @end
 
-#define LOGV(level, argstart)   \
-    va_list args;               \
-    va_start(args, argstart);   \
-    [LinphoneLogger logv:level format:argstart args:args]; \
-    va_end(args);
+@implementation NSString(md5)
 
-void LOGI(NSString* format, ...){
-    LOGV(LinphoneLoggerLog, format);
+#import <CommonCrypto/CommonDigest.h>
+
+- (NSString *)md5 {
+	const char *ptr = [self UTF8String];
+	unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
+	CC_MD5(ptr, (unsigned int)strlen(ptr), md5Buffer);
+	NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+	for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+		[output appendFormat:@"%02x",md5Buffer[i]];
+	}
+
+	return output;
 }
 
-void LOGD(NSString* format, ...){
-    LOGV(LinphoneLoggerDebug, format);
-}
-
-void LOGW(NSString* format, ...){
-    LOGV(LinphoneLoggerWarning, format);
-}
-
-void LOGE(NSString* format, ...){
-    LOGV(LinphoneLoggerError, format);
-}
-
-void LOGF(NSString* format, ...){
-    LOGV(LinphoneLoggerFatal, format);
-}
+@end

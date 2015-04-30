@@ -67,8 +67,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			bool_t value = linphone_core_payload_type_enabled(lc,pt);
 			[self setBool:value  forKey: pref];
 		}else{
-			[LinphoneLogger logc:LinphoneLoggerWarning format:"Codec %s/%i supported by core is not shown in iOS app config view.",
-					   pt->mime_type,pt->clock_rate];
+			LOGW(@"Codec %s/%i supported by core is not shown in iOS app config view.",
+					   pt->mime_type,pt->clock_rate);
 		}
 	}
 }
@@ -186,7 +186,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
 		[self setString:linphone_core_get_adaptive_rate_algorithm(lc) forKey:@"adaptive_rate_algorithm_preference"];
-		
+
 		[self setInteger:lp_config_get_int(conf, "audio", "codec_bitrate_limit", kLinphoneAudioVbrCodecDefaultBitrate) forKey:@"audio_codec_bitrate_limit_preference"];
         [self setInteger:lp_config_get_int(conf, LINPHONERC_APPLICATION_KEY, "voiceproc_preference", 1) forKey:@"voiceproc_preference"];
         [self setInteger:lp_config_get_int(conf, "sound", "eq_active", 0) forKey:@"eq_active"];
@@ -316,7 +316,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	// will also update the sip_*_port section of the config
 	if (linphone_core_set_sip_transports(lc, &transportValue)) {
-		[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+		LOGE(@"cannot set transport");
 	}
 
 	port_preference = linphone_core_get_sip_port(lc);
@@ -326,7 +326,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	BOOL enable_ipv6 = [self boolForKey:@"use_ipv6"];
 	lp_config_set_int(conf, "sip", "use_ipv6", enable_ipv6);
 	if( linphone_core_ipv6_enabled(lc) != enable_ipv6){
-		[LinphoneLogger logc:LinphoneLoggerDebug format:"%@ IPV6", enable_ipv6?@"ENABLING":@"DISABLING"];
+		LOGD(@"%@ IPV6", enable_ipv6?@"ENABLING":@"DISABLING");
 		linphone_core_enable_ipv6(lc, enable_ipv6);
 	}
 
@@ -689,7 +689,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
 	[[LinphoneManager instance] setLogsEnabled:debugmode];
-	
+
 	BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(config, LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
 
@@ -731,7 +731,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			} else if ([lTunnelPrefMode isEqualToString:@"auto"]) {
 				mode = tunnel_auto;
 			} else {
-				[LinphoneLogger logc:LinphoneLoggerError format:"Unexpected tunnel mode [%s]",[lTunnelPrefMode cStringUsingEncoding:[NSString defaultCStringEncoding]]];
+				LOGE(@"Unexpected tunnel mode [%s]",[lTunnelPrefMode cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
 

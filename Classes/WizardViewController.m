@@ -1,21 +1,22 @@
+
 /* WizardViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "WizardViewController.h"
 #import "LinphoneManager.h"
@@ -83,18 +84,18 @@ typedef enum _ViewElement {
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [contentView release];
-    
+
     [welcomeView release];
     [choiceView release];
     [createAccountView release];
     [connectAccountView release];
     [externalAccountView release];
     [validateAccountView release];
-    
+
     [waitView release];
-    
+
     [backButton release];
     [startButton release];
     [createAccountButton release];
@@ -102,20 +103,25 @@ typedef enum _ViewElement {
     [externalAccountButton release];
 
     [choiceViewLogoImageView release];
-    
+
     [historyViews release];
-    
+
     [viewTapGestureRecognizer release];
-    
+
     [remoteProvisioningButton release];
     [provisionedAccountView release];
     [provisionedUsername release];
     [provisionedPassword release];
     [provisionedDomain release];
     [_transportChooser release];
+
     [_createAccountUsername release];
     [_connectAccountUsername release];
     [_externalAccountUsername release];
+
+    [_purchaseButton release];
+    [_registerButton release];
+
     [super dealloc];
 }
 
@@ -126,12 +132,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"Wizard" 
-                                                                content:@"WizardViewController" 
-                                                               stateBar:nil 
-                                                        stateBarEnabled:false 
-                                                                 tabBar:nil 
-                                                          tabBarEnabled:false 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Wizard"
+                                                                content:@"WizardViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar:nil
+                                                          tabBarEnabled:false
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
@@ -145,7 +151,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationUpdateEvent:)
                                                  name:kLinphoneRegistrationUpdate
@@ -163,6 +169,18 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:IAPPurchaseSucceeded
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:IAPPurchaseTrying
+											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(inAppPurchaseNotification:)
+												 name:IAPPurchaseFailed
+											   object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -180,16 +198,24 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseFailed
+												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseTrying
+												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:IAPPurchaseSucceeded
+												  object:nil];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [viewTapGestureRecognizer setCancelsTouchesInView:FALSE];
     [viewTapGestureRecognizer setDelegate:self];
     [contentView addGestureRecognizer:viewTapGestureRecognizer];
-    
+
     if([LinphoneManager runningOnIpad]) {
         [LinphoneUtils adjustFontSize:welcomeView mult:2.22f];
         [LinphoneUtils adjustFontSize:choiceView mult:2.22f];
@@ -211,6 +237,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 			text.placeholder = NSLocalizedString(@"Username", nil);
 		}
 	}
+
+	BOOL mustPurchaseNewAccount = ([[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"] != nil);
+	_registerButton.hidden = mustPurchaseNewAccount;
+	_purchaseButton.hidden = !mustPurchaseNewAccount;
 }
 
 
@@ -241,7 +271,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 const LinphoneAuthInfo *auth = linphone_core_find_auth_info(lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
                 linphone_address_destroy(addr);
                 if( auth ){
-                    [LinphoneLogger log:LinphoneLoggerLog format:@"A proxy config was set up with the remote provisioning, skip wizard"];
+                    LOGI(@"A proxy config was set up with the remote provisioning, skip wizard");
                     [self onCancelClick:nil];
                 }
             }
@@ -286,14 +316,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)reset {
     [self clearProxyConfig];
     [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
-    
+
     LinphoneCore *lc = [LinphoneManager getLc];
     LCSipTransports transportValue={5060,5060,-1,-1};
 
     if (linphone_core_set_sip_transports(lc, &transportValue)) {
-        [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+        LOGE(@"cannot set transport");
     }
-    
+
     [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"sharing_server_preference"];
     [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"ice_preference"];
     [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
@@ -351,7 +381,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [startButton setHidden:true];
         [backButton setHidden:false];
     }
-    
+
     if (view == validateAccountView) {
         [backButton setEnabled:FALSE];
     } else if (view == choiceView) {
@@ -399,7 +429,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             view = connectAccountView;
         }
     }
-    
+
     // Animation
     if(animation && [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
       CATransition* trans = [CATransition animation];
@@ -413,14 +443,14 @@ static UICompositeViewDescription *compositeDescription = nil;
       }
       [contentView.layer addAnimation:trans forKey:@"Transition"];
     }
-    
+
     // Stack current view
     if(currentView != nil) {
         if(!back)
             [historyViews addObject:currentView];
         [currentView removeFromSuperview];
     }
-    
+
     // Set current view
     currentView = view;
     [contentView insertSubview:view atIndex:0];
@@ -546,44 +576,44 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Linphone XMLRPC
 
 - (void)checkUserExist:(NSString*)username {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC check_account %@", username];
-    
+    LOGI(@"XMLRPC check_account %@", username);
+
     NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"check_account" withParameters:[NSArray arrayWithObjects:username, nil]];
-    
+
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
-    
+
     [request release];
     [waitView setHidden:false];
 }
 
 - (void)createAccount:(NSString*)identity password:(NSString*)password email:(NSString*)email {
     NSString *useragent = [LinphoneManager getUserAgent];
-    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent];
-    
+    LOGI(@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent);
+
     NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"create_account_with_useragent" withParameters:[NSArray arrayWithObjects:identity, password, email, useragent, nil]];
-    
+
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
-    
+
     [request release];
     [waitView setHidden:false];
 }
 
 - (void)checkAccountValidation:(NSString*)identity {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC check_account_validated %@", identity];
-    
+    LOGI(@"XMLRPC check_account_validated %@", identity);
+
     NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"check_account_validated" withParameters:[NSArray arrayWithObjects:identity, nil]];
-    
+
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
-    
+
     [request release];
     [waitView setHidden:false];
 }
@@ -753,7 +783,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [remoteInput release];
 }
 
-- (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+- (BOOL) verificationWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
 		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
@@ -771,7 +801,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  otherButtonTitles:nil,nil];
 		[errorView show];
 		[errorView release];
-	} else {
+		return FALSE;
+	}
+	return TRUE;
+}
+- (void) verificationSignInWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
+	if ([self verificationWithUsername:username password:password domain:domain withTransport:transport]) {
 		[waitView setHidden:false];
 		if ([LinphoneManager instance].connectivity == none) {
 			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"No connectivity", nil)
@@ -811,49 +846,94 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
 }
 
+- (BOOL)verificationRegisterWithUsername:(NSString*)username password:(NSString*)password password2:(NSString*)password2 email:(NSString*)email  {
+	NSMutableString *errors = [NSMutableString string];
+	NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
+	NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
+
+	if ([username length] < username_length) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
+	}
+
+	if ([password length] < password_length) {
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), password_length]];
+	}
+
+	if (![password2 isEqualToString:password]) {
+		[errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
+	}
+
+	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
+	if(![emailTest evaluateWithObject:email]) {
+		[errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
+	}
+
+	if([errors length]) {
+		UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+															message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+												  otherButtonTitles:nil,nil];
+		[errorView show];
+		[errorView release];
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 - (IBAction)onRegisterClick:(id)sender {
     UITextField* username_tf = [WizardViewController findTextField:ViewElement_Username  view:contentView];
     NSString *username = username_tf.text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
     NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
-    NSMutableString *errors = [NSMutableString string];
 
-    NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
-    NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
-    
-    if ([username length] < username_length) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
-    }
-    
-    if ([password length] < password_length) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), password_length]];
-    }
-    
-    if (![password2 isEqualToString:password]) {
-        [errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
-    }
-    
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
-    if(![emailTest evaluateWithObject:email]) {
-        [errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
-    }
-
-    if([errors length]) {
-        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
-                                                        message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-                                              otherButtonTitles:nil,nil];
-        [errorView show];
-        [errorView release];
-
-    } else {
+	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
         username = [username lowercaseString];
         [username_tf setText:username];
         NSString *identity = [self identityFromUsername:username];
         [self checkUserExist:identity];
     }
+}
+
+- (void)inAppPurchaseNotification: (NSNotification*)notification {
+	BOOL wasWaitingForInApp = (currentView == createAccountView);
+	NSString *paidAccountID = [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+	if (wasWaitingForInApp
+		&& [paidAccountID isEqualToString:[notification.userInfo objectForKey:@"product_id"]]) {
+		if ([notification.name isEqual:IAPPurchaseTrying]) {
+			[waitView setHidden:false];
+		} else if ([notification.name isEqual:IAPPurchaseFailed]) {
+			[waitView setHidden:true];
+		} else if ([notification.name isEqual:IAPPurchaseSucceeded]) {
+			[waitView setHidden:true];
+			//now that the purchase is made, let's create the account.
+			[self onPurchaseAccountClick:self];
+		}
+	}
+}
+
+- (IBAction)onPurchaseAccountClick:(id)sender {
+	UITextField* username_tf = [WizardViewController findTextField:ViewElement_Username  view:contentView];
+	NSString *username = username_tf.text;
+	NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+	NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
+	NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
+
+	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
+		InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
+		//if has already purchased, continue
+		if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"]]) {
+			username = [username lowercaseString];
+			[username_tf setText:username];
+			NSString *identity = [self identityFromUsername:username];
+			[self checkUserExist:identity];
+		} else {
+			[iapm purchaseAccount:username withPassword:password];
+			// inAppPurchaseNotification will take care of bringing us to the next view now
+		}
+	}
 }
 
 - (IBAction)onProvisionedLoginClick:(id)sender {
@@ -894,14 +974,14 @@ static UICompositeViewDescription *compositeDescription = nil;
             if( [url rangeOfString:@"://"].location == NSNotFound )
                 url = [NSString stringWithFormat:@"http://%@", url];
 
-            [LinphoneLogger log:LinphoneLoggerLog format:@"Should use remote provisioning URL %@", url];
+            LOGI(@"Should use remote provisioning URL %@", url);
             linphone_core_set_provisioning_uri([LinphoneManager getLc], [url UTF8String]);
 
             [waitView setHidden:false];
             [[LinphoneManager instance] resetLinphoneCore];
         }
     } else {
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Canceled remote provisioning"];
+        LOGI(@"Canceled remote provisioning");
     }
 }
 
@@ -958,13 +1038,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
-    
+
     // Move view
     UIEdgeInsets inset = {0, 0, 0, 0};
     [contentView setContentInset:inset];
     [contentView setScrollIndicatorInsets:inset];
     [contentView setShowsVerticalScrollIndicator:FALSE];
-    
+
     [UIView commitAnimations];
 }
 
@@ -977,14 +1057,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
-    
+
     if(([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
        UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         int width = endFrame.size.height;
         endFrame.size.height = endFrame.size.width;
         endFrame.size.width = width;
     }
-    
+
     // Change inset
     {
         UIEdgeInsets inset = {0,0,0,0};
@@ -994,7 +1074,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         CGPoint gPos = [contentView convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
         inset.bottom = -(rect.size.height - gPos.y - endFrame.size.height);
         if(inset.bottom < 0) inset.bottom = 0;
-        
+
         [contentView setContentInset:inset];
         [contentView setScrollIndicatorInsets:inset];
         CGRect fieldFrame = activeTextField.frame;
@@ -1009,7 +1089,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - XMLRPCConnectionDelegate Functions
 
 - (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC %@: %@", [request method], [response body]];
+    LOGI(@"XMLRPC %@: %@", [request method], [response body]);
     [waitView setHidden:true];
     if ([response isFault]) {
         NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
@@ -1088,11 +1168,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    
+
 }
 
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    
+
 }
 
 #pragma mark - TPMultiLayoutViewController Functions

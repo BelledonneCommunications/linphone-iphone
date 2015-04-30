@@ -127,7 +127,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 }
 
 - (void)loadData {
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Load contact list"];
+	LOGI(@"Load contact list");
 	@synchronized (addressBookMap) {
 
 		// Reset Address book

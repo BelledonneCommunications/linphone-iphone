@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */      
+ */
 
 #import "UIPauseButton.h"
 #import "LinphoneManager.h"
@@ -46,7 +46,7 @@
 		[self initUIPauseButton];
 	}
     return self;
-}	
+}
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -68,7 +68,7 @@
 + (int)notInConferenceCallCount: (LinphoneCore*) lc {
     int count = 0;
     const MSList* calls = linphone_core_get_calls(lc);
-    
+
     while (calls != 0) {
         if (![UIPauseButton isInConference: (LinphoneCall*)calls->data]) {
             count++;
@@ -88,7 +88,7 @@
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 - (void)setType:(UIPauseButtonType) atype call:(LinphoneCall*)acall {
     type = atype;
@@ -105,14 +105,14 @@
             if (call != nil) {
                 linphone_core_pause_call([LinphoneManager getLc], call);
             } else {
-                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
+                LOGW(@"Cannot toggle pause buttton, because no current call");
             }
             break;
         }
         case UIPauseButtonType_Conference:
         {
             linphone_core_leave_conference([LinphoneManager getLc]);
-            
+
             // Fake event
             [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self];
             break;
@@ -123,7 +123,7 @@
             if (currentCall != nil) {
                 linphone_core_pause_call([LinphoneManager getLc], currentCall);
             } else {
-                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
+                LOGW(@"Cannot toggle pause buttton, because no current call");
             }
             break;
         }
@@ -137,7 +137,7 @@
             if (call != nil) {
                 linphone_core_resume_call([LinphoneManager getLc], call);
             } else {
-                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
+                LOGW(@"Cannot toggle pause buttton, because no current call");
             }
             break;
         }
@@ -154,7 +154,7 @@
             if (currentCall != nil) {
                 linphone_core_resume_call([LinphoneManager getLc], currentCall);
             } else {
-                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
+                LOGW(@"Cannot toggle pause buttton, because no current call");
             }
             break;
         }

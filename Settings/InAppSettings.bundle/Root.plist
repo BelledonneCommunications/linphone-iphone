@@ -243,6 +243,14 @@
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>in_app_products_button</string>
+			<key>Title</key>
+			<string>Extra features</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Development debug actions</string>
 			<key>Type</key>

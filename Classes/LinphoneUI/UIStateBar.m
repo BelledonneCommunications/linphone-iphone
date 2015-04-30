@@ -167,13 +167,13 @@ int messagesUnreadCount;
 	}
     const char* body = linphone_content_get_buffer(content);
     if ((body = strstr(body, "voice-message: ")) == NULL) {
-		[LinphoneLogger log:LinphoneLoggerWarning format:@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it."];
+		LOGW(@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it.");
 		return;
 	}
 
 	sscanf(body, "voice-message: %d", &messagesUnreadCount);
 
-	[LinphoneLogger log:LinphoneLoggerLog format:@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount];
+	LOGI(@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount);
 
 	// save in lpconfig for future
 	lp_config_set_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", messagesUnreadCount);

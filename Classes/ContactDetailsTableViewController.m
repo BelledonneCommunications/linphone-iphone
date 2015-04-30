@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "ContactDetailsTableViewController.h"
 #import "PhoneMainView.h"
@@ -74,7 +74,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
     labelArray = [[NSMutableArray alloc] initWithObjects:
                   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-                  [NSString stringWithString:(NSString*)kABPersonPhoneMobileLabel], 
+                  [NSString stringWithString:(NSString*)kABPersonPhoneMobileLabel],
                   [NSString stringWithString:(NSString*)kABPersonPhoneIPhoneLabel],
                   [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel], nil];
     editingIndexPath = nil;
@@ -94,7 +94,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         [self initContactDetailsTableViewController];
     }
     return self;
-}   
+}
 
 - (void)dealloc {
     if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
@@ -105,7 +105,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     }
     [labelArray release];
     [dataCache release];
-    
+
     [super dealloc];
 }
 
@@ -116,7 +116,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     [super viewDidLoad];
     [headerController view]; // Force view load
     [footerController view]; // Force view load
-    
+
     self.tableView.accessibilityIdentifier = @"Contact numbers table";
 }
 
@@ -176,12 +176,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
 - (void)loadData {
     [dataCache removeAllObjects];
-    
-    if(contact == NULL) 
+
+    if(contact == NULL)
         return;
-    
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Load data from contact %p", contact];
-    // Phone numbers 
+
+    LOGI(@"Load data from contact %p", contact);
+    // Phone numbers
     {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         NSMutableArray *subArray = [NSMutableArray array];
@@ -196,7 +196,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         }
         [dataCache addObject:subArray];
     }
-    
+
     // SIP (IM)
     {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
@@ -237,7 +237,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         }
         [dataCache addObject:subArray];
     }
-    
+
     // Email
     if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true)
     {
@@ -274,7 +274,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	}
 	ABMultiValueIdentifier index;
 	NSError* error = NULL;
-	
+
 	CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
 	CFTypeRef values[] = { [value copy], [LinphoneManager instance].contactSipField };
 	CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
@@ -287,7 +287,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	}
 
 	if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+		LOGI(@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]);
         CFRelease(lMap);
 	} else {
 		if (entry == nil) {
@@ -314,7 +314,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
                 CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
                 ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
                 if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, (CFErrorRef*)&error)) {
-                    [LinphoneLogger log:LinphoneLoggerLog format:@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]];
+                    LOGI(@"Can't set contact with value [%@] cause [%@]", value,[error localizedDescription]);
                 }
                 CFRelease(lDict2);
                 linphone_address_destroy(address);
@@ -324,7 +324,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         CFRelease(lMap);
 	}
 	CFRelease(lDict);
-	
+
 	return entry;
 }
 
@@ -354,14 +354,14 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
-        
+
         if(added  && ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, (CFErrorRef*)&error)) {
             Entry *entry = [[Entry alloc] initWithData:identifier];
             [sectionArray addObject:entry];
             [entry release];
         } else {
             added = false;
-            [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+            LOGI(@"Can't add entry: %@", [error localizedDescription]);
         }
         CFRelease(lMap);
     } else if(contactSections[section] == ContactSections_Sip) {
@@ -371,7 +371,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 			added=true;
 		} else {
 			added=false;
-			[LinphoneLogger log:LinphoneLoggerError format:@"Can't add entry for value: %@", value];
+			LOGE(@"Can't add entry for value: %@", value);
 		}
     } else if(contactSections[section] == ContactSections_Email) {
         ABMultiValueIdentifier identifier;
@@ -387,18 +387,18 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         if(!ABMultiValueAddValueAndLabel(lMap, [[value copy] autorelease], label, &identifier)) {
             added = false;
         }
-        
+
         if(added  && ABRecordSetValue(contact, kABPersonEmailProperty, lMap, (CFErrorRef*)&error)) {
             Entry *entry = [[Entry alloc] initWithData:identifier];
             [sectionArray addObject:entry];
             [entry release];
         } else {
             added = false;
-            [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+            LOGI(@"Can't add entry: %@", [error localizedDescription]);
         }
         CFRelease(lMap);
     }
-    
+
     if (added && animated) {
         // Update accessory
         if (count > 0) {
@@ -456,7 +456,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     }
 
     [sectionArray removeObjectAtIndex:[indexPath row]];
-    
+
     NSArray *tagInsertIndexPath = [NSArray arrayWithObject:indexPath];
     if (animated) {
         [tableview deleteRowsAtIndexPaths:tagInsertIndexPath withRowAnimation:UITableViewRowAnimationFade];
@@ -507,26 +507,26 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *kCellId = @"ContactDetailsCell";
     UIEditableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-    if (cell == nil) {  
+    if (cell == nil) {
         cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
         [cell.detailTextField setDelegate:self];
         [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
         [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
         [cell setBackgroundColor:[UIColor whiteColor]];
-        
+
         // Background View
         UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
-    
+
     NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
     Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
-    
+
     NSString *value = @"";
     // default label is our app name
     NSString *label = [ContactDetailsTableViewController localizeLabel:[labelArray objectAtIndex:0]];
-    
+
     if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
@@ -701,7 +701,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
     [headerController setEditing:editing animated:animated];
     [footerController setEditing:editing animated:animated];
-    
+
     if(animated) {
         [self.tableView beginUpdates];
     }
@@ -732,7 +732,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     if(animated) {
         [self.tableView endUpdates];
     }
-    
+
     [super setEditing:editing animated:animated];
     if(contactDetailsDelegate != nil) {
         [contactDetailsDelegate onModification:nil];
@@ -747,7 +747,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     return UITableViewCellEditingStyleDelete;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {   
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if(section == ContactSections_None) {
         return [headerController view];
     } else {
@@ -755,7 +755,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {   
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if(section == (ContactSections_MAX - 1)) {
         if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
             return [footerController view];
@@ -781,14 +781,14 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     return nil;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if(section == ContactSections_None) {
         return [UIContactDetailsHeader height:[headerController isEditing]];
     } else {
         // Hide section if nothing in it
         if([[self getSectionData:section] count] > 0)
             return 22;
-        else 
+        else
             return 0.000001f; // Hack UITableView = 0
     }
 }
@@ -846,12 +846,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];    
+    [textField resignFirstResponder];
     return YES;
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
-    UIView *view = [textField superview]; 
+    UIView *view = [textField superview];
     // Find TableViewCell
     while(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
     if(view != nil) {
@@ -878,7 +878,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
         [cell.detailTextLabel setText:value];
     } else {
-        [LinphoneLogger logc:LinphoneLoggerError format:"Not valid UIEditableTableViewCell"];
+        LOGE(@"Not valid UIEditableTableViewCell");
     }
     if(contactDetailsDelegate != nil) {
         [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];

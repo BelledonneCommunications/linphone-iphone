@@ -4,24 +4,25 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "SettingsViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UILinphone.h"
 #import "UACellBackgroundView.h"
+#import "InAppProductsViewController.h"
 
 #import "DCRoundSwitch.h"
 
@@ -66,7 +67,7 @@
 
 - (void)dealloc {
     [_key release], _key = nil;
-	
+
     [super dealloc];
 }
 
@@ -112,7 +113,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-    
+
     // Background View
     UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
     cell.selectedBackgroundView = selectedBackgroundView;
@@ -154,7 +155,7 @@
 - (void)toggledValue:(id)sender {
     IASKSwitchEx *toggle    = [[(IASKSwitchEx*)sender retain] autorelease];
     IASKSpecifier *spec   = [_settingsReader specifierForKey:[toggle key]];
-    
+
     if ([toggle isOn]) {
         if ([spec trueValue] != nil) {
             [self.settingsStore setObject:[spec trueValue] forKey:[toggle key]];
@@ -182,16 +183,16 @@
 
 - (void)initIASKAppSettingsViewControllerEx {
     [self.view setBackgroundColor:[UIColor clearColor]];
-    
+
     // Force kIASKSpecifierValuesViewControllerIndex
     static int kIASKSpecifierValuesViewControllerIndex = 0;
     _viewList = [[NSMutableArray alloc] init];
     [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKSpecifierValuesView", @"ViewName",nil]];
     [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKAppSettingsView", @"ViewName",nil]];
-    
+
     NSMutableDictionary *newItemDict = [NSMutableDictionary dictionaryWithCapacity:3];
     [newItemDict addEntriesFromDictionary: [_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex]];	// copy the title and explain strings
-    
+
     IASKSpecifierValuesViewController *targetViewController = [[IASKSpecifierValuesViewControllerEx alloc] init];
     // add the new view controller to the dictionary and then to the 'viewList' array
     [newItemDict setObject:targetViewController forKey:@"viewController"];
@@ -211,7 +212,7 @@
             }
             [specifiers replaceObjectAtIndex:j withObject:sp];
         }
-        
+
         [dataSource replaceObjectAtIndex:i withObject:specifiers];
     }
     [r setDataSource:dataSource];
@@ -221,7 +222,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    
+
     [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
     [self.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
@@ -236,8 +237,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    
+
+
     UIEdgeInsets inset = {0, 0, 10, 0};
     UIScrollView *scrollView = self.tableView;
     [scrollView setContentInset:inset];
@@ -246,7 +247,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+
     UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", nil) style:UIBarButtonItemStyleBordered target:self action:@selector(onAboutClick:)];
     self.navigationItem.rightBarButtonItem = buttonItem;
     [buttonItem release];
@@ -254,7 +255,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-    
+
     if([cell isKindOfClass:[IASKPSTextFieldSpecifierViewCell class]]) {
         UITextField *field = ((IASKPSTextFieldSpecifierViewCell*)cell).textField;
         [field setTextColor:LINPHONE_MAIN_COLOR];
@@ -265,7 +266,7 @@
     } else {
         cell.detailTextLabel.textColor = LINPHONE_MAIN_COLOR;
     }
-    
+
     // Background View
     UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
     cell.selectedBackgroundView = selectedBackgroundView;
@@ -283,7 +284,7 @@
 #pragma mark - UINavigationBarEx Class
 
 @interface UINavigationBarEx: UINavigationBar {
-    
+
 }
 @end
 
@@ -412,12 +413,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"Settings" 
-                                                                content:@"SettingsViewController" 
-                                                               stateBar:nil 
-                                                        stateBarEnabled:false 
-                                                                 tabBar: @"UIMainBar" 
-                                                          tabBarEnabled:true 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Settings"
+                                                                content:@"SettingsViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar: @"UIMainBar"
+                                                          tabBarEnabled:true
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
@@ -430,16 +431,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
 	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
-	
+
     settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
     settingsController.showCreditsFooter = FALSE;
     settingsController.settingsStore = settingsStore;
-    
+
     [navigationController.view setBackgroundColor:[UIColor clearColor]];
-    
+
     navigationController.view.frame = self.view.frame;
     [navigationController pushViewController:settingsController animated:FALSE];
     [self.view addSubview: navigationController.view];
@@ -449,23 +450,24 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillDisappear:animated];
     [settingsController dismiss:self];
     // Set observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:kIASKAppSettingChanged 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                 name:kIASKAppSettingChanged
                                                object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     [settingsStore transformLinphoneCoreToKeys]; // Sync settings with linphone core settings
     settingsController.hiddenKeys = [self findHiddenKeys];
-    [settingsController.tableView reloadData];	
-    
+    [settingsController.tableView reloadData];
+
     // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(appSettingChanged:) 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appSettingChanged:)
                                                  name:kIASKAppSettingChanged
                                                object:nil];
+
 }
 
 
@@ -592,7 +594,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (NSSet*)findHiddenKeys {
     LinphoneManager* lm = [LinphoneManager instance];
     NSMutableSet *hiddenKeys = [NSMutableSet set];
-    
+
 #ifndef DEBUG
     [hiddenKeys addObject:@"release_button"];
     [hiddenKeys addObject:@"clear_cache_button"];
@@ -603,28 +605,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
-    
+
     [hiddenKeys addObject:@"playback_gain_preference"];
     [hiddenKeys addObject:@"microphone_gain_preference"];
-    
+
     [hiddenKeys addObject:@"network_limit_group"];
     [hiddenKeys addObject:@"upload_bandwidth_preference"];
     [hiddenKeys addObject:@"download_bandwidth_preference"];
-    
+
     [hiddenKeys addObject:@"incoming_call_timeout_preference"];
     [hiddenKeys addObject:@"in_call_timeout_preference"];
-    
+
     [hiddenKeys addObject:@"wifi_only_preference"];
-    
+
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
     [hiddenKeys addObject:@"about_button"]; // Hide for the moment
-    
+
     if (!linphone_core_video_supported([LinphoneManager getLc]))
         [hiddenKeys addObject:@"video_menu"];
-    
+
     if (![LinphoneManager isNotIphone3G])
         [hiddenKeys addObject:@"silk_24k_preference"];
-    
+
     UIDevice* device = [UIDevice currentDevice];
     if (![device respondsToSelector:@selector(isMultitaskingSupported)] || ![device isMultitaskingSupported]) {
         [hiddenKeys addObject:@"backgroundmode_preference"];
@@ -634,18 +636,18 @@ static UICompositeViewDescription *compositeDescription = nil;
              [hiddenKeys addObject:@"start_at_boot_preference"];
          }
     }
-    
+
     [hiddenKeys addObject:@"enable_first_login_view_preference"];
-    
+
 #ifndef VIDEO_ENABLED
     [hiddenKeys addObject:@"enable_video_preference"];
 #endif //VIDEO_ENABLED
-    
+
     if (!linphone_core_video_enabled([LinphoneManager getLc])) {
         [hiddenKeys addObject:@"video_menu"];
     }
-    
-    
+
+
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
 
     BOOL random_port = [lm lpConfigBoolForKey:@"random_port_preference"];
@@ -660,14 +662,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(![lm lpConfigBoolForKey:@"debugenable_preference"]) {
         [hiddenKeys addObject:@"console_button"];
     }
-    
+
     if(![LinphoneManager runningOnIpad]) {
         [hiddenKeys addObject:@"preview_preference"];
     }
     if([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
 		[hiddenKeys addObject:@"wizard_button"];
 	}
-	
+
 	if (!linphone_core_tunnel_available()){
 		[hiddenKeys addObject:@"tunnel_menu"];
 	}
@@ -748,7 +750,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if ([key isEqual:@"send_logs_button"]) {
 		char * filepath = linphone_core_compress_log_collection(lc);
 		if (filepath == NULL) {
-			[LinphoneLogger log:LinphoneLoggerError format:@"Cannot sent logs: file is NULL"];
+			LOGE(@"Cannot sent logs: file is NULL");
 			return;
 		}
 
@@ -765,11 +767,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else if ([filename hasSuffix:@".gz"]) {
 			mimeType = @"application/gzip";
 		} else {
-			[LinphoneLogger log:LinphoneLoggerError format:@"Unknown extension type: %@, cancelling email", filename];
+			LOGE(@"Unknown extension type: %@, cancelling email", filename);
 			return;
 		}
 		[self emailAttachment:[NSData dataWithContentsOfFile:[NSString stringWithUTF8String:filepath]] mimeType:mimeType name:filename];
 		ms_free(filepath);
+	} else if([key isEqual:@"in_app_products_button"]) {
+		[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription] push:TRUE];
 	}
 }
 
@@ -784,7 +788,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)emailAttachment: (NSData*)attachment mimeType:(NSString*)type name:(NSString*)attachmentName
 {
 	if (attachmentName == nil || type == nil || attachmentName == nil) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Trying to email attachment but mandatory field is missing"];
+		LOGE(@"Trying to email attachment but mandatory field is missing");
 		return;
 	}
 
@@ -823,9 +827,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
 {
 	if (error != nil) {
-		[LinphoneLogger log:LinphoneLoggerWarning format:@"Error while sending mail: %@", error];
+		LOGW(@"Error while sending mail: %@", error);
 	} else {
-		[LinphoneLogger log:LinphoneLoggerLog format:@"Mail completed with status: %d", result];
+		LOGI(@"Mail completed with status: %d", result);
 	}
 	[self dismissViewControllerAnimated:true completion:nil];
 }

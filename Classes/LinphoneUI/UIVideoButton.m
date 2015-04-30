@@ -72,7 +72,7 @@
         linphone_core_update_call(lc, call, call_params);
 		linphone_call_params_destroy(call_params);
     } else {
-		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button, because no current call"];
+		LOGW(@"Cannot toggle video button, because no current call");
 	}   
 }
 
@@ -92,7 +92,7 @@
         linphone_core_update_call(lc, call, call_params);
 		linphone_call_params_destroy(call_params);
     } else {
-		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button, because no current call"];
+		LOGW(@"Cannot toggle video button, because no current call");
 	}
 }
 

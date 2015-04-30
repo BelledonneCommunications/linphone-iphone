@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */
 
 #import "ContactDetailsViewController.h"
 #import "PhoneMainView.h"
@@ -47,16 +47,16 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     [tableController release];
-    
+
     [editButton release];
     [backButton release];
     [cancelButton release];
-    
+
     [super dealloc];
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 - (void)resetData {
     [self disableEdit:FALSE];
@@ -64,8 +64,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         ABAddressBookRevert(addressBook);
         return;
     }
-    
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Reset data to contact %p", contact];
+
+    LOGI(@"Reset data to contact %p", contact);
     ABRecordID recordID = ABRecordGetRecordID(contact);
     ABAddressBookRevert(addressBook);
     contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
@@ -88,27 +88,27 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         [[PhoneMainView instance] popCurrentView];
         return;
     }
-    
+
     // Remove contact from book
     if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
         NSError* error = NULL;
         ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]];
+            LOGE(@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]);
         } else {
-            [LinphoneLogger logc:LinphoneLoggerLog format:"Remove contact %p: Success!", contact];
+            LOGI(@"Remove contact %p: Success!", contact);
         }
         contact = NULL;
-        
+
         // Save address book
         error = NULL;
         inhibUpdate = TRUE;
         ABAddressBookSave(addressBook, (CFErrorRef*)&error);
         inhibUpdate = FALSE;
         if (error != NULL) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Save AddressBook: Fail(%@)", [error localizedDescription]];
+            LOGE(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
         } else {
-            [LinphoneLogger logc:LinphoneLoggerLog format:"Save AddressBook: Success!"];
+            LOGI(@"Save AddressBook: Success!");
         }
 		[[LinphoneManager instance].fastAddressBook reload];
     }
@@ -119,27 +119,27 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         [[PhoneMainView instance] popCurrentView];
         return;
     }
-    
+
     // Add contact to book
     NSError* error = NULL;
     if(ABRecordGetRecordID(contact) == kABRecordInvalidID) {
         ABAddressBookAddRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Add contact %p: Fail(%@)", contact, [error localizedDescription]];
+            LOGE(@"Add contact %p: Fail(%@)", contact, [error localizedDescription]);
         } else {
-            [LinphoneLogger logc:LinphoneLoggerLog format:"Add contact %p: Success!", contact];
+            LOGI(@"Add contact %p: Success!", contact);
         }
     }
-    
+
     // Save address book
     error = NULL;
     inhibUpdate = TRUE;
     ABAddressBookSave(addressBook, (CFErrorRef*)&error);
     inhibUpdate = FALSE;
     if (error != NULL) {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Save AddressBook: Fail(%@)", [error localizedDescription]];
+        LOGE(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
     } else {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Save AddressBook: Success!"];
+        LOGI(@"Save AddressBook: Success!");
     }
     [[LinphoneManager instance].fastAddressBook reload];
 }
@@ -202,15 +202,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)viewDidLoad{
     [super viewDidLoad];
-    
+
     // Set selected+over background: IB lack !
     [editButton setBackgroundImage:[UIImage imageNamed:@"contact_ok_over.png"]
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
+
     // Set selected+disabled background: IB lack !
     [editButton setBackgroundImage:[UIImage imageNamed:@"contact_ok_disabled.png"]
                 forState:(UIControlStateDisabled | UIControlStateSelected)];
-    
+
     [LinphoneUtils buttonFixStates:editButton];
 
     [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
@@ -233,12 +233,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"ContactDetails" 
-                                                                content:@"ContactDetailsViewController" 
-                                                               stateBar:nil 
-                                                        stateBarEnabled:false 
-                                                                 tabBar:@"UIMainBar" 
-                                                          tabBarEnabled:true 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"ContactDetails"
+                                                                content:@"ContactDetailsViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar:@"UIMainBar"
+                                                          tabBarEnabled:true
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];

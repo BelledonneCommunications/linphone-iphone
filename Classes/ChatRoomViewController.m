@@ -262,7 +262,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)update {
     if(chatRoom == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
+        LOGW(@"Cannot update chat room header: null contact");
         return;
     }
 
@@ -311,14 +311,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
     const char*text = linphone_chat_message_get_text(msg);
-	[LinphoneLogger log:LinphoneLoggerLog
-				 format:@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state)];
+	LOGI(@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state));
 	[thiz.tableController updateChatEntry:msg];
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl withInternalURL:(NSURL*)internalUrl {
     if(chatRoom == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: No chatroom"];
+        LOGW(@"Cannot send message: No chatroom");
         return FALSE;
     }
 
@@ -350,7 +349,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                  dispatch_async(dispatch_get_main_queue(), ^{
                      [waitView setHidden:TRUE];
                      if (error) {
-                         [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
+                         LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
 
                          UIAlertView* errorAlert = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Transfer error", nil)
                                                                               message:NSLocalizedString(@"Cannot write image to photo library", nil)
@@ -361,7 +360,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                          [errorAlert release];
                          return;
                      }
-                     [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
+                     LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
                      [self chatRoomStartImageUpload:image url:assetURL];
                  });
              }];
@@ -653,7 +652,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[transferView setHidden:TRUE];
     NSString *url = [aimageSharing.connection.currentRequest.URL absoluteString];
     if (aimageSharing.upload) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot upload file to server [%@] because [%@]", url, [error localizedDescription]];
+		LOGE(@"Cannot upload file to server [%@] because [%@]", url, [error localizedDescription]);
         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
                                                              message:NSLocalizedString(@"Cannot transfer file to remote contact", nil)
                                                             delegate:nil
@@ -662,7 +661,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 		[errorAlert show];
         [errorAlert release];
 	} else {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot download file from [%@] because [%@]", url, [error localizedDescription]];
+		LOGE(@"Cannot download file from [%@] because [%@]", url, [error localizedDescription]);
         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
                                                              message:NSLocalizedString(@"Cannot transfer file from remote contact", nil)
                                                             delegate:nil
@@ -691,7 +690,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                               orientation:(ALAssetOrientation)[image imageOrientation]
                                                           completionBlock:^(NSURL *assetURL, NSError *error){
                                                               if (error) {
-                                                                  [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
+                                                                  LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
 
                                                                   UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
                                                                                                                        message:NSLocalizedString(@"Cannot write image to photo library", nil)
@@ -702,7 +701,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                                   [errorAlert release];
                                                                   return;
                                                               }
-                                                              [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
+                                                              LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
                                                               [LinphoneManager setValueInMessageAppData:[assetURL absoluteString] forKey:@"localimage" inMessage:chat];
                                                               [tableController updateChatEntry:chat];
                                                           }];

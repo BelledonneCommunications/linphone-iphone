@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */  
+ */
 
 #import <AudioToolbox/AudioToolbox.h>
 #import <AddressBook/AddressBook.h>
@@ -67,7 +67,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 - (void)dealloc {
     [callTableController release];
     [callTableView release];
-    
+
     [videoGroup release];
     [videoView release];
     [videoPreview release];
@@ -75,17 +75,17 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [testVideoView release];
 #endif
     [videoCameraSwitch release];
-    
+
     [videoWaitingForFirstImage release];
-    
+
     [videoZoomHandler release];
-    
+
     [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
     [singleFingerTap release];
-    
+
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [super dealloc];
 }
 
@@ -96,12 +96,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"InCall" 
-                                                                content:@"InCallViewController" 
-                                                               stateBar:@"UIStateBar" 
-                                                        stateBarEnabled:true 
-                                                                 tabBar:@"UICallBar" 
-                                                          tabBarEnabled:true 
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"InCall"
+                                                                content:@"InCallViewController"
+                                                               stateBar:@"UIStateBar"
+                                                        stateBarEnabled:true
+                                                                 tabBar:@"UICallBar"
+                                                          tabBarEnabled:true
                                                              fullscreen:false
                                                           landscapeMode:true
                                                            portraitMode:true];
@@ -115,7 +115,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
@@ -130,14 +130,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
-    
+
     if( hiddenVolume ) {
         [[PhoneMainView instance] setVolumeHidden:FALSE];
         hiddenVolume = FALSE;
     }
-    
+
     // Remove observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:kLinphoneCallUpdate
                                                object:nil];
 }
@@ -145,11 +145,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(callUpdateEvent:) 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(callUpdateEvent:)
                                                  name:kLinphoneCallUpdate
                                                object:nil];
-    
+
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
@@ -158,14 +158,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Set windows (warn memory leaks)
     linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
     linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
-    
+
     // Enable tap
     [singleFingerTap setEnabled:TRUE];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
+
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
@@ -177,16 +177,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [singleFingerTap setNumberOfTapsRequired:1];
     [singleFingerTap setCancelsTouchesInView: FALSE];
     [[PhoneMainView instance].view addGestureRecognizer:singleFingerTap];
-    
+
     [videoZoomHandler setup:videoGroup];
     videoGroup.alpha = 0;
-    
+
     [videoCameraSwitch setPreview:videoPreview];
-    
+
     [callTableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
     [callTableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
@@ -213,16 +213,16 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 
     // Update table
-    [callTableView reloadData];  
-    
+    [callTableView reloadData];
+
     // Fake call update
     if(call == NULL) {
         return;
     }
 
-	switch (state) {					
-		case LinphoneCallIncomingReceived: 
-		case LinphoneCallOutgoingInit: 
+	switch (state) {
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallOutgoingInit:
         {
             if(linphone_core_get_calls_nb(lc) > 1) {
                 [callTableController minimizeAll];
@@ -258,10 +258,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         {
             const LinphoneCallParams* current = linphone_call_get_current_params(call);
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
-            
+
             /* remote wants to add video */
             if (linphone_core_video_enabled(lc) && !linphone_call_params_video_enabled(current) &&
-                linphone_call_params_video_enabled(remote) && 
+                linphone_call_params_video_enabled(remote) &&
                 !linphone_core_get_video_policy(lc)->automatically_accept) {
                 linphone_core_defer_call_update(lc, call);
                 [self displayAskToEnableVideoCall:call];
@@ -288,7 +288,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         default:
             break;
 	}
-    
+
 }
 
 - (void)showControls:(id)sender {
@@ -296,7 +296,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
-    
+
     if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
         // show controls
         [UIView beginAnimations:nil context:nil];
@@ -306,7 +306,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [callTableView setAlpha:1.0];
         [videoCameraSwitch setAlpha:1.0];
         [UIView commitAnimations];
-        
+
         // hide controls in 5 sec
         hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
                                                              target:self
@@ -321,15 +321,15 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
-    
+
     if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
         [videoCameraSwitch setAlpha:0.0];
         [callTableView setAlpha:0.0];
         [UIView commitAnimations];
-        
-        
+
+
         [[PhoneMainView instance] showTabBar: false];
         [[PhoneMainView instance] showStateBar: false];
     }
@@ -351,19 +351,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)enableVideoDisplay:(BOOL)animation {
     if(videoShown && animation)
         return;
-    
+
     videoShown = true;
-    
+
     [videoZoomHandler resetZoom];
-    
+
     if(animation) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:1.0];
     }
-    
+
     [videoGroup setAlpha:1.0];
     [callTableView setAlpha:0.0];
-    
+
     UIEdgeInsets insets = {33, 0, 25, 0};
     [callTableView setContentInset:insets];
     [callTableView setScrollIndicatorInsets:insets];
@@ -372,31 +372,31 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(animation) {
         [UIView commitAnimations];
     }
-    
+
     if(linphone_core_self_view_enabled([LinphoneManager getLc])) {
         [videoPreview setHidden:FALSE];
     } else {
         [videoPreview setHidden:TRUE];
     }
-    
+
     if ([LinphoneManager instance].frontCamId != nil) {
         // only show camera switch button if we have more than 1 camera
         [videoCameraSwitch setHidden:FALSE];
     }
     [videoCameraSwitch setAlpha:0.0];
-    
+
     [[PhoneMainView instance] fullScreen: true];
     [[PhoneMainView instance] showTabBar: false];
     [[PhoneMainView instance] showStateBar: false];
-    
+
 #ifdef TEST_VIDEO_VIEW_CHANGE
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_debugChangeVideoView) userInfo:nil repeats:YES];
 #endif
     // [self batteryLevelChanged:nil];
-    
+
     [videoWaitingForFirstImage setHidden: NO];
     [videoWaitingForFirstImage startAnimating];
-    
+
     LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
     //linphone_call_params_get_used_video_codec return 0 if no video stream enabled
 	if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
@@ -407,13 +407,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)disableVideoDisplay:(BOOL)animation {
     if(!videoShown && animation)
         return;
-    
+
     videoShown = false;
     if(animation) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:1.0];
     }
-    
+
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
 
@@ -427,20 +427,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setHidden:TRUE];
-    
+
     if(animation) {
         [UIView commitAnimations];
     }
-    
+
     if (hideControlsTimer != nil) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
-    
+
     [[PhoneMainView instance] fullScreen:false];
 }
 
-- (void)displayVideoCall:(BOOL)animated { 
+- (void)displayVideoCall:(BOOL)animated {
     [self enableVideoDisplay:animated];
 }
 
@@ -475,17 +475,17 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 - (void)displayAskToEnableVideoCall:(LinphoneCall*) call {
     if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept)
         return;
-    
+
     const char* lUserNameChars = linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
+    const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));
 	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
-    
+
     NSString* title = [NSString stringWithFormat : NSLocalizedString(@"'%@' would like to enable video",nil), ([lDisplayName length] > 0)?lDisplayName:lUserName];
     DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:title] autorelease];
     NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissVideoActionSheet:) userInfo:sheet repeats:NO];
     [sheet addButtonWithTitle:NSLocalizedString(@"Accept", nil)  block:^() {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"User accept video proposal"];
+        LOGI(@"User accept video proposal");
         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
         linphone_call_params_enable_video(paramsCopy, TRUE);
         linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
@@ -493,7 +493,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         [timer invalidate];
     }];
     DTActionSheetBlock cancelBlock = ^() {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
+        LOGI(@"User declined video proposal");
         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
         linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
         linphone_call_params_destroy(paramsCopy);

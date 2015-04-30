@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "UICompositeViewController.h"
 
@@ -52,8 +52,8 @@
     return [self.name compare:description.name] == NSOrderedSame;
 }
 
-- (id)init:(NSString *)aname content:(NSString *)acontent stateBar:(NSString*)astateBar 
-                        stateBarEnabled:(BOOL) astateBarEnabled 
+- (id)init:(NSString *)aname content:(NSString *)acontent stateBar:(NSString*)astateBar
+                        stateBarEnabled:(BOOL) astateBarEnabled
                                  tabBar:(NSString*)atabBar
                           tabBarEnabled:(BOOL) atabBarEnabled
                              fullscreen:(BOOL) afullscreen
@@ -69,7 +69,7 @@
     self.landscapeMode = alandscapeMode;
     self.portraitMode = aportraitMode;
     self.darkBackground = false;
-    
+
     return self;
 }
 
@@ -131,22 +131,22 @@
 		[self initUICompositeViewController];
 	}
     return self;
-}	
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [self.stateBarViewController release];
     [self.tabBarViewController release];
     [self.contentViewController release];
-    
+
     [contentView release];
     [stateBarView release];
     [tabBarView release];
     [viewControllerCache release];
     [viewTransition release];
     [currentViewDescription release];
-    
+
     [super dealloc];
 }
 
@@ -190,7 +190,7 @@
 }
 
 - (void)viewDidLoad {
-    /* Force landscape view to match portrait view, because portrait view inherits 
+    /* Force landscape view to match portrait view, because portrait view inherits
        the device screen size at load */
     [self updateViewsFramesAccordingToLaunchOrientation];
     [super viewDidLoad];
@@ -201,7 +201,7 @@
     [self.contentViewController viewWillAppear:animated];
     [self.tabBarViewController viewWillAppear:animated];
     [self.stateBarViewController viewWillAppear:animated];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationDidChange:)
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -221,9 +221,9 @@
     [self.contentViewController viewWillDisappear:animated];
     [self.tabBarViewController viewWillDisappear:animated];
     [self.stateBarViewController viewWillDisappear:animated];
-    
+
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
@@ -340,7 +340,7 @@
             }
         }
         if(remove) {
-            [LinphoneLogger log:LinphoneLoggerLog format:@"Free cached view: %@", key];
+            LOGI(@"Free cached view: %@", key);
             [viewControllerCache removeObjectForKey:key];
         }
     }
@@ -420,7 +420,7 @@
     if(description != nil) {
         oldViewDescription = currentViewDescription;
         currentViewDescription = [description copy];
-        
+
         // Animate only with a previous screen
         if(oldViewDescription != nil && viewTransition != nil) {
             [contentView.layer removeAnimationForKey:@"transition"];
@@ -454,7 +454,7 @@
         self.stateBarViewController = newStateBarViewController;
         self.contentViewController = newContentViewController;
         self.tabBarViewController = newTabBarViewController;
-        
+
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:(UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation];
         if(currentOrientation != correctOrientation) {
@@ -487,11 +487,11 @@
     } else {
        oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
     }
-    
+
     if(currentViewDescription == nil) {
         return;
     }
-    
+
     if(tabBar != nil) {
         if(currentViewDescription.tabBarEnabled != [tabBar boolValue]) {
             currentViewDescription.tabBarEnabled = [tabBar boolValue];
@@ -499,7 +499,7 @@
             tabBar = nil; // No change = No Update
         }
     }
-    
+
     if(stateBar != nil) {
         if(currentViewDescription.stateBarEnabled != [stateBar boolValue]) {
             currentViewDescription.stateBarEnabled = [stateBar boolValue];
@@ -507,7 +507,7 @@
             stateBar = nil; // No change = No Update
         }
     }
-    
+
     if(fullscreen != nil) {
         if(currentViewDescription.fullscreen != [fullscreen boolValue]) {
             currentViewDescription.fullscreen = [fullscreen boolValue];
@@ -518,23 +518,23 @@
     } else {
         [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationNone];
     }
-    
+
     // Start animation
     if(tabBar != nil || stateBar != nil || fullscreen != nil) {
         [UIView beginAnimations:@"resize" context:nil];
         [UIView setAnimationDuration:0.35];
         [UIView setAnimationBeginsFromCurrentState:TRUE];
     }
-    
+
     CGRect contentFrame = contentView.frame;
     CGRect viewFrame = [self.view frame];
-    
+
     // Resize StateBar
     CGRect stateBarFrame = stateBarView.frame;
     int origin = IPHONE_STATUSBAR_HEIGHT;
     if(currentViewDescription.fullscreen)
         origin = 0;
-    
+
     if(self.stateBarViewController != nil && currentViewDescription.stateBarEnabled) {
         contentFrame.origin.y = origin + stateBarFrame.size.height;
         stateBarFrame.origin.y = origin;
@@ -542,7 +542,7 @@
         contentFrame.origin.y = origin;
         stateBarFrame.origin.y = origin - stateBarFrame.size.height;
     }
-    
+
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
     if(self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
@@ -567,12 +567,12 @@
         contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
         tabFrame.origin.y = viewFrame.size.height;
     }
-    
+
     if(currentViewDescription.fullscreen) {
         contentFrame.origin.y = origin;
         contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
     }
-    
+
     // Set frames
     [contentView setFrame: contentFrame];
     [self.contentViewController.view setFrame: [contentView bounds]];
@@ -584,12 +584,12 @@
     frame = [self.stateBarViewController.view frame];
     frame.size.width = [stateBarView bounds].size.width;
     [self.stateBarViewController.view setFrame:frame];
-    
+
     // Commit animation
     if(tabBar != nil || stateBar != nil || fullscreen != nil) {
         [UIView commitAnimations];
     }
-    
+
     // Change view
     if(description != nil) {
         [UICompositeViewController addSubView: self.contentViewController view:contentView];
@@ -600,7 +600,7 @@
             [UICompositeViewController addSubView: self.stateBarViewController view:stateBarView];
         }
     }
-    
+
     // Dealloc old view description
     if(oldViewDescription != nil) {
         [oldViewDescription release];

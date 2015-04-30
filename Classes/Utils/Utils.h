@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */   
+ */
 
 #ifndef LINPHONE_UTILS_H
 #define LINPHONE_UTILS_H
@@ -38,8 +38,7 @@ typedef enum _LinphoneLoggerSeverity {
 @interface LinphoneLogger : NSObject {
 
 }
-+ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,...;
-+ (void)logc:(LinphoneLoggerSeverity) severity format:(const char *)format,...;
++ (void)log:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString *)format,...;
 
 @end
 
@@ -62,11 +61,17 @@ typedef enum _LinphoneLoggerSeverity {
 
 @end
 
-void LOGI(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void LOGD(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void LOGW(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void LOGE(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-void LOGF(NSString* format, ...) NS_FORMAT_FUNCTION(1,2);
-
+#define LOGV(level, ...) [LinphoneLogger log:level file:__FILE__ line:__LINE__ format:__VA_ARGS__]
+#define LOGI(...) LOGV(LinphoneLoggerLog, __VA_ARGS__)
+#define LOGD(...) LOGV(LinphoneLoggerDebug, __VA_ARGS__)
+#define LOGW(...) LOGV(LinphoneLoggerWarning, __VA_ARGS__)
+#define LOGE(...) LOGV(LinphoneLoggerError, __VA_ARGS__)
+#define LOGF(...) LOGV(LinphoneLoggerFatal, __VA_ARGS__)
 
 #endif
+
+@interface NSString(md5)
+
+- (NSString *)md5;
+
+@end

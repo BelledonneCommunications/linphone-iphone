@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */                                                                           
+ */
 
 #import "PhoneMainView.h"
 #import "linphoneAppDelegate.h"
@@ -49,7 +49,7 @@
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 
 
@@ -62,23 +62,23 @@
     LOGI(@"%@", NSStringFromSelector(_cmd));
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-	
+
     if (call){
 		/* save call context */
 		LinphoneManager* instance = [LinphoneManager instance];
 		instance->currentCallContextBeforeGoingBackground.call = call;
 		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
-    
+
 		const LinphoneCallParams* params = linphone_call_get_current_params(call);
 		if (linphone_call_params_video_enabled(params)) {
 			linphone_call_enable_camera(call, false);
 		}
 	}
-    
+
     if (![[LinphoneManager instance] resignActive]) {
 
     }
-    
+
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -90,12 +90,12 @@
         [[PhoneMainView instance] updateStatusBar:nil];
     }
     LinphoneManager* instance = [LinphoneManager instance];
-    
+
     [instance becomeActive];
-    
+
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    
+
     if (call){
         if (call == instance->currentCallContextBeforeGoingBackground.call) {
             const LinphoneCallParams* params = linphone_call_get_current_params(call);
@@ -115,23 +115,23 @@
 }
 
 - (UIUserNotificationCategory*)getMessageNotificationCategory {
-    
+
     UIMutableUserNotificationAction* reply = [[[UIMutableUserNotificationAction alloc] init] autorelease];
     reply.identifier = @"reply";
     reply.title = NSLocalizedString(@"Reply", nil);
     reply.activationMode = UIUserNotificationActivationModeForeground;
     reply.destructive = NO;
     reply.authenticationRequired = YES;
-    
+
     UIMutableUserNotificationAction* mark_read = [[[UIMutableUserNotificationAction alloc] init] autorelease];
     mark_read.identifier = @"mark_read";
     mark_read.title = NSLocalizedString(@"Mark Read", nil);
     mark_read.activationMode = UIUserNotificationActivationModeBackground;
     mark_read.destructive = NO;
     mark_read.authenticationRequired = NO;
-    
+
     NSArray* localRingActions = @[mark_read, reply];
-    
+
     UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
     localRingNotifAction.identifier = @"incoming_msg";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
@@ -147,17 +147,17 @@
     answer.activationMode = UIUserNotificationActivationModeForeground;
     answer.destructive = NO;
     answer.authenticationRequired = YES;
-    
+
     UIMutableUserNotificationAction* decline = [[[UIMutableUserNotificationAction alloc] init] autorelease];
     decline.identifier = @"decline";
     decline.title = NSLocalizedString(@"Decline", nil);
     decline.activationMode = UIUserNotificationActivationModeBackground;
     decline.destructive = YES;
     decline.authenticationRequired = NO;
-    
-    
+
+
     NSArray* localRingActions = @[decline, answer];
-    
+
     UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
     localRingNotifAction.identifier = @"incoming_call";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
@@ -176,13 +176,13 @@
 	LinphoneManager* instance = [LinphoneManager instance];
     BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
     BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-    
-    
+
+
     if( !instance.isTesting ){
         if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
             /* iOS8 notifications can be actioned! Awesome: */
             UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
-            
+
             NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
             UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
             [app registerUserNotificationSettings:userSettings];
@@ -194,7 +194,7 @@
     } else {
         NSLog(@"No remote push for testing");
     }
-    
+
 
     if (state == UIApplicationStateBackground)
     {
@@ -208,7 +208,7 @@
 
     }
 	bgStartId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-		[LinphoneLogger log:LinphoneLoggerWarning format:@"Background task for application launching expired."];
+		LOGW(@"Background task for application launching expired.");
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
@@ -223,7 +223,7 @@
 
 	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif){
-		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
+		LOGI(@"PushNotification from launch received.");
 		[self processRemoteNotification:remoteNotif];
 	}
     if (bgStartId!=UIBackgroundTaskInvalid) [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
@@ -274,7 +274,7 @@
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
 
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
-	
+
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
@@ -292,7 +292,7 @@
 					if( callId != nil ){
 						[[LinphoneManager instance] addPushCallId:callId];
 					} else {
-						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
+						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
 					if( [loc_key isEqualToString:@"IM_MSG"] ) {
@@ -414,7 +414,7 @@
     if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
 
         LinphoneCore* lc = [LinphoneManager getLc];
-        [LinphoneLogger log:LinphoneLoggerLog format:@"%@", NSStringFromSelector(_cmd)];
+        LOGI(@"%@", NSStringFromSelector(_cmd));
         if( [notification.category isEqualToString:@"incoming_call"]) {
             if( [identifier isEqualToString:@"answer"] ){
                 // use the standard handler

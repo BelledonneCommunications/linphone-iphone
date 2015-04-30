@@ -86,7 +86,7 @@
 - (void)updateChatEntry:(LinphoneChatMessage*)chat {
     NSInteger index = ms_list_index(self->messageList, chat);
     if (index<0) {
-		[LinphoneLogger logc:LinphoneLoggerWarning format:"chat entry doesn't exist"];
+		LOGW(@"chat entry doesn't exist");
 		return;
 	}
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE]; //just reload

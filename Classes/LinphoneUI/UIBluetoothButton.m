@@ -25,7 +25,7 @@
 
 @implementation UIBluetoothButton
 #define check_auresult(au,method) \
-if (au!=0) [LinphoneLogger logc:LinphoneLoggerError format:"UIBluetoothButton error for %s: ret=%ld",method,au]
+if (au!=0) LOGE(@"UIBluetoothButton error for %s: ret=%ld",method,au)
 
 - (void)onOn {
 	//redirect audio to bluetooth
