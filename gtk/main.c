@@ -352,7 +352,8 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 			pbuf_list = g_list_append(pbuf_list, pbuf_32);
 			gtk_window_set_icon_list(GTK_WINDOW(w), pbuf_list);
 			gtk_window_set_default_icon_list(pbuf_list);
-			g_list_free_full(pbuf_list, g_object_unref);
+			g_list_foreach(pbuf_list, (GFunc)g_object_unref,NULL);
+			g_list_free(pbuf_list);
 		}
 	}
 }
