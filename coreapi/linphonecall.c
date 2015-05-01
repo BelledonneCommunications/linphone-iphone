@@ -41,6 +41,7 @@ static const char EC_STATE_STORE[] = ".linphone.ecstate";
 #define EC_STATE_MAX_LEN 1048576 // 1Mo
 
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
+static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr);
 
 #ifdef VIDEO_ENABLED
 MSWebCam *get_nowebcam_device(){
@@ -614,6 +615,8 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->nb_streams=(call->biggestdesc ? call->biggestdesc->nb_streams : 1);
 
+	/*re-check local ip address each time we make a new offer, because it may change in case of network reconnection*/
+	linphone_call_get_local_ip(call, call->dir == LinphoneCallOutgoing ?  call->log->to : call->log->from);
 	strncpy(md->addr,call->media_localip,sizeof(md->addr));
 	if (linphone_address_get_username(addr)) /*might be null in case of identity without userinfo*/
 		strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
@@ -911,7 +914,6 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseNatAddress
 		&& (ip=linphone_core_get_nat_address_resolved(call->core))!=NULL){
 		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
 #ifdef BUILD_UPNP
@@ -919,19 +921,15 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 			linphone_upnp_context_get_state(call->core->upnp) == LinphoneUpnpStateOk) {
 		ip = linphone_upnp_context_get_external_ipaddress(call->core->upnp);
 		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
 #endif //BUILD_UPNP
 	/*first nominal use case*/
 	linphone_core_get_local_ip(call->core, af, dest, call->media_localip);
-	strncpy(call->sig_localip,call->media_localip,LINPHONE_IPADDR_SIZE);
 
 	/*next, sometime, override from config*/
 	if ((ip=lp_config_get_string(call->core->config,"rtp","bind_address",NULL)))
 		strncpy(call->media_localip,ip,LINPHONE_IPADDR_SIZE);
-	if ((ip=lp_config_get_string(call->core->config,"sip","bind_address",NULL)))
-		strncpy(call->sig_localip,ip,LINPHONE_IPADDR_SIZE);
 
 	return;
 }
