@@ -21,6 +21,7 @@
 #import "WizardViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "UITextField+DoneButton.h"
 
 #import <XMLRPCConnection.h>
 #import <XMLRPCConnectionManager.h>
@@ -232,6 +233,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (usePhoneNumber) {
 			text.keyboardType = UIKeyboardTypePhonePad;
 			text.placeholder = NSLocalizedString(@"Phone number", nil);
+			[text addDoneButton];
 		} else {
 			text.keyboardType = UIKeyboardTypeDefault;
 			text.placeholder = NSLocalizedString(@"Username", nil);
