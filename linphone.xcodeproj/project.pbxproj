@@ -4592,6 +4592,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
 			name = Debug;
@@ -4678,6 +4679,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
 			name = DistributionAdhoc;
@@ -4762,6 +4764,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
 			name = Release;
@@ -4847,6 +4850,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
+					"-DLINPHONE_CAPABILITY_INAPP_PURCHASE=0",
 				);
 			};
 			name = Distribution;

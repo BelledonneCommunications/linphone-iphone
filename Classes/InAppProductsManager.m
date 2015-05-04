@@ -36,7 +36,8 @@
 	NSString *accountCreationPassword;
 }
 
-#if !TARGET_IPHONE_SIMULATOR
+// LINPHONE_CAPABILITY_INAPP_PURCHASE must be defined in Linphone Build Settings
+#if LINPHONE_CAPABILITY_INAPP_PURCHASE && !TARGET_IPHONE_SIMULATOR
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
