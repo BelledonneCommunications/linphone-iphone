@@ -242,7 +242,10 @@ signed-bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 pkg: $(MACAPPNAME)
-	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --sign "$(BUNDLE_SIGNING_ID)" --component $(MACAPPNAME) $(MACAPPPKG)
+	rm -rf ${srcdir}/packaging
+	mkdir ${srcdir}/packaging
+	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --sign "$(BUNDLE_SIGNING_ID)" --component $(MACAPPNAME) ${srcdir}/packaging/linphone.pkg
+	productbuild --distribution ${srcdir}/build/macos/pkg-distribution.xml --resources ${srcdir}/packaging $(MACAPPPKG}
 	
 
 ###
