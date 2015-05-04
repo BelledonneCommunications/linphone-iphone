@@ -76,7 +76,7 @@
     NSString* user = [self getUUID];
     
     [self startChatWith:user];
-    [self sendMessage:@"Hello Bro"];
+    [self sendMessage:user];
     
     [tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
     
