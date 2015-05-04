@@ -2238,6 +2238,17 @@ LINPHONE_PUBLIC LinphoneCallParams *linphone_core_create_call_params(LinphoneCor
 LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
 /**
+ * Get the call with the remote_address specified
+ * @param lc
+ * @param remote_address
+ * @return the LinphoneCall of the call if found
+ *
+ * @ingroup call_control
+ */
+LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, LinphoneAddress *remote_address);
+
+
+/**
  * Send the specified dtmf.
  *
  * @ingroup media_parameters

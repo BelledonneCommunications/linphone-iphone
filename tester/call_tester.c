@@ -207,6 +207,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	LinphoneCallParams *caller_params = caller_test_params->base;
 	LinphoneCallParams *callee_params = callee_test_params->base;
 	bool_t did_receive_call;
+	LinphoneCall *callee_call=NULL;
 
 	setup_sdp_handling(caller_test_params, caller_mgr);
 	setup_sdp_handling(callee_test_params, callee_mgr);
@@ -229,7 +230,8 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	if (!did_receive_call) return 0;
 
 
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
+	if (linphone_core_get_calls_nb(callee_mgr->lc)<=1)
+		CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,initial_caller.number_of_LinphoneCallOutgoingProgress+1);
 
 
@@ -247,6 +249,8 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
+	callee_call=linphone_core_get_call_by_remote_address2(callee_mgr->lc,caller_mgr->identity);
+
 	if(!linphone_core_get_current_call(caller_mgr->lc) || !linphone_core_get_current_call(callee_mgr->lc) || !linphone_core_get_current_call_remote_address(callee_mgr->lc)) {
 		return 0;
 	} else if (caller_mgr->identity){
@@ -256,21 +260,23 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		if (linphone_call_params_get_privacy(linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc))) == LinphonePrivacyNone) {
 			/*don't check in case of p asserted id*/
 			if (!lp_config_get_int(callee_mgr->lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0))
-				CU_ASSERT_TRUE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+				CU_ASSERT_TRUE(linphone_address_weak_equal(callee_from,linphone_call_get_remote_address(callee_call)));
 		} else {
-			CU_ASSERT_FALSE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+			CU_ASSERT_FALSE(linphone_address_weak_equal(callee_from,linphone_call_get_remote_address(linphone_core_get_current_call(callee_mgr->lc))));
 		}
 		linphone_address_destroy(callee_from);
 	}
+
+
 	if (callee_params){
-		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),callee_params);
+		linphone_core_accept_call_with_params(callee_mgr->lc,callee_call,callee_params);
 	}else if (build_callee_params){
-		LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
+		LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,callee_call);
 		ms_message("Created default call params with video=%i", linphone_call_params_video_enabled(default_params));
-		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),default_params);
+		linphone_core_accept_call_with_params(callee_mgr->lc,callee_call,default_params);
 		linphone_call_params_destroy(default_params);
 	}else{
-		linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
+		linphone_core_accept_call(callee_mgr->lc,callee_call);
 	}
 
 	CU_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
@@ -291,7 +297,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			|| (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS) /*also take care of caller policy*/ )
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 		{
-			const LinphoneCallParams* call_param = linphone_call_get_current_params(linphone_core_get_current_call(callee_mgr->lc));
+			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
 			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
 			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc));
@@ -901,6 +907,21 @@ static void early_declined_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void call_busy_when_calling_self(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCall *out_call=linphone_core_invite_address(marie->lc,marie->identity);
+	linphone_call_ref(out_call);
+
+	/*wait until flexisip transfers the busy...*/
+	CU_ASSERT_TRUE(wait_for_until(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCallError,1,33000));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonBusy);
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+}
+
 
 static void call_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -4040,6 +4061,7 @@ test_t call_tests[] = {
 	{ "Early cancelled call", early_cancelled_call},
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
+	{ "Call busy when calling self", call_busy_when_calling_self},
 	{ "Simple call", simple_call },
 	{ "Call with timeouted bye", call_with_timeouted_bye },
 	{ "Direct call over IPv6", direct_call_over_ipv6},

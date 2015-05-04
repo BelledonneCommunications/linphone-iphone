@@ -245,18 +245,6 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 	return FALSE;
 }
 
-static bool_t already_an_outgoing_call_pending(LinphoneCore *lc){
-	MSList *elem;
-	for(elem=lc->calls;elem!=NULL;elem=elem->next){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (call->state==LinphoneCallOutgoingInit
-			|| call->state==LinphoneCallOutgoingProgress
-			|| call->state==LinphoneCallOutgoingRinging){
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
 
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
@@ -264,9 +252,9 @@ static void call_received(SalOp *h){
 	char *alt_contact;
 	LinphoneAddress *from_addr=NULL;
 	LinphoneAddress  *to_addr=NULL;
-	/*this mode is deprcated because probably useless*/
-	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
+	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
+	const char * p_asserted_id;
 
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
@@ -300,9 +288,9 @@ static void call_received(SalOp *h){
 		sal_op_release(h);
 		return;
 	}
+	p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 	/*in some situation, better to trust the network rather than the UAC*/
 	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
-		const char * p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 		LinphoneAddress *p_asserted_id_addr;
 		if (!p_asserted_id) {
 			ms_warning("No P-Asserted-Identity header found so cannot use it for op [%p] instead of from",h);
@@ -321,13 +309,26 @@ static void call_received(SalOp *h){
 		from_addr=linphone_address_new(sal_op_get_from(h));
 	to_addr=linphone_address_new(sal_op_get_to(h));
 
-	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_an_outgoing_call_pending(lc)){
-		ms_warning("Receiving a call while one is initiated, refusing this one with busy message.");
+	if (sal_op_get_privacy(h) == SalPrivacyNone) {
+		from_address_to_search_if_me=linphone_address_clone(from_addr);
+	} else if (p_asserted_id) {
+		from_address_to_search_if_me  = linphone_address_new(p_asserted_id);
+	} else {
+		ms_warning ("Hidden from identity, don't know if it's me");
+	}
+
+	if (from_address_to_search_if_me && already_a_call_with_remote_address(lc,from_address_to_search_if_me)){
+		char *addr = linphone_address_as_string(from_addr);
+		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_destroy(from_addr);
 		linphone_address_destroy(to_addr);
+		linphone_address_destroy(from_address_to_search_if_me);
+		ms_free(addr);
 		return;
+	} else if (from_address_to_search_if_me) {
+		linphone_address_destroy(from_address_to_search_if_me);
 	}
 
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);

@@ -3721,6 +3721,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	SalOp *replaced;
 	SalMediaDescription *new_md;
 	bool_t was_ringing=FALSE;
+	MSList * iterator;
 
 	if (call==NULL){
 		//if just one call is present answer the only one ...
@@ -3740,6 +3741,28 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			return -1;
 			break;
 	}
+
+
+	for (iterator=ms_list_copy(linphone_core_get_calls(lc));iterator!=NULL;iterator=iterator->next) {
+		LinphoneCall *a_call=(LinphoneCall*)iterator->data;
+		if (a_call==call) continue;
+		switch(a_call->state){
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallOutgoingEarlyMedia:
+
+				ms_message("Already existing call [%p] in state [%s], canceling it before accepting new call [%p]"	,a_call
+																													,linphone_call_state_to_string(a_call->state)
+																													,call);
+				linphone_core_terminate_call(lc,a_call);
+				break;
+			default:
+				break; /*nothing to do*/
+		}
+
+	}
+	if (iterator) ms_list_free(iterator);
 
 	/* check if this call is supposed to replace an already running one*/
 	replaced=sal_call_get_replaces(call->op);
@@ -4138,9 +4161,17 @@ static int remote_address_compare(LinphoneCall *call, const LinphoneAddress *rad
  * @ingroup call_control
  */
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
+	LinphoneCall *call=NULL;
 	LinphoneAddress *raddr=linphone_address_new(remote_address);
+	if (raddr) {
+		call=linphone_core_get_call_by_remote_address2(lc, raddr);
+		linphone_address_unref(raddr);
+	}
+	return call;
+}
+LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, LinphoneAddress *raddr){
 	MSList *elem=ms_list_find_custom(lc->calls,(int (*)(const void*,const void *))remote_address_compare,raddr);
-	linphone_address_unref(raddr);
+
 	if (elem) return (LinphoneCall*) elem->data;
 	return NULL;
 }

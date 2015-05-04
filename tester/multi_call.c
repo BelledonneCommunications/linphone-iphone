@@ -115,6 +115,70 @@ static void call_waiting_indication_with_privacy(void) {
 	call_waiting_indication_with_param(TRUE);
 }
 
+static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState state) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	MSList* lcs;
+	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
+	LinphoneCallParams *marie_params=linphone_core_create_default_call_parameters(marie->lc);
+
+	lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+
+
+	if (state==LinphoneCallOutgoingRinging || state==LinphoneCallOutgoingEarlyMedia) {
+		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(marie->lc,pauline->identity,marie_params));
+
+		CU_ASSERT_TRUE(wait_for(marie->lc
+								,pauline->lc
+								,&pauline->stat.number_of_LinphoneCallIncomingReceived
+								,1));
+
+		if (state==LinphoneCallOutgoingEarlyMedia)
+			linphone_core_accept_early_media(pauline->lc,linphone_core_get_current_call(pauline->lc));
+
+		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
+		CU_ASSERT_TRUE(wait_for(marie->lc
+									,pauline->lc
+									,state==LinphoneCallOutgoingEarlyMedia?&marie->stat.number_of_LinphoneCallOutgoingEarlyMedia:&marie->stat.number_of_LinphoneCallOutgoingRinging
+									,1));
+	} else if (state==LinphoneCallOutgoingProgress) {
+		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(marie->lc,pauline->identity));
+	} else {
+		ms_error("Unsupported state");
+		return;
+	}
+
+	CU_ASSERT_TRUE(call_with_caller_params(laure,marie,laure_params));
+
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
+
+
+	linphone_core_terminate_all_calls(marie->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
+
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
+}
+static void incoming_call_accepted_when_outgoing_call_in_progress(void) {
+	incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallOutgoingProgress);
+}
+static void incoming_call_accepted_when_outgoing_call_in_outgoing_ringing(void) {
+	incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallOutgoingRinging);
+}
+static void incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media(void) {
+	incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallOutgoingEarlyMedia);
+}
+
 static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, LinphoneCoreManager* laure) {
 
 	stats initial_marie_stat;
@@ -437,7 +501,10 @@ test_t multi_call_tests[] = {
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Unattended call transfer", unattended_call_transfer },
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
-	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call }
+	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
+	{ "Incoming call accepted when outgoing call in progress",incoming_call_accepted_when_outgoing_call_in_progress},
+	{ "Incoming call accepted when outgoing call in outgoing ringing",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing},
+	{ "Incoming call accepted when outgoing call in outgoing ringing early media",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media},
 };
 
 test_suite_t multi_call_test_suite = {
