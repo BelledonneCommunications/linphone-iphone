@@ -242,7 +242,7 @@ signed-bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 pkg: $(MACAPPNAME)
-	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --sign $(BUNDLE_SIGNING_ID) --component $(MACAPPNAME) $(MACAPPPKG)
+	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --sign "$(BUNDLE_SIGNING_ID)" --component $(MACAPPNAME) $(MACAPPPKG)
 	
 
 ###
