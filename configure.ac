@@ -1041,6 +1041,7 @@ AC_CONFIG_FILES([
 	build/Makefile
 	build/macos/Makefile
 	build/macos/Info-linphone.plist
+	build/macos/pkg-distribution.xml
 	m4/Makefile
 	po/Makefile.in
 	pixmaps/Makefile

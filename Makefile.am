@@ -242,11 +242,15 @@ signed-bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 pkg: $(MACAPPNAME)
-	rm -rf ${srcdir}/packaging
-	mkdir ${srcdir}/packaging
-	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --sign "$(BUNDLE_SIGNING_ID)" --component $(MACAPPNAME) ${srcdir}/packaging/linphone.pkg
-	productbuild --distribution ${srcdir}/build/macos/pkg-distribution.xml --resources ${srcdir}/packaging $(MACAPPPKG}
+	rm -rf ./packaging
+	mkdir -p ./packaging
+	cp ${srcdir}/COPYING ./packaging
+	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
+	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
 	
+signed-pkg: pkg
+	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG) $(MACAPPPKG)
+
 
 ###
 ### CLEAN
@@ -258,6 +262,6 @@ discovery:
 	$(CC) --include $(top_builddir)/config.h \
         $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
 
-.PHONY: $(MACAPPNAME)
+.PHONY: $(MACAPPNAME) pkg
 
 
