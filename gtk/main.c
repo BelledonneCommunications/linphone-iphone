@@ -2032,9 +2032,9 @@ static void linphone_gtk_init_ui(void){
 		start_option=START_AUDIO_ASSISTANT;
 		iconified = TRUE;
 	}
-#ifndef HAVE_GTK_OSX
+
 	linphone_gtk_init_status_icon();
-#endif
+
 	if (!iconified){
 		linphone_gtk_show_main_window();
 		linphone_gtk_check_soundcards();
