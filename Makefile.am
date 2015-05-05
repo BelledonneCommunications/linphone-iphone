@@ -238,7 +238,7 @@ bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 signed-bundle: $(MACAPPNAME)
-	codesign --deep -s $(BUNDLE_SIGNING_ID) $(BUNDLEDIR)
+	codesign --deep -s "$(BUNDLE_SIGNING_ID)" $(BUNDLEDIR)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
 pkg: $(MACAPPNAME)
