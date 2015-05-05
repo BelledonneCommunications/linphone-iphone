@@ -72,7 +72,7 @@ The next pieces need to be compiled manually.
 
 * Install polarssl (encryption library used by belle-sip)
 
-        git clone git://git.linphone.org/polarssl.git -b linphone
+        git clone git://git.linphone.org/polarssl.git
         cd polarssl
         ./autogen.sh && ./configure --prefix=/opt/local && make
         sudo make install
@@ -92,7 +92,7 @@ The next pieces need to be compiled manually.
 
 * (Optional) Install zrtp, for unbreakable call encryption
 
-        git clone git://git.linphone.org:bzrtp
+        git clone git://git.linphone.org/bzrtp.git
         cd bzrtp && ./autogen.sh && ./configure --prefix=/opt/local && make
         sudo make install
 
@@ -113,7 +113,7 @@ The next pieces need to be compiled manually.
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, :
 
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
+        PKG_CONFIG_PATH=/opt/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
 * Install on the system
 
