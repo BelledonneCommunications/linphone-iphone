@@ -249,7 +249,9 @@ pkg: $(MACAPPNAME)
 	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
 	
 signed-pkg: pkg
-	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG) $(MACAPPPKG)
+	mv $(MACAPPPKG) $(MACAPPPKG).tmp
+	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG).tmp $(MACAPPPKG)
+	rm -f $(MACAPPPKG).tmp
 
 
 ###
