@@ -132,7 +132,7 @@ char * bc_tester_res(const char *name);
 }
 #define BC_ASSERT_GREATER_INT(actual, expected) { \
 	int cactual = (actual), cexpected = (expected); \
-	if (! BC_ASSERT_LOWER(cactual, cexpected)) { \
+	if (! BC_ASSERT_GREATER(cactual, cexpected)) { \
 		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " >= " #expected " but was %d < %d\n", __FILE__, __LINE__, cactual, cexpected); \
 	} \
 }
@@ -150,7 +150,7 @@ char * bc_tester_res(const char *name);
 }
 #define BC_ASSERT_LOWER_UINT64_T(actual, expected) { \
 	uint64_t cactual = (actual), cexpected = (expected); \
-	if (! BC_ASSERT_GREATER(cactual, cexpected)) { \
+	if (! BC_ASSERT_LOWER(cactual, cexpected)) { \
 		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " <= " #expected " but was %lu > %lu\n", __FILE__, __LINE__, (long unsigned)cactual, (long unsigned)cexpected); \
 	} \
 }
