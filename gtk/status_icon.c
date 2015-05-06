@@ -60,6 +60,7 @@ void linphone_status_icon_params_unref(LinphoneStatusIconParams *obj) {
 	if(obj->ref < 0) {
 		if(obj->title) g_free(obj->title);
 		if(obj->menu) g_object_unref(obj->menu);
+		if(obj->desc) g_free(obj->desc);
 		g_free(obj);
 	}
 }
@@ -78,7 +79,7 @@ void linphone_status_icon_params_set_description(LinphoneStatusIconParams *obj, 
 
 void linphone_status_icon_params_set_menu(LinphoneStatusIconParams *obj, GtkWidget *menu) {
 	if(obj->menu) g_object_unref(obj->menu);
-	if(menu) obj->menu = g_object_ref(menu);
+	if(menu) obj->menu = g_object_ref_sink(menu);
 	else obj->menu = NULL;
 }
 
