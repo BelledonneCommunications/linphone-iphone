@@ -205,11 +205,11 @@ const char *linphone_status_icon_get_implementation_name(const LinphoneStatusIco
 
 void linphone_status_icon_start(LinphoneStatusIcon *obj, LinphoneStatusIconParams *params) {
 	obj->params = linphone_status_icon_params_ref(params);
-	obj->desc->start(obj);
+	if(obj->desc->start) obj->desc->start(obj);
 }
 
 void linphone_status_icon_enable_blinking(LinphoneStatusIcon *obj, gboolean enable) {
-	obj->desc->enable_blinking(obj, enable);
+	if(obj->desc->enable_blinking) obj->desc->enable_blinking(obj, enable);
 }
 
 static void _linphone_status_icon_notify_click(LinphoneStatusIcon *obj) {
