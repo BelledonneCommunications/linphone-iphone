@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
+#include "ortp.h"
 #import "NSObject+DTRuntime.h"
 
 #include "mediastreamer2_tester.h"
@@ -35,17 +36,27 @@
     return safeString;
 }
 
+static void log_handler(int lev, const char *fmt, va_list args) {
+	va_list cap;
+	va_copy(cap,args);
+	/* Otherwise, we must use stdio to avoid log formatting (for autocompletion etc.) */
+	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, cap);
+	fprintf(lev == ORTP_ERROR ? stderr : stdout, "\n");
+	va_end(cap);
+
+}
+
 + (void)initialize {
-    mediastreamer2_tester_init();
+	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
     ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 
-    int count = mediastreamer2_tester_nb_test_suites();
+    int count = bc_tester_nb_suites();
     for (int i=0; i<count; i++) {
-        const char* suite = mediastreamer2_tester_test_suite_name(i);
+		const char* suite = bc_tester_suite_name(i);
 
-        int test_count = mediastreamer2_tester_nb_tests(suite);
+		int test_count = bc_tester_nb_tests(suite);
         for( int k = 0; k<test_count; k++){
-            const char* test =mediastreamer2_tester_test_name(suite, k);
+			const char* test = bc_tester_test_name(suite, k);
             NSString* sSuite = [NSString stringWithUTF8String:suite];
             NSString* sTest  = [NSString stringWithUTF8String:test];
 
@@ -75,8 +86,9 @@
     NSLog(@"Bundle path: %@", self.bundlePath);
     NSLog(@"Document path: %@", self.documentPath);
 
-    mediastreamer2_tester_set_file_root( [self.bundlePath UTF8String] );
-    mediastreamer2_tester_set_writable_dir( [self.documentPath UTF8String] );
+	bc_tester_writable_dir_prefix = [self.documentPath UTF8String];
+	bc_tester_read_dir_prefix = [self.bundlePath UTF8String];
+
     ms_static_image_set_default_image( [self.staticImagePath UTF8String]);
 
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -90,7 +102,7 @@
 - (void)testForSuite:(NSString*)suite andTest:(NSString*)test
 {
     NSLog(@"Launching test %@ from suite %@", test, suite);
-    XCTAssertFalse(mediastreamer2_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
+    XCTAssertFalse(bc_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite, test);
 }
 
 @end
