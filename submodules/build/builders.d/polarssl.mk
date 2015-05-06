@@ -22,6 +22,7 @@ clean-polarssl:
 
 veryclean-polarssl:
 	-rm -rf $(BUILD_DIR)/$(polarssl_dir)
+	-rm -f $(SRC_DIR)/$(polarssl_dir)/configure
 
 clean-makefile-polarssl: veryclean-polarssl
 
