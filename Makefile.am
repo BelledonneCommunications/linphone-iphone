@@ -245,6 +245,7 @@ pkg: $(MACAPPNAME)
 	rm -rf ./packaging
 	mkdir -p ./packaging
 	cp ${srcdir}/COPYING ./packaging
+	cp ${srcdir}/pixmaps/linphone.png ./packaging
 	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
 	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
 	
