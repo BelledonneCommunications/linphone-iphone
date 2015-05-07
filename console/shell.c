@@ -48,6 +48,7 @@
 #define STATUS_AUTOANSWER (1<<3)
 #define STATUS_IN_CONNECTED (1<<4) /* incoming call accepted */
 #define STATUS_OUT_CONNECTED (1<<5) /*outgoing call accepted */
+#define STATUS_IN_COMING (1<<6) /*incoming call pending */
 
 
 static int make_status_value(const char *status_string){
@@ -69,6 +70,9 @@ static int make_status_value(const char *status_string){
 	}
 	if (strstr(status_string,"hook=answered")){
 		ret|=STATUS_IN_CONNECTED;
+	}
+	if (strstr(status_string,"Incoming call from ")){
+		ret|=STATUS_IN_COMING;
 	}
 	return ret;
 }
@@ -181,7 +185,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 		int fd;
 		/*we are the new process*/
 		setsid();
-		
+
 		fd = open("/dev/null", O_RDWR);
 		if (fd==-1){
 			fprintf(stderr,"Could not open /dev/null\n");
@@ -191,7 +195,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 		dup2(fd, 1);
 		dup2(fd, 2);
 		close(fd);
-		
+
 		if (execvp("linphonec",args)==-1){
 			fprintf(stderr,"Fail to spawn linphonec: %s\n",strerror(errno));
 			exit(-1);
@@ -207,7 +211,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 	const char *cmd = "linphoned.exe --pipe -c NUL";
 	char *args_in_line = argv_to_line(argc, argv);
 	char *cmd_with_args;
-	
+
 	ZeroMemory( &si, sizeof(si) );
 	si.cb = sizeof(si);
 	ZeroMemory( &pinfo, sizeof(pinfo) );
@@ -217,7 +221,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 	} else {
 		cmd_with_args = ortp_strdup(cmd);
 	}
-	
+
 	ret=CreateProcess(NULL, cmd_with_args,
 		NULL,
 		NULL,
@@ -308,7 +312,7 @@ static int status_execute(int argc, char *argv[]){
 	char cmd[512];
 	char reply[DEFAULT_REPLY_SIZE];
 	int err;
-	
+
 	if (argc==1){
 		snprintf(cmd,sizeof(cmd),"status %s",argv[0]);
 		err=send_command(cmd,reply,sizeof(reply),TRUE);
