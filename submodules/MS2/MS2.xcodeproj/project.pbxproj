@@ -1,0 +1,614 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F03A97691AFA48E800651655 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A97681AFA48E800651655 /* main.m */; };
+		F03A976C1AFA48E800651655 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A976B1AFA48E800651655 /* AppDelegate.m */; };
+		F03A976F1AFA48E800651655 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A976E1AFA48E800651655 /* ViewController.m */; };
+		F03A97721AFA48E800651655 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F03A97701AFA48E800651655 /* Main.storyboard */; };
+		F03A97741AFA48E800651655 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F03A97731AFA48E800651655 /* Images.xcassets */; };
+		F03A97771AFA48E800651655 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03A97751AFA48E800651655 /* LaunchScreen.xib */; };
+		F03A97831AFA48E900651655 /* MS2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A97821AFA48E900651655 /* MS2Tests.m */; };
+		F03A97931AFA561900651655 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A978D1AFA561900651655 /* libmsamr.a */; };
+		F03A97941AFA561A00651655 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A978E1AFA561900651655 /* libmsbcg729.a */; };
+		F03A97951AFA561A00651655 /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A978F1AFA561900651655 /* libmsilbc.a */; };
+		F03A97961AFA561A00651655 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97901AFA561900651655 /* libmsopenh264.a */; };
+		F03A97971AFA561A00651655 /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97911AFA561900651655 /* libmssilk.a */; };
+		F03A97981AFA561A00651655 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97921AFA561900651655 /* libmsx264.a */; };
+		F03A97AE1AFA563200651655 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97991AFA563200651655 /* libavcodec.a */; };
+		F03A97AF1AFA563200651655 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979A1AFA563200651655 /* libavutil.a */; };
+		F03A97B01AFA563200651655 /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979B1AFA563200651655 /* libbzrtp.a */; };
+		F03A97B11AFA563200651655 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979C1AFA563200651655 /* libgsm.a */; };
+		F03A97B21AFA563200651655 /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979D1AFA563200651655 /* libilbc.a */; };
+		F03A97B31AFA563200651655 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979E1AFA563200651655 /* libmediastreamer_base.a */; };
+		F03A97B41AFA563200651655 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A979F1AFA563200651655 /* libmediastreamer_voip.a */; };
+		F03A97B51AFA563200651655 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A01AFA563200651655 /* libopencore-amrnb.a */; };
+		F03A97B61AFA563200651655 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A11AFA563200651655 /* libopencore-amrwb.a */; };
+		F03A97B71AFA563200651655 /* libopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A21AFA563200651655 /* libopenh264.a */; };
+		F03A97B81AFA563200651655 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A31AFA563200651655 /* libopus.a */; };
+		F03A97B91AFA563200651655 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A41AFA563200651655 /* libortp.a */; };
+		F03A97BA1AFA563200651655 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A51AFA563200651655 /* libpolarssl.a */; };
+		F03A97BB1AFA563200651655 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */; };
+		F03A97BC1AFA563200651655 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A71AFA563200651655 /* libspeex.a */; };
+		F03A97BD1AFA563200651655 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A81AFA563200651655 /* libspeexdsp.a */; };
+		F03A97BE1AFA563200651655 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A91AFA563200651655 /* libsrtp.a */; };
+		F03A97BF1AFA563200651655 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97AA1AFA563200651655 /* libswresample.a */; };
+		F03A97C01AFA563200651655 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97AB1AFA563200651655 /* libswscale.a */; };
+		F03A97C11AFA563200651655 /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97AC1AFA563200651655 /* libvpx.a */; };
+		F03A97C21AFA563200651655 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97AD1AFA563200651655 /* libx264.a */; };
+		F03A97C61AFA565000651655 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97C31AFA565000651655 /* AudioToolbox.framework */; };
+		F03A97C71AFA565000651655 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97C41AFA565000651655 /* AVFoundation.framework */; };
+		F03A97C81AFA565000651655 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97C51AFA565000651655 /* CoreAudio.framework */; };
+		F03A97CA1AFA565C00651655 /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97C91AFA565C00651655 /* libxml2.a */; };
+		F03A97CC1AFA572600651655 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97CB1AFA572600651655 /* libstdc++.dylib */; };
+		F03A97D81AFA580100651655 /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F03A97D71AFA580100651655 /* UITextField+DoneButton.m */; };
+		F03A97DA1AFA589E00651655 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97D91AFA589E00651655 /* Foundation.framework */; };
+		F03A97DC1AFA58B600651655 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97DB1AFA58B600651655 /* UIKit.framework */; };
+		F03A97E11AFA5B4A00651655 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97E01AFA5B4A00651655 /* CoreMedia.framework */; };
+		F03A97E31AFA64D200651655 /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F03A97E21AFA64D200651655 /* nowebcamCIF.jpg */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F03A977D1AFA48E900651655 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F03A975B1AFA48E800651655 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F03A97621AFA48E800651655;
+			remoteInfo = MS2;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F03A97631AFA48E800651655 /* MS2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MS2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F03A97671AFA48E800651655 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F03A97681AFA48E800651655 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F03A976A1AFA48E800651655 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F03A976B1AFA48E800651655 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F03A976D1AFA48E800651655 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		F03A976E1AFA48E800651655 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		F03A97711AFA48E800651655 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F03A97731AFA48E800651655 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F03A97761AFA48E800651655 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		F03A977C1AFA48E900651655 /* MS2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MS2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F03A97811AFA48E900651655 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F03A97821AFA48E900651655 /* MS2Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MS2Tests.m; sourceTree = "<group>"; };
+		F03A978D1AFA561900651655 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
+		F03A978E1AFA561900651655 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
+		F03A978F1AFA561900651655 /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = "<group>"; };
+		F03A97901AFA561900651655 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
+		F03A97911AFA561900651655 /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
+		F03A97921AFA561900651655 /* libmsx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsx264.a; path = "../../../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsx264.a"; sourceTree = "<group>"; };
+		F03A97991AFA563200651655 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libavcodec.a"; sourceTree = "<group>"; };
+		F03A979A1AFA563200651655 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libavutil.a"; sourceTree = "<group>"; };
+		F03A979B1AFA563200651655 /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
+		F03A979C1AFA563200651655 /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<group>"; };
+		F03A979D1AFA563200651655 /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<group>"; };
+		F03A979E1AFA563200651655 /* libmediastreamer_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_base.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libmediastreamer_base.a"; sourceTree = "<group>"; };
+		F03A979F1AFA563200651655 /* libmediastreamer_voip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_voip.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libmediastreamer_voip.a"; sourceTree = "<group>"; };
+		F03A97A01AFA563200651655 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrnb.a"; path = "../../../liblinphone-sdk/apple-darwin/lib/libopencore-amrnb.a"; sourceTree = "<group>"; };
+		F03A97A11AFA563200651655 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "../../../liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
+		F03A97A21AFA563200651655 /* libopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenh264.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libopenh264.a"; sourceTree = "<group>"; };
+		F03A97A31AFA563200651655 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libopus.a"; sourceTree = "<group>"; };
+		F03A97A41AFA563200651655 /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
+		F03A97A51AFA563200651655 /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
+		F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
+		F03A97A71AFA563200651655 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
+		F03A97A81AFA563200651655 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+		F03A97A91AFA563200651655 /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
+		F03A97AA1AFA563200651655 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libswresample.a"; sourceTree = "<group>"; };
+		F03A97AB1AFA563200651655 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
+		F03A97AC1AFA563200651655 /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
+		F03A97AD1AFA563200651655 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libx264.a"; sourceTree = "<group>"; };
+		F03A97C31AFA565000651655 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		F03A97C41AFA565000651655 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F03A97C51AFA565000651655 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		F03A97C91AFA565C00651655 /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
+		F03A97CB1AFA572600651655 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		F03A97D61AFA580100651655 /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
+		F03A97D71AFA580100651655 /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
+		F03A97D91AFA589E00651655 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F03A97DB1AFA58B600651655 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		F03A97E01AFA5B4A00651655 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F03A97E21AFA64D200651655 /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = "../../../liblinphone-sdk/apple-darwin/share/images/nowebcamCIF.jpg"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F03A97601AFA48E800651655 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F03A97E11AFA5B4A00651655 /* CoreMedia.framework in Frameworks */,
+				F03A97DC1AFA58B600651655 /* UIKit.framework in Frameworks */,
+				F03A97DA1AFA589E00651655 /* Foundation.framework in Frameworks */,
+				F03A97CC1AFA572600651655 /* libstdc++.dylib in Frameworks */,
+				F03A97C61AFA565000651655 /* AudioToolbox.framework in Frameworks */,
+				F03A97C71AFA565000651655 /* AVFoundation.framework in Frameworks */,
+				F03A97C81AFA565000651655 /* CoreAudio.framework in Frameworks */,
+				F03A97971AFA561A00651655 /* libmssilk.a in Frameworks */,
+				F03A97B61AFA563200651655 /* libopencore-amrwb.a in Frameworks */,
+				F03A97B91AFA563200651655 /* libortp.a in Frameworks */,
+				F03A97CA1AFA565C00651655 /* libxml2.a in Frameworks */,
+				F03A97981AFA561A00651655 /* libmsx264.a in Frameworks */,
+				F03A97BB1AFA563200651655 /* libSKP_SILK_SDK.a in Frameworks */,
+				F03A97B81AFA563200651655 /* libopus.a in Frameworks */,
+				F03A97B31AFA563200651655 /* libmediastreamer_base.a in Frameworks */,
+				F03A97B41AFA563200651655 /* libmediastreamer_voip.a in Frameworks */,
+				F03A97B21AFA563200651655 /* libilbc.a in Frameworks */,
+				F03A97931AFA561900651655 /* libmsamr.a in Frameworks */,
+				F03A97B11AFA563200651655 /* libgsm.a in Frameworks */,
+				F03A97C21AFA563200651655 /* libx264.a in Frameworks */,
+				F03A97951AFA561A00651655 /* libmsilbc.a in Frameworks */,
+				F03A97B71AFA563200651655 /* libopenh264.a in Frameworks */,
+				F03A97941AFA561A00651655 /* libmsbcg729.a in Frameworks */,
+				F03A97AE1AFA563200651655 /* libavcodec.a in Frameworks */,
+				F03A97B01AFA563200651655 /* libbzrtp.a in Frameworks */,
+				F03A97C01AFA563200651655 /* libswscale.a in Frameworks */,
+				F03A97BF1AFA563200651655 /* libswresample.a in Frameworks */,
+				F03A97C11AFA563200651655 /* libvpx.a in Frameworks */,
+				F03A97BC1AFA563200651655 /* libspeex.a in Frameworks */,
+				F03A97BE1AFA563200651655 /* libsrtp.a in Frameworks */,
+				F03A97B51AFA563200651655 /* libopencore-amrnb.a in Frameworks */,
+				F03A97AF1AFA563200651655 /* libavutil.a in Frameworks */,
+				F03A97961AFA561A00651655 /* libmsopenh264.a in Frameworks */,
+				F03A97BA1AFA563200651655 /* libpolarssl.a in Frameworks */,
+				F03A97BD1AFA563200651655 /* libspeexdsp.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F03A97791AFA48E900651655 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F03A975A1AFA48E800651655 = {
+			isa = PBXGroup;
+			children = (
+				F03A978C1AFA560800651655 /* Frameworks */,
+				F03A97651AFA48E800651655 /* MS2 */,
+				F03A977F1AFA48E900651655 /* MS2Tests */,
+				F03A97641AFA48E800651655 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F03A97641AFA48E800651655 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F03A97631AFA48E800651655 /* MS2.app */,
+				F03A977C1AFA48E900651655 /* MS2Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F03A97651AFA48E800651655 /* MS2 */ = {
+			isa = PBXGroup;
+			children = (
+				F03A976A1AFA48E800651655 /* AppDelegate.h */,
+				F03A976B1AFA48E800651655 /* AppDelegate.m */,
+				F03A976D1AFA48E800651655 /* ViewController.h */,
+				F03A976E1AFA48E800651655 /* ViewController.m */,
+				F03A97E21AFA64D200651655 /* nowebcamCIF.jpg */,
+				F03A97D61AFA580100651655 /* UITextField+DoneButton.h */,
+				F03A97D71AFA580100651655 /* UITextField+DoneButton.m */,
+				F03A97701AFA48E800651655 /* Main.storyboard */,
+				F03A97731AFA48E800651655 /* Images.xcassets */,
+				F03A97751AFA48E800651655 /* LaunchScreen.xib */,
+				F03A97661AFA48E800651655 /* Supporting Files */,
+			);
+			path = MS2;
+			sourceTree = "<group>";
+		};
+		F03A97661AFA48E800651655 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F03A97671AFA48E800651655 /* Info.plist */,
+				F03A97681AFA48E800651655 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F03A977F1AFA48E900651655 /* MS2Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F03A97821AFA48E900651655 /* MS2Tests.m */,
+				F03A97801AFA48E900651655 /* Supporting Files */,
+			);
+			path = MS2Tests;
+			sourceTree = "<group>";
+		};
+		F03A97801AFA48E900651655 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F03A97811AFA48E900651655 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F03A978C1AFA560800651655 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F03A97E01AFA5B4A00651655 /* CoreMedia.framework */,
+				F03A97DB1AFA58B600651655 /* UIKit.framework */,
+				F03A97D91AFA589E00651655 /* Foundation.framework */,
+				F03A97CB1AFA572600651655 /* libstdc++.dylib */,
+				F03A97C31AFA565000651655 /* AudioToolbox.framework */,
+				F03A97C41AFA565000651655 /* AVFoundation.framework */,
+				F03A97C51AFA565000651655 /* CoreAudio.framework */,
+				F03A978D1AFA561900651655 /* libmsamr.a */,
+				F03A978E1AFA561900651655 /* libmsbcg729.a */,
+				F03A97991AFA563200651655 /* libavcodec.a */,
+				F03A979A1AFA563200651655 /* libavutil.a */,
+				F03A979B1AFA563200651655 /* libbzrtp.a */,
+				F03A979C1AFA563200651655 /* libgsm.a */,
+				F03A979D1AFA563200651655 /* libilbc.a */,
+				F03A979E1AFA563200651655 /* libmediastreamer_base.a */,
+				F03A979F1AFA563200651655 /* libmediastreamer_voip.a */,
+				F03A97A01AFA563200651655 /* libopencore-amrnb.a */,
+				F03A97A11AFA563200651655 /* libopencore-amrwb.a */,
+				F03A97C91AFA565C00651655 /* libxml2.a */,
+				F03A97A21AFA563200651655 /* libopenh264.a */,
+				F03A97A31AFA563200651655 /* libopus.a */,
+				F03A97A41AFA563200651655 /* libortp.a */,
+				F03A97A51AFA563200651655 /* libpolarssl.a */,
+				F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */,
+				F03A97A71AFA563200651655 /* libspeex.a */,
+				F03A97A81AFA563200651655 /* libspeexdsp.a */,
+				F03A97A91AFA563200651655 /* libsrtp.a */,
+				F03A97AA1AFA563200651655 /* libswresample.a */,
+				F03A97AB1AFA563200651655 /* libswscale.a */,
+				F03A97AC1AFA563200651655 /* libvpx.a */,
+				F03A97AD1AFA563200651655 /* libx264.a */,
+				F03A978F1AFA561900651655 /* libmsilbc.a */,
+				F03A97901AFA561900651655 /* libmsopenh264.a */,
+				F03A97911AFA561900651655 /* libmssilk.a */,
+				F03A97921AFA561900651655 /* libmsx264.a */,
+			);
+			name = Frameworks;
+			path = MS2;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F03A97621AFA48E800651655 /* MS2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F03A97861AFA48E900651655 /* Build configuration list for PBXNativeTarget "MS2" */;
+			buildPhases = (
+				F03A975F1AFA48E800651655 /* Sources */,
+				F03A97601AFA48E800651655 /* Frameworks */,
+				F03A97611AFA48E800651655 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MS2;
+			productName = MS2;
+			productReference = F03A97631AFA48E800651655 /* MS2.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F03A977B1AFA48E900651655 /* MS2Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F03A97891AFA48E900651655 /* Build configuration list for PBXNativeTarget "MS2Tests" */;
+			buildPhases = (
+				F03A97781AFA48E900651655 /* Sources */,
+				F03A97791AFA48E900651655 /* Frameworks */,
+				F03A977A1AFA48E900651655 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F03A977E1AFA48E900651655 /* PBXTargetDependency */,
+			);
+			name = MS2Tests;
+			productName = MS2Tests;
+			productReference = F03A977C1AFA48E900651655 /* MS2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F03A975B1AFA48E800651655 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Belldonne Communications";
+				TargetAttributes = {
+					F03A97621AFA48E800651655 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+					F03A977B1AFA48E900651655 = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = F03A97621AFA48E800651655;
+					};
+				};
+			};
+			buildConfigurationList = F03A975E1AFA48E800651655 /* Build configuration list for PBXProject "MS2" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F03A975A1AFA48E800651655;
+			productRefGroup = F03A97641AFA48E800651655 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F03A97621AFA48E800651655 /* MS2 */,
+				F03A977B1AFA48E900651655 /* MS2Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F03A97611AFA48E800651655 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F03A97E31AFA64D200651655 /* nowebcamCIF.jpg in Resources */,
+				F03A97721AFA48E800651655 /* Main.storyboard in Resources */,
+				F03A97771AFA48E800651655 /* LaunchScreen.xib in Resources */,
+				F03A97741AFA48E800651655 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F03A977A1AFA48E900651655 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F03A975F1AFA48E800651655 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F03A976F1AFA48E800651655 /* ViewController.m in Sources */,
+				F03A976C1AFA48E800651655 /* AppDelegate.m in Sources */,
+				F03A97691AFA48E800651655 /* main.m in Sources */,
+				F03A97D81AFA580100651655 /* UITextField+DoneButton.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F03A97781AFA48E900651655 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F03A97831AFA48E900651655 /* MS2Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F03A977E1AFA48E900651655 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F03A97621AFA48E800651655 /* MS2 */;
+			targetProxy = F03A977D1AFA48E900651655 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F03A97701AFA48E800651655 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F03A97711AFA48E800651655 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F03A97751AFA48E800651655 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F03A97761AFA48E800651655 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F03A97841AFA48E900651655 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F03A97851AFA48E900651655 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F03A97871AFA48E900651655 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/include",
+				);
+				INFOPLIST_FILE = MS2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F03A97881AFA48E900651655 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../liblinphone-sdk/apple-darwin/include",
+				);
+				INFOPLIST_FILE = MS2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"/Users/guillaume/Dev/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F03A978A1AFA48E900651655 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = MS2Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MS2.app/MS2";
+			};
+			name = Debug;
+		};
+		F03A978B1AFA48E900651655 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = MS2Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MS2.app/MS2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F03A975E1AFA48E800651655 /* Build configuration list for PBXProject "MS2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F03A97841AFA48E900651655 /* Debug */,
+				F03A97851AFA48E900651655 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F03A97861AFA48E900651655 /* Build configuration list for PBXNativeTarget "MS2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F03A97871AFA48E900651655 /* Debug */,
+				F03A97881AFA48E900651655 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F03A97891AFA48E900651655 /* Build configuration list for PBXNativeTarget "MS2Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F03A978A1AFA48E900651655 /* Debug */,
+				F03A978B1AFA48E900651655 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F03A975B1AFA48E800651655 /* Project object */;
+}
