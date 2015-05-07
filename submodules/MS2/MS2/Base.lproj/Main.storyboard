@@ -45,7 +45,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dof-dF-W5E">
                                 <rect key="frame" x="16" y="230" width="568" height="360"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Infos" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ahO-FT-Buh" userLabel="LabelLocal IP">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Infos" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ahO-FT-Buh" userLabel="InfoLabel">
                                         <rect key="frame" x="10" y="58" width="548" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -76,17 +76,27 @@
                                             <action selector="changeCamUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="i7t-HS-skE"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bandwidth" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qRc-kS-kqP" userLabel="BWLabel">
+                                        <rect key="frame" x="12" y="87" width="548" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="ahO-FT-Buh" secondAttribute="trailing" constant="10" id="IMo-n1-N9M"/>
                                     <constraint firstItem="hJG-dO-y2z" firstAttribute="top" secondItem="Dof-dF-W5E" secondAttribute="top" constant="8" id="Koi-ap-9Ac"/>
                                     <constraint firstItem="ahO-FT-Buh" firstAttribute="leading" secondItem="Dof-dF-W5E" secondAttribute="leading" constant="10" id="NeM-ch-QXt"/>
+                                    <constraint firstItem="ahO-FT-Buh" firstAttribute="height" secondItem="qRc-kS-kqP" secondAttribute="height" id="TFn-Oz-nA8"/>
+                                    <constraint firstItem="ahO-FT-Buh" firstAttribute="leading" secondItem="qRc-kS-kqP" secondAttribute="leading" constant="-2" id="TSw-Fw-4gv"/>
                                     <constraint firstItem="ahO-FT-Buh" firstAttribute="top" secondItem="dpE-4Z-Bca" secondAttribute="bottom" constant="20" id="bHD-BD-qfs"/>
+                                    <constraint firstItem="qRc-kS-kqP" firstAttribute="top" secondItem="ahO-FT-Buh" secondAttribute="bottom" constant="8" id="bQ1-79-qUP"/>
                                     <constraint firstItem="dpE-4Z-Bca" firstAttribute="top" secondItem="Dof-dF-W5E" secondAttribute="top" constant="8" id="bff-S2-ssI"/>
                                     <constraint firstItem="hJG-dO-y2z" firstAttribute="centerY" secondItem="dpE-4Z-Bca" secondAttribute="centerY" id="cpB-ox-u06"/>
                                     <constraint firstItem="dpE-4Z-Bca" firstAttribute="leading" secondItem="Dof-dF-W5E" secondAttribute="leading" constant="10" id="lGn-tx-JZk"/>
                                     <constraint firstAttribute="centerX" secondItem="ahO-FT-Buh" secondAttribute="centerX" id="qGi-4Q-dov"/>
+                                    <constraint firstItem="ahO-FT-Buh" firstAttribute="width" secondItem="qRc-kS-kqP" secondAttribute="width" id="s5k-sE-Di2"/>
                                     <constraint firstAttribute="trailing" secondItem="hJG-dO-y2z" secondAttribute="trailing" constant="10" id="yuZ-Up-tVt"/>
                                 </constraints>
                             </view>
@@ -103,9 +113,11 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="bandwidthLabel" destination="qRc-kS-kqP" id="6Y0-4e-J9B"/>
                         <outlet property="infoLabel" destination="ahO-FT-Buh" id="EZr-MB-hUS"/>
                         <outlet property="localView" destination="VjN-5I-lOb" id="Hee-ge-Sjd"/>
                         <outlet property="remoteView" destination="CBm-CY-BBe" id="avg-4V-Kse"/>
+                        <outlet property="startStreamLabel" destination="dpE-4Z-Bca" id="NzX-dg-Wok"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
