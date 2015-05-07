@@ -2071,29 +2071,25 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
+
 	lang=linphone_gtk_get_lang(config_file);
 	if (lang == NULL || lang[0]=='\0'){
-		lang = g_getenv("LANG");
+		lang = g_getenv("LANGUAGE");
+		if (!lang) lang = g_getenv("LANG");
 	}
 	if (lang && lang[0]!='\0'){
 #ifdef WIN32
 		if (strncmp(lang,"zh",2)==0){
 			workaround_gtk_entry_chinese_bug=TRUE;
 		}
-#else
-		g_setenv("LANG",lang,1);
-		g_setenv("LANGUAGE",lang,1);
 #endif
+		g_setenv("LANGUAGE",lang,1);
 	}
 
 #ifdef ENABLE_NLS
+	setlocale(LC_ALL, "");
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-#ifdef WIN32
-	setlocale(LC_ALL,lang ? lang : "");
-#else
-	setlocale(LC_ALL,"");
-#endif
 
 	/*do not use textdomain(): this sets a global default domain. On Mac OS bundle, it breaks gtk translations (obscure bug somewhere)*/
 	/*textdomain (GETTEXT_PACKAGE);*/
