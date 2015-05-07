@@ -711,15 +711,14 @@ static void io_recv_error_without_active_register(){
 	LinphoneCore* lc;
 	int register_ok;
 	stats* counters ;
-	int number_of_udp_proxy=0;
 	MSList* proxys;
+	int dummy=0;
 
 	mgr=configure_lcm();
 	lc=mgr->lc;
 	counters = get_stats(lc);
 
 	register_ok=counters->number_of_LinphoneRegistrationOk;
-	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 
 	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
 		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
@@ -734,7 +733,8 @@ static void io_recv_error_without_active_register(){
 	sal_set_recv_error(lc->sal, 0);
 
 	/*nothing should happen because no active registration*/
-	CU_ASSERT_FALSE(wait_for_until(lc,lc,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/,3000));
+	wait_for_until(lc,lc, &dummy, 1, 3000);
+	CU_ASSERT_TRUE(counters->number_of_LinphoneRegistrationProgress == ms_list_size(linphone_core_get_proxy_config_list(lc)));
 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
 
