@@ -102,14 +102,14 @@ void linphone_gtk_reload_sound_devices(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
 	linphone_core_reload_sound_devices(linphone_gtk_get_core());
-	linphone_gtk_fill_soundcards(pb);
+	if (pb) linphone_gtk_fill_soundcards(pb);
 }
 
 void linphone_gtk_reload_video_devices(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
 	linphone_core_reload_video_devices(linphone_gtk_get_core());
-	linphone_gtk_fill_webcams(pb);
+	if (pb) linphone_gtk_fill_webcams(pb);
 }
 
 #ifdef HAVE_LIBUDEV_H
