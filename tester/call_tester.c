@@ -2363,7 +2363,7 @@ static void call_with_file_player(void) {
 	{
 		double similar;
 		const int threshold = 90;
-		BC_ASSERT_EQUAL_INT(ms_audio_diff(hellopath,recordpath,&similar,NULL,NULL), 0);
+		BC_ASSERT_EQUAL_INT(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL), 0);
 		BC_ASSERT_GREATER_INT(100*similar, threshold);
 		BC_ASSERT_LOWER_INT(100*similar, 100);
 		if (threshold < 100*similar && 100*similar < 100) {
@@ -2441,7 +2441,7 @@ static void call_with_mkv_file_player(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 #ifdef DO_AUDIO_CMP
-	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,NULL,NULL)==0);
+	CU_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL)==0);
 	CU_ASSERT_TRUE(similar>threshold);
 	CU_ASSERT_TRUE(similar<=1.0);
 	if(similar>threshold && similar<=1.0) {
