@@ -2067,43 +2067,34 @@ int main(int argc, char *argv[]){
 
 	workingdir= (tmp=g_getenv("LINPHONE_WORKDIR")) ? g_strdup(tmp) : NULL;
 
-#ifdef WIN32
-	/*workaround for windows: sometimes LANG is defined to an integer value, not understood by gtk */
-	if ((lang=getenv("LANG"))!=NULL){
-		if (atoi(lang)!=0){
-			char tmp[128];
-			snprintf(tmp,sizeof(tmp),"LANG=",lang);
-			_putenv(tmp);
-		}
-	}
-#else
+#ifdef __linux
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
 	lang=linphone_gtk_get_lang(config_file);
 	if (lang == NULL || lang[0]=='\0'){
-		lang = getenv("LANG");
+		lang = g_getenv("LANG");
 	}
 	if (lang && lang[0]!='\0'){
 #ifdef WIN32
-		char tmp[128];
-		snprintf(tmp,sizeof(tmp),"LANG=%s",lang);
-		_putenv(tmp);
 		if (strncmp(lang,"zh",2)==0){
 			workaround_gtk_entry_chinese_bug=TRUE;
 		}
-#elif __APPLE__
-		setenv("LANG",lang,1);
-		setenv("LANGUAGE",lang,1);
 #else
-		setenv("LANGUAGE",lang,1);
+		g_setenv("LANG",lang,1);
+		g_setenv("LANGUAGE",lang,1);
 #endif
 	}
 
 #ifdef ENABLE_NLS
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+#ifdef WIN32
+	setlocale(LC_ALL,lang ? lang : "");
+#else
 	setlocale(LC_ALL,"");
+#endif
+
 	/*do not use textdomain(): this sets a global default domain. On Mac OS bundle, it breaks gtk translations (obscure bug somewhere)*/
 	/*textdomain (GETTEXT_PACKAGE);*/
 #else
