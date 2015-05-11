@@ -227,6 +227,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self changeView:History_All];
 
+	[linphoneButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE];
+
 	// Set selected+over background: IB lack !
 	[linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
 				 forState:(UIControlStateHighlighted | UIControlStateSelected)];
