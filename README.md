@@ -16,7 +16,8 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 * Using HomeBrew:
 
-        brew install autoconf automake pkg-config doxygen java nasm gettext wget yasm optipng imagemagick coreutils intltool
+        brew install autoconf automake pkg-config doxygen nasm gettext wget yasm optipng imagemagick coreutils intltool
+        brew link gettext --force
         # antlr3.2 is faster than default homebrew version 3.4 - you can install official antlr3 though
         brew tap Gui13/linphone
         brew install antlr3.2
