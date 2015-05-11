@@ -100,7 +100,7 @@ LpItem * lp_comment_new(const char *comment){
 	pos=strchr(item->value,'\r');
 	if (pos==NULL)
 		pos=strchr(item->value,'\n');
-	
+
 	if(pos) {
 		*pos='\0'; /*replace the '\n' */
 	}
@@ -362,7 +362,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		ms_message("Using (r/w) config information from %s", config_filename);
 		lpconfig->filename=ortp_strdup(config_filename);
 		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",config_filename);
-		
+
 #if !defined(WIN32)
 		{
 			struct stat fileStat;
@@ -719,6 +719,20 @@ static char *_lp_config_dirname(char *path) {
 #endif
 }
 
+bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
+	if (lpconfig->filename == NULL)
+		return FALSE;
+	char *dir = _lp_config_dirname(lpconfig->filename);
+	char *filepath = ms_strdup_printf("%s/%s", dir, filename);
+	FILE *file = fopen(filepath, "r");
+	ms_free(dir);
+	ms_free(filepath);
+	if (file) {
+		fclose(file);
+	}
+	return file != NULL;
+}
+
 void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {
 	if (lpconfig->filename == NULL) return;
 	if(strlen(data) > 0) {
@@ -760,7 +774,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	ms_free(dir);
 	ms_free(filepath);
 	return 0;
-	
+
 err:
 	ms_free(dir);
 	ms_free(filepath);
