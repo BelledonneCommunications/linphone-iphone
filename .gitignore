@@ -84,3 +84,4 @@ po/linphone.pot
 tester/linphone_log.gz.txt
 tools/auto_answer
 tools/lp-autoanswer
+build/macos/pkg-distribution.xml

@@ -44,14 +44,14 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
                 antlr3.2 gettext speex ffmpeg readline libvpx opus
         ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
         brew link --force gettext
+        #readline is required from linphonec.c otherwise compilation will fail
+        brew link readline --force
 
 ##### Linphone UI (GTK version)
 
-	brew install cairo --without-x11
+        brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gettext gtk-mac-integration libsoup hicolor-icon-theme
-        #readline is required from linphonec.c otherwise compilation will fail
-        brew link readline --force
+        brew install gtk-mac-integration libsoup hicolor-icon-theme
 
 ### Building Linphone
 

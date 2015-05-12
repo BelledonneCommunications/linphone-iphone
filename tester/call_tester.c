@@ -2363,9 +2363,9 @@ static void call_with_file_player(void) {
 	{
 		double similar;
 		const int threshold = 90;
-		BC_ASSERT_EQUAL_INT(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL), 0);
-		BC_ASSERT_GREATER_INT(100*similar, threshold);
-		BC_ASSERT_LOWER_INT(100*similar, 100);
+		BC_ASSERT_EQUAL_WITH_TYPE(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL), 0, int, "%d");
+		BC_ASSERT_GREATER_WITH_TYPE(100*similar, threshold, int, "%d");
+		BC_ASSERT_LOWER_WITH_TYPE(100*similar, 100, int, "%d");
 		if (threshold < 100*similar && 100*similar < 100) {
 			remove(recordpath);
 		}

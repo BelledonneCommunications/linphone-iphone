@@ -290,6 +290,11 @@ LINPHONE_PUBLIC void lp_config_write_relative_file(const LpConfig *lpconfig, con
  */
 LINPHONE_PUBLIC int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename, char *data, size_t max_length);
 
+/**
+ * @return TRUE if file exists relative to the to the current location
+**/
+LINPHONE_PUBLIC bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename);
+
 #ifdef __cplusplus
 }
 #endif
