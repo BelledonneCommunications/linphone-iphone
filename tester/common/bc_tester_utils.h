@@ -124,37 +124,24 @@ char * bc_tester_res(const char *name);
 #define BC_ASSERT_LOWER(actual, expected) CU_assertImplementation(((actual) <= (expected)), __LINE__, ("CU_ASSERT_LOWER(" #actual "," #expected ")"), __FILE__, "", CU_FALSE)
 
 /*Add some custom defines with logs in case of fail*/
-#define BC_ASSERT_EQUAL_INT(actual, expected) { \
-	int cactual = (actual), cexpected = (expected); \
+#define BC_ASSERT_EQUAL_WITH_TYPE(actual, expected, type, type_format) { \
+	type cactual = (actual), cexpected = (expected); \
 	if (! BC_ASSERT_EQUAL(cactual, cexpected)) { \
-		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " = " #expected " but was %d != %d\n", __FILE__, __LINE__, cactual, cexpected); \
+		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " = " #expected " but was " type_format " != " type_format "\n", __FILE__, __LINE__, cactual, cexpected); \
 	} \
 }
-#define BC_ASSERT_GREATER_INT(actual, expected) { \
-	int cactual = (actual), cexpected = (expected); \
+#define BC_ASSERT_GREATER_WITH_TYPE(actual, expected, type, type_format) { \
+	type cactual = (actual), cexpected = (expected); \
 	if (! BC_ASSERT_GREATER(cactual, cexpected)) { \
-		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " >= " #expected " but was %d < %d\n", __FILE__, __LINE__, cactual, cexpected); \
+		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " >= " #expected " but was " type_format " < " type_format "\n", __FILE__, __LINE__, cactual, cexpected); \
 	} \
 }
-#define BC_ASSERT_LOWER_INT(actual, expected) { \
-	int cactual = (actual), cexpected = (expected); \
+#define BC_ASSERT_LOWER_WITH_TYPE(actual, expected, type, type_format) { \
+	type cactual = (actual), cexpected = (expected); \
 	if (! BC_ASSERT_LOWER(cactual, cexpected)) { \
-		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " <= " #expected " but was %d > %d\n", __FILE__, __LINE__, cactual, cexpected); \
+		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " <= " #expected " but was " type_format " > " type_format "\n", __FILE__, __LINE__, cactual, cexpected); \
 	} \
 }
-#define BC_ASSERT_GREATER_UINT64_T(actual, expected) { \
-	uint64_t cactual = (actual), cexpected = (expected); \
-	if (! BC_ASSERT_GREATER(cactual, cexpected)) { \
-		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " >= " #expected " but was %lu < %lu\n", __FILE__, __LINE__, (long unsigned)cactual, (long unsigned)cexpected); \
-	} \
-}
-#define BC_ASSERT_LOWER_UINT64_T(actual, expected) { \
-	uint64_t cactual = (actual), cexpected = (expected); \
-	if (! BC_ASSERT_LOWER(cactual, cexpected)) { \
-		bc_tester_printf(bc_printf_verbosity_error, "%s:%d - Expected " #actual " <= " #expected " but was %lu > %lu\n", __FILE__, __LINE__, (long unsigned)cactual, (long unsigned)cexpected); \
-	} \
-}
-
 
 #ifdef __cplusplus
 }
