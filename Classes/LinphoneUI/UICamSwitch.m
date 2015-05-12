@@ -54,14 +54,7 @@
 		[self initUICamSwitch];
 	}
     return self;
-}	
-
-
-- (void)dealloc {
-    [super dealloc];
-	[preview release];
 }
-
 
 #pragma mark - 
 
