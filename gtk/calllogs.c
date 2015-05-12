@@ -147,7 +147,7 @@ static GtkWidget *linphone_gtk_create_call_log_menu(GtkWidget *call_log){
 			name=linphone_address_as_string(la);
 			call_label=g_strdup_printf(_("Call %s"),name);
 			text_label=g_strdup_printf(_("Send text to %s"),name);
-			g_free(name);
+			ms_free(name);
 		}
 	}
 	if (call_label){
