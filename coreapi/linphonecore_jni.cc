@@ -3323,6 +3323,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
+		env->DeleteGlobalRef(chatMessageStateClass);
 	}
 }
 
@@ -3338,7 +3339,11 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferProgressChanged", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;II)V");
 	jobject jmessage = getChatMessage(env, msg);
-	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, offset, total);
+	jobject jcontent = content ? create_java_linphone_content(env, content) : NULL;
+	env->CallVoidMethod(listener, method, jmessage, jcontent, offset, total);
+	if (jcontent) {
+		env->DeleteLocalRef(jcontent);
+	}
 }
 
 static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* content, const LinphoneBuffer *buffer) {
@@ -3353,7 +3358,15 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
 	jobject jmessage = getChatMessage(env, msg);
-	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, buffer ? create_java_linphone_buffer(env, buffer) : NULL);
+	jobject jbuffer = buffer ? create_java_linphone_buffer(env, buffer) : NULL;
+	jobject jcontent = content ? create_java_linphone_content(env, content) : NULL;
+	env->CallVoidMethod(listener, method, jmessage, jcontent, jbuffer);
+	if (jbuffer) {
+		env->DeleteLocalRef(jbuffer);
+	}
+	if (jcontent) {
+		env->DeleteLocalRef(jcontent);
+	}
 }
 
 static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
@@ -3370,9 +3383,14 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
 	jobject jmessage = getChatMessage(env, msg);
 	jobject jbuffer = create_java_linphone_buffer(env, NULL);
-	env->CallVoidMethod(listener, method, jmessage, content ? create_java_linphone_content(env, content) : NULL, offset, size, jbuffer);
+	jobject jcontent = content ? create_java_linphone_content(env, content) : NULL;
+	env->CallVoidMethod(listener, method, jmessage, jcontent, offset, size, jbuffer);
+	if (jcontent) {
+		env->DeleteLocalRef(jcontent);
+	}
 	
 	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
+	env->DeleteLocalRef(jbuffer);
 	return buffer;
 }
 
@@ -3446,6 +3464,7 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
 		env->DeleteGlobalRef(jmessage);
+		env->DeleteGlobalRef(chatMessageStateClass);
 		linphone_chat_message_set_user_data(msg,NULL);
 	}
 }
@@ -4173,6 +4192,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *
 		linphone_tunnel_config_set_delay(tunnelConfig, env->CallIntMethod(config, getDelayMethod));
 		linphone_tunnel_add_server(tunnel, tunnelConfig);
 		env->ReleaseStringUTFChars(hostString, host);
+		env->DeleteLocalRef(TunnelConfigClass);
 	} else {
 		ms_error("LinphoneCore.tunnelAddServer(): tunnel feature is not enabled");
 	}
@@ -4202,6 +4222,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_tunnelGetServers
 			env->CallVoidMethod(elt, setRemoteUdpMirrorPortMethod, linphone_tunnel_config_get_remote_udp_mirror_port(conf));
 			env->CallVoidMethod(elt, setDelayMethod, linphone_tunnel_config_get_delay(conf));
 			env->SetObjectArrayElement(tunnelConfigArray, i, elt);
+			env->DeleteLocalRef(TunnelConfigClass);
 		}
 	}
 	return tunnelConfigArray;
