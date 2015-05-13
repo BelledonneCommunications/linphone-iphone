@@ -119,6 +119,8 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	SalMediaDescription *oldmd=call->resultdesc;
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
+	int md_changed=0;
+	
 
 	if (!((call->state == LinphoneCallIncomingEarlyMedia) && (linphone_core_get_ring_during_incoming_early_media(lc)))) {
 		linphone_core_stop_ringing(lc);
@@ -144,7 +146,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.state==MSStreamStarted) || (call->videostream && call->videostream->ms.state==MSStreamStarted)){
 		clear_early_media_destinations(call);
-		int md_changed=0;
+
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			md_changed = media_parameters_changed(call, oldmd, new_md);
