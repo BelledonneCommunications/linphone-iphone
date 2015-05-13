@@ -1017,12 +1017,13 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 	SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
+	int i;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
 	call->op=op;
 	call->core=lc;
-	int i;
+
 	linphone_call_incoming_select_ip_version(call);
 
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0));
