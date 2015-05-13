@@ -994,8 +994,6 @@ static void linphone_call_incoming_select_ip_version(LinphoneCall *call){
  * Fix call parameters on incoming call to eg. enable AVPF if the incoming call propose it and it is not enabled locally.
  */
 void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md) {
-	int i;
-
 	/* Handle AVPF, SRTP and DTLS. */
 	call->params->avpf_enabled = sal_media_description_has_avpf(md);
 	if (call->params->avpf_enabled == TRUE) {
