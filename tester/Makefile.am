@@ -33,6 +33,7 @@ liblinphonetester_la_SOURCES = \
 				upnp_tester.c \
 				video_tester.c \
 				common/bc_tester_utils.c
+
 liblinphonetester_ladir = $(includedir)/linphone
 liblinphonetester_la_HEADERS = common/bc_tester_utils.h
 

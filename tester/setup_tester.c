@@ -16,8 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
@@ -26,7 +25,7 @@
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
 	/*make sure the git version is always included in the version number*/
-	CU_ASSERT_TRUE(strstr(version,"unknown")==NULL);
+	BC_ASSERT_TRUE(strstr(version,"unknown")==NULL);
 }
 
 static void core_init_test(void) {
@@ -36,7 +35,7 @@ static void core_init_test(void) {
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_destroy(lc);
 }
 
@@ -50,10 +49,10 @@ static void core_sip_transport_test(void) {
 	LCSipTransports tr;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_get_sip_transports(lc,&tr);
-	CU_ASSERT_EQUAL(tr.udp_port,5060); /*default config*/
-	CU_ASSERT_EQUAL(tr.tcp_port,5060); /*default config*/
+	BC_ASSERT_EQUAL(tr.udp_port,5060, int, "%d"); /*default config*/
+	BC_ASSERT_EQUAL(tr.tcp_port,5060, int, "%d"); /*default config*/
 
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
@@ -62,12 +61,12 @@ static void core_sip_transport_test(void) {
 	linphone_core_set_sip_transports(lc,&tr);
 	linphone_core_get_sip_transports(lc,&tr);
 
-	CU_ASSERT_NOT_EQUAL(tr.udp_port,5060); /*default config*/
-	CU_ASSERT_NOT_EQUAL(tr.tcp_port,5060); /*default config*/
+	BC_ASSERT_NOT_EQUAL(tr.udp_port,5060,int,"%d"); /*default config*/
+	BC_ASSERT_NOT_EQUAL(tr.tcp_port,5060,int,"%d"); /*default config*/
 
-	CU_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_port",-2),LC_SIP_TRANSPORT_RANDOM);
-	CU_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tcp_port",-2),LC_SIP_TRANSPORT_RANDOM);
-	CU_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tls_port",-2),LC_SIP_TRANSPORT_RANDOM);
+	BC_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_port",-2),LC_SIP_TRANSPORT_RANDOM, int, "%d");
+	BC_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tcp_port",-2),LC_SIP_TRANSPORT_RANDOM, int, "%d");
+	BC_ASSERT_EQUAL(lp_config_get_int(linphone_core_get_config(lc),"sip","sip_tls_port",-2),LC_SIP_TRANSPORT_RANDOM, int, "%d");
 
 	linphone_core_destroy(lc);
 }
@@ -81,14 +80,14 @@ static void linphone_interpret_url_test()
 
 	memset ( &v_table,0,sizeof ( v_table ) );
 	lc = linphone_core_new ( &v_table,NULL,NULL,NULL );
-	CU_ASSERT_PTR_NOT_NULL_FATAL ( lc );
+	BC_ASSERT_PTR_NOT_NULL_FATAL ( lc );
 
 	address = linphone_core_interpret_url(lc, sips_address);
 
-	CU_ASSERT_PTR_NOT_NULL_FATAL(address);
-	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_scheme(address), "sips");
-	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_username(address), "margaux");
-	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_domain(address), "sip.linphone.org");
+	BC_ASSERT_PTR_NOT_NULL_FATAL(address);
+	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_scheme(address), "sips");
+	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_username(address), "margaux");
+	BC_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_domain(address), "sip.linphone.org");
 
 	linphone_address_destroy(address);
 
@@ -101,11 +100,11 @@ static void linphone_lpconfig_from_buffer(){
 	LpConfig* conf;
 
 	conf = lp_config_new_from_buffer(buffer);
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer","test",""),"ok");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer","test",""),"ok");
 	lp_config_destroy(conf);
 
 	conf = lp_config_new_from_buffer(buffer_linebreaks);
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer_linebreaks","test",""),"ok");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"buffer_linebreaks","test",""),"ok");
 	lp_config_destroy(conf);
 }
 
@@ -116,11 +115,11 @@ static void linphone_lpconfig_from_buffer_zerolen_value(){
 
 	conf = lp_config_new_from_buffer(zerolen);
 
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
 
 	lp_config_destroy(conf);
 }
@@ -135,13 +134,13 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	   stores the app bundle in read-only */
 	conf = lp_config_new_with_factory(NULL, rc_path);
 
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
 
 	// non_zero_len=test -> should return test
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
 
 	ms_free(rc_path);
 	lp_config_destroy(conf);
@@ -154,15 +153,15 @@ static void linphone_lpconfig_from_xml_zerolen_value(){
 
 	LinphoneCoreManager* mgr = linphone_core_manager_new2("empty_rc",FALSE);
 
-	CU_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0);
+	BC_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0, int, "%d");
 
 	conf = mgr->lc->config;
 
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");
 
 	lp_config_set_string(conf, "test", "non_zero_len", ""); /* should remove "non_zero_len" */
-	CU_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
+	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len","LOL"), "LOL");
 
 	linphone_core_manager_destroy(mgr);
 	ms_free(xml_path);
@@ -176,15 +175,15 @@ void linphone_proxy_config_address_equal_test() {
 	LinphoneAddress *e = linphone_address_new("sip:toto@titi;transport=udp");
 	LinphoneAddress *f = linphone_address_new("sip:toto@titi?X-Create-Account=yes");
 
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,NULL), LinphoneProxyConfigAddressDifferent);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,b), LinphoneProxyConfigAddressDifferent);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,c), LinphoneProxyConfigAddressDifferent);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,d), LinphoneProxyConfigAddressDifferent);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,e), LinphoneProxyConfigAddressWeakEqual);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(NULL,NULL), LinphoneProxyConfigAddressEqual);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,f), LinphoneProxyConfigAddressWeakEqual);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(c,f), LinphoneProxyConfigAddressDifferent);
-	CU_ASSERT_EQUAL(linphone_proxy_config_address_equal(e,f), LinphoneProxyConfigAddressWeakEqual);
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,NULL), LinphoneProxyConfigAddressDifferent, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,b), LinphoneProxyConfigAddressDifferent, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,c), LinphoneProxyConfigAddressDifferent, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,d), LinphoneProxyConfigAddressDifferent, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,e), LinphoneProxyConfigAddressWeakEqual, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(NULL,NULL), LinphoneProxyConfigAddressEqual, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(a,f), LinphoneProxyConfigAddressWeakEqual, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(c,f), LinphoneProxyConfigAddressDifferent, int, "%d");
+	BC_ASSERT_EQUAL(linphone_proxy_config_address_equal(e,f), LinphoneProxyConfigAddressWeakEqual, int, "%d");
 
 	linphone_address_destroy(a);
 	linphone_address_destroy(b);
@@ -200,36 +199,36 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_set_identity(proxy_config,"sip:toto@titi");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_identity(proxy_config,"sips:toto@titi");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent, int, "%d");
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:toto.com");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent, int, "%d");
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org:4444");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent, int, "%d");
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;transport=tcp");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressDifferent, int, "%d");
 
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org");
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_server_addr(proxy_config,"sip:sip.linphone.org;param=blue");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressWeakEqual);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressWeakEqual, int, "%d");
 
 
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_set_contact_parameters(proxy_config,"blabla=blue");
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual, int, "%d");
 
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_register(proxy_config,TRUE);
-	CU_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual);
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_server_config_changed(proxy_config), LinphoneProxyConfigAddressEqual, int, "%d");
 
 	linphone_proxy_config_destroy(proxy_config);
 }
@@ -239,7 +238,7 @@ static void chat_root_test(void) {
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_create_chat_room(lc,"sip:toto@titi.com");
 	linphone_core_destroy(lc);
 }
@@ -252,14 +251,14 @@ static void devices_reload_test(void) {
 	devid1 = ms_strdup(linphone_core_get_capture_device(mgr->lc));
 	linphone_core_reload_sound_devices(mgr->lc);
 	devid2 = ms_strdup(linphone_core_get_capture_device(mgr->lc));
-	CU_ASSERT_STRING_EQUAL(devid1, devid2);
+	BC_ASSERT_STRING_EQUAL(devid1, devid2);
 	ms_free(devid1);
 	ms_free(devid2);
 
 	devid1 = ms_strdup(linphone_core_get_video_device(mgr->lc));
 	linphone_core_reload_video_devices(mgr->lc);
 	devid2 = ms_strdup(linphone_core_get_video_device(mgr->lc));
-	CU_ASSERT_STRING_EQUAL(devid1, devid2);
+	BC_ASSERT_STRING_EQUAL(devid1, devid2);
 	ms_free(devid1);
 	ms_free(devid2);
 

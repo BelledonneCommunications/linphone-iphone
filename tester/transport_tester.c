@@ -52,7 +52,7 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 	long contact_host_ip_len;
 	char contact_host_ip[255];
 	char * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
-	CU_ASSERT_PTR_NOT_NULL(contact);
+	BC_ASSERT_PTR_NOT_NULL(contact);
 	contact_host_ip_len = strchr(contact, ':')-contact;
 	strncpy(contact_host_ip, contact, contact_host_ip_len);
 	contact_host_ip[contact_host_ip_len]='\0';
@@ -72,30 +72,30 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
 		char *public_ip, *public_ip2=NULL;
 
-		CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
-		CU_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
+		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
 
 		linphone_core_set_media_encryption(pauline->lc, encryption);
-		
+
 		if (with_video_and_ice){
 			/*we want to test that tunnel is able to work with long SIP message, above mtu.
 			 * Enable ICE and many codec to make the SIP message bigger*/
 			linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 			linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
-			linphone_core_enable_payload_type(pauline->lc, 
+			linphone_core_enable_payload_type(pauline->lc,
 				linphone_core_find_payload_type(pauline->lc, "speex", 32000, 1), TRUE);
-			linphone_core_enable_payload_type(pauline->lc, 
+			linphone_core_enable_payload_type(pauline->lc,
 				linphone_core_find_payload_type(pauline->lc, "speex", 16000, 1), TRUE);
-			linphone_core_enable_payload_type(pauline->lc, 
+			linphone_core_enable_payload_type(pauline->lc,
 				linphone_core_find_payload_type(pauline->lc, "G722", 8000, 1), TRUE);
-			linphone_core_enable_payload_type(marie->lc, 
+			linphone_core_enable_payload_type(marie->lc,
 				linphone_core_find_payload_type(marie->lc, "speex", 32000, 1), TRUE);
-			linphone_core_enable_payload_type(marie->lc, 
+			linphone_core_enable_payload_type(marie->lc,
 				linphone_core_find_payload_type(marie->lc, "speex", 16000, 1), TRUE);
-			linphone_core_enable_payload_type(marie->lc, 
+			linphone_core_enable_payload_type(marie->lc,
 				linphone_core_find_payload_type(marie->lc, "G722", 8000, 1), TRUE);
-			
+
 		}
 
 		if (tunnel_mode != LinphoneTunnelModeDisable){
@@ -111,14 +111,14 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 
 			/*
 			 * Enabling the tunnel with sip cause another REGISTER to be made.
-			 * In automatic mode, the udp test should conclude (assuming we have a normal network), that no 
+			 * In automatic mode, the udp test should conclude (assuming we have a normal network), that no
 			 * tunnel is needed. Thus the number of registrations should stay to 1.
-			 * The library is missing a notification of "tunnel connectivity test finished" to enable the 
+			 * The library is missing a notification of "tunnel connectivity test finished" to enable the
 			 * full testing of the automatic mode.
 			 */
 
 			if (tunnel_mode == LinphoneTunnelModeEnable && with_sip) {
-				CU_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,2));
+				BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,2));
 				/* Ensure that we did use the tunnel. If so, we should see contact changed from:
 				Contact: <sip:pauline@192.168.0.201>;.[...]
 				To:
@@ -126,32 +126,32 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 				*/
 				ms_free(public_ip);
 				public_ip = get_public_contact_ip(pauline->lc);
-				CU_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
+				BC_ASSERT_STRING_EQUAL(public_ip, tunnel_ip);
 			} else {
 				public_ip2 = get_public_contact_ip(pauline->lc);
-				CU_ASSERT_STRING_EQUAL(public_ip, public_ip2);
+				BC_ASSERT_STRING_EQUAL(public_ip, public_ip2);
 			}
 		}
 
-		CU_ASSERT_TRUE(call(pauline,marie));
+		BC_ASSERT_TRUE(call(pauline,marie));
 		pauline_call=linphone_core_get_current_call(pauline->lc);
-		CU_ASSERT_PTR_NOT_NULL(pauline_call);
+		BC_ASSERT_PTR_NOT_NULL(pauline_call);
 		if (pauline_call!=NULL){
-			CU_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(pauline_call)),
+			BC_ASSERT_PTR_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(pauline_call)),
 				encryption);
 		}
 		if (tunnel_mode == LinphoneTunnelModeEnable && with_sip){
 			/* make sure the call from pauline arrived from the tunnel by checking the contact address*/
 			marie_call = linphone_core_get_current_call(marie->lc);
-			CU_ASSERT_PTR_NOT_NULL(marie_call);
+			BC_ASSERT_PTR_NOT_NULL(marie_call);
 			if (marie_call){
 				const char *remote_contact = linphone_call_get_remote_contact(marie_call);
-				CU_ASSERT_PTR_NOT_NULL(remote_contact);
+				BC_ASSERT_PTR_NOT_NULL(remote_contact);
 				if (remote_contact){
 					LinphoneAddress *tmp = linphone_address_new(remote_contact);
-					CU_ASSERT_PTR_NOT_NULL(tmp);
+					BC_ASSERT_PTR_NOT_NULL(tmp);
 					if (tmp){
-						CU_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), tunnel_ip);
+						BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(tmp), tunnel_ip);
 						linphone_address_destroy(tmp);
 					}
 				}
@@ -159,7 +159,7 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 		}
 #ifdef VIDEO_ENABLED
 		if (with_video_and_ice){
-			CU_ASSERT_TRUE(add_video(pauline, marie, TRUE));
+			BC_ASSERT_TRUE(add_video(pauline, marie, TRUE));
 		}
 #endif
 		end_call(pauline,marie);

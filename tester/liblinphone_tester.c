@@ -16,8 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -27,7 +26,6 @@
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>
 #endif
-
 
 static FILE * log_file = NULL;
 

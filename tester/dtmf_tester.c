@@ -43,12 +43,12 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 	linphone_core_set_use_rfc2833_for_dtmf(pauline->lc, use_rfc2833);
 	linphone_core_set_use_info_for_dtmf(pauline->lc, use_sipinfo);
 
-	CU_ASSERT_TRUE(call(pauline,marie));
+	BC_ASSERT_TRUE(call(pauline,marie));
 
 	marie_call = linphone_core_get_current_call(marie->lc);
-	
-	CU_ASSERT_PTR_NOT_NULL(marie_call);
-	
+
+	BC_ASSERT_PTR_NOT_NULL(marie_call);
+
 	if (!marie_call) return;
 
 	if (dtmf != '\0') {
@@ -56,7 +56,7 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 		linphone_call_send_dtmf(marie_call, dtmf);
 
 		/*wait for the DTMF to be received from pauline*/
-		CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev+1, 10000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev+1, 10000));
 		expected = ms_strdup_printf("%c", dtmf);
 	}
 
@@ -66,29 +66,29 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 		linphone_call_send_dtmfs(marie_call, dtmf_seq);
 
 		/*wait for the DTMF sequence to be received from pauline*/
-		CU_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev + strlen(dtmf_seq), 10000 + dtmf_delay_ms * strlen(dtmf_seq)));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev + strlen(dtmf_seq), 10000 + dtmf_delay_ms * strlen(dtmf_seq)));
 		expected = (dtmf!='\0')?ms_strdup_printf("%c%s",dtmf,dtmf_seq):ms_strdup(dtmf_seq);
 	}
 
 	if (expected != NULL) {
-		CU_ASSERT_PTR_NOT_NULL(pauline->stat.dtmf_list_received);
+		BC_ASSERT_PTR_NOT_NULL(pauline->stat.dtmf_list_received);
 		if (pauline->stat.dtmf_list_received) {
-			CU_ASSERT_STRING_EQUAL(pauline->stat.dtmf_list_received, expected);
+			BC_ASSERT_STRING_EQUAL(pauline->stat.dtmf_list_received, expected);
 		}
 		ms_free(expected);
 	} else {
-		CU_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
+		BC_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
 	}
 }
 
 void send_dtmf_cleanup() {
-	CU_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
-	CU_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
+	BC_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
+	BC_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -116,7 +116,7 @@ static void send_dtmfs_sequence_sip_info() {
 
 static void send_dtmfs_sequence_not_ready() {
 	marie = linphone_core_manager_new( "marie_rc");
-	CU_ASSERT_EQUAL(linphone_call_send_dtmfs(linphone_core_get_current_call(marie->lc), "123"), -1);
+	BC_ASSERT_EQUAL(linphone_call_send_dtmfs(linphone_core_get_current_call(marie->lc), "123"), -1, int, "%d");
 	linphone_core_manager_destroy(marie);
 }
 
@@ -127,13 +127,13 @@ static void send_dtmfs_sequence_call_state_changed() {
 	linphone_call_send_dtmfs(marie_call, "123456789123456789");
 	/*just after, change call state, and expect DTMF to be canceled*/
 	linphone_core_pause_call(marie_call->core,marie_call);
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPausing,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPausing,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,1));
 
 	/*wait a few time to ensure that no DTMF are received*/
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 
-	CU_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
+	BC_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
 
 	send_dtmf_cleanup();
 }

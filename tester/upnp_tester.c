@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "lpconfig.h"
 #include "private.h"
@@ -28,7 +27,7 @@ static void upnp_start_n_stop(void) {
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 #ifdef BUILD_UPNP
-	CU_ASSERT_TRUE(lc_upnp->lc->upnp != NULL);
+	BC_ASSERT_TRUE(lc_upnp->lc->upnp != NULL);
 #endif
 	linphone_core_manager_destroy(lc_upnp);
 }
@@ -37,7 +36,7 @@ static void upnp_check_state(void) {
 	int tmp = 0;
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
-	CU_ASSERT_TRUE(linphone_core_get_upnp_state(lc_upnp->lc) == LinphoneUpnpStateOk);
+	BC_ASSERT_TRUE(linphone_core_get_upnp_state(lc_upnp->lc) == LinphoneUpnpStateOk);
 	linphone_core_manager_destroy(lc_upnp);
 }
 
@@ -47,7 +46,7 @@ static void upnp_check_ipaddress(void) {
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 	addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
-	CU_ASSERT_TRUE(addr != NULL && strlen(addr)>=7);
+	BC_ASSERT_TRUE(addr != NULL && strlen(addr)>=7);
 	linphone_core_manager_destroy(lc_upnp);
 }
 

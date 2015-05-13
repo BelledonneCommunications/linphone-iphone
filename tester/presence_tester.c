@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -169,11 +168,11 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	result&=wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_callee.number_of_LinphonePresenceActivityOnline+1);
 	*/
 
-	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NewSubscriptionRequest,initial_callee.number_of_NewSubscriptionRequest+1);
+	BC_ASSERT_EQUAL(callee_mgr->stat.number_of_NewSubscriptionRequest,initial_callee.number_of_NewSubscriptionRequest+1, int, "%d");
 	/*without proxy, callee cannot subscribe to caller
-	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NotifyReceived,initial_callee.number_of_NotifyReceived+1);
+	BC_ASSERT_EQUAL(callee_mgr->stat.number_of_NotifyReceived,initial_callee.number_of_NotifyReceived+1, int, "%d");
 	*/
-	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_NotifyReceived,initial_caller.number_of_NotifyReceived+1);
+	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_NotifyReceived,initial_caller.number_of_NotifyReceived+1, int, "%d");
 
 	ms_free(identity);
 	return result;
@@ -187,27 +186,27 @@ static void subscribe_failure_handle_by_app(void) {
 	char* lf_identity=linphone_address_as_string_uri_only(pauline->identity);
 	 linphone_core_get_default_proxy(marie->lc,&config);
 
-	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 	wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1); /*just to wait for unsubscription even if not notified*/
 
 	sal_set_recv_error(marie->lc->sal, 0); /*simulate an error*/
 
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationProgress,2));
-	CU_ASSERT_EQUAL(linphone_proxy_config_get_error(config),LinphoneReasonIOError);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationProgress,2));
+	BC_ASSERT_EQUAL(linphone_proxy_config_get_error(config),LinphoneReasonIOError, int, "%d");
 	sal_set_recv_error(marie->lc->sal, 1);
 
 	lf = linphone_core_get_friend_by_address(marie->lc,lf_identity);
 	linphone_friend_edit(lf);
 	linphone_friend_enable_subscribes(lf,FALSE); /*disable subscription*/
 	linphone_friend_done(lf);
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationOk,2)); /*wait for register ok*/
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationOk,2)); /*wait for register ok*/
 	linphone_friend_edit(lf);
 	linphone_friend_enable_subscribes(lf,TRUE);
 	linphone_friend_done(lf);
-	CU_ASSERT_FALSE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
+	BC_ASSERT_FALSE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
 
 	linphone_core_manager_destroy(marie);
-	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,3)); /*just to wait for unsubscription even if not notified*/
+	BC_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,3)); /*just to wait for unsubscription even if not notified*/
 
 	linphone_core_manager_destroy(pauline);
 }
@@ -216,12 +215,12 @@ static void simple_subscribe(void) {
 	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 
-	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 
 
 	linphone_core_manager_destroy(marie);
 	/*unsubscribe is not reported ?*/
-	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
+	BC_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
 
 	linphone_core_manager_destroy(pauline);
 }
@@ -244,18 +243,18 @@ static void call_with_presence(void) {
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 	LinphoneVideoPolicy pol={0};
 	linphone_core_set_video_policy(marie->lc,&pol);
-	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
-	CU_ASSERT_TRUE(subscribe_to_callee_presence(pauline,marie));
+	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+	BC_ASSERT_TRUE(subscribe_to_callee_presence(pauline,marie));
 
-	CU_ASSERT_TRUE(call(marie,pauline));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnThePhone,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnThePhone,1));
+	BC_ASSERT_TRUE(call(marie,pauline));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnThePhone,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnThePhone,1));
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1));
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -277,48 +276,48 @@ static void presence_information(void) {
 	char *contact2;
 	time_t current_timestamp, presence_timestamp;
 
-	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie, pauline));
+	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie, pauline));
 
 	/* Presence activity without description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityDinner,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityDinner, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityDinner, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
-	CU_ASSERT_PTR_NOT_NULL(activity);
-	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityDinner);
+	BC_ASSERT_PTR_NOT_NULL(activity);
+	BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityDinner, int, "%d");
 	description = linphone_presence_activity_get_description(activity);
-	CU_ASSERT_PTR_NULL(description);
+	BC_ASSERT_PTR_NULL(description);
 
 	/* Presence activity with description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivitySteering, bike_description);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivitySteering,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivitySteering, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivitySteering, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
-	CU_ASSERT_PTR_NOT_NULL(activity);
-	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivitySteering);
+	BC_ASSERT_PTR_NOT_NULL(activity);
+	BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivitySteering, int, "%d");
 	description = linphone_presence_activity_get_description(activity);
-	CU_ASSERT_PTR_NOT_NULL(description);
-	if (description != NULL) CU_ASSERT_EQUAL(strcmp(description, bike_description), 0);
+	BC_ASSERT_PTR_NOT_NULL(description);
+	if (description != NULL) BC_ASSERT_EQUAL(strcmp(description, bike_description), 0, int, "%d");
 
 	/* Presence activity with description and note. */
 	presence = linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityVacation, NULL, vacation_note, vacation_lang);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityVacation,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityVacation, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityVacation, 1, int, "%d");
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
-	CU_ASSERT_PTR_NOT_NULL(activity);
-	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityVacation);
+	BC_ASSERT_PTR_NOT_NULL(activity);
+	BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityVacation, int, "%d");
 	description = linphone_presence_activity_get_description(activity);
-	CU_ASSERT_PTR_NULL(description);
+	BC_ASSERT_PTR_NULL(description);
 	note = linphone_presence_model_get_note(marie->stat.last_received_presence, NULL);
-	CU_ASSERT_PTR_NOT_NULL(note);
+	BC_ASSERT_PTR_NOT_NULL(note);
 	if (note != NULL) {
 		note_content = linphone_presence_note_get_content(note);
-		CU_ASSERT_PTR_NOT_NULL(note_content);
+		BC_ASSERT_PTR_NOT_NULL(note_content);
 		if (note_content != NULL) {
-			CU_ASSERT_EQUAL(strcmp(note_content, vacation_note), 0);
+			BC_ASSERT_EQUAL(strcmp(note_content, vacation_note), 0, int, "%d");
 		}
 	}
 
@@ -327,11 +326,11 @@ static void presence_information(void) {
 	linphone_presence_model_set_contact(presence, contact);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnThePhone,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone, 1, int, "%d");
 	contact2 = linphone_presence_model_get_contact(presence);
-	CU_ASSERT_PTR_NOT_NULL(contact2);
+	BC_ASSERT_PTR_NOT_NULL(contact2);
 	if (contact2 != NULL) {
-		CU_ASSERT_EQUAL(strcmp(contact, contact2), 0);
+		BC_ASSERT_EQUAL(strcmp(contact, contact2), 0, int, "%d");
 		ms_free(contact2);
 	}
 
@@ -340,9 +339,9 @@ static void presence_information(void) {
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityShopping, NULL);
 	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityShopping,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1, int, "%d");
 	presence_timestamp = linphone_presence_model_get_timestamp(presence);
-	CU_ASSERT_TRUE(presence_timestamp >= current_timestamp);
+	BC_ASSERT_TRUE(presence_timestamp >= current_timestamp);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -367,7 +366,7 @@ static void test_subscribe_notify_publish(void) {
 
 	/*wait for subscribe acknowledgment*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	/*enable publish*/
 
@@ -380,23 +379,23 @@ static void test_subscribe_notify_publish(void) {
 
 	/*wait for marie status*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,2,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
 
 	/*wait for new status*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,3,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d");
 
 	/*wait for refresh*/
 	wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,4,5000);
-	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d");
 
 	/*linphone_core_remove_friend(pauline->lc,lf);*/
 	/*wait for final notify*/
 	/*wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyReceived,4,5000);
-	CU_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf), int, "%d");
 	 */
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -426,7 +425,7 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	/*wait for subscribe acknowledgment*/
 	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,1,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	/*enable publish*/
 
@@ -445,21 +444,21 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	/*wait for marie status*/
 	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,3,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(marie->lc,presence);
 
 	/*wait for new status*/
 	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,4,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf));
+	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d");
 
 
 	presence =linphone_presence_model_new_with_activity(  LinphonePresenceActivityMeeting,NULL);
 	linphone_core_set_presence_model(marie2->lc,presence);
 	/*wait for new status*/
 	wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,5,2000);
-	CU_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf)); /*because liblinphone compositor is very simple for now (I.E only take first occurence)*/
+	BC_ASSERT_EQUAL(LinphoneStatusBusy,linphone_friend_get_status(lf), int, "%d"); /*because liblinphone compositor is very simple for now (I.E only take first occurence)*/
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);

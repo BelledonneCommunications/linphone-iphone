@@ -67,15 +67,15 @@ void liblinphone_tester_enable_ipv6(bool_t enabled){
 
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(addr);
 	linphone_address_set_username(addr,test_username);
-	CU_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
+	BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
 	if (!domain) domain= test_route;
 	linphone_address_set_domain(addr,domain);
-	CU_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
+	BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
 	linphone_address_set_display_name(addr, NULL);
 	linphone_address_set_display_name(addr, "Mr Tester");
-	CU_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
+	BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
 	return addr;
 }
 
@@ -107,7 +107,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	if (file){
 		filepath = ms_strdup_printf("%s/%s", path, file);
-		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
+		BC_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
 		config = lp_config_new_with_factory(NULL,filepath);
 	}
 
@@ -297,7 +297,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, 
 	LinphoneProxyConfig* proxy;
 	int proxy_count;
 
-	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
+	/*BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies && rc_file) /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
 	else
@@ -311,7 +311,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, 
 			ms_error("Did not register after %d seconds for %d proxies", REGISTER_TIMEOUT, proxy_count);
 		}
 	}
-	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
+	BC_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count, int, "%d");
 	enable_codec(mgr->lc,"PCMU",8000);
 
 	linphone_core_get_default_proxy(mgr->lc,&proxy);

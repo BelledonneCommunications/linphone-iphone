@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
+#include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
 
 #if WINAPI_FAMILY_PHONE_APP
