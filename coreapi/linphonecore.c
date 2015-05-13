@@ -3436,6 +3436,8 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	int err;
 	bool_t no_user_consent=call->params->no_user_consent;
 
+	linphone_call_fill_media_multicast_addr(call);
+
 	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
@@ -3651,6 +3653,11 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 	}
 	if (params==NULL){
 		linphone_call_params_enable_video(call->params, lc->video_policy.automatically_accept || call->current_params->has_video);
+		if (!sal_call_is_offerer(call->op)) {
+			/*reset call param for multicast because this param is only relevant when offering*/
+			linphone_call_params_enable_audio_multicast(call->params,FALSE);
+			linphone_call_params_enable_video_multicast(call->params,FALSE);
+		}
 	}else
 		linphone_call_set_new_params(call,params);
 
@@ -3662,6 +3669,9 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		ms_warning("Video isn't supported in conference");
 		call->params->has_video = FALSE;
 	}
+	/*update multicast params according to call params*/
+	linphone_call_fill_media_multicast_addr(call);
+
 	linphone_call_init_media_streams(call); /*so that video stream is initialized if necessary*/
 	if (call->ice_session != NULL) {
 		if (linphone_call_prepare_ice(call,TRUE)==1)
@@ -7053,6 +7063,8 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->audio_dir=LinphoneMediaDirectionSendRecv;
 	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
+	params->audio_multicast_enabled=linphone_core_audio_multicast_enabled(lc);
+	params->video_multicast_enabled=linphone_core_video_multicast_enabled(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

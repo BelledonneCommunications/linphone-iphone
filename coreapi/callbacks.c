@@ -144,10 +144,13 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.state==MSStreamStarted) || (call->videostream && call->videostream->ms.state==MSStreamStarted)){
 		clear_early_media_destinations(call);
+		int md_changed=0;
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
-			int md_changed = media_parameters_changed(call, oldmd, new_md);
-			if ((md_changed & (SAL_MEDIA_DESCRIPTION_CODEC_CHANGED|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED))){
+			md_changed = media_parameters_changed(call, oldmd, new_md);
+			if ((md_changed & (	SAL_MEDIA_DESCRIPTION_CODEC_CHANGED
+								|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED
+								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED))){
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else if ( call->playing_ringbacktone) {
 				ms_message("Playing ringback tone, will restart the streams.");
@@ -181,6 +184,11 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			}
 		}
 		linphone_call_stop_media_streams (call);
+		if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED){
+			ms_message("Media ip type has changed, destroying sessions context on call [%p]",call);
+			ms_media_stream_sessions_uninit(&call->sessions[0]);
+			ms_media_stream_sessions_uninit(&call->sessions[1]);
+		}
 		linphone_call_init_media_streams (call);
 	}
 

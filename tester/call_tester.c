@@ -3086,7 +3086,7 @@ static void multiple_early_media(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir) {
+void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir) {
 	CU_ASSERT_PTR_NOT_NULL(call);
 	if  (call) {
 		int current_recv_iframe = mgr->stat.number_of_IframeDecoded;

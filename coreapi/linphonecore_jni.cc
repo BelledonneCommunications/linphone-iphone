@@ -3631,6 +3631,19 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_getVideoEnable
 	return (jboolean)linphone_call_params_video_enabled((LinphoneCallParams*)lcp);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableVideoMulticast(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
+	linphone_call_params_enable_video_multicast((LinphoneCallParams*)lcp, b);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_videoMulticastEnabled(JNIEnv *env, jobject thiz, jlong lcp){
+	return (jboolean)linphone_call_params_video_multicast_enabled((LinphoneCallParams*)lcp);
+}
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableAudioMulticast(JNIEnv *env, jobject thiz, jlong lcp, jboolean b){
+	linphone_call_params_enable_audio_multicast((LinphoneCallParams*)lcp, b);
+}
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_audioMulticastEnabled(JNIEnv *env, jobject thiz, jlong lcp){
+	return (jboolean)linphone_call_params_audio_multicast_enabled((LinphoneCallParams*)lcp);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_localConferenceMode(JNIEnv *env, jobject thiz, jlong lcp){
 	return (jboolean)linphone_call_params_get_local_conference_mode((LinphoneCallParams*)lcp);
 }

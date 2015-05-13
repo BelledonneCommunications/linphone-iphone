@@ -112,7 +112,8 @@ struct _LinphoneCallParams{
 	LinphoneMediaDirection video_dir;
 	bool_t video_declined; /*use to keep  traces of declined video to avoid to re-offer video in case of automatic RE-INVITE*/
 	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice)*/
-
+	bool_t video_multicast_enabled;
+	bool_t audio_multicast_enabled;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -205,8 +206,6 @@ typedef struct StunCandidate{
 
 typedef struct _PortConfig{
 	char multicast_ip[LINPHONE_IPADDR_SIZE];
-	int mcast_rtp_port;
-	int mcast_rtcp_port;
 	int rtp_port;
 	int rtcp_port;
 }PortConfig;
@@ -859,6 +858,7 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call);
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 void linphone_call_increment_local_media_description(LinphoneCall *call);
+void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);

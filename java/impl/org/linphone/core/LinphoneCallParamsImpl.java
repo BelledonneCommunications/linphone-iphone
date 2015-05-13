@@ -150,4 +150,25 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 		vSize.height = nativeSize[1];
 		return vSize;
 	}
+	private native void enableAudioMulticast(long ptr,boolean yesno);
+	@Override
+	public void enableAudioMulticast(boolean yesno) {
+		enableAudioMulticast(nativePtr,yesno);
+	}
+	private native boolean audioMulticastEnabled(long ptr);
+	@Override
+	public boolean audioMulticastEnabled() {
+		return audioMulticastEnabled(nativePtr);
+	}
+	private native void enableVideoMulticast(long ptr,boolean yesno);
+	
+	@Override
+	public void enableVideoMulticast(boolean yesno) {
+		enableVideoMulticast(nativePtr,yesno);
+	}
+	private native boolean videoMulticastEnabled(long ptr);
+	@Override
+	public boolean videoMulticastEnabled() {
+		return videoMulticastEnabled(nativePtr);
+	}
 }

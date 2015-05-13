@@ -307,6 +307,8 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 
 	if (sd1->type != sd2->type) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (strcmp(sd1->rtp_addr, sd2->rtp_addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (sd1->rtp_addr[0]!='\0' && sd2->rtp_addr[0]!='\0' && ms_is_multicast(sd1->rtp_addr) != ms_is_multicast(sd2->rtp_addr))
+			result |= SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED;
 	if (sd1->rtp_port != sd2->rtp_port) {
 		if ((sd1->rtp_port == 0) || (sd2->rtp_port == 0)) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 		else result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
@@ -330,6 +332,8 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (md1->addr[0]!='\0' && md2->addr[0]!='\0' && ms_is_multicast(md1->addr) != ms_is_multicast(md2->addr))
+		result |= SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED;
 	if (md1->nb_streams != md2->nb_streams) result |= SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	for(i = 0; i < md1->nb_streams; ++i){

@@ -235,6 +235,21 @@ void linphone_call_params_unref(LinphoneCallParams *cp) {
 	belle_sip_object_unref(cp);
 }
 
+void linphone_call_params_enable_audio_multicast(LinphoneCallParams *params, bool_t yesno) {
+	params->audio_multicast_enabled=yesno;
+}
+
+bool_t linphone_call_params_audio_multicast_enabled(const LinphoneCallParams *params) {
+	return params->audio_multicast_enabled;
+}
+
+void linphone_call_params_enable_video_multicast(LinphoneCallParams *params, bool_t yesno) {
+	params->video_multicast_enabled=yesno;
+}
+bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *params) {
+	return params->video_multicast_enabled;
+}
+
 /*******************************************************************************
  * Constructor and destructor functions                                        *
  ******************************************************************************/

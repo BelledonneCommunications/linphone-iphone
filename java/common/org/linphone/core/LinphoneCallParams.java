@@ -131,4 +131,31 @@ public interface LinphoneCallParams {
 	 * @return The received video size.
 	 */
 	VideoSize getReceivedVideoSize();
+	/**
+	 * Use to enable multicast rtp for audio stream.
+	 * * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent calls will propose multicast ip set by LinphoneCore.setAudioMulticastAddr
+	**/
+	void enableAudioMulticast(boolean yesno);
+
+	/**
+	 * Use to get multicast state of audio stream.
+	 * @return true if  subsequent calls will propose multicast ip set by LinphoneCore.setAudioMulticastAddr
+	**/
+	boolean audioMulticastEnabled();
+
+	/**
+	 * Use to enable multicast rtp for video stream.
+	 * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into video cline. In case of outgoing call video stream is sent to this  multicast address.
+	 * <br> For incoming calls behavior is unchanged.
+	 * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by LinphoneCore.setVideoMulticastAddr
+	**/
+	void enableVideoMulticast(boolean yesno);
+	/**
+	 * Use to get multicast state of video stream.
+	 * @return true if  subsequent calls will propose multicast ip set by LinphoneCore.setVideoMulticastAddr
+	**/
+	boolean videoMulticastEnabled();
+	
 }
