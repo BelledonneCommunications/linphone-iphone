@@ -3086,6 +3086,7 @@ static void multiple_early_media(void) {
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
 }
+#endif
 
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir) {
 	BC_ASSERT_PTR_NOT_NULL(call);
@@ -3095,10 +3096,11 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 		int dummy = 0;
 		const LinphoneCallParams *params = linphone_call_get_current_params(call);
 		BC_ASSERT_EQUAL(audio_dir,linphone_call_params_get_audio_direction(params), int, "%d");
+#ifdef VIDEO_ENABLED
 		BC_ASSERT_EQUAL(video_dir,linphone_call_params_get_video_direction(params), int, "%d");
-
 		linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_cb,mgr->lc);
 		linphone_call_send_vfu_request(call);
+
 
 		wait_for_list(lcs,&dummy,1,2000); /*on some device, it may take 3 to 4s to get audio from mic*/
 
@@ -3117,7 +3119,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 		}
 
 		BC_ASSERT_TRUE(wait_for_list(lcs, &mgr->stat.number_of_IframeDecoded,current_recv_iframe + expected_recv_iframe,3000));
-
+#endif
 		switch (audio_dir) {
 			case LinphoneMediaDirectionInactive:
 				BC_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
@@ -3135,7 +3137,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 	}
 
 }
-
+#ifdef VIDEO_ENABLED
 static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, LinphoneCoreManager *marie, MSList *lcs) {
 #define DEFAULT_WAIT_FOR 10000
 	LinphoneCallParams *params;
