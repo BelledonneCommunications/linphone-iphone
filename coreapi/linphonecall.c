@@ -1071,9 +1071,10 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		linphone_call_set_compatible_incoming_call_parameters(call, md);
 		  /* set multicast role & address if any*/
 		for (i=0;i<md->nb_streams;i++){
-			if (!sal_call_is_offerer(op) && ms_is_multicast(md->streams[i].rtp_addr))
+			if (!sal_call_is_offerer(op) && ms_is_multicast(md->streams[i].rtp_addr)){
 				md->streams[i].multicast_role = SalMulticastReceiver;
-			   strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
+				strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
+			}
 		}
 	}
 
