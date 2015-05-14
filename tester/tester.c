@@ -29,9 +29,9 @@
 #include <gtk/gtk.h>
 #endif
 
- static bool_t liblinphone_tester_ipv6_enabled=FALSE;
- static int liblinphone_tester_keep_accounts_flag = 0;
- static int manager_count = 0;
+static bool_t liblinphone_tester_ipv6_enabled=FALSE;
+static int liblinphone_tester_keep_accounts_flag = 0;
+static int manager_count = 0;
 
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";

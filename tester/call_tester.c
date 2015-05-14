@@ -2364,7 +2364,7 @@ static void call_with_file_player(void) {
 	{
 		double similar;
 		const int threshold = 90;
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL), 0, int, "%d");
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
 		BC_ASSERT_GREATER(100*similar, threshold, int, "%d");
 		BC_ASSERT_LOWER(100*similar, 100, int, "%d");
 		if (threshold < 100*similar && 100*similar < 100) {
@@ -2442,7 +2442,7 @@ static void call_with_mkv_file_player(void) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 #ifdef DO_AUDIO_CMP
-	BC_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_min_overlap,NULL,NULL)==0);
+	BC_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_max_shift,NULL,NULL)==0);
 	BC_ASSERT_TRUE(similar>threshold);
 	BC_ASSERT_TRUE(similar<=1.0);
 	if(similar>threshold && similar<=1.0) {
@@ -4057,6 +4057,89 @@ static void video_call_ice_params() {
 }
 #endif
 
+static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override) {
+	int begin;
+	int leaked_objects;
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+	PayloadType *pt;
+	char *stereo_file = ms_strdup_printf("%s/%s",bc_tester_read_dir_prefix,"sounds/vrroom.wav");
+	char *recordpath = create_filepath(bc_tester_writable_dir_prefix, "stereo-record", "wav");
+	int dummy=0;
+
+	belle_sip_object_enable_leak_detector(TRUE);
+	begin=belle_sip_object_get_object_count();
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new( "pauline_rc");
+	
+	/*make sure we have opus*/
+	pt = linphone_core_find_payload_type(marie->lc, codec_name, clock_rate, 2);
+	if (!pt) {
+		ms_warning("%s not available, stereo with %s not tested.",codec_name, codec_name);
+		goto end;
+	}
+	payload_type_set_recv_fmtp(pt, NULL); /*remove fmtp that by default contain stereo=0*/
+	if (bitrate_override) linphone_core_set_payload_type_bitrate(marie->lc, pt, bitrate_override);
+	pt = linphone_core_find_payload_type(pauline->lc, codec_name, clock_rate, 2);
+	payload_type_set_recv_fmtp(pt, NULL);
+	if (bitrate_override) linphone_core_set_payload_type_bitrate(pauline->lc, pt, bitrate_override);
+	
+	disable_all_audio_codecs_except_one(marie->lc, codec_name, clock_rate);
+	disable_all_audio_codecs_except_one(pauline->lc, codec_name, clock_rate);
+	
+	linphone_core_set_use_files(marie->lc, TRUE);
+	linphone_core_set_play_file(marie->lc, stereo_file);
+	linphone_core_set_use_files(pauline->lc, TRUE);
+	linphone_core_set_record_file(pauline->lc, recordpath);
+	
+	remove(recordpath);
+	
+	/*stereo is supported only without volume control, echo canceller...*/
+	lp_config_set_string(marie->lc->config,"sound","features","NONE");
+	lp_config_set_string(pauline->lc->config,"sound","features","NONE");
+
+	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1,6000);
+	end_call(marie,pauline);
+	
+	if (clock_rate!=48000) ms_warning("Similarity checking not implemented for files not having the same sampling rate");
+	else{
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
+		double similar;
+		const int threshold = 70;
+		CU_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0);
+		CU_ASSERT_TRUE(100*similar >= threshold);
+		CU_ASSERT_TRUE(100*similar <= 100);
+		if (threshold < 100*similar && 100*similar <= 100) {
+			ms_error("similarity is %g", similar);
+			//remove(recordpath);
+		}
+#endif
+	}
+
+	
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_free(stereo_file);
+	ms_free(recordpath);
+
+	leaked_objects=belle_sip_object_get_object_count()-begin;
+	CU_ASSERT_TRUE(leaked_objects==0);
+	if (leaked_objects>0){
+		belle_sip_object_dump_active_objects();
+	}
+}
+
+static void simple_stereo_call_l16(void){
+	simple_stereo_call("L16", 44100, 0);
+}
+
+static void simple_stereo_call_opus(void){
+	simple_stereo_call("opus", 48000, 150);
+}
+
 test_t call_tests[] = {
 	{ "Phone number normalization", phone_number_normalization },
 	{ "Early declined call", early_declined_call },
@@ -4176,8 +4259,9 @@ test_t call_tests[] = {
 	{ "Outgoing REINVITE with invalid SDP in ACK",outgoing_reinvite_with_invalid_ack_sdp},
 	{ "Call with generic CN", call_with_generic_cn },
 	{ "Call with transport change after released", call_with_transport_change_after_released },
-	{ "Unsuccessful call with transport change after released",unsucessfull_call_with_transport_change_after_released}
-
+	{ "Unsuccessful call with transport change after released",unsucessfull_call_with_transport_change_after_released},
+	{ "Simple stereo call with L16", simple_stereo_call_l16 },
+	{ "Simple stereo call with opus", simple_stereo_call_opus }
 };
 
 test_suite_t call_test_suite = {
