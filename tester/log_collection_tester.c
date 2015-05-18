@@ -16,9 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __USE_XOPEN
-	/*on Debian OS, time.h does declare strptime only if __USE_XOPEN is declared */
-	#define __USE_XOPEN
+#ifndef _XOPEN_SOURCE
+	#define _XOPEN_SOURCE 700 // To have definition of strptime, snprintf and getline
 #endif
 #include <time.h>
 #include "linphonecore.h"
