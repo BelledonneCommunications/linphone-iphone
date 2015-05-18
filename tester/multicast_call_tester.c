@@ -55,7 +55,7 @@ static void call_multicast_base(bool_t video) {
 	BC_ASSERT_TRUE(call(pauline,marie));
 	wait_for_until(marie->lc, pauline->lc, NULL, 1, 3000);
 	if (linphone_core_get_current_call(marie->lc)) {
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth,70,int,"%d");
 		if (video) {
 			/*check video path*/
 			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(marie->lc),linphone_call_cb,marie->lc);

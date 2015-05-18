@@ -4107,8 +4107,8 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 		double similar;
 		const double threshold = .7f;
 		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-		BC_ASSERT_GREATER(100*similar, threshold, float, "%f");
-		BC_ASSERT_LOWER(100*similar, 1.f, float, "%f");
+		BC_ASSERT_GREATER(similar, threshold, float, "%f");
+		BC_ASSERT_LOWER(similar, 1.f, float, "%f");
 #endif
 	}
 
