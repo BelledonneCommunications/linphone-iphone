@@ -1,39 +1,24 @@
 cunit_dir?=cunit
+SRC_CUNIT=$(BUILDER_SRC_DIR)/${cunit_dir}
+BUILD_CUNIT=$(BUILDER_BUILD_DIR)/${cunit_dir}
 
-SRC_DIR=$(BUILDER_SRC_DIR)
-BUILD_DIR=$(BUILDER_BUILD_DIR)
+${BUILD_CUNIT}/CMakeCache.txt:
+	mkdir -p ${BUILD_CUNIT} && \
+	cd ${BUILD_CUNIT} && \
+	cmake -DENABLE_STATIC=YES -DCMAKE_TOOLCHAIN_FILE=$(BUILDER_SRC_DIR)/build/toolchain.cmake \
+			-DIOS_ARCH=${ARCH} -DCMAKE_INSTALL_PREFIX=$(prefix) ${SRC_CUNIT}
 
-
-$(SRC_DIR)/$(cunit_dir)/configure $(SRC_DIR)/$(cunit_dir)/autogened:
-	cd $(SRC_DIR)/$(cunit_dir) \
-	&& ./autogen.sh \
-	&& touch autogened
-
-$(BUILD_DIR)/$(cunit_dir)/rsynced: $(SRC_DIR)/$(cunit_dir)/configure $(SRC_DIR)/$(cunit_dir)/autogened
-	mkdir -p $(BUILD_DIR)/$(cunit_dir)
-	cd $(BUILD_DIR)/$(cunit_dir)/ \
-	&& rsync -rvLpgoc --exclude ".git" $(SRC_DIR)/$(cunit_dir)/* . \
-	&& touch $(BUILD_DIR)/$(cunit_dir)/rsynced
-
-$(BUILD_DIR)/$(cunit_dir)/Makefile: $(BUILD_DIR)/$(cunit_dir)/rsynced 
-	mkdir -p $(BUILD_DIR)/$(cunit_dir)
-	cd $(BUILD_DIR)/$(cunit_dir) \
-	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(SRC_DIR)/build/$(config_site) \
-	$(SRC_DIR)/$(cunit_dir)/configure --prefix=$(prefix) --host=$(host) ${library_mode}  
-
-build-cunit: $(BUILD_DIR)/$(cunit_dir)/Makefile
-	cd $(BUILD_DIR)/${cunit_dir} \
-	&& host_alias=$(host) \
-	&& . $(SRC_DIR)/build/$(config_site) \
-	&& make V=1 \
-	&& make install V=1
+build-cunit: ${BUILD_CUNIT}/CMakeCache.txt
+	cd ${BUILD_CUNIT} && \
+	make && \
+	make install
 
 clean-cunit:
-	-cd $(BUILD_DIR)/$(cunit_dir) && make clean
+	cd $(BUILD_CUNIT)/$(cunit_dir) && \
+	make clean
 
-veryclean-cunit: 
-	-rm -rf $(BUILD_DIR)/$(cunit_dir)
-	-rm -f $(SRC_DIR)/$(cunit_dir)/autogened
+veryclean-cunit:
+	rm -rf $(BUILD_CUNIT)/$(cunit_dir)
 
 clean-makefile-cunit: veryclean-cunit
 
