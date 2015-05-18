@@ -16,13 +16,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #ifndef __USE_XOPEN
 	/*on Debian OS, time.h does declare strptime only if __USE_XOPEN is declared */
 	#define __USE_XOPEN
 #endif
 #include <time.h>
-#include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"

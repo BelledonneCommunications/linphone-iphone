@@ -17,10 +17,8 @@
 */
 
 
-#include <stdio.h>
-#include <sys/types.h>
+	#include <sys/types.h>
 #include <sys/stat.h>
-#include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "lpconfig.h"
 #include "private.h"
@@ -78,7 +76,7 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 	case LinphoneCallEarlyUpdating: counters->number_of_LinphoneCallEarlyUpdating++;break;
 	case LinphoneCallEarlyUpdatedByRemote: counters->number_of_LinphoneCallEarlyUpdatedByRemote++;break;
 	default:
-		CU_FAIL("unexpected event");break;
+		BC_FAIL("unexpected event");break;
 	}
 }
 
@@ -132,7 +130,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	case LinphoneCallStreamsRunning :counters->number_of_LinphoneTransferCallStreamsRunning++;break;
 	case LinphoneCallError :counters->number_of_LinphoneTransferCallError++;break;
 	default:
-		CU_FAIL("unexpected event");break;
+		BC_FAIL("unexpected event");break;
 	}
 }
 
@@ -4072,7 +4070,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
-	
+
 	/*make sure we have opus*/
 	pt = linphone_core_find_payload_type(marie->lc, codec_name, clock_rate, 2);
 	if (!pt) {
@@ -4084,17 +4082,17 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	pt = linphone_core_find_payload_type(pauline->lc, codec_name, clock_rate, 2);
 	payload_type_set_recv_fmtp(pt, NULL);
 	if (bitrate_override) linphone_core_set_payload_type_bitrate(pauline->lc, pt, bitrate_override);
-	
+
 	disable_all_audio_codecs_except_one(marie->lc, codec_name, clock_rate);
 	disable_all_audio_codecs_except_one(pauline->lc, codec_name, clock_rate);
-	
+
 	linphone_core_set_use_files(marie->lc, TRUE);
 	linphone_core_set_play_file(marie->lc, stereo_file);
 	linphone_core_set_use_files(pauline->lc, TRUE);
 	linphone_core_set_record_file(pauline->lc, recordpath);
-	
+
 	remove(recordpath);
-	
+
 	/*stereo is supported only without volume control, echo canceller...*/
 	lp_config_set_string(marie->lc->config,"sound","features","NONE");
 	lp_config_set_string(pauline->lc->config,"sound","features","NONE");
@@ -4102,15 +4100,15 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1,6000);
 	end_call(marie,pauline);
-	
+
 	if (clock_rate!=48000) ms_warning("Similarity checking not implemented for files not having the same sampling rate");
 	else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
 		const int threshold = 70;
-		CU_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0);
-		CU_ASSERT_TRUE(100*similar >= threshold);
-		CU_ASSERT_TRUE(100*similar <= 100);
+		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+		BC_ASSERT_TRUE(100*similar >= threshold);
+		BC_ASSERT_TRUE(100*similar <= 100);
 		if (threshold < 100*similar && 100*similar <= 100) {
 			ms_error("similarity is %g", similar);
 			//remove(recordpath);
@@ -4118,7 +4116,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 #endif
 	}
 
-	
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -4126,7 +4124,7 @@ end:
 	ms_free(recordpath);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_TRUE(leaked_objects==0);
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
