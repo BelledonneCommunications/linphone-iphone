@@ -17,6 +17,10 @@ check_installed() {
 
 cd $(dirname $0)/..
 
+if grep -q ' ' <<< $PWD; then
+	echo_err "Invalid location: your location should not contain spaces"
+fi
+
 for prog in autoconf automake pkg-config doxygen java nasm gettext wget yasm optipng; do
 	check_installed "$prog" "it"
 done
