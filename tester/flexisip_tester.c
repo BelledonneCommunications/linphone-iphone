@@ -104,8 +104,8 @@ static void message_forking_with_unreachable_recipients(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
-	BC_ASSERT_TRUE( marie2->stat.number_of_LinphoneMessageReceived==0);
-	BC_ASSERT_TRUE( marie3->stat.number_of_LinphoneMessageReceived==0);
+	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	BC_ASSERT_EQUAL(marie3->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
@@ -148,9 +148,9 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,5000));
 	/*flexisip will accept the message with 202 after 16 seconds*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,18000));
-	BC_ASSERT_TRUE( marie->stat.number_of_LinphoneMessageReceived==0);
-	BC_ASSERT_TRUE( marie2->stat.number_of_LinphoneMessageReceived==0);
-	BC_ASSERT_TRUE( marie3->stat.number_of_LinphoneMessageReceived==0);
+	BC_ASSERT_EQUAL( marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	BC_ASSERT_EQUAL( marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	BC_ASSERT_EQUAL( marie3->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 
 	/*marie 1 goes online */
 	linphone_core_set_network_reachable(marie->lc,TRUE);
@@ -551,12 +551,12 @@ static void early_media_call_forking(void) {
 
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,6000);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>60
-					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<99);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>60
-					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<99);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>60
-					&& linphone_call_get_audio_stats(marie2_call)->download_bandwidth<99);
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 99, int, "%d");
 
 	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
@@ -567,10 +567,10 @@ static void early_media_call_forking(void) {
 
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,3000);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>60
-					&& linphone_call_get_audio_stats(pauline_call)->download_bandwidth<99 );
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>60
-					&& linphone_call_get_audio_stats(marie1_call)->download_bandwidth<99 );
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 99, int, "%d");
 
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
@@ -610,7 +610,7 @@ static void call_with_sips(void){
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 
 	/*pauline2 should not have ring*/
-	BC_ASSERT_TRUE(pauline2->stat.number_of_LinphoneCallIncomingReceived==0);
+	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
 
 	linphone_core_terminate_call(pauline1->lc,linphone_core_get_current_call(pauline1->lc));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphoneCallEnd,1,3000));
@@ -692,7 +692,7 @@ static void call_with_ipv6(void) {
 			ct_addr=linphone_address_new(contact);
 			BC_ASSERT_PTR_NOT_NULL(ct_addr);
 			if (ct_addr){
-				BC_ASSERT_TRUE(strchr(linphone_address_get_domain(ct_addr),':')!=NULL);
+				BC_ASSERT_PTR_NOT_NULL(strchr(linphone_address_get_domain(ct_addr),':'));
 			}
 			linphone_address_destroy(ct_addr);
 		}
@@ -706,7 +706,7 @@ static void call_with_ipv6(void) {
 	liblinphone_tester_enable_ipv6(FALSE);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -881,7 +881,7 @@ static void dos_module_trigger(void) {
 	// At this point we should be banned for a minute
 
 	ms_usleep(90000000); // Wait 90 seconds to ensure we are not banned anymore
-	BC_ASSERT_TRUE(marie->stat.number_of_LinphoneMessageReceived < number_of_messge_to_send);
+	BC_ASSERT_LOWER(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);

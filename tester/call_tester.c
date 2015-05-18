@@ -4105,14 +4105,10 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
-		const int threshold = 70;
+		const double threshold = .7f;
 		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-		BC_ASSERT_TRUE(100*similar >= threshold);
-		BC_ASSERT_TRUE(100*similar <= 100);
-		if (threshold < 100*similar && 100*similar <= 100) {
-			ms_error("similarity is %g", similar);
-			//remove(recordpath);
-		}
+		BC_ASSERT_GREATER(100*similar, threshold, float, "%f");
+		BC_ASSERT_LOWER(100*similar, 1.f, float, "%f");
 #endif
 	}
 
