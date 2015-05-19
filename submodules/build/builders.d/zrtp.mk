@@ -1,5 +1,4 @@
 ############################################################################
-# zrtp.mk
 # Copyright (C) 2014  Belledonne Communications,Grenoble France
 #
 ############################################################################
@@ -19,48 +18,34 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-bzrtp_dir?=bzrtp
-enable_zrtp?=yes
 
-configure-options=
-ifeq ($(LINPHONE_CCACHE), ccache)
-	configure-options+= --disable-strict
-endif
+bzrtp_project:=bzrtp
+bzrtp_project_dir:=.
+bzrtp_cmake_specific_options:=-DENABLE_STATIC=YES
 
-$(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure:
-	@echo -e "\033[01;32m Running autogen for bzrtp in $(BUILDER_SRC_DIR)/$(bzrtp_dir) \033[0m"
-	cd $(BUILDER_SRC_DIR)/$(bzrtp_dir) && ./autogen.sh
+bzrtp_src_dir=$(BUILDER_SRC_DIR)/${bzrtp_project_dir}/${bzrtp_project}
+bzrtp_build_dir=$(BUILDER_BUILD_DIR)/${bzrtp_project_dir}/${bzrtp_project}
 
-$(BUILDER_BUILD_DIR)/$(bzrtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure
-	@echo -e "\033[01;32m Running configure in $(BUILDER_BUILD_DIR)/$(bzrtp_dir) \033[0m"
-	mkdir -p $(BUILDER_BUILD_DIR)/$(bzrtp_dir)
-	cd $(BUILDER_BUILD_DIR)/$(bzrtp_dir)/ \
-		&& host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-		$(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
-		--enable-static ${configure-options}
+${bzrtp_build_dir}/Makefile:
+	rm -rf ${bzrtp_build_dir}/CMakeCache.txt ${bzrtp_build_dir}/CMakeFiles/ && \
+	mkdir -p ${bzrtp_build_dir} && \
+	cd ${bzrtp_build_dir} && \
+	cmake -DCMAKE_TOOLCHAIN_FILE=$(BUILDER_SRC_DIR)/build/toolchain.cmake -DIOS_ARCH=${ARCH} \
+		-DCMAKE_INSTALL_PREFIX=$(prefix) -DCMAKE_PREFIX_PATH=$(prefix) -DCMAKE_MODULE_PATH=$(prefix)/share/cmake/Modules/ \
+		${bzrtp_cmake_specific_options} ${bzrtp_src_dir}
 
-ifeq ($(enable_zrtp),yes)
+build-${bzrtp_project}: ${bzrtp_build_dir}/Makefile
+	cd ${bzrtp_build_dir} && \
+	make && \
+	make install
 
-build-bzrtp: $(BUILDER_BUILD_DIR)/$(bzrtp_dir)/Makefile
-	@echo -e "\033[01;32m building bzrtp \033[0m"
-	cd $(BUILDER_BUILD_DIR)/$(bzrtp_dir) \
-		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig \
-		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-		make -j1 && make install
+clean-${bzrtp_project}:
+	cd $(bzrtp_build_dir) && \
+	make clean
 
-else
-build-bzrtp:
-	@echo "ZRTP is disabled"
+veryclean-${bzrtp_project}:
+	if [ -d $(bzrtp_build_dir) ]; then grep -v $(prefix) $(bzrtp_build_dir)/install_manifest.txt | xargs echo rm; fi && \
+	rm -rf $(bzrtp_build_dir)
 
-endif
+clean-makefile-${bzrtp_project}: veryclean-${bzrtp_project}
 
-clean-bzrtp:
-	-cd  $(BUILDER_BUILD_DIR)/$(bzrtp_dir) && make clean
-
-veryclean-bzrtp:
-	-cd $(BUILDER_BUILD_DIR)/$(bzrtp_dir) && make distclean
-	rm -f $(BUILDER_SRC_DIR)/$(bzrtp_dir)/configure
-
-clean-makefile-bzrtp:
-	-cd $(BUILDER_BUILD_DIR)/$(bzrtp_dir) && rm -f Makefile
