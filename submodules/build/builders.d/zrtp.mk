@@ -44,7 +44,7 @@ clean-${bzrtp_project}:
 	make clean
 
 veryclean-${bzrtp_project}:
-	if [ -d $(bzrtp_build_dir) ]; then grep -v $(prefix) $(bzrtp_build_dir)/install_manifest.txt | xargs echo rm; fi && \
+	if [ -d $(bzrtp_build_dir) ]; then grep -v $(prefix) $(bzrtp_build_dir)/install_manifest.txt | xargs rm; fi && \
 	rm -rf $(bzrtp_build_dir)
 
 clean-makefile-${bzrtp_project}: veryclean-${bzrtp_project}

@@ -44,7 +44,7 @@ clean-${polarssl_project}:
 	make clean
 
 veryclean-${polarssl_project}:
-	if [ -d $(polarssl_build_dir) ]; then grep -v $(prefix) $(polarssl_build_dir)/install_manifest.txt | xargs echo rm; fi && \
+	if [ -d $(polarssl_build_dir) ]; then grep -v $(prefix) $(polarssl_build_dir)/install_manifest.txt | xargs rm; fi && \
 	rm -rf $(polarssl_build_dir)
 
 clean-makefile-${polarssl_project}: veryclean-${polarssl_project}

@@ -44,7 +44,7 @@ clean-${cunit_project}:
 	make clean
 
 veryclean-${cunit_project}:
-	if [ -d $(cunit_build_dir) ]; then grep -v $(prefix) $(cunit_build_dir)/install_manifest.txt | xargs echo rm; fi && \
+	if [ -d $(cunit_build_dir) ]; then grep -v $(prefix) $(cunit_build_dir)/install_manifest.txt | xargs rm; fi && \
 	rm -rf $(cunit_build_dir)
 
 clean-makefile-${cunit_project}: veryclean-${cunit_project}
