@@ -108,7 +108,7 @@ static LinphoneCoreManager* setup(bool_t enable_logs)  {
 	collect_init();
 	linphone_core_enable_log_collection(enable_logs);
 
-	marie = linphone_core_manager_new( "marie_rc");
+	marie = linphone_core_manager_new2( "marie_rc", 0);
 	// wait a few seconds to generate some traffic
 	while (--timeout){
 		// Generate some logs - error logs because we must ensure that
@@ -288,27 +288,28 @@ static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogC
 }
 static void upload_collected_traces()  {
 	LinphoneCoreManager* marie = setup(TRUE);
-	int waiting = 100;
-	LinphoneCoreVTable *v_table = linphone_core_v_table_new();
-	v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
-	linphone_core_add_listener(marie->lc, v_table);
+	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+		int waiting = 100;
+		LinphoneCoreVTable *v_table = linphone_core_v_table_new();
+		v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
+		linphone_core_add_listener(marie->lc, v_table);
 
-	linphone_core_set_log_collection_max_file_size(5000);
-	linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
-	// Generate some logs
-	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-	linphone_core_compress_log_collection(marie->lc);
-	linphone_core_upload_log_collection(marie->lc);
-	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
+		linphone_core_set_log_collection_max_file_size(5000);
+		linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
+		// Generate some logs
+		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+		linphone_core_compress_log_collection(marie->lc);
+		linphone_core_upload_log_collection(marie->lc);
+		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
 
-	/*try 2 times*/
-	waiting=100;
-	linphone_core_reset_log_collection(marie->lc);
-	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-	linphone_core_compress_log_collection(marie->lc);
-	linphone_core_upload_log_collection(marie->lc);
-	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
-
+		/*try 2 times*/
+		waiting=100;
+		linphone_core_reset_log_collection(marie->lc);
+		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
+		linphone_core_compress_log_collection(marie->lc);
+		linphone_core_upload_log_collection(marie->lc);
+		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+	}
 	collect_cleanup(marie);
 }
 

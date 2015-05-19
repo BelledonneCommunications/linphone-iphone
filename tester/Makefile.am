@@ -28,7 +28,7 @@ liblinphonetester_la_SOURCES = \
 				remote_provisioning_tester.c \
 				setup_tester.c \
 				stun_tester.c \
-				transport_tester.c \
+				tunnel_tester.c \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \

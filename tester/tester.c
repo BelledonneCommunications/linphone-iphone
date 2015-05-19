@@ -224,6 +224,12 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 	return manager;
 }
 
+bool_t transport_supported(LinphoneCore *lc, LinphoneTransportType transport) {
+	bool_t supported = linphone_core_sip_transport_supported(lc, transport);
+	if (!supported) ms_warning("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
+	return supported;
+}
+
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	char *rc_path = NULL;
@@ -402,7 +408,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&remote_provisioning_test_suite);
 	bc_tester_add_suite(&quality_reporting_test_suite);
 	bc_tester_add_suite(&log_collection_test_suite);
-	bc_tester_add_suite(&transport_test_suite);
+	bc_tester_add_suite(&tunnel_test_suite);
 	bc_tester_add_suite(&player_test_suite);
 	bc_tester_add_suite(&dtmf_test_suite);
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)

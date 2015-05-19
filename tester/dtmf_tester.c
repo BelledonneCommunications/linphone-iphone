@@ -32,11 +32,16 @@ void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	counters->dtmf_count++;
 }
 
-void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtmf_seq) {
+void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtmf_seq, bool_t use_opus) {
 	char* expected = NULL;
 	int dtmf_count_prev;
 	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
+	pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	if (use_opus) {
+		disable_all_audio_codecs_except_one(marie->lc, "opus", 48000);
+		disable_all_audio_codecs_except_one(pauline->lc, "opus", 48000);
+	}
 
 	linphone_core_set_use_rfc2833_for_dtmf(marie->lc, use_rfc2833);
 	linphone_core_set_use_info_for_dtmf(marie->lc, use_sipinfo);
@@ -95,22 +100,22 @@ void send_dtmf_cleanup() {
 }
 
 static void send_dtmf_rfc2833() {
-	send_dtmf_base(TRUE,FALSE,'1',NULL);
+	send_dtmf_base(TRUE,FALSE,'1',NULL,FALSE);
 	send_dtmf_cleanup();
 }
 
 static void send_dtmf_sip_info() {
-	send_dtmf_base(FALSE,TRUE,'#',NULL);
+	send_dtmf_base(FALSE,TRUE,'#',NULL,FALSE);
 	send_dtmf_cleanup();
 }
 
 static void send_dtmfs_sequence_rfc2833() {
-	send_dtmf_base(TRUE,FALSE,'\0',"1230#");
+	send_dtmf_base(TRUE,FALSE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup();
 }
 
 static void send_dtmfs_sequence_sip_info() {
-	send_dtmf_base(FALSE,TRUE,'\0',"1230#");
+	send_dtmf_base(FALSE,TRUE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup();
 }
 
@@ -121,7 +126,7 @@ static void send_dtmfs_sequence_not_ready() {
 }
 
 static void send_dtmfs_sequence_call_state_changed() {
-	send_dtmf_base(FALSE,TRUE,'\0',NULL);
+	send_dtmf_base(FALSE,TRUE,'\0',NULL,FALSE);
 
 	/*very long DTMF(around 4 sec to be sent)*/
 	linphone_call_send_dtmfs(marie_call, "123456789123456789");
@@ -138,6 +143,11 @@ static void send_dtmfs_sequence_call_state_changed() {
 	send_dtmf_cleanup();
 }
 
+static void send_dtmf_rfc2833_opus() {
+	send_dtmf_base(TRUE,FALSE,'1',NULL,TRUE);
+	send_dtmf_cleanup();
+}
+
 test_t dtmf_tests[] = {
 	{ "Send DTMF using RFC2833",send_dtmf_rfc2833},
 	{ "Send DTMF using SIP INFO",send_dtmf_sip_info},
@@ -145,6 +155,7 @@ test_t dtmf_tests[] = {
 	{ "Send DTMF sequence using SIP INFO",send_dtmfs_sequence_sip_info},
 	{ "DTMF sequence not sent if invalid call",send_dtmfs_sequence_not_ready},
 	{ "DTMF sequence canceled if call state changed",send_dtmfs_sequence_call_state_changed},
+	{ "Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus},
 };
 
 test_suite_t dtmf_test_suite = {

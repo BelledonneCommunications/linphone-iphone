@@ -33,7 +33,7 @@
 
 static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	MSList *iterator;
 	MSList* lcs;
@@ -115,7 +115,7 @@ static void call_waiting_indication_with_privacy(void) {
 
 static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState state) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	MSList* lcs;
 	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
@@ -242,7 +242,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 }
 static void simple_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	simple_conference_base(marie,pauline,laure);
 	linphone_core_manager_destroy(marie);
@@ -252,7 +252,7 @@ static void simple_conference(void) {
 
 static void simple_conference_with_ice(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 
 	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
@@ -271,7 +271,7 @@ static void simple_conference_with_ice(void) {
 
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall *marie_calling_pauline;
@@ -331,7 +331,7 @@ static void simple_call_transfer(void) {
 
 static void unattended_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCall* pauline_called_by_marie;
 
@@ -377,7 +377,7 @@ static void unattended_call_transfer(void) {
 
 static void unattended_call_transfer_with_error(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* pauline_called_by_marie;
 	bool_t call_ok=TRUE;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -417,7 +417,7 @@ static void unattended_call_transfer_with_error(void) {
 
 static void call_transfer_existing_call_outgoing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;

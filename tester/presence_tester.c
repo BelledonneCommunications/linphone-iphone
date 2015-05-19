@@ -180,7 +180,7 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 }
 static void subscribe_failure_handle_by_app(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneProxyConfig* config;
 	LinphoneFriend* lf;
 	char* lf_identity=linphone_address_as_string_uri_only(pauline->identity);

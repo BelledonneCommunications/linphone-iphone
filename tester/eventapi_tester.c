@@ -122,7 +122,7 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 
 static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	const LinphoneErrorInfo *ei;
@@ -164,7 +164,7 @@ typedef enum RefreshTestType{
 
 static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
@@ -217,7 +217,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 
 static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
@@ -301,7 +301,7 @@ static void subscribe_test_manually_refreshed(void){
 
 static void publish_test_with_args(bool_t refresh, int expires){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);

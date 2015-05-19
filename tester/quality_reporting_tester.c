@@ -143,7 +143,7 @@ bool_t create_call_for_quality_reporting_tests(
 
 static void quality_reporting_not_used_without_config() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
@@ -167,7 +167,7 @@ static void quality_reporting_not_used_without_config() {
 
 static void quality_reporting_not_sent_if_call_not_started() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallLog* out_call_log;
 	LinphoneCall* out_call;
 
@@ -198,7 +198,7 @@ static void quality_reporting_not_sent_if_call_not_started() {
 
 static void quality_reporting_not_sent_if_low_bandwidth() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams* marie_params;
 
 	marie_params=linphone_core_create_default_call_parameters(marie->lc);
@@ -223,7 +223,7 @@ void on_report_send_remove_fields(const LinphoneCall *call, int stream_type, con
 
 static void quality_reporting_invalid_report() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
@@ -291,7 +291,7 @@ static void quality_reporting_interval_report() {
 
 static void quality_reporting_session_report_if_video_stopped() {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_pauline = NULL;
 	LinphoneCall* call_marie = NULL;
 	LinphoneCallParams* pauline_params;

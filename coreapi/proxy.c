@@ -604,6 +604,7 @@ typedef struct dial_plan{
 /* TODO: fill with information for all countries over the world*/
 
 static dial_plan_t const dial_plans[]={
+	//Country					, iso country code, e164 country calling code, number length, international usual prefix
 	{"Afghanistan"                  ,"AF"		, "93"      , 9		, "00"  },
 	{"Albania"                      ,"AL"		, "355"     , 9		, "00"  },
 	{"Algeria"                      ,"DZ"		, "213"     , 9		, "00"  },
@@ -651,7 +652,7 @@ static dial_plan_t const dial_plans[]={
 	{"Congo Democratic Republic"	,"CD"		, "243"     , 9		, "00"  },
 	{"Cook Islands"                 ,"CK"		, "682"     , 5		, "00"  },
 	{"Costa Rica"                   ,"CR"		, "506"     , 8     , "00"	},
-	{"C�te d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
+	{"Cote d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
 	{"Croatia"                      ,"HR"		, "385"     , 9		, "00"  },
 	{"Cuba"                         ,"CU"		, "53"      , 8     , "119" },
 	{"Cyprus"                       ,"CY"		, "357"     , 8     , "00"	},
@@ -780,7 +781,7 @@ static dial_plan_t const dial_plans[]={
 	{"Saint Vincent and the Grenadines","VC"	, "1"       , 10	, "011" },
 	{"Samoa"                        ,"WS"		, "685"     , 7     , "0"	},
 	{"San Marino"                   ,"SM"		, "378"     , 10	, "00"  },
-	{"S�o Tom� and Pr�ncipe"        ,"ST"		, "239"     , 7		, "00"  },
+	{"Sao Tome and Principe"        ,"ST"		, "239"     , 7		, "00"  },
 	{"Saudi Arabia"                 ,"SA"		, "966"     , 9		, "00"	},
 	{"Senegal"                      ,"SN"		, "221"     , 9	    , "00"  },
 	{"Serbia"                       ,"RS"		, "381"     , 9     , "00"  },

@@ -58,7 +58,7 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 }
 
 
-static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
+static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
 	if (linphone_core_tunnel_available()){
 		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
 		LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
@@ -174,30 +174,30 @@ static void call_with_transport_base(LinphoneTunnelMode tunnel_mode, bool_t with
 
 
 static void call_with_tunnel(void) {
-	call_with_transport_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE);
 }
 
 static void call_with_tunnel_srtp(void) {
-	call_with_transport_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionSRTP, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionSRTP, FALSE);
 }
 
 static void call_with_tunnel_without_sip(void) {
-	call_with_transport_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE);
 }
 
 static void call_with_tunnel_auto(void) {
-	call_with_transport_base(LinphoneTunnelModeAuto, TRUE, LinphoneMediaEncryptionNone, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeAuto, TRUE, LinphoneMediaEncryptionNone, FALSE);
 }
 
 static void call_with_tunnel_auto_without_sip_with_srtp(void) {
-	call_with_transport_base(LinphoneTunnelModeAuto, FALSE, LinphoneMediaEncryptionSRTP, FALSE);
+	call_with_tunnel_base(LinphoneTunnelModeAuto, FALSE, LinphoneMediaEncryptionSRTP, FALSE);
 }
 
 #ifdef VIDEO_ENABLED
 
 static void full_tunnel_video_ice_call(void){
 	if (linphone_core_tunnel_available()){
-		call_with_transport_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, TRUE);
+		call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, TRUE);
 	}else
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
@@ -250,28 +250,28 @@ static void tunnel_ice_call(void) {
 	else
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
-test_t transport_tests[] = {
-	{ "Tunnel only", call_with_tunnel },
-	{ "Tunnel with SRTP", call_with_tunnel_srtp },
-	{ "Tunnel without SIP", call_with_tunnel_without_sip },
-	{ "Tunnel in automatic mode", call_with_tunnel_auto },
-	{ "Tunnel in automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp },
-	{ "Tunnel ice call", tunnel_ice_call },
-	{ "Tunnel SRTP ice call", tunnel_srtp_ice_call },
-	{ "Tunnel ZRTP ice call", tunnel_zrtp_ice_call },
+test_t tunnel_tests[] = {
+	{ "Simple", call_with_tunnel },
+	{ "With SRTP", call_with_tunnel_srtp },
+	{ "Without SIP", call_with_tunnel_without_sip },
+	{ "In automatic mode", call_with_tunnel_auto },
+	{ "In automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp },
+	{ "Ice call", tunnel_ice_call },
+	{ "SRTP ice call", tunnel_srtp_ice_call },
+	{ "ZRTP ice call", tunnel_zrtp_ice_call },
 #ifdef VIDEO_ENABLED
-	{ "Tunnel ice video call", tunnel_video_ice_call },
-	{ "Tunnel with SIP - ice video call", full_tunnel_video_ice_call },
-	{ "Tunnel SRTP ice video call", tunnel_srtp_video_ice_call },
-	{ "Tunnel DTLS ice video call", tunnel_dtls_video_ice_call },
-	{ "Tunnel ZRTP ice video call", tunnel_zrtp_video_ice_call },
+	{ "Ice video call", tunnel_video_ice_call },
+	{ "With SIP - ice video call", full_tunnel_video_ice_call },
+	{ "SRTP ice video call", tunnel_srtp_video_ice_call },
+	{ "DTLS ice video call", tunnel_dtls_video_ice_call },
+	{ "ZRTP ice video call", tunnel_zrtp_video_ice_call },
 #endif
 };
 
-test_suite_t transport_test_suite = {
-	"Transport",
+test_suite_t tunnel_test_suite = {
+	"Tunnel",
 	NULL,
 	NULL,
-	sizeof(transport_tests) / sizeof(transport_tests[0]),
-	transport_tests
+	sizeof(tunnel_tests) / sizeof(tunnel_tests[0]),
+	tunnel_tests
 };

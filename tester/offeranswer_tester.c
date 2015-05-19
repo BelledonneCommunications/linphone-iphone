@@ -80,7 +80,7 @@ static void simple_call_with_different_codec_mappings(void) {
 	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
+	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
 	disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
@@ -127,7 +127,7 @@ static void call_failed_because_of_codecs(void) {
 
 	{
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 		LinphoneCall* out_call;
 
 		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
@@ -156,7 +156,7 @@ static void call_failed_because_of_codecs(void) {
 
 static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t avpf2, LinphoneMediaEncryption srtp2, bool_t encryption_mandatory, const char *expected_profile) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneProxyConfig *lpc;
 	const LinphoneCallParams *params;
 

@@ -31,7 +31,7 @@ static void call_multicast_base(bool_t video) {
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
+	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 	if (video) {
 		linphone_core_enable_video_capture(marie->lc, TRUE);
@@ -101,8 +101,8 @@ static void early_media_with_multicast_base(bool_t video) {
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
 	marie   = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
-	pauline2 = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
+	pauline2 = linphone_core_manager_new("pauline_tcp_rc");
 
 	marie_lp=linphone_core_get_config(marie->lc);
 	lp_config_set_int(marie_lp,"misc","real_early_media",1);

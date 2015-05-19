@@ -247,7 +247,7 @@ static void early_media_video_during_video_call_test(void) {
 	LinphoneCallParams *laure_params;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_video(pauline);
@@ -297,7 +297,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 	const MSList *calls_list;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
@@ -364,7 +364,7 @@ static void early_media_video_with_inactive_audio(void) {
 	LinphoneCallParams *pauline_params;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	marie_params = configure_for_early_media_video_receiving_with_inactive_audio(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
 

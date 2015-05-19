@@ -47,7 +47,7 @@ set(SOURCE_FILES
 	setup_tester.c
 	stun_tester.c
 	tester.c
-	transport_tester.c
+	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
 )
