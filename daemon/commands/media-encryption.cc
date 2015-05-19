@@ -62,7 +62,10 @@ void MediaEncryptionCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("Incorrect parameter.", Response::Error));
 			return;
 		}
-		linphone_core_set_media_encryption(app->getCore(), encryption);
-		app->sendResponse(MediaEncryptionResponse(app->getCore()));
+		if (linphone_core_set_media_encryption(app->getCore(), encryption)==0){
+			app->sendResponse(MediaEncryptionResponse(app->getCore()));
+		}else{
+			app->sendResponse(Response("Unsupported media encryption", Response::Error));
+		}
 	}
 }
