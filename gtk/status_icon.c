@@ -412,9 +412,9 @@ static void _linphone_status_icon_impl_sn_init(LinphoneStatusIcon *si) {
 	si->data = bc_status_notifier_new();
 }
 
-static void _linphone_status_icon_impl_sn_uninit(LinphoneStatusIcon *si) {
-	bc_status_notifier_unref((BcStatusNotifier *)si->data);
-}
+// static void _linphone_status_icon_impl_sn_uninit(LinphoneStatusIcon *si) {
+// 	bc_status_notifier_unref((BcStatusNotifier *)si->data);
+// }
 
 static void _linphone_status_icon_impl_sn_activated_cb(BcStatusNotifier *sn, int x, int y, void *user_data) {
 	LinphoneStatusIcon *si = (LinphoneStatusIcon *)user_data;
@@ -508,7 +508,7 @@ static gboolean _linphone_status_icon_impl_sn_is_supported(
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier = {
 	.impl_name = "status_notifier",
 	.init = _linphone_status_icon_impl_sn_init,
-	.uninit = _linphone_status_icon_impl_sn_uninit,
+	.uninit = NULL,
 	.start = _linphone_status_icon_impl_sn_start,
 	.enable_blinking = _linphone_status_icon_impl_sn_enable_blinking,
 	.is_supported = _linphone_status_icon_impl_sn_is_supported
