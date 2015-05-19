@@ -50,6 +50,10 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 			payload_type_append_send_fmtp(pt,fmtp);
 		}
 		rtp_profile_set_payload(prof,payload_type,pt);
+		if (linphone_core_generic_confort_noise_enabled(app->getCore())){
+			rtp_profile_set_payload(prof,13,payload_type_clone(&payload_type_cn));
+		}
+
 		
 		audio_stream_enable_adaptive_jittcomp(stream, linphone_core_audio_adaptive_jittcomp_enabled(app->getCore()));
 		rtp_session_set_symmetric_rtp(stream->ms.sessions.rtp_session, linphone_core_symmetric_rtp_enabled(app->getCore()));
