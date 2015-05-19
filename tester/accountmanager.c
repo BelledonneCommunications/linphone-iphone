@@ -187,6 +187,10 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	bool_t create_account=FALSE;
+	const LinphoneAuthInfo *original_ai = linphone_core_find_auth_info(lc
+																		,NULL
+																		, linphone_address_get_username(id_addr)
+																		, linphone_address_get_domain(id_addr));
 
 	if (!account){
 		account=account_new(id_addr,m->unique_id);
@@ -203,6 +207,11 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	if (create_account){
 		account_create_on_server(account,cfg);
 	}
+
+	/*remove previous auth info to avoid mismatching*/
+	if (original_ai)
+		linphone_core_remove_auth_info(lc,original_ai);
+
 	ai=linphone_auth_info_new(linphone_address_get_username(account->modified_identity),
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));

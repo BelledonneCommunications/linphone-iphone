@@ -250,12 +250,12 @@ static void text_message_with_credential_from_auth_cb(void) {
 	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(marie->lc)->data));
+	text_message_with_credential_from_auth_cb_auth_info=linphone_auth_info_clone((LinphoneAuthInfo*)(linphone_core_get_auth_info_list(pauline->lc)->data));
 
 	/*to force cb to be called*/
-	linphone_core_clear_all_auth_info(marie->lc);
+	linphone_core_clear_all_auth_info(pauline->lc);
 	vtable->auth_info_requested=text_message_with_credential_from_auth_cb_auth_info_requested;
-	linphone_core_add_listener(marie->lc, vtable);
+	linphone_core_add_listener(pauline->lc, vtable);
 
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
@@ -669,7 +669,7 @@ static void printHex(char *title, uint8_t *data, uint32_t length) {
 		sprintf (debug_string, "0x%02x, ", data[i]);
 		debug_string+=6;
 	}
-	debug_string = '\0';
+	*debug_string = '\0';
 	ms_message("%s", debug_string_buffer);
 }
 
