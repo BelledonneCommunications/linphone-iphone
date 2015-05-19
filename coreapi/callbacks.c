@@ -119,6 +119,8 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	SalMediaDescription *oldmd=call->resultdesc;
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
+	int md_changed=0;
+	
 
 	if (!((call->state == LinphoneCallIncomingEarlyMedia) && (linphone_core_get_ring_during_incoming_early_media(lc)))) {
 		linphone_core_stop_ringing(lc);
@@ -144,10 +146,13 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.state==MSStreamStarted) || (call->videostream && call->videostream->ms.state==MSStreamStarted)){
 		clear_early_media_destinations(call);
+
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
-			int md_changed = media_parameters_changed(call, oldmd, new_md);
-			if ((md_changed & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)){
+			md_changed = media_parameters_changed(call, oldmd, new_md);
+			if ((md_changed & (	SAL_MEDIA_DESCRIPTION_CODEC_CHANGED
+								|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED
+								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED))){
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else if ( call->playing_ringbacktone) {
 				ms_message("Playing ringback tone, will restart the streams.");
@@ -181,6 +186,11 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			}
 		}
 		linphone_call_stop_media_streams (call);
+		if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED){
+			ms_message("Media ip type has changed, destroying sessions context on call [%p]",call);
+			ms_media_stream_sessions_uninit(&call->sessions[0]);
+			ms_media_stream_sessions_uninit(&call->sessions[1]);
+		}
 		linphone_call_init_media_streams (call);
 	}
 
@@ -245,18 +255,6 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 	return FALSE;
 }
 
-static bool_t already_an_outgoing_call_pending(LinphoneCore *lc){
-	MSList *elem;
-	for(elem=lc->calls;elem!=NULL;elem=elem->next){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (call->state==LinphoneCallOutgoingInit
-			|| call->state==LinphoneCallOutgoingProgress
-			|| call->state==LinphoneCallOutgoingRinging){
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
 
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
@@ -264,9 +262,9 @@ static void call_received(SalOp *h){
 	char *alt_contact;
 	LinphoneAddress *from_addr=NULL;
 	LinphoneAddress  *to_addr=NULL;
-	/*this mode is deprcated because probably useless*/
-	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",FALSE);
+	LinphoneAddress *from_address_to_search_if_me=NULL; /*address used to know if I'm the caller*/
 	SalMediaDescription *md;
+	const char * p_asserted_id;
 
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
@@ -300,9 +298,9 @@ static void call_received(SalOp *h){
 		sal_op_release(h);
 		return;
 	}
+	p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 	/*in some situation, better to trust the network rather than the UAC*/
 	if (lp_config_get_int(lc->config,"sip","call_logs_use_asserted_id_instead_of_from",0)) {
-		const char * p_asserted_id = sal_custom_header_find(sal_op_get_recv_custom_header(h),"P-Asserted-Identity");
 		LinphoneAddress *p_asserted_id_addr;
 		if (!p_asserted_id) {
 			ms_warning("No P-Asserted-Identity header found so cannot use it for op [%p] instead of from",h);
@@ -321,13 +319,26 @@ static void call_received(SalOp *h){
 		from_addr=linphone_address_new(sal_op_get_from(h));
 	to_addr=linphone_address_new(sal_op_get_to(h));
 
-	if ((already_a_call_with_remote_address(lc,from_addr) && prevent_colliding_calls) || already_an_outgoing_call_pending(lc)){
-		ms_warning("Receiving a call while one is initiated, refusing this one with busy message.");
+	if (sal_op_get_privacy(h) == SalPrivacyNone) {
+		from_address_to_search_if_me=linphone_address_clone(from_addr);
+	} else if (p_asserted_id) {
+		from_address_to_search_if_me  = linphone_address_new(p_asserted_id);
+	} else {
+		ms_warning ("Hidden from identity, don't know if it's me");
+	}
+
+	if (from_address_to_search_if_me && already_a_call_with_remote_address(lc,from_address_to_search_if_me)){
+		char *addr = linphone_address_as_string(from_addr);
+		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message.",addr);
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
 		linphone_address_destroy(from_addr);
 		linphone_address_destroy(to_addr);
+		linphone_address_destroy(from_address_to_search_if_me);
+		ms_free(addr);
 		return;
+	} else if (from_address_to_search_if_me) {
+		linphone_address_destroy(from_address_to_search_if_me);
 	}
 
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
@@ -526,6 +537,7 @@ static void call_accepted(SalOp *op){
 
 	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
 		linphone_call_update_remote_session_id_and_ver(call);
+		linphone_core_update_ice_state_in_call_stats(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
 			sal_media_description_has_dir(md,SalStreamInactive)){
 			{
@@ -620,12 +632,17 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	LinphoneCallParams *params;
 	/*when we are paused, increment session id, because sdp is changed (a=recvonly appears)*/
 	linphone_call_increment_local_media_description(call);
 	/* we are being paused */
 	linphone_core_notify_display_status(lc,_("We are paused by other party."));
-	_linphone_core_accept_call_update(lc,call,NULL,LinphoneCallPausedByRemote,"Call paused by remote");
-
+	params = linphone_call_params_copy(call->params);
+	if (lp_config_get_int(lc->config, "sip", "inactive_video_on_pause", 0)) {
+		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionInactive);
+	}
+	_linphone_core_accept_call_update(lc,call,params,LinphoneCallPausedByRemote,"Call paused by remote");
+	linphone_call_params_unref(params);
 }
 
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t is_update){
@@ -658,7 +675,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 	if ( call->state == LinphoneCallStreamsRunning) {
 		/*reINVITE and in-dialogs UPDATE go here*/
 		linphone_core_notify_display_status(lc,_("Call is updated by remote."));
-		call->defer_update=FALSE;
+		call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
 		linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
 		if (call->defer_update==FALSE){
 			linphone_core_accept_call_update(lc,call,NULL);
@@ -671,7 +688,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		/* Case where no SDP is present and we were paused by remote.
 		 * We send back an ACK with our SDP and expect the remote to send its own.
 		 * No state change here until an answer is received. */
-		call->defer_update=FALSE;
+		call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
 		if (call->defer_update==FALSE){
 			_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
 		}

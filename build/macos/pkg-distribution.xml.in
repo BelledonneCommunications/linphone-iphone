@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Linphone</title>
+    <license file="COPYING" mime-type="text/plain"/>
+    <background file="linphone.png" mime-type="image/png" />
+    <pkg-ref id="org.linphone.linphone"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.linphone.linphone"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.linphone.linphone" visible="false">
+        <pkg-ref id="org.linphone.linphone"/>
+    </choice>
+    <pkg-ref id="org.linphone.linphone" version="@PACKAGE_VERSION@" onConclusion="none">linphone.pkg</pkg-ref>
+</installer-gui-script>

@@ -51,5 +51,14 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
+realm=auth1.example.org
 
+[proxy_3]
+reg_proxy=auth1.example.org
+reg_identity=sip:liblinphone_tester@auth1.example.org
+reg_expires=600
+reg_sendregister=1
+publish=0
+dial_escape_plus=0
+realm=auth1.example.org
 

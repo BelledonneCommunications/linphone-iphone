@@ -59,14 +59,14 @@ For windows compilation see README.mingw.
 For macOS X, see README.macos
 
 
-******************************** notes for developers: *****************************
+******************************** Notes for developers *****************************
 
 Here is a short description of the content of the source tree.
 
 - oRTP/ is a poweful implementation of the RTP protocol. See the oRTP/README for more details.
-	It is used by the mediastreamer to send and receive streams to the network.
+	It is used by mediastreamer2 to send and receive streams to the network.
 
-- mediastreamer2/ is one of the important part of linphone. It is a framework library for audio
+- mediastreamer2/ is one of the important part of linphone. It is a framework for audio
 	and video processing. It contains several objects for grabing audio and video and outputing
 	it (through rtp, to file).
 	It contains also codec objects to compress audio and video streams.

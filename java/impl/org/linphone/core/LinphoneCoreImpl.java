@@ -92,6 +92,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreviewWindowId(long nativePtr, Object wid);
 	private native void setDeviceRotation(long nativePtr, int rotation);
 	private native void addFriend(long nativePtr,long friend);
+	private native LinphoneFriend[] getFriendList(long nativePtr);
 	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
 	private native int getPresenceInfo(long nativePtr);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
@@ -433,8 +434,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void addFriend(LinphoneFriend lf) throws LinphoneCoreException {
 		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
-
 	}
+
+	public synchronized LinphoneFriend[] getFriendList() {
+		return getFriendList(nativePtr);
+	}
+
 	@SuppressWarnings("deprecation")
 	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {
 		setPresenceInfo(nativePtr,minutes_away,alternative_contact,status.mValue);
@@ -955,14 +960,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		removeFriend(nativePtr, lf.getNativePtr());
 	}
 
-	private native long getFriendByAddress(long ptr, String sipUri);
+	private native LinphoneFriend getFriendByAddress(long ptr, String sipUri);
 	@Override
 	public synchronized LinphoneFriend findFriendByAddress(String sipUri) {
-		long ptr = getFriendByAddress(nativePtr, sipUri);
-		if (ptr == 0) {
-			return null;
-		}
-		return new LinphoneFriendImpl(ptr);
+		return getFriendByAddress(nativePtr, sipUri);
 	}
 
 	public synchronized void setAudioPort(int port) {

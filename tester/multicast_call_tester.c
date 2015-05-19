@@ -52,15 +52,15 @@ static void call_multicast_base(bool_t video) {
 	linphone_core_set_audio_multicast_addr(pauline->lc,"224.1.2.3");
 	linphone_core_enable_audio_multicast(pauline->lc,TRUE);
 
-	CU_ASSERT_TRUE(call(pauline,marie));
+	BC_ASSERT_TRUE(call(pauline,marie));
 	wait_for_until(marie->lc, pauline->lc, NULL, 1, 3000);
 	if (linphone_core_get_current_call(marie->lc)) {
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth,70,int,"%d");
 		if (video) {
 			/*check video path*/
 			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(marie->lc),linphone_call_cb,marie->lc);
 			linphone_call_send_vfu_request(linphone_core_get_current_call(marie->lc));
-			CU_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
+			BC_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
 		}
 
 		end_call(marie,pauline);
@@ -69,7 +69,7 @@ static void call_multicast_base(bool_t video) {
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_TRUE(leaked_objects==0);
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -96,6 +96,7 @@ static void early_media_with_multicast_base(bool_t video) {
 	int begin;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
+	LinphoneCallParams *params;
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
@@ -138,8 +139,8 @@ static void early_media_with_multicast_base(bool_t video) {
 
 	linphone_core_invite_address(marie->lc, pauline->identity);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
 
 
 	if (linphone_core_inc_invite_pending(pauline->lc)) {
@@ -150,8 +151,8 @@ static void early_media_with_multicast_base(bool_t video) {
 		}
 		linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
-		CU_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
-		CU_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
+		BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+		BC_ASSERT_TRUE( wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000) );
 
 		if (linphone_core_inc_invite_pending(pauline2->lc)) {
 				/* send a 183 to initiate the early media */
@@ -161,28 +162,75 @@ static void early_media_with_multicast_base(bool_t video) {
 				}
 				linphone_core_accept_early_media(pauline2->lc, linphone_core_get_current_call(pauline2->lc));
 
-				CU_ASSERT_TRUE( wait_for_list(lcs, &pauline2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
+				BC_ASSERT_TRUE( wait_for_list(lcs, &pauline2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,2000) );
 		}
 
 		wait_for_list(lcs, &dummy, 1, 3000);
 
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth<90);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth<90);
 
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth>70);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth<90);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth>70);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth<90);
 
+		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+		if (video) {
+			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+		}
 
 		if (video) {
-			CU_ASSERT_TRUE( wait_for_list(lcs,&pauline->stat.number_of_IframeDecoded,1,2000));
-			CU_ASSERT_TRUE( wait_for_list(lcs,&pauline2->stat.number_of_IframeDecoded,1,2000));
+			BC_ASSERT_TRUE( wait_for_list(lcs,&pauline->stat.number_of_IframeDecoded,1,2000));
+			BC_ASSERT_TRUE( wait_for_list(lcs,&pauline2->stat.number_of_IframeDecoded,1,2000));
 		}
 
 		linphone_core_accept_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
-		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
-		CU_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline2->stat.number_of_LinphoneCallEnd, 1,1000));
 
+		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+		if (video) {
+			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+		}
+		params=linphone_call_params_copy(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+
+		linphone_call_params_enable_audio_multicast(params,FALSE);
+		linphone_call_params_enable_video_multicast(params,FALSE);
+		linphone_core_enable_video_capture(pauline->lc, TRUE);
+		linphone_core_enable_video_display(pauline->lc, TRUE);
+		linphone_core_enable_video_capture(marie->lc, TRUE);
+		linphone_core_enable_video_display(marie->lc, TRUE);
+
+		linphone_core_update_call(	pauline->lc
+									, linphone_core_get_current_call(pauline->lc)
+									, params);
+		linphone_call_params_destroy(params);
+
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2,1000));
+
+		BC_ASSERT_FALSE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+		BC_ASSERT_FALSE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+
+		check_media_direction(	pauline
+								, linphone_core_get_current_call(pauline->lc)
+								, lcs
+								,LinphoneMediaDirectionSendRecv
+								, video?LinphoneMediaDirectionSendRecv:LinphoneMediaDirectionInactive);
+		check_media_direction(	marie
+								, linphone_core_get_current_call(marie->lc)
+								, lcs
+								,LinphoneMediaDirectionSendRecv
+								, video?LinphoneMediaDirectionSendRecv:LinphoneMediaDirectionInactive);
+
+		if (video) {
+			BC_ASSERT_FALSE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+			BC_ASSERT_FALSE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+		}
 		end_call(marie,pauline);
 	}
 	ms_free(lcs);
@@ -191,7 +239,7 @@ static void early_media_with_multicast_base(bool_t video) {
 	linphone_core_manager_destroy(pauline2);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_EQUAL(leaked_objects,0);
+	BC_ASSERT_EQUAL(leaked_objects,0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}

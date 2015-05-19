@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
@@ -33,30 +34,41 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			Log.w("Unable to load optional library lib", s);
+			Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library lib" + s);
 		}
 		return false;
 	}
 
 	static {
-		String eabi = "armeabi";
-		if (Version.isX86()) {
-			eabi = "x86";
-		} else if (Version.isArmv7()) {
-			eabi = "armeabi-v7a";
+		List<String> cpuabis=Version.getCpuAbis();
+		String ffmpegAbi;
+		boolean libLoaded=false;
+		Throwable firstException=null;
+		for (String abi : cpuabis){
+			Log.i("LinphoneCoreFactoryImpl","Trying to load liblinphone for " + abi);
+			ffmpegAbi=abi;
+			// FFMPEG (audio/video)
+			if (abi.startsWith("armeabi")) {
+				ffmpegAbi="arm";
+			}
+			loadOptionalLibrary("ffmpeg-linphone-"+ffmpegAbi);
+			//Main library
+			try {
+				System.loadLibrary("linphone-" + abi);
+				Log.i("LinphoneCoreFactoryImpl","Loading done with " + abi);
+				libLoaded=true;
+				break;
+			}catch(Throwable e) {
+				if (firstException == null) firstException=e;
+			}
 		}
-
-		// FFMPEG (audio/video)
-		if (Version.isX86()) {
-			loadOptionalLibrary("ffmpeg-linphone-x86");
-		} else if (Version.isArmv7()) {
-			loadOptionalLibrary("ffmpeg-linphone-arm");
+		
+		if (!libLoaded){
+			throw new RuntimeException(firstException);
+			
+		}else{
+			Version.dumpCapabilities();
 		}
-
-		//Main library
-		System.loadLibrary("linphone-" + eabi);
-
-		Version.dumpCapabilities();
 	}
 	@Override
 	public LinphoneAuthInfo createAuthInfo(String username, String password,

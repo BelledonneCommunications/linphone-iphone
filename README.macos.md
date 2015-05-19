@@ -44,14 +44,14 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
                 antlr3.2 gettext speex ffmpeg readline libvpx opus
         ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
         brew link --force gettext
+        #readline is required from linphonec.c otherwise compilation will fail
+        brew link readline --force
 
 ##### Linphone UI (GTK version)
 
-	brew install cairo --without-x11
+        brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gettext gtk-mac-integration libsoup hicolor-icon-theme
-        #readline is required from linphonec.c otherwise compilation will fail
-        brew link readline --force
+        brew install gtk-mac-integration libsoup hicolor-icon-theme
 
 ### Building Linphone
 
@@ -72,7 +72,7 @@ The next pieces need to be compiled manually.
 
 * Install polarssl (encryption library used by belle-sip)
 
-        git clone git://git.linphone.org/polarssl.git -b linphone
+        git clone git://git.linphone.org/polarssl.git
         cd polarssl
         ./autogen.sh && ./configure --prefix=/opt/local && make
         sudo make install
@@ -92,7 +92,7 @@ The next pieces need to be compiled manually.
 
 * (Optional) Install zrtp, for unbreakable call encryption
 
-        git clone git://git.linphone.org:bzrtp
+        git clone git://git.linphone.org/bzrtp.git
         cd bzrtp && ./autogen.sh && ./configure --prefix=/opt/local && make
         sudo make install
 
@@ -102,9 +102,6 @@ The next pieces need to be compiled manually.
         cd gsm
         make CCFLAGS="$CFLAGS -c -O2 -DNeedFunctionPrototypes=1"
         sudo make install INSTALL_ROOT=/opt/local GSM_INSTALL_INC=/opt/local/include
-
-* (Optional) libvpx-1.2 has a bug on MacOS resulting in ugly video. It is recommended to upgrade it manually to 1.3 from source.
-The libvpx build isn't able to produce dual architecture files. To workaround this, configure libvpx twice and use lipo to create a dual architecture `libvpx.a`.
 
 * (Optional, proprietary extension only) Compile and install the tunnel library
  If you got the source code from git, run `./autogen.sh` first.
@@ -116,7 +113,7 @@ The libvpx build isn't able to produce dual architecture files. To workaround th
  If you got the source code from git, run `./autogen.sh` first.
  Then or otherwise, :
 
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
+        PKG_CONFIG_PATH=/opt/local/lib/pkgconfig ./configure --prefix=/opt/local --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
 * Install on the system
 

@@ -128,6 +128,11 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
 		avpf_params = payload_type_get_avpf_params(pt);
 
+		/* Add trr-int if not set generally. */
+		if (general_trr_int != TRUE) {
+			add_rtcp_fb_trr_int_attribute(media_desc, payload_type_get_number(pt), avpf_params.trr_interval);
+		}
+
 		/* Add rtcp-fb attributes according to the AVPF features of the payload types. */
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_PLI) {
 			add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_PLI);
@@ -538,9 +543,6 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 	switch (belle_sdp_rtcp_fb_attribute_get_type(fb_attribute)) {
 		case BELLE_SDP_RTCP_FB_NACK:
 			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
-				case BELLE_SDP_RTCP_FB_NONE:
-					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI | PAYLOAD_TYPE_AVPF_SLI | PAYLOAD_TYPE_AVPF_RPSI;
-					break;
 				case BELLE_SDP_RTCP_FB_PLI:
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_PLI;
 					break;
@@ -550,6 +552,7 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 				case BELLE_SDP_RTCP_FB_RPSI:
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_RPSI;
 					break;
+				case BELLE_SDP_RTCP_FB_NONE:
 				default:
 					break;
 			}
@@ -580,6 +583,15 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 	MSList *pt_it;
 	PayloadType *pt;
 	int8_t pt_num;
+
+	/* Clear the AVPF features for all payload types. */
+	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
+		PayloadTypeAvpfParams avpf_params;
+		pt = (PayloadType *)pt_it->data;
+		avpf_params = payload_type_get_avpf_params(pt);
+		avpf_params.features = PAYLOAD_TYPE_AVPF_NONE;
+		payload_type_set_avpf_params(pt, avpf_params);
+	}
 
 	/* Handle rtcp-fb attributes that concern all payload types. */
 	for (it = belle_sdp_media_description_get_attributes(media_desc); it != NULL; it = it->next) {

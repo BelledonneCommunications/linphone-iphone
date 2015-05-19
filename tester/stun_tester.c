@@ -16,8 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -57,10 +56,10 @@ static void linphone_stun_test_encode()
 	size_t bigLen = STUN_MAX_MESSAGE_SIZE;
 
 	size_t len = test_stun_encode(smallBuff, smallLen, TRUE);
-	CU_ASSERT(len == -1);
+	BC_ASSERT(len == -1);
 
 	len = test_stun_encode(bigBuff, bigLen, TRUE);
-	CU_ASSERT(len > 0);
+	BC_ASSERT(len > 0);
 	ms_message("STUN message encoded in %i bytes", (int)len);
 }
 
@@ -77,20 +76,20 @@ static void linphone_stun_test_grab_ip()
 	dummy_call.media_ports[1].rtp_port = 9078;
 
 	linphone_core_set_stun_server(lc_stun->lc, stun_address);
-	CU_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));
+	BC_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));
 
 	wait_for(lc_stun->lc,lc_stun->lc,&tmp,1);
 
 	ping_time = linphone_core_run_stun_tests(lc_stun->lc, &dummy_call);
-	CU_ASSERT(ping_time != -1);
+	BC_ASSERT(ping_time != -1);
 
 	ms_message("Round trip to STUN: %d ms", ping_time);
 
-	CU_ASSERT( dummy_call.ac.addr[0] != '\0');
-	CU_ASSERT( dummy_call.ac.port != 0);
+	BC_ASSERT( dummy_call.ac.addr[0] != '\0');
+	BC_ASSERT( dummy_call.ac.port != 0);
 #ifdef VIDEO_ENABLED
-	CU_ASSERT( dummy_call.vc.addr[0] != '\0');
-	CU_ASSERT( dummy_call.vc.port != 0);
+	BC_ASSERT( dummy_call.vc.addr[0] != '\0');
+	BC_ASSERT( dummy_call.vc.port != 0);
 #endif
 
 	ms_message("STUN test result: local audio port maps to %s:%i",

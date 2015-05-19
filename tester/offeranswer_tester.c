@@ -16,11 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "lpconfig.h"
 #include "private.h"
@@ -46,13 +43,13 @@ static void start_with_no_config(void){
 	int speex16_codec_pos=get_codec_position(codecs, "speex", 16000);
 	PayloadType *pt;
 	opus_codec_pos=get_codec_position(codecs, "opus", 48000);
-	if (opus_codec_pos!=-1) CU_ASSERT_TRUE(opus_codec_pos==0);
-	CU_ASSERT_TRUE(speex16_codec_pos<speex_codec_pos);
-	
+	if (opus_codec_pos!=-1) BC_ASSERT_TRUE(opus_codec_pos==0);
+	BC_ASSERT_TRUE(speex16_codec_pos<speex_codec_pos);
+
 	pt=linphone_core_find_payload_type(lc, "speex", 16000, 1);
-	CU_ASSERT_PTR_NOT_NULL(pt);
+	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt) {
-		CU_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt)==TRUE);
+		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt)==TRUE);
 	}
 	linphone_core_destroy(lc);
 }
@@ -60,15 +57,15 @@ static void start_with_no_config(void){
 static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2, int expected_number){
 	const LinphoneCallParams *params=linphone_call_get_current_params(call1);
 	const PayloadType *pt=linphone_call_params_get_used_audio_codec(params);
-	CU_ASSERT_PTR_NOT_NULL(pt);
+	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		CU_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
 	}
 	params=linphone_call_get_current_params(call2);
 	pt=linphone_call_params_get_used_audio_codec(params);
-	CU_ASSERT_PTR_NOT_NULL(pt);
+	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		CU_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
 	}
 }
 
@@ -84,29 +81,29 @@ static void simple_call_with_different_codec_mappings(void) {
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_rc");
-	
+
 	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
 	disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
-	
+
 	/*marie set a fantasy number to PCMU*/
 	linphone_core_set_payload_type_number(marie->lc,
 		linphone_core_find_payload_type(marie->lc, "PCMU", 8000, -1),
 		104);
-	
-	CU_ASSERT_TRUE(call(marie,pauline));
+
+	BC_ASSERT_TRUE(call(marie,pauline));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
-	CU_ASSERT_PTR_NOT_NULL(pauline_call);
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
 	if (pauline_call){
 		LinphoneCallParams *params;
 		check_payload_type_numbers(linphone_core_get_current_call(marie->lc), pauline_call, 104);
 		/*make a reinvite in the other direction*/
-		linphone_core_update_call(pauline->lc, pauline_call, 
+		linphone_core_update_call(pauline->lc, pauline_call,
 			params=linphone_core_create_call_params(pauline->lc, pauline_call));
 		linphone_call_params_unref(params);
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallUpdatedByRemote,1));
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallUpdatedByRemote,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 		/*payload type numbers shall remain the same*/
 		check_payload_type_numbers(linphone_core_get_current_call(marie->lc), pauline_call, 104);
 	}
@@ -116,7 +113,7 @@ static void simple_call_with_different_codec_mappings(void) {
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_TRUE(leaked_objects==0);
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -137,20 +134,20 @@ static void call_failed_because_of_codecs(void) {
 		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
 		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 		linphone_call_ref(out_call);
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
 		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-		CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-		CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable);
-		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
-		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0);
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
+		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
 
 		linphone_call_unref(out_call);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 	}
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	CU_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_TRUE(leaked_objects==0);
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -194,23 +191,23 @@ static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t
 
 	}
 
-	CU_ASSERT_TRUE(call(marie, pauline));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(call(marie, pauline));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	if (linphone_core_get_current_call(marie->lc)) {
 		params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
-		CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+		BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
 	}
 	if (linphone_core_get_current_call(pauline->lc)) {
 		params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
-		CU_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
+		BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), expected_profile);
 	}
 
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected, 1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected, 1);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected, 1, int, "%d");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallConnected, 1, int, "%d");
 end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);

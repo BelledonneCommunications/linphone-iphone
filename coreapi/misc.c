@@ -59,6 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define RTP_HDR_SZ 12
 #define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
 
+static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed);
 
 bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
 	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
@@ -716,8 +717,26 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
-void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
-{
+void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call) {
+	int i;
+	IceSession *session = call->ice_session;
+	SalMediaDescription *desc = call->localdesc;
+	
+	if (session == NULL) return;
+	if (ice_session_state(session) == IS_Completed) return;
+
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		IceCheckList *cl = ice_session_check_list(session, i);
+		if (!sal_stream_description_active(&desc->streams[i]) && cl) {
+			ice_session_remove_check_list(session, cl);
+			clear_ice_check_list(call, cl);
+		}
+	}
+
+	linphone_core_update_ice_state_in_call_stats(call);
+}
+
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session) {
 	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;

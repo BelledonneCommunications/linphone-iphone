@@ -16,13 +16,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#ifndef __USE_XOPEN
-	/*on Debian OS, time.h does declare strptime only if __USE_XOPEN is declared */
-	#define __USE_XOPEN
+#ifndef _XOPEN_SOURCE
+	#define _XOPEN_SOURCE 700 // To have definition of strptime, snprintf and getline
 #endif
 #include <time.h>
-#include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -136,7 +133,7 @@ static FILE* gzuncompress(const char* filepath) {
 			memset(buffer, 0, strlen(buffer));
 		}
 		fclose(output);
-		CU_ASSERT_EQUAL(gzclose(file), Z_OK);
+		BC_ASSERT_EQUAL(gzclose(file), Z_OK, int, "%d");
 		ret=fopen(newname, "rb");
 		ms_free(newname);
 		return ret;
@@ -169,7 +166,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 	uint32_t timediff = 0;
 	FILE *file = NULL;
 
-	CU_ASSERT_PTR_NOT_NULL(filepath);
+	BC_ASSERT_PTR_NOT_NULL(filepath);
 
 	if (filepath != NULL) {
 		int line_count = 0;
@@ -186,10 +183,10 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 #else
 		file = fopen(filepath, "rb");
 #endif
-		CU_ASSERT_PTR_NOT_NULL(file);
+		BC_ASSERT_PTR_NOT_NULL(file);
 		if (!file) return 0;
 		// 1) expect to find folder name in filename path
-		CU_ASSERT_PTR_NOT_NULL(strstr(filepath, bc_tester_writable_dir_prefix));
+		BC_ASSERT_PTR_NOT_NULL(strstr(filepath, bc_tester_writable_dir_prefix));
 
 		// 2) check file contents
 		while (getline(&line, &line_size, file) != -1) {
@@ -205,13 +202,13 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 				if (strptime(date, "%Y-%m-%d %H:%M:%S", &tm_curr) != NULL) {
 					tm_curr.tm_isdst = -1; // LOL
 					log_time = mktime(&tm_curr);
-					CU_ASSERT_TRUE(log_time >= time_prev);
+					BC_ASSERT_TRUE(log_time >= time_prev);
 					time_prev = log_time;
 				}
 			}
 #endif
 		}
-		CU_ASSERT_TRUE(line_count > 25);
+		BC_ASSERT_TRUE(line_count > 25);
 		free(line);
 		fclose(file);
 		ms_free(filepath);
@@ -220,7 +217,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		timediff = labs((long int)log_time - (long int)cur_time);
 		(void)timediff;
 #ifndef WIN32
-		CU_ASSERT_TRUE( timediff <= 1 );
+		BC_ASSERT_TRUE( timediff <= 1 );
 		if( !(timediff <= 1) ){
 			char buffers[2][128] = {{0}};
 			strftime(buffers[0], sizeof(buffers[0]), "%Y-%m-%d %H:%M:%S", localtime(&log_time));
@@ -242,7 +239,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 
 static void collect_files_disabled()  {
 	LinphoneCoreManager* marie = setup(FALSE);
-	CU_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
+	BC_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
 	collect_cleanup(marie);
 }
 
@@ -282,7 +279,7 @@ static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogC
 			break;
 		case LinphoneCoreLogCollectionUploadStateDelivered:
 			counters->number_of_LinphoneCoreLogCollectionUploadStateDelivered++;
-			CU_ASSERT_TRUE(strlen(info)>0)
+			BC_ASSERT_GREATER(strlen(info), 0, int, "%d");
 			break;
 		case LinphoneCoreLogCollectionUploadStateNotDelivered:
 			counters->number_of_LinphoneCoreLogCollectionUploadStateNotDelivered++;
@@ -302,7 +299,7 @@ static void upload_collected_traces()  {
 	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
 	linphone_core_compress_log_collection(marie->lc);
 	linphone_core_upload_log_collection(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
 
 	/*try 2 times*/
 	waiting=100;
@@ -310,7 +307,7 @@ static void upload_collected_traces()  {
 	while (--waiting) ms_error("(test error)Waiting %d...", waiting);
 	linphone_core_compress_log_collection(marie->lc);
 	linphone_core_upload_log_collection(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
 
 	collect_cleanup(marie);
 }

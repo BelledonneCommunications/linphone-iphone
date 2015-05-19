@@ -937,11 +937,12 @@ static void replace_icp(const char *src, char *dest, size_t destlen, const char 
 }
 
 
-bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, const char *username, char *result, size_t result_len){
+	bool_t ret;
+	LinphoneProxyConfig *proxy = inproxy ? inproxy : linphone_proxy_config_new();
 	memset(result, 0, result_len);
 	if (linphone_proxy_config_is_phone_number(proxy, username)){
-		char *flatten;
-		flatten=flatten_number(username);
+		char *flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s'",flatten);
 
 		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
@@ -987,11 +988,13 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const 
 			}
 		}
 		ms_free(flatten);
-		return TRUE;
+		ret = TRUE;
 	} else {
 		strncpy(result,username,result_len-1);
-		return FALSE;
+		ret = FALSE;
 	}
+	if (inproxy==NULL) ms_free(proxy);
+	return ret;
 }
 
 /**

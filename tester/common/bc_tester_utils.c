@@ -22,8 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bc_tester_utils.h"
 
-#include <stdarg.h>
 #include <stdlib.h>
+
+#include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
 
 #if WINAPI_FAMILY_PHONE_APP
@@ -41,6 +42,9 @@ const char *bc_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cach
 const char *bc_tester_writable_dir_prefix = ".";
 #endif
 
+int bc_printf_verbosity_info;
+int bc_printf_verbosity_error;
+
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
 
@@ -54,10 +58,8 @@ int   xml_enabled = 0;
 char * suite_name;
 char * test_name;
 void (*tester_printf_va)(int level, const char *fmt, va_list args);
-int verbosity_info;
-int verbosity_error;
 
-static void tester_printf(int level, const char *fmt, ...) {
+void bc_tester_printf(int level, const char *fmt, ...) {
 	va_list args;
 	va_start (args, fmt);
 	tester_printf_va(level, fmt, args);
@@ -115,7 +117,7 @@ int bc_tester_nb_tests(const char *suite_name) {
 void bc_tester_list_suites() {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
-		tester_printf(verbosity_info, "%s", bc_tester_suite_name(j));
+		bc_tester_printf(bc_printf_verbosity_info, "%s", bc_tester_suite_name(j));
 	}
 }
 
@@ -123,36 +125,36 @@ void bc_tester_list_tests(const char *suite_name) {
 	int j;
 	for( j = 0; j < bc_tester_nb_tests(suite_name); j++) {
 		const char *test_name = bc_tester_test_name(suite_name, j);
-		tester_printf(verbosity_info, "%s", test_name);
+		bc_tester_printf(bc_printf_verbosity_info, "%s", test_name);
 	}
 }
 
 static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 #ifdef HAVE_CU_GET_SUITE
 	char * results = CU_get_run_results_string();
-	tester_printf(verbosity_info,"\n%s",results);
+	bc_tester_printf(bc_printf_verbosity_info,"\n%s",results);
 	free(results);
 #endif
 }
 
 static void suite_init_failure_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_error,"Suite initialization failed for [%s]", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_error,"Suite initialization failed for [%s]", pSuite->pName);
 }
 
 static void suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_error,"Suite cleanup failed for [%s]", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_error,"Suite cleanup failed for [%s]", pSuite->pName);
 }
 
 #ifdef HAVE_CU_GET_SUITE
 static void suite_start_message_handler(const CU_pSuite pSuite) {
-	tester_printf(verbosity_info,"Suite [%s] started", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] started\n", pSuite->pName);
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
-	tester_printf(verbosity_info,"Suite [%s] ended", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] ended\n", pSuite->pName);
 }
 
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
-	tester_printf(verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
+	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
 }
 
 /*derivated from cunit*/
@@ -176,7 +178,7 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	} else {
 		strncat(result, " passed", strlen(" passed"));
 	}
-	tester_printf(verbosity_info,"%s\n", result);
+	bc_tester_printf(bc_printf_verbosity_info,"%s\n", result);
 }
 #endif
 
@@ -206,26 +208,26 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 
 #ifndef HAVE_CU_GET_SUITE
 		if( suite_name ){
-			tester_printf(verbosity_info, "Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'", suite_name);
+			bc_tester_printf(bc_printf_verbosity_info, "Tester compiled without CU_get_suite() function, running all tests instead of suite '%s'", suite_name);
 		}
 #else
 		if (suite_name){
 			CU_pSuite suite;
 			suite=CU_get_suite(suite_name);
 			if (!suite) {
-				tester_printf(verbosity_error, "Could not find suite '%s'. Available suites are:", suite_name);
+				bc_tester_printf(bc_printf_verbosity_error, "Could not find suite '%s'. Available suites are:", suite_name);
 				bc_tester_list_suites();
 				return -1;
 			} else if (test_name) {
 				CU_pTest test=CU_get_test_by_name(test_name, suite);
 				if (!test) {
-					tester_printf(verbosity_error, "Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
+					bc_tester_printf(bc_printf_verbosity_error, "Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
 					// do not use suite_name here, since this method is case sensitive
 					bc_tester_list_tests(suite->pName);
 					return -2;
 				} else {
 					CU_ErrorCode err= CU_run_test(suite, test);
-					if (err != CUE_SUCCESS) tester_printf(verbosity_error, "CU_basic_run_test error %d", err);
+					if (err != CUE_SUCCESS) bc_tester_printf(bc_printf_verbosity_error, "CU_basic_run_test error %d", err);
 				}
 			} else {
 				CU_run_suite(suite);
@@ -253,7 +255,7 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 
 
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
-	tester_printf(verbosity_info,"%s --help\n"
+	bc_tester_printf(bc_printf_verbosity_info,"%s --help\n"
 		"\t\t\t--list-suites\n"
 		"\t\t\t--list-tests <suite>\n"
 		"\t\t\t--suite <suite name>\n"
@@ -271,8 +273,8 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 
 void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
 	tester_printf_va = ftester_printf;
-	verbosity_error = iverbosity_error;
-	verbosity_info = iverbosity_info;
+	bc_printf_verbosity_error = iverbosity_error;
+	bc_printf_verbosity_info = iverbosity_info;
 }
 
 int bc_tester_parse_args(int argc, char **argv, int argid)
@@ -301,12 +303,12 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	} else if (strcmp(argv[i], "--xml") == 0){
 		xml_enabled = 1;
 	}else {
-		tester_printf(verbosity_error, "Unknown option \"%s\"\n", argv[i]);
+		bc_tester_printf(bc_printf_verbosity_error, "Unknown option \"%s\"\n", argv[i]);
 		return -1;
 	}
 
 	if( xml_enabled && (suite_name || test_name) ){
-		tester_printf(verbosity_error, "Cannot use both XML and specific test suite\n");
+		bc_tester_printf(bc_printf_verbosity_error, "Cannot use both XML and specific test suite\n");
 		return -1;
 	}
 
@@ -346,7 +348,7 @@ void bc_tester_uninit() {
 	}
 	CU_cleanup_registry();
 	/*add missing final newline*/
-	tester_printf(verbosity_info,"");
+	bc_tester_printf(bc_printf_verbosity_info,"");
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
@@ -362,4 +364,14 @@ void bc_tester_uninit() {
 		test_suite = NULL;
 		nb_test_suites = 0;
 	}
+}
+
+char * bc_tester_res(const char *name) {
+	char* file = NULL;
+	if (name) {
+		size_t len = strlen(bc_tester_read_dir_prefix) + 1 + strlen(name) + 1;
+		file = malloc(len);
+		snprintf(file, len, "%s/%s", bc_tester_read_dir_prefix, name);
+	}
+	return file;
 }

@@ -26,8 +26,6 @@ static const int PASSWORD_MIN_SIZE = 6;
 static const int LOGIN_MIN_SIZE = 4;
 
 static GtkWidget *the_assistant=NULL;
-static GdkPixbuf *ok;
-static GdkPixbuf *notok;
 
 static GtkWidget *create_intro(){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
@@ -205,10 +203,12 @@ static void account_email_changed(GtkEntry *entry, GtkWidget *w) {
 	GtkWidget *assistant=gtk_widget_get_toplevel(w);
 
 	if (g_regex_match_simple("^[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(email), 0, 0)) {
+		GdkPixbuf *ok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "ok"));
 		g_object_set_data(G_OBJECT(w),"is_email_correct",GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isEmailOk, ok);
 	}
 	else {
+		GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
 		g_object_set_data(G_OBJECT(w),"is_email_correct",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isEmailOk, notok);
 	}
@@ -227,11 +227,13 @@ static void account_password_changed(GtkEntry *entry, GtkWidget *w) {
 
 	if (gtk_entry_get_text_length(password) >= PASSWORD_MIN_SIZE &&
 	g_ascii_strcasecmp(gtk_entry_get_text(password), gtk_entry_get_text(password_confirm)) == 0) {
+		GdkPixbuf *ok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "ok"));
 		g_object_set_data(G_OBJECT(w),"is_password_correct",GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isPasswordOk, ok);
 		gtk_label_set_text(passwordError, "");
 	}
 	else {
+		GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
 		if (gtk_entry_get_text_length(password) < PASSWORD_MIN_SIZE) {
 			gtk_label_set_text(passwordError, "Password is too short !");
 		}
@@ -252,11 +254,13 @@ gboolean update_interface_with_username_availability(gpointer *w) {
 	int account_existing = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_username_used"));
 
 	if (account_existing == 0) {
+		GdkPixbuf *ok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "ok"));
 		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isUsernameOk, ok);
 		gtk_label_set_text(usernameError, "");
 	}
 	else {
+		GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
 		gtk_label_set_text(usernameError, "Username is already in use !");
 		g_object_set_data(G_OBJECT(w),"is_username_available",GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isUsernameOk, notok);
@@ -297,6 +301,7 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 #endif
 	}
 	else {
+		GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
 		if (gtk_entry_get_text_length(username) < LOGIN_MIN_SIZE) {
 			gtk_label_set_text(usernameError, "Username is too short");
 		}
@@ -313,7 +318,7 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 
 static GtkWidget *create_account_information_page() {
 	GtkWidget *vbox=gtk_table_new(7, 3, FALSE);
-
+	GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
 	GtkWidget *label=gtk_label_new(_("(*) Required fields"));
 	GtkWidget *labelUsername=gtk_label_new(_("Username: (*)"));
 	GtkWidget *isUsernameOk=gtk_image_new_from_pixbuf(notok);
@@ -595,6 +600,8 @@ void linphone_gtk_show_assistant(void){
 	GtkWidget *validate;
 	GtkWidget *error;
 	GtkWidget *end;
+	GdkPixbuf *ok;
+	GdkPixbuf *notok;
 	if(the_assistant!=NULL)
 		return;
 	w=the_assistant=gtk_assistant_new();
@@ -602,7 +609,9 @@ void linphone_gtk_show_assistant(void){
 	gtk_window_set_title(GTK_WINDOW(w),_("SIP account configuration assistant"));
 
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
+	g_object_set_data_full(G_OBJECT(the_assistant), "ok", ok, g_object_unref);
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));
+	g_object_set_data_full(G_OBJECT(the_assistant), "notok", notok, g_object_unref);
 
 	p1=create_intro();
 	p2=create_setup_signin_choice();

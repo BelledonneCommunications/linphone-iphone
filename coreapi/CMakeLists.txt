@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if(MSVC)
+if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	find_library(LIBGCC NAMES gcc)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
@@ -121,8 +121,6 @@ add_definitions(
 )
 
 set(LIBS
-	${LIBGCC}
-	${LIBMINGWEX}
 	${BELLESIP_LIBRARIES}
 	${MEDIASTREAMER2_LIBRARIES}
 	${XML2_LIBRARIES}
@@ -141,6 +139,9 @@ if(ENABLE_TUNNEL)
 endif()
 if(ENABLE_ASSISTANT)
 	list(APPEND LIBS ${SOUP_LIBRARIES})
+endif()
+if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})
 endif()
 if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	list(APPEND LIBS shlwapi)
@@ -166,7 +167,12 @@ if(WIN32 AND "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	set_target_properties(linphone PROPERTIES PREFIX "lib")
 endif()
 if(ICONV_FOUND)
-	target_include_directories(linphone PUBLIC ${ICONV_INCLUDE_DIRS})
+	if(APPLE)
+		# Prevent conflict between the system iconv.h header and the one from macports.
+		target_compile_options(linphone PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+	else()
+		target_include_directories(linphone PRIVATE ${ICONV_INCLUDE_DIRS})
+	endif()
 endif()
 
 install(TARGETS linphone EXPORT LinphoneTargets
@@ -199,4 +205,6 @@ install(FILES ${HEADER_FILES}
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-add_subdirectory(help)
+if(ENABLE_DOC)
+	add_subdirectory(help)
+endif()

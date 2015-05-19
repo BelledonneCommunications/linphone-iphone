@@ -322,6 +322,42 @@ LINPHONE_PUBLIC LinphoneCallParams * linphone_call_params_ref(LinphoneCallParams
 LINPHONE_PUBLIC void linphone_call_params_unref(LinphoneCallParams *cp);
 
 
+/**
+ * Use to enable multicast rtp for audio stream.
+ * * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into audio cline. In case of outgoing call audio stream is sent to this multicast address.
+ * <br> For incoming calls behavior is unchanged.
+ * @param core #LinphoneCallParams
+ * @param yesno if yes, subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_enable_audio_multicast(LinphoneCallParams *param, bool_t yesno);
+
+/**
+ * Use to get multicast state of audio stream.
+ * @param core #LinphoneCallParams
+ * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_audio_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_call_params_audio_multicast_enabled(const LinphoneCallParams *param);
+
+/**
+ * Use to enable multicast rtp for video stream.
+ * If enabled, outgoing calls put a multicast address from #linphone_core_get_video_multicast_addr into video cline. In case of outgoing call video stream is sent to this  multicast address.
+ * <br> For incoming calls behavior is unchanged.
+ * @param core #LinphoneCallParams
+ * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_enable_video_multicast(LinphoneCallParams *param, bool_t yesno);
+/**
+ * Use to get multicast state of video stream.
+ * @param core #LinphoneCallParams
+ * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *param);
+
+
 /*******************************************************************************
  * DEPRECATED                                                                  *
  ******************************************************************************/

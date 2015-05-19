@@ -19,8 +19,7 @@
 
 #if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
 
-#include <stdio.h>
-#include "CUnit/Basic.h"
+
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
@@ -168,11 +167,11 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 	bool_t result = TRUE;
 	bool_t did_received_call;
 
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc, callee_mgr->identity, caller_params));
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc, callee_mgr->identity, caller_params));
 	did_received_call = wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, initial_callee.number_of_LinphoneCallIncomingReceived + 1);
 	if (!did_received_call) return 0;
 
-	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, initial_caller.number_of_LinphoneCallOutgoingProgress + 1);
+	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress, initial_caller.number_of_LinphoneCallOutgoingProgress + 1, int, "%d");
 
 	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging != (initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
 		&& caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia != (initial_caller.number_of_LinphoneCallOutgoingEarlyMedia + 1)
@@ -182,10 +181,10 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 		ms_usleep(100000);
 	}
 
-	CU_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging == initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
+	BC_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging == initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
 		|| (caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia == initial_caller.number_of_LinphoneCallOutgoingEarlyMedia + 1));
 
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
 	if(!linphone_core_get_current_call(caller_mgr->lc) || !linphone_core_get_current_call(callee_mgr->lc) || !linphone_core_get_current_call_remote_address(callee_mgr->lc)) {
 		return 0;
 	}
@@ -193,8 +192,8 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 	if (automatically_accept == TRUE) {
 		linphone_core_accept_call_with_params(callee_mgr->lc, linphone_core_get_current_call(callee_mgr->lc), callee_params);
 
-		CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
-		CU_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
+		BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
+		BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, initial_callee.number_of_LinphoneCallConnected + 1));
 		result = wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_caller.number_of_LinphoneCallStreamsRunning + 1)
 			&& wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallStreamsRunning, initial_callee.number_of_LinphoneCallStreamsRunning + 1);
 	}
@@ -255,28 +254,28 @@ static void early_media_video_during_video_call_test(void) {
 	laure_params = configure_for_early_media_video_sending(laure);
 
 	/* Normal automatically accepted video call from marie to pauline. */
-	CU_ASSERT_TRUE(video_call_with_params(marie, pauline, marie_params, pauline_params, TRUE));
+	BC_ASSERT_TRUE(video_call_with_params(marie, pauline, marie_params, pauline_params, TRUE));
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
 
 	/* Early media video call from laure to marie. */
-	CU_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
+	BC_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 2000);
 
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
 
-	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
-	CU_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2, int, "%d");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1, int, "%d");
+	BC_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1, int, "%d");
 
 	linphone_call_params_unref(marie_params);
 	linphone_call_params_unref(pauline_params);
@@ -311,22 +310,22 @@ static void two_incoming_early_media_video_calls_test(void) {
 	ms_free(ringback_path);
 
 	/* Early media video call from pauline to marie. */
-	CU_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
+	BC_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
 
 	/* Early media video call from laure to marie. */
-	CU_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
+	BC_ASSERT_TRUE(video_call_with_params(laure, marie, laure_params, NULL, FALSE));
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 2000);
 
-	CU_ASSERT_EQUAL(linphone_core_get_calls_nb(marie->lc), 2);
+	BC_ASSERT_EQUAL(linphone_core_get_calls_nb(marie->lc), 2, int, "%d");
 	if (linphone_core_get_calls_nb(marie->lc) == 2) {
 		calls_list = linphone_core_get_calls(marie->lc);
 		call = (LinphoneCall *)ms_list_nth_data(calls_list, 0);
-		CU_ASSERT_PTR_NOT_NULL(call);
+		BC_ASSERT_PTR_NOT_NULL(call);
 		if (call != NULL) {
 			LinphoneCallParams *params = linphone_call_params_copy(linphone_call_get_current_params(call));
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
@@ -339,16 +338,16 @@ static void two_incoming_early_media_video_calls_test(void) {
 	}
 
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, laure->lc, &laure->stat.number_of_LinphoneCallEnd, 1));
 
-	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
-	CU_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 2, int, "%d");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1, int, "%d");
+	BC_ASSERT_EQUAL(laure->stat.number_of_video_windows_created, 1, int, "%d");
 
 	linphone_call_params_unref(marie_params);
 	linphone_call_params_unref(pauline_params);
@@ -370,23 +369,23 @@ static void early_media_video_with_inactive_audio(void) {
 	pauline_params = configure_for_early_media_video_sending(pauline);
 
 	/* Early media video call from pauline to marie. */
-	CU_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
+	BC_ASSERT_TRUE(video_call_with_params(pauline, marie, pauline_params, NULL, FALSE));
 
 	/* Wait for 2s. */
 	wait_for_three_cores(marie->lc, pauline->lc, NULL, 2000);
 
 	/* Check that we are in LinphoneCallOutgoingEarlyMedia state and that the ringstream is present meaning we are playing the ringback tone. */
-	CU_ASSERT_EQUAL(linphone_call_get_state(linphone_core_get_current_call(pauline->lc)), LinphoneCallOutgoingEarlyMedia);
-	CU_ASSERT_PTR_NOT_NULL(pauline->lc->ringstream);
+	BC_ASSERT_EQUAL(linphone_call_get_state(linphone_core_get_current_call(pauline->lc)), LinphoneCallOutgoingEarlyMedia, int, "%d");
+	BC_ASSERT_PTR_NOT_NULL(pauline->lc->ringstream);
 
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
-	CU_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
 
-	CU_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1);
+	BC_ASSERT_EQUAL(marie->stat.number_of_video_windows_created, 1, int, "%d");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_video_windows_created, 1, int, "%d");
 
 	linphone_call_params_unref(marie_params);
 	linphone_call_params_unref(pauline_params);
@@ -432,52 +431,52 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	linphone_core_invite_address_with_params(pauline->lc, marie1->identity, pauline_params);
 	linphone_call_params_destroy(pauline_params);
 
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1, 3000));
 
 	pauline_call = linphone_core_get_current_call(pauline->lc);
 	marie1_call = linphone_core_get_current_call(marie1->lc);
 	marie2_call = linphone_core_get_current_call(marie2->lc);
 
-	CU_ASSERT_PTR_NOT_NULL(pauline_call);
-	CU_ASSERT_PTR_NOT_NULL(marie1_call);
-	CU_ASSERT_PTR_NOT_NULL(marie2_call);
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
+	BC_ASSERT_PTR_NOT_NULL(marie1_call);
+	BC_ASSERT_PTR_NOT_NULL(marie2_call);
 
 	if (pauline_call && marie1_call && marie2_call) {
 		/* wait a bit that streams are established */
 		wait_for_list(lcs, &dummy, 1, 6000);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth == 0);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth == 0);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth == 0);
-		CU_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth == 0);
-		CU_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
-		CU_ASSERT_TRUE(linphone_call_get_video_stats(marie2_call)->download_bandwidth > 0);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth == 0);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth == 0);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth == 0);
+		BC_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth == 0);
+		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
+		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie2_call)->download_bandwidth > 0);
 
 		linphone_call_params_set_audio_direction(marie1_params, LinphoneMediaDirectionSendRecv);
 		linphone_core_accept_call_with_params(marie1->lc, linphone_core_get_current_call(marie1->lc), marie1_params);
-		CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
-		CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
 
 		/* marie2 should get her call terminated */
-		CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 1000));
 
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs, &dummy, 1, 3000);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth > 71);
-		CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth > 71);
-		CU_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth > 0);
-		CU_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth > 71);
+		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth > 71);
+		BC_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth > 0);
+		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
 
 		/* send an INFO in reverse side to check that dialogs are properly established */
 		info = linphone_core_create_info_message(marie1->lc);
 		linphone_call_send_info_message(marie1_call, info);
-		CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_inforeceived, 1, 3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_inforeceived, 1, 3000));
 	}
 
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 3000));
-	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallEnd, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallEnd, 1, 3000));
 
 	linphone_call_params_destroy(marie1_params);
 	linphone_call_params_destroy(marie2_params);

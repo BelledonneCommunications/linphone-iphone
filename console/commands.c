@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #ifndef _WIN32_WCE
 #include <errno.h>
-#include <unistd.h>
 #endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
@@ -38,6 +37,7 @@
 
 #ifndef WIN32
 #include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 #define AUDIO 0
@@ -1915,24 +1915,24 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	const MSList *elem;
 
 	if (!args)
-    	{
-    		/* it means that you want to register the default proxy */
-    		LinphoneProxyConfig *cfg=NULL;
-    		linphone_core_get_default_proxy(lc,&cfg);
-    		if (cfg)
-    		{
-    			if(!linphone_proxy_config_is_registered(cfg)) {
+		{
+			/* it means that you want to register the default proxy */
+			LinphoneProxyConfig *cfg=NULL;
+			linphone_core_get_default_proxy(lc,&cfg);
+			if (cfg)
+			{
+				if(!linphone_proxy_config_is_registered(cfg)) {
 				linphone_proxy_config_enable_register(cfg,TRUE);
 				linphone_proxy_config_done(cfg);
 			}else{
 				linphonec_out("default proxy already registered\n");
 			}
-    		}else{
-    			linphonec_out("we do not have a default proxy\n");
-    			return 0;
-    		}
-    		return 1;
-    	}
+			}else{
+				linphonec_out("we do not have a default proxy\n");
+				return 0;
+			}
+			return 1;
+		}
 	passwd[0]=proxy[0]=identity[0]='\0';
 	sscanf(args,"%511s %511s %511s",identity,proxy,passwd);
 	if (proxy[0]=='\0' || identity[0]=='\0'){
@@ -1943,7 +1943,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		LinphoneAddress *from;
 		LinphoneAuthInfo *info;
 		if ((from=linphone_address_new(identity))!=NULL){
-			info=linphone_auth_info_new(NULL,NULL,passwd,NULL,NULL,linphone_address_get_username(from));
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL,linphone_address_get_username(from));
 			linphone_core_add_auth_info(lc,info);
 			linphone_address_destroy(from);
 			linphone_auth_info_destroy(info);

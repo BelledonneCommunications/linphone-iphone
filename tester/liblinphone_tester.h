@@ -283,6 +283,7 @@ bool_t call_with_test_params(LinphoneCoreManager* caller_mgr
 				,const LinphoneCallTestParams *callee_test_params);
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
+bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t change_video_policy);
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);
@@ -307,5 +308,9 @@ void call_base(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_r
 bool_t call_with_caller_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr, const LinphoneCallParams *params);
 bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2);
 bool_t compare_files(const char *path1, const char *path2);
+void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir);
+
+static const int audio_cmp_max_shift=20;
+
 #endif /* LIBLINPHONE_TESTER_H_ */
 

@@ -209,6 +209,7 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 MACAPPNAME=Linphone.app
 MACAPPZIP=$(PACKAGE)-$(GITVERSION).app.zip
 MACAPPDMG=$(PACKAGE)-$(GITVERSION).dmg
+MACAPPPKG=$(PACKAGE)-$(GITVERSION).pkg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
 #a path prefix where additional libs can be cherry-picked by the bundler.
@@ -229,15 +230,29 @@ Linphone.app:
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
 	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
 	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
+	rm -f ${BUNDLEDIR}/Contents/Resources/lib/libopenh264*
 
-bundle: Linphone.app
+bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
 
-signed-bundle: Linphone.app
-	codesign --deep -s $(BUNDLE_SIGNING_ID) $(BUNDLEDIR)
+signed-bundle: $(MACAPPNAME)
+	codesign --deep -s "$(BUNDLE_SIGNING_ID)" $(BUNDLEDIR)
 	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+
+pkg: $(MACAPPNAME)
+	rm -rf ./packaging
+	mkdir -p ./packaging
+	cp ${srcdir}/COPYING ./packaging
+	cp ${srcdir}/pixmaps/linphone.png ./packaging
+	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
+	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
 	
+signed-pkg: pkg
+	mv $(MACAPPPKG) $(MACAPPPKG).tmp
+	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG).tmp $(MACAPPPKG)
+	rm -f $(MACAPPPKG).tmp
+
 
 ###
 ### CLEAN
@@ -247,4 +262,8 @@ clean-local:
 discovery:
 	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
-          $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+
+.PHONY: $(MACAPPNAME) pkg
+
+

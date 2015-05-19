@@ -1,3 +1,15 @@
+linphone-3.8.2 -- May 7th, 2015
+	Application level improvements:
+	* add support of the StatusNotifierItem standard to display a status icon on KDE5
+	* auto-answering can be set through the preferences panel
+	* bug fixes
+	
+	Liblinphone level improvements:
+	* fix audio bug with opus codec
+	* fix ICE corner case not properly handled and resulting bad final ice status
+	* update SO version to 7 (it should have been done in 3.8.0)
+	* bug fixes
+
 linphone-3.8.1 -- March 31th, 2015
 	Application level improvements:
 	* Auto-answer ability

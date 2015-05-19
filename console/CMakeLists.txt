@@ -20,50 +20,34 @@
 #
 ############################################################################
 
-set(PIXMAPS
-	active_chat.png
-	addcall-green.png
-	call.png
-	call_status_incoming.png
-	call_status_outgoing.png
-	chat_message_delivered.png
-	chat_message_inprogress.png
-	chat_message_not_delivered.png
-	chat.png
-	composing_active_chat.png
-	composing_chat.png
-	contact-orange.png
-	contact_starred.png
-	contact_unstarred.png
-	dialer-orange.png
-	dialer.png
-	history-orange.png
-	hold_off.png
-	hold_on.png
-	linphone-banner.png
-	linphone.icns
-	linphone.png
-	mic_active.png
-	mic_muted.png
-	notok.png
-	ok.png
-	speaker.png
-	startcall-green.png
-	startcall-small.png
-	status-green.png
-	status-offline.png
-	status-orange.png
-	status-red.png
-	stopcall-red.png
-	stopcall-small.png
+set(LINPHONEC_SOURCE_FILES
+	linphonec.c
+	linphonec.h
+	commands.c
+)
+set(LINPHONECSH_SOURCE_FILES
+	shell.c
 )
 
-install(FILES ${PIXMAPS}
-	DESTINATION ${PACKAGE_DATA_DIR}/pixmaps/linphone
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
+add_executable(linphonec ${LINPHONEC_SOURCE_FILES})
+target_link_libraries(linphonec linphone)
 
-install(FILES linphone.png
-	DESTINATION ${PACKAGE_DATA_DIR}/icons/hicolor/48x48/apps
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+if(WIN32)
+	add_executable(linphoned WIN32 ${LINPHONEC_SOURCE_FILES})
+	target_link_libraries(linphoned linphone)
+endif()
+
+add_executable(linphonecsh ${LINPHONECSH_SOURCE_FILES})
+target_link_libraries(linphonecsh linphone)
+
+set(INSTALL_TARGETS linphonec linphonecsh)
+if(WIN32)
+	list(APPEND INSTALL_TARGETS linphoned)
+endif()
+
+install(TARGETS ${INSTALL_TARGETS}
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )

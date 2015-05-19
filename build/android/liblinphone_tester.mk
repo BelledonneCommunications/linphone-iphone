@@ -1,7 +1,7 @@
 LOCAL_PATH := $(call my-dir)/../../tester
 
 common_SRC_FILES := \
-	../../belle-sip/tester/common/bc_tester_utils.c \
+	common/bc_tester_utils.c \
 	call_tester.c \
 	liblinphone_tester.c \
 	message_tester.c \
@@ -30,7 +30,7 @@ common_C_INCLUDES += \
         $(LOCAL_PATH)/../coreapi \
         $(LOCAL_PATH)/../oRTP/include \
         $(LOCAL_PATH)/../mediastreamer2/include \
-	$(LOCAL_PATH)/../../belle-sip/tester/common \
+		$(LOCAL_PATH)/common
 
 
 include $(CLEAR_VARS)

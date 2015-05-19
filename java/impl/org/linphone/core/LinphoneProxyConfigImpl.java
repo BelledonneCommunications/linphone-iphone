@@ -362,6 +362,12 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		return getPublishExpires(nativePtr);
 	}
 
+	private native boolean isPhoneNumber(long nativePtr,String username);
+	@Override
+	public boolean isPhoneNumber(String username){
+		return isPhoneNumber(nativePtr,username);
+	}
+
 	@Override
 	public void setUserData(Object obj) {
 		userData = obj;

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.8.1-linphone-daemon],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.8.2-linphone-daemon],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=6 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=7 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -347,9 +347,13 @@ if test "$gtk_ui" = "true" ; then
 		fi
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
 	fi
+
+	PKG_CHECK_MODULES(LIBGLIB, [glib-2.0 >= 2.26.0], [build_status_notifier=yes], [build_status_notifier=no])
 else
 	echo "GTK interface compilation is disabled."
 fi
+
+AM_CONDITIONAL([BUILD_STATUS_NOTIFIER], [test "$build_status_notifier" = "yes"])
 
 AC_ARG_ENABLE(notify,
 	[AS_HELP_STRING([--enable-notify=[yes/no]], [Enable libnotify support (default=yes)])],
@@ -1037,6 +1041,7 @@ AC_CONFIG_FILES([
 	build/Makefile
 	build/macos/Makefile
 	build/macos/Info-linphone.plist
+	build/macos/pkg-distribution.xml
 	m4/Makefile
 	po/Makefile.in
 	pixmaps/Makefile
