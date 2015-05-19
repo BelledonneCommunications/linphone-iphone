@@ -293,11 +293,12 @@ struct codec_name_pref_table codec_pref_table[]={
 		//set default values for first boot
 		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
 #ifdef DEBUG
-			[self lpConfigSetBool:TRUE forKey:@"debugenable_preference"];
+			[self lpConfigSetBool:TRUE  forKey:@"debugenable_preference"];
 #else
 			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
 #endif
 		}
+
 		_iapManager = [[InAppProductsManager alloc] init];
 
 		[self migrateFromUserPrefs];
@@ -1232,7 +1233,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-
 #pragma mark -
 
 static LinphoneCoreVTable linphonec_vtable = {
@@ -1370,8 +1370,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		}
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
-	// Query our in-app server when core is ready in order to retrieve InApp purchases
-	[_iapManager retrievePurchases];
 
 	LOGW(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
@@ -1483,6 +1481,7 @@ static BOOL libStarted = FALSE;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioSessionInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(globalStateChangedNotificationHandler:) name:kLinphoneGlobalStateUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(configuringStateChangedNotificationHandler:) name:kLinphoneConfiguringStateUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(inappReady:) name:kIAPReady object:nil];
 
 	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning grab, if any */
 	linphone_core_iterate(theLinphoneCore);
@@ -2261,7 +2260,10 @@ static void audioRouteChangeListenerCallback (
 	}
 }
 
-#pragma InApp Purchase
+#pragma mark - InApp Purchase events
 
-
+- (void)inappReady:(NSNotification*)notif {
+	// Query our in-app server to retrieve InApp purchases
+	[_iapManager retrievePurchases];
+}
 @end

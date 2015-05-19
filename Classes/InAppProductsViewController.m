@@ -35,7 +35,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	for (NSString* notification in [NSArray arrayWithObjects:IAPAvailableSucceeded, IAPRestoreSucceeded, IAPPurchaseSucceeded, IAPReceiptSucceeded, IAPPurchaseTrying, nil]) {
+	for (NSString* notification in [NSArray arrayWithObjects:kIAPReady, kIAPRestoreSucceeded, kIAPPurchaseSucceeded, kIAPReceiptSucceeded, kIAPPurchaseTrying, nil]) {
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(onIAPPurchaseNotification:)
 													 name:notification
@@ -45,7 +45,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	for (NSString* notification in [NSArray arrayWithObjects:IAPAvailableSucceeded, IAPRestoreSucceeded, IAPPurchaseSucceeded, IAPReceiptSucceeded, IAPPurchaseTrying, nil]) {
+	for (NSString* notification in [NSArray arrayWithObjects:kIAPReady, kIAPRestoreSucceeded, kIAPPurchaseSucceeded, kIAPReceiptSucceeded, kIAPPurchaseTrying, nil]) {
 		[[NSNotificationCenter defaultCenter] removeObserver:self
 														name:notification
 													  object:nil];
@@ -55,7 +55,7 @@
 - (void)onIAPPurchaseNotification:(NSNotification*)notif {
 	InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
 	[[_tableController tableView] reloadData];
-	[_waitView setHidden:([[iapm productsAvailable] count] != 0 && ![notif.name isEqualToString:IAPPurchaseTrying])];
+	[_waitView setHidden:([[iapm productsAvailable] count] != 0 && ![notif.name isEqualToString:kIAPPurchaseTrying])];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

@@ -26,16 +26,17 @@
 
 @end
 
-#define IAPNotReadyYet			@"IAPNotReadyYet" // startup status, manager is not ready yet
-#define IAPAvailableSucceeded	@"IAPAvailableSucceeded" //no data
-#define IAPAvailableFailed		@"IAPAvailableFailed" //data: error_msg
-#define IAPPurchaseTrying		@"IAPPurchaseTrying" //data: product_id
-#define IAPPurchaseFailed		@"IAPPurchaseFailed" //data: product_id, error_msg
-#define IAPPurchaseSucceeded	@"IAPPurchaseSucceeded" //data: product_id, expires_date
-#define IAPRestoreFailed		@"IAPRestoreFailed" //data: error_msg
-#define IAPRestoreSucceeded		@"IAPRestoreSucceeded" //no data
-#define IAPReceiptFailed		@"IAPReceiptFailed" //data: error_msg
-#define IAPReceiptSucceeded		@"IAPReceiptSucceeded" //no data
+#define kIAPNotReady			@"IAPNotReady" // startup status, manager is not ready yet
+#define kIAPReady				@"IAPReady" //no data
+#define kIAPPurchaseTrying		@"IAPPurchaseTrying" //data: product_id
+#define kIAPPurchaseCancelled	@"IAPPurchaseCancelled" //data: product_id
+#define kIAPPurchaseFailed		@"IAPPurchaseFailed" //data: product_id, error_msg
+#define kIAPPurchaseSucceeded	@"IAPPurchaseSucceeded" //data: product_id, expires_date
+#define kIAPPurchaseExpired		@"IAPPurchaseExpired" //data: product_id, expires_date
+#define kIAPRestoreFailed		@"IAPRestoreFailed" //data: error_msg
+#define kIAPRestoreSucceeded	@"IAPRestoreSucceeded" //no data
+#define kIAPReceiptFailed		@"IAPReceiptFailed" //data: error_msg
+#define kIAPReceiptSucceeded	@"IAPReceiptSucceeded" //no data
 typedef NSString*               IAPPurchaseNotificationStatus;
 
 // InAppProductsManager take care of any in app purchase accessible within Linphone
@@ -51,21 +52,31 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 	NSString *latestReceiptMD5;
 }
 
-// needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
-@property (nonatomic, retain) InAppProductsXMLRPCDelegate *xmlrpc;
+
 @property (nonatomic, retain) IAPPurchaseNotificationStatus status;
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 
+// TRUE when in app purchase capability is available - not modified during runtime
 @property (readonly) BOOL enabled;
+// TRUE when manager is correctly set up - must first retrieve products available and validate current receipt on our server
+@property (readonly) BOOL initialized;
+// TRUE if manager is available for usage - will be FALSE if an operation is already in progress or if not initialized or not enabled
+@property (readonly) BOOL available;
 
 - (BOOL)isPurchasedWithID:(NSString*)productId;
-- (void)purchaseAccount:(NSString*)sipURI withPassword:(NSString*)password;
+// Purchase an account. You should not use this if manager is not available yet.
+- (BOOL)purchaseAccount:(NSString *)phoneNumber withPassword:(NSString *)password andEmail:(NSString*)email;
+// Purchase a product. You should not use this if manager is not available yet.
 - (BOOL)purchaseWitID:(NSString *)productID;
 
-// restore user purchases. Must be at first launch or a user action ONLY.
-- (void)restore;
-- (void)retrievePurchases;
+// restore user purchases. You should not use this if manager is not available yet. Must be at a user action ONLY.
+- (BOOL)restore;
+// retrieve purchases on our server. You should not use this if manager is not available yet.
+// Warning: on first run, this will open a popup to user to provide iTunes Store credentials
+- (BOOL)retrievePurchases;
+
+
 // internal API only due to methods conflict
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response;
 // internal API only due to methods conflict
