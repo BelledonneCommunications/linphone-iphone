@@ -132,7 +132,7 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 	_LinphoneStatusIconDescSearchCtx *ctx) {
 	
 	if(!result) {
-		;
+		ctx->i = g_slist_next(ctx->i);
 		for(; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 			if(_linphone_status_icon_desc_is_supported(
 				(const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0),
