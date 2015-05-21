@@ -669,7 +669,7 @@ static void call_with_specified_codec_bitrate(void) {
 		min_bw=20;
 		max_bw=35;
 #else
-		CU_PASS("Test requires at least a dual core");
+		BC_PASS("Test requires at least a dual core");
 		goto end;
 #endif
 	}
