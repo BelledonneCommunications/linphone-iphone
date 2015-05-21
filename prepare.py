@@ -29,7 +29,7 @@ sys.path.insert(0, 'submodules/cmake-builder')
 import prepare
 
 
-platforms = ['all', 'devices', 'simulators', 'armv7', 'i386']
+platforms = ['all', 'devices', 'simulators', 'armv7', 'arm64', 'i386', 'x86_64']
 
 
 def main(argv = None):
@@ -46,11 +46,11 @@ def main(argv = None):
 
 	selected_platforms = []
 	if args.platform == 'all':
-		selected_platforms += ['armv7', 'i386']
+		selected_platforms += ['armv7', 'arm64', 'i386', 'x86_64']
 	elif args.platform == 'devices':
-		selected_platforms += ['armv7']
+		selected_platforms += ['armv7', 'arm64']
 	elif args.platform == 'simulators':
-		selected_platforms += ['i386']
+		selected_platforms += ['i386', 'x86_64']
 	else:
 		selected_platforms += [args.platform]
 
