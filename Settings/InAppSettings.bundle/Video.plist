@@ -74,7 +74,7 @@
 			<key>Key</key>
 			<string>mp4v-es_preference</string>
 			<key>Title</key>
-			<string>mpeg4</string>
+			<string>MPEG-4</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -84,7 +84,7 @@
 			<key>Key</key>
 			<string>h264_preference</string>
 			<key>Title</key>
-			<string>h264</string>
+			<string>H.264</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

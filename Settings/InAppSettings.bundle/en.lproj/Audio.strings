@@ -10,10 +10,10 @@
 "AAC-ELD 44kHz" = "AAC-ELD 44kHz";
 "AAC-ELD 48kHz" = "AAC-ELD 48kHz";
 "AMR" = "AMR";
-"G722" = "G722";
-"G729" = "G729";
+"G.722" = "G.722";
+"G.729" = "G.729";
 "GSM" = "GSM";
-"ILBC" = "ILBC";
+"iLBC" = "iLBC";
 "PCMU" = "PCMU";
 "PCMA" = "PCMA";
 "Advanced" = "Advanced";
