@@ -1019,12 +1019,12 @@ dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
 
-AC_ARG_ENABLE(doxygen,
-	[AS_HELP_STRING([--disable-documentation], [Disable documentation generation using doxygen (default=no)])],
+AC_ARG_ENABLE(documentation,
+	[AS_HELP_STRING([--enable-documentation], [Documentation generation using doxygen (default=yes)])],
 	[case "${enableval}" in
 		yes)	documentation_enabled=yes;;
 		no)		documentation_enabled=no;;
-		*)		AC_MSG_ERROR("Bad value for --disable-documentation");;
+		*)		AC_MSG_ERROR("Bad value for --enable-documentation");;
 	esac],
 	[documentation_enabled=yes]
 )
@@ -1076,12 +1076,13 @@ printf "* %-30s %s\n" "Video support"		$video
 printf "* %-30s %s\n" "GTK interface"		$gtk_ui
 printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
-printf "* %-30s %s\n" "Tools"			$build_tools
+printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib
+printf "* %-30s %s\n" "Documentation" 		$documentation_enabled
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"
