@@ -82,3 +82,6 @@
 	url = https://github.com/kif-framework/KIF.git
 	branch = origin/v3.1.2
 	ignore = dirty
+[submodule "submodules/cmake-builder"]
+	path = submodules/cmake-builder
+	url = git://git.linphone.org/linphone-cmake-builder.git
