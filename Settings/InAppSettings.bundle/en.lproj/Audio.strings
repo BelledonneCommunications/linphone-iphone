@@ -1,9 +1,9 @@
 "Codecs" = "Codecs";
-"Speex 16Khz" = "Speex 16Khz";
-"Speex 8Khz" = "Speex 8Khz";
+"Speex 16kHz" = "Speex 16kHz";
+"Speex 8kHz" = "Speex 8kHz";
 "Opus 48kHz" = "Opus 48kHz";
-"Silk 24Khz" = "Silk 24Khz";
-"Silk 16Khz" = "Silk 16Khz";
+"Silk 24kHz" = "Silk 24kHz";
+"Silk 16kHz" = "Silk 16kHz";
 "AAC-ELD 16kHz" = "AAC-ELD 16kHz";
 "AAC-ELD 22kHz" = "AAC-ELD 22kHz";
 "AAC-ELD 32kHz" = "AAC-ELD 32kHz";
