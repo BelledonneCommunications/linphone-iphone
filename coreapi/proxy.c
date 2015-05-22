@@ -868,17 +868,18 @@ int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
 	return -1;
 }
 
-static void lookup_dial_plan(const char *ccc, dial_plan_t *plan){
+static bool_t lookup_dial_plan_by_ccc(const char *ccc, dial_plan_t *plan){
 	int i;
 	for(i=0;dial_plans[i].country!=NULL;++i){
 		if (strcmp(ccc,dial_plans[i].ccc)==0){
 			*plan=dial_plans[i];
-			return;
+			return TRUE;
 		}
 	}
 	/*else return a generic "most common" dial plan*/
 	*plan=most_common_dialplan;
 	strcpy(plan->ccc,ccc);
+	return FALSE;
 }
 
 bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username){
@@ -900,6 +901,7 @@ bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const c
 	return TRUE;
 }
 
+//remove anything but [0-9] and +
 static char *flatten_number(const char *number){
 	char *result=ms_malloc0(strlen(number)+1);
 	char *w=result;
@@ -913,7 +915,7 @@ static char *flatten_number(const char *number){
 	return result;
 }
 
-static void replace_plus(const char *src, char *dest, size_t destlen, const char *icp){
+static void replace_plus_with_icp(const char *src, char *dest, size_t destlen, const char *icp){
 	int i=0;
 
 	if (icp && src[0]=='+' && (destlen>(i=strlen(icp))) ){
@@ -928,7 +930,7 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 	dest[i]='\0';
 }
 
-static void replace_icp(const char *src, char *dest, size_t destlen, const char *icp){
+static void replace_icp_with_plus(const char *src, char *dest, size_t destlen, const char *icp){
 	int i=0;
 	if (strstr(src, icp) == src){
 		dest[0]='+';
@@ -943,26 +945,35 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, cons
 	LinphoneProxyConfig *proxy = inproxy ? inproxy : linphone_proxy_config_new();
 	memset(result, 0, result_len);
 	if (linphone_proxy_config_is_phone_number(proxy, username)){
+		dial_plan_t dialplan = {0};
 		char *flatten=flatten_number(username);
+		bool_t dialplan_found = FALSE;
 		ms_debug("Flattened number is '%s'",flatten);
 
+		/*username does not contain a dial prefix nor the proxy, nothing else to do*/
 		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
-			/*no prefix configured, nothing else to do*/
 			strncpy(result,flatten,result_len-1);
-		}else{
-			dial_plan_t dialplan;
-			lookup_dial_plan(proxy->dial_prefix,&dialplan);
-			ms_debug("Using dialplan '%s'",dialplan.country);
+		} else {
+			dialplan_found = lookup_dial_plan_by_ccc(proxy->dial_prefix,&dialplan);
+		}
+
+		if (dialplan_found) {
+			ms_debug("Using dial plan '%s'",dialplan.country);
+			/* the number has international prefix or +, so nothing to do*/
 			if (flatten[0]=='+'){
-				/* the number has international prefix or +, so nothing to do*/
 				ms_debug("Prefix already present.");
 				/*eventually replace the plus by the international calling prefix of the country*/
-				replace_plus(flatten,result,result_len,proxy->dial_escape_plus ? dialplan.icp : NULL);
-			}else if (strstr(flatten,dialplan.icp)==flatten){
-				if (!proxy->dial_escape_plus)
-					replace_icp(flatten, result, result_len, dialplan.icp);
-				else
+				if (proxy->dial_escape_plus) {
+					replace_plus_with_icp(flatten,result,result_len,dialplan.icp);
+				}else{
 					strncpy(result, flatten, result_len-1);
+				}
+			}else if (strstr(flatten,dialplan.icp)==flatten){
+				if (proxy->dial_escape_plus){
+					strncpy(result, flatten, result_len-1);
+				}else{
+					replace_icp_with_plus(flatten, result, result_len, dialplan.icp);
+				}
 			}else{
 				int numlen;
 				int i=0;

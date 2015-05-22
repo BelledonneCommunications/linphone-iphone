@@ -18,11 +18,12 @@ liblinphonetester_la_SOURCES = \
 				flexisip_tester.c \
 				log_collection_tester.c \
 				message_tester.c \
-				multi_call.c \
+				multi_call_tester.c \
 				multicast_call_tester.c \
 				offeranswer_tester.c \
 				player_tester.c \
 				presence_tester.c \
+				proxy_config_tester.c \
 				quality_reporting_tester.c \
 				register_tester.c \
 				remote_provisioning_tester.c \

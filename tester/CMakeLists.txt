@@ -25,32 +25,7 @@ if(WIN32)
 endif()
 find_package(GTK2 2.18 COMPONENTS gtk)
 
-set(SOURCE_FILES
-	common/bc_tester_utils.c
-	common/bc_tester_utils.h
-	accountmanager.c
-	call_tester.c
-	dtmf_tester.c
-	eventapi_tester.c
-	flexisip_tester.c
-	liblinphone_tester.c
-	log_collection_tester.c
-	message_tester.c
-	multi_call.c
-	multicast_call_tester.c
-	offeranswer_tester.c
-	player_tester.c
-	presence_tester.c
-	quality_reporting_tester.c
-	register_tester.c
-	remote_provisioning_tester.c
-	setup_tester.c
-	stun_tester.c
-	tester.c
-	tunnel_tester.c
-	upnp_tester.c
-	video_tester.c
-)
+file (GLOB_RECURSE SOURCE_FILES *.c)
 
 add_definitions(-DBC_CONFIG_FILE="config.h")
 

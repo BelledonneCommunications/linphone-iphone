@@ -415,6 +415,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&video_test_suite);
 #endif
 	bc_tester_add_suite(&multicast_call_test_suite);
+	bc_tester_add_suite(&proxy_config_test_suite);
 }
 
 static bool_t linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
