@@ -19,9 +19,8 @@
 #include "liblinphone_tester.h"
 
 const char* phone_normalization(LinphoneProxyConfig *proxy, const char* in) {
-	const size_t RESULTLENGTH = 255;
-	static char result[RESULTLENGTH];
-	linphone_proxy_config_normalize_number(proxy, in, result, RESULTLENGTH-1);
+	static char result[255];
+	linphone_proxy_config_normalize_number(proxy, in, result, 255-1);
 	return result;
 }
 
