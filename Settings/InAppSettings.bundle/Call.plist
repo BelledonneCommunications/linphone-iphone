@@ -28,7 +28,7 @@
 			<key>Key</key>
 			<string>substitute_+_by_00_preference</string>
 			<key>Title</key>
-			<string>Substitue + by 00</string>
+			<string>Substitute + by 00</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
