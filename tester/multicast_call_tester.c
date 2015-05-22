@@ -53,9 +53,9 @@ static void call_multicast_base(bool_t video) {
 	linphone_core_enable_audio_multicast(pauline->lc,TRUE);
 
 	BC_ASSERT_TRUE(call(pauline,marie));
-	wait_for_until(marie->lc, pauline->lc, NULL, 1, 3000);
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 4000);
 	if (linphone_core_get_current_call(marie->lc)) {
-		BC_ASSERT_GREATER(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth,70,int,"%d");
+		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%d");
 		if (video) {
 			/*check video path*/
 			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(marie->lc),linphone_call_cb,marie->lc);
@@ -167,10 +167,10 @@ static void early_media_with_multicast_base(bool_t video) {
 
 		wait_for_list(lcs, &dummy, 1, 3000);
 
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
 		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth<90);
 
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline2),70,int,"%i");
 		BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline2->lc))->download_bandwidth<90);
 
 		BC_ASSERT_TRUE(linphone_call_params_audio_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));

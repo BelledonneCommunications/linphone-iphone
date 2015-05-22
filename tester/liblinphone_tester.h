@@ -212,12 +212,17 @@ typedef struct _stats {
 	int number_of_LinphoneCoreLogCollectionUploadStateDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateNotDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateInProgress;
-	int audio_download_bandwidth;
-	int audio_upload_bandwidth;
-	int video_download_bandwidth;
-	int video_upload_bandwidth;
+	int audio_download_bandwidth[3];
+	int *current_audio_download_bandwidth;
+	int audio_upload_bandwidth[3];
+	int *current_audio_upload_bandwidth;
+
+	int video_download_bandwidth[3];
+	int video_upload_bandwidth[3];
+	int current_bandwidth_index;
 
 }stats;
+
 
 typedef struct _LinphoneCoreManager {
 	LinphoneCoreVTable v_table;
@@ -312,6 +317,11 @@ bool_t compare_files(const char *path1, const char *path2);
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir);
 
 static const int audio_cmp_max_shift=20;
+
+/*
+ * this function return max value in the last 3 seconds*/
+int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr);
+int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr);
 
 #endif /* LIBLINPHONE_TESTER_H_ */
 

@@ -83,15 +83,24 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *lstats) {
 	stats* counters = get_stats(lc);
 	counters->number_of_LinphoneCallStatsUpdated++;
-	if (lstats->updated == LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
+	if (lstats->updated & LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE) {
 		counters->number_of_rtcp_received++;
-	} else if (lstats->updated == LINPHONE_CALL_STATS_SENT_RTCP_UPDATE) {
+	}
+	if (lstats->updated & LINPHONE_CALL_STATS_SENT_RTCP_UPDATE ) {
 		counters->number_of_rtcp_sent++;
 	}
-	counters->audio_download_bandwidth = linphone_call_get_audio_stats(call)->download_bandwidth;
-	counters->audio_upload_bandwidth = linphone_call_get_audio_stats(call)->upload_bandwidth;
-	counters->video_download_bandwidth = linphone_call_get_video_stats(call)->download_bandwidth;
-	counters->video_upload_bandwidth = linphone_call_get_video_stats(call)->upload_bandwidth;
+	if (lstats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE ) {
+		int tab_size = sizeof (counters->audio_download_bandwidth)/sizeof(int);
+		int index =  (counters->current_bandwidth_index++) % tab_size;
+
+		counters->current_audio_download_bandwidth = counters->audio_download_bandwidth + index;
+		counters->current_audio_upload_bandwidth = counters->audio_upload_bandwidth +index;
+
+		counters->audio_download_bandwidth[index] = linphone_call_get_audio_stats(call)->download_bandwidth;
+		counters->audio_upload_bandwidth[index] = linphone_call_get_audio_stats(call)->upload_bandwidth;
+		counters->video_download_bandwidth[index] = linphone_call_get_video_stats(call)->download_bandwidth;
+		counters->video_upload_bandwidth[index] = linphone_call_get_video_stats(call)->upload_bandwidth;
+	}
 
 }
 
@@ -3055,7 +3064,7 @@ static void multiple_early_media(void) {
 
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs,&dummy,1,6000);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
 		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
 		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
 
@@ -3126,13 +3135,13 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 				BC_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
 			case LinphoneMediaDirectionSendOnly:
 				BC_ASSERT_TRUE(linphone_call_get_video_stats(call)->download_bandwidth<5);
-				if (audio_dir == LinphoneMediaDirectionSendOnly) BC_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_upload_bandwidth,70,4000));
+				if (audio_dir == LinphoneMediaDirectionSendOnly) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
 				break;
 			case LinphoneMediaDirectionRecvOnly:
 				BC_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
 			case LinphoneMediaDirectionSendRecv:
-				BC_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_download_bandwidth,70,4000));
-				if (audio_dir == LinphoneMediaDirectionSendRecv) BC_ASSERT_TRUE(wait_for_list(lcs,&mgr->stat.audio_upload_bandwidth,70,4000));
+				BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_download_bandwidth,70,4000));
+				if (audio_dir == LinphoneMediaDirectionSendRecv) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
 				break;
 			}
 	}
@@ -3449,8 +3458,8 @@ static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	BC_ASSERT_STRING_EQUAL("PCMA",linphone_payload_type_get_mime_type(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))));
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc))->download_bandwidth>70);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
+	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%i");
+	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
 
 	end_call(marie,pauline);
 end:
@@ -3711,7 +3720,7 @@ static void call_with_paused_no_sdp_on_resume() {
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
 	wait_for_until(marie->lc, pauline->lc, &dummy, 1, 3000);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(call_marie)->download_bandwidth>70);
+	BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%i");
 	BC_ASSERT_TRUE(linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc))->download_bandwidth>70);
 end:
 	end_call(marie,pauline);
