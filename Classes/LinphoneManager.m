@@ -194,11 +194,7 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 + (BOOL)runningOnIpad {
-#ifdef UI_USER_INTERFACE_IDIOM
-	return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
-#else
-	return NO;
-#endif
+	return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
 }
 
 + (BOOL)isRunningTests {
