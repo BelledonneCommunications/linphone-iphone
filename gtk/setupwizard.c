@@ -589,7 +589,7 @@ void linphone_gtk_close_assistant(void){
 	the_assistant = NULL;
 }
 
-void linphone_gtk_show_assistant(void){
+void linphone_gtk_show_assistant(GtkWidget *parent){
 	GtkWidget *w;
 	GtkWidget *p1;
 	GtkWidget *p2;
@@ -670,6 +670,8 @@ void linphone_gtk_show_assistant(void){
 	g_signal_connect(G_OBJECT(w),"close",(GCallback)linphone_gtk_assistant_closed,NULL);
 	g_signal_connect(G_OBJECT(w),"cancel",(GCallback)linphone_gtk_assistant_closed,NULL);
 	g_signal_connect(G_OBJECT(w),"prepare",(GCallback)linphone_gtk_assistant_prepare,NULL);
+	
+	gtk_window_set_transient_for(GTK_WINDOW(the_assistant), GTK_WINDOW(parent));
 
 	gtk_widget_show(w);
 }

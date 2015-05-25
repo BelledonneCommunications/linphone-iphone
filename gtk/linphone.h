@@ -89,7 +89,7 @@ LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
 
 const char *linphone_gtk_message_storage_get_db_file(const char *filename);
-LINPHONE_PUBLIC void linphone_gtk_show_assistant(void);
+LINPHONE_PUBLIC void linphone_gtk_show_assistant(GtkWidget* parent);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);
@@ -147,7 +147,7 @@ LINPHONE_PUBLIC void linphone_gtk_friend_list_set_active_address(const LinphoneA
 LINPHONE_PUBLIC const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void);
 LINPHONE_PUBLIC void linphone_gtk_notebook_tab_select(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer data);
 LINPHONE_PUBLIC void linphone_gtk_show_friends(void);
-LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend *lf);
+LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend* lf, GtkWindow* parent);
 LINPHONE_PUBLIC void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 
 /*functions controlling the different views*/

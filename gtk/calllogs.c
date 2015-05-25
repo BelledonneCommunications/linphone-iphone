@@ -70,6 +70,7 @@ void linphone_gtk_call_log_chat_selected(GtkWidget *w){
 }
 
 void linphone_gtk_call_log_add_contact(GtkWidget *w){
+	GtkWidget *main_window = gtk_widget_get_toplevel(w);
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
 
@@ -87,7 +88,7 @@ void linphone_gtk_call_log_add_contact(GtkWidget *w){
 			if (la != NULL){
 				char *uri=linphone_address_as_string(la);
 				lf=linphone_friend_new_with_address(uri);
-				linphone_gtk_show_contact(lf);
+				linphone_gtk_show_contact(lf, GTK_WINDOW(main_window));
 				ms_free(uri);
 			}
 		}

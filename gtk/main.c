@@ -1051,7 +1051,7 @@ static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
 static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint response_id, LinphoneFriend *lf){
 	switch(response_id){
 		case GTK_RESPONSE_YES:
-			linphone_gtk_show_contact(lf);
+			linphone_gtk_show_contact(lf, GTK_WINDOW(the_ui));
 		break;
 		default:
 			linphone_core_reject_subscriber(linphone_gtk_get_core(),lf);
@@ -2022,7 +2022,7 @@ static void linphone_gtk_init_ui(void){
 #ifdef BUILD_WIZARD
 	// Veryfing if at least one sip account is configured. If not, show wizard
 	if (linphone_core_get_proxy_config_list(linphone_gtk_get_core()) == NULL) {
-		linphone_gtk_show_assistant();
+		linphone_gtk_show_assistant(the_ui);
 	}
 #endif
 
