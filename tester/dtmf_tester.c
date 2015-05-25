@@ -91,14 +91,15 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 }
 
 void send_dtmf_cleanup() {
-	BC_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
-	BC_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
+	if (marie_call) {
+		BC_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
+		BC_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
 
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
+		/*just to sleep*/
+		linphone_core_terminate_all_calls(pauline->lc);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
