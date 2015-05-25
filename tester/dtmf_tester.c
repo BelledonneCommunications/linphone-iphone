@@ -39,6 +39,10 @@ void send_dtmf_base(bool_t use_rfc2833, bool_t use_sipinfo, char dtmf, char* dtm
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 	if (use_opus) {
+		if (!ms_filter_codec_supported("opus")) {
+			ms_warning("Opus not supported, skipping test.");
+			return;
+		}
 		disable_all_audio_codecs_except_one(marie->lc, "opus", 48000);
 		disable_all_audio_codecs_except_one(pauline->lc, "opus", 48000);
 	}
