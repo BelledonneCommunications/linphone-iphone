@@ -110,9 +110,23 @@ def main(argv = None):
 			makefile_platforms += [platform]
 
 	if makefile_platforms:
-		archs_specific = ""
+		packages = os.listdir('WORK/ios-' + makefile_platforms[0] + '/Build')
+		packages.sort()
+		arch_targets = ""
+		for arch in makefile_platforms:
+			arch_targets += """
+{arch}:
+	$(MAKE) -C WORK/ios-{arch}/cmake
+
+{arch}-build-%:
+	$(MAKE) -C WORK/ios-{arch}/Build/$* install || exit 1;
+
+{arch}-clean-%:
+	$(MAKE) -C WORK/ios-{arch}/Build/$* clean || exit 1;
+""".format(arch=arch)
+		multiarch = ""
 		for arch in makefile_platforms[1:]:
-			archs_specific += \
+			multiarch += \
 """		if test -f "$${arch}_path"; then \\
 			all_paths=`echo $$all_paths $${arch}_path`; \\
 			all_archs="$$all_archs,{arch}" ; \\
@@ -122,15 +136,31 @@ def main(argv = None):
 """.format(first_arch=makefile_platforms[0], arch=arch)
 		makefile = """
 archs={archs}
+LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
 
-all: multi-arch
+all: build
 
-build-%:
+{arch_targets}
+all-%:
 	$(MAKE) -C WORK/ios-$*/cmake
 
-multi-arch: $(addprefix build-,$(archs))
+build-%:
+	@for arch in $(archs); do \\
+		echo "==== starting build of $* for arch $$arch ===="; \\
+		$(MAKE) -C WORK/ios-$$arch/Build/$* install || exit 1; \\
+	done
+
+clean-%:
+	@for arch in $(archs); do \\
+		echo "==== starting clean of $* for arch $$arch ===="; \\
+		$(MAKE) -C WORK/ios-$$arch/Build/$* clean || exit 1; \\
+	done
+
+build: libs
+
+libs: $(addprefix all-,$(archs))
 	archives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 	mkdir -p liblinphone-sdk/apple-darwin && \\
 	cp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
@@ -144,14 +174,54 @@ multi-arch: $(addprefix build-,$(archs))
 		all_paths=`echo $$archive`; \\
 		all_archs="{first_arch}"; \\
 		mkdir -p `dirname $$destpath`; \\
-		{archs_specific} \\
+		{multiarch} \\
 		echo "[$$all_archs] Mixing `basename $$archive` in $$destpath"; \\
 		lipo -create $$all_paths -output $$destpath; \\
 	done && \\
 	if ! test -f liblinphone-sdk/apple-darwin/lib/libtunnel.a ; then \\
 		cp -f submodules/binaries/libdummy.a liblinphone-sdk/apple-darwin/lib/libtunnel.a ; \\
 	fi
-""".format(archs=' '.join(makefile_platforms), first_arch=makefile_platforms[0], archs_specific=archs_specific)
+
+sdk: libs
+	echo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
+	zip -r liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \\
+	liblinphone-sdk/apple-darwin \\
+	liblinphone-tutorials \\
+	-x liblinphone-tutorials/hello-world/build\* \\
+	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \\
+	-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3
+
+pull-transifex:
+	tx pull -af
+
+push-transifex:
+	&& ./Tools/generate_strings_files.sh && tx push -s -t -f --no-interactive
+
+zipres:
+	@tar -czf ios_assets.tar.gz Resources iTunesArtwork
+
+help:
+	@echo "(please read the README.md file first)"
+	@echo ""
+	@echo "Available architectures: {archs}"
+	@echo "Available packages: {packages}"
+	@echo ""
+	@echo "Available targets:"
+	@echo ""
+	@echo "   * all       : builds all architectures and creates the liblinphone sdk"
+	@echo "   * zipres    : creates a tar.gz file with all the resources (images)"
+	@echo ""
+	@echo "=== Advanced usage ==="
+	@echo ""
+	@echo "   *            build-[package] : builds the package for all architectures"
+	@echo "   *            clean-[package] : clean the package for all architectures"
+	@echo ""
+	@echo "   *     [{arch_opts}]-build-[package] : builds a package for the selected architecture"
+	@echo "   *     [{arch_opts}]-clean-[package] : clean the package for the selected architecture"
+	@echo ""
+	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
+	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"
+""".format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms), first_arch=makefile_platforms[0], arch_targets=arch_targets, packages=' '.join(packages), multiarch=multiarch)
 		f = open('Makefile', 'w')
 		f.write(makefile)
 		f.close()
