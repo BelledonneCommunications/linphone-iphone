@@ -297,10 +297,8 @@ static void _linphone_status_icon_impl_gtk_init(LinphoneStatusIcon *si) {
 	g_signal_connect_swapped(G_OBJECT(icon),"activate", G_CALLBACK(_linphone_status_icon_impl_gtk_on_click_cb), si);
 	g_signal_connect(G_OBJECT(icon), "popup-menu", G_CALLBACK(_linphone_status_icon_impl_gtk_popup_menu), si);
 	g_object_set_data_full(G_OBJECT(icon),"icon",pbuf, g_object_unref);
-	g_object_unref(pbuf);
 	pbuf=create_pixbuf(call_icon_path);
 	g_object_set_data_full(G_OBJECT(icon),"call_icon",pbuf, g_object_unref);
-	g_object_unref(pbuf);
 	si->data = icon;
 }
 
