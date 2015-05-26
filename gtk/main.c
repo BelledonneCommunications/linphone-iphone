@@ -98,6 +98,7 @@ static int start_option = START_LINPHONE;
 static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
 static gboolean run_audio_assistant=FALSE;
+static gboolean version=FALSE;
 static gboolean selftest=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
@@ -135,6 +136,7 @@ static GtkWidget *config_fetching_dialog=NULL;
 
 static GOptionEntry linphone_options[]={
 	LINPHONE_OPTION("verbose",             '\0', G_OPTION_ARG_NONE,     (gpointer)&verbose,              N_("log to stdout some debug information while running.")),
+	LINPHONE_OPTION("version",             '\0', G_OPTION_ARG_NONE,     (gpointer)&version,              N_("display version and exit.")),
 	LINPHONE_OPTION("logfile",             'l',  G_OPTION_ARG_STRING,   &linphone_logfile,               N_("path to a file to write logs into.")),
 	LINPHONE_OPTION("no-video",            '\0', G_OPTION_ARG_NONE,     (gpointer)&no_video,             N_("Start linphone with video disabled.")),
 	LINPHONE_OPTION("iconified",           '\0', G_OPTION_ARG_NONE,     (gpointer)&iconified,            N_("Start only in the system tray, do not show the main interface.")),
@@ -1569,11 +1571,11 @@ static void linphone_gtk_init_status_icon(void) {
 	linphone_status_icon_params_set_title(params, _("Linphone"));
 	linphone_status_icon_params_set_description(params, _("A video internet phone"));
 	linphone_status_icon_params_set_on_click_cb(params, handle_icon_click, NULL);
-	
+
 	if(linphone_status_icon_init(
 		(LinphoneStatusIconReadyCb)linphone_gtk_status_icon_initialised_cb,
 		params)) {
-		
+
 		LinphoneStatusIcon *icon = linphone_status_icon_get();
 		if(icon) {
 			linphone_status_icon_start(icon, params);
@@ -2107,6 +2109,11 @@ int main(int argc, char *argv[]){
 		g_critical("%s", error->message);
 		return -1;
 	}
+	if(version) {
+		g_message("Linphone version %s.", LIBLINPHONE_GIT_VERSION);
+		return 0;
+	}
+
 	if (config_file) g_free(config_file);
 	if (custom_config_file && !g_path_is_absolute(custom_config_file)) {
 		gchar *res = g_get_current_dir();
