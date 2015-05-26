@@ -24,11 +24,51 @@
 
 import argparse
 import os
+import shutil
 import sys
 sys.path.insert(0, 'submodules/cmake-builder')
 import prepare
 
 
+class IOSTarget(prepare.Target):
+	def __init__(self, arch):
+		prepare.Target.__init__(self, 'ios-' + arch)
+		current_path = os.path.dirname(os.path.realpath(__file__))
+		self.config_file = 'configs/config-ios-' + arch + '.cmake'
+		self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
+		self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
+		self.additional_args = [
+			'-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' + current_path + '/submodules'
+		]
+
+	def clean(self):
+		prepare.Target.clean(self)
+		if os.path.isdir('liblinphone-sdk/apple-darwin'):
+			shutil.rmtree('liblinphone-sdk/apple-darwin', ignore_errors=False, onerror=self.handle_remove_read_only)
+
+
+class IOSi386Target(IOSTarget):
+	def __init__(self):
+		IOSTarget.__init__(self, 'i386')
+
+class IOSx8664Target(IOSTarget):
+	def __init__(self):
+		IOSTarget.__init__(self, 'x86_64')
+
+class IOSarmv7Target(IOSTarget):
+	def __init__(self):
+		IOSTarget.__init__(self, 'armv7')
+
+class IOSarm64Target(IOSTarget):
+	def __init__(self):
+		IOSTarget.__init__(self, 'arm64')
+
+
+targets = {}
+targets['i386'] = IOSi386Target()
+targets['x86_64'] = IOSx8664Target()
+targets['armv7'] = IOSarmv7Target()
+targets['arm64'] = IOSarm64Target()
 platforms = ['all', 'devices', 'simulators', 'armv7', 'arm64', 'i386', 'x86_64']
 
 
@@ -57,7 +97,7 @@ def main(argv = None):
 	retcode = 0
 	makefile_platforms = []
 	for platform in selected_platforms:
-		target = prepare.targets['ios-' + platform]
+		target = targets[platform]
 
 		if args.veryclean:
 			target.veryclean()
@@ -88,7 +128,7 @@ archs={archs}
 all: multi-arch
 
 build-%:
-	make -C WORK/cmake-ios-$*
+	$(MAKE) -C WORK/ios-$*/cmake
 
 multi-arch: $(addprefix build-,$(archs))
 	archives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
