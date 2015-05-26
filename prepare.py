@@ -71,6 +71,14 @@ targets['armv7'] = IOSarmv7Target()
 targets['arm64'] = IOSarm64Target()
 platforms = ['all', 'devices', 'simulators', 'armv7', 'arm64', 'i386', 'x86_64']
 
+class PlatformListAction(argparse.Action):
+	def __call__(self, parser, namespace, values, option_string=None):
+		if values:
+			for value in values:
+				if value not in platforms:
+					message = ("invalid platform: {0!r} (choose from {1})".format(value, ', '.join([repr(platform) for platform in platforms])))
+					raise argparse.ArgumentError(self, message)
+			setattr(namespace, self.dest, values)
 
 def main(argv = None):
 	if argv is None:
@@ -81,18 +89,20 @@ def main(argv = None):
 	argparser.add_argument('-d', '--debug', help="Prepare a debug build.", action='store_true')
 	argparser.add_argument('-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
 	argparser.add_argument('-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
-	argparser.add_argument('platform', choices=platforms, help="The platform to build for.")
+	argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=['all'], help="The platform to build for (default is all), one of: {0}.".format(', '.join([repr(platform) for platform in platforms])))
 	args, additional_args = argparser.parse_known_args()
 
 	selected_platforms = []
-	if args.platform == 'all':
-		selected_platforms += ['armv7', 'arm64', 'i386', 'x86_64']
-	elif args.platform == 'devices':
-		selected_platforms += ['armv7', 'arm64']
-	elif args.platform == 'simulators':
-		selected_platforms += ['i386', 'x86_64']
-	else:
-		selected_platforms += [args.platform]
+	for platform in args.platform:
+		if platform == 'all':
+			selected_platforms += ['armv7', 'arm64', 'i386', 'x86_64']
+		elif platform == 'devices':
+			selected_platforms += ['armv7', 'arm64']
+		elif platform == 'simulators':
+			selected_platforms += ['i386', 'x86_64']
+		else:
+			selected_platforms += [platform]
+	selected_platforms = list(set(selected_platforms))
 
 	retcode = 0
 	makefile_platforms = []
