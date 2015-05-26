@@ -840,7 +840,7 @@ static void lime_unit(void) {
 
 	xmlDocDumpFormatMemoryEnc(cacheBufferBob, &xmlStringOutput, &xmlStringLength, "UTF-8", 0);
 	/* write it to the file */
-	CACHE = fopen("ZIDCacheBob.xml", "wb+");
+	CACHE = fopen_from_write_dir("ZIDCacheBob.xml", "wb+");
 	fwrite(xmlStringOutput, 1, xmlStringLength, CACHE);
 	xmlFree(xmlStringOutput);
 	fclose(CACHE);
