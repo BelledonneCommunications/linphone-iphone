@@ -167,7 +167,7 @@ libs: $(addprefix all-,$(archs))
 	cp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
 	for archive in $$archives ; do \\
 		armv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
-		arm64_path=`echo $$archive | sed -e "s/{first_arch}/aarch64/"`; \\
+		arm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
 		i386_path=`echo $$archive | sed -e "s/{first_arch}/i386/"`; \\
 		x86_64_path=`echo $$archive | sed -e "s/{first_arch}/x86_64/"`; \\
 		destpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
