@@ -2,27 +2,28 @@ LOCAL_PATH := $(call my-dir)/../../tester
 
 common_SRC_FILES := \
 	common/bc_tester_utils.c \
-	call_tester.c \
-	liblinphone_tester.c \
-	message_tester.c \
-	presence_tester.c \
-	register_tester.c \
-	setup_tester.c \
-	upnp_tester.c \
-	eventapi_tester.c \
-	stun_tester.c \
-	flexisip_tester.c \
-	tester.c \
-	remote_provisioning_tester.c \
-	quality_reporting_tester.c \
-	log_collection_tester.c \
-	transport_tester.c \
-	player_tester.c \
-	dtmf_tester.c \
 	accountmanager.c \
+	call_tester.c \
+	dtmf_tester.c \
+	eventapi_tester.c \
+	flexisip_tester.c \
+	liblinphone_tester.c \
+	log_collection_tester.c \
+	message_tester.c \
+	multi_call_tester.c \
 	offeranswer_tester.c \
+	player_tester.c \
+	presence_tester.c \
+	proxy_config_tester.c \
+	quality_reporting_tester.c \
+	register_tester.c \
+	remote_provisioning_tester.c \
+	setup_tester.c \
+	stun_tester.c \
+	tester.c \
+	tunnel_tester.c \
+	upnp_tester.c \
  	multicast_call_tester.c \
-	multi_call.c \
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
