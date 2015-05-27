@@ -748,7 +748,7 @@ static int select_random_port(LinphoneCore *lc, int stream_index, int min_port, 
 	int existing_port = 0;
 	bool_t already_used = FALSE;
 
-	tried_port = (rand() % (max_port - min_port) + min_port) & ~0x1;
+	tried_port = (ortp_random() % (max_port - min_port) + min_port) & ~0x1;
 	if (tried_port < min_port) tried_port = min_port + 2;
 	for (nb_tries = 0; nb_tries < 100; nb_tries++) {
 		for (elem = lc->calls; elem != NULL; elem = elem->next) {

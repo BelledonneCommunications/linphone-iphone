@@ -53,7 +53,7 @@ static void call_multicast_base(bool_t video) {
 	linphone_core_enable_audio_multicast(pauline->lc,TRUE);
 
 	BC_ASSERT_TRUE(call(pauline,marie));
-	wait_for_until(marie->lc, pauline->lc, NULL, 1, 4000);
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 6000);
 	if (linphone_core_get_current_call(marie->lc)) {
 		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%d");
 		if (video) {
