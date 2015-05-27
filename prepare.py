@@ -27,6 +27,7 @@ import os
 import re
 import shutil
 import sys
+sys.dont_write_bytecode = True
 sys.path.insert(0, 'submodules/cmake-builder')
 import prepare
 
