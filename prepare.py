@@ -166,7 +166,21 @@ def main(argv = None):
 	$(MAKE) -C WORK/ios-{arch}/Build/$* install || exit 1;
 
 {arch}-clean-%:
-	$(MAKE) -C WORK/ios-{arch}/Build/$* clean || exit 1;
+	$(MAKE) -C WORK/ios-{arch}/Build/$* clean; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-build; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-install;
+
+{arch}-veryclean-%:
+	cat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
+	rm -rf WORK/ios-{arch}/Build/$*/*; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
+	echo "Run 'make {arch}' to rebuild $* correctly.";
+
+{arch}-clean-openh264:
+	cd WORK/ios-{arch}/Build/openh264; \\
+	make -f ../../../../submodules/externals/openh264/Makefile clean; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-build; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-install;
 """.format(arch=arch)
 		multiarch = ""
 		for arch in makefile_platforms[1:]:
@@ -180,6 +194,7 @@ def main(argv = None):
 """.format(first_arch=makefile_platforms[0], arch=arch)
 		makefile = """
 archs={archs}
+packages={packages}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
@@ -193,16 +208,34 @@ all-%:
 build-%:
 	@for arch in $(archs); do \\
 		echo "==== starting build of $* for arch $$arch ===="; \\
-		$(MAKE) -C WORK/ios-$$arch/Build/$* install || exit 1; \\
+		$(MAKE) $$arch-build-$*; \\
 	done
 
 clean-%:
-	@for arch in $(archs); do \\
+	for arch in $(archs); do \\
 		echo "==== starting clean of $* for arch $$arch ===="; \\
-		$(MAKE) -C WORK/ios-$$arch/Build/$* clean || exit 1; \\
+		$(MAKE) $$arch-clean-$*; \\
 	done
 
+veryclean-%:
+	for arch in $(archs); do \\
+		echo "==== starting veryclean of $* for arch $$arch ===="; \\
+		$(MAKE) $$arch-veryclean-$*; \\
+	done; \\
+	echo "Run 'make' to rebuild $* correctly."
+
+clean-openh264:
+	for arch in $(archs); do \\
+		echo "==== starting clean of openh264 for arch $$arch ===="; \\
+		$(MAKE) $(arch)-clean-openh264; \\
+	done; \\
+	echo "Run 'make' to rebuild openh264 correctly."
+
 build: libs sdk
+
+clean: $(addprefix clean-,$(packages))
+
+veryclean: $(addprefix veryclean-,$(packages))
 
 libs: $(addprefix all-,$(archs))
 	archives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
