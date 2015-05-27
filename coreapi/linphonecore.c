@@ -7006,27 +7006,44 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 
 int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc) {
 	const char *type="none";
-	int ret=0;
-	if (menc == LinphoneMediaEncryptionSRTP){
-		if (!ms_srtp_supported()){
-			ms_warning("SRTP not supported by library.");
-			type="none";
-			ret=-1;
-		}else type="srtp";
-	}else if (menc == LinphoneMediaEncryptionZRTP){
-		if (!ms_zrtp_available()){
-			ms_warning("ZRTP not supported by library.");
-			type="none";
-			ret=-1;
-		}else type="zrtp";
-	}else if (menc == LinphoneMediaEncryptionDTLS){
-		if (!ms_dtls_srtp_available()){
-			ms_warning("DTLS not supported by library.");
-			type="none";
-			ret=-1;
-		}else type="dtls";
+	int ret=-1;
+	
+	switch(menc){
+		case LinphoneMediaEncryptionSRTP:
+			if (!ms_srtp_supported()){
+				ms_warning("SRTP not supported by library.");
+				type="none";
+				ret=-1;
+			}else{
+				type="srtp";
+				ret = 0;
+			}
+		break;
+		case LinphoneMediaEncryptionZRTP:
+			if (!ms_zrtp_available()){
+				ms_warning("ZRTP not supported by library.");
+				type="none";
+				ret=-1;
+			}else {
+				type="zrtp";
+				ret = 0;
+			}
+		break;
+		case LinphoneMediaEncryptionDTLS:
+			if (!ms_dtls_srtp_available()){
+				ms_warning("DTLS not supported by library.");
+				type="none";
+				ret=-1;
+			}else {
+				type="dtls";
+				ret = 0;
+			}
+		break;
+		case LinphoneMediaEncryptionNone:
+			type = "none";
+			ret = 0;
+		break;
 	}
-
 	lp_config_set_string(lc->config,"sip","media_encryption",type);
 	return ret;
 }

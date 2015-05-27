@@ -4088,10 +4088,10 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 		ms_warning("%s not available, stereo with %s not tested.",codec_name, codec_name);
 		goto end;
 	}
-	payload_type_set_recv_fmtp(pt, NULL); /*remove fmtp that by default contain stereo=0*/
+	payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
 	if (bitrate_override) linphone_core_set_payload_type_bitrate(marie->lc, pt, bitrate_override);
 	pt = linphone_core_find_payload_type(pauline->lc, codec_name, clock_rate, 2);
-	payload_type_set_recv_fmtp(pt, NULL);
+	payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
 	if (bitrate_override) linphone_core_set_payload_type_bitrate(pauline->lc, pt, bitrate_override);
 
 	disable_all_audio_codecs_except_one(marie->lc, codec_name, clock_rate);
