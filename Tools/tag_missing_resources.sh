@@ -50,12 +50,16 @@ grep -oE '([^ /"])*.png' ../linphone.xcodeproj/project.pbxproj | sort -u > $alre
 find ../Resources/  -name *.png -exec basename {} \; | sort -u > $to_sync
 
 # clean red tags
-cd ../Resources && tag -r red $(cat $to_sync $already_sync) && cd - 1>/dev/null
+for file in $to_sync $already_sync; do 
+	find ../Resources -name $file -exec tag -a red {} \;
+done
 
 # 'comm' command output files contained in second file but not in first nor in common
 non_synced_files=$(comm -13 $already_sync $to_sync)
 
-cd ../Resources/ && tag -a red $non_synced_files && cd - 1>/dev/null
+for file in $non_synced_files; do 
+	find ../Resources -name $file -exec tag -a red {} \;
+done
 
 rm $already_sync $to_sync
 
