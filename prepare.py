@@ -24,6 +24,7 @@
 
 import argparse
 import os
+import re
 import shutil
 import sys
 sys.path.insert(0, 'submodules/cmake-builder')
@@ -79,6 +80,40 @@ class PlatformListAction(argparse.Action):
 					message = ("invalid platform: {0!r} (choose from {1})".format(value, ', '.join([repr(platform) for platform in platforms])))
 					raise argparse.ArgumentError(self, message)
 			setattr(namespace, self.dest, values)
+
+def warning(platforms):
+	gpl_third_parties_enabled = False
+	regex = re.compile("^ENABLE_GPL_THIRD_PARTIES:BOOL=ON")
+	f = open('WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
+	for line in f:
+		if regex.match(line):
+			gpl_third_parties_enabled = True
+			break
+	f.close()
+	
+	if gpl_third_parties_enabled:
+		print("""
+***************************************************************************
+***************************************************************************
+***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****
+***** Even if you acquired a proprietary license from Belledonne      *****
+***** Communications, this SDK is GPL and GPL only.                   *****
+***** To disable 3rd party gpl code, please use:                      *****
+***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****
+***************************************************************************
+***************************************************************************
+""")
+	else:
+		print("""
+*****************************************************************
+*****************************************************************
+***** Linphone SDK without 3rd party GPL software           *****
+***** If you acquired a proprietary license from Belledonne *****
+***** Communications, this SDK can be used to create        *****
+***** a proprietary linphone-based application.             *****
+*****************************************************************
+*****************************************************************
+""")
 
 def main(argv = None):
 	if argv is None:
@@ -168,7 +203,7 @@ clean-%:
 		$(MAKE) -C WORK/ios-$$arch/Build/$* clean || exit 1; \\
 	done
 
-build: libs
+build: libs sdk
 
 libs: $(addprefix all-,$(archs))
 	archives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
@@ -191,6 +226,10 @@ libs: $(addprefix all-,$(archs))
 	if ! test -f liblinphone-sdk/apple-darwin/lib/libtunnel.a ; then \\
 		cp -f submodules/binaries/libdummy.a liblinphone-sdk/apple-darwin/lib/libtunnel.a ; \\
 	fi
+
+ipa: build
+	xcodebuild -configuration Release \\
+	&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o linphone-iphone.ipa
 
 sdk: libs
 	echo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
@@ -235,6 +274,7 @@ help:
 		f = open('Makefile', 'w')
 		f.write(makefile)
 		f.close()
+		warning(makefile_platforms)
 	elif os.path.isfile('Makefile'):
 		os.remove('Makefile')
 
