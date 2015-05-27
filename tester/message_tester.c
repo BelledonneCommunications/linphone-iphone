@@ -440,12 +440,6 @@ bool_t compare_files(const char *path1, const char *path2) {
 	return res;
 }
 
-static FILE* fopen_from_write_dir(const char * name, const char * mode) {
-	char *filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,name);
-	FILE * file = fopen(filepath,mode);
-	ms_free(filepath);
-	return file;
-}
 static void file_transfer_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	if (transport_supported(marie->lc, LinphoneTransportTls)) {
@@ -582,6 +576,14 @@ static void small_file_transfer_message(void) {
 }
 
 #ifdef HAVE_LIME
+
+static FILE* fopen_from_write_dir(const char * name, const char * mode) {
+	char *filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,name);
+	FILE * file = fopen(filepath,mode);
+	ms_free(filepath);
+	return file;
+}
+
 static void lime_file_transfer_message(void) {
 	int i;
 	char *to;
@@ -592,6 +594,7 @@ static void lime_file_transfer_message(void) {
 	LinphoneChatMessage *message;
 	LinphoneChatMessageCbs *cbs;
 	char *pauline_id, *marie_id;
+	char *filepath;
 
 	/* setting dummy file content to something */
 	const char* big_file_content="big file";
@@ -621,8 +624,14 @@ static void lime_file_transfer_message(void) {
 	fclose(ZIDCachePaulineFD);
 	ms_free(marie_id);
 	ms_free(pauline_id);
-	linphone_core_set_zrtp_secrets_file(marie->lc, "tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, "tmpZIDCachePauline.xml");
+
+	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
+	ms_free(filepath);
+
+	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+	ms_free(filepath);
 
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
@@ -854,6 +863,7 @@ static void lime_text_message(void) {
 	char* to;
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneChatRoom* chat_room;
+	char* filepath;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -868,8 +878,14 @@ static void lime_text_message(void) {
 	fprintf(ZIDCachePaulineFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>", linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
 	fclose(ZIDCacheMarieFD);
 	fclose(ZIDCachePaulineFD);
-	linphone_core_set_zrtp_secrets_file(marie->lc, "tmpZIDCacheMarie.xml");
-	linphone_core_set_zrtp_secrets_file(pauline->lc, "tmpZIDCachePauline.xml");
+
+	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
+	ms_free(filepath);
+
+	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+	ms_free(filepath);
 
 	to = linphone_address_as_string(marie->identity);
 	chat_room = linphone_core_create_chat_room(pauline->lc,to);
