@@ -595,6 +595,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     LinphoneManager* lm = [LinphoneManager instance];
     NSMutableSet *hiddenKeys = [NSMutableSet set];
 
+#ifndef HAVE_SSL
+	[hiddenKeys addObject:@"media_encryption_preference"];
+#endif
+
 #ifndef DEBUG
     [hiddenKeys addObject:@"release_button"];
     [hiddenKeys addObject:@"clear_cache_button"];
