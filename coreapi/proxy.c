@@ -702,6 +702,7 @@ static dial_plan_t const dial_plans[]={
 	{"Ireland"                      ,"IE"		, "353"     , 9		, "00"  },
 	{"Israel"                       ,"IL"		, "972"     , 9     , "00"	},
 	{"Italy"                        ,"IT"		, "39"      , 10	, "00"  },
+	{"Jersey"                       ,"JE"		, "44"      , 10	, "00"	},
 	{"Jamaica"                      ,"JM"		, "1"       , 10	, "011" },
 	{"Japan"                        ,"JP"		, "81"      , 10	, "010" },
 	{"Jordan"                       ,"JO"		, "962"     , 9     , "00"	},
