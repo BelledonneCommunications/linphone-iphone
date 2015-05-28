@@ -128,6 +128,8 @@
 		639CEB061A1DF4F1004DE38F /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB081A1DF4F1004DE38F /* UIChatRoomCell.xib */; };
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
+		63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */; };
+		63D268101B174A5E00A2CC11 /* numpad_one_voicemail_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
@@ -1051,6 +1053,8 @@
 		639CEB0D1A1DF52C004DE38F /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
+		63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_default.png; path = Resources/numpad_one_voicemail_default.png; sourceTree = "<group>"; };
+		63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_over.png; path = Resources/numpad_one_voicemail_over.png; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EF7FDC1A24B5810017A416 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutViewController.strings; sourceTree = "<group>"; };
@@ -2817,6 +2821,8 @@
 				D3F83F3F1582223B00336684 /* numpad_nine_over.png */,
 				D3F83F2E1582223B00336684 /* numpad_one_default.png */,
 				D3F83F2F1582223B00336684 /* numpad_one_over.png */,
+				63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */,
+				63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */,
 				D3F83F3A1582223B00336684 /* numpad_seven_default.png */,
 				D3F83F3B1582223B00336684 /* numpad_seven_over.png */,
 				D3F83F401582223B00336684 /* numpad_sharp_default.png */,
@@ -3340,6 +3346,7 @@
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 				D347347E1580E5F8003C7B8C /* history_default.png in Resources */,
 				D347347F1580E5F8003C7B8C /* history_selected.png in Resources */,
+				63D268101B174A5E00A2CC11 /* numpad_one_voicemail_over.png in Resources */,
 				D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */,
 				D38327F41580FE3A00FA0D23 /* contacts_selected.png in Resources */,
 				D38327F51580FE3A00FA0D23 /* dialer_default.png in Resources */,
@@ -3540,6 +3547,7 @@
 				639CEB061A1DF4F1004DE38F /* UIChatRoomCell.xib in Resources */,
 				D3A8BB7B15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */,
 				D3A8BB7D15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */,
+				63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */,
 				F0C1F9101A28781F009402C9 /* corner-left-bottom.png in Resources */,
 				D3A8BB7F15A6CC3200F96BE5 /* setup_back_disabled.png in Resources */,
 				D3A8BB8115A6CC3200F96BE5 /* setup_cancel_disabled.png in Resources */,

@@ -47,17 +47,17 @@ already_sync=$(mktemp -t tag_missing_resources)
 to_sync=$(mktemp -t tag_missing_resources)
 
 grep -oE '([^ /"])*.png' ../linphone.xcodeproj/project.pbxproj | sort -u > $already_sync
-find ../Resources/  -name *.png -exec basename {} \; | sort -u > $to_sync
+find ../Resources/ -not -path '*/Images.xcassets/*' -name '*.png' -exec basename {} \; | sort -u > $to_sync
 
 # clean red tags
-for file in $to_sync $already_sync; do 
-	find ../Resources -name $file -exec tag -a red {} \;
+for file in $to_sync $already_sync; do
+	find ../Resources -name $file -exec tag -r red {} \;
 done
 
 # 'comm' command output files contained in second file but not in first nor in common
 non_synced_files=$(comm -13 $already_sync $to_sync)
 
-for file in $non_synced_files; do 
+for file in $non_synced_files; do
 	find ../Resources -name $file -exec tag -a red {} \;
 done
 
