@@ -24,7 +24,7 @@
 /*avoid crash if x is NULL on libc versions <4.5.26 */
 #define __strstr(x, y) ((x==NULL)?NULL:strstr(x,y))
 
-void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char *)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
@@ -69,8 +69,8 @@ void on_report_send_mandatory(const LinphoneCall *call, int stream_type, const L
 
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
 
-	if (report->remote_metrics.rtcp_sr_count&&ms!=NULL&&ms->rc!=NULL){
-		/* Hack: reset rtcp_sr_count to 0 because in case of interval reports, we need one RTCP SR by interval */
+	if (report->remote_metrics.rtcp_sr_count>0&&ms!=NULL&&ms->rc!=NULL){
+		/* Hack: reset rtcp_sr_count to 0 because in case of interval reports, we need one RTCP SR by interval. */
 		report->remote_metrics.rtcp_sr_count=0;
 		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
 	}
@@ -92,7 +92,7 @@ char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics,
 	return body;
 }
 
-void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char*)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
@@ -100,7 +100,7 @@ void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, int stream_type
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalMetrics:"));
 	BC_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics,body) < remote_metrics_start);
 }
-void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char*)linphone_content_get_buffer(content);
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 
@@ -111,7 +111,7 @@ void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, int stream_typ
 		on_report_send_verify_metrics(&report->remote_metrics,body);
 	}
 }
-void on_report_send_with_rtcp_xr_both(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+void on_report_send_with_rtcp_xr_both(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	on_report_send_with_rtcp_xr_local(call,stream_type,content);
 	on_report_send_with_rtcp_xr_remote(call,stream_type,content);
 }
@@ -215,7 +215,7 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 	linphone_core_manager_destroy(pauline);
 }
 
-void on_report_send_remove_fields(const LinphoneCall *call, int stream_type, const LinphoneContent *content){
+void on_report_send_remove_fields(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char *body = (char*)linphone_content_get_buffer(content);
 	/*corrupt start of the report*/
 	strncpy(body, "corrupted report is corrupted", strlen("corrupted report is corrupted"));
@@ -319,8 +319,8 @@ static void quality_reporting_session_report_if_video_stopped() {
 		linphone_call_params_enable_video(pauline_params,FALSE);
 		linphone_core_update_call(pauline->lc,call_pauline,pauline_params);
 
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,5000));
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,5000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,10000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,10000));
 
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
 
