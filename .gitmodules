@@ -85,3 +85,6 @@
 [submodule "submodules/cmake-builder"]
 	path = submodules/cmake-builder
 	url = git://git.linphone.org/linphone-cmake-builder.git
+[submodule "submodules/externals/vo-amrwbenc"]
+	path = submodules/externals/vo-amrwbenc
+	url = git://git.code.sf.net/p/opencore-amr/vo-amrwbenc
