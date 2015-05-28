@@ -30,9 +30,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <signal.h>
 
 static bool_t running=TRUE;
+static bool_t print_stats=FALSE;
 
 static void stop(int signum){
 	running=FALSE;
+}
+
+static void stats(int signum){
+	print_stats=TRUE;
 }
 
 #ifndef PACKAGE_DATA_DIR
@@ -63,6 +68,7 @@ extern MSWebCamDesc mire_desc;
 static void helper() {
 	printf("auto_answer --help\n"
 			"\t\t\t--listening-uri <uri> uri to listen on, default [sip:localhost:5060]\n"
+			"\t\t\t--max-call-duration max duration of a call in seconds, default [3600]\n"
 			"\t\t\t--verbose\n");
 	exit(0);
 }
@@ -77,10 +83,14 @@ int main(int argc, char *argv[]){
 	char * tmp = NULL;
 	LpConfig * lp_config = lp_config_new(NULL);
 	policy.automatically_accept=TRUE;
+	int max_call_duration=3600;
 	signal(SIGINT,stop);
+	signal(SIGUSR1,stats);
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
 			linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+		} else if (strcmp(argv[i], "--max-call-duration") == 0){
+			max_call_duration = atoi(argv[++i]);
 		} else if (strcmp(argv[i], "--listening-uri") == 0){
 			addr = linphone_address_new(argv[++i]);
 			if (!addr) {
@@ -114,6 +124,7 @@ int main(int argc, char *argv[]){
 	linphone_core_enable_video_capture(lc,TRUE);
 	linphone_core_enable_video_display(lc,FALSE);
 	linphone_core_set_video_policy(lc,&policy);
+	linphone_core_enable_keep_alive(lc,FALSE);
 
 
 	/*instead of using sound capture card, a file is played to the calling party*/
@@ -143,8 +154,25 @@ int main(int argc, char *argv[]){
 
 	/* main loop for receiving notifications and doing background linphonecore work: */
 	while(running){
+		const MSList * iterator;
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
+		if (print_stats) {
+			ms_message("*********************************");
+			ms_message("*Current number of call   [%10i]  *",ms_list_size(linphone_core_get_calls(lc)));
+			ms_message("*Number of call until now [%10i]  *",ms_list_size(linphone_core_get_call_logs(lc)));
+			ms_message("*********************************");
+			print_stats=FALSE;
+		}
+		for (iterator=linphone_core_get_calls(lc);iterator!=NULL;iterator=iterator->next) {
+			LinphoneCall *call=(LinphoneCall *)iterator->data;
+			if (linphone_call_get_duration(call) > max_call_duration) {
+				ms_message("Terminating call [%p] after [%i] s",call,linphone_call_get_duration(call));
+				linphone_core_terminate_call(lc,call);
+				break;
+			}
+		}
+
 	}
 
 	ms_message("Shutting down...\n");
