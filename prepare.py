@@ -212,24 +212,17 @@ build-%:
 	done
 
 clean-%:
-	for arch in $(archs); do \\
+	@for arch in $(archs); do \\
 		echo "==== starting clean of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-clean-$*; \\
 	done
 
 veryclean-%:
-	for arch in $(archs); do \\
+	@for arch in $(archs); do \\
 		echo "==== starting veryclean of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-veryclean-$*; \\
 	done; \\
 	echo "Run 'make' to rebuild $* correctly."
-
-clean-openh264:
-	for arch in $(archs); do \\
-		echo "==== starting clean of openh264 for arch $$arch ===="; \\
-		$(MAKE) $(arch)-clean-openh264; \\
-	done; \\
-	echo "Run 'make' to rebuild openh264 correctly."
 
 build: libs sdk
 
