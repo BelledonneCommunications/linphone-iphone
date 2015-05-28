@@ -948,17 +948,13 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, cons
 	if (linphone_proxy_config_is_phone_number(proxy, username)){
 		dial_plan_t dialplan = {0};
 		char *flatten=flatten_number(username);
-		bool_t dialplan_found = FALSE;
 		ms_debug("Flattened number is '%s'",flatten);
 
 		/*username does not contain a dial prefix nor the proxy, nothing else to do*/
 		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
 			strncpy(result,flatten,result_len-1);
 		} else {
-			dialplan_found = lookup_dial_plan_by_ccc(proxy->dial_prefix,&dialplan);
-		}
-
-		if (dialplan_found) {
+			lookup_dial_plan_by_ccc(proxy->dial_prefix,&dialplan);
 			ms_debug("Using dial plan '%s'",dialplan.country);
 			/* the number has international prefix or +, so nothing to do*/
 			if (flatten[0]=='+'){
@@ -1000,6 +996,7 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, cons
 				strncpy(result+i,flatten+skip,result_len-i-1);
 			}
 		}
+
 		ms_free(flatten);
 		ret = TRUE;
 	} else {
