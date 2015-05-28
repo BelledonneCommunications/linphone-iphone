@@ -7407,4 +7407,5 @@ LINPHONE_PUBLIC const char *linphone_core_log_collection_upload_state_to_string(
 	case LinphoneCoreLogCollectionUploadStateDelivered : return "LinphoneCoreLogCollectionUploadStateDelivered";
 	case LinphoneCoreLogCollectionUploadStateNotDelivered : return "LinphoneCoreLogCollectionUploadStateNotDelivered";
 	}
+	return "UNKNOWN";
 }
