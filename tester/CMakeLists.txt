@@ -26,6 +26,7 @@ endif()
 find_package(GTK2 2.18 COMPONENTS gtk)
 
 set(SOURCE_FILES
+	common/bc_tester_utils.c
 	accountmanager.c
 	call_tester.c
 	dtmf_tester.c
