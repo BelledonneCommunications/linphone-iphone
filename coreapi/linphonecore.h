@@ -1636,6 +1636,8 @@ typedef enum _LinphoneCoreLogCollectionUploadState {
 	LinphoneCoreLogCollectionUploadStateNotDelivered, /**< Log collection upload was not delivered */
 } LinphoneCoreLogCollectionUploadState;
 
+LINPHONE_PUBLIC const char *linphone_core_log_collection_upload_state_to_string(const LinphoneCoreLogCollectionUploadState lcus);
+
 /**
  * Global state notification callback.
  * @param lc

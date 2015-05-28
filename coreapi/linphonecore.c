@@ -390,13 +390,21 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
 #else
 		FILE *log_file = fopen(log_filename, "r");
 #endif
-		fseek(log_file, offset, SEEK_SET);
-		*size = fread(buffer, 1, *size, log_file);
+		if (fseek(log_file, offset, SEEK_SET)) {
+			ms_error("Cannot seek file [%s] at position [%lu] errno [%s]",log_filename,(unsigned long)offset,strerror(errno));
+
+		} else {
+			*size = fread(buffer, 1, *size, log_file);
+		}
 		fclose(log_file);
 		ms_free(log_filename);
+		return BELLE_SIP_CONTINUE;
+	} else {
+		*size=0;
+		return BELLE_SIP_STOP;
 	}
 
-	return BELLE_SIP_CONTINUE;
+
 }
 
 /**
@@ -7391,3 +7399,12 @@ void linphone_core_multicast_lock_release(LinphoneCore *lc) {
 			ms_warning("No wifi lock configured or not usable for core [%p]",lc);
 }
 #endif
+
+
+LINPHONE_PUBLIC const char *linphone_core_log_collection_upload_state_to_string(const LinphoneCoreLogCollectionUploadState lcus) {
+	switch (lcus) {
+	case LinphoneCoreLogCollectionUploadStateInProgress : return "LinphoneCoreLogCollectionUploadStateInProgress";
+	case LinphoneCoreLogCollectionUploadStateDelivered : return "LinphoneCoreLogCollectionUploadStateDelivered";
+	case LinphoneCoreLogCollectionUploadStateNotDelivered : return "LinphoneCoreLogCollectionUploadStateNotDelivered";
+	}
+}

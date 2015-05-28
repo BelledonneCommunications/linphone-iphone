@@ -273,6 +273,9 @@ static void collect_files_changing_size()  {
 static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
 
 	stats* counters = get_stats(lc);
+	ms_message("lc [%p], logCollectionUploadStateChanged to [%s], info [%s]",lc
+																			,linphone_core_log_collection_upload_state_to_string(state)
+																			,info);
 	switch(state) {
 		case LinphoneCoreLogCollectionUploadStateInProgress:
 			counters->number_of_LinphoneCoreLogCollectionUploadStateInProgress++;
