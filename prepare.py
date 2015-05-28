@@ -68,11 +68,14 @@ class IOSarm64Target(IOSTarget):
 
 
 targets = {}
-targets['i386'] = IOSi386Target()
+targets[  'i386'] = IOSi386Target()
 targets['x86_64'] = IOSx8664Target()
-targets['armv7'] = IOSarmv7Target()
-targets['arm64'] = IOSarm64Target()
-platforms = ['all', 'devices', 'simulators', 'armv7', 'arm64', 'i386', 'x86_64']
+targets[ 'armv7'] = IOSarmv7Target()
+targets[ 'arm64'] = IOSarm64Target()
+
+archs_device = ['arm64', 'armv7']
+archs_simu = ['i386', 'x86_64']
+platforms = ['all', 'devices', 'simulators'] + archs_device + archs_simu
 
 class PlatformListAction(argparse.Action):
 	def __call__(self, parser, namespace, values, option_string=None):
@@ -117,6 +120,7 @@ def warning(platforms):
 *****************************************************************
 """)
 
+
 def main(argv = None):
 	if argv is None:
 		argv = sys.argv
@@ -131,11 +135,11 @@ def main(argv = None):
 	selected_platforms = []
 	for platform in args.platform:
 		if platform == 'all':
-			selected_platforms += ['armv7', 'arm64', 'i386', 'x86_64']
+			selected_platforms += archs_device + archs_simu
 		elif platform == 'devices':
-			selected_platforms += ['armv7', 'arm64']
+			selected_platforms += archs_device
 		elif platform == 'simulators':
-			selected_platforms += ['i386', 'x86_64']
+			selected_platforms += archs_simu
 		else:
 			selected_platforms += [platform]
 	selected_platforms = list(set(selected_platforms))
