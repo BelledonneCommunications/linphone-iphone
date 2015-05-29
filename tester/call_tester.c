@@ -2671,7 +2671,7 @@ static void early_media_call_with_ringing(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 		ended_time=ms_get_cur_time_ms();
-		BC_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time)) <=1000 );
+		BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
 		ms_list_free(lcs);
 	}
 
@@ -3801,7 +3801,7 @@ static void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ic
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 		ended_time=ms_get_cur_time_ms();
-		BC_ASSERT_TRUE( labs((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time)) <=1000 );
+		BC_ASSERT_LOWER(labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
 		ms_list_free(lcs);
 	}
 
