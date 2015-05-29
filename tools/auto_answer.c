@@ -82,8 +82,9 @@ int main(int argc, char *argv[]){
 	LCSipTransports tp;
 	char * tmp = NULL;
 	LpConfig * lp_config = lp_config_new(NULL);
-	policy.automatically_accept=TRUE;
 	int max_call_duration=3600;
+
+	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
 	signal(SIGUSR1,stats);
 	for(i = 1; i < argc; ++i) {
