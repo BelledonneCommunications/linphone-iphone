@@ -933,7 +933,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			NSString *identity = [self identityFromUsername:username];
 			[self checkUserExist:identity];
 		} else {
-			[iapm purchaseAccount:username withPassword:password andEmail:email];
+			[iapm purchaseAccount:username withPassword:password andEmail:email monthly:FALSE];
 			// inAppPurchaseNotification will take care of bringing us to the next view now
 		}
 	}

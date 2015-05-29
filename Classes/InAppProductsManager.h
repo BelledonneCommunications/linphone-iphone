@@ -46,7 +46,14 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 //paid_account_id=test.autorenew_7days
 //receipt_validation_url=https://www.linphone.org/inapp.php
 //products_list=test.autorenew_7days
-// Note: in Sandbox mode (test), autorenewal expire time is speed up (see http://stackoverflow.com/questions/8815271/what-expiry-date-should-i-see-for-in-app-purchase-in-the-application-sandbox) so that 7 days renewal is only 3 minutes!
+// Note: in Sandbox mode (test), autorenewal expire time is speed up (see http://stackoverflow.com/questions/8815271/what-expiry-date-should-i-see-for-in-app-purchase-in-the-application-sandbox) so that 7 days renewal is only 3 minutes and:
+//1 week = 3 minutes
+//1 month = 5 minutes
+//2 months = 10 minutes
+//3 months = 15 minutes
+//6 months = 30 minutes
+//1 year = 1 hour
+
 
 @interface InAppProductsManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
 	NSString *latestReceiptMD5;
@@ -64,11 +71,16 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 // TRUE if manager is available for usage - will be FALSE if an operation is already in progress or if not initialized or not enabled
 @property (readonly) BOOL available;
 
+// TRUE if accountActivate was started but we did not receive response from server yet
+@property (readonly) BOOL accountActivationInProgress;
+
 - (BOOL)isPurchasedWithID:(NSString*)productId;
 // Purchase an account. You should not use this if manager is not available yet.
-- (BOOL)purchaseAccount:(NSString *)phoneNumber withPassword:(NSString *)password andEmail:(NSString*)email;
+- (BOOL)purchaseAccount:(NSString *)phoneNumber withPassword:(NSString *)password andEmail:(NSString*)email monthly:(BOOL)monthly;
 // Purchase a product. You should not use this if manager is not available yet.
 - (BOOL)purchaseWitID:(NSString *)productID;
+// Activate purchased account.
+- (BOOL)activateAccount:(NSString *)phoneNumber;
 
 // restore user purchases. You should not use this if manager is not available yet. Must be at a user action ONLY.
 - (BOOL)restore;
