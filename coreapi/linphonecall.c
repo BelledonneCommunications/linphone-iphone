@@ -1069,11 +1069,13 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		// It is licit to receive an INVITE without SDP
 		// In this case WE chose the media parameters according to policy.
 		linphone_call_set_compatible_incoming_call_parameters(call, md);
-		  /* set multicast role & address if any*/
-		for (i=0;i<md->nb_streams;i++){
-			if (!sal_call_is_offerer(op) && ms_is_multicast(md->streams[i].rtp_addr)){
-				md->streams[i].multicast_role = SalMulticastReceiver;
-				strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
+		/* set multicast role & address if any*/
+		if (!sal_call_is_offerer(op)){
+			for (i=0;i<md->nb_streams;i++){
+				if (md->streams[i].rtp_addr[0]!='\0' && ms_is_multicast(md->streams[i].rtp_addr)){
+					md->streams[i].multicast_role = SalMulticastReceiver;
+					strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
+				}
 			}
 		}
 	}
