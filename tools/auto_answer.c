@@ -35,11 +35,11 @@ static bool_t print_stats=FALSE;
 static void stop(int signum){
 	running=FALSE;
 }
-
+#ifndef WIN32
 static void stats(int signum){
 	print_stats=TRUE;
 }
-
+#endif
 #ifndef PACKAGE_DATA_DIR
 	#define PACKAGE_DATA_DIR  '.'
 #endif
@@ -86,7 +86,9 @@ int main(int argc, char *argv[]){
 
 	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
+#ifndef WIN32
 	signal(SIGUSR1,stats);
+#endif
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
 			linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
