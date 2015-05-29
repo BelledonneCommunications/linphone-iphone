@@ -162,8 +162,23 @@ def main(argv = None):
 {arch}:
 	$(MAKE) -C WORK/ios-{arch}/cmake
 
+{arch}-build:
+	@for package in $(packages); do \\
+		$(MAKE) {arch}-build-$$package; \\
+	done
+
+{arch}-clean:
+	@for package in $(packages); do \\
+		$(MAKE) {arch}-clean-$$package; \\
+	done
+
+{arch}-veryclean:
+	@for package in $(packages); do \\
+		$(MAKE) {arch}-veryclean-$$package; \\
+	done
+
 {arch}-build-%:
-	$(MAKE) -C WORK/ios-{arch}/Build/$* install || exit 1;
+	$(MAKE) -C WORK/ios-{arch}/cmake EP_$*
 
 {arch}-clean-%:
 	$(MAKE) -C WORK/ios-{arch}/Build/$* clean; \\
