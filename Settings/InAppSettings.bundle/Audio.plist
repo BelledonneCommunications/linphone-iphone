@@ -16,7 +16,7 @@
 			<key>Key</key>
 			<string>speex_16k_preference</string>
 			<key>Title</key>
-			<string>Speex 16Khz</string>
+			<string>Speex 16kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -26,7 +26,7 @@
 			<key>Key</key>
 			<string>speex_8k_preference</string>
 			<key>Title</key>
-			<string>Speex 8Khz</string>
+			<string>Speex 8kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -46,7 +46,7 @@
 			<key>Key</key>
 			<string>silk_24k_preference</string>
 			<key>Title</key>
-			<string>Silk 24Khz</string>
+			<string>Silk 24kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -56,7 +56,7 @@
 			<key>Key</key>
 			<string>silk_16k_preference</string>
 			<key>Title</key>
-			<string>Silk 16Khz</string>
+			<string>Silk 16kHz</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -128,7 +128,7 @@
 			<key>Key</key>
 			<string>g722_preference</string>
 			<key>Title</key>
-			<string>G722</string>
+			<string>G.722</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -138,7 +138,7 @@
 			<key>Key</key>
 			<string>g729_preference</string>
 			<key>Title</key>
-			<string>G729</string>
+			<string>G.729</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -158,7 +158,7 @@
 			<key>Key</key>
 			<string>ilbc_preference</string>
 			<key>Title</key>
-			<string>ILBC</string>
+			<string>iLBC</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

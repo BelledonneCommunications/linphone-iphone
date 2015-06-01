@@ -194,11 +194,7 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 + (BOOL)runningOnIpad {
-#ifdef UI_USER_INTERFACE_IDIOM
-	return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
-#else
-	return NO;
-#endif
+	return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
 }
 
 + (BOOL)isRunningTests {
@@ -298,8 +294,6 @@ struct codec_name_pref_table codec_pref_table[]={
 			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
 #endif
 		}
-
-		_iapManager = [[InAppProductsManager alloc] init];
 
 		[self migrateFromUserPrefs];
 	}
@@ -1402,6 +1396,8 @@ static BOOL libStarted = FALSE;
 
 	// create linphone core
 	[self createLinphoneCore];
+
+	_iapManager = [[InAppProductsManager alloc] init];
 
 	linphone_core_migrate_to_multi_transport(theLinphoneCore);
 

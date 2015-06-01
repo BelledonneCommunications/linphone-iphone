@@ -626,7 +626,7 @@ static RootViewManager* rootViewManagerInstance = nil;
     }
 
     if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
-        lMessage = [NSString stringWithFormat : NSLocalizedString(@"'%@' not registered", nil), lUserName];
+        lMessage = [NSString stringWithFormat : NSLocalizedString(@"%@ not registered", nil), lUserName];
     } else {
         if (message != nil) {
             lMessage = [NSString stringWithFormat : NSLocalizedString(@"%@\nReason was: %@", nil), lMessage, message];

@@ -172,7 +172,7 @@
         // Set selected+over background: IB lack !
         [speakerButton setBackgroundImage:[UIImage imageNamed:@"speaker_on_over.png"]
                                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-        [speakerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"sspeaker_on_over_landscape.png"]
+        [speakerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"speaker_on_over_landscape.png"]
                                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
         
         [LinphoneUtils buttonFixStates:speakerButton];
