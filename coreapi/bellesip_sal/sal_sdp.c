@@ -93,6 +93,14 @@ static void add_rtcp_fb_trr_int_attribute(belle_sdp_media_description_t *media_d
 	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
 }
 
+static void add_rtcp_fb_ack_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
+	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
+	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
+	belle_sdp_rtcp_fb_attribute_set_type(attribute, BELLE_SDP_RTCP_FB_ACK);
+	belle_sdp_rtcp_fb_attribute_set_param(attribute, param);
+	belle_sdp_media_description_add_attribute(media_desc, BELLE_SDP_ATTRIBUTE(attribute));
+}
+
 static void add_rtcp_fb_nack_attribute(belle_sdp_media_description_t *media_desc, int8_t id, belle_sdp_rtcp_fb_val_param_t param) {
 	belle_sdp_rtcp_fb_attribute_t *attribute = belle_sdp_rtcp_fb_attribute_new();
 	belle_sdp_rtcp_fb_attribute_set_id(attribute, id);
@@ -141,7 +149,11 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 			add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_SLI);
 		}
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_RPSI) {
-			add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+			if (avpf_params.rpsi_compatibility == TRUE) {
+				add_rtcp_fb_nack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+			} else {
+				add_rtcp_fb_ack_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_RPSI);
+			}
 		}
 		if (avpf_params.features & PAYLOAD_TYPE_AVPF_FIR) {
 			add_rtcp_fb_ccm_attribute(media_desc, payload_type_get_number(pt), BELLE_SDP_RTCP_FB_FIR);
@@ -550,7 +562,11 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_SLI;
 					break;
 				case BELLE_SDP_RTCP_FB_RPSI:
+					/* Linphone uses positive feeback for RPSI. However first versions handling
+					 * AVPF wrongly declared RPSI as negative feedback, so this is kept for compatibility
+					 * with these versions but will probably be removed at some point in time. */
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_RPSI;
+					avpf_params.rpsi_compatibility = TRUE;
 					break;
 				case BELLE_SDP_RTCP_FB_NONE:
 				default:
@@ -569,7 +585,6 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 					break;
 			}
 			break;
-		case BELLE_SDP_RTCP_FB_ACK:
 		default:
 			break;
 	}
@@ -590,6 +605,7 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 		pt = (PayloadType *)pt_it->data;
 		avpf_params = payload_type_get_avpf_params(pt);
 		avpf_params.features = PAYLOAD_TYPE_AVPF_NONE;
+		avpf_params.rpsi_compatibility = FALSE;
 		payload_type_set_avpf_params(pt, avpf_params);
 	}
 
