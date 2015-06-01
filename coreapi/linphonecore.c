@@ -1871,6 +1871,10 @@ bool_t linphone_core_lime_enabled(const LinphoneCore *lc){
 	return (lp_config_get_int(lc->config,"sip", "lime", FALSE) && lime_is_available());
 }
 
+bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc){
+	return linphone_core_lime_enabled(lc) && (lp_config_get_int(lc->config,"sip", "lime_for_file_sharing", TRUE) && lime_is_available());
+}
+
 /**
  * Same as linphone_core_get_primary_contact() but the result is a LinphoneAddress object
  * instead of const char*

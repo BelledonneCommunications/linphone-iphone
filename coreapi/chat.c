@@ -323,7 +323,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
-			if (linphone_core_lime_enabled(msg->chat_room->lc)) {
+			if (linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
 				char keyBuffer[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
 				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
 				sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
@@ -739,20 +739,26 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		sal_message_send(op,identity,cr->peer,content_type, NULL, NULL);
 		ms_free(content_type);
 	} else {
-		if (linphone_core_lime_enabled(cr->lc)) { /* shall we try to encrypt messages? */
-			linphone_chat_message_ref(msg); /* ref the message or it may be destroyed by callback if the encryption failed */
-			if ((msg->content_type != NULL) && (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0 )) { /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
-				sal_message_send(op, identity, cr->peer, "application/cipher.vnd.gsma.rcs-ft-http+xml", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
+		char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+		const char * content_type;
+
+		if (linphone_core_lime_enabled(cr->lc)) {
+			linphone_chat_message_ref(msg);  /* ref the message or it may be destroyed by callback if the encryption failed */
+			if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+				content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml"; /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
 			} else {
-				sal_message_send(op, identity, cr->peer, "xml/cipher", msg->message, linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr)));
+				content_type = "xml/cipher";
 			}
 		} else {
-			if (msg->content_type == NULL) {
-				sal_text_send(op, identity, cr->peer,msg->message);
-			} else { /* rcs file transfer */
-				sal_message_send(op, identity, cr->peer, msg->content_type, msg->message, NULL);
-			}
+			content_type = msg->content_type;
 		}
+
+		if (content_type == NULL) {
+			sal_text_send(op, identity, cr->peer,msg->message);
+		} else {
+			sal_message_send(op, identity, cr->peer, content_type, msg->message, peer_uri);
+		}
+		ms_free(peer_uri);
 	}
 
 	msg->dir=LinphoneChatMessageOutgoing;

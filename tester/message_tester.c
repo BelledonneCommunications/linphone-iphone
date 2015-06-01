@@ -584,7 +584,7 @@ static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	return file;
 }
 
-static void lime_file_transfer_message(void) {
+static void lime_file_transfer_message_base(bool_t encrypt_file) {
 	int i;
 	char *to;
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
@@ -612,6 +612,10 @@ static void lime_file_transfer_message(void) {
 	/* make sure lime is enabled */
 	linphone_core_enable_lime(marie->lc, 1);
 	linphone_core_enable_lime(pauline->lc, 1);
+	if (!encrypt_file) {
+		LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+		lp_config_set_int(pauline_lp,"sip","lime_for_file_sharing",0);
+	}
 
 	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
 	ZIDCacheMarieFD = fopen_from_write_dir("tmpZIDCacheMarie.xml", "wb");
@@ -676,6 +680,13 @@ static void lime_file_transfer_message(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 
+}
+static  void lime_file_transfer_message() {
+	lime_file_transfer_message_base(TRUE);
+}
+
+static  void lime_file_transfer_message_without_encryption() {
+	lime_file_transfer_message_base(FALSE);
 }
 
 static void printHex(char *title, uint8_t *data, uint32_t length) {
@@ -1600,6 +1611,7 @@ test_t message_tests[] = {
 #ifdef HAVE_LIME
 	,{ "Lime Text Message", lime_text_message }
 	,{ "Lime File transfer message", lime_file_transfer_message }
+	,{ "Lime File transfer message encryption only", lime_file_transfer_message_without_encryption}
 	,{ "Lime Unitary", lime_unit }
 #endif /* HAVE_LIME */
 #ifdef MSG_STORAGE_ENABLED
