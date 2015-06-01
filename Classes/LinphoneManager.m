@@ -295,8 +295,6 @@ struct codec_name_pref_table codec_pref_table[]={
 #endif
 		}
 
-		_iapManager = [[InAppProductsManager alloc] init];
-
 		[self migrateFromUserPrefs];
 	}
 	return self;
@@ -1398,6 +1396,8 @@ static BOOL libStarted = FALSE;
 
 	// create linphone core
 	[self createLinphoneCore];
+
+	_iapManager = [[InAppProductsManager alloc] init];
 
 	linphone_core_migrate_to_multi_transport(theLinphoneCore);
 
