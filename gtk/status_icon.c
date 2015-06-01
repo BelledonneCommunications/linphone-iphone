@@ -144,7 +144,15 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 			} else return;
 		}
 	}
-	if(ctx->cb) ctx->cb((const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0), ctx->user_data);
+	
+	if(ctx->i) {
+		const _LinphoneStatusIconDesc *desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
+		g_message("StatusIcon: found implementation: %s", desc->impl_name);
+		if(ctx->cb) ctx->cb(desc, ctx->user_data);
+	} else {
+		g_warning("StatusIcon: no implementation found");
+	}
+	
 	g_free(ctx);
 }
 
@@ -158,6 +166,8 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 	ctx->cb = cb;
 	ctx->user_data = user_data;
 	
+	g_message("StatusIcon: looking for implementation...");
+	
 	for(ctx->i=_linphone_status_icon_impls; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 		if(_linphone_status_icon_desc_is_supported(
 			(const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0),
@@ -167,12 +177,14 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 			
 			if(result) {
 				*desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
+				g_message("StatusIcon: found implementation: %s", (*desc)->impl_name);
 				goto sync_return;
 			}
 		} else {
 			return 0;
 		}
 	}
+	g_warning("StatusIcon: no implementation found");
 	*desc = NULL;
 	
 sync_return:
@@ -205,11 +217,13 @@ const char *linphone_status_icon_get_implementation_name(const LinphoneStatusIco
 }
 
 void linphone_status_icon_start(LinphoneStatusIcon *obj, LinphoneStatusIconParams *params) {
+	g_message("StatusIcon: starting status icon");
 	obj->params = linphone_status_icon_params_ref(params);
 	if(obj->desc->start) obj->desc->start(obj);
 }
 
 void linphone_status_icon_enable_blinking(LinphoneStatusIcon *obj, gboolean enable) {
+	g_message("StatusIcon: blinking set to %s", enable ? "TRUE" : "FALSE");
 	if(obj->desc->enable_blinking) obj->desc->enable_blinking(obj, enable);
 }
 
@@ -252,11 +266,14 @@ gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *use
 	const _LinphoneStatusIconDesc *desc;
 	void **ctx;
 	
+	g_message("StatusIcon: Initialising");
+	
 	_linphone_status_icon_create_implementations_list();
 	
 	ctx = g_new(void *, 2);
 	ctx[0] = ready_cb;
 	ctx[1] = user_data;
+	
 	if(_linphone_status_icon_find_first_available_impl(&desc, _linphone_status_icon_init_cb, ctx)) {
 		_linphone_status_icon_selected_desc = desc;
 		g_free(ctx);
@@ -272,6 +289,7 @@ void linphone_status_icon_uninit(void) {
 LinphoneStatusIcon *linphone_status_icon_get(void) {
 	if(_linphone_status_icon_instance == NULL) {
 		if(_linphone_status_icon_selected_desc)
+			g_message("StatusIcon: instanciating singleton");
 			_linphone_status_icon_instance = _linphone_status_icon_new(_linphone_status_icon_selected_desc);
 	}
 	return _linphone_status_icon_instance;
