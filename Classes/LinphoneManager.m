@@ -525,23 +525,11 @@ static void dump_section(const char* section, void* data){
 
 #pragma mark - Logs Functions
 
-//generic log handler for debug version
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
-	NSLogv(format, args);
-//	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-//
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
-//            [[LinphoneManager instance].logs removeObjectAtIndex:0];
-//        }
-//        [[LinphoneManager instance].logs addObject:formatedString];
-//
-//        // Post event
-//        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
-//    });
-//
+	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+	//since \r are interpreted like \n, avoid double new lines when logging packets
+	NSLogv([formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"], nil);
 }
 
 //Error/warning log handler
@@ -1922,7 +1910,7 @@ static void audioRouteChangeListenerCallback (
 	if (call) {
 		// The LinphoneCallAppData object should be set on call creation with callback
 		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
-		// We are NOT responsible for creating the AppData. 
+		// We are NOT responsible for creating the AppData.
 		LinphoneCallAppData* data=(__bridge LinphoneCallAppData*)linphone_call_get_user_data(call);
 		if (data==nil)
 			LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
