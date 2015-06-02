@@ -45,16 +45,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [linphoneCoreVersionLabel release];
-    [linphoneIphoneVersionLabel release];
-    [contentView release];
-    [linkTapGestureRecognizer release];
-    [linkLabel release];
-    [licensesView release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions

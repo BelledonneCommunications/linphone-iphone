@@ -24,6 +24,6 @@
 @interface UIVideoButton : UIToggleButton<UIToggleButtonDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView*  waitView;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView*  waitView;
 
 @end

@@ -38,21 +38,16 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if(self != nil) {
         inhibUpdate = FALSE;
         addressBook = ABAddressBookCreateWithOptions(nil, nil);
-        ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
+        ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
     }
     return self;
 }
 
 - (void)dealloc {
-    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
     CFRelease(addressBook);
-    [tableController release];
 
-    [editButton release];
-    [backButton release];
-    [cancelButton release];
 
-    [super dealloc];
 }
 
 
@@ -77,7 +72,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-    ContactDetailsViewController* controller = (ContactDetailsViewController*)context;
+    ContactDetailsViewController* controller = (__bridge ContactDetailsViewController*)context;
     if(!controller->inhibUpdate && ![[controller tableController] isEditing]) {
         [controller resetData];
     }
@@ -91,10 +86,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
     // Remove contact from book
     if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
-        NSError* error = NULL;
+        CFErrorRef error = NULL;
         ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            LOGE(@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]);
+            LOGE(@"Remove contact %p: Fail(%@)", contact, [(__bridge NSError*)error localizedDescription]);
         } else {
             LOGI(@"Remove contact %p: Success!", contact);
         }
@@ -106,7 +101,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         ABAddressBookSave(addressBook, (CFErrorRef*)&error);
         inhibUpdate = FALSE;
         if (error != NULL) {
-            LOGE(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+            LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError*)error localizedDescription]);
         } else {
             LOGI(@"Save AddressBook: Success!");
         }
@@ -121,11 +116,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     }
 
     // Add contact to book
-    NSError* error = NULL;
+    CFErrorRef error = NULL;
     if(ABRecordGetRecordID(contact) == kABRecordInvalidID) {
         ABAddressBookAddRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            LOGE(@"Add contact %p: Fail(%@)", contact, [error localizedDescription]);
+            LOGE(@"Add contact %p: Fail(%@)", contact, [(__bridge NSError*)error localizedDescription]);
         } else {
             LOGI(@"Add contact %p: Success!", contact);
         }
@@ -137,7 +132,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABAddressBookSave(addressBook, (CFErrorRef*)&error);
     inhibUpdate = FALSE;
     if (error != NULL) {
-        LOGE(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+        LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError*)error localizedDescription]);
     } else {
         LOGI(@"Save AddressBook: Success!");
     }

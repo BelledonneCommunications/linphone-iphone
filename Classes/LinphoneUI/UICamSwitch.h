@@ -22,6 +22,6 @@
 
 @interface UICamSwitch : UIButton
 
-@property (nonatomic, assign) IBOutlet UIView* preview;
+@property (nonatomic, weak) IBOutlet UIView* preview;
 
 @end

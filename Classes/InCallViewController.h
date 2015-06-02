@@ -35,16 +35,16 @@
     VideoZoomHandler* videoZoomHandler;
 }
 
-@property (nonatomic, retain) IBOutlet InCallTableViewController* callTableController;
-@property (nonatomic, retain) IBOutlet UITableView* callTableView;
+@property (nonatomic, strong) IBOutlet InCallTableViewController* callTableController;
+@property (nonatomic, strong) IBOutlet UITableView* callTableView;
 
-@property (nonatomic, retain) IBOutlet UIView* videoGroup;
-@property (nonatomic, retain) IBOutlet UIView* videoView;
+@property (nonatomic, strong) IBOutlet UIView* videoGroup;
+@property (nonatomic, strong) IBOutlet UIView* videoView;
 #ifdef TEST_VIDEO_VIEW_CHANGE
 @property (nonatomic, retain) IBOutlet UIView* testVideoView;
 #endif
-@property (nonatomic, retain) IBOutlet UIView* videoPreview;
-@property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView* videoWaitingForFirstImage;
+@property (nonatomic, strong) IBOutlet UIView* videoPreview;
+@property (nonatomic, strong) IBOutlet UICamSwitch* videoCameraSwitch;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* videoWaitingForFirstImage;
 
 @end

@@ -32,10 +32,10 @@
 #import "InAppProductsViewController.h"
 
 @interface InAppProductsManager()
-@property (retain, nonatomic) NSDate *expirationDate;
-@property (retain, nonatomic) NSDictionary *accountCreationData;
+@property (strong, nonatomic) NSDate *expirationDate;
+@property (strong, nonatomic) NSDictionary *accountCreationData;
 // needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
-@property (nonatomic, retain) InAppProductsXMLRPCDelegate *xmlrpc;
+@property (nonatomic, strong) InAppProductsXMLRPCDelegate *xmlrpc;
 @end
 
 @implementation InAppProductsManager

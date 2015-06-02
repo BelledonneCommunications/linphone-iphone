@@ -27,9 +27,9 @@
 @interface ChatViewController : UIViewController<UITextFieldDelegate,UICompositeViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet UITextField *addressField;
+@property (nonatomic, strong) IBOutlet ChatTableViewController* tableController;
+@property (nonatomic, strong) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, strong) IBOutlet UITextField *addressField;
 
 - (IBAction)onAddClick:(id) event;
 - (IBAction)onEditClick:(id) event;

@@ -36,7 +36,7 @@
 	static NSString *kCellId = @"InAppProductsCell";
 	InAppProductsCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
-		cell = [[[InAppProductsCell alloc] initWithIdentifier:kCellId maximized:(currentExpanded == indexPath.row)] autorelease];
+		cell = [[InAppProductsCell alloc] initWithIdentifier:kCellId maximized:(currentExpanded == indexPath.row)];
 	}
 	SKProduct *prod = [[[[LinphoneManager instance] iapManager] productsAvailable] objectAtIndex:indexPath.row];
 	[cell fillFromProduct:prod];
@@ -65,7 +65,6 @@
 
 		[alert addCancelButtonWithTitle:NSLocalizedString(@"OK", nil) block:nil];
 		[alert show];
-		[alert release];
 	} else {
 		//try to purchase item, and if successfull change the switch
 		[[[LinphoneManager instance] iapManager] purchaseWitID: cell.productID];

@@ -47,14 +47,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [detailsButton release];
-    [deleteButton release];
-    [addressLabel release];
-    [imageView release];
-
-    [super dealloc];
-}
 
 
 #pragma mark - Action Functions

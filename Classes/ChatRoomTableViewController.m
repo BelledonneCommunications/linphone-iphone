@@ -32,10 +32,8 @@
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-    [chatRoomDelegate release];
     [self clearMessageList];
 
-    [super dealloc];
 }
 
 #pragma mark - ViewController Functions
@@ -168,7 +166,7 @@
     static NSString *kCellId = @"UIChatRoomCell";
     UIChatRoomCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIChatRoomCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[UIChatRoomCell alloc] initWithIdentifier:kCellId];
     }
 
     LinphoneChatMessage* chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);

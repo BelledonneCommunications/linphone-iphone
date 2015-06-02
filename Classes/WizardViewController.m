@@ -86,44 +86,16 @@ typedef enum _ViewElement {
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [contentView release];
 
-    [welcomeView release];
-    [choiceView release];
-    [createAccountView release];
-    [connectAccountView release];
-    [externalAccountView release];
-    [validateAccountView release];
 
-    [waitView release];
 
-    [backButton release];
-    [startButton release];
-    [createAccountButton release];
-    [connectAccountButton release];
-    [externalAccountButton release];
 
-    [choiceViewLogoImageView release];
 
-    [historyViews release];
 
-    [viewTapGestureRecognizer release];
 
-    [remoteProvisioningButton release];
-    [provisionedAccountView release];
-    [provisionedUsername release];
-    [provisionedPassword release];
-    [provisionedDomain release];
-    [_transportChooser release];
 
-    [_createAccountUsername release];
-    [_connectAccountUsername release];
-    [_externalAccountUsername release];
 
-    [_purchaseButton release];
-    [_registerButton release];
 
-    [super dealloc];
 }
 
 
@@ -509,7 +481,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:nil,nil];
 		[errorView show];
-		[errorView release];
 		return FALSE;
 	}
 
@@ -588,7 +559,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
 
-    [request release];
     [waitView setHidden:false];
 }
 
@@ -603,7 +573,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
 
-    [request release];
     [waitView setHidden:false];
 }
 
@@ -617,7 +586,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
     [manager spawnConnectionWithXMLRPCRequest: request delegate: self];
 
-    [request release];
     [waitView setHidden:false];
 }
 
@@ -643,7 +611,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
             [alert show];
-            [alert release];
             break;
         }
         case LinphoneRegistrationProgress: {
@@ -783,7 +750,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     prov_url.placeholder  = @"URL";
 
     [remoteInput show];
-    [remoteInput release];
 }
 
 - (BOOL) verificationWithUsername:(NSString*)username password:(NSString*)password domain:(NSString*)domain withTransport:(NSString*)transport {
@@ -803,7 +769,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:nil,nil];
 		[errorView show];
-		[errorView release];
 		return FALSE;
 	}
 	return TRUE;
@@ -878,7 +843,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:nil,nil];
 		[errorView show];
-		[errorView release];
 		return FALSE;
 	}
 
@@ -956,7 +920,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                   cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                   otherButtonTitles:nil,nil];
         [errorView show];
-        [errorView release];
     } else {
         [self.waitView setHidden:false];
         [self addProvisionedProxy:username withPassword:password withDomain:provisionedDomain.text];
@@ -1011,7 +974,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                   cancelButtonTitle:NSLocalizedString(@"OK", nil)
                                                   otherButtonTitles: nil];
             [alert show];
-            [alert release];
             break;
         }
 
@@ -1102,7 +1064,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                   cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                   otherButtonTitles:nil,nil];
         [errorView show];
-        [errorView release];
     } else if([response object] != nil) { //Don't handle if not object: HTTP/Communication Error
         if([[request method] isEqualToString:@"check_account"]) {
             if([response object] == [NSNumber numberWithInt:1]) {
@@ -1112,7 +1073,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                       cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                       otherButtonTitles:nil,nil];
                 [errorView show];
-                [errorView release];
             } else {
                 NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                 NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
@@ -1134,7 +1094,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                           cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                           otherButtonTitles:nil,nil];
                 [errorView show];
-                [errorView release];
             }
         } else if([[request method] isEqualToString:@"check_account_validated"]) {
              if([response object] == [NSNumber numberWithInt:1]) {
@@ -1148,7 +1107,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                            cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                            otherButtonTitles:nil,nil];
                  [errorView show];
-                 [errorView release];
              }
         }
     }
@@ -1162,7 +1120,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                           cancelButtonTitle:NSLocalizedString(@"Continue", nil)
                                           otherButtonTitles:nil,nil];
     [errorView show];
-    [errorView release];
     [waitView setHidden:true];
 }
 

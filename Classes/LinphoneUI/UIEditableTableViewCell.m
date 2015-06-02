@@ -51,16 +51,10 @@
 
         [self.contentView addSubview:verticalSep];
         
-        [tf release];
-        [v release];
     }
     return self;
 }
 
-- (void)dealloc {
-    self.detailTextField = nil;
-    [super dealloc];
-}
 
 
 #pragma mark - View Functions

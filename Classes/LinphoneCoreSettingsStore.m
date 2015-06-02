@@ -35,11 +35,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	return self;
 }
 
-- (void)dealloc {
-	[dict release];
-	[changedDict release];
-	[super dealloc];
-}
 
 - (void)transformKeysToLinphoneCore {
 	//LinphoneCore *lc=[LinphoneManager getLc];
@@ -50,7 +45,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	id obj=Nil;
 	if (value) obj=[[NSString alloc] initWithCString:value encoding:[NSString defaultCStringEncoding] ];
 	[self setObject:obj forKey:key];
-	[obj release];
 }
 
 - (NSString*)stringForKey:(NSString*) key {
@@ -262,7 +256,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 	}
 
-	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
 
 	// Post event
@@ -290,7 +283,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
 											  otherButtonTitles: nil];
 	[alertview show];
-	[alertview release];
 }
 
 + (BOOL)hasSipPrefix:(NSString*)str {
@@ -739,7 +731,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[[LinphoneManager instance] setTunnelMode:mode];
 	}
 
-	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
 
 	// Post event

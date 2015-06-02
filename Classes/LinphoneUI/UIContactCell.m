@@ -44,13 +44,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [firstNameLabel release];
-    [lastNameLabel release];
-    [avatarImage release];
-
-    [super dealloc];
-}
 
 
 #pragma mark - Property Functions
@@ -88,31 +81,25 @@
     CFStringRef lLocalizedOrganization = (lOrganization != nil)?ABAddressBookCopyLocalizedLabel(lOrganization):nil;
 
     if(lLocalizedFirstName != nil){
-        [firstNameLabel setText: (NSString *)lLocalizedFirstName];
+        [firstNameLabel setText: (NSString *)CFBridgingRelease(lLocalizedFirstName)];
     }
     else
         [firstNameLabel setText: @""];
 
     if(lLocalizedLastName != nil){
-        [lastNameLabel setText: (NSString *)lLocalizedLastName];
+        [lastNameLabel setText: (NSString *)CFBridgingRelease(lLocalizedLastName)];
     }
     else
         [lastNameLabel setText: @""];
 
     if(lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-        [firstNameLabel setText: (NSString *)lLocalizedOrganization];
+        [firstNameLabel setText: (NSString *)CFBridgingRelease(lLocalizedOrganization)];
     }
 
-    if(lLocalizedOrganization != nil)
-        CFRelease(lLocalizedOrganization);
     if(lOrganization != nil)
         CFRelease(lOrganization);
-    if(lLocalizedLastName != nil)
-        CFRelease(lLocalizedLastName);
     if(lLastName != nil)
         CFRelease(lLastName);
-    if(lLocalizedFirstName != nil)
-        CFRelease(lLocalizedFirstName);
     if(lFirstName != nil)
         CFRelease(lFirstName);
 }

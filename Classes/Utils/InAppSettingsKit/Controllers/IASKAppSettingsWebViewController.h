@@ -24,7 +24,7 @@
 
 - (id)initWithFile:(NSString*)htmlFileName key:(NSString*)key;
 
-@property (nonatomic, retain) UIWebView *webView;
-@property (nonatomic, retain) NSURL *url;
+@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) NSURL *url;
 
 @end

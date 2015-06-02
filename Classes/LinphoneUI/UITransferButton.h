@@ -22,6 +22,6 @@
 @interface UITransferButton : UIButton {
 }
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property (nonatomic, strong) IBOutlet UITextField* addressField;
 
 @end

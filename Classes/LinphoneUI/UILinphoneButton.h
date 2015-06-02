@@ -24,7 +24,7 @@
     
 }
 
-@property (retain, nonatomic) IBOutlet TUNinePatch *backgroundNinePatch;
-@property (retain, nonatomic) IBOutlet TUNinePatch *backgroundOverNinePatch;
+@property (strong, nonatomic) IBOutlet TUNinePatch *backgroundNinePatch;
+@property (strong, nonatomic) IBOutlet TUNinePatch *backgroundOverNinePatch;
 
 @end

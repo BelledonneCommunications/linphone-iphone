@@ -34,9 +34,6 @@
 
 #pragma mark - Lifecycle Functions
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 #pragma mark - ViewController Functions 
 
@@ -115,10 +112,10 @@ static void chatTable_free_chatrooms(void *data){
     static NSString *kCellId = @"UIChatCell";
     UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIChatCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
         
         // Background View
-        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }

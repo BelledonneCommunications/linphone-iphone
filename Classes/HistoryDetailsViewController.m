@@ -22,7 +22,9 @@
 #import "FastAddressBook.h"
 #import "Utils.h"
 
-@implementation HistoryDetailsViewController
+@implementation HistoryDetailsViewController {
+
+}
 
 @synthesize callLogId;
 @synthesize avatarImage;
@@ -56,24 +58,8 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [dateFormatter release];
-    [callLogId release];
 
-    [avatarImage release];
-    [addressLabel release];
-    [dateLabel release];
-    [dateHeaderLabel release];
-    [durationLabel release];
-    [durationHeaderLabel release];
-    [typeLabel release];
-    [typeHeaderLabel release];
-    [plainAddressLabel release];
-    [plainAddressHeaderLabel release];
-    [callButton release];
-    [messageButton release];
-    [addContactButton release];
 
-    [super dealloc];
 }
 
 

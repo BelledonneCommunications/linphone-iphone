@@ -49,16 +49,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [addressLabel release];
-    [chatContentLabel release];
-    [avatarImage release];
-    [deleteButton release];
-    [unreadMessageLabel release];
-    [unreadMessageView release];
-
-    [super dealloc];
-}
 
 
 #pragma mark - Property Funcitons

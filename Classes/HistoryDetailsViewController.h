@@ -29,25 +29,26 @@
     LinphoneCallLog *callLog;
     NSDateFormatter *dateFormatter;
 }
-@property (nonatomic, retain) IBOutlet  UIImageView *avatarImage;
-@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel *dateLabel;
-@property (nonatomic, retain) IBOutlet UILabel *dateHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel *durationLabel;
-@property (nonatomic, retain) IBOutlet UILabel *durationHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel *typeLabel;
-@property (nonatomic, retain) IBOutlet UILabel *typeHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel *plainAddressLabel;
-@property (nonatomic, retain) IBOutlet UILabel *plainAddressHeaderLabel;
-@property (nonatomic, retain) IBOutlet UIButton *callButton;
-@property (nonatomic, retain) IBOutlet UIButton *messageButton;
-@property (nonatomic, retain) IBOutlet UIButton *addContactButton;
-@property (nonatomic, assign) NSString *callLogId;
+@property (nonatomic, strong) IBOutlet  UIImageView *avatarImage;
+@property (nonatomic, strong) IBOutlet UILabel *addressLabel;
+@property (nonatomic, strong) IBOutlet UILabel *dateLabel;
+@property (nonatomic, strong) IBOutlet UILabel *dateHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel *durationLabel;
+@property (nonatomic, strong) IBOutlet UILabel *durationHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel *typeLabel;
+@property (nonatomic, strong) IBOutlet UILabel *typeHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel *plainAddressLabel;
+@property (nonatomic, strong) IBOutlet UILabel *plainAddressHeaderLabel;
+@property (nonatomic, strong) IBOutlet UIButton *callButton;
+@property (nonatomic, strong) IBOutlet UIButton *messageButton;
+@property (nonatomic, strong) IBOutlet UIButton *addContactButton;
+@property (nonatomic, copy, setter=setCallLogId:) NSString *callLogId;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onCallClick:(id)event;
 - (IBAction)onMessageClick:(id)event;
+- (void)setCallLogId:(NSString *)acallLogId;
 
 @end

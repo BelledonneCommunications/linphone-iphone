@@ -35,8 +35,8 @@
         self->minimize = minimized;
         self->view = UICallCellOtherView_Avatar;
         self->call = acall;
-        image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
-        address = [NSLocalizedString(@"Unknown",nil) retain];
+        image = [UIImage imageNamed:@"avatar_unknown.png"];
+        address = NSLocalizedString(@"Unknown",nil);
         [self update];
     }
     return self;
@@ -82,12 +82,6 @@
     }
 }
 
-- (void)dealloc {
-    [address release];
-    [image release];
-
-    [super dealloc];
-}
 
 @end
 
@@ -200,53 +194,16 @@
                                                   object:nil];
 
 
-    [headerBackgroundImage release];
-    [headerBackgroundHighlightImage release];
 
-    [addressLabel release];
-    [stateLabel release];
-    [stateImage release];
-    [avatarImage release];
-    [pauseButton release];
-    [removeButton release];
 
-    [headerView release];
-    [avatarView release];
 
-    [audioStatsView release];
 
-    [audioCodecLabel release];
-    [audioCodecHeaderLabel release];
-    [audioUploadBandwidthLabel release];
-    [audioUploadBandwidthHeaderLabel release];
-    [audioDownloadBandwidthLabel release];
-    [audioDownloadBandwidthHeaderLabel release];
-    [audioIceConnectivityLabel release];
-    [audioIceConnectivityHeaderLabel release];
 
-    [videoStatsView release];
 
-    [videoCodecLabel release];
-    [videoCodecHeaderLabel release];
-    [videoUploadBandwidthLabel release];
-    [videoUploadBandwidthHeaderLabel release];
-    [videoDownloadBandwidthLabel release];
-    [videoDownloadBandwidthHeaderLabel release];
-    [videoIceConnectivityLabel release];
-    [videoIceConnectivityHeaderLabel release];
 
-    [otherView release];
 
-    [data release];
 
-    [detailsLeftSwipeGestureRecognizer release];
-    [detailsRightSwipeGestureRecognizer release];
 
-    [videoSentSizeHeaderLabel release];
-    [videoSentSizeLabel release];
-    [videoRecvSizeHeaderLabel release];
-    [videoRecvSizeLabel release];
-    [super dealloc];
 }
 
 
@@ -257,11 +214,10 @@
         return;
     }
     if(data != nil) {
-        [data release];
         data = nil;
     }
     if(adata != nil) {
-        data = [adata retain];
+        data = adata;
     }
 }
 

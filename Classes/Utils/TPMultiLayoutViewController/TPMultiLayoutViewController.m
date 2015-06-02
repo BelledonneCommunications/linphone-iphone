@@ -28,8 +28,8 @@
     [super viewDidLoad];
     
     // Construct attribute tables
-    portraitAttributes = [[self attributeTableForViewHierarchy:portraitView associateWithViewHierarchy:self.view] retain];
-    landscapeAttributes = [[self attributeTableForViewHierarchy:landscapeView associateWithViewHierarchy:self.view] retain];
+    portraitAttributes = [self attributeTableForViewHierarchy:portraitView associateWithViewHierarchy:self.view];
+    landscapeAttributes = [self attributeTableForViewHierarchy:landscapeView associateWithViewHierarchy:self.view];
     viewIsCurrentlyPortrait = (self.view == portraitView);
     
     // Don't need to retain the original template view hierarchies any more
@@ -40,19 +40,14 @@
 - (void)viewDidUnload {
     [super viewDidUnload];
     
-    [portraitAttributes release];
     portraitAttributes = nil;
-    [landscapeAttributes release];
     landscapeAttributes = nil;
 }
 
 - (void)dealloc {
-    [portraitAttributes release];
     portraitAttributes = nil;
-    [landscapeAttributes release];
     landscapeAttributes = nil;
     
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -89,7 +84,7 @@
 }
 
 - (void)addAttributesForSubviewHierarchy:(UIView*)view associatedWithSubviewHierarchy:(UIView*)associatedView toTable:(NSMutableDictionary*)table {
-    [table setObject:[self attributesForView:view] forKey:[NSValue valueWithPointer:associatedView]];
+    [table setObject:[self attributesForView:view] forKey:[NSValue valueWithPointer:(__bridge const void *)(associatedView)]];
     
     if ( ![self shouldDescendIntoSubviewsOfView:view] ) return;
     
@@ -189,7 +184,7 @@
 }
 
 - (void)applyAttributeTable:(NSDictionary*)table toViewHierarchy:(UIView*)view {
-    NSDictionary *attributes = [table objectForKey:[NSValue valueWithPointer:view]];
+    NSDictionary *attributes = [table objectForKey:[NSValue valueWithPointer:(__bridge const void *)(view)]];
     if ( attributes ) {
         [self applyAttributes:attributes toView:view];
     }

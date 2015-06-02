@@ -35,7 +35,7 @@
     if(imgs != nil) {
         imgs.userInfo = auserInfo;
         imgs->upload = TRUE;
-        imgs->delegate = [delegate retain];
+        imgs->delegate = delegate;
         imgs->data = [[NSMutableData alloc] init];
         if(delegate) {
             [delegate imageSharingProgress:imgs progress:0];
@@ -50,7 +50,7 @@
     if(imgs != nil) {
         imgs.userInfo = auserInfo;
         imgs->upload = FALSE;
-        imgs->delegate = [delegate retain];
+        imgs->delegate = delegate;
         imgs->data = [[NSMutableData alloc] init];
         if(delegate) {
             [delegate imageSharingProgress:imgs progress:0];
@@ -60,13 +60,6 @@
     return imgs;
 }
 
-- (void)dealloc {
-    [connection release];
-    [data release];
-    [delegate release];
-    [userInfo release];
-    [super dealloc];
-}
 
 
 #pragma mark -
@@ -95,7 +88,7 @@
     LOGI(@"downloading [%@]", [url absoluteString]);
 
 	// setting up the request object now
-	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
 
@@ -133,7 +126,6 @@
     if(delegate) {
         [delegate imageSharingError:self error:error];
     }
-    [self release];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
@@ -173,7 +165,6 @@
         if(delegate) {
             [delegate imageSharingUploadDone:self url:[NSURL URLWithString:imageRemoteUrl]];
         }
-        [imageRemoteUrl release];
 	} else {
 		UIImage* image = [UIImage imageWithData:data];
         LOGI(@"File downloaded");
@@ -181,7 +172,6 @@
             [delegate imageSharingDownloadDone:self image:image];
         }
 	}
-    [self release];
 }
 
 @end

@@ -39,10 +39,6 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [avatarImage release];
-    [addressLabel release];
-    [delegate release];
-    [super dealloc];
 }
 
 

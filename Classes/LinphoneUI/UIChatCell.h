@@ -27,12 +27,12 @@
     LinphoneChatRoom* chatRoom;
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
-@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
-@property (nonatomic, retain) IBOutlet UIButton * deleteButton;
-@property (nonatomic, retain) IBOutlet UIView * unreadMessageView;
-@property (nonatomic, retain) IBOutlet UILabel * unreadMessageLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
+@property (nonatomic, strong) IBOutlet UILabel* addressLabel;
+@property (nonatomic, strong) IBOutlet UILabel* chatContentLabel;
+@property (nonatomic, strong) IBOutlet UIButton * deleteButton;
+@property (nonatomic, strong) IBOutlet UIView * unreadMessageView;
+@property (nonatomic, strong) IBOutlet UILabel * unreadMessageLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

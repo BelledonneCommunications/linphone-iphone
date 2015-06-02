@@ -21,10 +21,7 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
-	[_tableController release];
 
-    [_waitView release];
-	[super dealloc];
 }
 
 #pragma mark - ViewController Functions

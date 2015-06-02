@@ -44,9 +44,6 @@
     return self;
 }
 
-- (void)dealloc {
-	[super dealloc];
-}
 
 
 #pragma mark -
@@ -116,14 +113,14 @@
 
 - (UIUserNotificationCategory*)getMessageNotificationCategory {
 
-    UIMutableUserNotificationAction* reply = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    UIMutableUserNotificationAction* reply = [[UIMutableUserNotificationAction alloc] init];
     reply.identifier = @"reply";
     reply.title = NSLocalizedString(@"Reply", nil);
     reply.activationMode = UIUserNotificationActivationModeForeground;
     reply.destructive = NO;
     reply.authenticationRequired = YES;
 
-    UIMutableUserNotificationAction* mark_read = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    UIMutableUserNotificationAction* mark_read = [[UIMutableUserNotificationAction alloc] init];
     mark_read.identifier = @"mark_read";
     mark_read.title = NSLocalizedString(@"Mark Read", nil);
     mark_read.activationMode = UIUserNotificationActivationModeBackground;
@@ -132,7 +129,7 @@
 
     NSArray* localRingActions = @[mark_read, reply];
 
-    UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
+    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
     localRingNotifAction.identifier = @"incoming_msg";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
@@ -141,14 +138,14 @@
 }
 
 - (UIUserNotificationCategory*)getCallNotificationCategory {
-    UIMutableUserNotificationAction* answer = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    UIMutableUserNotificationAction* answer = [[UIMutableUserNotificationAction alloc] init];
     answer.identifier = @"answer";
     answer.title = NSLocalizedString(@"Answer", nil);
     answer.activationMode = UIUserNotificationActivationModeForeground;
     answer.destructive = NO;
     answer.authenticationRequired = YES;
 
-    UIMutableUserNotificationAction* decline = [[[UIMutableUserNotificationAction alloc] init] autorelease];
+    UIMutableUserNotificationAction* decline = [[UIMutableUserNotificationAction alloc] init];
     decline.identifier = @"decline";
     decline.title = NSLocalizedString(@"Decline", nil);
     decline.activationMode = UIUserNotificationActivationModeBackground;
@@ -158,7 +155,7 @@
 
     NSArray* localRingActions = @[decline, answer];
 
-    UIMutableUserNotificationCategory* localRingNotifAction = [[[UIMutableUserNotificationCategory alloc] init] autorelease];
+    UIMutableUserNotificationCategory* localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
     localRingNotifAction.identifier = @"incoming_call";
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
     [localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
@@ -247,7 +244,6 @@
                                               otherButtonTitles:NSLocalizedString(@"Yes",nil),nil];
         confirmation.tag = 1;
         [confirmation show];
-        [confirmation release];
     } else {
         if([[url scheme] isEqualToString:@"sip"]) {
 			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and trailing "/"
@@ -462,7 +458,6 @@
                                               cancelButtonTitle:NSLocalizedString(@"OK",nil)
                                               otherButtonTitles:nil];
         [error show];
-        [error release];
         [[PhoneMainView instance] startUp];
     }
     if (state == LinphoneConfiguringFailed) {
@@ -476,7 +471,6 @@
                                               cancelButtonTitle:NSLocalizedString(@"OK",nil)
                                               otherButtonTitles:nil];
         [error show];
-        [error release];
     }
 }
 
@@ -492,7 +486,6 @@
         [_waitingIndicator addSubview:progress];
     }
     [progress startAnimating];
-    [progress release];
     [_waitingIndicator show];
 
 }

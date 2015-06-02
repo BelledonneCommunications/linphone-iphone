@@ -27,10 +27,10 @@
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
-@property (nonatomic, retain) IBOutlet UIImageView* imageView;
-@property (nonatomic, retain) IBOutlet UILabel*     addressLabel;
-@property (nonatomic, retain) IBOutlet UIButton*    detailsButton;
-@property (nonatomic, retain) IBOutlet UIButton*    deleteButton;
+@property (nonatomic, strong) IBOutlet UIImageView* imageView;
+@property (nonatomic, strong) IBOutlet UILabel*     addressLabel;
+@property (nonatomic, strong) IBOutlet UIButton*    detailsButton;
+@property (nonatomic, strong) IBOutlet UIButton*    deleteButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

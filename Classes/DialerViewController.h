@@ -36,29 +36,29 @@
 
 @property (nonatomic, assign) BOOL transferMode;
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
-@property (nonatomic, retain) IBOutlet UIButton* addContactButton;
-@property (nonatomic, retain) IBOutlet UICallButton* callButton;
-@property (nonatomic, retain) IBOutlet UICallButton* addCallButton;
-@property (nonatomic, retain) IBOutlet UITransferButton* transferButton;
-@property (nonatomic, retain) IBOutlet UIButton* backButton;
-@property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
+@property (nonatomic, strong) IBOutlet UITextField* addressField;
+@property (nonatomic, strong) IBOutlet UIButton* addContactButton;
+@property (nonatomic, strong) IBOutlet UICallButton* callButton;
+@property (nonatomic, strong) IBOutlet UICallButton* addCallButton;
+@property (nonatomic, strong) IBOutlet UITransferButton* transferButton;
+@property (nonatomic, strong) IBOutlet UIButton* backButton;
+@property (nonatomic, strong) IBOutlet UIEraseButton* eraseButton;
 
-@property (nonatomic, retain) IBOutlet UIDigitButton* oneButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* twoButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* threeButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* fourButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* fiveButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* sixButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* sevenButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* eightButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* nineButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* starButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* zeroButton;
-@property (nonatomic, retain) IBOutlet UIDigitButton* sharpButton;
-@property (nonatomic, retain) IBOutlet UIView* backgroundView;
-@property (nonatomic, retain) IBOutlet UIView* videoPreview;
-@property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
+@property (nonatomic, strong) IBOutlet UIDigitButton* oneButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* twoButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* threeButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* fourButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* fiveButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* sixButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* sevenButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* eightButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* nineButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* starButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* zeroButton;
+@property (nonatomic, strong) IBOutlet UIDigitButton* sharpButton;
+@property (nonatomic, strong) IBOutlet UIView* backgroundView;
+@property (nonatomic, strong) IBOutlet UIView* videoPreview;
+@property (nonatomic, strong) IBOutlet UICamSwitch* videoCameraSwitch;
 
 - (IBAction)onAddContactClick: (id) event;
 - (IBAction)onBackClick: (id) event;

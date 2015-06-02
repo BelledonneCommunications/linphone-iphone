@@ -24,9 +24,9 @@
 @interface UIContactCell : UITransparentTVCell {
 }
 
-@property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;
-@property (nonatomic, retain) IBOutlet UILabel* lastNameLabel;
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
+@property (nonatomic, strong) IBOutlet UILabel* firstNameLabel;
+@property (nonatomic, strong) IBOutlet UILabel* lastNameLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, assign) ABRecordRef contact;
 
 - (id)initWithIdentifier:(NSString*)identifier;

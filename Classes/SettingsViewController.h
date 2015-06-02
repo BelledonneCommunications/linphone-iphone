@@ -28,7 +28,7 @@
 	LinphoneCoreSettingsStore* settingsStore;
 }
 
-@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
-@property (nonatomic, retain) IBOutlet IASKAppSettingsViewController *settingsController;
+@property (nonatomic, strong) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, strong) IBOutlet IASKAppSettingsViewController *settingsController;
 
 @end

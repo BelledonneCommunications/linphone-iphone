@@ -11,12 +11,12 @@
 
 @interface InAppProductsCell : UITableViewCell {
 }
-@property (retain, nonatomic) IBOutlet UILabel *ptitle;
-@property (retain, nonatomic) IBOutlet UILabel *pdescription;
-@property (retain, nonatomic) IBOutlet UILabel *pprice;
-@property (retain, nonatomic) IBOutlet UISwitch *ppurchased;
+@property (strong, nonatomic) IBOutlet UILabel *ptitle;
+@property (strong, nonatomic) IBOutlet UILabel *pdescription;
+@property (strong, nonatomic) IBOutlet UILabel *pprice;
+@property (strong, nonatomic) IBOutlet UISwitch *ppurchased;
 @property (nonatomic) BOOL isMaximized;
-@property (retain, nonatomic) NSString *productID;
+@property (strong, nonatomic) NSString *productID;
 
 - (id)initWithIdentifier:(NSString*)identifier maximized:(bool)maximized;
 

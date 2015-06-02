@@ -58,12 +58,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [image release];
-    [imageView dealloc];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions
@@ -132,12 +126,6 @@
     return [super initWithNibName:@"ImageViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-    [scrollView release];
-    [backButton release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - UICompositeViewDelegate Functions

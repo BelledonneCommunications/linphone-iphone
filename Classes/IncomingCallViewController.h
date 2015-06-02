@@ -34,10 +34,10 @@
 @interface IncomingCallViewController : TPMultiLayoutViewController <UICompositeViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
-@property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
+@property (nonatomic, strong) IBOutlet UILabel* addressLabel;
+@property (nonatomic, strong) IBOutlet UIImageView* avatarImage;
 @property (nonatomic, assign) LinphoneCall* call;
-@property (nonatomic, retain) id<IncomingCallViewDelegate> delegate;
+@property (nonatomic, strong) id<IncomingCallViewDelegate> delegate;
 
 - (IBAction)onAcceptClick:(id) event;
 - (IBAction)onDeclineClick:(id) event;

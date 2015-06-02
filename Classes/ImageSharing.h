@@ -43,7 +43,7 @@
 
 - (void)cancel;
 
-@property (nonatomic, retain) id userInfo;
+@property (nonatomic, strong) id userInfo;
 
 @property (nonatomic, readonly) BOOL upload;
 @property (nonatomic, readonly) NSMutableData* data;

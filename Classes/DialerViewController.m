@@ -70,34 +70,12 @@
 }
 
 - (void)dealloc {
-	[addressField release];
-    [addContactButton release];
-    [backButton release];
-    [eraseButton release];
-	[callButton release];
-    [addCallButton release];
-    [transferButton release];
 
-	[oneButton release];
-	[twoButton release];
-	[threeButton release];
-	[fourButton release];
-	[fiveButton release];
-	[sixButton release];
-	[sevenButton release];
-	[eightButton release];
-	[nineButton release];
-	[starButton release];
-	[zeroButton release];
-	[sharpButton release];
 
-    [videoPreview release];
-    [videoCameraSwitch release];
 
     // Remove all observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-	[super dealloc];
 }
 
 
@@ -182,7 +160,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
                                                  attributes:@{NSForegroundColorAttributeName: color}];
         addressField.attributedPlaceholder = placeHolderString;
-        [placeHolderString release];
     }
 #endif
 
@@ -312,7 +289,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 			self.modalPresentationStyle = UIModalPresentationPageSheet;
 			[self.view.window.rootViewController presentViewController:controller animated:TRUE completion:^{}];
-			[controller release];
 		}
 
 	} else {
@@ -322,7 +298,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
 											  otherButtonTitles: nil];
 		[alert show];
-		[alert release];
 	}
 }
 
@@ -354,7 +329,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}];
 
 		[alertView show];
-		[alertView release];
 		return true;
 	}
 	return false;

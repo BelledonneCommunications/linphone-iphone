@@ -26,13 +26,13 @@
 @interface HistoryViewController : UIViewController<UICompositeViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet HistoryTableViewController* tableController;
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) IBOutlet HistoryTableViewController* tableController;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
 
-@property (nonatomic, retain) IBOutlet UIButton* allButton;
-@property (nonatomic, retain) IBOutlet UIButton* missedButton;
-@property (nonatomic, retain) IBOutlet UIToggleButton* editButton;
-@property (nonatomic, retain) IBOutlet UIButton* deleteButton;
+@property (nonatomic, strong) IBOutlet UIButton* allButton;
+@property (nonatomic, strong) IBOutlet UIButton* missedButton;
+@property (nonatomic, strong) IBOutlet UIToggleButton* editButton;
+@property (nonatomic, strong) IBOutlet UIButton* deleteButton;
 
 - (IBAction)onAllClick:(id) event;
 - (IBAction)onMissedClick:(id) event;

@@ -37,27 +37,27 @@
     BOOL composingVisible;
 }
 
-@property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet HPGrowingTextView* messageField;
-@property (nonatomic, retain) IBOutlet UIButton* sendButton;
-@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
-@property (nonatomic, retain) IBOutlet UIView *headerView;
-@property (nonatomic, retain) IBOutlet UIView *chatView;
-@property (nonatomic, retain) IBOutlet UIView *messageView;
-@property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
-@property (nonatomic, retain) IBOutlet UIImageView *transferBackgroundImage;
-@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
-@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
-@property (retain, nonatomic) IBOutlet UILabel *composeLabel;
-@property (retain, nonatomic) IBOutlet UIView *composeIndicatorView;
+@property (nonatomic, strong) IBOutlet ChatRoomTableViewController* tableController;
+@property (nonatomic, strong) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, strong) IBOutlet HPGrowingTextView* messageField;
+@property (nonatomic, strong) IBOutlet UIButton* sendButton;
+@property (nonatomic, strong) IBOutlet UILabel *addressLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
+@property (nonatomic, strong) IBOutlet UIView *headerView;
+@property (nonatomic, strong) IBOutlet UIView *chatView;
+@property (nonatomic, strong) IBOutlet UIView *messageView;
+@property (nonatomic, strong) IBOutlet UIImageView *messageBackgroundImage;
+@property (nonatomic, strong) IBOutlet UIImageView *transferBackgroundImage;
+@property (nonatomic, strong) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+@property (nonatomic, strong) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
+@property (strong, nonatomic) IBOutlet UILabel *composeLabel;
+@property (strong, nonatomic) IBOutlet UIView *composeIndicatorView;
 
-@property (nonatomic, retain) IBOutlet UIButton* pictureButton;
-@property (nonatomic, retain) IBOutlet UIButton* cancelTransferButton;
-@property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
-@property (nonatomic, retain) IBOutlet UIView* transferView;
-@property (nonatomic, retain) IBOutlet UIView* waitView;
+@property (nonatomic, strong) IBOutlet UIButton* pictureButton;
+@property (nonatomic, strong) IBOutlet UIButton* cancelTransferButton;
+@property (nonatomic, strong) IBOutlet UIProgressView* imageTransferProgressBar;
+@property (nonatomic, strong) IBOutlet UIView* transferView;
+@property (nonatomic, strong) IBOutlet UIView* waitView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;

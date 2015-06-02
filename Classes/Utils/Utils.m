@@ -40,7 +40,6 @@
 		ortp_severity = ORTP_FATAL;
 	}
     ortp_log(ortp_severity, "%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
-    [str release];
 }
 
 + (void)log:(LinphoneLoggerSeverity) severity file:(const char*)file line:(int)line format:(NSString *)format,... {

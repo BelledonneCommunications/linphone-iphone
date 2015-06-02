@@ -41,11 +41,10 @@ static NSString* sNameOrEmailFilter;
 
 + (void)setAddAddress:(NSString*)address {
 	if(sAddAddress != nil) {
-		[sAddAddress release];
 		sAddAddress= nil;
 	}
 	if(address != nil) {
-		sAddAddress = [address retain];
+		sAddAddress = address;
 	}
 }
 
@@ -54,8 +53,7 @@ static NSString* sNameOrEmailFilter;
 }
 
 + (void)setSipFilter:(NSString*)domain {
-	[sSipFilter release];
-	sSipFilter = [domain retain];
+	sSipFilter = domain;
 }
 
 + (NSString*)getSipFilter {
@@ -71,8 +69,7 @@ static NSString* sNameOrEmailFilter;
 }
 
 + (void)setNameOrEmailFilter:(NSString*)fuzzyName {
-	[sNameOrEmailFilter release];
-	sNameOrEmailFilter = [fuzzyName retain];
+	sNameOrEmailFilter = fuzzyName;
 }
 
 + (NSString*)getNameOrEmailFilter {
@@ -109,18 +106,6 @@ typedef enum _HistoryView {
 	return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-	[tableController release];
-	[tableView release];
-
-	[allButton release];
-	[linphoneButton release];
-	[backButton release];
-	[addButton release];
-
-	[_searchBar release];
-	[super dealloc];
-}
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -181,8 +166,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if( !use_system && !self.tableController ){
 
 
-		self.tableController = [[[ContactsTableViewController alloc] init] autorelease];
-		self.tableView = [[[UITableView alloc] init] autorelease];
+		self.tableController = [[ContactsTableViewController alloc] init];
+		self.tableView = [[UITableView alloc] init];
 
 		self.tableController.view = self.tableView;
 
@@ -213,7 +198,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil];
 		[error show];
-		[error release];
 		[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 	}
 }
@@ -356,13 +340,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
-	NSString *phoneNumber = (NSString *)ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
+	NSString *phoneNumber = (NSString *)CFBridgingRelease(ABMultiValueCopyValueAtIndex(multiValue, valueIdx));
 	// Go to dialer view
 	DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
 	if(controller != nil) {
-		[controller call:phoneNumber displayName:[(NSString*)ABRecordCopyCompositeName(person) autorelease]];
+		[controller call:phoneNumber displayName:(NSString*)CFBridgingRelease(ABRecordCopyCompositeName(person))];
 	}
-	[phoneNumber release];
 	CFRelease(multiValue);
 	return false;
 }

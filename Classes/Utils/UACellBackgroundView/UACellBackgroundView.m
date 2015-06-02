@@ -57,17 +57,11 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 }
      
 - (void)setBackgroundColor:(UIColor *)abackgroundColor {
-    if(backgroundColor != nil) {
-        [backgroundColor release];
-    }
     backgroundColor = [[UIColor alloc] initWithCGColor:abackgroundColor.CGColor];
     [self setNeedsDisplay];
 }
 
 - (void)setBorderColor:(UIColor *)aborderColor {
-    if(borderColor != nil) {
-        [borderColor release];
-    }
     
     borderColor = [[UIColor alloc] initWithCGColor:aborderColor.CGColor];
     [self setNeedsDisplay];
@@ -246,10 +240,6 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     return;
 }
 
-- (void)dealloc {
-    [backgroundColor release];
-    [super dealloc];
-}
 
 - (void)setPosition:(UACellBackgroundViewPosition)newPosition {
     if (position != newPosition) {

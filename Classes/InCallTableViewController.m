@@ -62,9 +62,6 @@ enum TableSection {
     return self;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 #pragma mark - ViewController Functions
 
@@ -133,7 +130,7 @@ enum TableSection {
 - (void)removeCallData:(LinphoneCall*) call {
     // Remove data associated with the call
     if(call != NULL) {
-        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        LinphoneCallAppData* appData = (__bridge LinphoneCallAppData*) linphone_call_get_user_pointer(call);
         if(appData != NULL) {
             [appData->userInfos removeObjectForKey:kLinphoneInCallCellData];
         }
@@ -144,11 +141,11 @@ enum TableSection {
     // Handle data associated with the call
     UICallCellData * data = nil;
     if(call != NULL) {
-        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        LinphoneCallAppData* appData = (__bridge LinphoneCallAppData*) linphone_call_get_user_pointer(call);
         if(appData != NULL) {
             data = [appData->userInfos objectForKey:kLinphoneInCallCellData];
             if(data == nil) {
-                data = [[[UICallCellData alloc] init:call minimized:minimized] autorelease];
+                data = [[UICallCellData alloc] init:call minimized:minimized];
                 [appData->userInfos setObject:data forKey:kLinphoneInCallCellData];
             }
         }
@@ -160,7 +157,7 @@ enum TableSection {
     // Handle data associated with the call
     UICallCellData * data = nil;
     if(call != NULL) {
-        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        LinphoneCallAppData* appData = (__bridge LinphoneCallAppData*) linphone_call_get_user_pointer(call);
         if(appData != NULL) {
             data = [appData->userInfos objectForKey:kLinphoneInCallCellData];
         }
@@ -214,7 +211,7 @@ enum TableSection {
     static NSString *kCellId = @"UICallCell";
     UICallCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UICallCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[UICallCell alloc] initWithIdentifier:kCellId];
     }
 
     bool inConference = indexPath.section == ConferenceSection;
@@ -275,24 +272,23 @@ enum TableSection {
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if(section == CallSection) {
-        return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+        return [[UIView alloc] initWithFrame:CGRectZero];
     } else if(section == ConferenceSection) {
         LinphoneCore* lc = [LinphoneManager getLc];
         if(linphone_core_get_conference_size(lc) > 0){
             UIConferenceHeader *headerController = [[UIConferenceHeader alloc] init];
             [headerController update];
             UIView *headerView = [headerController view];
-            [headerController release];
             return headerView;
         } else {
-            return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+            return [[UIView alloc] initWithFrame:CGRectZero];
         }
     }
-    return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    return [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    return [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

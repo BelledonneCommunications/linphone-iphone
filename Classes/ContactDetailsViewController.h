@@ -30,10 +30,10 @@
 }
 
 @property (nonatomic, assign) ABRecordRef contact;
-@property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet UIButton *backButton;
-@property (nonatomic, retain) IBOutlet UIButton *cancelButton;
+@property (nonatomic, strong) IBOutlet ContactDetailsTableViewController *tableController;
+@property (nonatomic, strong) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, strong) IBOutlet UIButton *backButton;
+@property (nonatomic, strong) IBOutlet UIButton *cancelButton;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;

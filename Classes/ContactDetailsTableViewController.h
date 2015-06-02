@@ -42,9 +42,9 @@ typedef enum _ContactSections {
 }
 
 @property (nonatomic, assign) ABRecordRef contact;
-@property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
-@property (nonatomic, retain) IBOutlet UIContactDetailsHeader *headerController;
-@property (nonatomic, retain) IBOutlet UIContactDetailsFooter *footerController;
+@property (nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+@property (nonatomic, strong) IBOutlet UIContactDetailsHeader *headerController;
+@property (nonatomic, strong) IBOutlet UIContactDetailsFooter *footerController;
 
 - (BOOL)isValid;
 - (void)addPhoneField:(NSString*)number;

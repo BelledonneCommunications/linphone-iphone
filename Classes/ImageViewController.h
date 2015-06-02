@@ -23,7 +23,7 @@
 
 @interface UIImageScrollView : UIScrollView<UIScrollViewDelegate>
     
-@property (nonatomic, retain) UIImage  *image;
+@property (nonatomic, strong) UIImage  *image;
 @property (readonly) IBOutlet UIImageView *imageView;
 
 @end
@@ -32,9 +32,9 @@
 	
 }
 
-@property (nonatomic, retain) IBOutlet UIImageScrollView *scrollView;
-@property (nonatomic, retain) UIImage  *image;
-@property (nonatomic, retain) IBOutlet UIButton *backButton;
+@property (nonatomic, strong) IBOutlet UIImageScrollView *scrollView;
+@property (nonatomic, strong) UIImage  *image;
+@property (nonatomic, strong) IBOutlet UIButton *backButton;
 
 - (IBAction)onBackClick:(id)sender;
 

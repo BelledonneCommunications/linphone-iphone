@@ -31,15 +31,15 @@
 
 @property (nonatomic, assign) ABRecordRef contact;
     
-@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
+@property (nonatomic, strong) IBOutlet UILabel *addressLabel;
+@property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
 
-@property (nonatomic, retain) IBOutlet UIView *normalView;
-@property (nonatomic, retain) IBOutlet UIView *editView;
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+@property (nonatomic, strong) IBOutlet UIView *normalView;
+@property (nonatomic, strong) IBOutlet UIView *editView;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
 
-@property (retain, nonatomic) ImagePickerViewController* popoverController;
+@property (strong, nonatomic) ImagePickerViewController* popoverController;
 
 @property(nonatomic,getter=isEditing) BOOL editing;
 

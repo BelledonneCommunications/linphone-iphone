@@ -60,7 +60,7 @@ typedef NSString*               IAPPurchaseNotificationStatus;
 }
 
 
-@property (nonatomic, retain) IAPPurchaseNotificationStatus status;
+@property (nonatomic, strong) IAPPurchaseNotificationStatus status;
 @property (nonatomic, strong) NSMutableArray *productsAvailable;
 @property (nonatomic, strong) NSMutableArray *productsIDPurchased;
 

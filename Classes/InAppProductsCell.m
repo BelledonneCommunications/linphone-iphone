@@ -48,13 +48,6 @@
 	return self;
 }
 
-- (void)dealloc {
-	[_ptitle release];
-	[_pdescription release];
-	[_pprice release];
-	[_ppurchased release];
-    [super dealloc];
-}
 
 - (NSString *)description {
 	return [NSString stringWithFormat:@"%@ (%@): %@ (%@)", _ptitle.text, _pprice.text, _pdescription.text, _isMaximized ? @"maximized":@"minimized"];

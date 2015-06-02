@@ -14,10 +14,10 @@
 
 @interface DCRoundSwitchToggleLayer : CALayer
 
-@property (nonatomic, retain) UIColor *onTintColor;
-@property (nonatomic, retain) NSString *onString;
-@property (nonatomic, retain) NSString *offString;
-@property (nonatomic, readonly) UIFont *labelFont;
+@property (nonatomic, strong) UIColor *onTintColor;
+@property (nonatomic, strong) NSString *onString;
+@property (nonatomic, strong) NSString *offString;
+@property (weak, nonatomic, readonly) UIFont *labelFont;
 @property (nonatomic) BOOL drawOnTint;
 @property (nonatomic) BOOL clip;
 

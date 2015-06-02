@@ -24,6 +24,6 @@
 @interface UIEraseButton : UILongTouchButton<UILongTouchButtonDelegate>  {  
 }
 
-@property (nonatomic, assign) IBOutlet UITextField* addressField;
+@property (nonatomic, weak) IBOutlet UITextField* addressField;
 
 @end

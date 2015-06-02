@@ -122,7 +122,6 @@ typedef struct _LinphoneManagerSounds {
 + (void)instanceRelease;
 #endif
 + (LinphoneCore*) getLc;
-+ (BOOL)isLcReady;
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
@@ -183,14 +182,14 @@ typedef struct _LinphoneManagerSounds {
 - (void)silentPushFailed:(NSTimer*)timer;
 
 @property (readonly) BOOL isTesting;
-@property (readonly) FastAddressBook* fastAddressBook;
+@property (readonly, strong) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
-@property (retain, nonatomic) NSString* SSID;
+@property (strong, nonatomic) NSString* SSID;
 @property (readonly) sqlite3* database;
-@property (nonatomic, retain) NSData *pushNotificationToken;
+@property (nonatomic, strong) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL speakerEnabled;

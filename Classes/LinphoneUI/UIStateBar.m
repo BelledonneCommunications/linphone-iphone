@@ -21,17 +21,19 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 
-@implementation UIStateBar
+@implementation UIStateBar {
+
+	NSTimer *callQualityTimer;
+	NSTimer *callSecurityTimer;
+	int messagesUnreadCount;
+
+}
 
 @synthesize registrationStateImage;
 @synthesize registrationStateLabel;
 @synthesize callQualityImage;
 @synthesize callSecurityImage;
 @synthesize callSecurityButton;
-
-NSTimer *callQualityTimer;
-NSTimer *callSecurityTimer;
-int messagesUnreadCount;
 
 #pragma mark - Lifecycle Functions
 
@@ -46,19 +48,8 @@ int messagesUnreadCount;
 }
 
 - (void) dealloc {
-	if(securitySheet) {
-		[securitySheet release];
-	}
-	[registrationStateImage release];
-	[registrationStateLabel release];
-	[callQualityImage release];
-	[callSecurityImage release];
-	[callSecurityButton release];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[callQualityTimer invalidate];
-	[callQualityTimer release];
-	[_voicemailCount release];
-	[super dealloc];
 }
 
 
@@ -337,17 +328,16 @@ int messagesUnreadCount;
 							   linphone_call_get_authentication_token(call)];
 				}
 				if( securitySheet == nil ){
+					__block __strong UIStateBar* weakSelf = self;
 					securitySheet = [[DTActionSheet alloc] initWithTitle:message];
 					[securitySheet setDelegate:self];
 					[securitySheet addButtonWithTitle:NSLocalizedString(@"Ok",nil) block:^(){
 						linphone_call_set_authentication_token_verified(call, !valid);
-						[securitySheet release];
-						securitySheet = nil;
+						weakSelf->securitySheet = nil;
 					}];
 
 					[securitySheet addDestructiveButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:^(){
-						[securitySheet release];
-						securitySheet = nil;
+						weakSelf->securitySheet = nil;
 					}];
 					[securitySheet showInView:[PhoneMainView instance].view];
 				}
@@ -357,7 +347,6 @@ int messagesUnreadCount;
 }
 
 -(void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex{
-	[securitySheet release];
 	securitySheet = nil;
 }
 

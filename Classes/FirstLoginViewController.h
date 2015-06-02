@@ -27,10 +27,10 @@
 - (IBAction)onLoginClick:(id)sender;
 - (IBAction)onSiteClick:(id)sender;
 
-@property (nonatomic, retain) IBOutlet UIButton* loginButton;
-@property (nonatomic, retain) IBOutlet UIButton* siteButton;
-@property (nonatomic, retain) IBOutlet UITextField* usernameField;
-@property (nonatomic, retain) IBOutlet UITextField* passwordField;
-@property (nonatomic, retain) IBOutlet UIView* waitView;
+@property (nonatomic, strong) IBOutlet UIButton* loginButton;
+@property (nonatomic, strong) IBOutlet UIButton* siteButton;
+@property (nonatomic, strong) IBOutlet UITextField* usernameField;
+@property (nonatomic, strong) IBOutlet UITextField* passwordField;
+@property (nonatomic, strong) IBOutlet UIView* waitView;
 
 @end

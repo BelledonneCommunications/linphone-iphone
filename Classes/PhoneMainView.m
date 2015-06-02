@@ -42,7 +42,7 @@ static RootViewManager* rootViewManagerInstance = nil;
     self = [super init];
     if ( self ){
         self.portraitViewController = portrait;
-        self.rotatingViewController = [[[PhoneMainView alloc] init] autorelease];
+        self.rotatingViewController = [[PhoneMainView alloc] init];
 
         self.portraitViewController.name = @"Portrait";
         self.rotatingViewController.name = @"Rotating";
@@ -146,10 +146,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [mainViewController release];
-    [inhibitedEvents release];
 
-    [super dealloc];
 }
 
 
@@ -292,7 +289,6 @@ static RootViewManager* rootViewManagerInstance = nil;
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil,nil];
 		[error show];
-		[error release];
 	}
 }
 
@@ -612,7 +608,7 @@ static RootViewManager* rootViewManagerInstance = nil;
 
 - (void)displayCallError:(LinphoneCall*) call message:(NSString*) message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
     NSString* lMessage;
     NSString* lTitle;
 
@@ -639,7 +635,6 @@ static RootViewManager* rootViewManagerInstance = nil;
                                           cancelButtonTitle:NSLocalizedString(@"Dismiss",nil)
                                           otherButtonTitles:nil];
     [error show];
-    [error release];
 }
 
 - (void)addInhibitedEvent:(id)event {
@@ -706,12 +701,12 @@ static RootViewManager* rootViewManagerInstance = nil;
 
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-        LinphoneCallAppData* callData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        LinphoneCallAppData* callData = (__bridge LinphoneCallAppData*) linphone_call_get_user_pointer(call);
         if(callData != nil) {
             if (state == UIDeviceBatteryStateUnplugged) {
                 if (level <= 0.2f && !callData->batteryWarningShown) {
                     LOGI(@"Battery warning");
-                    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
+                    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)];
                     [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil) block:nil];
                     [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
                         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
