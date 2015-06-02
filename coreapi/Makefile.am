@@ -137,7 +137,6 @@ liblinphone_la_LIBADD= \
 		$(ORTP_LIBS) \
 		$(SIPSTACK_LIBS) \
 		$(TUNNEL_LIBS) \
-		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
 		$(LIBXML2_LIBS) \
 		$(LDAP_LIBS) \
@@ -170,7 +169,6 @@ COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
 	$(SIPSTACK_CFLAGS) \
-	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \
