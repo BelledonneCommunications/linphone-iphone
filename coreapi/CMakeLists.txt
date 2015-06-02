@@ -92,6 +92,8 @@ set(SOURCE_FILES
 	xml2lpc.c
 	xml2lpc.h
 	xml.c
+	xmlrpc.c
+	xmlrpc.h
 	vtables.c
 )
 if(ENABLE_TUNNEL)

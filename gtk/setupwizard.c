@@ -292,6 +292,7 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 
 	LinphoneAccountCreator *creator=linphone_gtk_assistant_get_creator(assistant);
 	linphone_account_creator_set_username(creator, gtk_entry_get_text(username));
+	linphone_account_creator_set_domain(creator, "sip.linphone.org");
 
 	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
 #if !GLIB_CHECK_VERSION(2, 31, 0)

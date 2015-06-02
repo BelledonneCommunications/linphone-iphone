@@ -20,24 +20,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include <ctype.h>
-#include <libsoup/soup.h>
 
-typedef struct _BLReq{
-	int status;
-	int result;
-	SoupMessage *msg;
-	SoupSession *session;
-	ortp_thread_t th;
-}BLReq;
 
-static const int XMLRPC_FAILED = -1;
-static const int XMLRPC_OK = 0;
 static const char *XMLRPC_URL = "https://www.linphone.org/wizard.php";
 
 static void sip_wizard_init_instance(SipSetupContext *ctx){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	/*disable registration until the user logs in*/
 	linphone_proxy_config_enable_register(cfg,FALSE);
+}
+
+static void sip_wizard_uninit_instance(SipSetupContext *ctx) {
+	if (ctx->xmlrpc_session != NULL) {
+		linphone_xml_rpc_session_unref(ctx->xmlrpc_session);
+		ctx->xmlrpc_session = NULL;
+	}
 }
 
 static const char ** sip_wizard_get_domains(SipSetupContext *ctx) {
@@ -47,94 +44,23 @@ static const char ** sip_wizard_get_domains(SipSetupContext *ctx) {
 }
 
 
-static int xml_rpc_parse_response(BLReq *blreq, SoupMessage *sm){
-	SoupBuffer *sb;
-	GValue retval;
-	GError *error=NULL;
-	sb=soup_message_body_flatten(sm->response_body);
-	ms_message("This the xml-rpc response:\n%s\n",sb->data);
-	if (soup_xmlrpc_parse_method_response(sb->data,sb->length,&retval,&error)==FALSE){
-		if (error!=NULL){
-			ms_error("xmlrpc fault: %s",error->message);
-			g_error_free(error);
-		}else{
-			ms_error("Could not parse xml-rpc response !");
-		}
-		blreq->status=XMLRPC_FAILED;
-	}else{
-		ms_message("Extracting values from return type...");
-		blreq->result = g_value_get_int(&retval);
-		g_value_unset(&retval);
-		blreq->status=XMLRPC_OK;
-	}
-	soup_buffer_free(sb);
-	return blreq->status;
-}
+static int do_simple_xmlrpc_request(SipSetupContext *ctx, LinphoneXmlRpcRequest *request) {
+	int ret = -1;
 
-static void got_headers(BLReq *blreq, SoupMessage*msg){
-	ms_message("Got headers !");
-	blreq->status=XMLRPC_OK;
-}
-
-#if SERIALIZE_HTTPS
-/*on windows libsoup support for threads with gnutls is not yet functionnal (only in git)
-This will come in next release of libsoup, probably.
-In the meantime, we are forced to serialize all soup https processing with a big
-ugly global mutex...*/
-
-static GStaticMutex big_mutex = G_STATIC_MUTEX_INIT;
-#endif
-
-static void * process_xml_rpc_request(void *up){
-	BLReq *blreq=(BLReq*)up;
-	SoupMessage *sm=blreq->msg;
-	int code;
-	g_signal_connect_swapped(G_OBJECT(sm),"got-headers",(GCallback)got_headers,blreq);
-	blreq->status=XMLRPC_OK;
-#if SERIALIZE_HTTPS
-	g_static_mutex_lock(&big_mutex);
-#endif
-	code=soup_session_send_message(blreq->session,sm);
-	if (code==200){
-		xml_rpc_parse_response(blreq,sm);
-	}else{
-		ms_error("request failed, error-code=%i (%s)",code,soup_status_get_phrase(code));
-		blreq->status=XMLRPC_FAILED;
-	}
-#if SERIALIZE_HTTPS
-	g_static_mutex_unlock(&big_mutex);
-#endif
-	return NULL;
-}
-
-
-static int do_simple_xmlrpc_request(SoupMessage *msg) {
-        int ret=-1;
-        BLReq *req;
-
-	if (!msg){
-		ms_error("Fail to create SoupMessage !");
+	if (!request) {
+		ms_error("Fail to create XML-RPC request!");
 		return -1;
-	}else{
-		SoupBuffer *sb=soup_message_body_flatten(msg->request_body);
-		ms_message("This is the XML-RPC request we are going to send:\n%s\n",sb->data);
-		soup_buffer_free(sb);
+	} else {
+		ms_message("This is the XML-RPC request we are going to send:\n%s\n", linphone_xml_rpc_request_get_content(request));
 	}
 
-	req=ms_new0(BLReq, 1);
-        req->session=soup_session_sync_new();
-        req->msg=msg;
-
-        process_xml_rpc_request(req);
-
-        if (req->status == XMLRPC_OK) {
-                ret=req->result;
-        }
-
-	// Freeing allocated structures lead to a crash (why?)
-	//g_free(req->session);
-	//g_free(msg);
-        ms_free(req);
+	if (ctx->xmlrpc_session == NULL) {
+		ctx->xmlrpc_session = linphone_xml_rpc_session_new(ctx->cfg->lc, XMLRPC_URL);
+	}
+	if (linphone_xml_rpc_session_send_request(ctx->xmlrpc_session, request) == LinphoneXmlRpcStatusOk) {
+		ret = linphone_xml_rpc_request_get_response(request);
+	}
+	linphone_xml_rpc_request_unref(request);
 
         return ret;
 }
@@ -145,30 +71,27 @@ static int do_simple_xmlrpc_request(SoupMessage *msg) {
  * -1 if information isn't available
  */
 static int sip_wizard_account_exists(SipSetupContext *ctx, const char *identity) {
-	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
-                                "check_account",
-                                G_TYPE_STRING, identity,
-                                G_TYPE_INVALID);
-	return do_simple_xmlrpc_request(msg);
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("check_account",
+		LinphoneXmlRpcArgString, identity,
+		LinphoneXmlRpcArgNone);
+	return do_simple_xmlrpc_request(ctx, request);
 }
 
 static int sip_wizard_account_validated(SipSetupContext *ctx, const char *identity) {
-	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
-                                "check_account_validated",
-                                G_TYPE_STRING, identity,
-                                G_TYPE_INVALID);
-        return do_simple_xmlrpc_request(msg);
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("check_account_validated",
+		LinphoneXmlRpcArgString, identity,
+		LinphoneXmlRpcArgNone);
+        return do_simple_xmlrpc_request(ctx, request);
 }
 
-static int sip_wizard_create_account(SipSetupContext *ctx, const char *identity, const char *passwd, const char *email, int suscribe) {
-	SoupMessage *msg=soup_xmlrpc_request_new(XMLRPC_URL,
-				"create_account",
-				G_TYPE_STRING, identity,
-				G_TYPE_STRING, passwd,
-				G_TYPE_STRING, email,
-				G_TYPE_INT, suscribe,
-				G_TYPE_INVALID);
-	return do_simple_xmlrpc_request(msg);
+static int sip_wizard_create_account(SipSetupContext *ctx, const char *identity, const char *passwd, const char *email, int subscribe) {
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("create_account",
+		LinphoneXmlRpcArgString, identity,
+		LinphoneXmlRpcArgString, passwd,
+		LinphoneXmlRpcArgString, email,
+		LinphoneXmlRpcArgInt, subscribe,
+		LinphoneXmlRpcArgNone);
+	return do_simple_xmlrpc_request(ctx, request);
 }
 
 static void guess_display_name(LinphoneAddress *from){
@@ -232,6 +155,7 @@ SipSetup linphone_sip_wizard={
 	.name="SipWizard",
 	.capabilities=SIP_SETUP_CAP_ACCOUNT_MANAGER,
 	.init_instance=sip_wizard_init_instance,
+	.uninit_instance=sip_wizard_uninit_instance,
 	.account_exists=sip_wizard_account_exists,
 	.create_account=sip_wizard_create_account,
 	.login_account=sip_wizard_do_login,
@@ -247,7 +171,7 @@ SipSetup linphone_sip_wizard={
 	NULL,
 	NULL,
 	sip_wizard_init_instance,
-	NULL,
+	sip_wizard_uninit_instance,
 	sip_wizard_account_exists,
 	sip_wizard_create_account,
 	sip_wizard_do_login,
@@ -260,7 +184,5 @@ SipSetup linphone_sip_wizard={
 	NULL,
 	sip_wizard_account_validated
 };
-
-
 
 #endif

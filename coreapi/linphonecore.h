@@ -373,6 +373,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "content.h"
 #include "event.h"
 #include "linphonefriend.h"
+#include "xmlrpc.h"
 #else
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
@@ -380,6 +381,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/content.h"
 #include "linphone/event.h"
 #include "linphone/linphonefriend.h"
+#include "linphone/xmlrpc.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
