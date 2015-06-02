@@ -101,9 +101,6 @@ if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
 endif()
-if(ENABLE_ASSISTANT)
-	target_link_libraries(linphone-gtk ${SOUP_LIBRARIES})
-endif()
 
 install(TARGETS linphone-gtk
 	RUNTIME DESTINATION bin

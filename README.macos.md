@@ -31,7 +31,7 @@ In order to enable generation of bundle for older MacOS version, it is recommend
 
 Install `GTK`. It is recommended to use the `quartz` backend for better integration.
 
-        sudo port install gtk2 +quartz +no_x11 libsoup
+        sudo port install gtk2 +quartz +no_x11
         sudo port install gtk-osx-application +no_python
         sudo port install hicolor-icon-theme
 
@@ -51,7 +51,7 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 
         brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gtk-mac-integration libsoup hicolor-icon-theme
+        brew install gtk-mac-integration hicolor-icon-theme
 
 ### Building Linphone
 
