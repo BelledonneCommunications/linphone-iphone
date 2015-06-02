@@ -42,7 +42,7 @@ typedef struct reporting_addr {
 } reporting_addr_t;
 
 /**
- * Linphone quality report sub object storing media metrics information as required by RFC035.
+ * Linphone quality report sub object storing media metrics information as required by RFC6035.
  */
 
 typedef struct reporting_content_metrics {

@@ -568,7 +568,7 @@ int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cf
 void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector){
 	if (collector!=NULL && strlen(collector)>0){
 		LinphoneAddress *addr=linphone_address_new(collector);
-		if (!addr || linphone_address_get_username(addr)==NULL){
+		if (!addr){
 			ms_error("Invalid SIP collector URI: %s. Quality reporting will be DISABLED.",collector);
 		} else {
 			if (cfg->quality_reporting_collector != NULL){
