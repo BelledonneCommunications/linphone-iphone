@@ -77,7 +77,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         ms_list_free_with_data(history, (void (*)(void *))linphone_chat_message_unref);
 
         sorted = ms_list_insert_sorted(sorted,
-                                       linphone_chat_room_ref(iter->data),
+                                       iter->data,
                                        (MSCompareFunc)sorted_history_comparison);
 
         iter = iter->next;
@@ -91,7 +91,6 @@ static void chatTable_free_chatrooms(void *data){
         linphone_chat_message_unref(linphone_chat_room_get_user_data(data));
         linphone_chat_room_set_user_data(data, NULL);
     }
-    linphone_chat_room_unref(data);
 }
 
 - (void)loadData {
