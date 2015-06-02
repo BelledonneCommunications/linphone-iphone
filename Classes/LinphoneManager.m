@@ -1715,16 +1715,24 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 }
 
 - (void)copyDefaultSettings {
-	NSString *src = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc~ipad":@"linphonerc"];
+	NSString *src = [LinphoneManager bundleFile:@"linphonerc"];
+	NSString *srcIpad = [LinphoneManager bundleFile:@"linphonerc~ipad"];
+	if ([LinphoneManager runningOnIpad] && [[NSFileManager defaultManager] fileExistsAtPath:srcIpad]){
+		src = srcIpad;
+	}
 	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
 	[LinphoneManager copyFile:src destination:dst override:FALSE];
 }
 
 - (void)overrideDefaultSettings {
-	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+	NSString* factory = [LinphoneManager bundleFile:@"linphonerc-factory"];
+	NSString *factoryIpad = [LinphoneManager bundleFile:@"linphonerc-factory~ipad"];
+	if ([LinphoneManager runningOnIpad] && [[NSFileManager defaultManager] fileExistsAtPath:factoryIpad]){
+		factory = factoryIpad;
+	}
 	NSString *confiFileName = [LinphoneManager documentFile:@"linphonerc"];
 	configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
-										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+										, [factory cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 #pragma mark - Audio route Functions
 
