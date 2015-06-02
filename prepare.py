@@ -148,6 +148,8 @@ def main(argv = None):
 		if args.clean:
 			target.clean()
 		else:
+			if args.debug:
+				additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
 			retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
 			if retcode != 0:
 				return retcode
