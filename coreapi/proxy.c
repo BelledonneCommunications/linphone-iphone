@@ -1507,7 +1507,7 @@ LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core,
 		return NULL;
 	}
 	obj=ms_new0(LinphoneAccountCreator,1);
-	cfg=linphone_proxy_config_new();
+	cfg=linphone_core_create_proxy_config(core);
 	ssctx=sip_setup_context_new(ss,cfg);
 	obj->lc=core;
 	obj->ssctx=ssctx;

@@ -980,6 +980,38 @@ BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
 
 /*****************************************************************************
+ * XML-RPC interface                                                         *
+ ****************************************************************************/
+
+struct _LinphoneXmlRpcRequest {
+	belle_sip_object_t base;
+	void *user_data;
+	belle_sip_list_t *arg_list;
+	char *content;	/**< The string representation of the XML-RPC request */
+	char *method;
+	LinphoneXmlRpcStatus status;
+	int response;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequest);
+
+struct _LinphoneXmlRpcSession {
+	belle_sip_object_t base;
+	void *user_data;
+	belle_sip_list_t *arg_list;
+	LinphoneCore *core;
+	LinphoneXmlRpcRequest *request;
+	LinphoneContent *content;
+	char *url;
+	ms_cond_t cond;
+	ms_mutex_t cond_mutex;
+	ms_mutex_t mutex;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);
+
+
+/*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                                     *
  ****************************************************************************/
 
@@ -1083,7 +1115,9 @@ BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
-BELLE_SIP_TYPE_ID(LinphoneFriend)
+BELLE_SIP_TYPE_ID(LinphoneFriend),
+BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
+BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession)
 BELLE_SIP_DECLARE_TYPES_END
 
 
