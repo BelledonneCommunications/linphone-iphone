@@ -65,13 +65,6 @@ const NSInteger SECURE_BUTTON_TAG=5;
 }
 
 - (void)dealloc {
-
-#ifdef TEST_VIDEO_VIEW_CHANGE
-    [testVideoView release];
-#endif
-
-
-
     [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
 
     // Remove all observer

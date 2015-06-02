@@ -537,7 +537,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
         [values removeObject:@"tls"];
         [dict setObject:values forKey:@"Values"];
-        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+        return [[IASKSpecifier alloc] initWithSpecifier:dict];
     }
 #else
     if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
@@ -808,7 +808,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[picker addAttachmentData:attachment mimeType:type fileName:attachmentName];
 
 		[self presentViewController:picker animated:true completion:nil];
-		[picker release];
 	} else {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
 														message:NSLocalizedString(@"Your device is not configured to send emails. Please configure mail application prior to send logs.",nil)
@@ -816,7 +815,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil];
 		[error show];
-		[error release];
 	}
 #endif
 }

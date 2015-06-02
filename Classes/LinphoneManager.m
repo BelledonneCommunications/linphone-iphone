@@ -542,7 +542,6 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 //        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
 //    });
 //
-//	[formatedString release];
 }
 
 //Error/warning log handler
