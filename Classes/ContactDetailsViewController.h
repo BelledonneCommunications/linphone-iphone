@@ -29,7 +29,7 @@
     BOOL inhibUpdate;
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
+@property (nonatomic, assign, setter=setContact:) ABRecordRef contact;
 @property (nonatomic, strong) IBOutlet ContactDetailsTableViewController *tableController;
 @property (nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property (nonatomic, strong) IBOutlet UIButton *backButton;
@@ -43,5 +43,5 @@
 - (void)newContact:(NSString*)address;
 - (void)editContact:(ABRecordRef)contact;
 - (void)editContact:(ABRecordRef)contact address:(NSString*)address;
-
+- (void)setContact:(ABRecordRef)contact;
 @end

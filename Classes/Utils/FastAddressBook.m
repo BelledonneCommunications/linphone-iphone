@@ -246,4 +246,14 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
     CFRelease(addressBook);
 }
 
+#pragma mark - Tools
+
++(NSString *)localizedLabel:(NSString *)label {
+	if( label != nil ){
+		return CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef)(label)));
+	}
+	return @"";
+}
+
+
 @end

@@ -41,7 +41,7 @@ typedef enum _ContactSections {
     NSIndexPath *editingIndexPath;
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
+@property (nonatomic, assign, setter=setContact:) ABRecordRef contact;
 @property (nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
 @property (nonatomic, strong) IBOutlet UIContactDetailsHeader *headerController;
 @property (nonatomic, strong) IBOutlet UIContactDetailsFooter *footerController;
@@ -50,5 +50,6 @@ typedef enum _ContactSections {
 - (void)addPhoneField:(NSString*)number;
 - (void)addSipField:(NSString*)address;
 - (void)addEmailField:(NSString*)address;
+- (void)setContact:(ABRecordRef)contact;
 
 @end

@@ -150,14 +150,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     }
 }
 
-+ (NSString*)localizeLabel:(NSString*)str {
-    return (NSString*) CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef) str));
-}
-
 - (NSDictionary*)getLocalizedLabels {
     OrderedDictionary *dict = [[OrderedDictionary alloc] initWithCapacity:[labelArray count]];
     for(NSString *str in labelArray) {
-        [dict setObject:[ContactDetailsTableViewController localizeLabel:str] forKey:str];
+        [dict setObject:[FastAddressBook localizedLabel:str] forKey:str];
     }
     return dict;
 }
@@ -260,15 +256,15 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	ABMultiValueIdentifier index;
 	CFErrorRef error = NULL;
 
-	CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-	CFTypeRef values[] = { CFBridgingRetain([value copy]), (__bridge CFTypeRef)([LinphoneManager instance].contactSipField) };
-	CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
+	NSDictionary* lDict = @{(NSString*)kABPersonInstantMessageUsernameKey:value,
+							(NSString*)kABPersonInstantMessageServiceKey:[LinphoneManager instance].contactSipField};
+
 	if (entry) {
 		index = (int)ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
+		ABMultiValueReplaceValueAtIndex(lMap, (__bridge CFTypeRef)(lDict), index);
 	} else {
         CFStringRef label = (__bridge CFStringRef)[labelArray objectAtIndex:0];
-		ABMultiValueAddValueAndLabel(lMap, lDict, label, &index);
+		ABMultiValueAddValueAndLabel(lMap, (__bridge CFTypeRef)lDict, label, &index);
 	}
 
 	if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, &error)) {
@@ -278,7 +274,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		if (entry == nil) {
 			entry = [[Entry alloc] initWithData:index];
 		}
-		CFRelease(lDict);
         CFRelease(lMap);
 
 		/*check if message type is kept or not*/
@@ -286,29 +281,29 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		lMap = ABMultiValueCreateMutableCopy(lcMap);
 		CFRelease(lcMap);
 		index = (int)ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		lDict = ABMultiValueCopyValueAtIndex(lMap,index);
-		if(!CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+		lDict = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap,index));
+
+		if([lDict objectForKey:(__bridge NSString*)kABPersonInstantMessageServiceKey] == nil) {
 			/*too bad probably a gtalk number, storing uri*/
-			NSString* username = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+			NSString* username = [lDict objectForKey:(NSString*)kABPersonInstantMessageUsernameKey];
 			LinphoneAddress* address = linphone_core_interpret_url([LinphoneManager getLc]
 																   ,[username UTF8String]);
             if(address){
                 char* uri = linphone_address_as_string_uri_only(address);
-                CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-                CFTypeRef values[] = { (__bridge CFTypeRef)([NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]]), (__bridge CFTypeRef)([LinphoneManager instance].contactSipField) };
-                CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
-                ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
-                if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, &error)) {
+				NSDictionary *dict2 = @{(NSString*)kABPersonInstantMessageUsernameKey:[NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]],
+										(NSString*)kABPersonInstantMessageServiceKey:[LinphoneManager instance].contactSipField};
+
+				ABMultiValueReplaceValueAtIndex(lMap, (__bridge CFTypeRef)(dict2), index);
+
+				if (!ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, &error)) {
                     LOGI(@"Can't set contact with value [%@] cause [%@]", value,[(__bridge NSError*)error localizedDescription]);
                 }
-                CFRelease(lDict2);
                 linphone_address_destroy(address);
                 ms_free(uri);
             }
 		}
         CFRelease(lMap);
 	}
-	CFRelease(lDict);
 
 	return entry;
 }
@@ -336,7 +331,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (__bridge CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, CFBridgingRetain([value copy]), label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, (__bridge CFTypeRef)(value), label, &identifier)) {
             added = false;
         }
 
@@ -368,7 +363,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             lMap = ABMultiValueCreateMutable(kABStringPropertyType);
         }
         CFStringRef label = (__bridge CFStringRef)[labelArray objectAtIndex:0];
-        if(!ABMultiValueAddValueAndLabel(lMap, CFBridgingRetain([value copy]), label, &identifier)) {
+        if(!ABMultiValueAddValueAndLabel(lMap, (__bridge CFTypeRef)(value), label, &identifier)) {
             added = false;
         }
 
@@ -405,15 +400,23 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             ABMultiValueRef lMap = ABRecordCopyValue(contact, property);
             NSInteger index      = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFTypeRef valueRef   = ABMultiValueCopyValueAtIndex(lMap, index);
-            CFTypeRef toRelease  = valueRef;
+			CFTypeRef toRelease  = nil;
+			NSString* value = nil;
             if (property == kABPersonInstantMessageProperty ) {
                 // when we query the instanteMsg property we get a dictionary instead of a value
-                valueRef = CFDictionaryGetValue(valueRef, kABPersonInstantMessageUsernameKey);
-            }
-            if(![(__bridge NSString*) valueRef length]) {
+				toRelease = valueRef;
+                value = (__bridge_transfer NSString*)CFDictionaryGetValue(valueRef, kABPersonInstantMessageUsernameKey);
+			} else {
+				value = (__bridge_transfer NSString*)valueRef;
+			}
+
+            if(value.length == 0) {
                 [self removeEntry:tableview path:[NSIndexPath indexPathForRow:row inSection:section] animated:animated];
             }
-            CFRelease(toRelease);
+			if( toRelease != nil ){
+				CFRelease(toRelease);
+			}
+			
             CFRelease(lMap);
 
         }
@@ -508,39 +511,37 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
     NSString *value = @"";
     // default label is our app name
-    NSString *label = [ContactDetailsTableViewController localizeLabel:[labelArray objectAtIndex:0]];
+    NSString *label = [FastAddressBook localizedLabel:[labelArray objectAtIndex:0]];
 
     if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+        NSString* labelRef = (__bridge_transfer NSString*)(ABMultiValueCopyLabelAtIndex(lMap, index));
         if(labelRef != NULL) {
-            label = [ContactDetailsTableViewController localizeLabel:(NSString*) CFBridgingRelease(labelRef)];
+            label = [FastAddressBook localizedLabel:labelRef];
         }
-        NSString* valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
+        NSString* valueRef = (__bridge_transfer NSString*)(ABMultiValueCopyValueAtIndex(lMap, index));
         if(valueRef != NULL) {
-            value = [ContactDetailsTableViewController localizeLabel:valueRef];
+            value = [FastAddressBook localizedLabel:valueRef];
         }
         CFRelease(lMap);
     } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
         NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+
+		NSString* labelRef = (__bridge_transfer NSString*)(ABMultiValueCopyLabelAtIndex(lMap, index));
         if(labelRef != NULL) {
-            label = [ContactDetailsTableViewController localizeLabel:(NSString*) CFBridgingRelease(labelRef)];
+            label = [FastAddressBook localizedLabel:labelRef];
         }
         CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-        CFStringRef valueRef = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
-        if(valueRef != NULL) {
+		value = (__bridge NSString*)( CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+        if(value != NULL) {
 			LinphoneAddress* addr=NULL;
-            if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"]
-				&& (addr=linphone_address_new([(NSString *)CFBridgingRelease(valueRef) UTF8String]))) {
+            if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"] && (addr=linphone_address_new([value UTF8String]))) {
 				if (linphone_address_get_username(addr)) {
 					value = [NSString stringWithCString:linphone_address_get_username(addr)
 											   encoding:[NSString defaultCStringEncoding]];
-				} /*else value=@""*/
-			} else {
-				value = (NSString*) CFBridgingRelease(valueRef);
+				}
 			}
 			if (addr) linphone_address_destroy(addr);
         }
@@ -549,13 +550,13 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
     } else if(contactSections[[indexPath section]] == ContactSections_Email) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
         NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+        NSString* labelRef = (__bridge_transfer NSString*)ABMultiValueCopyLabelAtIndex(lMap, index);
         if(labelRef != NULL) {
-            label = [ContactDetailsTableViewController localizeLabel:(NSString*) CFBridgingRelease(labelRef)];
+            label = [FastAddressBook localizedLabel:labelRef];
         }
-        CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+        NSString* valueRef = (__bridge_transfer NSString*)(ABMultiValueCopyValueAtIndex(lMap, index));
         if(valueRef != NULL) {
-            value = [ContactDetailsTableViewController localizeLabel:(NSString*) CFBridgingRelease(valueRef)];
+            value = [FastAddressBook localizedLabel:valueRef];
         }
         CFRelease(lMap);
     }
@@ -584,25 +585,25 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         if(contactSections[[indexPath section]] == ContactSections_Number) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+            NSString* valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
             if(valueRef != NULL) {
-                dest = [ContactDetailsTableViewController localizeLabel:(NSString*) CFBridgingRelease(valueRef)];
+                dest = [FastAddressBook localizedLabel:(NSString*)(valueRef)];
             }
             CFRelease(lMap);
         } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-            CFStringRef valueRef = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
-            dest = [FastAddressBook normalizeSipURI:(NSString*) CFBridgingRelease(valueRef)];
+            NSString* valueRef = CFBridgingRelease(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+            dest = [FastAddressBook normalizeSipURI:(NSString*) valueRef];
             CFRelease(lDict);
             CFRelease(lMap);
         } else if(contactSections[[indexPath section]] == ContactSections_Email) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
             NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+            NSString* valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
             if(valueRef != NULL) {
-                dest = [FastAddressBook normalizeSipURI:(NSString*) CFBridgingRelease(valueRef)];
+                dest = [FastAddressBook normalizeSipURI:(NSString*)(valueRef)];
             }
             CFRelease(lMap);
         }
@@ -631,14 +632,14 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
         if( property != kABInvalidPropertyType ){
             ABMultiValueRef lMap = ABRecordCopyValue(contact, property);
             NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            CFTypeRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+            NSString* labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
             if(labelRef != NULL) {
-                key = (NSString*) CFBridgingRelease(labelRef);
+                key = (NSString*)(labelRef);
             }
             CFRelease(lMap);
         }
         if(key != nil) {
-            editingIndexPath = [indexPath copy];
+            editingIndexPath = indexPath;
             ContactDetailsLabelViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsLabelViewController compositeViewDescription] push:TRUE], ContactDetailsLabelViewController);
             if(controller != nil) {
                 [controller setDataList:[self getLocalizedLabels]];

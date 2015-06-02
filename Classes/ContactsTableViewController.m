@@ -133,7 +133,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 		NSArray *lContacts = (NSArray *)CFBridgingRelease(ABAddressBookCopyArrayOfAllPeople(addressBook));
 		for (id lPerson in lContacts) {
 			BOOL add = true;
-			ABRecordRef person = (ABRecordRef)CFBridgingRetain(lPerson);
+			ABRecordRef person = (__bridge ABRecordRef)lPerson;
 
 			// Do not add the contact directly if we set some filter
 			if([ContactSelection getSipFilter] || [ContactSelection emailFilterEnabled]) {
@@ -152,19 +152,20 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 
 			if(add) {
 				NSString* lFirstName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-				NSString* lLocalizedFirstName = (lFirstName != nil)? CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef)(lFirstName))): nil;
+				NSString* lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
 				NSString* lLastName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty));
-				NSString* lLocalizedLastName = (lLastName != nil)? CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef)(lLastName))): nil;
+				NSString* lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
 				NSString* lOrganization = CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty));
-				NSString* lLocalizedlOrganization = (lOrganization != nil)? CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef)lOrganization)): nil;
+				NSString* lLocalizedlOrganization = [FastAddressBook localizedLabel:lOrganization];
+
 				NSString *name = nil;
-				if(lLocalizedFirstName != nil && lLocalizedLastName != nil) {
+				if(lLocalizedFirstName.length && lLocalizedLastName.length ) {
 					name=[NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
-				} else if(lLocalizedLastName != nil) {
+				} else if(lLocalizedLastName.length) {
 					name=[NSString stringWithFormat:@"%@",lLocalizedLastName];
-				} else if(lLocalizedFirstName != nil) {
+				} else if(lLocalizedFirstName.length) {
 					name=[NSString stringWithFormat:@"%@",lLocalizedFirstName];
-				} else if(lLocalizedlOrganization != nil) {
+				} else if(lLocalizedlOrganization.length) {
 					name=[NSString stringWithFormat:@"%@",lLocalizedlOrganization];
 				}
 
