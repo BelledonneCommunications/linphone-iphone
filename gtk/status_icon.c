@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "status_notifier.h"
+#include <mediastreamer2/mscommon.h>
 
 typedef struct __LinphoneStatusIconDesc _LinphoneStatusIconDesc;
 
@@ -147,7 +148,7 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 	
 	if(ctx->i) {
 		const _LinphoneStatusIconDesc *desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
-		g_message("StatusIcon: found implementation: %s", desc->impl_name);
+		ms_message("StatusIcon: found implementation: %s", desc->impl_name);
 		if(ctx->cb) ctx->cb(desc, ctx->user_data);
 	} else {
 		g_warning("StatusIcon: no implementation found");
@@ -166,7 +167,7 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 	ctx->cb = cb;
 	ctx->user_data = user_data;
 	
-	g_message("StatusIcon: looking for implementation...");
+	ms_message("StatusIcon: looking for implementation...");
 	
 	for(ctx->i=_linphone_status_icon_impls; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 		if(_linphone_status_icon_desc_is_supported(
@@ -177,7 +178,7 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 			
 			if(result) {
 				*desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
-				g_message("StatusIcon: found implementation: %s", (*desc)->impl_name);
+				ms_message("StatusIcon: found implementation: %s", (*desc)->impl_name);
 				goto sync_return;
 			}
 		} else {
@@ -217,13 +218,13 @@ const char *linphone_status_icon_get_implementation_name(const LinphoneStatusIco
 }
 
 void linphone_status_icon_start(LinphoneStatusIcon *obj, LinphoneStatusIconParams *params) {
-	g_message("StatusIcon: starting status icon");
+	ms_message("StatusIcon: starting status icon");
 	obj->params = linphone_status_icon_params_ref(params);
 	if(obj->desc->start) obj->desc->start(obj);
 }
 
 void linphone_status_icon_enable_blinking(LinphoneStatusIcon *obj, gboolean enable) {
-	g_message("StatusIcon: blinking set to %s", enable ? "TRUE" : "FALSE");
+	ms_message("StatusIcon: blinking set to %s", enable ? "TRUE" : "FALSE");
 	if(obj->desc->enable_blinking) obj->desc->enable_blinking(obj, enable);
 }
 
@@ -266,7 +267,7 @@ gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *use
 	const _LinphoneStatusIconDesc *desc;
 	void **ctx;
 	
-	g_message("StatusIcon: Initialising");
+	ms_message("StatusIcon: Initialising");
 	
 	_linphone_status_icon_create_implementations_list();
 	
@@ -289,7 +290,7 @@ void linphone_status_icon_uninit(void) {
 LinphoneStatusIcon *linphone_status_icon_get(void) {
 	if(_linphone_status_icon_instance == NULL) {
 		if(_linphone_status_icon_selected_desc)
-			g_message("StatusIcon: instanciating singleton");
+			ms_message("StatusIcon: instanciating singleton");
 			_linphone_status_icon_instance = _linphone_status_icon_new(_linphone_status_icon_selected_desc);
 	}
 	return _linphone_status_icon_instance;
