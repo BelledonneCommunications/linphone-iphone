@@ -27,13 +27,25 @@
 #import "Utils.h"
 
 @implementation ChatTableViewController {
-    @private
     MSList* data;
 }
 
 
 #pragma mark - Lifecycle Functions
 
+-(instancetype)init {
+	self = super.init;
+	if( self ){
+		self->data = nil;
+	}
+	return self;
+}
+
+- (void)dealloc {
+	if( data != nil ) {
+		ms_list_free_with_data(data, chatTable_free_chatrooms);
+	}
+}
 
 #pragma mark - ViewController Functions 
 
@@ -42,6 +54,7 @@
     self.tableView.accessibilityIdentifier = @"ChatRoom list";
     [self loadData];
 }
+
 
 
 #pragma mark - 
@@ -85,7 +98,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 static void chatTable_free_chatrooms(void *data){
     LinphoneChatMessage* lastMsg = linphone_chat_room_get_user_data(data);
     if( lastMsg ){
-        linphone_chat_message_unref(linphone_chat_room_get_user_data(data));
+        linphone_chat_message_unref(lastMsg);
         linphone_chat_room_set_user_data(data, NULL);
     }
 }
@@ -152,8 +165,14 @@ static void chatTable_free_chatrooms(void *data){
         [tableView beginUpdates];
 
         LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatMessage* last_msg = linphone_chat_room_get_user_data(chatRoom);
+		if( last_msg ){
+			linphone_chat_message_unref(last_msg);
+			linphone_chat_room_set_user_data(chatRoom, NULL);
+		}
         linphone_chat_room_delete_history(chatRoom);
         linphone_chat_room_unref(chatRoom);
+		data = ms_list_remove(data, chatRoom);
 
         // will force a call to [self loadData]
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
