@@ -186,7 +186,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
-
+	const MSList* calls;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
@@ -229,6 +229,10 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 		}
 	}
 	*/
+	for (calls=linphone_core_get_calls(marie->lc);calls!=NULL;calls=calls->next) {
+		LinphoneCall *call=(LinphoneCall *)calls->data;
+		BC_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)),int,"%d");
+	}
 
 	linphone_core_terminate_conference(marie->lc);
 
@@ -250,22 +254,41 @@ static void simple_conference(void) {
 	linphone_core_manager_destroy(laure);
 }
 
-static void simple_conference_with_ice(void) {
+
+
+static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 
-	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
-	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
-	linphone_core_set_firewall_policy(laure->lc,LinphonePolicyUseIce);
-	linphone_core_set_stun_server(laure->lc,"stun.linphone.org");
+	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
+		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+		linphone_core_set_firewall_policy(laure->lc,LinphonePolicyUseIce);
+		linphone_core_set_stun_server(laure->lc,"stun.linphone.org");
 
-	simple_conference_base(marie,pauline,laure);
+		linphone_core_set_media_encryption(marie->lc,mode);
+		linphone_core_set_media_encryption(pauline->lc,mode);
+		linphone_core_set_media_encryption(laure->lc,mode);
+
+		simple_conference_base(marie,pauline,laure);
+	} else {
+		ms_warning("No [%s] support available",linphone_media_encryption_to_string(mode));
+		BC_PASS("Passed");
+	}
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
+}
+
+static void simple_conference_with_ice(void) {
+	simple_encrypted_conference_with_ice(LinphoneMediaEncryptionNone);
+}
+static void simple_zrtp_conference_with_ice(void) {
+	simple_encrypted_conference_with_ice(LinphoneMediaEncryptionZRTP);
 }
 
 
@@ -496,6 +519,7 @@ test_t multi_call_tests[] = {
 	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
 	{ "Simple conference", simple_conference },
 	{ "Simple conference with ICE",simple_conference_with_ice},
+	{ "Simple ZRTP conference with ICE",simple_zrtp_conference_with_ice},
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Unattended call transfer", unattended_call_transfer },
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },

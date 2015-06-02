@@ -35,10 +35,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void register_failure(SalOp *op);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
-	if (call->params->in_conference != call->current_params->in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
-	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_CHANGED;
+	int result=0;
+	if (call->params->in_conference != call->current_params->in_conference) return SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
+	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
 	if (call->localdesc_changed) ms_message("Local description has changed: %i", call->localdesc_changed);
-	return call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
+	result = call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
+	return result;
 }
 
 void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
@@ -152,7 +154,8 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			md_changed = media_parameters_changed(call, oldmd, new_md);
 			if ((md_changed & (	SAL_MEDIA_DESCRIPTION_CODEC_CHANGED
 								|SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED
-								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED))){
+								|SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED
+								|SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION ))){
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else if ( call->playing_ringbacktone) {
 				ms_message("Playing ringback tone, will restart the streams.");
