@@ -272,14 +272,15 @@ struct codec_name_pref_table codec_pref_table[]={
 		speakerEnabled = FALSE;
 		bluetoothEnabled = FALSE;
 		tunnelMode = FALSE;
-		[self copyDefaultSettings];
+
+
 		pushCallIDs = [[NSMutableArray alloc] init ];
 		photoLibrary = [[ALAssetsLibrary alloc] init];
-        self->_isTesting = [LinphoneManager isRunningTests];
+		self->_isTesting = [LinphoneManager isRunningTests];
 
-		NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
-		NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
-		configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]] , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		[self renameDefaultSettings];
+		[self copyDefaultSettings];
+		[self overrideDefaultSettings];
 
 		//set default values for first boot
 		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
@@ -1707,14 +1708,37 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
 
+- (void)renameDefaultSettings {
+	//rename .linphonerc to linphonerc to ease debugging: when downloading
+	//containers from MacOSX, Finder do not display hidden files leading
+	//to useless painful operations to display the .linphonerc file
+	NSString *src = [LinphoneManager documentFile:@".linphonerc"];
+	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSError *fileError = nil;
+	if ([fileManager fileExistsAtPath:src]) {
+		if ([fileManager fileExistsAtPath:dst]) {
+			[fileManager removeItemAtPath:src error:&fileError];
+			LOGW(@"%@ already exists, simply removing %@ %@", dst, src, fileError?fileError.localizedDescription:@"successfully");
+		} else {
+			[fileManager moveItemAtPath:src toPath:dst error:&fileError];
+			LOGI(@"%@ moving to %@ %@", dst, src, fileError?fileError.localizedDescription:@"successfully");
+		}
+	}
+}
 
 - (void)copyDefaultSettings {
 	NSString *src = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc~ipad":@"linphonerc"];
-	NSString *dst = [LinphoneManager documentFile:@".linphonerc"];
+	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
 	[LinphoneManager copyFile:src destination:dst override:FALSE];
 }
 
-
+- (void)overrideDefaultSettings {
+	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+	NSString *confiFileName = [LinphoneManager documentFile:@"linphonerc"];
+	configDb=lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
+										, [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+}
 #pragma mark - Audio route Functions
 
 - (bool)allowSpeaker {
@@ -2003,6 +2027,10 @@ static void audioRouteChangeListenerCallback (
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSError *error = nil;
+	if ([fileManager fileExistsAtPath:src] == NO) {
+		LOGE(@"Can't find \"%@\": %@", src, [error localizedDescription]);
+		return FALSE;
+	}
 	if ([fileManager fileExistsAtPath:dst] == YES) {
 		if(override) {
 			[fileManager removeItemAtPath:dst error:&error];
@@ -2014,10 +2042,6 @@ static void audioRouteChangeListenerCallback (
 			LOGW(@"\"%@\" already exists", dst);
 			return FALSE;
 		}
-	}
-	if ([fileManager fileExistsAtPath:src] == NO) {
-		LOGE(@"Can't find \"%@\": %@", src, [error localizedDescription]);
-		return FALSE;
 	}
 	[fileManager copyItemAtPath:src toPath:dst error:&error];
 	if(error != nil) {
