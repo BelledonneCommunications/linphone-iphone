@@ -186,7 +186,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     @synchronized (addressBookMap) {
         [addressBookMap removeAllObjects];
 
-        NSArray *lContacts = (NSArray *)CFBridgingRelease(ABAddressBookCopyArrayOfAllPeople(addressBook));
+        NSArray *lContacts = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
             // Phone
             {
