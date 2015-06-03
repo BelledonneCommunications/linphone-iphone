@@ -553,6 +553,11 @@ static void enable_avpf_for_stream(SalStreamDescription *stream) {
 static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb_attribute, PayloadType *pt) {
 	PayloadTypeAvpfParams avpf_params = payload_type_get_avpf_params(pt);
 	switch (belle_sdp_rtcp_fb_attribute_get_type(fb_attribute)) {
+		case BELLE_SDP_RTCP_FB_ACK:
+			if (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute) == BELLE_SDP_RTCP_FB_RPSI) {
+				avpf_params.features |= PAYLOAD_TYPE_AVPF_RPSI;
+			}
+			break;
 		case BELLE_SDP_RTCP_FB_NACK:
 			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
 				case BELLE_SDP_RTCP_FB_PLI:
@@ -598,16 +603,6 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 	MSList *pt_it;
 	PayloadType *pt;
 	int8_t pt_num;
-
-	/* Clear the AVPF features for all payload types. */
-	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
-		PayloadTypeAvpfParams avpf_params;
-		pt = (PayloadType *)pt_it->data;
-		avpf_params = payload_type_get_avpf_params(pt);
-		avpf_params.features = PAYLOAD_TYPE_AVPF_NONE;
-		avpf_params.rpsi_compatibility = FALSE;
-		payload_type_set_avpf_params(pt, avpf_params);
-	}
 
 	/* Handle rtcp-fb attributes that concern all payload types. */
 	for (it = belle_sdp_media_description_get_attributes(media_desc); it != NULL; it = it->next) {

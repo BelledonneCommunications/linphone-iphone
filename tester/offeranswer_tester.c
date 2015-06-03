@@ -298,6 +298,93 @@ static void savpf_dtls_to_avpf_call(void) {
 	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionNone, "UDP/TLS/RTP/SAVPF");
 }
 
+#ifdef VIDEO_ENABLED
+static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc) {
+	LinphoneProxyConfig *lpc;
+	LinphonePayloadType *lpt;
+	LinphoneVideoPolicy policy = { 0 };
+
+	policy.automatically_initiate = TRUE;
+	policy.automatically_accept = TRUE;
+	linphone_core_get_default_proxy(lc, &lpc);
+	linphone_proxy_config_enable_avpf(lpc, TRUE);
+	linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
+	linphone_core_set_video_device(lc, "StaticImage: Static picture");
+	linphone_core_enable_video_capture(lc, TRUE);
+	linphone_core_enable_video_display(lc, TRUE);
+	linphone_core_set_video_policy(lc, &policy);
+	lpt = linphone_core_find_payload_type(lc, "VP8", 90000, -1);
+	if (lpt == NULL) {
+		ms_warning("VP8 codec not available.");
+	} else {
+		disable_all_video_codecs_except_one(lc, "VP8");
+	}
+	return lpt;
+}
+
+static void check_avpf_features(LinphoneCore *lc, unsigned char expected_features) {
+	LinphoneCall *lcall = linphone_core_get_current_call(lc);
+	BC_ASSERT_PTR_NOT_NULL(lcall);
+	if (lcall != NULL) {
+		SalStreamDescription *desc = sal_media_description_find_stream(lcall->resultdesc, SalProtoRtpAvpf, SalVideo);
+		BC_ASSERT_PTR_NOT_NULL(desc);
+		if (desc != NULL) {
+			BC_ASSERT_PTR_NOT_NULL(desc->payloads);
+			if (desc->payloads) {
+				PayloadType *pt = (PayloadType *)desc->payloads->data;
+				BC_ASSERT_STRING_EQUAL(pt->mime_type, "VP8");
+				BC_ASSERT_EQUAL(pt->avpf.features, expected_features, int, "%d");
+			}
+		}
+	}
+}
+
+static void compatible_avpf_features(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphonePayloadType *lpt;
+
+	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
+	lpt = configure_core_for_avpf_and_video(pauline->lc);
+
+	BC_ASSERT_TRUE(call(marie, pauline));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	check_avpf_features(marie->lc, lpt->avpf.features);
+	check_avpf_features(pauline->lc, lpt->avpf.features);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
+static void incompatible_avpf_features(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphonePayloadType *lpt;
+
+	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
+	lpt = configure_core_for_avpf_and_video(pauline->lc);
+	lpt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
+
+	BC_ASSERT_TRUE(call(marie, pauline));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	check_avpf_features(marie->lc, PAYLOAD_TYPE_AVPF_NONE);
+	check_avpf_features(pauline->lc, PAYLOAD_TYPE_AVPF_NONE);
+
+	linphone_core_terminate_all_calls(marie->lc);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+#endif
+
 static test_t offeranswer_tests[] = {
 	{ "Start with no config", start_with_no_config },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
@@ -323,7 +410,10 @@ static test_t offeranswer_tests[] = {
 	{ "SAVPF/DTLS to SAVPF call", savpf_dtls_to_savpf_call},
 	{ "SAVPF/DTLS to SAVPF encryption mandatory call", savpf_dtls_to_savpf_encryption_mandatory_call},
 	{ "SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_call},
-
+#ifdef VIDEO_ENABLED
+	{ "Compatible AVPF features", compatible_avpf_features },
+	{ "Incompatible AVPF features", incompatible_avpf_features },
+#endif
 };
 
 test_suite_t offeranswer_test_suite = {
