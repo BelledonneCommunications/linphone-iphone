@@ -50,19 +50,17 @@ static int do_simple_xmlrpc_request(SipSetupContext *ctx, LinphoneXmlRpcRequest 
 	if (!request) {
 		ms_error("Fail to create XML-RPC request!");
 		return -1;
-	} else {
-		ms_message("This is the XML-RPC request we are going to send:\n%s\n", linphone_xml_rpc_request_get_content(request));
 	}
 
 	if (ctx->xmlrpc_session == NULL) {
 		ctx->xmlrpc_session = linphone_xml_rpc_session_new(ctx->cfg->lc, XMLRPC_URL);
 	}
 	if (linphone_xml_rpc_session_send_request(ctx->xmlrpc_session, request) == LinphoneXmlRpcStatusOk) {
-		ret = linphone_xml_rpc_request_get_response(request);
+		ret = linphone_xml_rpc_request_get_int_response(request);
 	}
 	linphone_xml_rpc_request_unref(request);
 
-        return ret;
+	return ret;
 }
 
 /*
@@ -71,21 +69,24 @@ static int do_simple_xmlrpc_request(SipSetupContext *ctx, LinphoneXmlRpcRequest 
  * -1 if information isn't available
  */
 static int sip_wizard_account_exists(SipSetupContext *ctx, const char *identity) {
-	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("check_account",
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new_with_args("check_account",
+		LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
 	return do_simple_xmlrpc_request(ctx, request);
 }
 
 static int sip_wizard_account_validated(SipSetupContext *ctx, const char *identity) {
-	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("check_account_validated",
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new_with_args("check_account_validated",
+		LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
         return do_simple_xmlrpc_request(ctx, request);
 }
 
 static int sip_wizard_create_account(SipSetupContext *ctx, const char *identity, const char *passwd, const char *email, int subscribe) {
-	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new("create_account",
+	LinphoneXmlRpcRequest *request = linphone_xml_rpc_request_new_with_args("create_account",
+		LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgString, passwd,
 		LinphoneXmlRpcArgString, email,

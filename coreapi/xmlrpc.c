@@ -26,20 +26,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-typedef struct _LinphoneXmlRpcArg {
-	LinphoneXmlRpcArgType type;
-	union {
-		int i;
-		char *s;
-	} data;
-} LinphoneXmlRpcArg;
-
 static void format_request(LinphoneXmlRpcRequest *request) {
 	char si[64];
 	belle_sip_list_t *arg_ptr = request->arg_list;
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
+
+	if (request->content != NULL) {
+		belle_sip_free(request->content);
+		request->content = NULL;
+	}
 
 	buf = xmlBufferCreate();
 	if (buf == NULL) {
@@ -140,10 +137,23 @@ static void parse_valid_xml_rpc_response(LinphoneXmlRpcSession *session, const c
 	if (xml_ctx->doc != NULL) {
 		const char *response_str;
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
-		response_str = linphone_get_xml_text_content(xml_ctx, "/methodResponse/params/param/value/int");
-		if (response_str != NULL) {
-			session->request->response = atoi(response_str);
-			session->request->status = LinphoneXmlRpcStatusOk;
+		switch (session->request->response.type) {
+			case LinphoneXmlRpcArgInt:
+				response_str = linphone_get_xml_text_content(xml_ctx, "/methodResponse/params/param/value/int");
+				if (response_str != NULL) {
+					session->request->response.data.i = atoi(response_str);
+					session->request->status = LinphoneXmlRpcStatusOk;
+				}
+				break;
+			case LinphoneXmlRpcArgString:
+				response_str = linphone_get_xml_text_content(xml_ctx, "/methodResponse/params/param/value/string");
+				if (response_str != NULL) {
+					session->request->response.data.s = belle_sip_strdup(response_str);
+					session->request->status = LinphoneXmlRpcStatusOk;
+				}
+				break;
+			default:
+				break;
 		}
 		linphone_free_xml_text_content(response_str);
 	} else {
@@ -182,13 +192,39 @@ static void process_response_from_post_xml_rpc_request(void *data, const belle_h
 }
 
 
-static void linphone_xml_rpc_request_destroy(LinphoneXmlRpcRequest *request) {
+static LinphoneXmlRpcRequest * _linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type) {
+	LinphoneXmlRpcRequest *request = belle_sip_object_new(LinphoneXmlRpcRequest);
+	belle_sip_object_ref(request);
+	request->status = LinphoneXmlRpcStatusPending;
+	request->response.type = return_type;
+	request->method = belle_sip_strdup(method);
+	return request;
+}
+
+static void _linphone_xml_rpc_request_add_int_arg(LinphoneXmlRpcRequest *request, int value) {
+	LinphoneXmlRpcArg *arg = belle_sip_malloc0(sizeof(LinphoneXmlRpcArg));
+	arg->type = LinphoneXmlRpcArgInt;
+	arg->data.i = value;
+	request->arg_list = belle_sip_list_append(request->arg_list, arg);
+}
+
+static void _linphone_xml_rpc_request_add_string_arg(LinphoneXmlRpcRequest *request, const char *value) {
+	LinphoneXmlRpcArg *arg = belle_sip_malloc0(sizeof(LinphoneXmlRpcArg));
+	arg->type = LinphoneXmlRpcArgString;
+	arg->data.s = belle_sip_strdup(value);
+	request->arg_list = belle_sip_list_append(request->arg_list, arg);
+}
+
+static void _linphone_xml_rpc_request_destroy(LinphoneXmlRpcRequest *request) {
 	belle_sip_list_free_with_data(request->arg_list, (void (*)(void*))free_arg);
+	if ((request->response.type == LinphoneXmlRpcArgString) && (request->response.data.s != NULL)) {
+		belle_sip_free(request->response.data.s);
+	}
 	if (request->content) belle_sip_free(request->content);
 	belle_sip_free(request->method);
 }
 
-static void linphone_xml_rpc_session_destroy(LinphoneXmlRpcSession *session) {
+static void _linphone_xml_rpc_session_destroy(LinphoneXmlRpcSession *session) {
 	belle_sip_free(session->url);
 	ms_cond_destroy(&session->cond);
 	ms_mutex_destroy(&session->cond_mutex);
@@ -199,31 +235,33 @@ BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneXmlRpcRequest);
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneXmlRpcSession);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneXmlRpcRequest, belle_sip_object_t,
-	(belle_sip_object_destroy_t)linphone_xml_rpc_request_destroy,
+	(belle_sip_object_destroy_t)_linphone_xml_rpc_request_destroy,
 	NULL, // clone
 	NULL, // marshal
 	TRUE
 );
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneXmlRpcSession, belle_sip_object_t,
-	(belle_sip_object_destroy_t)linphone_xml_rpc_session_destroy,
+	(belle_sip_object_destroy_t)_linphone_xml_rpc_session_destroy,
 	NULL, // clone
 	NULL, // marshal
 	TRUE
 );
 
 
-LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, ...) {
+LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type) {
+	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(method, return_type);
+	format_request(request);
+	return request;
+}
+
+LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type, ...) {
 	bool_t cont = TRUE;
 	va_list args;
 	LinphoneXmlRpcArgType arg_type;
 	LinphoneXmlRpcArg *arg = NULL;
-	LinphoneXmlRpcRequest *request = belle_sip_object_new(LinphoneXmlRpcRequest);
-	belle_sip_object_ref(request);
-	request->status = LinphoneXmlRpcStatusPending;
-	request->response = -1;
-	request->method = belle_sip_strdup(method);
-	va_start(args, method);
+	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(method, return_type);
+	va_start(args, return_type);
 	while (cont) {
 		arg_type = va_arg(args, LinphoneXmlRpcArgType);
 		switch (arg_type) {
@@ -231,16 +269,10 @@ LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, ...) {
 				cont = FALSE;
 				break;
 			case LinphoneXmlRpcArgInt:
-				arg = belle_sip_malloc0(sizeof(LinphoneXmlRpcArg));
-				arg->type = LinphoneXmlRpcArgInt;
-				arg->data.i = va_arg(args, int);
-				request->arg_list = belle_sip_list_append(request->arg_list, arg);
+				_linphone_xml_rpc_request_add_int_arg(request, va_arg(args, int));
 				break;
 			case LinphoneXmlRpcArgString:
-				arg = belle_sip_malloc0(sizeof(LinphoneXmlRpcArg));
-				arg->type = LinphoneXmlRpcArgString;
-				arg->data.s = belle_sip_strdup(va_arg(args, char *));
-				request->arg_list = belle_sip_list_append(request->arg_list, arg);
+				_linphone_xml_rpc_request_add_string_arg(request, va_arg(args, char *));
 				break;
 		}
 	}
@@ -266,6 +298,16 @@ void linphone_xml_rpc_request_set_user_data(LinphoneXmlRpcRequest *request, void
 	request->user_data = ud;
 }
 
+void linphone_xml_rpc_request_add_int_arg(LinphoneXmlRpcRequest *request, int value) {
+	_linphone_xml_rpc_request_add_int_arg(request, value);
+	format_request(request);
+}
+
+void linphone_xml_rpc_request_add_string_arg(LinphoneXmlRpcRequest *request, const char *value) {
+	_linphone_xml_rpc_request_add_string_arg(request, value);
+	format_request(request);
+}
+
 const char * linphone_xml_rpc_request_get_content(const LinphoneXmlRpcRequest *request) {
 	return request->content;
 }
@@ -274,8 +316,12 @@ LinphoneXmlRpcStatus linphone_xml_rpc_request_get_status(const LinphoneXmlRpcReq
 	return request->status;
 }
 
-int linphone_xml_rpc_request_get_response(const LinphoneXmlRpcRequest *request) {
-	return request->response;
+int linphone_xml_rpc_request_get_int_response(const LinphoneXmlRpcRequest *request) {
+	return request->response.data.i;
+}
+
+const char * linphone_xml_rpc_request_get_string_response(const LinphoneXmlRpcRequest *request) {
+	return request->response.data.s;
 }
 
 
