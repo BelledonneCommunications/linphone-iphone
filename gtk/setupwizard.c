@@ -283,6 +283,16 @@ void* check_username_availability(void* w) {
 	return NULL;
 }
 
+static gboolean start_check_username_availability_thread(GtkWidget *w) {
+#if !GLIB_CHECK_VERSION(2, 31, 0)
+	g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
+#else
+	g_thread_new(NULL, check_username_availability, w);
+#endif
+	g_object_set_data(G_OBJECT(w), "usernameAvailabilityTimerID", GUINT_TO_POINTER(0));
+	return FALSE;
+}
+
 static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	// Verifying if username choosed is available, and if form is correctly filled, let the user go next page
 	GtkWidget *assistant = gtk_widget_get_toplevel(GTK_WIDGET(w));
@@ -295,11 +305,12 @@ static void account_username_changed(GtkEntry *entry, GtkWidget *w) {
 	linphone_account_creator_set_domain(creator, "sip.linphone.org");
 
 	if (g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{3,}$", gtk_entry_get_text(username), 0, 0)) {
-#if !GLIB_CHECK_VERSION(2, 31, 0)
-		g_thread_create(check_username_availability, (void*)w, FALSE, NULL);
-#else
-		g_thread_new(NULL, check_username_availability, w);
-#endif
+		guint timerID = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(w), "usernameAvailabilityTimerID"));
+		if (timerID > 0) {
+			g_source_remove(timerID);
+		}
+		timerID = g_timeout_add(500, start_check_username_availability_thread, w);
+		g_object_set_data(G_OBJECT(w), "usernameAvailabilityTimerID", GUINT_TO_POINTER(timerID));
 	}
 	else {
 		GdkPixbuf *notok = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "notok"));
