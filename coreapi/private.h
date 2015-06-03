@@ -983,6 +983,14 @@ BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
  * XML-RPC interface                                                         *
  ****************************************************************************/
 
+typedef struct _LinphoneXmlRpcArg {
+	LinphoneXmlRpcArgType type;
+	union {
+		int i;
+		char *s;
+	} data;
+} LinphoneXmlRpcArg;
+
 struct _LinphoneXmlRpcRequest {
 	belle_sip_object_t base;
 	void *user_data;
@@ -990,7 +998,7 @@ struct _LinphoneXmlRpcRequest {
 	char *content;	/**< The string representation of the XML-RPC request */
 	char *method;
 	LinphoneXmlRpcStatus status;
-	int response;
+	LinphoneXmlRpcArg response;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequest);

@@ -31,12 +31,18 @@ extern "C" {
  * @{
  */
 
+/**
+* Enum describing the types of argument for LinphoneXmlRpcRequest.
+**/
 typedef enum _LinphoneXmlRpcArgType {
 	LinphoneXmlRpcArgNone,
 	LinphoneXmlRpcArgInt,
 	LinphoneXmlRpcArgString
 } LinphoneXmlRpcArgType;
 
+/**
+* Enum describing the status of a LinphoneXmlRpcRequest.
+**/
 typedef enum _LinphoneXmlRpcStatus {
 	LinphoneXmlRpcStatusPending,
 	LinphoneXmlRpcStatusOk,
@@ -55,11 +61,20 @@ typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
 
 
 /**
- * Create a new LinphoneXmlRpcRequest object.
+* Create a new LinphoneXmlRpcRequest object.
+* @param[in] method The XML-RPC method to call.
+* @param[in] return_type The expected XML-RPC response type.
+* @return A new LinphoneXmlRpcRequest object.
+**/
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type);
+
+/**
+ * Create a new LinphoneXmlRpcRequest object giving the arguments to the method call.
  * @param[in] method The XML-RPC method to call.
+ * @param[in] return_type The expected XML-RPC response type.
  * @return A new LinphoneXmlRpcRequest object.
- */
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, ...);
+**/
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type, ...);
 
 /**
  * Acquire a reference to the XML-RPC request.
@@ -89,6 +104,20 @@ LINPHONE_PUBLIC void *linphone_xml_rpc_request_get_user_data(const LinphoneXmlRp
 LINPHONE_PUBLIC void linphone_xml_rpc_request_set_user_data(LinphoneXmlRpcRequest *request, void *ud);
 
 /**
+ * Add an integer argument to an XML-RPC request.
+ * @param[in] request LinphoneXmlRpcRequest object.
+ * @param[in] value The integer value of the added argument.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_request_add_int_arg(LinphoneXmlRpcRequest *request, int value);
+
+/**
+ * Add a string argument to an XML-RPC request.
+ * @param[in] request LinphoneXmlRpcRequest object.
+ * @param[in] value The string value of the added argument.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_request_add_string_arg(LinphoneXmlRpcRequest *request, const char *value);
+
+/**
  * Get the content of the XML-RPC request.
  * @param[in] request LinphoneXmlRpcRequest object.
  * @return The string representation of the content of the XML-RPC request.
@@ -103,11 +132,18 @@ LINPHONE_PUBLIC const char * linphone_xml_rpc_request_get_content(const Linphone
 LINPHONE_PUBLIC LinphoneXmlRpcStatus linphone_xml_rpc_request_get_status(const LinphoneXmlRpcRequest *request);
 
 /**
- * Get the response to an XML-RPC request sent with linphone_xml_rpc_session_send_request().
+ * Get the response to an XML-RPC request sent with linphone_xml_rpc_session_send_request() and returning an integer response.
  * @param[in] request LinphoneXmlRpcRequest object.
- * @return The response to the XML-RPC request.
+ * @return The integer response to the XML-RPC request.
 **/
-LINPHONE_PUBLIC int linphone_xml_rpc_request_get_response(const LinphoneXmlRpcRequest *request);
+LINPHONE_PUBLIC int linphone_xml_rpc_request_get_int_response(const LinphoneXmlRpcRequest *request);
+
+/**
+* Get the response to an XML-RPC request sent with linphone_xml_rpc_session_send_request() and returning a string response.
+* @param[in] request LinphoneXmlRpcRequest object.
+* @return The string response to the XML-RPC request.
+**/
+LINPHONE_PUBLIC const char * linphone_xml_rpc_request_get_string_response(const LinphoneXmlRpcRequest *request);
 
 /**
  * Create a new LinphoneXmlRpcSession object.
