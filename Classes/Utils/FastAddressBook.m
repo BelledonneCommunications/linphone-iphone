@@ -147,8 +147,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (FastAddressBook*)init {
     if ((self = [super init]) != nil) {
-        addressBookMap  = [[NSMutableDictionary alloc] init];
-        addressBook = nil;
+        addressBookMap = [NSMutableDictionary dictionary];
+        addressBook    = nil;
         [self reload];
     }
     return self;
@@ -163,22 +163,28 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)reload {
-    if(addressBook != nil) {
-        ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
-        CFRelease(addressBook);
-        addressBook = nil;
-    }
-    NSError *error = nil;
+	CFErrorRef error;
 
-    addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-    if(addressBook != NULL) {
-        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-            ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, (__bridge void *)(self));
-            [self loadData];
-        });
-       } else {
-        LOGE(@"Create AddressBook: Fail(%@)", [error localizedDescription]);
-    }
+	// create if it doesn't exist
+	if( addressBook == nil ){
+		addressBook = ABAddressBookCreateWithOptions(NULL, &error);
+	}
+
+	if(addressBook != nil) {
+		__weak FastAddressBook* weakSelf = self;
+		ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+			if( !granted ) {
+				LOGE(@"Permission for address book acces was denied: %@", [(__bridge NSError*)error description]);
+				return;
+			}
+
+			ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(weakSelf));
+			[weakSelf loadData];
+
+		});
+	} else {
+		LOGE(@"Create AddressBook failed, reason: %@", [(__bridge NSError*)error localizedDescription]);
+	}
 }
 
 - (void)loadData {
@@ -186,18 +192,24 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     @synchronized (addressBookMap) {
         [addressBookMap removeAllObjects];
 
-        NSArray *lContacts = (__bridge NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
-        for (id lPerson in lContacts) {
+        CFArrayRef lContacts = ABAddressBookCopyArrayOfAllPeople(addressBook);
+		CFIndex count = CFArrayGetCount(lContacts);
+		for(CFIndex idx = 0; idx < count; idx++){
+			ABRecordRef lPerson = CFArrayGetValueAtIndex(lContacts, idx);
             // Phone
             {
-                ABMultiValueRef lMap = ABRecordCopyValue((__bridge ABRecordRef)lPerson, kABPersonPhoneProperty);
+                ABMultiValueRef lMap = ABRecordCopyValue(lPerson, kABPersonPhoneProperty);
                 if(lMap) {
                     for (int i=0; i<ABMultiValueGetCount(lMap); i++) {
                         CFStringRef lValue = ABMultiValueCopyValueAtIndex(lMap, i);
-                        NSString* lNormalizedKey = [FastAddressBook normalizePhoneNumber:(NSString*)CFBridgingRelease(lValue)];
+
+						NSString* lNormalizedKey = [FastAddressBook normalizePhoneNumber:(__bridge NSString *)(lValue)];
                         NSString* lNormalizedSipKey = [FastAddressBook normalizeSipURI:lNormalizedKey];
                         if (lNormalizedSipKey != NULL) lNormalizedKey = lNormalizedSipKey;
-                        [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+
+						[addressBookMap setObject:(__bridge id)(lPerson) forKey:lNormalizedKey];
+
+						CFRelease(lValue);
                     }
                     CFRelease(lMap);
                 }
@@ -205,7 +217,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
             // SIP
             {
-                ABMultiValueRef lMap = ABRecordCopyValue((__bridge ABRecordRef)lPerson, kABPersonInstantMessageProperty);
+                ABMultiValueRef lMap = ABRecordCopyValue(lPerson, kABPersonInstantMessageProperty);
                 if(lMap) {
                     for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
                         CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
@@ -218,12 +230,13 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                             add = true;
                         }
                         if(add) {
-                            NSString* lValue = CFBridgingRelease( CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) );
-                            NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:lValue];
+                            CFStringRef lValue = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+                            NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:(__bridge NSString *)(lValue)];
                             if(lNormalizedKey != NULL) {
-                                [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+                                [addressBookMap setObject:(__bridge id)(lPerson) forKey:lNormalizedKey];
                             } else {
-                                [addressBookMap setObject:lPerson forKey:lValue];
+								NSString* value = CFBridgingRelease(lValue);
+                                [addressBookMap setObject:(__bridge id)(lPerson) forKey:value];
                             }
                         }
                         CFRelease(lDict);
@@ -232,6 +245,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                 }
             }
         }
+		CFRelease(lContacts);
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:self];
 }
