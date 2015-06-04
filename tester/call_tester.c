@@ -311,6 +311,14 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 
 		}
 	}
+	/*wait ice re-invite*/
+	if (linphone_core_get_firewall_policy(caller_mgr->lc) == LinphonePolicyUseIce
+			&& linphone_core_get_firewall_policy(callee_mgr->lc) == LinphonePolicyUseIce
+			&& !linphone_core_sdp_200_ack_enabled(caller_mgr->lc)) { /*ice does not work with sdp less invite*/
+		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2));
+		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2));
+
+	}
 	return result;
 }
 

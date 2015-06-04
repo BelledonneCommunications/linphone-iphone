@@ -1255,6 +1255,11 @@ static void text_message_with_send_error(void) {
 	BC_ASSERT_EQUAL(ms_list_size(chat_room->transient_messages), 0, int, "%d");
 
 	sal_set_send_error(marie->lc->sal, 0);
+
+	/*give a chance to register again to allow linphone_core_manager_destroy to properly unregister*/
+	linphone_core_refresh_registers(marie->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationOk,marie->stat.number_of_LinphoneRegistrationOk + 1));
+
 	ms_free(to);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
