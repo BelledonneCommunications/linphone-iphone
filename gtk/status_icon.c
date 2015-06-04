@@ -507,10 +507,18 @@ static gboolean _linphone_status_icon_impl_sn_is_supported(
 	LinphoneStatusIconDescIsSupportedResultCb cb,
 	void *user_data) {
 	
-	_LinphoneStatusIconDesc *desc2 = g_new(_LinphoneStatusIconDesc, 1);
-	void **data = g_new(void *, 3);
+	_LinphoneStatusIconDesc *desc2;
+	void **data;
+	const char *desktop = g_getenv("XDG_CURRENT_DESKTOP");
 	
+	if(desktop == NULL || g_strcmp0(desktop, "KDE") != 0) {
+		*result = FALSE;
+		return TRUE;
+	}
+	
+	desc2 = g_new(_LinphoneStatusIconDesc, 1);
 	*desc2 = *desc;
+	data = g_new(void *, 3);
 	data[0] = desc2;
 	data[1] = cb;
 	data[2] = user_data;
@@ -519,7 +527,7 @@ static gboolean _linphone_status_icon_impl_sn_is_supported(
 		(BcStatusNotifierSupportDetectionCb)_linphone_status_icon_impl_is_supported_cb,
 		data
 	);
-	return 0;
+	return FALSE;
 }
 
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_status_notifier = {
