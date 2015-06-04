@@ -1,3 +1,6 @@
+linphone-3.8.3 -- June 4th, 2015
+	* Fix status icons on all platforms (Windows, MacOS, non-KDE Linux desktop environment)
+
 linphone-3.8.2 -- May 7th, 2015
 	Application level improvements:
 	* add support of the StatusNotifierItem standard to display a status icon on KDE5
