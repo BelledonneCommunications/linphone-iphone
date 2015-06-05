@@ -367,6 +367,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 
 
 #ifdef IN_LINPHONE
+#include "account_creator.h"
 #include "buffer.h"
 #include "call_log.h"
 #include "call_params.h"
@@ -375,6 +376,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphonefriend.h"
 #include "xmlrpc.h"
 #else
+#include "linphone/account_creator.h"
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
@@ -1178,32 +1180,6 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig
 /**
  * @}
 **/
-
-typedef struct _LinphoneAccountCreator{
-	LinphoneCore *lc;
-	struct _SipSetupContext *ssctx;
-	char *username;
-	char *password;
-	char *domain;
-	char *route;
-	char *email;
-	int suscribe;
-	bool_t succeeded;
-}LinphoneAccountCreator;
-
-LINPHONE_PUBLIC LinphoneAccountCreator *linphone_account_creator_new(LinphoneCore *core, const char *type);
-LINPHONE_PUBLIC void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
-LINPHONE_PUBLIC void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
-LINPHONE_PUBLIC void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
-LINPHONE_PUBLIC void linphone_account_creator_set_route(LinphoneAccountCreator *obj, const char *route);
-LINPHONE_PUBLIC void linphone_account_creator_set_email(LinphoneAccountCreator *obj, const char *email);
-LINPHONE_PUBLIC void linphone_account_creator_set_suscribe(LinphoneAccountCreator *obj, int suscribre);
-LINPHONE_PUBLIC const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj);
-LINPHONE_PUBLIC const char * linphone_account_creator_get_domain(LinphoneAccountCreator *obj);
-LINPHONE_PUBLIC int linphone_account_creator_test_existence(LinphoneAccountCreator *obj);
-LINPHONE_PUBLIC int linphone_account_creator_test_validation(LinphoneAccountCreator *obj);
-LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj);
-LINPHONE_PUBLIC void linphone_account_creator_destroy(LinphoneAccountCreator *obj);
 
 struct _LinphoneAuthInfo;
 

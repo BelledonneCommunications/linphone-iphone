@@ -923,6 +923,7 @@
                     <child>
                       <object class="GtkImageMenuItem" id="assistant_item">
                         <property name="label" translatable="yes">Account assistant</property>
+			<property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="image">connect_image</property>
                         <property name="use_stock">False</property>

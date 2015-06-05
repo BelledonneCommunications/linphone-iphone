@@ -1,5 +1,5 @@
 /*
-buffer.h
+xmlrpc.h
 Copyright (C) 2010-2015 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
@@ -59,22 +59,30 @@ typedef struct _LinphoneXmlRpcRequest LinphoneXmlRpcRequest;
 **/
 typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
 
+typedef void (*LinphoneXmlRpcResponseCb)(LinphoneXmlRpcRequest *request, void *user_data);
+
 
 /**
-* Create a new LinphoneXmlRpcRequest object.
-* @param[in] method The XML-RPC method to call.
-* @param[in] return_type The expected XML-RPC response type.
-* @return A new LinphoneXmlRpcRequest object.
+ * Create a new LinphoneXmlRpcRequest object.
+ * @param[in] method The XML-RPC method to call.
+ * @param[in] return_type The expected XML-RPC response type.
+ * @param[in] cb The callback that will be called when the XML-RPC response is received or if an error occurs.
+ * @param[in] user_data A user data that will be passed as a parameter to the callback.
+ * @return A new LinphoneXmlRpcRequest object.
 **/
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type);
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type,
+	LinphoneXmlRpcResponseCb cb, void *user_data);
 
 /**
  * Create a new LinphoneXmlRpcRequest object giving the arguments to the method call.
  * @param[in] method The XML-RPC method to call.
  * @param[in] return_type The expected XML-RPC response type.
+ * @param[in] cb The callback that will be called when the XML-RPC response is received or if an error occurs.
+ * @param[in] user_data A user data that will be passed as a parameter to the callback.
  * @return A new LinphoneXmlRpcRequest object.
 **/
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type, ...);
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type,
+	LinphoneXmlRpcResponseCb cb, void *user_data, ...);
 
 /**
  * Acquire a reference to the XML-RPC request.
@@ -184,9 +192,8 @@ LINPHONE_PUBLIC void linphone_xml_rpc_session_set_user_data(LinphoneXmlRpcSessio
  * Send an XML-RPC request.
  * @param[in] session LinphoneXmlRpcSession object.
  * @param[in] request The LinphoneXmlRpcRequest to be sent.
- * @return The status of the XML-RPC request sending. If it is LinphoneXmlRpcStatusOk, use linphone_xml_rpc_session_get_response() to get the XML-RPC response.
 **/
-LINPHONE_PUBLIC LinphoneXmlRpcStatus linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request);
+LINPHONE_PUBLIC void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request);
 
 /**
  * @}

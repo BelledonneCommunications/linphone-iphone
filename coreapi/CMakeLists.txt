@@ -31,6 +31,8 @@ endif()
 
 
 set(SOURCE_FILES
+	account_creator.c
+	account_creator.h
 	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
@@ -104,9 +106,6 @@ if(ENABLE_TUNNEL)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
 	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
-endif()
-if(ENABLE_ASSISTANT)
-	list(APPEND SOURCE_FILES sipwizard.c)
 endif()
 
 set(GENERATED_SOURCE_FILES

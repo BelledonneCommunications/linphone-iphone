@@ -25,6 +25,7 @@ CLEANFILES=$(GITVERSION_FILE)
 linphone_includedir=$(includedir)/linphone
 
 linphone_include_HEADERS=\
+	account_creator.h \
 	buffer.h \
 	call_log.h \
 	call_params.h \
@@ -38,11 +39,13 @@ linphone_include_HEADERS=\
 	lpc2xml.h \
 	lpconfig.h \
 	sipsetup.h \
-	xml2lpc.h
+	xml2lpc.h \
+	xmlrpc.h
 
 lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
+	account_creator.c \
 	address.c \
 	authentication.c \
 	buffer.c \
@@ -82,6 +85,7 @@ liblinphone_la_SOURCES=\
 	sipsetup.c sipsetup.h \
 	xml2lpc.c \
 	xml.c \
+	xmlrpc.c \
 	vtables.c \
 	$(GITVERSION_FILE)
 
@@ -101,10 +105,6 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_op_call_transfer.c \
 				bellesip_sal/sal_op_info.c \
 				bellesip_sal/sal_op_events.c
-
-if BUILD_WIZARD
-liblinphone_la_SOURCES+=sipwizard.c
-endif
 
 liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
@@ -180,10 +180,6 @@ COMMON_CFLAGS=\
 	$(LDAP_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(ZLIB_CFLAGS)
-
-if BUILD_WIZARD
-COMMON_CFLAGS+= -DBUILD_WIZARD
-endif
 
 COMMON_CFLAGS+= -DUSE_BELLESIP
 

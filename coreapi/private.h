@@ -997,6 +997,8 @@ struct _LinphoneXmlRpcRequest {
 	belle_sip_list_t *arg_list;
 	char *content;	/**< The string representation of the XML-RPC request */
 	char *method;
+	LinphoneXmlRpcResponseCb cb;
+	void *cb_ud;
 	LinphoneXmlRpcStatus status;
 	LinphoneXmlRpcArg response;
 };
@@ -1006,14 +1008,8 @@ BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequest);
 struct _LinphoneXmlRpcSession {
 	belle_sip_object_t base;
 	void *user_data;
-	belle_sip_list_t *arg_list;
 	LinphoneCore *core;
-	LinphoneXmlRpcRequest *request;
-	LinphoneContent *content;
 	char *url;
-	ms_cond_t cond;
-	ms_mutex_t cond_mutex;
-	ms_mutex_t mutex;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);
