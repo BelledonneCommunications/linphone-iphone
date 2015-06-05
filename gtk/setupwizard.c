@@ -98,6 +98,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 				linphone_proxy_config_set_route(cfg, linphone_account_creator_get_route(creator));
 				linphone_proxy_config_enable_publish(cfg, FALSE);
 				linphone_proxy_config_enable_register(cfg, TRUE);
+				ms_free(identity_str);
 
 				if (strcmp(linphone_account_creator_get_domain(creator), "sip.linphone.org") == 0) {
 					linphone_proxy_config_enable_avpf(cfg,TRUE);
