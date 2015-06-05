@@ -51,7 +51,6 @@ option(ENABLE_TUTORIALS "Enable compilation of tutorials." YES)
 option(ENABLE_UNIT_TESTS "Enable compilation of unit tests." YES)
 option(ENABLE_UPNP "Build with uPnP support." YES)
 option(ENABLE_VIDEO "Build with video support." YES)
-cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -119,9 +118,6 @@ if(ENABLE_NOTIFY)
 		message(WARNING "Could not find the notify library!")
 		set(ENABLE_NOTIFY OFF CACHE BOOL "Enable libnotify support." FORCE)
 	endif()
-endif()
-if(ENABLE_ASSISTANT)
-	set(BUILD_WIZARD 1)
 endif()
 find_package(Gettext)
 

@@ -1977,9 +1977,7 @@ static void linphone_gtk_check_soundcards(){
 static void linphone_gtk_quit_core(void){
 	linphone_gtk_unmonitor_usb();
 	g_source_remove_by_user_data(linphone_gtk_get_core());
-#ifdef BUILD_WIZARD
 	linphone_gtk_close_assistant();
-#endif
 	linphone_gtk_set_ldap(NULL);
 	linphone_gtk_destroy_log_window();
 	linphone_core_destroy(the_core);
@@ -2019,12 +2017,10 @@ static gboolean on_block_termination(void){
 static void linphone_gtk_init_ui(void){
 	linphone_gtk_init_main_window();
 
-#ifdef BUILD_WIZARD
 	// Veryfing if at least one sip account is configured. If not, show wizard
 	if (linphone_core_get_proxy_config_list(linphone_gtk_get_core()) == NULL) {
 		linphone_gtk_show_assistant();
 	}
-#endif
 
 	if(run_audio_assistant){
 		linphone_gtk_show_audio_assistant();

@@ -63,6 +63,7 @@ set(SOURCE_FILES
 	loginframe.c
 	main.c
 	propertybox.c
+	setupwizard.c
 	singleinstance.c
 	status_icon.c
 	status_notifier.c
@@ -73,10 +74,6 @@ set(SOURCE_FILES
 )
 if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
-endif()
-
-if(ENABLE_ASSISTANT)
-	list(APPEND SOURCE_FILES setupwizard.c)
 endif()
 
 if(GETTEXT_FOUND)
