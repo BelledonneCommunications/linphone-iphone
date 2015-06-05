@@ -59,6 +59,11 @@ typedef struct _LinphoneXmlRpcRequest LinphoneXmlRpcRequest;
 **/
 typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
 
+/**
+ * Callback used to notify the response to an XML-RPC request.
+ * @param[in] request LinphoneXmlRpcRequest object
+ * @param[in] user_data A user data given when setting the callback upon creation of the XML-RPC request.
+**/
 typedef void (*LinphoneXmlRpcResponseCb)(LinphoneXmlRpcRequest *request, void *user_data);
 
 

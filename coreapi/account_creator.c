@@ -35,7 +35,7 @@ struct _LinphoneAccountCreator {
 	char *domain;
 	char *route;
 	char *email;
-	int subscribe;
+	bool_t subscribe;
 };
 
 LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
@@ -85,11 +85,11 @@ const char * linphone_account_creator_get_email(const LinphoneAccountCreator *cr
 	return creator->email;
 }
 
-void linphone_account_creator_set_subscribe(LinphoneAccountCreator *creator, int subscribe) {
+void linphone_account_creator_set_subscribe(LinphoneAccountCreator *creator, bool_t subscribe) {
 	creator->subscribe = subscribe;
 }
 
-int linphone_account_creator_get_subscribe(const LinphoneAccountCreator *creator) {
+bool_t linphone_account_creator_get_subscribe(const LinphoneAccountCreator *creator) {
 	return creator->subscribe;
 }
 
@@ -190,7 +190,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCr
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgString, creator->password,
 		LinphoneXmlRpcArgString, creator->email,
-		LinphoneXmlRpcArgInt, creator->subscribe,
+		LinphoneXmlRpcArgInt, (creator->subscribe == TRUE) ? 1 : 0,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
