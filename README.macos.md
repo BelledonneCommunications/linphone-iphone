@@ -24,7 +24,7 @@ In order to enable generation of bundle for older MacOS version, it is recommend
 ##### Linphone library (liblinphone)
 
         sudo port install automake autoconf libtool pkgconfig intltool wget cunit \
-        antlr3 speex libvpx readline sqlite3 openldap libupnp \
+        antlr3 speex readline sqlite3 openldap libupnp \
         ffmpeg-devel -gpl2
 
 ##### Linphone UI (GTK version)
@@ -76,6 +76,26 @@ The next pieces need to be compiled manually.
         cd polarssl
         ./autogen.sh && ./configure --prefix=/opt/local && make
         sudo make install
+
+* Install libvpx (Must be manualy build because the macport recipe does not support 'macosx_deployment_target')
+
+	git clone https://chromium.googlesource.com/webm/libvpx -b v1.3.0
+	cd libvpx
+	./configure --prefix=/opt/local \
+	        --enable-error-concealment \
+	        --enable-multithread \
+	        --enable-realtime-only \
+	        --enable-spatial-resampling \
+	        --enable-vp8 \
+	        --disable-vp9 \
+	        --enable-libs \
+	        --disable-install-docs \
+	        --disable-debug-libs \
+	        --disable-examples \
+	        --disable-unit-tests \
+	        --as=yasm
+	make
+	sudo make install
 
 * Install belle-sip (sip stack)
 
