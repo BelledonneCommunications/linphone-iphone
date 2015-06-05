@@ -51,10 +51,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-	[linkLabel setText:NSLocalizedString(@"http://www.linphone.org", nil)];
-	[licenseLabel setText:NSLocalizedString(@"GNU General Public License V2 ", nil)];
-	[copyrightLabel setText:NSLocalizedString(@"© 2010 Belledonne Communications ", nil)];
 	
     [linkLabel addGestureRecognizer:linkTapGestureRecognizer];
     

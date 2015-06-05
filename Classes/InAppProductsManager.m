@@ -417,7 +417,7 @@
 				} else {
 					errorMsg=[NSString stringWithFormat:NSLocalizedString(@"Unknown error (%@).", nil), error];
 				}
-				NSDictionary* dict = @{@"product_id": productID, @"error_msg": NSLocalizedString(errorMsg, nil)};
+				NSDictionary* dict = @{@"product_id": productID, @"error_msg": errorMsg};
 				[self postNotificationforStatus:kIAPPurchaseFailed withDict:dict];
 			}
 		}
@@ -506,6 +506,6 @@
 }
 
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	
+
 }
 @end
