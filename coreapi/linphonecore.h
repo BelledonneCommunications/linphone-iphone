@@ -2247,7 +2247,7 @@ LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneC
  *
  * @ingroup call_control
  */
-LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, LinphoneAddress *remote_address);
+LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address2(LinphoneCore *lc, const LinphoneAddress *remote_address);
 
 
 /**

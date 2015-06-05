@@ -370,22 +370,29 @@ static void call_forking_declined_localy(void){
 
 static void call_forking_with_push_notification_single(void){
 	MSList* lcs;
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(marie->lc, LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new2( "marie_rc", FALSE);
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( transport_supported(marie->lc, LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc",FALSE);
+	int dummy=0;
 
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	linphone_proxy_config_set_contact_uri_parameters(
+		linphone_core_get_default_proxy_config(marie->lc),
+		"app-id=org.linphonetester;pn-tok=aaabbb;pn-type=apple;pn-msg-str=33;pn-call-str=34;");
 
 	lcs=ms_list_append(NULL,pauline->lc);
-
 	lcs=ms_list_append(lcs,marie->lc);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneRegistrationOk,1,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneRegistrationOk,1,5000));
 
 	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 
 	linphone_core_invite_address(pauline->lc,marie->identity);
 
-	/*the server is expected to send a push notification to marie, this will wake up linphone, that will reconnect:*/
+	/*After 5 seconds the server is expected to send a push notification to marie, this will wake up linphone, that will reconnect:*/
+	wait_for_list(lcs,&dummy,1,6000);
 	linphone_core_set_network_reachable(marie->lc,TRUE);
 
 	/*Marie shall receive the call immediately*/

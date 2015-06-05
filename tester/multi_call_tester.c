@@ -271,7 +271,7 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 
 		/*work around a to avoid stun resolution to be initiate in  call_received callback leading a mainloop reentrency*/
 		/*
-		  	belle_sip_main_loop_iterate() at belle_sip_loop.c:369
+			belle_sip_main_loop_iterate() at belle_sip_loop.c:369
 			belle_sip_main_loop_run [inlined]() at belle_sip_loop.c:478
 			belle_sip_main_loop_sleep() at belle_sip_loop.c:490
 			sal_iterate() at sal_impl.c:745
@@ -283,7 +283,11 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 			...
 			linphone_core_iterate() at linphonecore.c:2 620
 			...
-		 	 */
+			
+			linphone_core_set_stun_server() initiates an asynchronous resolution, but it needs a few iteration before it is completed.
+			By calling private function linphone_core_get_stun_server_addrinfo() we make sure to wait that the resolution is done before the 
+			test calls actually start.
+		*/
 		linphone_core_get_stun_server_addrinfo(marie->lc);
 		linphone_core_get_stun_server_addrinfo(pauline->lc);
 		linphone_core_get_stun_server_addrinfo(laure->lc);

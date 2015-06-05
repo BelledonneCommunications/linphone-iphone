@@ -153,7 +153,6 @@ int sal_media_description_get_nb_active_streams(const SalMediaDescription *md) {
 	return nb;
 }
 
-
 static bool_t is_null_address(const char *addr){
 	return strcmp(addr,"0.0.0.0")==0 || strcmp(addr,"::0")==0;
 }
