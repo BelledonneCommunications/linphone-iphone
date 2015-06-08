@@ -405,7 +405,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             if (property == kABPersonInstantMessageProperty ) {
                 // when we query the instanteMsg property we get a dictionary instead of a value
 				toRelease = valueRef;
-                value = (__bridge_transfer NSString*)CFDictionaryGetValue(valueRef, kABPersonInstantMessageUsernameKey);
+                value = CFDictionaryGetValue(valueRef, kABPersonInstantMessageUsernameKey);
 			} else {
 				value = (__bridge_transfer NSString*)valueRef;
 			}
