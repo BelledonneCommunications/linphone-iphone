@@ -98,6 +98,9 @@ typedef enum _UICallCellOtherView {
 @property (assign) BOOL firstCell;
 @property (assign) BOOL conferenceCell;
 @property (nonatomic, assign) BOOL currentCall;
+@property (strong, nonatomic) IBOutlet UILabel *outgoingRingCountLabel;
+@property (strong) NSTimer *outgoingRingCountTimer;
+
 
 - (void)update;
 

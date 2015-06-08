@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -22,6 +23,7 @@
                 <outlet property="headerBackgroundImage" destination="52" id="54"/>
                 <outlet property="headerView" destination="36" id="42"/>
                 <outlet property="otherView" destination="77" id="78"/>
+                <outlet property="outgoingRingCountLabel" destination="v7L-WQ-vV7" id="Da8-NN-jxR"/>
                 <outlet property="pauseButton" destination="47" id="48"/>
                 <outlet property="removeButton" destination="49" id="50"/>
                 <outlet property="stateImage" destination="18" id="33"/>
@@ -43,7 +45,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="16">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="300"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="428"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="77" userLabel="otherView">
@@ -411,7 +413,7 @@
                                 <accessibilityTraits key="traits" none="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                            <color key="textColor" red="0.43529411764705883" green="0.44313725490196076" blue="0.47450980392156861" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="38" userLabel="toggleButton">
@@ -430,6 +432,13 @@
                                 <action selector="doHeaderClick:" destination="-1" eventType="touchUpInside" id="39"/>
                             </connections>
                         </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="v7L-WQ-vV7" userLabel="outgoingRingCountLabel">
+                            <rect key="frame" x="256" y="26" width="40" height="29"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <color key="textColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
@@ -437,6 +446,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="422" y="415"/>
         </view>
     </objects>
     <resources>
