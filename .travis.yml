@@ -6,6 +6,7 @@ xcode_sdk: iphonesimulator8.1
 branches:
   only:
     - master
+    - travis_cmake
 
 env:
     global:
