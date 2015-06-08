@@ -51,7 +51,6 @@ option(ENABLE_TUTORIALS "Enable compilation of tutorials." YES)
 option(ENABLE_UNIT_TESTS "Enable compilation of unit tests." YES)
 option(ENABLE_UPNP "Build with uPnP support." YES)
 option(ENABLE_VIDEO "Build with video support." YES)
-cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
 
 
@@ -78,16 +77,6 @@ if(MSVC)
 			file(DOWNLOAD http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip" SHOW_PROGRESS)
 			execute_process(
 				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/gtk+-bundle_win32.zip"
-				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
-			)
-		endif()
-	endif()
-	if(ENABLE_ASSISTANT)
-		if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip")
-			message(STATUS "Installing libsoup")
-			file(DOWNLOAD http://www.linphone.org/files/libsoup_2.24.0-1_win32.zip "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip" SHOW_PROGRESS)
-			execute_process(
-				COMMAND "${CMAKE_COMMAND}" "-E" "tar" "x" "${CMAKE_CURRENT_BINARY_DIR}/libsoup.zip"
 				WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 			)
 		endif()
@@ -131,15 +120,6 @@ if(ENABLE_NOTIFY)
 		set(ENABLE_NOTIFY OFF CACHE BOOL "Enable libnotify support." FORCE)
 	endif()
 endif()
-if(ENABLE_ASSISTANT)
-	find_package(Soup)
-	if(SOUP_FOUND)
-		set(BUILD_WIZARD 1)
-	else()
-		message(WARNING "Could not find the soup library!")
-		set(ENABLE_ASSISTANT OFF CACHE BOOL "Turn on assistant compiling." FORCE)
-	endif()
-endif()
 find_package(Gettext)
 
 
@@ -162,9 +142,6 @@ if(SQLITE3_FOUND)
 endif()
 if(ENABLE_TUNNEL)
 	include_directories(${TUNNEL_INCLUDE_DIRS})
-endif()
-if(ENABLE_ASSISTANT)
-	include_directories(${SOUP_INCLUDE_DIRS})
 endif()
 if(ENABLE_DEBUG_LOGS)
 	add_definitions("-DDEBUG")

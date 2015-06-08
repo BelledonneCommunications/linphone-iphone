@@ -53,6 +53,7 @@ linphone_SOURCES=	\
 			singleinstance.c \
 			conference.c \
 			config-fetching.c \
+			setupwizard.c \
 			audio_assistant.c \
 			videowindow.c \
 			status_icon.c status_icon.h \
@@ -62,11 +63,6 @@ if BUILD_STATUS_NOTIFIER
 linphone_SOURCES+= \
 	status_notifier.c \
 	status_notifier.h
-endif
-
-if BUILD_WIZARD
-linphone_SOURCES+=	\
-			setupwizard.c
 endif
 
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \

@@ -31,6 +31,8 @@ endif()
 
 
 set(SOURCE_FILES
+	account_creator.c
+	account_creator.h
 	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
@@ -92,6 +94,8 @@ set(SOURCE_FILES
 	xml2lpc.c
 	xml2lpc.h
 	xml.c
+	xmlrpc.c
+	xmlrpc.h
 	vtables.c
 )
 if(ENABLE_TUNNEL)
@@ -102,9 +106,6 @@ if(ENABLE_TUNNEL)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
 	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
-endif()
-if(ENABLE_ASSISTANT)
-	list(APPEND SOURCE_FILES sipwizard.c)
 endif()
 
 set(GENERATED_SOURCE_FILES
@@ -136,9 +137,6 @@ if(ICONV_FOUND)
 endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
-endif()
-if(ENABLE_ASSISTANT)
-	list(APPEND LIBS ${SOUP_LIBRARIES})
 endif()
 if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})

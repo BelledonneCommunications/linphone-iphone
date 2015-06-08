@@ -26,7 +26,6 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 		- theora (optional)
 	+ gsm codec (gsm source package or libgsm-dev or gsm-devel) (optional)
 	+ libreadline (optional: for convenient command line in linphonec)
-	+ libsoup (optional: for wizard - account creation assistant)
 	+ libsqlite3 (optional : for a local history of chat messages)
 	+ if you want uPnP support (optional):
 		- libupnp (version 1.6 branch (not patched with 18-url-upnpstrings.patch))
@@ -39,7 +38,7 @@ libglew1.6-dev libv4l-dev libxml2-dev
 
 	+ for optional library
 	$ sudo apt-get install libreadline-dev libgsm1-dev libtheora-dev \
-libsoup2.4-dev libsqlite3-dev libupnp4-dev libsrtp-dev
+libsqlite3-dev libupnp4-dev libsrtp-dev
 
 	+ Install zrtp (optional), for unbreakable call encryption
 		$ git clone git://git.linphone.org:bzrtp
