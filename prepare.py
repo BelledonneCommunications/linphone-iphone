@@ -161,8 +161,7 @@ def main(argv = None):
 		arch_targets = ""
 		for arch in makefile_platforms:
 			arch_targets += """
-{arch}:
-	$(MAKE) -C WORK/ios-{arch}/cmake
+{arch}: all-{arch}
 
 {arch}-build:
 	@for package in $(packages); do \\
