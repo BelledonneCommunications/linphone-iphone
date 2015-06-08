@@ -192,13 +192,33 @@ def main(argv = None):
 	cat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
 	rm -rf WORK/ios-{arch}/Build/$*/*; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
-	echo "Run 'make {arch}' to rebuild $* correctly.";
+	echo "Run 'make {arch}-build-$*' to rebuild $* correctly.";
+
+{arch}-veryclean-ffmpeg:
+	$(MAKE) -C WORK/ios-{arch}/Build/ffmpeg uninstall; \\
+	rm -rf WORK/ios-{arch}/Build/ffmpeg/*; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_ffmpeg/*; \\
+	echo "Run 'make {arch}-build-ffmpeg' to rebuild ffmpeg correctly.";
 
 {arch}-clean-openh264:
 	cd WORK/ios-{arch}/Build/openh264; \\
-	make -f ../../../../submodules/externals/openh264/Makefile clean; \\
+	$(MAKE) -f ../../../../submodules/externals/openh264/Makefile clean; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-build; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-install;
+
+{arch}-veryclean-openh264:
+	rm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/wels; \\
+	rm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libopenh264.*; \\
+	rm -rf WORK/ios-{arch}/Build/openh264/*; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_openh264/*; \\
+	echo "Run 'make {arch}-build-openh264' to rebuild openh264 correctly.";
+
+{arch}-veryclean-vpx:
+	rm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/vpx; \\
+	rm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libvpx.*; \\
+	rm -rf WORK/ios-{arch}/Build/vpx/*; \\
+	rm -f WORK/ios-{arch}/Stamp/EP_vpx/*; \\
+	echo "Run 'make {arch}-build-vpx' to rebuild vpx correctly.";
 """.format(arch=arch)
 		multiarch = ""
 		for arch in makefile_platforms[1:]:
@@ -243,7 +263,7 @@ veryclean-%:
 		echo "==== starting veryclean of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-veryclean-$*; \\
 	done; \\
-	echo "Run 'make' to rebuild $* correctly."
+	echo "Run 'make build-$*' to rebuild $* correctly."
 
 build: libs sdk
 
