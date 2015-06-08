@@ -10,3 +10,4 @@ build
 test-reports
 WORK
 Makefile
+OUTPUT
