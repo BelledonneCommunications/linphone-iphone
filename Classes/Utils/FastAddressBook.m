@@ -64,10 +64,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 + (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail {
     UIImage* retImage = nil;
     if (contact && ABPersonHasImageData(contact)) {
-        CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, thumbnail?
-                                                            kABPersonImageFormatThumbnail: kABPersonImageFormatOriginalSize);
+        NSData* imgData = CFBridgingRelease(ABPersonCopyImageDataWithFormat(contact, thumbnail?
+                                                            kABPersonImageFormatThumbnail: kABPersonImageFormatOriginalSize));
 
-        retImage = [UIImage imageWithData:(NSData *)CFBridgingRelease(imgData)];
+        retImage = [UIImage imageWithData:imgData];
 
 		if (retImage != nil && retImage.size.width != retImage.size.height) {
 			LOGI(@"Image is not square : cropping it.");
@@ -230,13 +230,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                             add = true;
                         }
                         if(add) {
-                            CFStringRef lValue = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
-                            NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:(__bridge NSString *)(lValue)];
+                            NSString* lValue = (__bridge NSString*)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+                            NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:lValue];
                             if(lNormalizedKey != NULL) {
                                 [addressBookMap setObject:(__bridge id)(lPerson) forKey:lNormalizedKey];
                             } else {
-								NSString* value = CFBridgingRelease(lValue);
-                                [addressBookMap setObject:(__bridge id)(lPerson) forKey:value];
+                                [addressBookMap setObject:(__bridge id)(lPerson) forKey:lValue];
                             }
                         }
                         CFRelease(lDict);

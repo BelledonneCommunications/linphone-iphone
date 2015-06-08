@@ -572,7 +572,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 	LinphoneCallAppData* data=(__bridge LinphoneCallAppData*)linphone_call_get_user_data(call);
 	if (!data) {
 		data = [[LinphoneCallAppData alloc] init];
-		linphone_call_set_user_data(call, (__bridge_retained void*)data);
+		linphone_call_set_user_data(call, (void*)CFBridgingRetain(data));
 	}
 
 	if (silentPushCompletion) {
