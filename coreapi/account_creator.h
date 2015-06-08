@@ -138,18 +138,18 @@ LINPHONE_PUBLIC void linphone_account_creator_set_email(LinphoneAccountCreator *
 LINPHONE_PUBLIC const char * linphone_account_creator_get_email(const LinphoneAccountCreator *creator);
 
 /**
- * Set the subscribe (to the newsletter) field.
+ * Enable the newsletter subscription.
  * @param[in] creator LinphoneAccountCreator object
  * @param[in] subscribe A boolean telling whether to subscribe to the newsletter or not.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_set_subscribe(LinphoneAccountCreator *creator, bool_t subscribe);
+LINPHONE_PUBLIC void linphone_account_creator_enable_newsletter_subscription(LinphoneAccountCreator *creator, bool_t subscribe);
 
 /**
- * Get the subscribe (to the newsletter) field.
+ * Tell whether to subscribe to the newsletter or not.
  * @param[in] creator LinphoneAccountCreator object
  * @return A boolean telling whether to subscribe to the newsletter or not.
 **/
-LINPHONE_PUBLIC bool_t linphone_account_creator_get_subscribe(const LinphoneAccountCreator *creator);
+LINPHONE_PUBLIC bool_t linphone_account_creator_newsletter_subscription_enabled(const LinphoneAccountCreator *creator);
 
 /**
  * Set the callback called when the account existence test is finished.
@@ -195,6 +195,13 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_test_valid
  * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCreator *creator);
+
+/**
+ * Configure an account (create a proxy config and authentication info for it).
+ * @param[in] creator LinphoneAccountCreator object
+ * @return A LinphoneProxyConfig object if successful, NULL otherwise
+**/
+LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator);
 
 /**
  * @}
