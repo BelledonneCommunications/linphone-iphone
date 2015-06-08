@@ -367,7 +367,6 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 
 
 #ifdef IN_LINPHONE
-#include "account_creator.h"
 #include "buffer.h"
 #include "call_log.h"
 #include "call_params.h"
@@ -376,7 +375,6 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphonefriend.h"
 #include "xmlrpc.h"
 #else
-#include "linphone/account_creator.h"
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
 #include "linphone/call_params.h"
@@ -1334,6 +1332,13 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 /**
  * @}
  */
+
+
+#ifdef IN_LINPHONE
+#include "account_creator.h"
+#else
+#include "linphone/account_creator.h"
+#endif
 
 
 struct _LinphoneChatRoom;

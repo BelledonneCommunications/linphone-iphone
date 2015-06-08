@@ -46,6 +46,7 @@ static void linphone_gtk_account_validate_cb(LinphoneAccountCreator *creator, Li
 		// Go to page_8_error
 		gtk_assistant_set_current_page(GTK_ASSISTANT(assistant), 8);
 	}
+	gtk_assistant_commit(GTK_ASSISTANT(assistant));
 }
 
 static void create_account(GtkWidget *assistant) {
@@ -86,49 +87,10 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 			check_account_validation(assistant);
 			break;
 		case 9:
-			{
-				LinphoneAddress *identity;
-				LinphoneAuthInfo *info;
-				LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
-				LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(linphone_gtk_get_core());
-				char *identity_str = ms_strdup_printf("sip:%s@%s", linphone_account_creator_get_username(creator), linphone_account_creator_get_domain(creator));
-
-				linphone_proxy_config_set_identity(cfg, identity_str);
-				linphone_proxy_config_set_server_addr(cfg, linphone_account_creator_get_domain(creator));
-				linphone_proxy_config_set_route(cfg, linphone_account_creator_get_route(creator));
-				linphone_proxy_config_enable_publish(cfg, FALSE);
-				linphone_proxy_config_enable_register(cfg, TRUE);
-				ms_free(identity_str);
-
-				if (strcmp(linphone_account_creator_get_domain(creator), "sip.linphone.org") == 0) {
-					linphone_proxy_config_enable_avpf(cfg,TRUE);
-					// If account created on sip.linphone.org, we configure linphone to use TLS by default
-					if (linphone_core_sip_transport_supported(linphone_gtk_get_core(), LinphoneTransportTls)) {
-						LinphoneAddress *addr = linphone_address_new(linphone_proxy_config_get_server_addr(cfg));
-						char *tmp;
-						linphone_address_set_transport(addr, LinphoneTransportTls);
-						tmp = linphone_address_as_string(addr);
-						linphone_proxy_config_set_server_addr(cfg, tmp);
-						linphone_proxy_config_set_route(cfg, tmp);
-						ms_free(tmp);
-						linphone_address_destroy(addr);
-					}
-					linphone_core_set_stun_server(linphone_gtk_get_core(), "stun.linphone.org");
-					linphone_core_set_firewall_policy(linphone_gtk_get_core(), LinphonePolicyUseIce);
-				}
-
-				identity = linphone_address_new(linphone_proxy_config_get_identity(cfg));
-				info = linphone_auth_info_new(linphone_address_get_username(identity), NULL,
-					linphone_account_creator_get_password(creator), NULL, NULL, linphone_address_get_domain(identity));
-				linphone_core_add_auth_info(linphone_gtk_get_core(), info);
-				linphone_address_destroy(identity);
-
-				if (linphone_core_add_proxy_config(linphone_gtk_get_core(), cfg) != -1) {
-					linphone_core_set_default_proxy(linphone_gtk_get_core(), cfg);
-					linphone_gtk_load_identities();
-				}
-				gtk_assistant_commit(GTK_ASSISTANT(assistant));
+			if (linphone_account_creator_configure(linphone_gtk_assistant_get_creator(assistant)) != NULL) {
+				linphone_gtk_load_identities();
 			}
+			gtk_assistant_commit(GTK_ASSISTANT(assistant));
 			break;
 		default:
 			break;
@@ -190,7 +152,7 @@ static int linphone_gtk_assistant_forward(int curpage, gpointer data) {
 			linphone_account_creator_set_username(creator, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box), "username"))));
 			linphone_account_creator_set_password(creator, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box), "password"))));
 			linphone_account_creator_set_email(creator, gtk_entry_get_text(GTK_ENTRY(g_object_get_data(G_OBJECT(box), "email"))));
-			linphone_account_creator_set_subscribe(creator, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(g_object_get_data(G_OBJECT(box), "newsletter"))));
+			linphone_account_creator_enable_newsletter_subscription(creator, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(g_object_get_data(G_OBJECT(box), "newsletter"))));
 			curpage = 5; // Go to page_5_linphone_account_creation_in_progress
 			break;
 		case 6:

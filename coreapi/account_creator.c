@@ -26,6 +26,7 @@ struct _LinphoneAccountCreator {
 	LinphoneAccountCreatorCb existence_test_cb;
 	LinphoneAccountCreatorCb validation_test_cb;
 	LinphoneAccountCreatorCb validate_cb;
+	LinphoneCore *core;
 	void *existence_test_cb_ud;
 	void *validation_test_cb_ud;
 	void *validate_cb_ud;
@@ -35,12 +36,13 @@ struct _LinphoneAccountCreator {
 	char *domain;
 	char *route;
 	char *email;
-	bool_t subscribe;
+	bool_t subscribe_to_newsletter;
 };
 
 LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
 	LinphoneAccountCreator *creator;
 	creator = ms_new0(LinphoneAccountCreator, 1);
+	creator->core = core;
 	creator->xmlrpc_session = linphone_xml_rpc_session_new(core, xmlrpc_url);
 	return creator;
 }
@@ -85,12 +87,12 @@ const char * linphone_account_creator_get_email(const LinphoneAccountCreator *cr
 	return creator->email;
 }
 
-void linphone_account_creator_set_subscribe(LinphoneAccountCreator *creator, bool_t subscribe) {
-	creator->subscribe = subscribe;
+void linphone_account_creator_enable_newsletter_subscription(LinphoneAccountCreator *creator, bool_t subscribe) {
+	creator->subscribe_to_newsletter = subscribe;
 }
 
-bool_t linphone_account_creator_get_subscribe(const LinphoneAccountCreator *creator) {
-	return creator->subscribe;
+bool_t linphone_account_creator_newsletter_subscription_enabled(const LinphoneAccountCreator *creator) {
+	return creator->subscribe_to_newsletter;
 }
 
 void linphone_account_creator_set_test_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data) {
@@ -190,12 +192,57 @@ LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCr
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgString, creator->password,
 		LinphoneXmlRpcArgString, creator->email,
-		LinphoneXmlRpcArgInt, (creator->subscribe == TRUE) ? 1 : 0,
+		LinphoneXmlRpcArgInt, (creator->subscribe_to_newsletter == TRUE) ? 1 : 0,
 		LinphoneXmlRpcArgNone);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	ms_free(identity);
 	return LinphoneAccountCreatorOk;
+}
+
+LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
+	LinphoneAddress *identity;
+	LinphoneAuthInfo *info;
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
+	char *identity_str = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
+
+	linphone_proxy_config_set_identity(cfg, identity_str);
+	linphone_proxy_config_set_server_addr(cfg, creator->domain);
+	linphone_proxy_config_set_route(cfg, creator->route);
+	linphone_proxy_config_enable_publish(cfg, FALSE);
+	linphone_proxy_config_enable_register(cfg, TRUE);
+	ms_free(identity_str);
+
+	if (strcmp(creator->domain, "sip.linphone.org") == 0) {
+		linphone_proxy_config_enable_avpf(cfg, TRUE);
+		// If account created on sip.linphone.org, we configure linphone to use TLS by default
+		if (linphone_core_sip_transport_supported(creator->core, LinphoneTransportTls)) {
+			LinphoneAddress *addr = linphone_address_new(linphone_proxy_config_get_server_addr(cfg));
+			char *tmp;
+			linphone_address_set_transport(addr, LinphoneTransportTls);
+			tmp = linphone_address_as_string(addr);
+			linphone_proxy_config_set_server_addr(cfg, tmp);
+			linphone_proxy_config_set_route(cfg, tmp);
+			ms_free(tmp);
+			linphone_address_destroy(addr);
+		}
+		linphone_core_set_stun_server(creator->core, "stun.linphone.org");
+		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
+	}
+
+	identity = linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	info = linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password, NULL, NULL, linphone_address_get_domain(identity));
+	linphone_core_add_auth_info(creator->core, info);
+	linphone_address_destroy(identity);
+
+	if (linphone_core_add_proxy_config(creator->core, cfg) != -1) {
+		linphone_core_set_default_proxy(creator->core, cfg);
+		return cfg;
+	}
+
+	linphone_core_remove_auth_info(creator->core, info);
+	linphone_proxy_config_unref(cfg);
+	return NULL;
 }
 
 void linphone_account_creator_destroy(LinphoneAccountCreator *creator){
