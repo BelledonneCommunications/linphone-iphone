@@ -180,6 +180,7 @@ def main(argv = None):
 	done
 
 {arch}-build-%:
+	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
 	$(MAKE) -C WORK/ios-{arch}/cmake EP_$*
 
 {arch}-clean-%:
@@ -220,6 +221,9 @@ all: build
 
 {arch_targets}
 all-%:
+	@for package in $(packages); do \\
+		rm -f WORK/ios-$*/Stamp/EP_$$package/EP_$$package-update; \\
+	done
 	$(MAKE) -C WORK/ios-$*/cmake
 
 build-%:
